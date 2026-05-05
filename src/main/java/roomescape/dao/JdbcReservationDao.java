@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationRequestDto;
 
 @Primary
 @Repository
@@ -25,24 +24,22 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Reservation create(ReservationRequestDto requestDto, ReservationTime reservationTime, Theme theme) {
+    public Reservation create(Reservation reservationWithoutId, ReservationTime reservationTime, Theme theme) {
         String sql = "INSERT INTO `reservation`(`name`, `date`, `time_id`, `theme_id`) VALUES (?, ?, ?, ?)";
-
-        Reservation reservation = requestDto.toEntity(reservationTime, theme);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement preparedStatement = con.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, requestDto.name());
-            preparedStatement.setDate(2, Date.valueOf(requestDto.date()));
-            preparedStatement.setLong(3, requestDto.timeId());
-            preparedStatement.setLong(4, requestDto.themeId());
+            preparedStatement.setString(1, reservationWithoutId.getName());
+            preparedStatement.setDate(2, Date.valueOf(reservationWithoutId.getDate()));
+            preparedStatement.setLong(3, reservationTime.getId());
+            preparedStatement.setLong(4, theme.getId());
 
             return preparedStatement;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return Reservation.of(id, reservation);
+        return Reservation.of(id, reservationWithoutId);
     }
 
     @Override

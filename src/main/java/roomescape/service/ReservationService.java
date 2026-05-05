@@ -26,7 +26,10 @@ public class ReservationService {
     public ReservationResponseDto create(ReservationRequestDto requestDto) {
         ReservationTime reservationTime = reservationTimeDao.read(requestDto.timeId());
         Theme theme = themeDao.read(requestDto.themeId());
-        Reservation reservation = reservationDao.create(requestDto, reservationTime, theme);
+
+        Reservation reservationWithoutId = requestDto.toEntity(reservationTime, theme);
+        Reservation reservation = reservationDao.create(reservationWithoutId, reservationTime, theme);
+
         return ReservationResponseDto.from(reservation);
     }
 

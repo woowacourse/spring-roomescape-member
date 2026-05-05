@@ -16,7 +16,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponseDto create(ReservationTimeRequestDto requestDto) {
-        ReservationTime reservationTime = reservationTimeDao.create(requestDto);
+        ReservationTime reservationTime = reservationTimeDao.create(requestDto.toEntity());
         return ReservationTimeResponseDto.from(reservationTime);
     }
 

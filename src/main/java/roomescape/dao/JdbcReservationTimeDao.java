@@ -11,7 +11,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
 
@@ -25,21 +24,19 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime create(ReservationTimeRequestDto requestDto) {
+    public ReservationTime create(ReservationTime reservationTimeWithoutId) {
         String sql = "INSERT INTO `reservation_time`(`start_at`) VALUES ?";
-
-        ReservationTime reservationTime = requestDto.toEntity();
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement preparedStatement = con.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setTime(1, Time.valueOf(requestDto.startAt()));
+            preparedStatement.setTime(1, Time.valueOf(reservationTimeWithoutId.getStartAt()));
 
             return preparedStatement;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return ReservationTime.of(id, reservationTime);
+        return ReservationTime.of(id, reservationTimeWithoutId);
     }
 
     @Override
