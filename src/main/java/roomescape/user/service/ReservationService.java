@@ -21,15 +21,15 @@ public class ReservationService {
     }
 
     public List<Reservation> findAll() {
-        return reservationDao.read();
+        return reservationDao.selectAll();
     }
 
     @Transactional
-    public Reservation create(String name, LocalDate date, Long timeId) {
-        ReservationTime time = timeDao.findById(timeId);
+    public Reservation add(String name, LocalDate date, Long timeId) {
+        ReservationTime time = timeDao.selectById(timeId);
         Reservation reservation = new Reservation(name, date, time);
 
-        return reservationDao.create(reservation);
+        return reservationDao.insert(reservation);
     }
 
     public void delete(Long id) {

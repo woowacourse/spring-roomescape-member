@@ -15,11 +15,11 @@ public class ThemeService {
     }
 
     public List<Theme> findAll() {
-        return themeDao.findAll();
+        return themeDao.selectAll();
     }
 
     public Theme findById(Long id) {
-        return themeDao.findById(id);
+        return themeDao.selectById(id);
     }
 
     public Theme add(String name, String description, String image) {

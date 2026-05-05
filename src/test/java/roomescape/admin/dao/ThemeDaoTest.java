@@ -46,7 +46,7 @@ public class ThemeDaoTest {
 
     @Test
     void 테마_전체_조회_테스트() {
-        List<Theme> themes = themeDao.findAll();
+        List<Theme> themes = themeDao.selectAll();
         assertThat(themes.size()).isEqualTo(2);
 
         Theme theme = themes.get(0);
@@ -55,10 +55,10 @@ public class ThemeDaoTest {
 
     @Test
     void 테마_단일_조회_테스트() {
-        Theme firstTheme = themeDao.findById(1L);
+        Theme firstTheme = themeDao.selectById(1L);
         assertThat(firstTheme.getName()).isEqualTo("은하수");
 
-        Theme secoundTheme = themeDao.findById(2L);
+        Theme secoundTheme = themeDao.selectById(2L);
         assertThat(secoundTheme.getName()).isEqualTo("지구");
 
     }

@@ -34,12 +34,12 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> read() {
+    public List<Reservation> selectAll() {
         String sql = "select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at from reservation r inner join reservation_time t on r.time_id = t.id";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public Reservation create(Reservation reservation) {
+    public Reservation insert(Reservation reservation) {
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())

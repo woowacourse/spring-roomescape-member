@@ -24,7 +24,7 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponse>> read() {
+    public ResponseEntity<List<ReservationResponse>> readAll() {
         List<ReservationResponse> reservations = reservationService.findAll().stream()
                 .map(ReservationResponse::from)
                 .collect(Collectors.toList());
@@ -32,8 +32,8 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> post(@RequestBody ReservationRequest request) {
-        Reservation reservation = reservationService.create(
+    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request) {
+        Reservation reservation = reservationService.add(
                 request.name(),
                 request.date(),
                 request.timeId()

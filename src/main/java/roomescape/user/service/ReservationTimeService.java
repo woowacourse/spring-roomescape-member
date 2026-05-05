@@ -16,12 +16,12 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTime> findAll() {
-        return timeDao.read();
+        return timeDao.selectAll();
     }
 
-    public ReservationTime create(LocalTime startAt) {
+    public ReservationTime add(LocalTime startAt) {
         ReservationTime time = new ReservationTime(startAt);
-        return timeDao.create(time);
+        return timeDao.insert(time);
     }
 
     public void delete(Long id) {

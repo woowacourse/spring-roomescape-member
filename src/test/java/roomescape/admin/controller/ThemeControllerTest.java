@@ -33,7 +33,7 @@ public class ThemeControllerTest {
     @Test
     void 관리자_전체_테마_조회() throws Exception {
         RestAssured.given().log().all()
-                .when().get("/themes")
+                .when().get("/admin/themes")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2));
@@ -43,7 +43,7 @@ public class ThemeControllerTest {
     @Test
     void 관리자_단일_테마_조회() {
         RestAssured.given().log().all()
-                .when().get("/themes/1")
+                .when().get("/admin/themes/1")
                 .then().log().all()
                 .statusCode(200)
                 .body("name", is("은하수"));
@@ -59,7 +59,7 @@ public class ThemeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201)
                 .and().body("name", is("수성"));

@@ -27,17 +27,17 @@ public class ReservationTimeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<ReservationTime> read() {
+    public List<ReservationTime> selectAll() {
         String sql = "select id, start_at from reservation_time";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public ReservationTime findById(Long id) {
+    public ReservationTime selectById(Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
-    public ReservationTime create(ReservationTime time) {
+    public ReservationTime insert(ReservationTime time) {
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("start_at", time.getStartAt());
 

@@ -29,13 +29,13 @@ public class ThemeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Theme> findAll() {
+    public List<Theme> selectAll() {
         String sql = "SELECT * FROM theme";
 
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public Theme findById(Long id) {
+    public Theme selectById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
 
         return jdbcTemplate.queryForObject(sql, rowMapper, id);

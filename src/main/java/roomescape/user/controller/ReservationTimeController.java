@@ -24,7 +24,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times")
-    public ResponseEntity<List<ReservationTimeResponse>> read() {
+    public ResponseEntity<List<ReservationTimeResponse>> readAll() {
         List<ReservationTimeResponse> reservationTimes = timeService.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .collect(Collectors.toList());
@@ -32,8 +32,8 @@ public class ReservationTimeController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ReservationTimeResponse> post(@RequestBody ReservationTimeRequest request) {
-        ReservationTime time = timeService.create(request.startAt());
+    public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeRequest request) {
+        ReservationTime time = timeService.add(request.startAt());
         return ResponseEntity.ok(ReservationTimeResponse.from(time));
     }
 
