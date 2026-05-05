@@ -23,8 +23,6 @@ class ReservationTimeRepositoryTest {
 
     private static final long DEFAULT_ID = 1;
     private static final long NOT_EXIST_ID = 999;
-    private static final String DEFAULT_RESERVATION_NAME = "name";
-    private static final LocalDate DEFAULT_RESERVATION_DATE = LocalDate.of(2025, 1, 1);
     private static final LocalTime DEFAULT_START_AT = LocalTime.of(1, 1);
 
     @Autowired
