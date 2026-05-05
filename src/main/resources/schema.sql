@@ -18,7 +18,6 @@ CREATE TABLE `schedule` (
     `theme_id` BIGINT NOT NULL,
     `start_at` DATETIME NOT NULL,
     `end_at` DATETIME NOT NULL,
-    `is_available` TINYINT(1) NOT NULL DEFAULT 1,
     CONSTRAINT `PK_SCHEDULE` PRIMARY KEY (`id`),
     CONSTRAINT `FK_SCHEDULE_THEME` FOREIGN KEY (`theme_id`) REFERENCES `THEME` (`id`)
 );

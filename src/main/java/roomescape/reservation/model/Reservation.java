@@ -1,5 +1,7 @@
 package roomescape.model;
 
+import roomescape.theme.model.Theme;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -9,14 +11,16 @@ public class Reservation {
     private String name;
     private LocalDate date;
     private ReservationTime time;
+    private Theme theme;
 
-    protected Reservation() {}
-
-    public Reservation(String name, LocalDate date, ReservationTime time) {
-        this(null, name, date, time);
+    protected Reservation() {
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
+    }
+
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(date);
         validateTime(time);
@@ -25,6 +29,7 @@ public class Reservation {
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     private void validateName(String name) {
@@ -71,5 +76,9 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }

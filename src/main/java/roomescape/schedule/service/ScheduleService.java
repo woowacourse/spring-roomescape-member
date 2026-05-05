@@ -34,6 +34,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    @Transactional
     public int delete(Long id) {
         return reservationTimeRepository.delete(id);
     }
