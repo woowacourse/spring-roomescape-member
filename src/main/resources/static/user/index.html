@@ -310,7 +310,8 @@
     }
 
     async function loadPopularThemes() {
-        const res = await fetch('/themes?limit=10');
+        const today = new Date().toISOString().slice(0, 10);
+        const res = await fetch(`/themes?limit=10&date=${today}`);
         const themes = await res.json();
         const grid = document.getElementById('popularGrid');
         grid.innerHTML = themes.map((t, i) => `
