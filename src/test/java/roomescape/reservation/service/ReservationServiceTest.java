@@ -1,90 +1,56 @@
-//package roomescape.service;
-//
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.transaction.annotation.Transactional;
-//import roomescape.dto.ReservationRequest;
-//import roomescape.dto.ReservationResponse;
-//import roomescape.dto.ReservationsResponse;
-//import roomescape.model.ReservationTime;
-//import roomescape.repository.ReservationTimeRepository;
-//
-//import java.time.LocalDate;
-//import java.time.LocalTime;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//
-//@SpringBootTest
-//@Transactional
-//class ReservationServiceTest {
-//
-//    @Autowired
-//    private ReservationService reservationService;
-//
-//    @Autowired
-//    private ReservationTimeRepository reservationTimeRepository;
-//
-//    @Test
-//    @DisplayName("실제 DB에 예약 시간을 먼저 저장한 후, 예약을 생성한다.")
-//    void create() {
-//        // given
-//        ReservationTime time = new ReservationTime(LocalTime.of(10, 0));
-//        Long timeId = reservationTimeRepository.create(time);
-//
-//        ReservationRequest request = new ReservationRequest("브라운", LocalDate.of(2026, 12, 25), timeId);
-//
-//        // when
-//        ReservationResponse response = reservationService.create(request);
-//
-//        // then
-//        assertThat(response.getId()).isNotNull();
-//        assertThat(response.getName()).isEqualTo("브라운");
-//
-//        ReservationsResponse all = reservationService.findAll();
-//        assertThat(all.getReservationsResponse()).anyMatch(res -> res.getName().equals("브라운"));
-//    }
-//
-//    @Test
-//    @DisplayName("DB에 저장된 모든 예약을 조회한다.")
-//    void findAll() {
-//        // given
-//        ReservationTime time = new ReservationTime(LocalTime.of(13, 0));
-//        Long timeId = reservationTimeRepository.create(time);
-//
-//        reservationService.create(new ReservationRequest("브라운", LocalDate.of(2026, 12, 25), timeId));
-//        reservationService.create(new ReservationRequest("루크", LocalDate.of(2026, 12, 26), timeId));
-//
-//        // when
-//        ReservationsResponse response = reservationService.findAll();
-//
-//        // then
-//        assertThat(response.getReservationsResponse()).hasSize(2);
-//        assertThat(response.getReservationsResponse())
-//                .extracting("name")
-//                .containsExactlyInAnyOrder("브라운", "루크");
-//    }
-//
-//    @Test
-//    @DisplayName("ID를 이용해 실제 DB에서 예약을 삭제한다.")
-//    void delete() {
-//        // given
-//        ReservationTime time = new ReservationTime(LocalTime.of(15, 0));
-//        Long timeId = reservationTimeRepository.create(time);
-//        ReservationResponse saved = reservationService.create(new ReservationRequest("포비", LocalDate.of(2026, 12, 27), timeId));
-//
-//        long reservationId = saved.getId();
-//
-//        // when
-//        int result = reservationService.delete(reservationId);
-//
-//        // then
-//        assertThat(result).isEqualTo(1);
-//
-//        ReservationsResponse remaining = reservationService.findAll();
-//        assertThat(remaining.getReservationsResponse())
-//                .extracting("id")
-//                .doesNotContain(reservationId);
-//    }
-//}
+package roomescape.reservation.service;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.dto.ReservationsResponse;
+import roomescape.reservation.model.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.schedule.model.Schedule;
+import roomescape.theme.model.Theme;
+import roomescape.user.model.Role;
+import roomescape.user.model.User;
+
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest
+@Transactional
+class ReservationServiceTest {
+
+    private final User user = new User(1L, "user1", Role.USER);
+    private final Theme theme = new Theme(1L, "공포", "설명", "경로");
+    private final Schedule schedule = new Schedule(1L, LocalDateTime.of(2026, 12, 10, 12, 0),
+            LocalDateTime.of(2026, 12, 10, 14, 0), theme);
+
+    @Autowired
+    private ReservationService reservationService;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.update("INSERT INTO \"USER\" (id, name, role) VALUES (?, ?, ?)",
+                1L, "user1", "USER");
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url) VALUES (?, ?, ?, ?)",
+                1L, "공포", "설명", "경로");
+        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
+                1L, 1L, "2026-12-10 12:00:00", "2026-12-10 14:00:00");
+        reservationRepository.create(new Reservation(user, schedule, theme));
+    }
+
+    @Test
+    void 데이터베이스에_저장된_모든_예약을_조회한다() {
+        ReservationsResponse response = reservationService.findAll();
+
+        assertThat(response.getReservationsResponse()).hasSize(1);
+    }
+}
