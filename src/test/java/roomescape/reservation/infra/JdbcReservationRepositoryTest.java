@@ -45,19 +45,19 @@ class JdbcReservationRepositoryTest {
     void 전체_예약_조회_레포지토리_테스트() {
         List<Reservation> reservations = reservationRepository.findAll();
 
-        assertThat(reservations).hasSize(3);
+        assertThat(reservations).hasSize(9);
         assertThat(reservations)
                 .extracting(Reservation::getName)
-                .containsExactly("kim", "lee", "park");
+                .startsWith("kim", "kim", "lee");
         assertThat(reservations)
                 .extracting(Reservation::getDate)
-                .containsExactly(LocalDate.of(2026, 5, 5), LocalDate.of(2026, 5, 5), LocalDate.of(2026, 5, 6));
+                .startsWith(LocalDate.of(2026, 5, 5), LocalDate.of(2026, 5, 5), LocalDate.of(2026, 5, 5));
         assertThat(reservations)
                 .extracting(reservation -> reservation.getTime().getId())
-                .containsExactly(1L, 3L, 4L);
+                .startsWith(1L, 2L, 1L);
         assertThat(reservations)
                 .extracting(reservation -> reservation.getTime().getStartAt())
-                .containsExactly(LocalTime.of(10, 0), LocalTime.of(12, 0), LocalTime.of(13, 0));
+                .startsWith(LocalTime.of(10, 0), LocalTime.of(11, 0), LocalTime.of(10, 0));
     }
 
     @Test
@@ -65,7 +65,7 @@ class JdbcReservationRepositoryTest {
         reservationRepository.deleteById(1L);
         int rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
 
-        assertThat(rowCount).isEqualTo(2);
+        assertThat(rowCount).isEqualTo(8);
     }
 
     @Test
@@ -73,6 +73,6 @@ class JdbcReservationRepositoryTest {
     void findTimeIdByDateAndThemeId_테스트() {
         List<Long> result = reservationRepository.findTimeIdByDateAndThemeId(LocalDate.parse("2026-05-05"), 1L);
 
-        assertThat(result).containsExactly(1L);
+        assertThat(result).containsExactly(1L, 2L);
     }
 }

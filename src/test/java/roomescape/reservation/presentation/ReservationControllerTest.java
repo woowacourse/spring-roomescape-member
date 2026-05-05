@@ -20,7 +20,7 @@ public class ReservationControllerTest {
     void 예약_생성() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2026-05-05");
+        reservation.put("date", "2026-05-06");
         reservation.put("timeId", 2);
         reservation.put("themeId", 1);
 
@@ -30,7 +30,7 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(4));
+                .body("id", is(10));
     }
 
     @Test
@@ -39,14 +39,14 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3)); // 아직 생성 요청이 없으니 0개
+                .body("size()", is(9)); // 아직 생성 요청이 없으니 0개
     }
 
     @Test
     void 예약_추가_및_삭제() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2025-05-05");
+        reservation.put("date", "2025-05-06");
         reservation.put("timeId", 2);
         reservation.put("themeId", 1);
 
@@ -56,13 +56,13 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(4));
+                .body("id", is(10));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4));
+                .body("size()", is(10));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -73,6 +73,6 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(9));
     }
 }

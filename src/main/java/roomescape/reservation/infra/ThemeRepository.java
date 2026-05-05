@@ -13,5 +13,7 @@ public interface ThemeRepository {
 
     List<Theme> findByDate(LocalDate date);
 
+    List<Theme> findByDayAndLimit(int day, int limit);
+
     Optional<Theme> findById(long id);
 }
