@@ -40,10 +40,10 @@ class ReservationTimeRepositoryTest {
         @Test
         void 새로운_시간_정보를_저장한다() {
             // given
-            ReservationTime transientTime = ReservationTime.create(DEFAULT_START_AT);
+            ReservationTime time = ReservationTime.create(DEFAULT_START_AT);
 
             // when
-            timeRepository.persist(transientTime);
+            timeRepository.persist(time);
 
             // then
             String timeCountSql = "SELECT count(*)"
@@ -67,10 +67,10 @@ class ReservationTimeRepositoryTest {
             // then
             String selectSql = "SELECT id, start_at"
                     + " FROM reservation_time";
-            List<ReservationTime> findReservations = jdbcTemplate.query(selectSql, reservationTimeRowMapper());
+            List<ReservationTime> foundReservations = jdbcTemplate.query(selectSql, reservationTimeRowMapper());
 
-            assertThat(findReservations).hasSize(1);
-            assertThat(findReservations.getFirst()).isEqualTo(persistedReservationTime);
+            assertThat(foundReservations).hasSize(1);
+            assertThat(foundReservations.getFirst()).isEqualTo(persistedReservationTime);
         }
     }
 
