@@ -1,15 +1,16 @@
 package roomescape.reservation.infra;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Theme;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class JdbcThemeRepositoryTest {
@@ -46,7 +47,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @Transactional
-    void 각_날짜에_존재하는_모든_테마_조회_레포토지리_테스트(){
+    void 각_날짜에_존재하는_모든_테마_조회_레포토지리_테스트() {
         List<Theme> themes = repository.findByDate(LocalDate.of(2026, 5, 5));
 
         assertThat(themes).hasSize(10);
@@ -60,7 +61,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @Transactional
-    void 최근_7일_예약_개수에_따른_인기_테마_조회_레포지토리_테스트(){
+    void 최근_7일_예약_개수에_따른_인기_테마_조회_레포지토리_테스트() {
         List<Theme> themes = repository.findByDayAndLimit(7, 10);
 
         assertThat(themes).hasSize(10);
