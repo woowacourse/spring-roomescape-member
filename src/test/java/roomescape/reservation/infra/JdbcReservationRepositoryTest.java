@@ -70,10 +70,15 @@ class JdbcReservationRepositoryTest {
                 Long.class,
                 "16:00"
         );
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05",
-                firstTimeId);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "코니", "2023-08-05",
-                secondTimeId);
+
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?,?,?)", "꿀잼 방탈출",
+                "재밌는 분위기의 방탈출", "https://example.com/theme_happy.jpg");
+        Long themeId = jdbcTemplate.queryForObject("SELECT id FROM theme LIMIT 1", Long.class);
+
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05",
+                firstTimeId,themeId);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "코니", "2023-08-05",
+                secondTimeId,themeId);
 
         List<Reservation> reservations = reservationRepository.findAll();
 

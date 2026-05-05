@@ -35,11 +35,11 @@ public class ReservationTimeService {
         reservationTimeRepository.deleteById(id);
     }
 
-    public List<AvailableTimeFindResponse> findTimesByDateAndThemeId(LocalDate date, long themeId){
-        // schedule에서 존재하는 타임 id 모두 조회
-        List<ReservationTime> times = scheduleRepository.findByDateAndThemeId();
-
-        // date와 themeId에 해당하는 reservation를 모두 조회
-        List<ReservationTime> notAvailableTimes = reservationRepository.findTimesByDateAndThemeId(date, themeId);
-    }
+//    public List<AvailableTimeFindResponse> findTimesByDateAndThemeId(LocalDate date, long themeId){
+//        // schedule에서 존재하는 타임 id 모두 조회
+//        List<ReservationTime> times = scheduleRepository.findByDateAndThemeId();
+//
+//        // date와 themeId에 해당하는 reservation를 모두 조회
+//        List<ReservationTime> notAvailableTimes = reservationRepository.findTimesByDateAndThemeId(date, themeId);
+//    }
 }
