@@ -1,30 +1,30 @@
-package roomescape.dto;
+package roomescape.schedule.dto;
 
-import roomescape.model.ReservationTime;
+import roomescape.schedule.model.Schedule;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
-public class ReservationTimeResponse {
+public class ScheduleResponse {
 
     private final Long id;
-    private final LocalTime time;
+    private final String themeName;
+    private final LocalDateTime startAt;
+    private final LocalDateTime endAt;
 
-    public ReservationTimeResponse(Long id, LocalTime time) {
+
+    private ScheduleResponse(Long id, String themeName, LocalDateTime startAt, LocalDateTime endAt) {
         this.id = id;
-        this.time = time;
+        this.themeName = themeName;
+        this.startAt = startAt;
+        this.endAt = endAt;
     }
 
-    public static ReservationTimeResponse from(ReservationTime reservationTime) {
-        return new ReservationTimeResponse(
-                reservationTime.getId(),
-                reservationTime.getStartTime()
-        );
-    }
-
-    public static ReservationTimeResponse of(ReservationTime reservationTime) {
-        return new ReservationTimeResponse(
-                reservationTime.getId(),
-                reservationTime.getStartTime()
+    public static ScheduleResponse of(Schedule schedule) {
+        return new ScheduleResponse(
+                schedule.getId(),
+                schedule.getTheme().getName(),
+                schedule.getStartAt(),
+                schedule.getEndAt()
         );
     }
 
@@ -32,8 +32,15 @@ public class ReservationTimeResponse {
         return id;
     }
 
-    public LocalTime getStartAt() {
-        return time;
+    public String getThemeName() {
+        return themeName;
     }
 
+    public LocalDateTime getStartAt() {
+        return startAt;
+    }
+
+    public LocalDateTime getEndAt() {
+        return endAt;
+    }
 }
