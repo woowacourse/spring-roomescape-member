@@ -37,7 +37,7 @@ public class JdbcReservationTimeRepositoryTest {
         assertThat(reservationTimes).hasSize(4);
         assertThat(reservationTimes)
                 .extracting(ReservationTime::getStartAt)
-                .containsExactly(LocalTime.of(10, 00), LocalTime.of(11, 00), LocalTime.of(12, 00), LocalTime.of(13, 00) );
+                .containsExactly(LocalTime.of(10, 00), LocalTime.of(11, 00), LocalTime.of(12, 00), LocalTime.of(13, 00));
     }
 
     @Test
@@ -60,6 +60,6 @@ public class JdbcReservationTimeRepositoryTest {
 
         assertThat(result)
                 .extracting(ReservationTime::getStartAt)
-                .containsExactly(LocalTime.of(10, 00), LocalTime.of(11, 00), LocalTime.of(12, 00), LocalTime.of(13, 00) );
+                .containsExactly(LocalTime.of(10, 00), LocalTime.of(11, 00), LocalTime.of(12, 00), LocalTime.of(13, 00));
     }
 }

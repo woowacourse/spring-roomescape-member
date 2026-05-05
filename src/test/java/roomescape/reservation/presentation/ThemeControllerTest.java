@@ -1,7 +1,5 @@
 package roomescape.reservation.presentation;
 
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
@@ -12,6 +10,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Sql(scripts = {"/truncate.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -59,7 +59,7 @@ public class ThemeControllerTest {
     }
 
     @Test
-    void 각_날짜에_존재하는_모든_테마_조회_API_테스트(){
+    void 각_날짜에_존재하는_모든_테마_조회_API_테스트() {
         RestAssured.given().log().all()
                 .queryParam("date", "2026-05-05")
                 .when().get("/themes")
@@ -69,7 +69,7 @@ public class ThemeControllerTest {
     }
 
     @Test
-    void 최근_7일_예약_개수에_따른_인기_테마_조회_API_테스트(){
+    void 최근_7일_예약_개수에_따른_인기_테마_조회_API_테스트() {
         RestAssured.given().log().all()
                 .queryParam("day", 7)
                 .queryParam("limit", 10)

@@ -1,12 +1,7 @@
 package roomescape.reservation.presentation;
 
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +9,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.is;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Sql(scripts = {"/truncate.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class ReservationTimeControllerTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    private void deleteTable(){
-        jdbcTemplate.update("DELETE FROM schedule");
-        jdbcTemplate.update("DELETE FROM reservation");
-    }
 
     @Test
     void 시간_관리_API() {
@@ -52,7 +47,7 @@ public class ReservationTimeControllerTest {
     }
 
     @Test
-    void 특정날짜와_테마에_예약_가능_시간을_조회_API(){
+    void 특정날짜와_테마에_예약_가능_시간을_조회_API() {
         Map<String, Object> options = new HashMap<>();
         options.put("date", "2026-05-05");
         options.put("themeId", 1);
@@ -71,7 +66,7 @@ public class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("예약 가능 시간 조회 및 예약 생성 이후 예약 가능 시간을 재조회를 할 수 있다.")
-    void 정상_흐름_테스트(){
+    void 정상_흐름_테스트() {
         Map<String, Object> options = new HashMap<>();
         options.put("date", "2026-05-05");
         options.put("themeId", 2);
@@ -116,5 +111,10 @@ public class ReservationTimeControllerTest {
                 .body("[2].isAvailable", is(false))
                 .body("[3].isAvailable", is(false))
                 .statusCode(200);
+    }
+
+    private void deleteTable() {
+        jdbcTemplate.update("DELETE FROM schedule");
+        jdbcTemplate.update("DELETE FROM reservation");
     }
 }
