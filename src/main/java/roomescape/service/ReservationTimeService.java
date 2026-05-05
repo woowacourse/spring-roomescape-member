@@ -31,25 +31,28 @@ public class ReservationTimeService {
         return CreateReservationTimeResponse.from(newReservationTime);
     }
 
+    // TODO: 지난 날짜 검증
     public List<ReservationTimeResponse> getReservationTimes(Long themeId, LocalDate date) {
         themeDao.selectById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        //TODO: 지난 날짜 검증
-        List<Reservation> reservations = reservationDao.selectByThemeIdAndDate(themeId, date); // 테마 아이디와 날짜에 맞는 예약된 객체들 반환
+        List<Reservation> reservations = reservationDao.selectByThemeIdAndDate(themeId, date);
         List<ReservationTime> reservationTimes = reservationTimeDao.select();
-        List<ReservationTimeResponse> responses = new ArrayList<>();
 
+        List<ReservationTimeResponse> responses = new ArrayList<>();
         for (Reservation reservation : reservations) {
             for (ReservationTime reservationTime : reservationTimes) {
-                if (reservation.getTime().getStartAt() == reservationTime.getStartAt()) {
-                    responses.add(ReservationTimeResponse.from(reservationTime, false));
-                } else {
-                    responses.add(ReservationTimeResponse.from(reservationTime, true));
-                }
+                responses.add(createReservationTimeResponse(reservation, reservationTime));
             }
         }
         return responses;
+    }
+
+    private ReservationTimeResponse createReservationTimeResponse(Reservation reservation, ReservationTime reservationTime) {
+        if (reservation.getTime().getStartAt().equals(reservationTime.getStartAt())) {
+            return ReservationTimeResponse.from(reservationTime, false);
+        }
+        return ReservationTimeResponse.from(reservationTime, true);
     }
 
     public void deleteReservationTime(long reservationTimeId) {
