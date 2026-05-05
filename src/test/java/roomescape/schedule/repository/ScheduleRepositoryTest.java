@@ -20,8 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ScheduleRepositoryTest {
 
     private final Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
-    private final Schedule schedule = new Schedule(LocalDateTime.of(2026, 12, 10, 12, 0),
-            LocalDateTime.of(2026, 12, 10, 14, 0), theme);
+    private final Schedule schedule = new Schedule(LocalDateTime.of(2026, 12, 10, 12, 0), theme);
 
     @Autowired
     private ScheduleRepository scheduleRepository;
