@@ -13,6 +13,13 @@ public class ReservationRequest {
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
+        validateName();
+    }
+
+    public void validateName() {
+        if (name.length() < 2 || name.length() > 20) {
+            throw new IllegalArgumentException("[ERROR] 사용자 이름은 2자 이상 20자 이하입니다.");
+        }
     }
 
     public String getName() {
