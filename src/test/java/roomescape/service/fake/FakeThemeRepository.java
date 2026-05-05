@@ -1,30 +1,44 @@
 package roomescape.service.fake;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
-    private final List<Theme> themes = new ArrayList<>();
-    private final AtomicLong index = new AtomicLong(1);
+
+    private final Map<Long, Theme>  themes = new HashMap<>();
+    private final AtomicLong idGenerator = new AtomicLong(1);
 
     @Override
     public Theme save(Theme theme) {
+        long id = idGenerator.getAndIncrement();
         Theme savedTheme = new Theme(
-                index.getAndIncrement(),
+                id,
                 theme.getName(),
                 theme.getDescription(),
-                theme.getThumbnailImageUrl()
+                theme.getThumbnailImageUrl(),
+                theme.isActive()
         );
-        themes.add(savedTheme);
+        themes.put(id, savedTheme);
         return savedTheme;
     }
 
     @Override
-    public boolean existByName(String name) {
-        return themes.stream()
-                .anyMatch(theme -> theme.getName().equals(name));
+    public void update(Theme theme) {
+        themes.put(theme.getId(), theme);
+    }
+
+    @Override
+    public Optional<Theme> findById(long id) {
+        return Optional.ofNullable(themes.get(id));
+    }
+
+    @Override
+    public boolean existByNameAndIsDeletedFalse(String name) {
+        return themes.values().stream()
+                .anyMatch(theme -> theme.getName().equals(name) && !theme.isActive());
     }
 }

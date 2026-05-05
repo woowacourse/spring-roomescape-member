@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.domain.fixture.ThemeFixture;
 
 class ThemeTest {
 
@@ -21,10 +22,10 @@ class ThemeTest {
         // when
         Theme theme = new Theme(name, description, thumbnailImageUrl);
 
-        // then
+        // then: 기본 생성 시 삭제되지 않은 상태이다.
         assertThat(theme)
-                .extracting(Theme::getName, Theme::getDescription, Theme::getThumbnailImageUrl)
-                .containsExactly(name, description, thumbnailImageUrl);
+                .extracting(Theme::getName, Theme::getDescription, Theme::getThumbnailImageUrl, Theme::isActive)
+                .containsExactly(name, description, thumbnailImageUrl, false);
     }
 
     @ParameterizedTest
@@ -73,5 +74,29 @@ class ThemeTest {
         assertThatThrownBy(() -> new Theme(name, description, invalidUrl))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(expectedMessage);
+    }
+
+    @Test
+    void 테마를_삭제할_수_있다() {
+        // given
+        Theme theme = ThemeFixture.createDefaultTheme();
+
+        // when
+        theme.deactivate();
+
+        // then
+        assertThat(theme.isActive()).isTrue();
+    }
+
+    @Test
+    void 이미_삭제된_테마를_삭제하면_예외가_발생한다() {
+        // given
+        Theme theme = ThemeFixture.createDefaultTheme();
+        theme.deactivate();
+
+        // when & then
+        assertThatThrownBy(theme::deactivate)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("이미 비활성화 된 테마입니다.");
     }
 }

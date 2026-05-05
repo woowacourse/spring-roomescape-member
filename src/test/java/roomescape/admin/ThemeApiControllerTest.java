@@ -3,6 +3,9 @@ package roomescape.admin;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.restassured.common.mapper.TypeRef;
@@ -89,5 +92,28 @@ class ThemeApiControllerTest {
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body(containsString(exceptionMessage));
+    }
+
+    @Test
+    void 관리자가_특정_테마_삭제_요청_시_204_NoContent를_응답한다() {
+        // when & then: 관리자 헤더를 포함해서 요청했을 때, 삭제 로직을 수행한다.
+        RestAssuredMockMvc.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("role", "ADMIN")
+                .when().delete("/admin/themes/1")
+                .then().log().all()
+                .status(HttpStatus.NO_CONTENT);
+
+        verify(themeService, times(1)).remove(any(Accessor.class), anyLong());
+    }
+
+    @Test
+    void 관리자가_아닌_사용자가_특정_테마_삭제_요청_시_실패한다() {
+        // when & then: 관리자 헤더 정보 없이 1번 테마를 삭제
+        RestAssuredMockMvc.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON)
+                .when().delete("/admin/themes/1")
+                .then().log().all()
+                .status(HttpStatus.FORBIDDEN);
     }
 }

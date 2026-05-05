@@ -1,4 +1,4 @@
-# 1단계 - 방탈출 예약 관리
+# 예약
 
 ## 구현할 기능 목록
 
@@ -11,6 +11,7 @@
     * 나중에 다른 유형의 방탈출이 추가 될 수 있다.
 * 방탈출은 게임마다 시간이 다르다.
     * 현재는 한 가지 카테고리만 존재하므로 1시간으로 고정한다.
+* 예약 당시 테마 정보를 가지고 있는다.
 
 ## 객체 명세서 V1. 방탈출 예약 관리
 
@@ -29,7 +30,7 @@
 * time: ReservationTime (예약 시간 정보)
 
 
-# 2단계 - 테마 + 사용자 예약
+# 테마 
 
 ## 구현할 기능 목록
 
@@ -39,21 +40,35 @@
 ## 테마 비즈니스 정의
 
 * 모든 테마의 시작 시간과 소요 시간은 동일하다고 가정한다.
-* 관리자가 테마를 추가/삭제할 수 있다.
-  * 관리자가 아닌 사용자가 테마를 추가/삭제 시 예외를 던진다.
-* 테마는 중복된 이름을 가질 수 없다.
+* 관리자가 테마를 추가/비활성화 할 수 있다.
+  * 테마 이름은 중복 될 수 없다.
+  * 관리자가 아닌 사용자가 테마를 추가/비활성화 시 예외를 던진다.
+  * 테마를 삭제하더라도 기존 예약 정보들에 영향을 미치지 않는다.
 * 테마는 이름, 설명, 썸네일 이미지 URL을 필수로 가진다.
 
 ### API 엔드포인트
-* 테마 추가 : `POST /themes`
+
+> 테마 추가
+
+**Request**
+
 ```json
+POST /themes HTTP/1.1
+Content-Type: application/json
+role: {role}
+
 {
   "name" : "공포",
   "description" : "공포 방탈출입니다.",
   "thumbnailImageUrl" : "http://image.url"
 }
 ```
+
+**Response**
+
 ```json
+201 Created
+
 {
   "id" : 1,
   "name" : "공포",
@@ -61,9 +76,19 @@
   "thumbnailImageUrl" : "http://image.url"
 }
 ```
-* 테마 삭제 : `DELETE /themes/{themeId}`
 
+> 테마 비활성화
 
-## 사용자 비즈니스 정의
+**Request**
 
-* 관리자 여부를 알 수 있다.
+```json
+DELETE /themes/{themeId} HTTP/1.1
+Content-Type: application/json
+role: {role}
+```
+
+**Response**
+
+```json
+204 NoContent
+```
