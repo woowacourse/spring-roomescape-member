@@ -61,7 +61,7 @@ public class ReservationDao {
         Number reservationId = reservationInsertExecutor.executeAndReturnKey(params);
 
         String sql = """
-                SELECT
+                SELECT 
                     reservation.id as reservation_id,
                     reservation.name,
                     reservation.date,
