@@ -3,6 +3,9 @@ package roomescape.admin.controller;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,5 +47,21 @@ public class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("name", is("은하수"));
+    }
+
+    @Test
+    void 관리자_테마_추가() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "수성");
+        params.put("description", "수성 테마방입니다.");
+        params.put("image", "http.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .and().body("name", is("수성"));
     }
 }

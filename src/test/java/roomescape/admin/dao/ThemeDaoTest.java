@@ -62,4 +62,13 @@ public class ThemeDaoTest {
         assertThat(secoundTheme.getName()).isEqualTo("지구");
 
     }
+
+    @Test
+    void 테마_생성_테스트() {
+        Theme theme = new Theme("수성", "수성 테마방입니다", "http.jp");
+        Theme result = themeDao.insert(theme);
+
+        assertThat(result.getId()).isEqualTo(3L);
+        assertThat(result.getName()).isEqualTo(theme.getName());
+    }
 }

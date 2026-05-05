@@ -21,4 +21,9 @@ public class ThemeService {
     public Theme findById(Long id) {
         return themeDao.findById(id);
     }
+
+    public Theme add(String name, String description, String image) {
+        Theme theme = new Theme(name, description, image);
+        return themeDao.insert(theme);
+    }
 }
