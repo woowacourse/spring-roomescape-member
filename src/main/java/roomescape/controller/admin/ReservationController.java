@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 
 import jakarta.validation.Valid;
@@ -33,6 +33,12 @@ public class ReservationController {
                 .toList());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservationResponseDto> findById(@PathVariable Long id) {
+        Reservation reservationById = reservationService.findById(id);
+        return ResponseEntity.ok(ReservationResponseDto.from(reservationById));
+    }
+
     @PostMapping
     public ResponseEntity<ReservationResponseDto> create(@Valid @RequestBody ReservationRequestDto reservationRequest) {
         Reservation reservation = reservationService.create(reservationRequest);
@@ -40,7 +46,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Valid @PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.delete(id);
         return ResponseEntity.ok().build();
     }

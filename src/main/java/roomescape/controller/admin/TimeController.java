@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +37,12 @@ public class TimeController {
         return ResponseEntity.ok(times.stream()
                 .map(TimeResponseDto::from)
                 .toList());
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<TimeResponseDto> findById(@PathVariable Long id) {
+        Time timeById = timeService.findById(id);
+        return ResponseEntity.ok(TimeResponseDto.from(timeById));
     }
 
     @DeleteMapping("/{id}")

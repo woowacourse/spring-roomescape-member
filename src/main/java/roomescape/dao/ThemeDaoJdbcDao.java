@@ -1,14 +1,26 @@
 package roomescape.dao;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
 
 @Repository
 public class ThemeDaoJdbcDao implements ThemeDao {
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+
+    public ThemeDaoJdbcDao(NamedParameterJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     public static final RowMapper<Theme> ROW_MAPPER = (rs, rowNum) ->
             new Theme(
                     rs.getLong(1),
@@ -19,21 +31,55 @@ public class ThemeDaoJdbcDao implements ThemeDao {
 
     @Override
     public List<Theme> findAll() {
-        return List.of();
+        String sql = """
+                SELECT * FROM themes
+                """;
+
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
     public Optional<Theme> findById(Long id) {
-        return Optional.empty();
+        String sql = """
+                SELECT * FROM themes
+                WHERE id = :id
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        return jdbcTemplate.query(sql, params, ROW_MAPPER).stream().findFirst();
     }
 
     @Override
     public Long insert(Theme theme) {
-        return 0L;
+        String sql = """
+                INSERT INTO themes
+                (name, thumbnail_url, description)
+                VALUE (:name, :thumbnailUrl, :description)
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", theme.getName().getValue())
+                .addValue("thumbnailUrl", theme.getThumbnailUrl())
+                .addValue("description", theme.getDescription());
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(sql, params, keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     @Override
     public int delete(Long id) {
-        return 0;
+        String sql = """
+                DELETE FROM themes
+                WHEE id = :id
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        return jdbcTemplate.update(sql, params);
     }
 }

@@ -8,6 +8,8 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
@@ -16,6 +18,8 @@ import roomescape.dto.ReservationRequestDto;
 import roomescape.service.fake.FakeReservationDao;
 import roomescape.service.fake.FakeThemeDao;
 import roomescape.service.fake.FakeTimeDao;
+
+import javax.sql.DataSource;
 
 class ReservationServiceTest {
 
