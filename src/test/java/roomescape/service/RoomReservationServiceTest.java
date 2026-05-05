@@ -40,6 +40,11 @@ public class RoomReservationServiceTest {
             }
 
             @Override
+            public List<Reservation> getAllReservationByName(String name) {
+                return List.of();
+            }
+
+            @Override
             public boolean existsByTimeId(long timeId) {
                 return false;
             }
