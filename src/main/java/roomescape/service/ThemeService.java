@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ThemeCreateRequest;
+import roomescape.domain.Duration;
 import roomescape.domain.Theme;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.repository.ThemeRepository;
@@ -40,10 +41,9 @@ public class ThemeService {
     @Transactional(readOnly = true)
     public List<ReservedTheme> findMostReserved(
             long limit,
-            LocalDate startDate,
-            LocalDate endDate
+            Duration duration
     ) {
-        return themeRepository.findMostReserved(limit, startDate, endDate);
+        return themeRepository.findMostReserved(limit, duration);
     }
 
     public void delete(long id) {

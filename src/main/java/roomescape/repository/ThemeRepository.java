@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Duration;
 import roomescape.domain.Theme;
 import roomescape.exception.InUseTimeException;
 import roomescape.repository.dto.ReservedTheme;
@@ -64,8 +65,7 @@ public class ThemeRepository {
 
     public List<ReservedTheme> findMostReserved(
             long limit,
-            LocalDate startDate,
-            LocalDate endDate
+            Duration duration
     ) {
         String findSql = "SELECT t.id, t.name, t.description, t.image_url, count(r.id) AS reservation_count"
                 + " FROM theme t"
@@ -75,6 +75,9 @@ public class ThemeRepository {
                 + " GROUP BY t.id"
                 + " ORDER BY reservation_count DESC"
                 + " LIMIT ?";
+
+        LocalDate startDate = duration.startDate();
+        LocalDate endDate = duration.endDate();
 
         return jdbcTemplate.query(
                 findSql,

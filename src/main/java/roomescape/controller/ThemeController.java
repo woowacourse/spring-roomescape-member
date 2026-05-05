@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.controller.dto.ThemeResponse;
 import roomescape.controller.mapper.ThemeMapper;
+import roomescape.domain.Duration;
 import roomescape.domain.Theme;
 import roomescape.repository.dto.ReservedTheme;
 import roomescape.service.ThemeService;
@@ -65,7 +66,8 @@ public class ThemeController {
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate
     ) {
-        List<ReservedTheme> responses = themeService.findMostReserved(limit, startDate, endDate);
+        Duration duration = new Duration(startDate, endDate);
+        List<ReservedTheme> responses = themeService.findMostReserved(limit, duration);
 
         return ResponseEntity.ok(responses);
     }
