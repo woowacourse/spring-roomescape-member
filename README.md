@@ -21,7 +21,6 @@ class Theme
 | 테마 등록       | POST `/themes`                          | `{name, description, thumbnail}`    | `{id, name, description, thumbnail}`        | 201   |
 | 테마 삭제       | DELETE `/themes/{id}`                   | —                                   |                                             | 204   |
 | 예약 가능 시간 조회 | GET `/themes/{id}/times?date=2026-05-08` | —                                   | `[{time, available}, ...]`                  | 200   |
-| 예약 등록       | POST `/reservations`                     | `{name, date, timeId, themeId}`<br> | `{id, name, date, time, theme}`<br>         | 201   |
 
 ### 1단계 - 테마 도메인 추가
 - [X] 테마 테이블 스키마 추가
