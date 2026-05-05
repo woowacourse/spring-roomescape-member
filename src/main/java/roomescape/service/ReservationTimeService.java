@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalTime;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
@@ -19,7 +20,7 @@ public class ReservationTimeService {
         return reservationTimeDao.findAll();
     }
 
-    public ReservationTime create(String startAt) {
+    public ReservationTime create(LocalTime startAt) {
         Long id = reservationTimeDao.insert(new ReservationTime(null, startAt));
         return reservationTimeDao.findBy(id);
     }

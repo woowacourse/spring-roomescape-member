@@ -1,10 +1,13 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.AvailableTime;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -28,7 +31,7 @@ public class ReservationService {
         return reservationDao.findAll();
     }
 
-    public Reservation create(String name, String date, Long timeId, Long themeId) {
+    public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = findReservationTime(timeId);
         Theme theme = findTheme(themeId);
         Reservation reservation = new Reservation(null, name, date, time, theme);
@@ -39,6 +42,23 @@ public class ReservationService {
     public void delete(Long id) {
         validateId(id);
         reservationDao.delete(id);
+    }
+
+    public List<AvailableTime> findAvailableTime(Long themeId, LocalDate date) {
+        List<ReservationTime> times = reservationTimeDao.findAll();
+        List<Reservation> reservations = reservationDao.findReservationsByThemeAndDate(themeId, date);
+
+        return times.stream()
+                .map(time -> new AvailableTime(
+                        time.getStartAt(),
+                        isAvailable(time, reservations)
+                ))
+                .toList();
+    }
+
+    private boolean isAvailable(ReservationTime time, List<Reservation> reservations) {
+        return reservations.stream()
+                .noneMatch(reservation -> reservation.isSameTime(time.getStartAt()));
     }
 
     private ReservationTime findReservationTime(Long timeId) {

@@ -1,5 +1,7 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,7 +22,7 @@ public class ReservationDao {
     private final RowMapper<Reservation> actorRowMapper = (resultSet, rowNum) -> {
         ReservationTime time = new ReservationTime(
                 resultSet.getLong("time_id"),
-                resultSet.getString("time_value"));
+                resultSet.getObject("time_value", LocalTime.class));
         Theme theme = new Theme(
                 resultSet.getLong("theme_id"),
                 resultSet.getString("theme_name"),
@@ -30,7 +32,7 @@ public class ReservationDao {
         Reservation reservation = new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("username"),
-                resultSet.getString("date"),
+                resultSet.getObject("date", LocalDate.class),
                 time,
                 theme);
         return reservation;
@@ -87,7 +89,7 @@ public class ReservationDao {
                     sql,
                     new String[]{"id"});
             pstmt.setString(1, reservation.getName());
-            pstmt.setString(2, reservation.getDate());
+            pstmt.setObject(2, reservation.getDate());
             pstmt.setLong(3, reservation.getTime().getId());
             pstmt.setLong(4, reservation.getTheme().getId());
             return pstmt;
@@ -99,5 +101,27 @@ public class ReservationDao {
     public int delete(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?;";
         return jdbcTemplate.update(sql, id);
+    }
+
+    public List<Reservation> findReservationsByThemeAndDate(Long themeId, LocalDate date) {
+        String sql = "SELECT\n" +
+                "    r.id as reservation_id,\n" +
+                "    r.name as username,\n" +
+                "    r.date,\n" +
+                "    rt.id as time_id,\n" +
+                "    rt.start_at as time_value,\n" +
+                "    t.id as theme_id,\n" +
+                "    t.name as theme_name,\n" +
+                "    t.description,\n" +
+                "    t.thumbnail\n" +
+                "FROM reservation as r\n" +
+                "INNER JOIN reservation_time as rt\n" +
+                "  ON r.time_id = rt.id\n" +
+                "INNER JOIN theme as t\n" +
+                "  ON r.theme_id = t.id\n" +
+                "WHERE t.id = ? "
+                + "AND r.date = ?";
+
+        return jdbcTemplate.query(sql, actorRowMapper, themeId, date);
     }
 }

@@ -6,10 +6,9 @@ import java.time.format.DateTimeParseException;
 
 public record ReservationRequest(
         String name,
-        String date,
+        LocalDate date,
         Long timeId,
         Long themeId) {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public ReservationRequest {
         validateName(name);
@@ -27,15 +26,9 @@ public record ReservationRequest(
         }
     }
 
-    private void validateDate(String date) {
-        if (date == null || date.isBlank()) {
+    private void validateDate(LocalDate date) {
+        if (date == null) {
             throw new IllegalArgumentException("[ERROR] 날짜는 비어 있을 수 없습니다.");
-        }
-
-        try {
-            LocalDate.parse(date, FORMATTER);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("[ERROR] 날짜 형식이 올바르지 않습니다.");
         }
     }
 

@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalTime;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,7 +19,7 @@ public class ReservationTimeDao {
     private final RowMapper<ReservationTime> actorRowMapper = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("id"),
-                resultSet.getString("start_at"));
+                resultSet.getObject("start_at", LocalTime.class));
         return reservationTime;
     };
 
@@ -43,7 +44,7 @@ public class ReservationTimeDao {
             PreparedStatement pstmt = connection.prepareStatement(
                     sql,
                     new String[]{"id"});
-            pstmt.setString(1, reservationTime.getStartAt());
+            pstmt.setObject(1, reservationTime.getStartAt());
             return pstmt;
         }, keyHolder);
 

@@ -1,14 +1,18 @@
 package roomescape.domain;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+
 public class Reservation {
 
     private final Long id;
     private final String name;
-    private final String date;
+    private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, String date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(date);
         validateTime(time);
@@ -29,7 +33,7 @@ public class Reservation {
         return name;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
@@ -41,6 +45,12 @@ public class Reservation {
         return theme;
     }
 
+    public boolean isSameTime(LocalTime time) {
+        return this.time.getStartAt()
+                .truncatedTo(ChronoUnit.MINUTES)
+                .equals(time.truncatedTo(ChronoUnit.MINUTES));
+    }
+
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이름은 비어 있을 수 없습니다.");
@@ -50,8 +60,8 @@ public class Reservation {
         }
     }
 
-    private void validateDate(String date) {
-        if (date == null || date.isBlank()) {
+    private void validateDate(LocalDate date) {
+        if (date == null) {
             throw new IllegalArgumentException("[ERROR] 날짜는 비어 있을 수 없습니다.");
         }
     }

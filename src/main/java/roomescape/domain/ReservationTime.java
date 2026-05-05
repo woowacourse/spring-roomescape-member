@@ -1,11 +1,13 @@
 package roomescape.domain;
 
+import java.time.LocalTime;
+
 public class ReservationTime {
 
     private final Long id;
-    private final String startAt;
+    private final LocalTime startAt;
 
-    public ReservationTime(Long id, String startAt) {
+    public ReservationTime(Long id, LocalTime startAt) {
         validateTime(startAt);
 
         this.id = id;
@@ -16,12 +18,12 @@ public class ReservationTime {
         return id;
     }
 
-    public String getStartAt() {
+    public LocalTime getStartAt() {
         return startAt;
     }
 
-    private void validateTime(String startAt) {
-        if (startAt == null || startAt.isBlank()) {
+    private void validateTime(LocalTime startAt) {
+        if (startAt == null) {
             throw new IllegalArgumentException("[ERROR] 시간은 비어 있을 수 없습니다.");
         }
     }
