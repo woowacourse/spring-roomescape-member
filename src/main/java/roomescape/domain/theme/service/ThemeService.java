@@ -1,5 +1,6 @@
 package roomescape.domain.theme.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.theme.dto.request.ThemeCreatedRequestDTO;
@@ -18,6 +19,10 @@ public class ThemeService {
 
     public List<ThemeResponseDTO> getThemes() {
         return convertThemesToDTO(themeRepository.findAllThemes());
+    }
+
+    public List<ThemeResponseDTO> getPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit) {
+        return convertThemesToDTO(themeRepository.findPopularThemesDateBetween(startDate, endDate, limit));
     }
 
     private List<ThemeResponseDTO> convertThemesToDTO(List<Theme> themes) {

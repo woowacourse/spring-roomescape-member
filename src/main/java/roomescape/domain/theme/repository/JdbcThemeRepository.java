@@ -1,5 +1,6 @@
 package roomescape.domain.theme.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,5 +78,33 @@ public class JdbcThemeRepository implements ThemeRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, Integer limit) {
+        String sql = """
+            SELECT t.id, t.name, t.description, t.image_url
+            FROM theme t
+            JOIN reservation r ON t.id = r.theme_id
+            WHERE r.date BETWEEN :startDate AND :endDate
+            GROUP BY t.id, t.name, t.description, t.image_url
+            ORDER BY COUNT(r.id) DESC, t.id ASC
+            LIMIT :limit
+            """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
+            "startDate", startDate,
+            "endDate", endDate,
+            "limit", limit
+        ));
+        return jdbcTemplate.query(
+            sql,
+            parameters,
+            (resultSet, rowNum) -> Theme.reconstruct(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("image_url")
+            ));
     }
 }
