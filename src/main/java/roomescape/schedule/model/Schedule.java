@@ -3,8 +3,12 @@ package roomescape.schedule.model;
 import roomescape.theme.model.Theme;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class Schedule {
+
+    private static final LocalTime OPENING_TIME = LocalTime.of(10, 0);
+    private static final LocalTime CLOSE_TIME = LocalTime.of(20, 0);
 
     private Long id;
     private Theme theme;
@@ -14,17 +18,16 @@ public class Schedule {
     public Schedule() {
     }
 
-    public Schedule(LocalDateTime startAt, LocalDateTime endAt, Theme theme) {
-        this(null, startAt, endAt, theme);
+    public Schedule(LocalDateTime startAt, Theme theme) {
+        this(null, startAt, theme);
     }
 
-    public Schedule(Long id, LocalDateTime startAt, LocalDateTime endAt, Theme theme) {
+    public Schedule(Long id, LocalDateTime startAt, Theme theme) {
         validateStartAt(startAt);
-        validateEndAt(endAt);
         validateTheme(theme);
         this.id = id;
         this.startAt = startAt;
-        this.endAt = endAt;
+        this.endAt = calculateEndAt(startAt, theme);
         this.theme = theme;
     }
 
@@ -44,15 +47,37 @@ public class Schedule {
         return theme;
     }
 
+    private LocalDateTime calculateEndAt(LocalDateTime startAt, Theme theme) {
+        LocalTime requiredTime = theme.getRequiredTime();
+
+        LocalDateTime endAt = startAt.plusHours(requiredTime.getHour())
+                .plusMinutes(requiredTime.getMinute());
+
+        validateEndAt(endAt);
+        return endAt;
+    }
+
     private void validateStartAt(LocalDateTime startAt) {
         if (startAt == null) {
             throw new IllegalArgumentException("예약 시작 시간은 필수입니다.");
+        }
+
+        LocalTime startTime = startAt.toLocalTime();
+
+        if (startTime.isBefore(OPENING_TIME)) {
+            throw new IllegalArgumentException("오전 10시 이전에는 예약이 불가능합니다.");
         }
     }
 
     private void validateEndAt(LocalDateTime endAt) {
         if (endAt == null) {
             throw new IllegalArgumentException("예약 시작 시간은 필수입니다.");
+        }
+
+        LocalTime endTime = endAt.toLocalTime();
+
+        if (endTime.isAfter(CLOSE_TIME)) {
+            throw new IllegalArgumentException("오후 8시 이후에는 예약이 불가능합니다.");
         }
     }
 
