@@ -43,18 +43,7 @@ public class ThemeService {
             LocalDate startDate,
             LocalDate endDate
     ) {
-        LocalDate notNullEndDate = handleDefaultEndDate(endDate);
-
-        return themeRepository.findMostReserved(limit, startDate, notNullEndDate);
-    }
-
-    private LocalDate handleDefaultEndDate(LocalDate endDate) {
-        if (endDate == null) {
-            return LocalDate.now()
-                    .minusDays(1);
-        }
-
-        return endDate;
+        return themeRepository.findMostReserved(limit, startDate, endDate);
     }
 
     public void delete(long id) {
