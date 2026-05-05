@@ -1,15 +1,12 @@
 package roomescape.service.fake;
 
 import roomescape.dao.TimeDao;
-import roomescape.dao.vo.TimeRow;
-import roomescape.dao.vo.TimeRows;
 import roomescape.domain.Time;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class FakeTimeDao implements TimeDao {
 

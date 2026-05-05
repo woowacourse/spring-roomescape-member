@@ -6,6 +6,7 @@ import roomescape.dao.TimeDao;
 import roomescape.domain.Time;
 import roomescape.dto.TimeRequestDto;
 import roomescape.service.fake.FakeTimeDao;
+
 import java.time.LocalTime;
 import java.util.List;
 
@@ -17,7 +18,7 @@ class TimeServiceTest {
     private TimeService timeService;
     private TimeDao timeDao;
 
-    private void saveTimeHandler(Time ...times) {
+    private void saveTimeHandler(Time... times) {
         for (Time time : times) {
             timeDao.insert(time);
         }
@@ -30,7 +31,7 @@ class TimeServiceTest {
     }
 
     @Test
-    void 시간을_생성하면_id가_부여된_시간이_생성된다 () {
+    void 시간을_생성하면_id가_부여된_시간이_생성된다() {
         Time time = timeService.create(new TimeRequestDto(LocalTime.of(13, 30)));
 
         assertThat(time).isNotNull();
@@ -39,8 +40,8 @@ class TimeServiceTest {
 
     @Test
     void 지정한_id를_가진_시간을_조회할_수_있다() {
-        Time time1 = new Time(LocalTime.of(13,0));
-        Time time2 = new Time(LocalTime.of(14,0));
+        Time time1 = new Time(LocalTime.of(13, 0));
+        Time time2 = new Time(LocalTime.of(14, 0));
 
         saveTimeHandler(time1, time2);
         Time timeById = timeService.findById(2L);
@@ -58,8 +59,8 @@ class TimeServiceTest {
 
     @Test
     void 모든_시간을_조회할_수_있다() {
-        Time time1 = new Time(LocalTime.of(13,0));
-        Time time2 = new Time(LocalTime.of(14,0));
+        Time time1 = new Time(LocalTime.of(13, 0));
+        Time time2 = new Time(LocalTime.of(14, 0));
 
         saveTimeHandler(time1, time2);
 
@@ -78,7 +79,7 @@ class TimeServiceTest {
 
     @Test
     void 지정한_id를_가진_시간을_삭제할_수_있다() {
-        Time time = new Time(LocalTime.of(13,0));
+        Time time = new Time(LocalTime.of(13, 0));
         saveTimeHandler(time);
 
         timeService.delete(1L);

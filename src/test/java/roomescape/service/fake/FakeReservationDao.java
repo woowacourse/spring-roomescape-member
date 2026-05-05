@@ -1,11 +1,7 @@
 package roomescape.service.fake;
 
-import org.w3c.dom.stylesheets.LinkStyle;
 import roomescape.dao.ReservationDao;
-import roomescape.dao.vo.ReservationRow;
-import roomescape.dao.vo.ReservationRows;
 import roomescape.domain.Reservation;
-import roomescape.domain.Time;
 
 import java.util.HashMap;
 import java.util.List;
