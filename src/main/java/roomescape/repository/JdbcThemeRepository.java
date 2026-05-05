@@ -2,9 +2,14 @@ package roomescape.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.InfrastructureException;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +23,16 @@ public class JdbcThemeRepository implements ThemeRepository {
     private static final String FIND_BY_ID_SQL = """
             SELECT id, name, description, thumbnail
             FROM theme
+            WHERE id = ?
+            """;
+
+    private static final String INSERT_SQL = """
+            INSERT INTO theme (name, description, thumbnail)
+            VALUES (?, ?, ?)
+            """;
+
+    private static final String DELETE_SQL = """
+            DELETE FROM theme
             WHERE id = ?
             """;
 
@@ -36,6 +51,17 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public Theme save(Theme theme) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        int rowCount = insert(theme, keyHolder);
+        validateCreatedRowCount(rowCount);
+
+        Long id = getGeneratedId(keyHolder);
+        return theme.withId(id);
+    }
+
+    @Override
     public List<Theme> findAll() {
         return jdbcTemplate.query(FIND_ALL_SQL, themeRowMapper);
     }
@@ -45,5 +71,37 @@ public class JdbcThemeRepository implements ThemeRepository {
         return jdbcTemplate.query(FIND_BY_ID_SQL, themeRowMapper, id)
                 .stream()
                 .findFirst();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        jdbcTemplate.update(DELETE_SQL, id);
+    }
+
+    private int insert(Theme theme, KeyHolder keyHolder) {
+        return jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    INSERT_SQL,
+                    new String[]{"id"}
+            );
+            preparedStatement.setString(1, theme.getName());
+            preparedStatement.setString(2, theme.getDescription());
+            preparedStatement.setString(3, theme.getThumbnail());
+            return preparedStatement;
+        }, keyHolder);
+    }
+
+    private void validateCreatedRowCount(int rowCount) {
+        if (rowCount != 1) {
+            throw new InfrastructureException(ErrorCode.THEME_CREATE_FAILED);
+        }
+    }
+
+    private Long getGeneratedId(KeyHolder keyHolder) {
+        Number key = keyHolder.getKey();
+        if (key == null) {
+            throw new InfrastructureException(ErrorCode.THEME_CREATE_FAILED);
+        }
+        return key.longValue();
     }
 }
