@@ -2,7 +2,6 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.exception.InvalidReservationTimeException;
 
 public class ReservationTime {
 
@@ -47,7 +46,7 @@ public class ReservationTime {
 
     private void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new InvalidReservationTimeException("예약 시간엔 시간 정보가 존재해야 합니다.");
+            throw new IllegalArgumentException("예약 시간엔 시간 정보가 존재해야 합니다.");
         }
     }
 

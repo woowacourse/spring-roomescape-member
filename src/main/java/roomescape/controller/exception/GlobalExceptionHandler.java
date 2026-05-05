@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.InUseTimeException;
-import roomescape.exception.InvalidReservationException;
-import roomescape.exception.InvalidReservationTimeException;
 
 @RestControllerAdvice
 @Slf4j
@@ -17,9 +15,7 @@ public class GlobalExceptionHandler {
             IllegalArgumentException.class,
             IllegalStateException.class,
             InUseTimeException.class,
-            EntityNotFoundException.class,
-            InvalidReservationException.class,
-            InvalidReservationTimeException.class
+            EntityNotFoundException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequest(Exception exception) {
         log.warn("[Bad Request] ", exception);

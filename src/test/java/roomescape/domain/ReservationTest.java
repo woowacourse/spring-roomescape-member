@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.exception.InvalidReservationException;
 
 class ReservationTest {
 
@@ -29,7 +28,7 @@ class ReservationTest {
                     DEFAULT_DATE,
                     DEFAULT_TIME,
                     DEFAULT_THEME
-            )).isInstanceOf(InvalidReservationException.class)
+            )).isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("예약엔 이름이 존재해야 합니다.");
         }
 
@@ -40,7 +39,7 @@ class ReservationTest {
                     DEFAULT_DATE,
                     DEFAULT_TIME,
                     DEFAULT_THEME
-            )).isInstanceOf(InvalidReservationException.class)
+            )).isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("예약엔 이름이 존재해야 합니다.");
         }
 
@@ -53,7 +52,7 @@ class ReservationTest {
                     DEFAULT_DATE,
                     DEFAULT_TIME,
                     DEFAULT_THEME
-            )).isInstanceOf(InvalidReservationException.class)
+            )).isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("예약엔 이름이 존재해야 합니다.");
         }
 
@@ -65,7 +64,7 @@ class ReservationTest {
                     DEFAULT_DATE,
                     DEFAULT_TIME,
                     DEFAULT_THEME
-            )).isInstanceOf(InvalidReservationException.class)
+            )).isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("예약엔 이름이 존재해야 합니다.");
         }
     }
@@ -80,7 +79,7 @@ class ReservationTest {
                     null,
                     DEFAULT_TIME,
                     DEFAULT_THEME
-            )).isInstanceOf(InvalidReservationException.class)
+            )).isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("예약엔 날짜가 존재해야 합니다.");
         }
 
@@ -92,7 +91,7 @@ class ReservationTest {
                     null,
                     DEFAULT_TIME,
                     DEFAULT_THEME
-            )).isInstanceOf(InvalidReservationException.class)
+            )).isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("예약엔 날짜가 존재해야 합니다.");
         }
     }
@@ -107,7 +106,7 @@ class ReservationTest {
                     DEFAULT_DATE,
                     null,
                     DEFAULT_THEME
-            )).isInstanceOf(InvalidReservationException.class)
+            )).isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("예약엔 시간이 존재해야 합니다.");
         }
 
@@ -119,7 +118,7 @@ class ReservationTest {
                     DEFAULT_DATE,
                     null,
                     DEFAULT_THEME
-            )).isInstanceOf(InvalidReservationException.class)
+            )).isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("예약엔 시간이 존재해야 합니다.");
         }
     }
