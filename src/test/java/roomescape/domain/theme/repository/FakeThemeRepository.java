@@ -29,7 +29,7 @@ public class FakeThemeRepository implements ThemeRepository {
                 reservation.getTime(),
                 reservation.getTheme()))
             .toList();
-        reservations.addAll(reconstructedReservations);
+        this.reservations.addAll(reconstructedReservations);
     }
 
     public void saveAllThemes(List<Theme> themes) {
@@ -40,7 +40,7 @@ public class FakeThemeRepository implements ThemeRepository {
                 theme.getDescription(),
                 theme.getImageUrl()))
             .toList();
-        themes.addAll(reconstructedThemes);
+        this.themes.addAll(reconstructedThemes);
     }
 
     @Override
@@ -71,8 +71,8 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, Integer limit) {
         List<Theme> filteredThemes = reservations.stream()
-            .filter(reservation -> reservation.getDate().isAfter(startDate) && reservation.getDate().isEqual(startDate))
-            .filter(reservation -> reservation.getDate().isBefore(endDate) && reservation.getDate().isEqual(endDate))
+            .filter(reservation -> reservation.getDate().isAfter(startDate) || reservation.getDate().isEqual(startDate))
+            .filter(reservation -> reservation.getDate().isBefore(endDate) || reservation.getDate().isEqual(endDate))
             .map(Reservation::getTheme)
             .toList();
         List<Theme> distinctThemes = filteredThemes.stream()
