@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +16,8 @@ import java.util.Optional;
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private final JdbcTemplate template;
 
@@ -30,12 +32,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         template.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, DATE_TIME_FORMATTER.format(reservationTime.getStartAt()));
+            ps.setString(1, TIME_FORMATTER.format(reservationTime.getStartAt()));
             return ps;
         }, keyHolder);
 
         long key = keyHolder.getKey().longValue();
-        return new ReservationTime(key, DATE_TIME_FORMATTER.format(reservationTime.getStartAt())); // QUESTION: 이럴 때 그냥 객체 새로 만들어서 보내면 되는 건지 아니면 만들어진걸 조회해서 보내야 하는 건지
+        return new ReservationTime(key, TIME_FORMATTER.format(reservationTime.getStartAt())); // QUESTION: 이럴 때 그냥 객체 새로 만들어서 보내면 되는 건지 아니면 만들어진걸 조회해서 보내야 하는 건지
     }
 
     @Override
@@ -62,6 +64,24 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 id);
 
         return times.stream().findFirst();
+    }
+
+    @Override
+    public List<ReservationTime> findByDateAndThemeId(LocalDate date, Long themeId) {
+        String formattedDate = DATE_FORMATTER.format(date);
+
+        return template.query(
+            "SELECT t.id as time_id, t.start_at as time_value " +
+                    "FROM reservation_time as t " +
+                    "LEFT JOIN reservation as r " +
+                    "  ON t.id = r.time_id " +
+                    "  AND r.date = ? " +
+                    "  AND r.theme_id = ? " +
+                    "WHERE r.id IS NULL ",
+                reservationTimeRowMapper(),
+                formattedDate,
+                themeId
+        );
     }
 
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
