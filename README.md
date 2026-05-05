@@ -2,11 +2,11 @@
 
 ## 1단계 :
 
-- [ ] 예약에 테마 정보를 포함하도록 한다.
-- [ ] 테마는 이름, 설명, 썸네일 이미지 URL을 가진다.
+- [x] 예약에 테마 정보를 포함하도록 한다.
+- [x] 테마는 이름, 설명, 썸네일 이미지 URL을 가진다.
 - [ ] 각 테마의 시작 시간은 10시이고, 종료 시간은 20시이다.
 - [ ] 각 테마의 소요 시간은 2시간이다.
-- [ ] 관리자가 테마를 추가, 삭제할 수 있다.
+- [x] 관리자가 테마를 추가, 삭제할 수 있다.
 
 ## 2단계 :
 
@@ -43,13 +43,13 @@
 | **StatusCode** | `204 No Content` |
 
 ### 3. 전체 예약 조회
-| 항목 | 상세 내용 |
-| :--- | :--- |
-| **URL** | `/admin/reservations` |
-| **HTTP Method** | `GET` |
-| **Request** | 없음 |
-| **Response** | `[ { "reservationId": 1, "userId": 1, "userName": "루크", "themeId": 1, "themeName": "테마명", "date": "2026-05-10", "time": "14:00" }, ... ]` |
-| **StatusCode** | `200 OK` |
+| 항목 | 상세 내용                                                                                                                                                                          |
+| :--- |:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **URL** | `/admin/reservations`                                                                                                                                                          |
+| **HTTP Method** | `GET`                                                                                                                                                                          |
+| **Request** | 없음                                                                                                                                                                             |
+| **Response** | `[ { "reservationId": 1, "userId": 1, "userName": "루크", "themeId": 1, "themeName": "테마명", "scheduleId": 1, startAt": "2026-05-10 15:00", "endAt": "2026-05-10 17:00" }, ... ]` |
+| **StatusCode** | `200 OK`                                                                                                                                                                       |
 
 ### 4. 예약 삭제
 | 항목 | 상세 내용 |
@@ -72,15 +72,15 @@
 | **Response**    | `[ { "id": 1, "name": "테마명", "description": "공포", "image_url": "https://techcourse.woowahan.com/" }, ... ]` |
 | **StatusCode**  | `200 OK`                                                                                 |
 
-### 2. 예약 가능한 시간 조회
+### 2. 예약된 스케줄 조회
 
-| 항목 | 상세 내용                                                                                             |
-| :--- |:--------------------------------------------------------------------------------------------------|
-| **URL** | `/schedules?startAt={startAt}&themeId={themeId}`                                                  |
-| **HTTP Method** | `GET`                                                                                             |
-| **Request (Query)** | `startAt` , `themeId`                                                                             |
-| **Response** | `[ { "id": 1, "themeName": "...", "startAt": "...", "endAt": "...", "isAvailable": true }, ... ]` |
-| **StatusCode**  | `200 OK`                                                                                          |
+| 항목 | 상세 내용                                                                                                                        |
+| :--- |:-----------------------------------------------------------------------------------------------------------------------------|
+| **URL** | `/schedules?date={date}&themeId={themeId}`                                                                                   |
+| **HTTP Method** | `GET`                                                                                                                        |
+| **Request (Query)** | `date`, `themeId`                                                                                                            |
+| **Response** | `[ { "id": 1, "themeName": "테마명", "startAt": "2026-05-10 10:00", "endAt": "2026-05-10 12:00" }, ... ]` |
+| **StatusCode**  | `200 OK`                                                                                                                     |
 
 ### 3. 예약 생성
 
