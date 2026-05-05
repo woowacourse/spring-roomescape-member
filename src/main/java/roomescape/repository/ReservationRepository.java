@@ -9,6 +9,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.dto.ReservationRequest;
+import roomescape.dto.ThemeResponse;
+import roomescape.dto.TimeResponse;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -51,26 +54,20 @@ public class ReservationRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    public Reservation register(String name, LocalDate date, Long timeId, Long themeId) {
+    public Reservation register(ReservationRequest reservationRequest, TimeResponse timeResponse, ThemeResponse themeResponse) {
         String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, name);
-            ps.setObject(2, date);
-            ps.setLong(3, timeId);
-            ps.setLong(4, themeId);
+            ps.setString(1, reservationRequest.getName());
+            ps.setObject(2, reservationRequest.getDate());
+            ps.setLong(3, reservationRequest.getTimeId());
+            ps.setLong(4, reservationRequest.getThemeId());
             return ps;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
 
-        String selectSql = "SELECT r.id, r.name, r.date, t.id as time_id, t.start_at, m.id as theme_id, m.name as theme_name, m.description, m.url  " +
-                "FROM reservation r " +
-                "INNER JOIN reservation_time t ON r.time_id = t.id " +
-                "INNER JOIN theme m ON r.theme_id = m.id " +
-                "WHERE r.id = ? ";
-
-        return jdbcTemplate.queryForObject(selectSql, reservationMapper, id);
+        return new Reservation(id, reservationRequest.getName(), reservationRequest.getDate(), ReservationTime.from(timeResponse), Theme.from(themeResponse));
     }
 }

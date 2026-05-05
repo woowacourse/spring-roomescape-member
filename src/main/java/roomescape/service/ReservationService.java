@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.ThemeResponse;
+import roomescape.dto.TimeResponse;
 import roomescape.model.Reservation;
 import roomescape.repository.ReservationRepository;
 
@@ -12,9 +14,14 @@ import roomescape.repository.ReservationRepository;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final TimeService timeService;
+    private final ThemeService themeService;
 
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TimeService timeService,
+                              ThemeService themeService) {
         this.reservationRepository = reservationRepository;
+        this.timeService = timeService;
+        this.themeService = themeService;
     }
 
     public List<ReservationResponse> readReservation() {
@@ -29,8 +36,9 @@ public class ReservationService {
     }
 
     public ReservationResponse registerReservation(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationRepository.register(reservationRequest.getName(),
-                reservationRequest.getDate(), reservationRequest.getTimeId(), reservationRequest.getThemeId());
+        TimeResponse timeResponse = timeService.findById(reservationRequest.getTimeId());
+        ThemeResponse themeResponse = themeService.findById(reservationRequest.getThemeId());
+        Reservation reservation = reservationRepository.register(reservationRequest, timeResponse, themeResponse);
         return ReservationResponse.from(reservation);
     }
 

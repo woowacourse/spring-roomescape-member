@@ -32,4 +32,9 @@ public class TimeService {
         ReservationTime reservationTime = timeRepository.saveTime(timeRequest.getStartAt());
         return TimeResponse.from(reservationTime);
     }
+
+    public TimeResponse findById(Long id) {
+        ReservationTime reservationTime = timeRepository.selectById(id);
+        return TimeResponse.from(reservationTime);
+    }
 }

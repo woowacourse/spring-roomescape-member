@@ -1,6 +1,7 @@
 package roomescape.model;
 
 import java.time.LocalTime;
+import roomescape.dto.TimeResponse;
 
 public class ReservationTime {
     private final Long id;
@@ -10,6 +11,10 @@ public class ReservationTime {
         this.id = id;
         this.startAt = startAt;
         validateStartAt();
+    }
+
+    public static ReservationTime from(TimeResponse timeResponse) {
+        return new ReservationTime(timeResponse.getId(), timeResponse.getStartAt());
     }
 
     private void validateStartAt() {

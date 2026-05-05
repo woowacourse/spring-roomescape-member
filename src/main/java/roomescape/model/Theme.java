@@ -1,5 +1,7 @@
 package roomescape.model;
 
+import roomescape.dto.ThemeResponse;
+
 public class Theme {
     private Long id;
     private final String name;
@@ -12,6 +14,10 @@ public class Theme {
         this.description = description;
         this.url = url;
         validateName();
+    }
+
+    public static Theme from(ThemeResponse themeResponse) {
+        return new Theme(themeResponse.getId(), themeResponse.getName(), themeResponse.getDescription(), themeResponse.getUrl());
     }
 
     private void validateName(){
