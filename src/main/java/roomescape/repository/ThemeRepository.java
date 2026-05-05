@@ -94,10 +94,14 @@ public class ThemeRepository {
         try {
             int deletedRowCount = jdbcTemplate.update(deleteSql, id);
 
-            return deletedRowCount > 0;
+            return isDeleted(deletedRowCount);
         } catch (DataIntegrityViolationException exception) {
             throw new InUseTimeException("사용중이지 않은 시간만 제거할 수 있습니다. id = " + id);
         }
+    }
+
+    private boolean isDeleted(int deletedRowCount) {
+        return deletedRowCount > 0;
     }
 
     private RowMapper<Theme> themeRowMapper() {
