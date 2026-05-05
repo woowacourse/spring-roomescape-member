@@ -17,7 +17,6 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 0개
+                .body("size()", is(3));
     }
-
 }
