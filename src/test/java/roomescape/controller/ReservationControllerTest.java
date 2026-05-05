@@ -17,7 +17,6 @@ import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.service.ReservationService;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +25,6 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationControllerTest {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final ReservationTime TIME = new ReservationTime(1L, "12:00");
     private static final Theme THEME = new Theme(1L, "name", "d", "url");
     private static final Reservation RESERVATION = new Reservation("이름", "2026-05-01", TIME, THEME);
@@ -100,12 +98,13 @@ class ReservationControllerTest {
                 .then()
                 .statusCode(HttpStatus.OK.value());
 
-        List<ReservationResponseDto> responseDtos = response.as(new TypeRef<>() {});
+        List<ReservationResponseDto> responseDtos = response.as(new TypeRef<>() {
+        });
         assertThat(responseDtos).hasSize(3);
         assertThat(responseDtos).containsExactlyElementsOf(dtos);
     }
 
     private ReservationRequestDto requestDtoFrom(Reservation reservation) {
-        return new ReservationRequestDto(reservation.getName().value(), DATE_FORMATTER.format(reservation.getDate()), reservation.getTime().getId(), reservation.getTheme().getId());
+        return new ReservationRequestDto(reservation.getName().value(), reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
     }
 }
