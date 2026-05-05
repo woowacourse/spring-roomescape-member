@@ -73,7 +73,7 @@ public class ReservationRepository {
 
             Schedule schedule = new Schedule(resultSet.getLong("schedule_id"),
                     resultSet.getObject("start_at", LocalDateTime.class),
-                    resultSet.getObject("end_at", LocalDateTime.class), theme);
+                    theme);
 
             return new Reservation(resultSet.getLong("reservation_id"), user, schedule, theme);
         });
