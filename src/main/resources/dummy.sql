@@ -4,7 +4,7 @@ INSERT INTO reservation_time (start_at) VALUES
                                             ('15:00'), ('16:00'), ('17:00'), ('18:00');
 
 -- 2. 테마 (총 15개)
-INSERT INTO theme (name, description, imageUrl) VALUES
+INSERT INTO theme (name, description, image_url) VALUES
                                                     ('공포의 저택', '원혼이 떠도는 저택에서 탈출하세요.', 'url1'),
                                                     ('비밀 연구소', '바이러스가 퍼진 연구소.', 'url2'),
                                                     ('마법사의 방', '신비한 마법의 비밀을 푸세요.', 'url3'),
