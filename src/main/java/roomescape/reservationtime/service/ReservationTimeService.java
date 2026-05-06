@@ -3,12 +3,14 @@ package roomescape.reservationtime.service;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
@@ -19,7 +21,7 @@ public class ReservationTimeService {
         this.themeService = themeService;
     }
 
-
+    @Transactional
     public ReservationTime save(final LocalTime startAt, final Long themeId) {
         Theme theme = themeService.getById(themeId);
         ReservationTime reservationTime = ReservationTime.createNew(startAt, theme);
@@ -31,12 +33,13 @@ public class ReservationTimeService {
         return reservationTimeRepository.save(reservationTime);
     }
 
-    public List<ReservationTime> findAllByThemeId(final long themeId) {
-        return reservationTimeRepository.findAllByThemeId(themeId);
-    }
-
+    @Transactional
     public void deleteById(final long timeId) {
         reservationTimeRepository.deleteById(timeId);
+    }
+
+    public List<ReservationTime> findAllByThemeId(final long themeId) {
+        return reservationTimeRepository.findAllByThemeId(themeId);
     }
 
     public ReservationTime getById(final long timeId) {

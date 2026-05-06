@@ -2,10 +2,12 @@ package roomescape.theme.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
@@ -14,6 +16,7 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public Theme save(final String name, final String description, final String thumbnailUrl) {
         Theme nonIdTheme = Theme.createNew(name, description, thumbnailUrl);
 
@@ -22,6 +25,11 @@ public class ThemeService {
         }
 
         return themeRepository.save(nonIdTheme);
+    }
+
+    @Transactional
+    public void deleteById(final long themeId) {
+        themeRepository.deleteById(themeId);
     }
 
     public List<Theme> getAll() {
@@ -33,7 +41,4 @@ public class ThemeService {
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 테마를 찾을 수 없습니다."));
     }
 
-    public void deleteById(final long themeId) {
-        themeRepository.deleteById(themeId);
-    }
 }
