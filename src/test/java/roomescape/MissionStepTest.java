@@ -83,6 +83,81 @@ public class MissionStepTest {
     }
 
     @Test
+    void 같은_날짜와_시간이라도_테마가_다르면_각각_예약_가능하다() {
+        Map<String, String> theme1 = new HashMap<>();
+        theme1.put("name", "테마1");
+        theme1.put("description", "설명1");
+        theme1.put("imageUrl", "https://example.com/theme1.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme1)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
+        Map<String, String> theme2 = new HashMap<>();
+        theme2.put("name", "테마2");
+        theme2.put("description", "설명2");
+        theme2.put("imageUrl", "https://example.com/theme2.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme2)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(2));
+
+        Map<String, String> time = new HashMap<>();
+        time.put("startAt", "10:00");
+        time.put("endAt", "16:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(time)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
+        Map<String, Object> reservation1 = new HashMap<>();
+        reservation1.put("name", "브라운");
+        reservation1.put("date", "2023-08-05");
+        reservation1.put("themeId", 1);
+        reservation1.put("time", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation1)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
+        Map<String, Object> reservation2 = new HashMap<>();
+        reservation2.put("name", "초코");
+        reservation2.put("date", "2023-08-05");
+        reservation2.put("themeId", 2);
+        reservation2.put("time", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation2)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(2));
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
+
+    @Test
     void 없는_예약_삭제시_404_에러_응답() {
         RestAssured.given().log().all()
             .when().delete("/reservations/999")
