@@ -1,18 +1,15 @@
 package roomescape.dao;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Repository
 public class ThemeJdbcDao implements ThemeDao {
@@ -53,23 +50,18 @@ public class ThemeJdbcDao implements ThemeDao {
 
     @Override
     public Theme insert(Theme theme) {
-        String sql = """
-                INSERT INTO themes(name, thumbnail_url, description)
-                VALUES(:name, :thumbnailUrl, :description)
-                """;
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
+                .withTableName("themes")
+                .usingGeneratedKeyColumns("id");
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName().getValue())
                 .addValue("thumbnailUrl", theme.getThumbnailUrl())
                 .addValue("description", theme.getDescription());
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(sql, params, keyHolder);
-        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Theme(
-                id, theme.getName(), theme.getThumbnailUrl(), theme.getDescription()
-        );
+        return new Theme(id, theme.getName(), theme.getThumbnailUrl(), theme.getDescription());
     }
 
     @Override

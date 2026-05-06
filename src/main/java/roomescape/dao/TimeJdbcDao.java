@@ -1,30 +1,26 @@
 package roomescape.dao;
 
-import org.springframework.jdbc.core.JdbcTemplate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Time;
 
-import java.sql.PreparedStatement;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 @Repository
 public class TimeJdbcDao implements TimeDao {
-    public static final RowMapper<Time> ROW_MAPPER = (resultSet, rowNum) -> {
-        return new Time(
-                resultSet.getLong("id"),
-                LocalTime.parse(resultSet.getString("start_at"))
-        );
-    };
+    public static final RowMapper<Time> ROW_MAPPER = (resultSet, rowNum) -> new Time(
+            resultSet.getLong("id"),
+            LocalTime.parse(resultSet.getString("start_at"))
+    );
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public TimeJdbcDao(JdbcTemplate jdbcTemplate) {
+    public TimeJdbcDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -40,28 +36,24 @@ public class TimeJdbcDao implements TimeDao {
     public Optional<Time> findById(Long id) {
         String sql = """
                 SELECT * FROM times
-                WHERE id = ?
+                WHERE id = :id
                 """;
 
-        return jdbcTemplate.query(sql, ROW_MAPPER, id).stream()
+        SqlParameterSource params = new MapSqlParameterSource("id", id);
+
+        return jdbcTemplate.query(sql, params, ROW_MAPPER).stream()
                 .findFirst();
     }
 
     @Override
     public Time insert(Time time) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = """
-                INSERT INTO times
-                (start_at)
-                VALUES (?)
-                """;
-        jdbcTemplate.update(con -> {
-            PreparedStatement pstmt = con.prepareStatement(sql, new String[]{"id"});
-            pstmt.setString(1, time.getStartAt().toString());
-            return pstmt;
-        }, keyHolder);
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
+                .withTableName("times")
+                .usingGeneratedKeyColumns("id");
 
-        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        SqlParameterSource params = new MapSqlParameterSource("start_at", time.getStartAt());
+
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Time(id, time.getStartAt());
     }
 
@@ -69,9 +61,11 @@ public class TimeJdbcDao implements TimeDao {
     public int delete(Long id) {
         String sql = """
                 DELETE FROM times
-                WHERE id = ?
+                WHERE id = :id
                 """;
 
-        return jdbcTemplate.update(sql, id);
+        SqlParameterSource params = new MapSqlParameterSource("id", id);
+
+        return jdbcTemplate.update(sql, params);
     }
 }
