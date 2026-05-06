@@ -3,6 +3,7 @@ package roomescape.reservation.repository;
 import java.time.LocalDate;
 import java.util.List;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
 
 public interface ReservationRepository {
     List<Reservation> findAll();
@@ -12,4 +13,6 @@ public interface ReservationRepository {
     List<Long> findTimeIdsByDate(LocalDate date);
 
     boolean deleteById(Long id);
+
+    boolean isDuplicated(Long themeId, ReservationTime time, LocalDate date);
 }

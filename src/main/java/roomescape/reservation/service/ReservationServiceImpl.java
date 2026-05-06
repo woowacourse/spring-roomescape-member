@@ -1,14 +1,17 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import roomescape.holiday.service.HolidayService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
+import roomescape.time.repository.TimeRepository;
 import roomescape.time.service.TimeService;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -18,15 +21,21 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeService timeService;
     private final ThemeRepository themeRepository;
+    private final TimeRepository timeRepository;
+    private final HolidayService holidayService;
 
     public ReservationServiceImpl(
             ReservationRepository reservationRepository,
             TimeService timeService,
-            ThemeRepository themeRepository
+            ThemeRepository themeRepository,
+            TimeRepository timeRepository,
+            HolidayService holidayService
     ) {
         this.reservationRepository = reservationRepository;
         this.timeService = timeService;
         this.themeRepository = themeRepository;
+        this.timeRepository = timeRepository;
+        this.holidayService = holidayService;
     }
 
     @Override
@@ -34,10 +43,16 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationRepository.findAll();
     }
 
+
     @Override
     public Reservation create(ReservationSaveServiceDto reservation) {
         ReservationTime time = findTime(reservation.getTime());
         Long themeId = findThemeId(reservation.getThemeId());
+        LocalDate date = reservation.getDate();
+        if (holidayService.isHoliday(reservation.getDate())) {
+            throw new IllegalArgumentException("휴일은 예약이 불가합니다.");
+        }
+        validateDuplicatedReservation(themeId, time, date);
         Reservation newReservation = new Reservation(
                 reservation.getName(),
                 reservation.getDate(),
@@ -45,6 +60,16 @@ public class ReservationServiceImpl implements ReservationService {
                 themeId
         );
         return reservationRepository.save(newReservation);
+    }
+
+    private void validateDuplicatedReservation(Long themeId, ReservationTime time, LocalDate date) {
+        if (isAlreadyReserved(themeId, time, date)) {
+            throw new IllegalArgumentException("중복 예약은 불가합니다.");
+        }
+    }
+
+    private boolean isAlreadyReserved(Long themeId, ReservationTime time, LocalDate date) {
+        return reservationRepository.isDuplicated(themeId, time, date);
     }
 
     private ReservationTime findTime(String startAt) {

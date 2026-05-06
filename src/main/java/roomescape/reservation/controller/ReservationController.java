@@ -26,8 +26,7 @@ public class ReservationController {
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponseDto>> getAll() {
         List<ReservationResponseDto> body = reservationService.getAll().stream()
-                .map(ReservationR
-                        esponseDto::from)
+                .map(ReservationResponseDto::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(body);
     }

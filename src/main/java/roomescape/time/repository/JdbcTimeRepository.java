@@ -66,6 +66,16 @@ public class JdbcTimeRepository implements TimeRepository {
   }
 
   @Override
+  public boolean existsById(Long id) {
+    Integer exists = jdbcTemplate.queryForObject(
+            "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE id = ?)",
+            Integer.class,
+            id
+    );
+    return exists != null && exists == 1;
+  }
+
+  @Override
   public boolean deleteById(Long id) {
     int affectedRows = jdbcTemplate.update(
         "DELETE FROM reservation_time WHERE id = ?",
