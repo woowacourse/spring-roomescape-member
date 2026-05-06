@@ -20,7 +20,7 @@ import roomescape.exception.ErrorMessage;
 import roomescape.repository.ReservationTheme.ReservationThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
-public class ReservationReservationThemeServiceTest {
+public class ReservationThemeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTheme) {
         return new ReservationRepository() {
 
