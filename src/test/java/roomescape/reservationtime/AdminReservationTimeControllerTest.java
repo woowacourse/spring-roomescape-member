@@ -20,7 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(UserReservationTimeController.class)
+@WebMvcTest(AdminReservationTimeController.class)
 class AdminReservationTimeControllerTest {
 
     @Autowired
@@ -33,14 +33,13 @@ class AdminReservationTimeControllerTest {
     private AdminReservationTimeService reservationTimeService;
 
     @Test
-    @DisplayName("예약 시간을 생성할 수 있다")
-    void createReservationTime() throws Exception {
+    void 예약_시간을_생성할_수_있다() throws Exception {
         ReservationTime saved = new ReservationTime(1L, LocalTime.of(10, 0));
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 0));
 
         when(reservationTimeService.createReservationTime(eq(LocalTime.of(10, 0)))).thenReturn(saved);
 
-        mockMvc.perform(post("/times")
+        mockMvc.perform(post("/admin/times")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -49,9 +48,8 @@ class AdminReservationTimeControllerTest {
     }
 
     @Test
-    @DisplayName("예약 시간을 삭제할 수 있다")
-    void deleteReservationTime() throws Exception {
-        mockMvc.perform(delete("/times/{id}", 1L))
+    void 예약_시간을_삭제할_수_있다() throws Exception {
+        mockMvc.perform(delete("/admin/times/{id}", 1L))
                 .andExpect(status().isNoContent());
     }
 }
