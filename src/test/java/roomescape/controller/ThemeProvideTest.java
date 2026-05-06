@@ -1,28 +1,45 @@
 package roomescape.controller;
 
-
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ThemeProvideTest {
 
+    @TestConfiguration
+    static class FixedClockConfig {
+        @Bean
+        @Primary
+        public Clock testClock() {
+            return Clock.fixed(
+                    LocalDate.of(2026, 5, 5).atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                    ZoneId.systemDefault()
+            );
+        }
+    }
+
     @Test
     @Sql(scripts = "/testData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @DisplayName("갯수 테스트")
+    @DisplayName("개수 테스트")
     void readAvailableTime() {
 
         RestAssured.given().log().all()
-                    .queryParam("date", "2026-05-05")
                     .queryParam("limit", 10)
-                    .when().get("/themes")
+                    .when().get("/themes/popular")
                     .then().statusCode(200)
                     .log().all()
                     .body("size()",is(10));
@@ -34,9 +51,8 @@ public class ThemeProvideTest {
     void sortThemes() {
 
         RestAssured.given().log().all()
-                .queryParam("date", "2026-05-05")
                 .queryParam("limit", 10)
-                .when().get("/themes")
+                .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(10))

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeQueryService;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,13 +19,13 @@ import java.util.List;
 public class ThemeController {
 
     private final ThemeQueryService themeQueryService;
+    private final Clock clock;
 
-    @GetMapping
+    @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getSortedPopularThemesAtPeriod(
-            @RequestParam("date") LocalDate today,
             @RequestParam("limit") int limit) {
 
-
+        LocalDate today = LocalDate.now(clock);
         LocalDate startAt = today.minusWeeks(1L);
         LocalDate endAt = today.minusDays(1);
 
