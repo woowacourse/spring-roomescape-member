@@ -7,9 +7,7 @@ import roomescape.domain.dto.ReservationTimeCreateCommand;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.request.ReservationTimeCreateRequest;
 import roomescape.service.dto.response.ReservationTimeResponse;
-import roomescape.service.dto.response.ReservationTimeStatusResponse;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -22,13 +20,6 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll()
                 .stream()
                 .map(ReservationTimeResponse::from)
-                .toList();
-    }
-
-    public List<ReservationTimeStatusResponse> getTimesWithStatus(final LocalDate date, final Long themeId) {
-        return reservationTimeRepository.findByDateAndThemeId(date, themeId)
-                .stream()
-                .map(ReservationTimeStatusResponse::from)
                 .toList();
     }
 

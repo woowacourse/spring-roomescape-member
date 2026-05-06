@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.request.ReservationCreateRequest;
 import roomescape.service.dto.response.ReservationResponse;
+import roomescape.service.dto.response.ReservationTimeStatusResponse;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -20,6 +22,15 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations() {
         final List<ReservationResponse> results = reservationService.getReservations();
+        return ResponseEntity.ok(results);
+    }
+
+    @GetMapping(path = "/available-times", params = {"date", "themeId"})
+    public ResponseEntity<List<ReservationTimeStatusResponse>> getReservationTimeStatuses(
+            @RequestParam(value = "date", required = false) LocalDate date,
+            @RequestParam(value = "themeId", required = false) Long themeId
+    ) {
+        final List<ReservationTimeStatusResponse> results = reservationService.getReservationTimeStatuses(date, themeId);
         return ResponseEntity.ok(results);
     }
 

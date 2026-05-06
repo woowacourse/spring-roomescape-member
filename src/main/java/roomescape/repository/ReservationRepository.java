@@ -8,9 +8,11 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.dto.ReservationTimesWithStatus;
 import roomescape.repository.entity.ReservationEntity;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -58,6 +60,32 @@ public class ReservationRepository {
                 """;
 
         return jdbcTemplate.update(sql, reservationId) > 0;
+    }
+
+    public List<ReservationTimesWithStatus> findReservationTimeStatusesByDateAndThemeId(final LocalDate date, final Long themeId) {
+        final String sql = """
+                SELECT
+                    rt.id,
+                    rt.start_at,
+                    CASE
+                        WHEN r.id IS NOT NULL THEN TRUE
+                        ELSE FALSE
+                    END AS reserved
+                FROM reservation_time rt
+                LEFT JOIN reservation r
+                    ON r.time_id = rt.id
+                   AND r.date = ?
+                   AND r.theme_id = ?
+                ORDER BY rt.start_at;
+                """;
+
+        return jdbcTemplate.query(
+                        sql,
+                        this::mapToTimesWithStatus,
+                        date,
+                        themeId
+                ).stream()
+                .toList();
     }
 
 
@@ -131,6 +159,18 @@ public class ReservationRepository {
                 Date.valueOf(reservation.getDate()),
                 reservation.getTime().getId(),
                 reservation.getTheme().getId()
+        );
+    }
+
+
+    /**
+     * dto 매핑 메서드
+     */
+    private ReservationTimesWithStatus mapToTimesWithStatus(final ResultSet resultSet, final int rowNum) throws SQLException {
+        return new ReservationTimesWithStatus(
+                resultSet.getLong("id"),
+                resultSet.getTime("start_at").toLocalTime(),
+                resultSet.getBoolean("reserved")
         );
     }
 }

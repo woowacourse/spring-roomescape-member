@@ -12,7 +12,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ClearDbTest
-class ReservationTimeControllerTest {
+class ReservationControllerTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -45,7 +45,7 @@ class ReservationTimeControllerTest {
 
     private static List<ReservationTimeStatusResponse> getReservationTimeStatusResponses() {
         return RestAssured.given().log().all()
-                .when().get("/times?date=2026-05-05&themeId=1")
+                .when().get("/reservations/available-times?date=2026-05-05&themeId=1")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTimeStatusResponse.class);
