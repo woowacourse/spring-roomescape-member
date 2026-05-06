@@ -2,7 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.dao.ThemeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;

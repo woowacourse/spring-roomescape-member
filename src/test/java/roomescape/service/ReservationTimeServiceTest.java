@@ -9,7 +9,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import roomescape.dao.ReservationTimeRepository;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
 
 import java.time.LocalTime;

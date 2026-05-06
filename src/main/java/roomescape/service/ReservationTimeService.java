@@ -2,7 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.dao.ReservationTimeRepository;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
 
 import java.time.LocalTime;
