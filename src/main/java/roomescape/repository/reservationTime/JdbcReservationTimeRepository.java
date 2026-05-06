@@ -2,10 +2,13 @@ package roomescape.repository.reservationTime;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTime.ReservationTimeCommand;
 import roomescape.domain.ReservationTime.ReservationTimeCondition;
@@ -14,34 +17,83 @@ import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
 @Repository
 @Profile("web")
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
-    private final ReservationTimeDao reservationTimeDao;
+    private static final String TABLE_NAME = "reservation_time";
 
-    public JdbcReservationTimeRepository(ReservationTimeDao reservationTimeDao) {
-        this.reservationTimeDao = reservationTimeDao;
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_START_AT = "start_at";
+    private static final String COLUMN_AVAILABLE = "available";
+
+    private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+    private static final String SELECT_ALL_SQL = "SELECT id, start_at FROM reservation_time";
+    private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation_time WHERE id = ?";
+    private static final String SELECT_AVAILABLE_SQL = """
+            SELECT t.id AS id, t.start_at AS start_at, \s
+            CASE \s
+            WHEN r.time_id IS NULL THEN true \s
+            ELSE false \s
+            END AS available \s
+            FROM reservation_time t \s
+            LEFT JOIN ( \s
+            SELECT r.time_id \s
+            FROM reservation r \s
+            WHERE r.date = ? AND r.theme_id = ? \s
+            ) AS r ON r.time_id = t.id
+            """;
+
+    private static final RowMapper<ReservationTime> MAPPER = (rs, rowNumber) -> new ReservationTime(
+            rs.getLong(COLUMN_ID),
+            rs.getString(COLUMN_START_AT)
+    );
+
+    private static final RowMapper<ReservationTimeWithAvailable> CONDITION_MAPPER = (rs, rowNumber) -> new ReservationTimeWithAvailable(
+            rs.getLong(COLUMN_ID),
+            rs.getString(COLUMN_START_AT),
+            rs.getBoolean(COLUMN_AVAILABLE)
+    );
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(TABLE_NAME)
+                .usingGeneratedKeyColumns(COLUMN_ID);
     }
 
     @Override
     public ReservationTime addReservationTime(ReservationTimeCommand reservationTimeCommand) {
-        return new ReservationTime(reservationTimeDao.insertReservationTime(reservationTimeCommand), reservationTimeCommand.startAt());
+        long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
+                COLUMN_START_AT, reservationTimeCommand.startAt()
+        )).longValue();
+
+        return ReservationTime.from(id, reservationTimeCommand);
     }
 
     @Override
     public Optional<ReservationTime> getReservationTime(long id) {
-        return reservationTimeDao.getReservationTime(id);
+        return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, MAPPER, id)
+                .stream()
+                .findFirst();
     }
 
     @Override
     public List<ReservationTime> getAllReservationTime() {
-        return Collections.unmodifiableList(reservationTimeDao.getAllReservationTime());
+        return Collections.unmodifiableList(jdbcTemplate.query(SELECT_ALL_SQL, MAPPER));
     }
 
     @Override
     public void deleteReservationTime(long id) {
-        reservationTimeDao.deleteReservationTime(id);
+        jdbcTemplate.update(DELETE_SPECIFIC_ID_SQL, id);
     }
 
     @Override
     public List<ReservationTimeWithAvailable> getReservationTimeByDateAndTheme(ReservationTimeCondition reservationTimeCondition) {
-        return reservationTimeDao.getReservationTimeByDateAndTheme(reservationTimeCondition);
+        return jdbcTemplate.query(
+                SELECT_AVAILABLE_SQL,
+                CONDITION_MAPPER,
+                reservationTimeCondition.date(),
+                reservationTimeCondition.themeId()
+        );
     }
 }
