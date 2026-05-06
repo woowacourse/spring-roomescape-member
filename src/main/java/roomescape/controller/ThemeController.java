@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.CreateThemeRequest;
-import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeReservationTimeResponse;
 import roomescape.service.ThemeService;
 

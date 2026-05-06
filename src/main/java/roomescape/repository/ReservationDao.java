@@ -99,4 +99,14 @@ public class ReservationDao {
                 """;
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("time_id"), themeId, date);
     }
+
+    public boolean isExistsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+                SELECT COUNT(1) FROM reservation
+                WHERE date = ? AND time_id = ? AND theme_id = ?
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class,
+                Date.valueOf(date), timeId, themeId);
+        return count != null && count > 0;
+    }
 }
