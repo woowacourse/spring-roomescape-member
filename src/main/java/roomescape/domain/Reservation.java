@@ -2,9 +2,12 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import lombok.Getter;
 import org.springframework.util.StringUtils;
 
+@Getter
 public class Reservation {
+
     private final Long id;
     private final String name;
     private final LocalDate date;
@@ -95,32 +98,12 @@ public class Reservation {
         }
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public ReservationTime getTime() {
-        return time;
-    }
-
     public Long getTimeId() {
         return time.getId();
     }
 
     public Long getThemeId() {
         return theme.getId();
-    }
-
-    public Theme getTheme() {
-        return theme;
     }
 
     @Override
