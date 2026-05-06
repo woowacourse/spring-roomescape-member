@@ -1,5 +1,6 @@
 package roomescape.reservation.dto;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import roomescape.reservation.model.Reservation;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ReservationsResponse {
         return new ReservationsResponse(responses);
     }
 
+    @JsonValue
     public List<ReservationResponse> getReservationsResponse() {
         return reservationsResponse;
     }

@@ -1,5 +1,6 @@
 package roomescape.schedule.dto;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import roomescape.schedule.model.Schedule;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class SchedulesResponse {
         return new SchedulesResponse(responses);
     }
 
+    @JsonValue
     public List<ScheduleResponse> getScheduleResponses() {
         return scheduleResponses;
     }
