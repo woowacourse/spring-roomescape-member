@@ -53,8 +53,8 @@
 
  ```
     테마 조회	GET /themes	        —	                     [{id, name, description, thumbnail}]
-    테마 추가	POST /themes	   {name, description, thumbnail}    {id, name, description, thumbnail}
-    테마 삭제	DELETE /themes/{id}	—	                     200 OK
+    테마 추가	POST /admin/themes	   {name, description, thumbnail}    {id, name, description, thumbnail}
+    테마 삭제	DELETE /admin/themes/{id}	—	                     200 OK
 ```
 
 - [x] 테마 테이블 구현
@@ -91,3 +91,7 @@
 - [x] 인기 테마 조회 dao 구현
 - [x] 인기 테마 조회 service 구현
 - [x] 인기 테마 조회 controller 구현
+
+#### 추가
+- [x] data.sql 구현
+- [x] 화면 구현

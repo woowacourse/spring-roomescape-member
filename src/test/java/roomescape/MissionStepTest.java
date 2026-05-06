@@ -26,7 +26,7 @@ import roomescape.dto.ReservationResponse;
 public class MissionStepTest {
 
     @BeforeEach
-    void 시간_테마_넣어주기(){
+    void 시간_테마_넣어주기() {
         Map<String, String> timeParams = new HashMap<>();
         timeParams.put("startAt", "10:00");
         Map<String, String> themeParams = new HashMap<>();
@@ -49,7 +49,7 @@ public class MissionStepTest {
                 .statusCode(201);
     }
 
-    //1단계
+    // 1단계
     @Test
     void 예약_조회() {
         RestAssured.given().log().all()
@@ -65,7 +65,7 @@ public class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
-        params.put("themeId",1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -93,7 +93,7 @@ public class MissionStepTest {
                 .body("size()", is(0));
     }
 
-    //2단계
+    // 2단계
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -110,7 +110,8 @@ public class MissionStepTest {
 
     @Test
     void DB_조회_API_전환() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+                "2023-08-05", "1", "1");
 
         List<ReservationResponse> reservationResponses = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -123,14 +124,13 @@ public class MissionStepTest {
         assertThat(reservationResponses.size()).isEqualTo(count);
     }
 
-
     @Test
     void DB_추가_삭제_API_전환() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
-        params.put("themeId",1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -151,7 +151,7 @@ public class MissionStepTest {
         assertThat(countAfterDelete).isEqualTo(0);
     }
 
-    //3단계
+    // 3단계
     @Test
     void 시간_관리_API() {
         RestAssured.given().log().all()
@@ -172,7 +172,7 @@ public class MissionStepTest {
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
-        reservation.put("themeId",1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -188,7 +188,7 @@ public class MissionStepTest {
                 .body("size()", is(1));
     }
 
-    //4단계
+    // 4단계
     @Autowired
     private ReservationController reservationController;
 
