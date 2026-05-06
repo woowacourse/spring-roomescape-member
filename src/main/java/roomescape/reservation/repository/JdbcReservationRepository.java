@@ -1,9 +1,5 @@
 package roomescape.reservation.repository;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,6 +8,11 @@ import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
+
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -92,7 +93,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(int period, int limit) {
+    public List<PopularThemeQueryResult> findPopularThemes(int period, int limit) {
         String sql = "select " +
                 "t.id, " +
                 "t.name, " +
@@ -111,8 +112,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> new Theme(
-                        resultSet.getLong("id"),
+                (resultSet, rowNum) -> new PopularThemeQueryResult(
                         resultSet.getString("name"),
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail_url")

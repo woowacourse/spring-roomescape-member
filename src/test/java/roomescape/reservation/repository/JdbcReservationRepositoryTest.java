@@ -1,10 +1,5 @@
 package roomescape.reservation.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +9,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 class JdbcReservationRepositoryTest {
@@ -150,11 +151,11 @@ class JdbcReservationRepositoryTest {
         reservationRepository.save(new Reservation(null, "범위밖예약", today.minusDays(8), time, carrotTheme));
 
         // when
-        List<Theme> popularThemes = reservationRepository.findPopularThemes(7, 2);
+        List<PopularThemeQueryResult> popularThemes = reservationRepository.findPopularThemes(7, 2);
 
         // then
         assertThat(popularThemes)
-                .extracting(Theme::getName)
+                .extracting(PopularThemeQueryResult::name)
                 .containsExactly("우테코", "페어");
     }
 }
