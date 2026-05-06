@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -88,5 +89,14 @@ public class ReservationDao {
     public void deleteById(Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public List<Long> findTimeIdsByThemeIdAndDate(Long themeId, LocalDate date) {
+        String sql = """
+                select time_id
+                from reservation
+                where theme_id = ? and date = ?
+                """;
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("time_id"), themeId, date);
     }
 }

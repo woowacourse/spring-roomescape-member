@@ -1,13 +1,18 @@
 package roomescape.repository;
 
 import java.sql.PreparedStatement;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.CreateThemeRequest;
+import roomescape.dto.ThemeReservationTimeResponse;
 
 @Component
 public class ThemeDao {
