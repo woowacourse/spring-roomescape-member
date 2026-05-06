@@ -49,7 +49,7 @@ public class ThemeDao {
                 on th.id = r.theme_id
                 where r.date between ? and ? 
                 group by th.id, th.name, th.description, th.thumbnail 
-                order by reservation_count desc 
+현                order by reservation_count desc , th.id asc
                 limit 10
                 """;
 
@@ -63,8 +63,8 @@ public class ThemeDao {
                         ),
                         resultSet.getInt("reservation_count")
                 )
-                ,startDate
-                ,endDate
+                ,startDate.toString()
+                ,endDate.toString()
                 );
     }
 
