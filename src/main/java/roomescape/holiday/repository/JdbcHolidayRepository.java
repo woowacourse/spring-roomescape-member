@@ -1,5 +1,7 @@
 package roomescape.holiday.repository;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -40,6 +42,16 @@ public class JdbcHolidayRepository implements HolidayRepository{
                         """,
                 new HolidayRowMapper()
         );
+    }
+
+    @Override
+    public boolean existsByDate(LocalDate date) {
+        Integer exists = jdbcTemplate.queryForObject(
+                "SELECT EXISTS(SELECT 1 FROM holiday WHERE date = ?)",
+                Integer.class,
+                Date.valueOf(date)
+        );
+        return exists != null && exists == 1;
     }
 
     @Override

@@ -8,5 +8,7 @@ public interface ThemeRepository {
 
     Theme save(Theme theme);
 
+    boolean existsById(Long id);
+
     boolean deleteById(Long id);
 }
