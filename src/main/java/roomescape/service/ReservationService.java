@@ -10,6 +10,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
+import roomescape.exception.CustomException;
+import roomescape.exception.ErrorCode;
 
 @Service
 public class ReservationService {
@@ -26,6 +28,12 @@ public class ReservationService {
     public ReservationResponseDto create(ReservationRequestDto requestDto) {
         ReservationTime reservationTime = reservationTimeDao.read(requestDto.timeId());
         Theme theme = themeDao.read(requestDto.themeId());
+
+        boolean existReservation = reservationDao.existByDateAndTimeIdAndThemeId(requestDto.date(), requestDto.timeId(),
+                requestDto.themeId());
+        if (existReservation) {
+            throw new CustomException(ErrorCode.DUPLICATED_RESERVATION);
+        }
 
         Reservation reservationWithoutId = requestDto.toEntity(reservationTime, theme);
         Reservation reservation = reservationDao.create(reservationWithoutId, reservationTime, theme);
