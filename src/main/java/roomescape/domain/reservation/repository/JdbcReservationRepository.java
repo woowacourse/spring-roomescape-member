@@ -1,19 +1,16 @@
 package roomescape.domain.reservation.repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.theme.entity.Theme;
@@ -35,15 +32,13 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAllReservations() {
-        return jdbcTemplate.query(
-            """
+        String sql = """
                 SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at, t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
                 FROM reservation r
                 JOIN reservation_time rt ON r.time_id = rt.id
                 JOIN theme t ON r.theme_id = t.id
-                """,
-            (rs, rowNum) -> mapReservation(rs)
-        );
+                """;
+        return jdbcTemplate.query(sql, this::mapReservation);
     }
 
     @Override
@@ -75,28 +70,28 @@ public class JdbcReservationRepository implements ReservationRepository {
             reservation.getTheme());
     }
 
-    private Reservation mapReservation(java.sql.ResultSet rs) throws java.sql.SQLException {
-        return Reservation.reconstruct(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getDate("date").toLocalDate(),
-            Time.reconstruct(
-                rs.getLong("time_id"),
-                LocalTime.parse(rs.getString("start_at"))
-            ),
-            Theme.reconstruct(
-                rs.getLong("theme_id"),
-                rs.getString("theme_name"),
-                rs.getString("description"),
-                rs.getString("image_url")
-            )
-        );
-    }
-
     @Override
     public void deleteReservationById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         jdbcTemplate.update(sql, parameters);
+    }
+
+    private Reservation mapReservation(ResultSet resultSet, int rowNum) throws SQLException {
+        return Reservation.reconstruct(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getDate("date").toLocalDate(),
+            Time.reconstruct(
+                resultSet.getLong("time_id"),
+                LocalTime.parse(resultSet.getString("start_at"))
+            ),
+            Theme.reconstruct(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("description"),
+                resultSet.getString("image_url")
+            )
+        );
     }
 }
