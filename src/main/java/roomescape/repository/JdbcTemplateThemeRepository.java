@@ -104,4 +104,24 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
                 date
         );
     }
+
+    @Override
+    public List<Theme> findPopularThemes(LocalDate startInclusive, LocalDate endInclusive, int limit) {
+        return jdbcTemplate.query(
+                "SELECT th.id, th.name, th.description, th.thumbnail_url " +
+                        "FROM reservation r JOIN theme th ON r.theme_id = th.id " +
+                        "WHERE r.date BETWEEN ? AND ? " +
+                        "GROUP BY th.id, th.name, th.description, th.thumbnail_url " +
+                        "ORDER BY COUNT(r.id) DESC " +
+                        "LIMIT ?",
+                (rs, rowNum) -> {
+                    long id = rs.getLong("id");
+                    String name = rs.getString("name");
+                    String description = rs.getString("description");
+                    String thumbnailUrl = rs.getString("thumbnail_url");
+                    return new Theme(id, name, description, thumbnailUrl);
+                },
+                startInclusive, endInclusive, limit
+        );
+    }
 }

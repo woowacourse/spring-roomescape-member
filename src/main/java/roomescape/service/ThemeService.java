@@ -11,6 +11,7 @@ import java.util.Objects;
 
 @Service
 public class ThemeService {
+    private static final int TOP_NUMBERS = 10;
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
@@ -38,5 +39,13 @@ public class ThemeService {
         }
 
         return themeRepository.findAvailableTimes(themeId, selectedDate);
+    }
+
+    public List<Theme> findPopularThemes() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startInclusive = currentDate.minusDays(8);
+        LocalDate endInclusive = currentDate.minusDays(1);
+
+        return themeRepository.findPopularThemes(startInclusive, endInclusive, TOP_NUMBERS);
     }
 }

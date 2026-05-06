@@ -17,4 +17,6 @@ public interface ThemeRepository {
     Optional<Theme> findById(Long id);
 
     List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date);
+
+    List<Theme> findPopularThemes(LocalDate startInclusive, LocalDate endInclusive, int limit);
 }

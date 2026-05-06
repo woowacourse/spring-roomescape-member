@@ -5,14 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import roomescape.domain.ReservationTime;
 
-import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,11 +22,13 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private long addTime(LocalTime startAt) {
+        return reservationTimeRepository.addTime(new ReservationTime(null, startAt)).id();
+    }
+
     @Test
     void 시간을_저장하면_id가_채워진_도메인을_반환한다() {
-        ReservationTime toSave = new ReservationTime(null, LocalTime.of(10, 0));
-
-        ReservationTime saved = reservationTimeRepository.addTime(toSave);
+        ReservationTime saved = reservationTimeRepository.addTime(new ReservationTime(null, LocalTime.of(10, 0)));
 
         assertThat(saved.id()).isNotNull();
         assertThat(saved.startAt()).isEqualTo(LocalTime.of(10, 0));
@@ -38,8 +36,8 @@ class JdbcTemplateReservationTimeRepositoryTest {
 
     @Test
     void 모든_시간을_조회한다() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
+        addTime(LocalTime.of(10, 0));
+        addTime(LocalTime.of(11, 0));
 
         List<ReservationTime> times = reservationTimeRepository.findAllReservationTimes();
 
@@ -55,14 +53,7 @@ class JdbcTemplateReservationTimeRepositoryTest {
 
     @Test
     void id로_시간을_조회한다() {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(conn -> {
-            PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO reservation_time (start_at) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS);
-            ps.setString(1, "10:00");
-            return ps;
-        }, keyHolder);
-        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        long id = addTime(LocalTime.of(10, 0));
 
         ReservationTime time = reservationTimeRepository.findById(id).get();
 
@@ -72,14 +63,7 @@ class JdbcTemplateReservationTimeRepositoryTest {
 
     @Test
     void id로_시간을_삭제한다() {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(conn -> {
-            PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO reservation_time (start_at) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS);
-            ps.setString(1, "10:00");
-            return ps;
-        }, keyHolder);
-        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        long id = addTime(LocalTime.of(10, 0));
 
         reservationTimeRepository.deleteTime(id);
 
