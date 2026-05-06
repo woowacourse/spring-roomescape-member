@@ -16,6 +16,7 @@ import roomescape.reservationtime.service.ReservationTimeService;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final ThemeService themeService;
     private final ReservationTimeService reservationTimeService;
 
     public List<ReservationResponse> findAllReservations() {
@@ -27,6 +28,7 @@ public class ReservationService {
     }
 
     public ReservationResponse saveReservation(ReservationCreateRequest request) {
+        Theme theme = themeService.findById(request.themeId());
         ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
         validateDuplicateReservation(request);
         Reservation reservation = request.toEntity(reservationTime);
