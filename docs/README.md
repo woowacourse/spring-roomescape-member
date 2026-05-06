@@ -40,16 +40,16 @@
 ```json
 [
   {
-    "themeId": 1,
-    "themeName": "귀신의 집",
+    " id": 1,
+    "name": "귀신의 집",
     "description": "무서워요",
-    "thumbnailImageUrl": "/resources/image/..." 
+    "imageUrl": "/resources/image/..." 
   },
   {
-    "themeId": 2,
-    "themeName": "물고기",
+    "id": 2,
+    "name": "물고기",
     "description": "어푸",
-    "thumbnailImageUrl": "/resources/image/..." 
+    "imageUrl": "/resources/image/..." 
   }
 ]
 ```
@@ -63,13 +63,13 @@
 [
   {
     "rank": 1,
-    "themeId": 1,
-    "themeName": "Hello"
+    "id": 1,
+    "name": "Hello"
   },
   {
     "rank": 2,
-    "themeId": 2,
-    "themeName": "World"
+    "id": 2,
+    "name": "World"
   }
 ]
 ```
@@ -79,18 +79,18 @@
 - **Request:**
 ```json
 {
-  "themeName": "귀신의 집",
+  "name": "귀신의 집",
   "description": "무서워요",
-  "thumbnailImageUrl": "/resources/image/..." 
+  "imageUrl": "/resources/image/..." 
 }
 ```
 - **Response (201 Created):**
 ```json
 {
-  "themeId": 1,
-  "themeName": "귀신의 집",
+  "id": 1,
+  "name": "귀신의 집",
   "description": "무서워요",
-  "thumbnailImageUrl": "/resources/image/..."
+  "imageUrl": "/resources/image/..."
 }
 ```
 
@@ -106,22 +106,22 @@
 
 ### 2.1 예약 가능 시간 조회
 - **Method / Path:** `GET /times`
-- **Query Parameter:** `date=2026-05-01&themeId=1&avaiable`
+- **Query Parameter:** `date=2026-05-01&themeId=1`
 - **Response (200 OK):**
 ```json
 {
-  "themeId": 1,
-  "themeName": "Hello",
+  "id": 1,
+  "name": "Hello",
   "times": [
     {
       "id": 1,
       "startAt": "15:00",
-      "isAvailable": true
+      "available": true
     },
     {
       "id": 2,
       "startAt": "16:00",
-      "isAvailable": false
+      "available": false
     }
   ]
 }
@@ -147,7 +147,7 @@
 - **Response (201 Created):**
 ```json
 {
-  "reservationId": 1,
+  "id": 1,
   "userName": "고래",
   "date": "2026-05-01",
   "timeId": 1,
