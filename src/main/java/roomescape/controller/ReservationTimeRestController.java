@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRequest;
 import roomescape.domain.reservationtime.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
@@ -19,11 +18,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-public class ReservationTimeController {
+public class ReservationTimeRestController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public ReservationTimeRestController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
