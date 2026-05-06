@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.theme.service.dto.ThemeBestServiceDto;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -80,8 +81,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findBestThemesByDate(LocalDate date, int dayCount, int rankCount) {
-        LocalDate startDate = date.minusDays(dayCount);
+    public List<Theme> findBestThemesByDate(ThemeBestServiceDto themeBestServiceDto) {
+        LocalDate date = themeBestServiceDto.date();
+        LocalDate startDate = date.minusDays(themeBestServiceDto.dayCount());
         return jdbcTemplate.query(
                 """
                         SELECT t.id, t.name, t.description, t.image_url
@@ -95,7 +97,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 new ThemeRowMapper(),
                 startDate,
                 date,
-                rankCount
+                themeBestServiceDto.rankCount()
         );
     }
 
