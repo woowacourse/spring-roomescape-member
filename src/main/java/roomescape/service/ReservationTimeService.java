@@ -47,6 +47,7 @@ public class ReservationTimeService {
         reservationTimeRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationTimeAvailability> findAvailableTimes(LocalDate date, Long themeId) {
         themeRepository.findById(themeId)
                 .orElseThrow(() -> new DomainException(ErrorCode.THEME_NOT_FOUND));
