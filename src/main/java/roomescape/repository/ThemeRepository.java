@@ -13,13 +13,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class ThemeDao {
+public class ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
+
+    private static long generatedIdFrom(final KeyHolder keyHolder) {
+        if (keyHolder.getKey() == null) {
+            throw new IllegalStateException("생성된 id를 가져오지 못했습니다.");
+        }
+
+        final long themeId = keyHolder.getKey().longValue();
+        return themeId;
+    }
 
     public Optional<Theme> findById(final Long themeId) {
         final String sql = """
@@ -58,6 +69,38 @@ public class ThemeDao {
         return jdbcTemplate.update(sql, themeId) > 0;
     }
 
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate today) {
+        final String sql = """
+                SELECT
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.thumbnail_url
+                FROM theme t
+                LEFT JOIN reservation r
+                    ON r.theme_id = t.id
+                    AND r.date >= ?
+                    AND r.date < ?
+                GROUP BY
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.thumbnail_url
+                ORDER BY
+                    COUNT(r.id) DESC,
+                    t.name ASC
+                LIMIT 10;
+                """;
+
+        return jdbcTemplate.query(
+                        sql,
+                        this::mapToDomain,
+                        startDate,
+                        today
+                )
+                .stream()
+                .toList();
+    }
 
     private long insertTheme(final ThemeEntity themeEntity) {
         final String sql = """
@@ -82,16 +125,6 @@ public class ThemeDao {
 
         return generatedIdFrom(keyHolder);
     }
-
-    private static long generatedIdFrom(final KeyHolder keyHolder) {
-        if (keyHolder.getKey() == null) {
-            throw new IllegalStateException("생성된 id를 가져오지 못했습니다.");
-        }
-
-        final long themeId = keyHolder.getKey().longValue();
-        return themeId;
-    }
-
 
     /**
      * 엔티티 - 도메인 매핑 메서드

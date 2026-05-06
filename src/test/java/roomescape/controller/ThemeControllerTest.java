@@ -5,10 +5,19 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.service.dto.response.ThemeResponse;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +28,21 @@ class ThemeControllerTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @TestConfiguration
+    static class FixedClockConfig {
+
+        @Bean
+        @Primary
+        Clock fixedClock() {
+            return Clock.fixed(
+                    LocalDate.of(2026, 5, 8)
+                            .atStartOfDay(ZoneId.of("Asia/Seoul"))
+                            .toInstant(),
+                    ZoneId.of("Asia/Seoul")
+            );
+        }
+    }
 
     @Test
     void 테마_추가_및_삭제() {
@@ -45,5 +69,21 @@ class ThemeControllerTest {
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
+    }
+
+    @Test
+    @Sql("/popular-themes-test-data.sql")
+    void 최근_일주일간_예약이_많은_상위_10개_테마_조회() {
+        List<ThemeResponse> popularThemes = RestAssured.given().log().all()
+                .when().get("/themes/popular")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".", ThemeResponse.class);
+
+        assertThat(popularThemes.size()).isEqualTo(10);
+        assertThat(popularThemes).doesNotContain(
+                new ThemeResponse(11L, "마녀의 숲", "깊은 숲속 마녀의 오두막에서 숨겨진 계약서를 찾는 판타지 테마", "https://example.com/images/witch-forest.jpg"),
+                new ThemeResponse(12L, "사라진 열차", "한밤중 흔적 없이 사라진 열차의 비밀을 추적하는 추리 테마", "https://example.com/images/missing-train.jpg")
+        );
     }
 }

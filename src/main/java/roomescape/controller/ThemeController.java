@@ -8,12 +8,20 @@ import roomescape.service.ThemeService;
 import roomescape.service.dto.request.ThemeCreateRequest;
 import roomescape.service.dto.response.ThemeResponse;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/themes")
 @RequiredArgsConstructor
 public class ThemeController {
 
     private final ThemeService themeService;
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
+        final List<ThemeResponse> results = themeService.getPopularThemes();
+        return ResponseEntity.ok().body(results);
+    }
 
     @PostMapping
     public ResponseEntity<ThemeResponse> create(
