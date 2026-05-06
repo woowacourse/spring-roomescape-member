@@ -67,3 +67,14 @@
 - [x] 예약에 테마 정보 포함하도록 기존 테스트 코드 변경
 - [x] http메서드에 상태코드 구현
 - [x] `ThemeDao`, `ThemeService`, `ReservationDAO`, `ReservationService` 테스트 구현
+
+
+#### 2단계 - 사용자 예약
+- [x] API 명세 작성
+ ```
+    예약 가능 시간 조회    GET /themes/1/reservation-times?date=2026-05-08         -        [{"id":1,"startAt":"10:00","available":true}]
+```
+- [x] 예약 가능한 시간인 ReservationTimeStatusResponse Dto 구현
+- [ ] ReservationDao에서 사용자가 선택한 날짜와 테마에 해당하는 예약시간Id를 가져오는 메서드 구현
+- [ ] ThemeService에서 예약 가능한 시간을 계산하는 메서드 구현
+- [ ] 예약 가능 시간 조회 Controller 구현 
