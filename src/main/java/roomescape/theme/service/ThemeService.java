@@ -2,9 +2,7 @@ package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.theme.dto.ThemeRequest;
-import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.dto.ThemesResponse;
+import roomescape.theme.dto.*;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -34,5 +32,10 @@ public class ThemeService {
 
     public void delete(Long id) {
         themeRepository.delete(id);
+    }
+
+    public PopularThemesResponse findPopularThemes(String sort, int limit, int days) {
+        List<PopularThemeResponse> responses = themeRepository.findPopularThemes(sort, limit, days);
+        return PopularThemesResponse.from(responses);
     }
 }
