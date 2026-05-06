@@ -1,73 +1,82 @@
 package roomescape.repository.ReservationTheme;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.dao.ReservationThemeDao;
 import roomescape.domain.ReservationTheme.PopularThemeCondition;
 import roomescape.domain.ReservationTheme.ReservationTheme;
 import roomescape.domain.ReservationTheme.ReservationThemeCommand;
-import roomescape.domain.ReservationTheme.ReservationThemeDaoData;
 import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
-import roomescape.domain.ReservationTheme.ReservationThemeWithCountDaoData;
 
 @Repository
 public class JdbcReservationThemeRepository implements ReservationThemeRepository {
-    private final ReservationThemeDao reservationThemeDao;
+    private static final String TABLE_NAME = "reservation_theme";
 
-    public JdbcReservationThemeRepository(ReservationThemeDao reservationThemeDao) {
-        this.reservationThemeDao = reservationThemeDao;
-    }
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_DESCRIPTION = "description";
+    private static final String COLUMN_IMAGE_URL = "image_url";
+
+    private static final String SELECT_ALL_SQL = "SELECT id, name, description, image_url FROM reservation_theme";
+    private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation_theme WHERE id = ?";
+    private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM reservation_theme WHERE id = ?";
+
+    private static final String SELECT_POPULAR_THEMES_BY_DATE_RANGE = """
+        SELECT t.id AS id, t.name AS name, t.description AS description, t.image_url AS image_url, COUNT(r.id) AS count \s
+        FROM reservation_theme t \s
+        JOIN ( \s
+            SELECT theme_id, COUNT(id) AS reservation_count \s
+            FROM reservation \s
+            WHERE created_at BETWEEN ? AND ? \s
+            GROUP BY theme_id \s
+        ) AS r ON r.theme_id = t.id \s
+        ORDER BY r.reservation_count ? \s
+        LIMIT ?
+    """;
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
+    public JdbcReservationThemeRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(TABLE_NAME)
+                .usingGeneratedKeyColumns(COLUMN_ID);    }
 
     public ReservationTheme addTheme(ReservationThemeCommand reservationThemeCommand) {
-        ReservationThemeDaoData reservationThemeDaoData = reservationThemeDao.addTheme(reservationThemeCommand);
-        return createTheme(reservationThemeDaoData);
+        long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
+                COLUMN_NAME, reservationThemeCommand.name(),
+                COLUMN_DESCRIPTION, reservationThemeCommand.description(),
+                COLUMN_IMAGE_URL, reservationThemeCommand.imageUrl()
+        )).longValue();
+
+        return ReservationTheme.from(id, reservationThemeCommand);
     }
 
     public List<ReservationTheme> getAllTheme() {
-        List<ReservationThemeDaoData> themeDaoAllData = reservationThemeDao.getAllTheme();
-        return themeDaoAllData.stream()
-                .map(this::createTheme)
-                .toList();
+        return jdbcTemplate.query(SELECT_ALL_SQL, (rs, i) -> ReservationTheme.from(rs));
     }
 
     public Optional<ReservationTheme> getTheme(long id) {
-        Optional<ReservationThemeDaoData> themeDaoData = reservationThemeDao.getTheme(id);
-
-        if(themeDaoData.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(createTheme(reservationThemeDao.getTheme(id).get()));
+        return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, ((rs, rowNum) -> ReservationTheme.from(rs)), id)
+                .stream()
+                .findFirst();
     }
 
     public void deleteTheme(long id) {
-        reservationThemeDao.deleteTheme(id);
+        jdbcTemplate.update(DELETE_SPECIFIC_ID_SQL, id);
     }
 
+    @Override
     public List<ReservationThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
-        return reservationThemeDao.getPopularTheme(popularThemeCondition).stream()
-                .map(this::createReservationThemeWithCount)
-                .toList();
-    }
-
-    private ReservationTheme createTheme(ReservationThemeDaoData reservationThemeDaoData) {
-        return new ReservationTheme(
-                reservationThemeDaoData.id(),
-                reservationThemeDaoData.name(),
-                reservationThemeDaoData.description(),
-                reservationThemeDaoData.imageUrl()
-        );
-    }
-
-    private ReservationThemeWithCount createReservationThemeWithCount(
-            ReservationThemeWithCountDaoData reservationThemeWithCount) {
-        return new ReservationThemeWithCount(
-                reservationThemeWithCount.id(),
-                reservationThemeWithCount.name(),
-                reservationThemeWithCount.description(),
-                reservationThemeWithCount.imageUrl(),
-                reservationThemeWithCount.count()
+        return jdbcTemplate.query(SELECT_ALL_SQL, (rs, i) -> ReservationThemeWithCount.from(rs),
+                popularThemeCondition.startDate(),
+                popularThemeCondition.endDate(),
+                popularThemeCondition.order(),
+                popularThemeCondition.size()
         );
     }
 }

@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTheme.ReservationThemeCommand;
-import roomescape.domain.ReservationTheme.ReservationThemeDaoData;
 
 public class ReservationReservationThemeDaoTest extends BaseDaoTest {
     private ReservationThemeDao reservationThemeDao;
