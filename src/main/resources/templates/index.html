@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{fragments/site :: head('홈')}"></head>
+<body>
+
+<header th:replace="~{fragments/site :: header('home')}"></header>
+
+<main>
+
+    <section class="hero" style="grid-template-columns: 1fr; padding: 2.5rem 0 3.5rem;">
+        <div>
+            <span class="eyebrow">DOSSIER · 2026 SPRING</span>
+            <h1 style="margin-top: 0.6rem;">한 시간의 <em>심증</em>,<br>한 자리의 <em>물증</em>.</h1>
+            <p class="hero-deck">
+                도시의 어딘가, 잠긴 방 다섯 곳.
+                탐정으로 들어가 60분 안에 사건을 풀어낼 수 있을까.
+                예약은 명부에 잉크가 마르기 전에.
+            </p>
+
+            <div class="hero-actions">
+                <a href="#popular" class="btn btn-primary">인기 사건 →</a>
+                <a href="#themes" class="btn">전체 사건</a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="num" id="stat-themes">·</span>
+                    <span class="label">진행 중인 사건</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="num">60</span>
+                    <span class="label">분 안의 추리</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="num">1974</span>
+                    <span class="label">설립년</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-label" id="popular">
+        <span class="num">§ 01</span>
+        <h2>이번 주 인기 사건</h2>
+        <span class="meta">TOTAL · <span id="popular-count">0</span></span>
+    </div>
+
+    <div>
+        <div class="file-strip" id="popular-strip"></div>
+        <div class="scroll-hint">좌우로 스크롤</div>
+    </div>
+    <div class="empty-state" id="popular-empty" style="display: none;">
+        ※ 지난 7일간의 예약 데이터가 부족합니다 — 누적되면 목록이 채워집니다
+    </div>
+
+    <div class="section-label" id="themes">
+        <span class="num">§ 02</span>
+        <h2>전체 사건</h2>
+        <span class="meta">ALL · <span id="themes-count">0</span></span>
+    </div>
+
+    <div class="file-grid" id="themes-grid"></div>
+    <div class="empty-state" id="themes-empty" style="display: none;">
+        ※ 등록된 사건이 없습니다 — 관리국에서 추가하세요
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/site :: footer}"></footer>
+
+<script th:src="@{/js/home.js}"></script>
+
+</body>
+</html>

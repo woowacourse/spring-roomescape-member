@@ -12,15 +12,15 @@ VALUES ('19:00');
 
 -- 테마 (5개)
 INSERT INTO theme (name, description, thumbnail)
-VALUES ('공포의 방', '심장 약한 사람은 들어오지 마세요. 공포 등급 최상.', 'https://example.com/themes/horror.jpg');
+VALUES ('공포의 방', '심장 약한 사람은 들어오지 마세요. 공포 등급 최상.', 'https://picsum.photos/id/1060/500/500');
 INSERT INTO theme (name, description, thumbnail)
-VALUES ('미스터리 추리', '셜록이 되어 사건을 해결해보세요.', 'https://example.com/themes/mystery.jpg');
+VALUES ('미스터리 추리', '셜록이 되어 사건을 해결해보세요.', 'https://picsum.photos/id/1060/500/500');
 INSERT INTO theme (name, description, thumbnail)
-VALUES ('우주 탈출', '고장난 우주선에서 1시간 안에 탈출하라.', 'https://example.com/themes/space.jpg');
+VALUES ('우주 탈출', '고장난 우주선에서 1시간 안에 탈출하라.', 'https://picsum.photos/id/1060/500/500');
 INSERT INTO theme (name, description, thumbnail)
-VALUES ('조선시대 암행어사', '암행어사가 되어 부패한 사또를 잡아라.', 'https://example.com/themes/joseon.jpg');
+VALUES ('조선시대 암행어사', '암행어사가 되어 부패한 사또를 잡아라.', 'https://picsum.photos/id/1060/500/500');
 INSERT INTO theme (name, description, thumbnail)
-VALUES ('초보자 방', '방탈출이 처음이신 분들을 위한 입문 테마.', 'https://example.com/themes/beginner.jpg');
+VALUES ('초보자 방', '방탈출이 처음이신 분들을 위한 입문 테마.', 'https://picsum.photos/id/1060/500/500');
 
 -- 예약
 -- 같은 날 같은 테마에 여러 시간 예약 (예약 가능 시간 조회 테스트용)
