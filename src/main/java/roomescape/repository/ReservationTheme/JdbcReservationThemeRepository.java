@@ -25,15 +25,15 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM reservation_theme WHERE id = ?";
 
     private static final String SELECT_POPULAR_THEMES_BY_DATE_RANGE = """
-        SELECT t.id AS id, t.name AS name, t.description AS description, t.image_url AS image_url, COUNT(r.id) AS count \s
-        FROM reservation_theme t \s
-        JOIN ( \s
-            SELECT theme_id, COUNT(id) AS reservation_count \s
-            FROM reservation \s
-            WHERE created_at BETWEEN ? AND ? \s
-            GROUP BY theme_id \s
-        ) AS r ON r.theme_id = t.id \s
-        ORDER BY r.reservation_count ? \s
+        SELECT t.id AS id, t.name AS name, t.description AS description, t.image_url AS image_url, reservation_count AS count
+        FROM reservation_theme t
+        JOIN (
+            SELECT theme_id, COUNT(id) AS reservation_count
+            FROM reservation
+            WHERE created_at BETWEEN ? AND ?
+            GROUP BY theme_id
+        ) AS r ON r.theme_id = t.id
+        ORDER BY r.reservation_count DESC
         LIMIT ?
     """;
 
@@ -72,10 +72,9 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
 
     @Override
     public List<ReservationThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
-        return jdbcTemplate.query(SELECT_ALL_SQL, (rs, i) -> ReservationThemeWithCount.from(rs),
+        return jdbcTemplate.query(SELECT_POPULAR_THEMES_BY_DATE_RANGE, (rs, i) -> ReservationThemeWithCount.from(rs),
                 popularThemeCondition.startDate(),
                 popularThemeCondition.endDate(),
-                popularThemeCondition.order(),
                 popularThemeCondition.size()
         );
     }
