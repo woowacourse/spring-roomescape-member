@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ThemeRepository;
 import roomescape.domain.Theme;
 
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
@@ -20,6 +22,7 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
+    @Transactional
     public Theme create(String name, String description, String thumbnail) {
         Theme theme = new Theme(null, name, description, thumbnail);
         Long id = themeRepository.insert(theme);
@@ -27,6 +30,7 @@ public class ThemeService {
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다."));
     }
 
+    @Transactional
     public void delete(Long id) {
         validateId(id);
         themeRepository.delete(id);
