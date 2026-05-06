@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class ReservationTime {
 
@@ -14,18 +15,22 @@ public class ReservationTime {
         this.startAt = time;
     }
 
-    public static ReservationTime withId(Long id, ReservationTime reservationTime) {
-        return new ReservationTime(
-                id,
-                reservationTime.startAt
-        );
-    }
-
     public Long getId() {
         return id;
     }
 
     public LocalTime getStartAt() {
         return startAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ReservationTime that)) return false;
+        return Objects.equals(id, that.id) && Objects.equals(startAt, that.startAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, startAt);
     }
 }

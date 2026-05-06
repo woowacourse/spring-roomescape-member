@@ -8,17 +8,45 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Theme;
 import roomescape.dto.PopularTheme;
 
 @JdbcTest
 @ActiveProfiles("test")
 @Import(ThemeDao.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ThemeDaoTest {
 
     @Autowired
     private ThemeDao themeDao;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("imgUrl")
+    );
+
+    @Test
+    void 테마_생성_테스트() {
+        Long id = themeDao.insertTheme("이든의 공포 하우스", "이든이 귀신으로 나오는 공포 테마", "image.jpg");
+
+        Theme actual = themeDao.findById(id);
+        Theme expected = jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?", themeRowMapper, id);
+
+        assertThat(actual.getId()).isEqualTo(expected.getId());
+        assertThat(actual.getName()).isEqualTo(expected.getName());
+        assertThat(actual.getDescription()).isEqualTo(expected.getDescription());
+        assertThat(actual.getImgUrl()).isEqualTo(expected.getImgUrl());
+    }
 
     @Test
     @Sql("/popular-themes.sql")
@@ -41,5 +69,8 @@ public class ThemeDaoTest {
                         "시간의 문",
                         "사라진 탐정"
                 );
+        assertThat(popularThemes)
+                .extracting(PopularTheme::rank)
+                .containsExactly(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
     }
 }
