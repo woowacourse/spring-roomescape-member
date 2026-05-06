@@ -1,5 +1,6 @@
 package roomescape.reservation.repository;
 
+import java.time.LocalDate;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -44,6 +45,15 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId()));
         return reservation.withId(id.longValue());
+    }
+
+    @Override
+    public List<Long> findTimeIdsByDate(LocalDate date) {
+        return jdbcTemplate.query(
+                "SELECT time_id FROM reservation WHERE date = ?",
+                (rs, rowNum) -> rs.getLong("time_id"),
+                Date.valueOf(date)
+        );
     }
 
     @Override
