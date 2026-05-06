@@ -40,6 +40,45 @@ class ReservationTimeControllerTest {
     void setPort() {
         RestAssured.port = port;
     }
+    @Test
+    void 관리자는_예약_시간을_추가할_수_있다() {
+        // given
+        ReservationTime newTime = new ReservationTime(1L, "12:30");
+        ReservationTimeRequestDto request = requestDtoFrom(newTime);
+        when(reservationService.addReservationTime(any()))
+                .thenReturn(newTime);
+
+        // when
+        Response response = RestAssured
+                .given().log().all()
+                .queryParam("role", "admin")
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/times");
+
+        // then
+        response
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
+
+        ReservationTimeResponseDto responseDto = response.as(ReservationTimeResponseDto.class);
+        assertThat(responseDto.id()).isEqualTo(newTime.getId());
+    }
+
+    @Test
+    void 관리자는_예약_시간을_삭제할_수_있다() {
+        // given & when
+        Response response = RestAssured
+                .given().log().all()
+                .queryParam("role", "admin")
+                .pathParam("id", 1)
+                .when().delete("/times/{id}");
+
+        // then
+        response
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
 
     @Test
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
@@ -70,46 +109,6 @@ class ReservationTimeControllerTest {
     @Nested
     @DisplayName("인가 권한 테스트")
     class RoleForbidden {
-        @Test
-        void 관리자는_예약_시간을_추가할_수_있다() {
-            // given
-            ReservationTime newTime = new ReservationTime(1L, "12:30");
-            ReservationTimeRequestDto request = requestDtoFrom(newTime);
-            when(reservationService.addReservationTime(any()))
-                    .thenReturn(newTime);
-
-            // when
-            Response response = RestAssured
-                    .given().log().all()
-                    .queryParam("role", "admin")
-                    .contentType(ContentType.JSON)
-                    .body(request)
-                    .when().post("/times");
-
-            // then
-            response
-                    .then()
-                    .statusCode(HttpStatus.CREATED.value());
-
-            ReservationTimeResponseDto responseDto = response.as(ReservationTimeResponseDto.class);
-            assertThat(responseDto.id()).isEqualTo(newTime.getId());
-        }
-
-        @Test
-        void 관리자는_예약_시간을_삭제할_수_있다() {
-            // given & when
-            Response response = RestAssured
-                    .given().log().all()
-                    .queryParam("role", "admin")
-                    .pathParam("id", 1)
-                    .when().delete("/times/{id}");
-
-            // then
-            response
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-        }
-
         @Test
         void 관리자가_아닌_사용자가_테마를_추가하는_경우_예외가_발생한다() {
             // given
