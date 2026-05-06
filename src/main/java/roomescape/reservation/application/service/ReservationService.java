@@ -12,10 +12,10 @@ import roomescape.reservation.application.dto.ReservationQueryResult;
 import roomescape.reservation.application.exception.ReservationException;
 import roomescape.reservation.domain.repository.ReservationDetail;
 import roomescape.reservation.domain.repository.ReservationRepository;
-import roomescape.reservationtime.dto.ReservationTimeResponse;
-import roomescape.reservationtime.service.ReservationTimeService;
-import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.service.ThemeService;
+import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
+import roomescape.reservationtime.application.service.ReservationTimeService;
+import roomescape.theme.application.dto.ThemeQueryResult;
+import roomescape.theme.application.service.ThemeService;
 
 @RequiredArgsConstructor
 @Service
@@ -33,14 +33,14 @@ public class ReservationService {
     }
 
     public ReservationQueryResult save(ReservationCreateCommand request, LocalDateTime currentDateTime) {
-        ReservationTimeResponse timeResponse = timeService.findById(request.timeId());
+        ReservationTimeQueryResult timeResponse = timeService.findById(request.timeId());
         validateReservationDateTime(request.date(), timeResponse.startAt(), currentDateTime);
 
-        ThemeResponse themeResponse = themeService.findById(request.themeId());
+        ThemeQueryResult themeQueryResult = themeService.findById(request.themeId());
         validateDuplicateReservation(request);
 
-        Reservation reservation = request.toEntity(themeResponse.id(), timeResponse.id());
-        return ReservationQueryResult.from(reservationRepository.save(reservation), themeResponse, timeResponse);
+        Reservation reservation = request.toEntity(themeQueryResult.id(), timeResponse.id());
+        return ReservationQueryResult.from(reservationRepository.save(reservation), themeQueryResult, timeResponse);
     }
 
     private void validateReservationDateTime(LocalDate date, LocalTime startAt, LocalDateTime currentDateTime) {

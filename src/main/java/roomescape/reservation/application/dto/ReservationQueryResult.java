@@ -4,18 +4,18 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationDetail;
-import roomescape.reservationtime.dto.ReservationTimeResponse;
-import roomescape.theme.dto.ThemeResponse;
+import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
+import roomescape.theme.application.dto.ThemeQueryResult;
 
-public record ReservationQueryResult(Long id, String name, @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date, ThemeResponse theme, ReservationTimeResponse time) {
+public record ReservationQueryResult(Long id, String name, @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date, ThemeQueryResult theme, ReservationTimeQueryResult time) {
 
-    public static ReservationQueryResult from(Reservation reservation, ThemeResponse themeResponse,
-                                              ReservationTimeResponse timeResponse) {
+    public static ReservationQueryResult from(Reservation reservation, ThemeQueryResult themeQueryResult,
+                                              ReservationTimeQueryResult timeResponse) {
         return new ReservationQueryResult(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                themeResponse,
+                themeQueryResult,
                 timeResponse
         );
     }
@@ -25,13 +25,13 @@ public record ReservationQueryResult(Long id, String name, @JsonFormat(pattern =
                 reservationDetail.reservationId(),
                 reservationDetail.username(),
                 reservationDetail.date(),
-                ThemeResponse.from(
+                ThemeQueryResult.from(
                         reservationDetail.themeId(),
                         reservationDetail.themeName(),
                         reservationDetail.themeDescription(),
                         reservationDetail.thumbnailImgUrl()
                 ),
-                ReservationTimeResponse.from(
+                ReservationTimeQueryResult.from(
                         reservationDetail.timeId(),
                         reservationDetail.startAt()
                 )

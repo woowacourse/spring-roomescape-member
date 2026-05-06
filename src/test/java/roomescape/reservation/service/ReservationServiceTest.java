@@ -15,12 +15,12 @@ import roomescape.reservation.application.dto.ReservationQueryResult;
 import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservation.application.exception.ReservationException;
 import roomescape.reservation.domain.repository.ReservationRepository;
-import roomescape.reservationtime.dto.ReservationTimeCreateRequest;
-import roomescape.reservationtime.dto.ReservationTimeResponse;
-import roomescape.reservationtime.service.ReservationTimeService;
-import roomescape.theme.dto.ThemeCreateRequest;
-import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.service.ThemeService;
+import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
+import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
+import roomescape.reservationtime.application.service.ReservationTimeService;
+import roomescape.theme.application.dto.ThemeCreateCommand;
+import roomescape.theme.application.dto.ThemeQueryResult;
+import roomescape.theme.application.service.ThemeService;
 
 class ReservationServiceTest {
 
@@ -34,8 +34,8 @@ class ReservationServiceTest {
     @DisplayName("사용자의 방탈출 예약 시간 추가를 테스트합니다.")
     @Test
     void save_user_reservation_successfully() {
-        themeService.save(new ThemeCreateRequest("theme name", "theme description", "theme img url"));
-        timeService.save(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+        themeService.save(new ThemeCreateCommand("theme name", "theme description", "theme img url"));
+        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(10, 0)));
 
         ReservationCreateCommand request = new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
         ReservationQueryResult reservationQueryResult = reservationService.save(request, LocalDateTime.of(2000, 1, 1, 0, 0));
@@ -44,17 +44,17 @@ class ReservationServiceTest {
             assertSoftly.assertThat(reservationQueryResult.id()).isEqualTo(1L);
             assertSoftly.assertThat(reservationQueryResult.name()).isEqualTo("스타크");
             assertSoftly.assertThat(reservationQueryResult.date()).isEqualTo("2026-05-06");
-            assertSoftly.assertThat(reservationQueryResult.time()).isEqualTo(new ReservationTimeResponse(1L, LocalTime.of(10,0)));
+            assertSoftly.assertThat(reservationQueryResult.time()).isEqualTo(new ReservationTimeQueryResult(1L, LocalTime.of(10,0)));
             assertSoftly.assertThat(reservationQueryResult.theme())
-                    .isEqualTo(new ThemeResponse(1L, "theme name", "theme description", "theme img url"));
+                    .isEqualTo(new ThemeQueryResult(1L, "theme name", "theme description", "theme img url"));
         });
     }
 
     @DisplayName("중복된 시간과 테마에 예약 추가 시 예외 발생을 테스트합니다.")
     @Test
     void validate_duplicated_reservation() {
-        themeService.save(new ThemeCreateRequest("theme name", "theme description", "theme img url"));
-        timeService.save(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+        themeService.save(new ThemeCreateCommand("theme name", "theme description", "theme img url"));
+        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(10, 0)));
 
         ReservationCreateCommand firstRequest = new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
         reservationService.save(firstRequest, LocalDateTime.of(2000, 1, 1, 0, 0));
@@ -69,8 +69,8 @@ class ReservationServiceTest {
     @DisplayName("오늘보다 이전 날짜 혹은 시간 예약 시도 시 예외 발생을 테스트합니다.")
     @Test
     void validate_throw_exception_when_reserving_past_date_or_time() {
-        themeService.save(new ThemeCreateRequest("theme name", "theme description", "theme img url"));
-        timeService.save(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+        themeService.save(new ThemeCreateCommand("theme name", "theme description", "theme img url"));
+        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(10, 0)));
 
         ReservationCreateCommand request = new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
 

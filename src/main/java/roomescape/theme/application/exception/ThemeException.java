@@ -1,4 +1,4 @@
-package roomescape.theme.exception;
+package roomescape.theme.application.exception;
 
 import roomescape.exception.RoomEscapeException;
 

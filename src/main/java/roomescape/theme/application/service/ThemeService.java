@@ -1,15 +1,15 @@
-package roomescape.theme.service;
+package roomescape.theme.application.service;
 
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.PopularThemeResponse;
-import roomescape.theme.dto.ThemeCreateRequest;
-import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.exception.ThemeException;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.application.dto.PopularThemeQueryResult;
+import roomescape.theme.application.dto.ThemeCreateCommand;
+import roomescape.theme.application.dto.ThemeQueryResult;
+import roomescape.theme.application.exception.ThemeException;
+import roomescape.theme.domain.repository.ThemeRepository;
 
 @RequiredArgsConstructor
 @Service
@@ -17,23 +17,23 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
 
-    public ThemeResponse findById(Long id) {
-        return ThemeResponse.from(themeRepository.findById(id)
+    public ThemeQueryResult findById(Long id) {
+        return ThemeQueryResult.from(themeRepository.findById(id)
                 .orElseThrow(() -> new ThemeException("[ERROR] 존재하지 않는 테마 입니다.")));
     }
 
-    public List<ThemeResponse> findAll() {
+    public List<ThemeQueryResult> findAll() {
         List<Theme> themes = themeRepository.findAll();
 
-        return themes.stream().map(ThemeResponse::from)
+        return themes.stream().map(ThemeQueryResult::from)
                 .toList();
     }
 
-    public ThemeResponse save(ThemeCreateRequest request) {
+    public ThemeQueryResult save(ThemeCreateCommand request) {
         Theme theme = request.toEntity();
         validateDuplicateTheme(theme);
 
-        return ThemeResponse.from(themeRepository.save(theme));
+        return ThemeQueryResult.from(themeRepository.save(theme));
     }
 
     public int delete(long id) {
@@ -53,10 +53,10 @@ public class ThemeService {
         }
     }
 
-    public List<PopularThemeResponse> findPopularThemes(LocalDate today) {
+    public List<PopularThemeQueryResult> findPopularThemes(LocalDate today) {
         return themeRepository.findTop10PopularThemesBetween(today.minusWeeks(1), today.minusDays(1))
                 .stream()
-                .map(PopularThemeResponse::from)
+                .map(PopularThemeQueryResult::from)
                 .toList();
     }
 }

@@ -1,5 +1,6 @@
-package roomescape.theme.controller;
+package roomescape.theme.presentation.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.dto.ThemeCreateRequest;
-import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.service.ThemeService;
+import roomescape.theme.application.service.ThemeService;
+import roomescape.theme.presentation.dto.ThemeCreateRequest;
+import roomescape.theme.presentation.dto.ThemeResponse;
 
 @RequiredArgsConstructor
 @RequestMapping("/admin/themes")
@@ -22,10 +23,10 @@ public class AdminThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> create(
-            @RequestBody ThemeCreateRequest request
+            @Valid @RequestBody ThemeCreateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(themeService.save(request));
+                .body(ThemeResponse.from(themeService.save(request.toCommand())));
     }
 
     @DeleteMapping("/{id}")

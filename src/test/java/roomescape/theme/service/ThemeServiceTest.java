@@ -8,11 +8,12 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeThemeRepository;
-import roomescape.theme.dto.PopularThemeResponse;
-import roomescape.theme.exception.ThemeException;
-import roomescape.theme.dto.ThemeCreateRequest;
-import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.repository.PopularTheme;
+import roomescape.theme.application.service.ThemeService;
+import roomescape.theme.application.dto.PopularThemeQueryResult;
+import roomescape.theme.application.exception.ThemeException;
+import roomescape.theme.application.dto.ThemeCreateCommand;
+import roomescape.theme.application.dto.ThemeQueryResult;
+import roomescape.theme.domain.repository.PopularTheme;
 
 public class ThemeServiceTest {
 
@@ -22,21 +23,21 @@ public class ThemeServiceTest {
     @DisplayName("테마의 정상 추가를 테스트합니다.")
     @Test
     void save_theme_successfully() {
-        ThemeCreateRequest createRequestDto = new ThemeCreateRequest("theme name", "theme description", "theme img url");
-        ThemeResponse themeResponse = themeService.save(createRequestDto);
+        ThemeCreateCommand createRequestDto = new ThemeCreateCommand("theme name", "theme description", "theme img url");
+        ThemeQueryResult themeQueryResult = themeService.save(createRequestDto);
 
         SoftAssertions.assertSoftly(assertSoftly -> {
-            assertSoftly.assertThat(themeResponse.id()).isEqualTo(1L);
-            assertSoftly.assertThat(themeResponse.name()).isEqualTo("theme name");
-            assertSoftly.assertThat(themeResponse.description()).isEqualTo("theme description");
-            assertSoftly.assertThat(themeResponse.thumbnailImgUrl()).isEqualTo("theme img url");
+            assertSoftly.assertThat(themeQueryResult.id()).isEqualTo(1L);
+            assertSoftly.assertThat(themeQueryResult.name()).isEqualTo("theme name");
+            assertSoftly.assertThat(themeQueryResult.description()).isEqualTo("theme description");
+            assertSoftly.assertThat(themeQueryResult.thumbnailImgUrl()).isEqualTo("theme img url");
         });
     }
 
     @DisplayName("중복된 테마 추가 시 예외 발생을 테스트합니다.")
     @Test
     void save_duplicated_theme_exception() {
-        ThemeCreateRequest createRequestDto = new ThemeCreateRequest("theme name", "theme description", "theme img url");
+        ThemeCreateCommand createRequestDto = new ThemeCreateCommand("theme name", "theme description", "theme img url");
         themeService.save(createRequestDto);
 
         assertThatThrownBy(() -> themeService.save(createRequestDto))
@@ -47,7 +48,7 @@ public class ThemeServiceTest {
     @DisplayName("테마의 삭제를 테스트합니다.")
     @Test
     void delete_theme() {
-        ThemeCreateRequest createRequestDto = new ThemeCreateRequest("theme name", "theme description", "theme img url");
+        ThemeCreateCommand createRequestDto = new ThemeCreateCommand("theme name", "theme description", "theme img url");
         themeService.save(createRequestDto);
 
         assertThat(themeService.delete(1L)).isEqualTo(1);
@@ -56,10 +57,10 @@ public class ThemeServiceTest {
     @DisplayName("테마 조회를 테스트합니다.")
     @Test
     void find_theme() {
-        ThemeCreateRequest createRequestDto = new ThemeCreateRequest("theme name", "theme description", "theme img url");
+        ThemeCreateCommand createRequestDto = new ThemeCreateCommand("theme name", "theme description", "theme img url");
         themeService.save(createRequestDto);
 
-        ThemeResponse foundTheme = themeService.findById(1L);
+        ThemeQueryResult foundTheme = themeService.findById(1L);
 
         SoftAssertions.assertSoftly(assertSoftly -> {
             assertSoftly.assertThat(foundTheme.id()).isEqualTo(1L);
@@ -80,22 +81,22 @@ public class ThemeServiceTest {
     @DisplayName("테마의 전체 조회를 테스트합니다.")
     @Test
     void find_all_themes() {
-        ThemeCreateRequest createRequestDto1 = new ThemeCreateRequest("theme name1", "theme description1", "theme img url1");
-        ThemeCreateRequest createRequestDto2 = new ThemeCreateRequest("theme name2", "theme description2", "theme img url2");
-        ThemeCreateRequest createRequestDto3 = new ThemeCreateRequest("theme name3", "theme description3", "theme img url3");
+        ThemeCreateCommand createRequestDto1 = new ThemeCreateCommand("theme name1", "theme description1", "theme img url1");
+        ThemeCreateCommand createRequestDto2 = new ThemeCreateCommand("theme name2", "theme description2", "theme img url2");
+        ThemeCreateCommand createRequestDto3 = new ThemeCreateCommand("theme name3", "theme description3", "theme img url3");
 
         themeService.save(createRequestDto1);
         themeService.save(createRequestDto2);
         themeService.save(createRequestDto3);
 
-        List<ThemeResponse> themeResponses = themeService.findAll();
+        List<ThemeQueryResult> themeRespons = themeService.findAll();
 
         SoftAssertions.assertSoftly(assertSoftly -> {
-            assertSoftly.assertThat(themeResponses.size()).isEqualTo(3);
-            assertSoftly.assertThat(themeResponses).containsExactly(
-                    new ThemeResponse(1L, "theme name1", "theme description1", "theme img url1"),
-                    new ThemeResponse(2L, "theme name2", "theme description2", "theme img url2"),
-                    new ThemeResponse(3L, "theme name3", "theme description3", "theme img url3")
+            assertSoftly.assertThat(themeRespons.size()).isEqualTo(3);
+            assertSoftly.assertThat(themeRespons).containsExactly(
+                    new ThemeQueryResult(1L, "theme name1", "theme description1", "theme img url1"),
+                    new ThemeQueryResult(2L, "theme name2", "theme description2", "theme img url2"),
+                    new ThemeQueryResult(3L, "theme name3", "theme description3", "theme img url3")
             );
         });
     }
@@ -111,13 +112,13 @@ public class ThemeServiceTest {
                 10
         ));
 
-        List<PopularThemeResponse> responses = themeService.findPopularThemes(LocalDate.of(2026, 5, 6));
+        List<PopularThemeQueryResult> responses = themeService.findPopularThemes(LocalDate.of(2026, 5, 6));
 
         SoftAssertions.assertSoftly(assertSoftly -> {
             assertSoftly.assertThat(themeRepository.getFrom()).isEqualTo(LocalDate.of(2026, 4, 29));
             assertSoftly.assertThat(themeRepository.getTo()).isEqualTo(LocalDate.of(2026, 5, 5));
             assertSoftly.assertThat(responses).containsExactly(
-                    new PopularThemeResponse(1L, "theme name", "theme description", "theme img url", 10)
+                    new PopularThemeQueryResult(1L, "theme name", "theme description", "theme img url", 10)
             );
         });
     }

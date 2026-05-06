@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.Getter;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.PopularTheme;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.domain.repository.PopularTheme;
+import roomescape.theme.domain.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 

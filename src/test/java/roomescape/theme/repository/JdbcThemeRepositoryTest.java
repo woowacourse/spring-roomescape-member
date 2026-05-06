@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.repository.PopularTheme;
+import roomescape.theme.domain.repository.ThemeRepository;
+import roomescape.theme.infra.JdbcThemeRepository;
 
 @JdbcTest
 public class JdbcThemeRepositoryTest {
