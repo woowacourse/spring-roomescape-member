@@ -49,10 +49,6 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
         return 0;
     }
 
-    public void saveReservation(Reservation reservation) {
-        reservations.add(reservation);
-    }
-
     @Override
     public List<ReservationTime> findByThemeAndDate(Long themeId, LocalDate date) {
         Set<Long> reservedTimeIds = reservations.stream()
@@ -64,5 +60,9 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
         return times.values().stream()
                 .filter(time -> !reservedTimeIds.contains(time.getId()))
                 .toList();
+    }
+
+    public void saveReservation(Reservation reservation) {
+        reservations.add(reservation);
     }
 }

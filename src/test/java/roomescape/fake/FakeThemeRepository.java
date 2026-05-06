@@ -1,10 +1,12 @@
 package roomescape.fake;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import lombok.Getter;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.PopularTheme;
 import roomescape.theme.repository.ThemeRepository;
@@ -12,7 +14,12 @@ import roomescape.theme.repository.ThemeRepository;
 public class FakeThemeRepository implements ThemeRepository {
 
     private final Map<Long, Theme> themes = new LinkedHashMap<>();
+    private final List<PopularTheme> popularThemes = new ArrayList<>();
     private Long idHoler = 1L;
+    @Getter
+    private LocalDate from;
+    @Getter
+    private LocalDate to;
 
     @Override
     public Optional<Theme> findById(Long id) {
@@ -27,7 +34,9 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public List<PopularTheme> findTop10PopularThemesBetween(LocalDate from, LocalDate to) {
-        return List.of();
+        this.from = from;
+        this.to = to;
+        return popularThemes;
     }
 
     @Override
@@ -54,5 +63,9 @@ public class FakeThemeRepository implements ThemeRepository {
     public Boolean existsByNameAndDescription(Theme theme) {
         return themes.values().stream()
                 .anyMatch(savedTheme -> savedTheme.equals(theme));
+    }
+
+    public void savePopularTheme(PopularTheme popularTheme) {
+        popularThemes.add(popularTheme);
     }
 }

@@ -2,19 +2,21 @@ package roomescape.theme.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeThemeRepository;
+import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.exception.ThemeException;
-import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.dto.ThemeCreateRequest;
 import roomescape.theme.dto.ThemeResponse;
+import roomescape.theme.repository.PopularTheme;
 
 public class ThemeServiceTest {
 
-    private ThemeRepository themeRepository = new FakeThemeRepository();
+    private FakeThemeRepository themeRepository = new FakeThemeRepository();
     private ThemeService themeService = new ThemeService(themeRepository);
 
     @DisplayName("테마의 정상 추가를 테스트합니다.")
@@ -94,6 +96,28 @@ public class ThemeServiceTest {
                     new ThemeResponse(1L, "theme name1", "theme description1", "theme img url1"),
                     new ThemeResponse(2L, "theme name2", "theme description2", "theme img url2"),
                     new ThemeResponse(3L, "theme name3", "theme description3", "theme img url3")
+            );
+        });
+    }
+
+    @DisplayName("인기 테마 조회를 테스트합니다.")
+    @Test
+    void find_popular_themes() {
+        themeRepository.savePopularTheme(new PopularTheme(
+                1L,
+                "theme name",
+                "theme description",
+                "theme img url",
+                10
+        ));
+
+        List<PopularThemeResponse> responses = themeService.findPopularThemes(LocalDate.of(2026, 5, 6));
+
+        SoftAssertions.assertSoftly(assertSoftly -> {
+            assertSoftly.assertThat(themeRepository.getFrom()).isEqualTo(LocalDate.of(2026, 4, 28));
+            assertSoftly.assertThat(themeRepository.getTo()).isEqualTo(LocalDate.of(2026, 5, 5));
+            assertSoftly.assertThat(responses).containsExactly(
+                    new PopularThemeResponse(1L, "theme name", "theme description", "theme img url", 10)
             );
         });
     }

@@ -1,9 +1,11 @@
 package roomescape.theme.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.dto.ThemeCreateRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.exception.ThemeException;
@@ -42,5 +44,14 @@ public class ThemeService {
         if (themeRepository.existsByNameAndDescription(theme)) {
             throw new ThemeException("[ERROR] 이름과 설명이 같은 테마가 이미 존재합니다.");
         }
+    }
+
+    public List<PopularThemeResponse> findPopularThemes(LocalDate today) {
+        LocalDate yesterday = today.minusDays(1);
+
+        return themeRepository.findTop10PopularThemesBetween(yesterday.minusWeeks(1), yesterday)
+                .stream()
+                .map(PopularThemeResponse::from)
+                .toList();
     }
 }
