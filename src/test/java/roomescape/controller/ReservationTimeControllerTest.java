@@ -84,6 +84,20 @@ public class ReservationTimeControllerTest {
     }
 
     @Test
+    void 시간_관리_API() {
+        RestAssured.given().log().all()
+                .when().get("/api/v1/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(3));
+
+        RestAssured.given().log().all()
+                .when().delete("/api/v1/times/1")
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @Test
     void 예약_가능_시간_조회() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -150,5 +164,30 @@ public class ReservationTimeControllerTest {
                 .when().post("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(201);
+    }
+
+    @Test
+    void 존재하지_않는_예약시간을_삭제하면_404를_반환한다() {
+        RestAssured.given().log().all()
+                .when().delete("/api/v1/times/4")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 예약이_존재하는_예약시간을_삭제하면_409를_반환한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams())
+                .when().post("/api/v1/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
+        RestAssured.given().log().all()
+                .when().delete("/api/v1/times/1")
+                .then().log().all()
+                .statusCode(409);
+
     }
 }
