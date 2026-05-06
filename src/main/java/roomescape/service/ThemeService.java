@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
 import roomescape.repository.ThemeDao;
 
@@ -17,5 +18,9 @@ public class ThemeService {
         return themeDao.findAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
+    }
+
+    public List<AvailableReservationTimeResponse> getAvailableTimeResponses(Long themId, String date) {
+        return themeDao.findAvailableTimeById(themId, date);
     }
 }
