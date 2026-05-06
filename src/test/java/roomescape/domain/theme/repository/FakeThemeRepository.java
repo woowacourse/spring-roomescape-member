@@ -45,7 +45,7 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAllThemes() {
-        return List.of();
+        return List.copyOf(themes);
     }
 
     @Override
@@ -81,8 +81,11 @@ public class FakeThemeRepository implements ThemeRepository {
         Map<Long, Long> counterMap = getThemeCounterMap(filteredThemes, distinctThemes);
 
         return distinctThemes.stream()
-            .sorted(Comparator.comparingLong((Theme theme) -> counterMap.get(theme.getId()))
-                .reversed())
+            .sorted(
+                Comparator.comparingLong((Theme theme) -> counterMap.get(theme.getId()))
+                    .reversed()
+                    .thenComparing(Theme::getId)
+            )
             .limit(limit)
             .toList();
     }
