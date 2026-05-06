@@ -20,7 +20,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ThemeService themeService;
-    private final ReservationTimeService reservationTimeService;
+    private final ReservationTimeService timeService;
 
     public List<ReservationResponse> findAll() {
         List<ReservationDetail> result = reservationRepository.findAll();
@@ -31,7 +31,7 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationCreateRequest request) {
         ThemeResponse themeResponse = ThemeResponse.from(themeService.findById(request.themeId()));
-        ReservationTimeResponse timeResponse = ReservationTimeResponse.from(reservationTimeService.findById(request.timeId()));
+        ReservationTimeResponse timeResponse = ReservationTimeResponse.from(timeService.findById(request.timeId()));
         validateDuplicateReservation(request);
         Reservation reservation = request.toEntity(themeResponse.id(), timeResponse.id());
 

@@ -14,38 +14,38 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 @Service
 public class ReservationTimeService {
 
-    private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationTimeRepository timeRepository;
 
-    public ReservationTime findById(Long reservationTimeId) {
-        return reservationTimeRepository.findById(reservationTimeId)
+    public ReservationTime findById(Long timeId) {
+        return timeRepository.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeException("[ERROR] 존재하지 않는 시간 입니다."));
     }
 
     public List<ReservationTimeResponse> findAll() {
-        List<ReservationTime> result = reservationTimeRepository.findAll();
+        List<ReservationTime> times = timeRepository.findAll();
 
-        return result.stream()
+        return times.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
     }
 
     public List<ReservationTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findByThemeAndDate(themeId, date);
+        List<ReservationTime> times = timeRepository.findByThemeAndDate(themeId, date);
 
-        return reservationTimes.stream()
+        return times.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
     }
 
     public ReservationTimeResponse save(ReservationTimeCreateRequest request) {
-        ReservationTime reservationTime = request.toEntity();
+        ReservationTime time = request.toEntity();
 
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        ReservationTime savedTime = timeRepository.save(time);
 
-        return ReservationTimeResponse.from(savedReservationTime);
+        return ReservationTimeResponse.from(savedTime);
     }
 
     public int delete(Long id) {
-        return reservationTimeRepository.delete(id);
+        return timeRepository.delete(id);
     }
 }

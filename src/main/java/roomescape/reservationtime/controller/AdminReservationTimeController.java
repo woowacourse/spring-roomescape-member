@@ -21,11 +21,11 @@ import roomescape.reservationtime.service.ReservationTimeService;
 @RestController
 public class AdminReservationTimeController {
 
-    private final ReservationTimeService reservationTimeService;
+    private final ReservationTimeService timeService;
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
-        return ResponseEntity.ok(reservationTimeService.findAll());
+        return ResponseEntity.ok(timeService.findAll());
     }
 
     @PostMapping
@@ -33,12 +33,12 @@ public class AdminReservationTimeController {
             @Valid @RequestBody ReservationTimeCreateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(reservationTimeService.save(request));
+                .body(timeService.save(request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        int deletedCount = reservationTimeService.delete(id);
+        int deletedCount = timeService.delete(id);
 
         if (deletedCount == 0) {
             return ResponseEntity.notFound().build();

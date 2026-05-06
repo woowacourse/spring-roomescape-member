@@ -46,12 +46,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime save(ReservationTime reservationTime) {
+    public ReservationTime save(ReservationTime time) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.getStartAt());
+                .addValue("start_at", time.getStartAt());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return reservationTime.withId(id);
+        return time.withId(id);
     }
 
     @Override

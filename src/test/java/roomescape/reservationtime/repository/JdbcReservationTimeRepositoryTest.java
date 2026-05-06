@@ -25,16 +25,16 @@ class JdbcReservationTimeRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    ReservationTimeRepository reservationTimeRepository;
+    ReservationTimeRepository timeRepository;
     ThemeRepository themeRepository;
 
     @BeforeEach
     void setUp() {
-        reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+        timeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
 
-        reservationTimeRepository.save(ReservationTime.builder().startAt(LocalTime.parse("09:00")).build());
-        reservationTimeRepository.save(ReservationTime.builder().startAt(LocalTime.parse("10:00")).build());
-        reservationTimeRepository.save(ReservationTime.builder().startAt(LocalTime.parse("11:00")).build());
+        timeRepository.save(ReservationTime.builder().startAt(LocalTime.parse("09:00")).build());
+        timeRepository.save(ReservationTime.builder().startAt(LocalTime.parse("10:00")).build());
+        timeRepository.save(ReservationTime.builder().startAt(LocalTime.parse("11:00")).build());
 
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
@@ -58,11 +58,11 @@ class JdbcReservationTimeRepositoryTest {
         Theme savedTheme = themeRepository.save(theme);
         LocalDate date = LocalDate.of(2026, 5, 4);
 
-        List<ReservationTime> reservationTimes = reservationTimeRepository
+        List<ReservationTime> times = timeRepository
                 .findByThemeAndDate(savedTheme.getId(), date);
 
         for (int i = 0; i < 3; i++) {
-            assertThat(reservationTimes.get(i).getStartAt()).isEqualTo(expectedTimes.get(i));
+            assertThat(times.get(i).getStartAt()).isEqualTo(expectedTimes.get(i));
         }
     }
 }

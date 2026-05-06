@@ -14,16 +14,16 @@ import roomescape.reservationtime.dto.ReservationTimeResponse;
 
 class ReservationTimeServiceTest {
 
-    private FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-    private ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+    private FakeReservationTimeRepository timeRepository = new FakeReservationTimeRepository();
+    private ReservationTimeService timeService = new ReservationTimeService(timeRepository);
 
     @BeforeEach
     void setUp() {
-        reservationTimeRepository.save(ReservationTime.builder()
+        timeRepository.save(ReservationTime.builder()
                 .startAt(LocalTime.of(9, 0))
                 .build()
         );
-        reservationTimeRepository.save(ReservationTime.builder()
+        timeRepository.save(ReservationTime.builder()
                 .startAt(LocalTime.of(10, 0))
                 .build()
         );
@@ -35,9 +35,9 @@ class ReservationTimeServiceTest {
         Long themeId = 1L;
         LocalDate date = LocalDate.of(2026, 5, 6);
 
-        List<ReservationTimeResponse> reservationTimeResponses =  reservationTimeService.findAvailableTimes(themeId, date);
+        List<ReservationTimeResponse> timeResponses = timeService.findAvailableTimes(themeId, date);
 
-        Assertions.assertThat(reservationTimeResponses).containsExactly(
+        Assertions.assertThat(timeResponses).containsExactly(
                 new ReservationTimeResponse(1L, "09:00"),
                 new ReservationTimeResponse(2L, "10:00")
         );
@@ -49,7 +49,7 @@ class ReservationTimeServiceTest {
         Long themeId = 1L;
         LocalDate date = LocalDate.of(2026, 5, 6);
 
-        reservationTimeRepository.saveReservation(Reservation.builder()
+        timeRepository.saveReservation(Reservation.builder()
                 .name("스타크")
                 .date(date)
                 .themeId(1L)
@@ -57,9 +57,9 @@ class ReservationTimeServiceTest {
                 .build()
         );
 
-        List<ReservationTimeResponse> reservationTimeResponses =  reservationTimeService.findAvailableTimes(themeId, date);
+        List<ReservationTimeResponse> timeResponses = timeService.findAvailableTimes(themeId, date);
 
-        Assertions.assertThat(reservationTimeResponses).containsExactly(
+        Assertions.assertThat(timeResponses).containsExactly(
                 new ReservationTimeResponse(2L, "10:00")
         );
     }

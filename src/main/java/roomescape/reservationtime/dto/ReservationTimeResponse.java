@@ -6,10 +6,10 @@ import roomescape.reservationtime.domain.ReservationTime;
 
 public record ReservationTimeResponse(Long id, String startAt) {
 
-    public static ReservationTimeResponse from(ReservationTime reservationTime) {
+    public static ReservationTimeResponse from(ReservationTime time) {
         return new ReservationTimeResponse(
-                reservationTime.getId(),
-                reservationTime.getStartAt().format(DateTimeFormatter.ofPattern("HH:mm"))
+                time.getId(),
+                time.getStartAt().format(DateTimeFormatter.ofPattern("HH:mm"))
         );
     }
 

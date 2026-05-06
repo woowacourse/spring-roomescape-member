@@ -16,13 +16,13 @@ import roomescape.reservationtime.service.ReservationTimeService;
 @RestController
 public class ReservationTimeController {
 
-    private final ReservationTimeService reservationTimeService;
+    private final ReservationTimeService timeService;
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findAvailableTimes(
             @RequestParam Long themeId,
             @RequestParam LocalDate date
     ) {
-        return ResponseEntity.ok(reservationTimeService.findAvailableTimes(themeId, date));
+        return ResponseEntity.ok(timeService.findAvailableTimes(themeId, date));
     }
 }

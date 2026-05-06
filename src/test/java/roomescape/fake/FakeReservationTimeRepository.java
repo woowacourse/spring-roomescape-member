@@ -30,8 +30,8 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime save(ReservationTime reservationTime) {
-        ReservationTime savedTime = reservationTime.withId(idHoler);
+    public ReservationTime save(ReservationTime time) {
+        ReservationTime savedTime = time.withId(idHoler);
         times.put(idHoler++, savedTime);
         return savedTime;
     }
@@ -62,7 +62,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
                 .collect(Collectors.toSet());
 
         return times.values().stream()
-                .filter(reservationTime -> !reservedTimeIds.contains(reservationTime.getId()))
+                .filter(time -> !reservedTimeIds.contains(time.getId()))
                 .toList();
     }
 }
