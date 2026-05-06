@@ -15,11 +15,11 @@ Phase 1 - 테마 도메인 추가
 
 Phase 2 - Reservation에 Theme 연결
 
-- [ ]  reservation 테이블에 theme_id FK 추가
-- [ ]  Reservation 도메인에 theme 필드 추가
-- [ ]  예약 Repository에 theme 조회·저장 연결
-- [ ]  예약 생성 시 themeId 포함하도록 변경
-- [ ]  MissionStepTest 예약과_시간_연결을 theme 포함으로 갱신
+- [x]  reservation 테이블에 theme_id FK 추가
+- [x]  Reservation 도메인에 theme 필드 추가
+- [x]  예약 Repository에 theme 조회·저장 연결
+- [x]  예약 생성 시 themeId 포함하도록 변경
+- [x]  MissionStepTest 예약과_시간_연결을 theme 포함으로 갱신
 
 Phase 3 - 사용자 API
 
