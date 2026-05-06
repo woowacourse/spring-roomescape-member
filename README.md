@@ -43,12 +43,12 @@
 
 ### 테마 (Theme)
 
-| 구분 | Method | URL | Request Body | Response |
-|------|--------|-----|--------------|----------|
-| 사용자 | `GET` | `/themes?limit={n}` | - | `200` |
-| 관리자 | `GET` | `/admin/themes` | - | `200` |
-| 관리자 | `POST` | `/admin/themes` | `{"name", "thumbnailUrl", "description"}` | `201` |
-| 관리자 | `DELETE` | `/admin/themes/{id}` | - | `204` |
+| 구분 | Method | URL                         | Request Body | Response |
+|------|--------|-----------------------------|--------------|----------|
+| 사용자 | `GET` | `/themes/popular?limit={n}` | - | `200` |
+| 관리자 | `GET` | `/admin/themes`             | - | `200` |
+| 관리자 | `POST` | `/admin/themes`             | `{"name", "thumbnailUrl", "description"}` | `201` |
+| 관리자 | `DELETE` | `/admin/themes/{id}`        | - | `204` |
 
 **사용자 응답 예시** `GET /themes?limit=10`
 - 오늘 기준 직전 7일(어제 ~ 7일 전) 예약 수 기준 내림차순 정렬
