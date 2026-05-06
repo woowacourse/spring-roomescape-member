@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>예약하기</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            background: #f5f5f7;
+            color: #1d1d1f;
+        }
+        header {
+            background: #1d1d1f;
+            color: #fff;
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        header h1 { margin: 0; font-size: 22px; }
+        header a { color: #fff; text-decoration: none; font-size: 14px; opacity: 0.85; }
+        main { max-width: 900px; margin: 0 auto; padding: 32px; }
+        section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        section h2 {
+            margin: 0 0 16px;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .step-num {
+            display: inline-flex;
+            width: 24px; height: 24px;
+            background: #007aff;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 13px;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+        .theme-item {
+            border: 2px solid #e5e5ea;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+        .theme-item.selected { border-color: #007aff; }
+        .theme-item img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            display: block;
+        }
+        .theme-item .name {
+            padding: 10px 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        input[type="date"], input[type="text"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 10px;
+        }
+        .time-btn {
+            padding: 12px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.15s;
+        }
+        .time-btn:hover:not(:disabled) { border-color: #007aff; }
+        .time-btn.selected {
+            background: #007aff;
+            color: #fff;
+            border-color: #007aff;
+        }
+        .time-btn:disabled {
+            background: #f5f5f7;
+            color: #c7c7cc;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #007aff;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .submit-btn:disabled {
+            background: #c7c7cc;
+            cursor: not-allowed;
+        }
+        .hint { color: #6e6e73; font-size: 14px; margin: 0; }
+        .res-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .res-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            border: 1px solid #e5e5ea;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .res-item button {
+            background: transparent;
+            border: 1px solid #ff3b30;
+            color: #ff3b30;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .modal-backdrop.show { display: flex; }
+        .modal {
+            background: #fff;
+            border-radius: 14px;
+            width: min(420px, 92vw);
+            padding: 28px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+        .modal h3 {
+            margin: 0 0 6px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal .sub {
+            margin: 0 0 20px;
+            color: #6e6e73;
+            font-size: 14px;
+        }
+        .modal dl {
+            margin: 0 0 24px;
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            row-gap: 10px;
+            font-size: 14px;
+        }
+        .modal dt { color: #6e6e73; }
+        .modal dd { margin: 0; font-weight: 500; }
+        .modal .actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        .modal button {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary { background: #007aff; color: #fff; }
+        .btn-danger { background: #ff3b30; color: #fff; }
+        .btn-secondary { background: #f0f0f3; color: #1d1d1f; }
+        .icon-success { color: #34c759; }
+        .icon-danger { color: #ff3b30; }
+        .err {
+            background: #fff2f1;
+            border: 1px solid #ffd5d2;
+            color: #c0392b;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin: 0 0 16px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>예약하기</h1>
+    <a href="/">← 홈으로</a>
+</header>
+<main>
+    <section>
+        <h2><span class="step-num">1</span> 테마 선택</h2>
+        <div id="themes" class="theme-grid"></div>
+    </section>
+
+    <section>
+        <h2><span class="step-num">2</span> 날짜 선택</h2>
+        <input type="date" id="date" />
+    </section>
+
+    <section>
+        <h2><span class="step-num">3</span> 시간 선택</h2>
+        <div id="times"><p class="hint">테마와 날짜를 먼저 선택해주세요.</p></div>
+    </section>
+
+    <section>
+        <h2><span class="step-num">4</span> 예약자 정보</h2>
+        <input type="text" id="name" placeholder="이름을 입력하세요" />
+    </section>
+
+    <section>
+        <div id="form-error"></div>
+        <button class="submit-btn" id="submit-btn" disabled>예약하기</button>
+    </section>
+
+    <section>
+        <h2>📋 전체 예약 내역</h2>
+        <div id="reservations" class="res-list"></div>
+    </section>
+</main>
+
+<div class="modal-backdrop" id="modal">
+    <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+    const state = {
+        themes: [],
+        themeMap: new Map(),
+        timeMap: new Map(),
+        selectedThemeId: null,
+        selectedDate: null,
+        selectedTimeId: null,
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+
+    function showModal(html) {
+        $('modal-content').innerHTML = html;
+        $('modal').classList.add('show');
+    }
+    function hideModal() {
+        $('modal').classList.remove('show');
+    }
+    $('modal').addEventListener('click', (e) => {
+        if (e.target.id === 'modal') hideModal();
+    });
+
+    async function api(path, options) {
+        const res = await fetch(path, options);
+        if (!res.ok) {
+            let msg = `요청에 실패했습니다 (${res.status})`;
+            try {
+                const body = await res.json();
+                if (body.message) msg = body.message;
+            } catch (_) {}
+            throw new Error(msg);
+        }
+        if (res.status === 204) return null;
+        return res.json();
+    }
+
+    async function loadThemes() {
+        const container = $('themes');
+        try {
+            state.themes = await api('/themes');
+            state.themeMap = new Map(state.themes.map(t => [t.id, t]));
+        } catch {
+            container.innerHTML = '<p class="hint">테마를 불러오지 못했습니다.</p>';
+            return;
+        }
+        if (state.themes.length === 0) {
+            container.innerHTML = '<p class="hint">등록된 테마가 없습니다.</p>';
+            return;
+        }
+        container.innerHTML = state.themes.map(t => `
+            <div class="theme-item" data-id="${t.id}">
+                <img src="${esc(t.thumbnail)}" alt="${esc(t.name)}"
+                     onerror="this.src='https://via.placeholder.com/320x240?text=No+Image'" />
+                <div class="name">${esc(t.name)}</div>
+            </div>
+        `).join('');
+        container.querySelectorAll('.theme-item').forEach(el => {
+            el.addEventListener('click', () => selectTheme(Number(el.dataset.id)));
+        });
+
+        const preselect = new URLSearchParams(location.search).get('themeId');
+        if (preselect && state.themeMap.has(Number(preselect))) {
+            selectTheme(Number(preselect));
+        }
+    }
+
+    function selectTheme(id) {
+        state.selectedThemeId = id;
+        state.selectedTimeId = null;
+        document.querySelectorAll('.theme-item').forEach(el => {
+            el.classList.toggle('selected', Number(el.dataset.id) === id);
+        });
+        loadTimes();
+        updateSubmit();
+    }
+
+    async function loadTimes() {
+        const container = $('times');
+        if (!state.selectedThemeId || !state.selectedDate) {
+            container.innerHTML = '<p class="hint">테마와 날짜를 먼저 선택해주세요.</p>';
+            return;
+        }
+        let times;
+        try {
+            times = await api(`/themes/${state.selectedThemeId}/available-times?date=${state.selectedDate}`);
+        } catch {
+            container.innerHTML = '<p class="hint">시간 정보를 불러오지 못했습니다.</p>';
+            return;
+        }
+        state.timeMap = new Map(times.map(t => [t.id, t]));
+        if (times.length === 0) {
+            container.innerHTML = '<p class="hint">등록된 시간이 없습니다.</p>';
+            return;
+        }
+        container.innerHTML = `<div class="time-grid">${
+            times.map(t => `
+                <button class="time-btn" data-id="${t.id}" ${t.isAvailable ? '' : 'disabled'}>
+                    ${esc(t.startAt)}
+                </button>
+            `).join('')
+        }</div>`;
+        container.querySelectorAll('.time-btn').forEach(btn => {
+            btn.addEventListener('click', () => selectTime(Number(btn.dataset.id)));
+        });
+    }
+
+    function selectTime(id) {
+        state.selectedTimeId = id;
+        document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.classList.toggle('selected', Number(btn.dataset.id) === id);
+        });
+        updateSubmit();
+    }
+
+    function updateSubmit() {
+        const ready = state.selectedThemeId && state.selectedDate
+                   && state.selectedTimeId && $('name').value.trim();
+        $('submit-btn').disabled = !ready;
+    }
+
+    function setFormError(msg) {
+        $('form-error').innerHTML = msg ? `<div class="err">${esc(msg)}</div>` : '';
+    }
+
+    async function submitReservation() {
+        setFormError('');
+        $('submit-btn').disabled = true;
+        try {
+            const created = await api('/reservations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: $('name').value.trim(),
+                    date: state.selectedDate,
+                    timeId: state.selectedTimeId,
+                    themeId: state.selectedThemeId,
+                }),
+            });
+            showReservationSuccess(created);
+            resetSelection();
+            await Promise.all([loadTimes(), loadReservations()]);
+        } catch (e) {
+            setFormError(e.message);
+        } finally {
+            updateSubmit();
+        }
+    }
+
+    function showReservationSuccess(r) {
+        showModal(`
+            <h3><span class="icon-success">✓</span> 예약이 완료되었습니다</h3>
+            <p class="sub">예약 번호 #${r.id}</p>
+            <dl>
+                <dt>예약자</dt><dd>${esc(r.name)}</dd>
+                <dt>테마</dt><dd>${esc(r.theme.name)}</dd>
+                <dt>날짜</dt><dd>${esc(r.date)}</dd>
+                <dt>시간</dt><dd>${esc(r.time.startAt)}</dd>
+            </dl>
+            <div class="actions">
+                <button class="btn-primary" onclick="hideModal()">확인</button>
+            </div>
+        `);
+    }
+
+    function resetSelection() {
+        state.selectedTimeId = null;
+        $('name').value = '';
+        document.querySelectorAll('.time-btn.selected').forEach(b => b.classList.remove('selected'));
+    }
+
+    async function loadReservations() {
+        const container = $('reservations');
+        let reservations;
+        try {
+            reservations = await api('/reservations');
+        } catch {
+            container.innerHTML = '<p class="hint">예약 내역을 불러오지 못했습니다.</p>';
+            return;
+        }
+        if (reservations.length === 0) {
+            container.innerHTML = '<p class="hint">예약 내역이 없습니다.</p>';
+            return;
+        }
+        container.innerHTML = reservations.map(r => `
+            <div class="res-item" data-id="${r.id}">
+                <span><strong>${esc(r.name)}</strong> · ${esc(r.theme.name)} · ${esc(r.date)} ${esc(r.time.startAt)}</span>
+                <button>취소</button>
+            </div>
+        `).join('');
+        container.querySelectorAll('.res-item').forEach(item => {
+            const id = Number(item.dataset.id);
+            const r = reservations.find(x => x.id === id);
+            item.querySelector('button').addEventListener('click', () => askCancel(r));
+        });
+    }
+
+    function askCancel(r) {
+        showModal(`
+            <h3><span class="icon-danger">!</span> 예약을 취소하시겠습니까?</h3>
+            <p class="sub">취소 후에는 되돌릴 수 없습니다.</p>
+            <dl>
+                <dt>예약자</dt><dd>${esc(r.name)}</dd>
+                <dt>테마</dt><dd>${esc(r.theme.name)}</dd>
+                <dt>날짜</dt><dd>${esc(r.date)}</dd>
+                <dt>시간</dt><dd>${esc(r.time.startAt)}</dd>
+            </dl>
+            <div class="actions">
+                <button class="btn-secondary" onclick="hideModal()">닫기</button>
+                <button class="btn-danger" id="confirm-cancel">취소하기</button>
+            </div>
+        `);
+        $('confirm-cancel').addEventListener('click', () => doCancel(r));
+    }
+
+    async function doCancel(r) {
+        $('confirm-cancel').disabled = true;
+        try {
+            await api(`/reservations/${r.id}`, { method: 'DELETE' });
+            showCancelSuccess(r);
+            await Promise.all([loadReservations(), loadTimes()]);
+        } catch (e) {
+            showModal(`
+                <h3><span class="icon-danger">✕</span> 취소에 실패했습니다</h3>
+                <p class="sub">${esc(e.message)}</p>
+                <div class="actions">
+                    <button class="btn-primary" onclick="hideModal()">확인</button>
+                </div>
+            `);
+        }
+    }
+
+    function showCancelSuccess(r) {
+        showModal(`
+            <h3><span class="icon-success">✓</span> 예약이 취소되었습니다</h3>
+            <p class="sub">예약 번호 #${r.id}</p>
+            <dl>
+                <dt>예약자</dt><dd>${esc(r.name)}</dd>
+                <dt>테마</dt><dd>${esc(r.theme.name)}</dd>
+                <dt>날짜</dt><dd>${esc(r.date)}</dd>
+                <dt>시간</dt><dd>${esc(r.time.startAt)}</dd>
+            </dl>
+            <div class="actions">
+                <button class="btn-primary" onclick="hideModal()">확인</button>
+            </div>
+        `);
+    }
+
+    $('date').addEventListener('change', e => {
+        state.selectedDate = e.target.value;
+        state.selectedTimeId = null;
+        loadTimes();
+        updateSubmit();
+    });
+    $('name').addEventListener('input', updateSubmit);
+    $('submit-btn').addEventListener('click', submitReservation);
+
+    $('date').min = new Date().toISOString().split('T')[0];
+
+    loadThemes();
+    loadReservations();
+</script>
+</body>
+</html>
