@@ -3,12 +3,15 @@ package roomescape.theme.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.theme.dto.PopularThemesResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.dto.ThemesResponse;
 import roomescape.theme.model.Theme;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,6 +23,9 @@ class ThemeServiceTest {
 
     @Autowired
     private ThemeService themeService;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     void 새로운_테마를_생성하고_쩡상적으로_응답을_반환한다() {
@@ -57,5 +63,35 @@ class ThemeServiceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getThemeResponses()).hasSize(2);
+    }
+
+    @Test
+    void 최근_일주일간_예약이_많은_순서대로_인기_테마를_조회한다() {
+        jdbcTemplate.update("INSERT INTO \"USER\" (id, name, role) VALUES (?, ?, ?)", 1L, "user1", "USER");
+
+        ThemeResponse theme1 = themeService.create(new ThemeRequest("테마1", "설명1", "경로1", LocalTime.of(2, 0)));
+        ThemeResponse theme2 = themeService.create(new ThemeRequest("테마2", "설명2", "경로2", LocalTime.of(2, 0)));
+
+        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+
+        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
+                1L, theme1.getId(), yesterday, yesterday.plusHours(2));
+        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
+                2L, theme1.getId(), yesterday.plusHours(3), yesterday.plusHours(5));
+        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
+                3L, theme2.getId(), yesterday, yesterday.plusHours(2));
+
+        jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 1L, 1L);
+        jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 2L, 1L);
+        jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 3L, 1L);
+
+        PopularThemesResponse response = themeService.findPopularThemes("reservations", 10, 7);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getPopularThemeResponses()).hasSize(2);
+        assertThat(response.getPopularThemeResponses().get(0).getThemeName()).isEqualTo("테마1");
+        assertThat(response.getPopularThemeResponses().get(0).getReservationCount()).isEqualTo(2);
+        assertThat(response.getPopularThemeResponses().get(1).getThemeName()).isEqualTo("테마2");
+        assertThat(response.getPopularThemeResponses().get(1).getReservationCount()).isEqualTo(1);
     }
 }
