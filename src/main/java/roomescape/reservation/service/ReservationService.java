@@ -46,7 +46,7 @@ public class ReservationService {
         return reservationRepository.findAllByNameOrderByDateAndTime(name);
     }
 
-    public Reservation create(ReservationSaveDto dto) {
+    public Reservation reserve(ReservationSaveDto dto) {
         ReservationTime reservationTime = getReservationTime(dto.timeId());
         ReservationDate reservationDate = getReservationDate(dto.dateId());
         Theme theme = getTheme(dto.themeId());

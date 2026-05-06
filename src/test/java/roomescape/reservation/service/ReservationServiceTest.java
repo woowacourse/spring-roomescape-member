@@ -99,10 +99,10 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("예약을 추가한다.")
-    void create() {
+    void reserve() {
         //given & when
         List<Reservation> reservations = List.of();
-        reservationService.create(new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id()));
+        reservationService.reserve(new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id()));
 
         //then
         assertThat(reservationService.readAll())
@@ -111,26 +111,26 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 예약 시간이면 예외를 발생한다.")
-    void create_does_not_exist_reservation_time() {
+    void reserve_does_not_exist_reservation_time() {
         // given
         Long wrongTimeId = Long.MIN_VALUE;
         ReservationSaveDto command = new ReservationSaveDto(name, reservationDate1.id(), wrongTimeId, theme1.id());
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(command))
+        assertThatThrownBy(() -> reservationService.reserve(command))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
     @Test
     @DisplayName("예약 생성 시 예약 날짜/시간/테마가 중복되면 예외를 발생한다.")
-    void create_duplicate_reservation() {
+    void reserve_duplicate_reservation() {
         // given
-        reservationService.create(new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id()));
+        reservationService.reserve(new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id()));
         ReservationSaveDto duplicateDateTimeCommand = new ReservationSaveDto("한다", reservationDate1.id(), reservationTime1.id(), theme1.id());
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(duplicateDateTimeCommand))
+        assertThatThrownBy(() -> reservationService.reserve(duplicateDateTimeCommand))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("해당 날짜/시간/테마는 이미 예약되었습니다.");
     }
