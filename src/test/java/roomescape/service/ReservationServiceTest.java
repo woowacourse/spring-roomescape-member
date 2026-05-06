@@ -44,12 +44,14 @@ class ReservationServiceTest {
         ReservationTime availableTime1 = new ReservationTime(1L, "12:30");
         ReservationTime availableTime2 = new ReservationTime(2L, "14:30");
 
+        when(themeRepository.findById(anyLong()))
+            .thenReturn(Optional.of(SAVED_THEME));
         when(timeRepository.findByDateAndThemeId(any(), anyLong()))
             .thenReturn(List.of(availableTime1, availableTime2));
 
         // when
-        List<ReservationTime> availableTimes = reservationService.getAvailableTimes(RESERVATION.getDate(),
-            RESERVATION.getThemeId());
+        List<ReservationTime> availableTimes = reservationService
+            .getAvailableTimes(RESERVATION.getDate(), RESERVATION.getThemeId());
 
         // then
         assertThat(availableTimes).hasSize(2);
@@ -63,17 +65,17 @@ class ReservationServiceTest {
     void 동일한_테마에서_이미_예약된_시간을_선택하면_예외가_발생한다() {
         // given
         when(timeRepository.findById(SAVED_TIME.getId()))
-                .thenReturn(Optional.of(SAVED_TIME));
+            .thenReturn(Optional.of(SAVED_TIME));
         when(themeRepository.findById(SAVED_THEME.getId()))
-                .thenReturn(Optional.of(SAVED_THEME));
+            .thenReturn(Optional.of(SAVED_THEME));
 
         when(timeRepository.findByDateAndThemeId(any(), anyLong()))
-                .thenReturn(List.of());
+            .thenReturn(List.of());
 
         // when & then
-       assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(RESERVATION)))
-               .isInstanceOf(IllegalArgumentException.class)
-               .hasMessageContaining("이미 예약된");
+        assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(RESERVATION)))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("이미 예약된");
     }
 
     @Test
@@ -83,20 +85,21 @@ class ReservationServiceTest {
         Reservation reservation = new Reservation("이름", "2026-05-05", SAVED_TIME, otherTheme);
 
         when(timeRepository.findById(SAVED_TIME.getId()))
-                .thenReturn(Optional.of(SAVED_TIME));
+            .thenReturn(Optional.of(SAVED_TIME));
         when(themeRepository.findById(otherTheme.getId()))
-                .thenReturn(Optional.of(otherTheme));
+            .thenReturn(Optional.of(otherTheme));
 
         when(timeRepository.findByDateAndThemeId(any(LocalDate.class), eq(otherTheme.getId())))
-                .thenReturn(List.of(SAVED_TIME));
+            .thenReturn(List.of(SAVED_TIME));
 
         // when & then
         assertThatCode(() -> reservationService.addReservation(requestDtoFrom(reservation)))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
         verify(reservationRepository, times(1)).createReservation(any());
     }
 
     private ReservationRequestDto requestDtoFrom(Reservation reservation) {
-        return new ReservationRequestDto(reservation.getName().value(), reservation.getDate(), reservation.getTime().getId(), reservation.getThemeId());
+        return new ReservationRequestDto(reservation.getName().value(), reservation.getDate(),
+            reservation.getTime().getId(), reservation.getThemeId());
     }
 }
