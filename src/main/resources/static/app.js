@@ -25,6 +25,20 @@ document.getElementById('login-btn').addEventListener('click', () => {
     document.getElementById('reservation-section').classList.remove('hidden');
 
     loadThemes(); // 일반 유저 화면이 뜨면 테마를 불러옵니다.
+    loadPopularThemes(); // 인기 테마 통계도 함께 불러옵니다.
+});
+
+// 페이지 로드 시 날짜 입력 필드의 최소 날짜를 오늘로 설정
+document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date-input').min = today;
+});
+
+// 이름 입력창에서 엔터키를 눌렀을 때 '시작하기' 버튼 클릭 효과 주기
+document.getElementById('login-name').addEventListener('keyup', (event) => {
+    if (event.key === 'Enter') {
+        document.getElementById('login-btn').click();
+    }
 });
 
 // =================================================================================================
@@ -46,6 +60,34 @@ function loadThemes() {
                 option.value = theme.id; // option의 값으로는 theme의 id를
                 option.textContent = theme.name; // 사용자에게 보여줄 텍스트는 theme의 name을 사용
                 themeSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error(error));
+}
+
+// =================================================================================================
+// ✅ 인기 테마 통계 조회
+// API 명세: GET /themes?sort=reservations&limit=10&days=7
+// =================================================================================================
+function loadPopularThemes() {
+    fetch('/themes?sort=reservations&limit=10&days=7')
+        .then(response => {
+            if (!response.ok) throw new Error('인기 테마 통계를 불러오는데 실패했습니다.');
+            return response.json();
+        })
+        .then(popularThemes => {
+            const popularList = document.getElementById('popular-themes-list');
+            popularList.innerHTML = ''; // 초기화
+
+            if (popularThemes.length === 0) {
+                popularList.innerHTML = '<li style="list-style:none; margin-left:-20px;" class="empty-message">최근 예약된 테마가 없습니다.</li>';
+                return;
+            }
+
+            popularThemes.forEach(theme => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${theme.themeName}</strong> <span style="color: #e74c3c; font-size: 0.9em;">(예약 ${theme.reservationCount}건)</span>`;
+                popularList.appendChild(li);
             });
         })
         .catch(error => console.error(error));
@@ -143,7 +185,9 @@ document.getElementById('reserve-btn').addEventListener('click', () => {
         .then(response => {
             if (response.status === 201) { // 201 Created
                 alert("예약이 완료되었습니다!");
-                window.location.reload(); // 성공 시 페이지 새로고침
+                // 페이지를 새로고침하는 대신, 변경된 부분만 다시 불러옵니다.
+                loadPopularThemes(); // 1. 인기 테마 목록 새로고침
+                document.getElementById('search-schedule-btn').click(); // 2. 현재 날짜/테마의 스케줄 목록 새로고침
             } else {
                 // 서버 응답이 JSON이 아닐 수도 있으므로 텍스트로 먼저 받아서 처리합니다.
                 response.text().then(text => {

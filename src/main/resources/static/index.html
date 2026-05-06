@@ -23,6 +23,14 @@
     <div id="reservation-section" class="container hidden">
         <h1>방탈출 예약하기 🗝️</h1>
 
+        <!-- 인기 테마 통계 영역 -->
+        <section style="background-color: #fffbeb; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+            <h2 style="margin-top: 0; margin-bottom: 10px; color: #d35400;">🔥 최근 1주 인기 테마 Top 10</h2>
+            <ol id="popular-themes-list" style="margin: 0; padding-left: 20px; color: #555; line-height: 1.6;">
+                <li class="empty-message" style="list-style: none; margin-left: -20px;">인기 테마를 불러오는 중입니다...</li>
+            </ol>
+        </section>
+
         <!-- 테마 및 날짜 선택 영역 -->
         <section class="selection-section">
             <div class="form-group">
@@ -34,7 +42,7 @@
 
             <div class="form-group">
                 <label for="date-input">날짜 선택</label>
-                <input type="date" id="date-input">
+                <input type="date" id="date-input" min="">
             </div>
 
             <button id="search-schedule-btn" class="primary-btn">스케줄 조회</button>
