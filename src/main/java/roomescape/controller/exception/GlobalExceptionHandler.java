@@ -53,7 +53,8 @@ public class GlobalExceptionHandler {
     })
     public ResponseEntity<ErrorResponse> handleSecureBadRequest(SecureException secureException) {
         log.warn(
-                "[Secure Bad Request]: {}",
+                "[Secure Bad Request]: {} ({})",
+                secureException.getMessage(),
                 secureException.getSensitiveInformation(),
                 secureException
         );
