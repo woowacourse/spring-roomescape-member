@@ -10,6 +10,7 @@ import roomescape.theme.exception.ThemeNotFoundException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -76,6 +77,26 @@ public class JdbcThemeRepository implements ThemeRepository {
     public boolean deleteById(Long id) {
         int affectedRows = jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
         return affectedRows > 0;
+    }
+
+    @Override
+    public List<Theme> findBestThemesByDate(LocalDate date, int dayCount, int rankCount) {
+        LocalDate startDate = date.minusDays(dayCount);
+        return jdbcTemplate.query(
+                """
+                        SELECT t.id, t.name, t.description, t.image_url
+                        FROM theme t
+                        JOIN reservation r ON r.theme_id = t.id
+                        WHERE r.date BETWEEN ? AND ?
+                        GROUP BY t.id, t.name, t.description, t.image_url
+                        ORDER BY COUNT(r.id) DESC, t.id ASC
+                        LIMIT ?
+                        """,
+                new ThemeRowMapper(),
+                startDate,
+                date,
+                rankCount
+        );
     }
 
     private static class ThemeRowMapper implements RowMapper<Theme> {
