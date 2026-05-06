@@ -146,13 +146,13 @@ class ThemeRepositoryTest {
             String countSql = "SELECT count(*)"
                     + " FROM theme"
                     + " WHERE id = ?";
-            Integer timeCount = jdbcTemplate.queryForObject(
+            Integer themeCount = jdbcTemplate.queryForObject(
                     countSql,
                     Integer.class,
                     id
             );
 
-            assertThat(timeCount).isEqualTo(0);
+            assertThat(themeCount).isEqualTo(0);
         }
 
         @Test
