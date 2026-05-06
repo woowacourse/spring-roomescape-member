@@ -17,6 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.request.ThemeCreateRequest;
+import roomescape.domain.theme.response.PopularThemeResponse;
+import roomescape.domain.theme.response.PopularThemesResponse;
 import roomescape.domain.theme.response.ThemeResponse;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,13 +67,56 @@ public class ThemeServiceTest {
 
         // then
         assertThat(responses).hasSize(2)
-                .extracting("id", "name","description", "thumbnailUrl")
+                .extracting("id", "name", "description", "thumbnailUrl")
                 .containsExactly(
                         tuple(1L, "테마A", "요약", "www.url.com/A"),
                         tuple(2L, "테마B", "요약", "www.url.com/B")
                 );
 
         verify(themeRepository).findAll();
+    }
+
+    @Test
+    @DisplayName("최근 1주일간 인기 테마 상위 10개를 조회한다.")
+    void findPopularThemes() {
+        // given
+        int period = 7;
+        int limit = 10;
+        List<PopularThemeResponse> popularThemes = List.of(
+                new PopularThemeResponse(1L, "테마1", "설명1", "url1", 1),
+                new PopularThemeResponse(2L, "테마2", "설명2", "url2", 2),
+                new PopularThemeResponse(3L, "테마3", "설명3", "url3", 3),
+                new PopularThemeResponse(4L, "테마4", "설명4", "url4", 4),
+                new PopularThemeResponse(5L, "테마5", "설명5", "url5", 5),
+                new PopularThemeResponse(6L, "테마6", "설명6", "url6", 6),
+                new PopularThemeResponse(7L, "테마7", "설명7", "url7", 7),
+                new PopularThemeResponse(8L, "테마8", "설명8", "url8", 8),
+                new PopularThemeResponse(9L, "테마9", "설명9", "url9", 9),
+                new PopularThemeResponse(10L, "테마10", "설명10", "url10", 10)
+        );
+
+        when(themeRepository.findPopularThemes(period, limit)).thenReturn(popularThemes);
+
+        // when
+        PopularThemesResponse response = themeService.findPopularThemes(period, limit);
+
+        // then
+        assertThat(response.popularThemes()).hasSize(10)
+                .extracting("id", "name", "rank")
+                .containsExactly(
+                        tuple(1L, "테마1", 1),
+                        tuple(2L, "테마2", 2),
+                        tuple(3L, "테마3", 3),
+                        tuple(4L, "테마4", 4),
+                        tuple(5L, "테마5", 5),
+                        tuple(6L, "테마6", 6),
+                        tuple(7L, "테마7", 7),
+                        tuple(8L, "테마8", 8),
+                        tuple(9L, "테마9", 9),
+                        tuple(10L, "테마10", 10)
+                );
+
+        verify(themeRepository).findPopularThemes(period, limit);
     }
 
     @Test

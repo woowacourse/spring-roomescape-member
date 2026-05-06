@@ -49,10 +49,11 @@ class ReservationJdbcRepositoryTest {
         List<Reservation> reservations = reservationRepository.findAll();
 
         // then
-        assertThat(reservations).hasSize(5);
+        assertThat(reservations).hasSize(13);
         assertThat(reservations)
                 .extracting(Reservation::getUsername)
-                .containsExactlyInAnyOrder("브라운", "제임스", "로치", "이안", "스타크");
+                .containsExactlyInAnyOrder("흑곰", "카키", "피온", "워넬", "포비", "네오", "브리",
+                        "워니", "브라운", "제임스", "로치", "이안", "스타크");
     }
 
     @Test

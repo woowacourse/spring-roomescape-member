@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.request.ThemeCreateRequest;
+import roomescape.domain.theme.response.PopularThemeResponse;
+import roomescape.domain.theme.response.PopularThemesResponse;
 import roomescape.domain.theme.response.ThemeReservationTimeResponse;
 import roomescape.domain.theme.response.ThemeReservationTimesResponse;
 import roomescape.domain.theme.response.ThemeResponse;
@@ -40,6 +42,11 @@ public class ThemeService {
                 date
         );
         return new ThemeReservationTimesResponse(times);
+    }
+
+    public PopularThemesResponse findPopularThemes(Integer period, Integer limit) {
+        List<PopularThemeResponse> popularThemes = themeRepository.findPopularThemes(period, limit);
+        return new PopularThemesResponse(popularThemes);
     }
 
     @Transactional
