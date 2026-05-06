@@ -25,4 +25,9 @@ public class PageController {
     public String theme() {
         return "theme";
     }
+
+    @GetMapping("/popular")
+    public String popular() {
+        return "popular";
+    }
 }

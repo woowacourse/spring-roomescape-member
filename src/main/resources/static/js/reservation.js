@@ -1,121 +1,200 @@
 const RESERVATION_API = '/reservations';
-const THEME_API = '/admin/theme';
+const THEME_API = '/admin/themes';
 
-let selectedDate = null;
-let selectedThemeId = null;
+const state = {
+  date: null,
+  themeId: null,
+  themeName: null,
+  timeId: null,
+  timeText: null,
+};
 
 document.addEventListener('DOMContentLoaded', () => {
+  initCalendar();
   loadThemes();
-  document.getElementById('search-btn').addEventListener('click', searchAvailableTimes);
+
+  document.getElementById('confirm-booking').addEventListener('click', confirmBooking);
+  document.getElementById('cancel-booking').addEventListener('click', clearBookingBar);
 });
+
+function initCalendar() {
+  flatpickr('#calendar', {
+    inline: true,
+    minDate: 'today',
+    dateFormat: 'Y-m-d',
+    locale: 'ko',
+    onChange: (selected, dateStr) => {
+      state.date = dateStr;
+      refreshTimes();
+    }
+  });
+}
 
 function loadThemes() {
   fetch(THEME_API)
     .then(res => res.json())
-    .then(themes => {
-      const select = document.getElementById('filter-theme');
-      themes.forEach(theme => {
-        const option = document.createElement('option');
-        option.value = theme.id;
-        option.textContent = theme.name;
-        select.appendChild(option);
-      });
-    });
+    .then(renderThemeList)
+    .catch(err => console.error('테마 조회 실패:', err));
 }
 
-function searchAvailableTimes() {
-  const date = document.getElementById('filter-date').value;
-  const themeId = document.getElementById('filter-theme').value;
-
-  if (!date || !themeId) {
-    alert('날짜와 테마를 선택해주세요.');
+function renderThemeList(themes) {
+  const list = document.getElementById('theme-list');
+  const empty = document.getElementById('theme-empty');
+  list.innerHTML = '';
+  if (!themes || themes.length === 0) {
+    empty.classList.remove('d-none');
     return;
   }
+  empty.classList.add('d-none');
+  themes.forEach(theme => {
+    const li = document.createElement('li');
+    li.className = 'theme-item';
+    li.dataset.themeId = theme.id;
+    li.dataset.themeName = theme.name;
 
-  selectedDate = date;
-  selectedThemeId = themeId;
+    const thumb = document.createElement('div');
+    thumb.className = 'theme-thumb';
+    if (theme.imageUrl) {
+      thumb.style.backgroundImage = `url('${theme.imageUrl}')`;
+    }
+    li.appendChild(thumb);
 
-  fetch(`${RESERVATION_API}?date=${date}&themeId=${themeId}`)
-    .then(res => res.json())
-    .then(renderAvailableTimes);
-}
+    const info = document.createElement('div');
+    info.className = 'theme-info';
+    const name = document.createElement('p');
+    name.className = 'theme-name';
+    name.textContent = theme.name;
+    info.appendChild(name);
+    if (theme.description) {
+      const desc = document.createElement('p');
+      desc.className = 'theme-desc';
+      desc.textContent = theme.description;
+      info.appendChild(desc);
+    }
+    li.appendChild(info);
 
-function renderAvailableTimes(times) {
-  const tableBody = document.getElementById('reservation-table-body');
-  const resultSection = document.getElementById('result-section');
-  const noTimesMsg = document.getElementById('no-times-msg');
-
-  tableBody.innerHTML = '';
-  resultSection.classList.remove('d-none');
-
-  if (times.length === 0) {
-    noTimesMsg.classList.remove('d-none');
-    return;
-  }
-
-  noTimesMsg.classList.add('d-none');
-  times.forEach(time => {
-    const row = tableBody.insertRow();
-    row.dataset.timeId = time.id;
-    row.insertCell(0).textContent = time.startAt;
-    const actionCell = row.insertCell(1);
-    actionCell.appendChild(createButton('예약하기', 'btn-primary', showBookingForm));
+    li.addEventListener('click', () => selectTheme(li));
+    list.appendChild(li);
   });
 }
 
-function showBookingForm(event) {
-  const row = event.target.closest('tr');
-  const actionCell = row.cells[1];
-  actionCell.innerHTML = '';
-
-  const nameInput = document.createElement('input');
-  nameInput.type = 'text';
-  nameInput.placeholder = '예약자 이름';
-  nameInput.className = 'form-control d-inline-block mr-2';
-  nameInput.style.width = '140px';
-
-  actionCell.appendChild(nameInput);
-  actionCell.appendChild(createButton('확인', 'btn-success mr-1', () => confirmBooking(row, nameInput)));
-  actionCell.appendChild(createButton('취소', 'btn-secondary', () => cancelBooking(row)));
+function selectTheme(li) {
+  document.querySelectorAll('#theme-list .theme-item').forEach(el => el.classList.remove('active'));
+  li.classList.add('active');
+  state.themeId = parseInt(li.dataset.themeId);
+  state.themeName = li.dataset.themeName;
+  refreshTimes();
 }
 
-function confirmBooking(row, nameInput) {
-  const name = nameInput.value.trim();
+function refreshTimes() {
+  clearBookingBar();
+  const list = document.getElementById('time-list');
+  const hint = document.getElementById('time-hint');
+  list.innerHTML = '';
+
+  if (!state.date || !state.themeId) {
+    list.classList.add('d-none');
+    hint.classList.remove('d-none');
+    hint.textContent = '날짜와 테마를 먼저 선택해주세요.';
+    return;
+  }
+
+  fetch(`${RESERVATION_API}?date=${state.date}&themeId=${state.themeId}`)
+    .then(res => res.json())
+    .then(times => renderTimes(times))
+    .catch(err => {
+      console.error('시간 조회 실패:', err);
+      hint.classList.remove('d-none');
+      hint.textContent = '시간을 불러오지 못했습니다.';
+    });
+}
+
+function renderTimes(times) {
+  const list = document.getElementById('time-list');
+  const hint = document.getElementById('time-hint');
+  list.innerHTML = '';
+
+  if (!times || times.length === 0) {
+    list.classList.add('d-none');
+    hint.classList.remove('d-none');
+    hint.textContent = '예약 가능한 시간이 없습니다.';
+    return;
+  }
+
+  hint.classList.add('d-none');
+  list.classList.remove('d-none');
+
+  times.forEach(time => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'time-btn';
+    btn.dataset.timeId = time.id;
+    btn.dataset.timeText = time.startAt;
+    btn.textContent = formatTime(time.startAt);
+    btn.addEventListener('click', () => selectTime(btn));
+    list.appendChild(btn);
+  });
+}
+
+function formatTime(value) {
+  if (!value) return '';
+  const [h, m] = value.split(':');
+  return `${h}:${m}`;
+}
+
+function selectTime(btn) {
+  document.querySelectorAll('#time-list .time-btn').forEach(el => el.classList.remove('active'));
+  btn.classList.add('active');
+  state.timeId = parseInt(btn.dataset.timeId);
+  state.timeText = btn.dataset.timeText;
+  showBookingBar();
+}
+
+function showBookingBar() {
+  const bar = document.getElementById('booking-bar');
+  document.getElementById('booking-summary-text').textContent =
+    `${state.date} · ${state.themeName} · ${formatTime(state.timeText)}`;
+  bar.classList.remove('d-none');
+  document.getElementById('booking-name').focus();
+}
+
+function clearBookingBar() {
+  const bar = document.getElementById('booking-bar');
+  bar.classList.add('d-none');
+  document.getElementById('booking-name').value = '';
+  state.timeId = null;
+  state.timeText = null;
+  document.querySelectorAll('#time-list .time-btn').forEach(el => el.classList.remove('active'));
+}
+
+function confirmBooking() {
+  const name = document.getElementById('booking-name').value.trim();
   if (!name) {
     alert('예약자 이름을 입력해주세요.');
     return;
   }
-
-  const body = {
-    name,
-    date: selectedDate,
-    timeId: parseInt(row.dataset.timeId),
-    themeId: parseInt(selectedThemeId)
-  };
+  if (!state.date || !state.themeId || !state.timeId) {
+    alert('날짜·테마·시간을 모두 선택해주세요.');
+    return;
+  }
 
   fetch(RESERVATION_API, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(body)
+    body: JSON.stringify({
+      name,
+      date: state.date,
+      timeId: state.timeId,
+      themeId: state.themeId
+    })
   })
     .then(res => {
       if (res.status === 200) return res.json();
       throw new Error('예약 실패');
     })
-    .then(() => row.remove())
+    .then(() => {
+      alert('예약이 완료되었습니다.');
+      refreshTimes();
+    })
     .catch(err => alert(err.message));
-}
-
-function cancelBooking(row) {
-  const actionCell = row.cells[1];
-  actionCell.innerHTML = '';
-  actionCell.appendChild(createButton('예약하기', 'btn-primary', showBookingForm));
-}
-
-function createButton(label, className, handler) {
-  const btn = document.createElement('button');
-  btn.textContent = label;
-  btn.className = `btn ${className}`;
-  btn.addEventListener('click', handler);
-  return btn;
 }
