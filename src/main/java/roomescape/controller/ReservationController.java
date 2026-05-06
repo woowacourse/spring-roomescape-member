@@ -38,6 +38,7 @@ public class ReservationController {
         try {
             Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand());
             ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
+
             return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);
         } catch (NotFoundException e) {
             return ResponseEntity.notFound().build();
