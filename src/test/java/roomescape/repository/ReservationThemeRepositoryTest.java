@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTheme.PopularThemeCondition;
@@ -21,9 +20,7 @@ public class ReservationThemeRepositoryTest extends BaseRepositoryTest {
 
     @Override
     protected void initTable() {
-        createReservationTimeTable();
         createReservationThemeTable();
-        createReservationTable();
         insertReservationTheme("테마1", "테마 설명", "image url");
 
         this.reservationThemeRepository = new JdbcReservationThemeRepository(jdbcTemplate);
@@ -31,7 +28,6 @@ public class ReservationThemeRepositoryTest extends BaseRepositoryTest {
 
     @Override
     protected void deleteTable() {
-        deleteReservationTable();
         deleteReservationThemeTable();
     }
 
@@ -84,6 +80,9 @@ public class ReservationThemeRepositoryTest extends BaseRepositoryTest {
     @Test
     @DisplayName("특정 기간 인기 테마 정상적으로 가져오는 지 테스트")
     void getPopularThemeTest() {
+        createReservationTimeTable();
+        createReservationTable();
+
         String startDate = "2026-04-01";
         String endDate = "2026-05-01";
         long size = 2;
@@ -110,5 +109,8 @@ public class ReservationThemeRepositoryTest extends BaseRepositoryTest {
                 () -> assertThat(popularThemes.getLast().id()).isEqualTo(3),
                 () -> assertThat(popularThemes.getLast().count()).isEqualTo(2)
         );
+
+        deleteReservationTable();
+        deleteReservationTimeTable();
     }
 }
