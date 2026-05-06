@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>예약 관리</title>
     <style>
         :root {
@@ -258,7 +258,7 @@
 
     <nav class="nav">
         <a th:href="@{/pages/user/reservations}">예약 홈</a>
-        <a th:href="@{/pages/admin/themes}" class="admin-link">관리자 콘솔로 이동</a>
+        <a class="admin-link" th:href="@{/pages/admin/themes}">관리자 콘솔로 이동</a>
     </nav>
 
     <section class="top-grid">
@@ -272,15 +272,15 @@
                             <select name="themeId" required>
                                 <option value="">테마를 선택하세요</option>
                                 <option th:each="theme : ${themes}"
-                                        th:value="${theme.id}"
                                         th:selected="${selectedThemeId != null and selectedThemeId == theme.id}"
-                                        th:text="${theme.name}">
+                                        th:text="${theme.name}"
+                                        th:value="${theme.id}">
                                 </option>
                             </select>
                         </label>
                         <label>
                             날짜
-                            <input type="date" name="date" th:value="${selectedDate}" required>
+                            <input name="date" required th:value="${selectedDate}" type="date">
                         </label>
                         <button type="submit">가능 시간 찾기</button>
                     </form>
@@ -300,10 +300,10 @@
                             </div>
                         </div>
                         <div class="item" th:each="time : ${availableTimes}">
-                            <button type="button"
-                                    class="time-option"
+                            <button class="time-option"
+                                    onclick="selectTimeSlot(this)"
                                     th:attr="data-time-id=${time.id},data-date=${selectedDate},data-theme-name=${time.theme.name},data-start-at=${time.startAt}"
-                                    onclick="selectTimeSlot(this)">
+                                    type="button">
                                 <div>
                                     <strong th:text="${time.startAt}">10:00</strong>
                                     <span th:text="${time.theme.name}">테마명</span>
@@ -312,7 +312,8 @@
                             </button>
                         </div>
                     </div>
-                    <p class="hint" th:if="${selectedThemeId == null or selectedDate == null}">조회 후 원하는 시간대를 클릭하면 바로 오른쪽 예약 폼으로 이어집니다.</p>
+                    <p class="hint" th:if="${selectedThemeId == null or selectedDate == null}">조회 후 원하는 시간대를 클릭하면 바로 오른쪽
+                        예약 폼으로 이어집니다.</p>
                 </section>
             </div>
         </article>
@@ -322,25 +323,25 @@
             <form method="post" th:action="@{/pages/user/reservations}">
                 <label>
                     예약자 이름
-                    <input type="text" id="reservation-name" name="name" maxlength="9" required>
+                    <input id="reservation-name" maxlength="9" name="name" required type="text">
                 </label>
                 <label>
                     날짜
-                    <input type="date" id="reservation-date" name="date" th:value="${selectedDate}" required>
+                    <input id="reservation-date" name="date" required th:value="${selectedDate}" type="date">
                 </label>
                 <label>
                     시간 슬롯
                     <select id="reservation-time" name="timeId" required>
                         <option value="">예약 가능한 시간을 먼저 조회하세요</option>
                         <option th:each="time : ${availableTimes}"
-                                th:value="${time.id}"
-                                th:text="${time.theme.name + ' / ' + time.startAt}">
+                                th:text="${time.theme.name + ' / ' + time.startAt}"
+                                th:value="${time.id}">
                         </option>
                     </select>
                 </label>
-                <div id="selection-card" class="selection-card hidden">
+                <div class="selection-card hidden" id="selection-card">
                     <strong id="selection-title">선택한 시간</strong>
-                    <div id="selection-body" class="helper">조회 결과에서 시간을 고르면 자동으로 채워집니다.</div>
+                    <div class="helper" id="selection-body">조회 결과에서 시간을 고르면 자동으로 채워집니다.</div>
                 </div>
                 <button type="submit">예약 저장</button>
             </form>
@@ -357,8 +358,9 @@
                         <strong th:text="${reservation.name}">브라운</strong>
                         <span th:text="${reservation.date + ' / ' + reservation.time.theme.name + ' / ' + reservation.time.startAt}">내용</span>
                     </div>
-                    <form class="inline-form" method="post" th:action="@{/pages/user/reservations/{id}/delete(id=${reservation.id})}">
-                        <button type="submit" class="delete">삭제</button>
+                    <form class="inline-form" method="post"
+                          th:action="@{/pages/user/reservations/{id}/delete(id=${reservation.id})}">
+                        <button class="delete" type="submit">삭제</button>
                     </form>
                 </div>
             </div>
@@ -368,15 +370,15 @@
         <article class="card">
             <h2>최근 인기 테마</h2>
             <form method="get" th:action="@{/pages/user/reservations}">
-                <input type="hidden" name="themeId" th:value="${selectedThemeId}">
-                <input type="hidden" name="date" th:value="${selectedDate}">
+                <input name="themeId" th:value="${selectedThemeId}" type="hidden">
+                <input name="date" th:value="${selectedDate}" type="hidden">
                 <label>
                     최근 기간(일)
-                    <input type="number" min="1" name="period" th:value="${period}" required>
+                    <input min="1" name="period" required th:value="${period}" type="number">
                 </label>
                 <label>
                     노출 개수
-                    <input type="number" min="1" name="limit" th:value="${limit}" required>
+                    <input min="1" name="limit" required th:value="${limit}" type="number">
                 </label>
                 <button type="submit">인기 테마 갱신</button>
             </form>

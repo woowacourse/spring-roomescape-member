@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>예약 시간 관리</title>
     <style>
         :root {
@@ -117,7 +117,7 @@
         <a th:each="navTheme : ${themes}"
            th:href="@{/pages/admin/themes/{themeId}/times(themeId=${navTheme.id})}"
            th:text="${navTheme.name}">테마명</a>
-        <a th:href="@{/pages/user/reservations}" class="user-link">사용자 예약 페이지</a>
+        <a class="user-link" th:href="@{/pages/user/reservations}">사용자 예약 페이지</a>
     </nav>
 
     <section class="hero">
@@ -132,7 +132,7 @@
             <form method="post" th:action="@{/pages/admin/themes/{themeId}/times(themeId=${theme.id})}">
                 <label>
                     시작 시간
-                    <input type="time" name="startAt" required>
+                    <input name="startAt" required type="time">
                 </label>
                 <button type="submit">시간 추가</button>
             </form>
@@ -148,7 +148,7 @@
                     </div>
                     <form method="post"
                           th:action="@{/pages/admin/themes/{themeId}/times/{timeId}/delete(themeId=${theme.id}, timeId=${time.id})}">
-                        <button type="submit" class="delete">삭제</button>
+                        <button class="delete" type="submit">삭제</button>
                     </form>
                 </div>
             </div>

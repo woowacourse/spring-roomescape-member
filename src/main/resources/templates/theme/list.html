@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>테마 관리</title>
     <style>
         :root {
@@ -119,7 +119,7 @@
 <div class="wrap">
     <nav class="nav">
         <a th:href="@{/pages/admin/themes}">관리자 홈</a>
-        <a th:href="@{/pages/user/reservations}" class="user-link">사용자 예약 페이지</a>
+        <a class="user-link" th:href="@{/pages/user/reservations}">사용자 예약 페이지</a>
         <a th:href="@{/pages/admin/themes}">테마 관리</a>
     </nav>
 
@@ -135,7 +135,7 @@
             <form method="post" th:action="@{/pages/admin/themes}">
                 <label>
                     테마 이름
-                    <input type="text" name="name" required>
+                    <input name="name" required type="text">
                 </label>
                 <label>
                     설명
@@ -143,7 +143,7 @@
                 </label>
                 <label>
                     썸네일 URL
-                    <input type="url" name="thumbnailUrl" required>
+                    <input name="thumbnailUrl" required type="url">
                 </label>
                 <button type="submit">테마 저장</button>
             </form>
@@ -161,7 +161,7 @@
                     <div class="actions">
                         <a th:href="@{/pages/admin/themes/{id}/times(id=${theme.id})}">시간 관리</a>
                         <form method="post" th:action="@{/pages/admin/themes/{id}/delete(id=${theme.id})}">
-                            <button type="submit" class="delete">삭제</button>
+                            <button class="delete" type="submit">삭제</button>
                         </form>
                     </div>
                 </div>

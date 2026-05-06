@@ -9,7 +9,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 public class TestDatabaseInitializer extends AbstractTestExecutionListener {
 
     @Override
-    public void afterTestMethod(TestContext testContext) {
+    public void beforeTestMethod(TestContext testContext) {
         JdbcTemplate jdbcTemplate = getJdbcTemplate(testContext);
 
         cleanDatabase(jdbcTemplate);
