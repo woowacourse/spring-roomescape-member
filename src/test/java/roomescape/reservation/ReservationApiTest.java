@@ -156,7 +156,7 @@ class ReservationApiTest {
 
         RestAssured.given().log().all()
                 .queryParam("date", "2026-05-10")
-                .when().get("/reservations/theme/1/times")
+                .when().get("/reservations/theme/1/times/available-times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1))

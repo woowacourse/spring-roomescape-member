@@ -52,7 +52,7 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/theme/{themeId}/times")
+    @GetMapping("/theme/{themeId}/times/available-times")
     public ResponseEntity<List<ReservationTime>> read(
             @PathVariable final Long themeId,
             @RequestParam final LocalDate date

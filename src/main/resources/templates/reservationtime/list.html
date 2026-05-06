@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 시간 관리</title>
+    <style>
+        :root {
+            --bg: #eef4f3;
+            --card: #ffffff;
+            --line: #c8d7d5;
+            --text: #20302f;
+            --point: #0f766e;
+            --danger: #d62828;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+            background:
+                linear-gradient(160deg, rgba(15,118,110,0.12), transparent 35%),
+                linear-gradient(180deg, #f5faf9 0%, var(--bg) 100%);
+            color: var(--text);
+        }
+        .wrap {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 32px 20px 64px;
+        }
+        .eyebrow {
+            display: inline-flex;
+            width: fit-content;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.75);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            margin-bottom: 14px;
+        }
+        .nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        .nav a {
+            text-decoration: none;
+            color: var(--text);
+            background: rgba(255,255,255,0.84);
+            border: 1px solid var(--line);
+            padding: 10px 14px;
+            border-radius: 999px;
+        }
+        .user-link {
+            margin-left: auto;
+            color: var(--point) !important;
+            border-color: rgba(15,118,110,0.24) !important;
+            background: rgba(15,118,110,0.08) !important;
+            font-weight: 700;
+        }
+        .hero h1 { margin: 0 0 8px; font-size: 38px; }
+        .hero p { margin: 0 0 24px; color: rgba(32, 48, 47, 0.76); }
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(280px, 340px) 1fr;
+            gap: 20px;
+        }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 12px 30px rgba(15, 118, 110, 0.08);
+        }
+        form { display: grid; gap: 12px; }
+        label { display: grid; gap: 6px; font-weight: 600; }
+        input, button, select {
+            font: inherit;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            padding: 12px 14px;
+        }
+        button {
+            border: 0;
+            background: var(--point);
+            color: white;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        button.delete { background: var(--danger); }
+        .list {
+            display: grid;
+            gap: 12px;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px;
+            background: rgba(250,255,255,0.9);
+        }
+        @media (max-width: 860px) {
+            .layout { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <nav class="nav">
+        <a th:href="@{/pages/admin/themes}">관리자 홈</a>
+        <a th:href="@{/pages/admin/themes}">테마 관리</a>
+        <a th:each="navTheme : ${themes}"
+           th:href="@{/pages/admin/themes/{themeId}/times(themeId=${navTheme.id})}"
+           th:text="${navTheme.name}">테마명</a>
+        <a th:href="@{/pages/user/reservations}" class="user-link">사용자 예약 페이지</a>
+    </nav>
+
+    <section class="hero">
+        <span class="eyebrow">ADMIN PAGE</span>
+        <h1 th:text="${theme.name + ' 시간 관리'}">테마 시간 관리</h1>
+        <p th:text="${theme.description}">선택한 테마의 예약 가능 시간 슬롯을 추가하고 제거합니다.</p>
+    </section>
+
+    <section class="layout">
+        <article class="card">
+            <h2>시간 슬롯 추가</h2>
+            <form method="post" th:action="@{/pages/admin/themes/{themeId}/times(themeId=${theme.id})}">
+                <label>
+                    시작 시간
+                    <input type="time" name="startAt" required>
+                </label>
+                <button type="submit">시간 추가</button>
+            </form>
+        </article>
+
+        <article class="card">
+            <h2>등록된 시간</h2>
+            <div class="list" th:if="${!#lists.isEmpty(reservationTimes)}">
+                <div class="item" th:each="time : ${reservationTimes}">
+                    <div>
+                        <strong th:text="${time.startAt}">10:00</strong>
+                        <span th:text="${time.theme.name}">테마명</span>
+                    </div>
+                    <form method="post"
+                          th:action="@{/pages/admin/themes/{themeId}/times/{timeId}/delete(themeId=${theme.id}, timeId=${time.id})}">
+                        <button type="submit" class="delete">삭제</button>
+                    </form>
+                </div>
+            </div>
+            <p th:if="${#lists.isEmpty(reservationTimes)}">등록된 시간이 없습니다.</p>
+        </article>
+    </section>
+</div>
+</body>
+</html>
