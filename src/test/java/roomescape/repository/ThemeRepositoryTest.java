@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import roomescape.domain.Theme;
+import roomescape.test.util.TestDatabaseUtils;
 
 @JdbcTest
 class ThemeRepositoryTest {
@@ -29,6 +30,7 @@ class ThemeRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        TestDatabaseUtils.clearTables(jdbcTemplate);
         this.themeRepository = new ThemeRepository(jdbcTemplate);
     }
 

@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.test.util.TestDatabaseUtils;
 
 @JdbcTest
 class ReservationRepositoryTest {
@@ -35,6 +36,7 @@ class ReservationRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        TestDatabaseUtils.clearTables(jdbcTemplate);
         this.reservationRepository = new ReservationRepository(jdbcTemplate);
     }
 

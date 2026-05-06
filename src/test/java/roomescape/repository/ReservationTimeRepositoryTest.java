@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -14,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import roomescape.domain.ReservationTime;
+import roomescape.test.util.TestDatabaseUtils;
 
 @JdbcTest
 class ReservationTimeRepositoryTest {
@@ -29,6 +29,7 @@ class ReservationTimeRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        TestDatabaseUtils.clearTables(jdbcTemplate);
         this.timeRepository = new ReservationTimeRepository(jdbcTemplate);
     }
 

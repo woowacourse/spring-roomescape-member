@@ -8,7 +8,9 @@ import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +18,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.ReservationController;
+import roomescape.controller.dto.ReservationTimeResponse;
+import roomescape.test.util.TestDatabaseUtils;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
+    private static final int INITIALED_RESERVATION_COUNT = 3;
+    private static final int INITIALED_TIME_COUNT = 2;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -32,11 +39,12 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 0개
+                .body("size()", is(INITIALED_RESERVATION_COUNT));
     }
 
     @Test
     void 예약_추가_및_삭제() {
+        TestDatabaseUtils.clearTables(jdbcTemplate);
         createTime();
         createTheme();
 
@@ -85,6 +93,7 @@ public class MissionStepTest {
 
     @Test
     void DB_조회_API_전환() {
+        TestDatabaseUtils.clearTables(jdbcTemplate);
         createTime();
         createTheme();
 
@@ -117,6 +126,7 @@ public class MissionStepTest {
 
     @Test
     void DB_추가_삭제_API_전환() {
+        TestDatabaseUtils.clearTables(jdbcTemplate);
         createTime();
         createTheme();
 
@@ -147,6 +157,7 @@ public class MissionStepTest {
 
     @Test
     void 시간_관리_API() {
+        TestDatabaseUtils.clearTables(jdbcTemplate);
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
@@ -171,6 +182,7 @@ public class MissionStepTest {
 
     @Test
     void 예약과_시간_연결() {
+        TestDatabaseUtils.clearTables(jdbcTemplate);
         createTime();
         createTheme();
 
@@ -206,6 +218,66 @@ public class MissionStepTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
+    }
+
+    @Test
+    void 예약_가능한_시간_조회() {
+        // given
+        Map<String, String> availableTimesParams = Map.of(
+                "themeId", "1",
+                "date", "2026-05-05"
+        );
+        List<ReservationTimeResponse> expectedAvailableTimes = List.of(
+                new ReservationTimeResponse(1, LocalTime.parse("10:00:00")),
+                new ReservationTimeResponse(2, LocalTime.parse("14:00:00"))
+        );
+
+        // when
+        List<ReservationTimeResponse> actualAvailableTimes = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .params(availableTimesParams)
+                .when().get("/times/available-times")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", ReservationTimeResponse.class);
+
+        // then
+        assertThat(actualAvailableTimes).containsExactlyInAnyOrderElementsOf(expectedAvailableTimes);
+    }
+
+    @Test
+    void 이미_예약된_시간은_조회에서_제외() {
+        // given
+        int reservedTimeId = 1;
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "브라운",
+                        "date", "2026-05-05",
+                        "timeId", reservedTimeId,
+                        "themeId", "1"
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(200);
+
+        // when
+        List<ReservationTimeResponse> availableTimes = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .params(Map.of(
+                        "themeId", "1",
+                        "date", "2026-05-05"
+                ))
+                .when().get("times/available-times")
+                .then().log().all()
+                .extract().jsonPath().getList(".", ReservationTimeResponse.class);
+
+        // then
+        boolean reservedTimeNotExist = availableTimes.stream()
+                .noneMatch(availableTime -> availableTime.id() == reservedTimeId);
+        assertThat(reservedTimeNotExist).isTrue();
+        assertThat(availableTimes).hasSize(INITIALED_TIME_COUNT - 1);
     }
 
     private void createTime() {
