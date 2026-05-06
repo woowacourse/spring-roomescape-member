@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -96,6 +97,14 @@ class ReservationServiceTest {
         List<Reservation> reservations = reservationService.findAllReservations();
 
         assertThat(reservations).hasSize(2);
+    }
+
+    @Test
+    void 사용자명이_없으면_NotFound_예외() {
+        given(reservationRepository.findReservationsByName(any())).willReturn(List.of());
+        assertThatThrownBy(() -> reservationService.findReservationsByName(" "))
+                .isInstanceOf(NotFoundException.class);
+        verify(reservationRepository, times(1)).findReservationsByName(any());
     }
 
     @Test

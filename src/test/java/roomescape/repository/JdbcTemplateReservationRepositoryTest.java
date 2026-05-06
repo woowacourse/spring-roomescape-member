@@ -12,6 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.NotFoundException;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -20,9 +21,11 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql("/test-theme.sql")
+@Sql("/test-reservation-time.sql")
 @Import({JdbcTemplateReservationRepository.class, JdbcTemplateThemeRepository.class})
 class JdbcTemplateReservationRepositoryTest {
 
@@ -78,6 +81,22 @@ class JdbcTemplateReservationRepositoryTest {
 
         assertThat(reservations).hasSize(2);
         assertThat(reservations.get(0).time().startAt()).isEqualTo(LocalTime.of(10, 0));
+    }
+
+    @Test
+    void 특정_사용자의_예약을_조회한다() {
+        String name1 = "브라운";
+        String name2 = "조이";
+
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                name1, "2026-05-03", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                name1, "2026-05-04", 2, 1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                name2, "2026-05-04", timeId, 2);
+
+        List<Reservation> reservations = reservationRepository.findReservationsByName(name1);
+        assertThat(reservations).hasSize(2);
     }
 
     @Test

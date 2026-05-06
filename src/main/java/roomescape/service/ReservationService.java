@@ -11,6 +11,7 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ReservationService {
@@ -38,10 +39,23 @@ public class ReservationService {
     public Reservation saveReservation(ReservationSaveCommand command) {
         ReservationTime reservationTime = reservationTimeRepository.findById(command.timeId())
                 .orElseThrow(() -> new NotFoundException("reservation"));
+
         Theme theme = themeRepository.findById(command.themeId())
                 .orElseThrow(() -> new NotFoundException("theme"));
         Reservation reservation = new Reservation(null, command.name(), command.date(), reservationTime, theme);
 
         return reservationRepository.addReservation(reservation);
+    }
+
+    public List<Reservation> findReservationsByName(String name) {
+        if (Objects.isNull(name)) {
+            throw new NotFoundException("username");
+        }
+        List<Reservation> reservations = reservationRepository.findReservationsByName(name);
+        if (reservations.isEmpty()) {
+            throw new NotFoundException("reservation");
+        }
+
+        return reservations;
     }
 }

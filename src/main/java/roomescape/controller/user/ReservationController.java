@@ -30,9 +30,13 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<ReservationResponse> getReservations(@RequestParam String name) {
-
-        return ReservationResponse.from(reservationService.findAllReservations());
+    public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParam("name") String name) {
+        try {
+            List<ReservationResponse> responses = ReservationResponse.from(reservationService.findReservationsByName(name));
+            return ResponseEntity.ok(responses);
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping

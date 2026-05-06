@@ -10,4 +10,6 @@ public interface ReservationRepository {
     Reservation addReservation(Reservation reservation);
 
     void deleteById(Long id);
+
+    List<Reservation> findReservationsByName(String name);
 }
