@@ -2,6 +2,7 @@ package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.AvailableTimesResult;
@@ -28,7 +29,11 @@ public class ThemeService {
 
     @Transactional
     public void deleteById(Long id) {
-        themeRepository.deleteById(id);
+        try {
+            themeRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException("예약에 사용 중인 테마는 삭제할 수 없습니다.");
+        }
     }
 
     public List<Theme> findAll() {

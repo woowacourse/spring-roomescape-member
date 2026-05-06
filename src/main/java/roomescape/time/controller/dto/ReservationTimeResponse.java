@@ -5,13 +5,13 @@ import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalTime;
 
-public record ReservationTimeResponse(LocalTime startAt) {
+public record ReservationTimeResponse(Long id, LocalTime startAt) {
 
     public static ReservationTimeResponse from(ReservationTime time) {
-        return new ReservationTimeResponse(time.getStartAt());
+        return new ReservationTimeResponse(time.getId(), time.getStartAt());
     }
 
     public static ReservationTimeResponse from(AvailableTimeQueryResult time) {
-        return new ReservationTimeResponse(time.startAt());
+        return new ReservationTimeResponse(time.id(), time.startAt());
     }
 }

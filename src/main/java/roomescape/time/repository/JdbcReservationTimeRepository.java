@@ -1,17 +1,16 @@
 package roomescape.time.repository;
 
+import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.time.domain.ReservationTime;
-
-import java.sql.PreparedStatement;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -52,6 +51,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         String sql = "select id, start_at from reservation_time where id = ?";
         List<ReservationTime> results = jdbcTemplate.query(sql, reservationTimeRowMapper, id);
         return results.stream().findFirst();
+    }
+
+    @Override
+    public boolean existStartAt(LocalTime startAt) {
+        String sql = "select exists (select 1 from reservation_time where start_at = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 
     @Override

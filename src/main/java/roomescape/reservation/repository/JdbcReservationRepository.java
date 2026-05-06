@@ -113,6 +113,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> new PopularThemeQueryResult(
+                        resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail_url")

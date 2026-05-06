@@ -80,4 +80,19 @@ class JdbcReservationTimeRepositoryTest {
         assertThat(times).hasSize(2);
         assertThat(times).extracting("startAt").containsExactly(LocalTime.of(10, 0), LocalTime.of(11, 0));
     }
+
+    @DisplayName("해당 시간이 존재하는지 조회한다.")
+    @Test
+    void existStartAtTest() {
+        // given
+        reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+
+        // when
+        boolean exists = reservationTimeRepository.existStartAt(LocalTime.of(10, 0));
+        boolean notExists = reservationTimeRepository.existStartAt(LocalTime.of(11, 0));
+
+        // then
+        assertThat(exists).isTrue();
+        assertThat(notExists).isFalse();
+    }
 }
