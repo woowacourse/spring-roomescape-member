@@ -25,6 +25,19 @@ public class MissionStepTest {
 
     @Test
     void 예약_추가_및_삭제() {
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "테마");
+        theme.put("description", "설명");
+        theme.put("imageUrl", "https://example.com/theme.png");
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(theme)
+            .when().post("/themes")
+            .then().log().all()
+            .statusCode(201)
+            .body("id", is(1));
+
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "15:40");
         time.put("endAt", "18:00");
@@ -40,7 +53,8 @@ public class MissionStepTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
-        params.put("timeId", 1);
+        params.put("themeId", 1);
+        params.put("time", "15:40");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -105,6 +119,17 @@ public class MissionStepTest {
 
     @Test
     void 예약과_시간_연결() {
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "테마");
+        theme.put("description", "설명");
+        theme.put("imageUrl", "https://example.com/theme.png");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");
         time.put("endAt", "16:00");
@@ -118,7 +143,8 @@ public class MissionStepTest {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
-        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+        reservation.put("time", "10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -141,6 +167,7 @@ public class MissionStepTest {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

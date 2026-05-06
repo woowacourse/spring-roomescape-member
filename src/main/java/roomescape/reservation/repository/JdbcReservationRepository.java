@@ -31,7 +31,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
                 """
-                SELECT r.id, r.name, r.date, r.time_id, rt.start_time, rt.end_time
+                SELECT r.id, r.name, r.date, r.time_id, r.theme_id, rt.start_time, rt.end_time
                 FROM reservation r
                 LEFT JOIN reservation_time rt ON r.time_id = rt.id
                 """,
@@ -44,7 +44,8 @@ public class JdbcReservationRepository implements ReservationRepository {
         Number id = reservationInsert.executeAndReturnKey(new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTime().getId()));
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getThemeId()));
         return reservation.withId(id.longValue());
     }
 
@@ -74,7 +75,8 @@ public class JdbcReservationRepository implements ReservationRepository {
             Reservation reservation = new Reservation(
                     rs.getString("name"),
                     rs.getDate("date").toLocalDate(),
-                    time
+                    time,
+                    rs.getLong("theme_id")
             );
             return reservation.withId(rs.getLong("id"));
         }

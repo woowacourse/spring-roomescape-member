@@ -2,6 +2,7 @@ package roomescape;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +26,13 @@ public class DatabaseMissionStepTest {
 
     @Test
     void 데이터베이스_연동() {
-        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
+        var dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
+
+        try (Connection connection = dataSource.getConnection()) {
             assertThat(connection).isNotNull();
             assertThat(connection.getCatalog()).isEqualTo("DATABASE");
-            assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue();
+            var metaData = Objects.requireNonNull(connection.getMetaData());
+            assertThat(metaData.getTables(null, null, "RESERVATION", null).next()).isTrue();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -36,6 +40,10 @@ public class DatabaseMissionStepTest {
 
     @Test
     void DB_조회_API_전환() {
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, image_url) VALUES (?, ?, ?)",
+                "테마", "설명", "https://example.com/theme.png"
+        );
         jdbcTemplate.update(
                 "INSERT INTO reservation_time (start_time, end_time) VALUES (?, ?)",
                 "15:40", "16:00"
@@ -47,8 +55,8 @@ public class DatabaseMissionStepTest {
         );
 
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
-                "브라운", "2023-08-05", timeId
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2023-08-05", timeId, 1L
         );
 
         List<?> reservations = RestAssured.given().log().all()
@@ -68,6 +76,18 @@ public class DatabaseMissionStepTest {
         time.put("startAt", "10:00");
         time.put("endAt", "12:00");
 
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "테마");
+        theme.put("description", "설명");
+        theme.put("imageUrl", "https://example.com/theme.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(time)
@@ -78,7 +98,8 @@ public class DatabaseMissionStepTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
-        params.put("timeId", 1);
+        params.put("themeId", 1);
+        params.put("time", "10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

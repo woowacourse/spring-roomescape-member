@@ -11,5 +11,7 @@ public interface TimeService {
 
   ReservationTime findById(Long id);
 
+  ReservationTime findByStartAt(String startAt);
+
   void deleteById(Long id);
 }

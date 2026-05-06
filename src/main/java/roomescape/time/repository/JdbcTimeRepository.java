@@ -56,6 +56,16 @@ public class JdbcTimeRepository implements TimeRepository {
   }
 
   @Override
+  public Optional<ReservationTime> findByStartAt(String startAt) {
+    List<ReservationTime> results = jdbcTemplate.query(
+        "SELECT id, start_time, end_time FROM reservation_time WHERE start_time = ?",
+        new ReservationTimeRowMapper(),
+        startAt
+    );
+    return results.stream().findFirst();
+  }
+
+  @Override
   public boolean deleteById(Long id) {
     int affectedRows = jdbcTemplate.update(
         "DELETE FROM reservation_time WHERE id = ?",
