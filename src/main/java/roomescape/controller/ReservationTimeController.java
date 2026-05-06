@@ -43,7 +43,7 @@ public class ReservationTimeController {
             @RequestParam("role") String role
     ) {
         if (!role.equals("admin")) {
-            throw new ForbiddenAccessException("테마 추가는 관리자만 가능합니다.");
+            throw new ForbiddenAccessException("시간 추가는 관리자만 가능합니다.");
         }
 
         ReservationTime time = reservationService.addReservationTime(requestDto);
@@ -57,7 +57,7 @@ public class ReservationTimeController {
             @RequestParam("role") String role
     ) {
         if (!role.equals("admin")) {
-            throw new ForbiddenAccessException("테마 삭제는 관리자만 가능합니다.");
+            throw new ForbiddenAccessException("시간 삭제는 관리자만 가능합니다.");
         }
 
         reservationService.deleteReservationTime(id);
