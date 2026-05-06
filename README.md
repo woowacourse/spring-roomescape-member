@@ -173,14 +173,15 @@ Content-Type: application/json
 
 # 📝API 명세
 
-| 기능    | 메서드 / URL                   | 요청 본문                             | 응답 본문                                                                                                 |
-|-------|-----------------------------|-----------------------------------|-------------------------------------------------------------------------------------------------------|
-| 예약 추가 | `POST /reservations`        | `{name, date, time_id, theme_id}` | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
-| 예약 조회 | `GET /reservations`         |                                   | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
-| 예약 삭제 | `DELETE /reservations/{id}` |                                   |                                                                                                       |
-| 시간 추가 | `POST /times`               | `{startAt}`                       | `{id, startAt}`                                                                                       |
-| 시간 조회 | `GET /times`                |                                   | `[{id, startAt}, ...]`                                                                                |
-| 시간 삭제 | `DELETE /times/{id}`        |                                   |                                                                                                       |
+| 기능           | 메서드 / URL                       | 요청 본문                             | 응답 본문                                                                                                 |
+|--------------|---------------------------------|-----------------------------------|-------------------------------------------------------------------------------------------------------|
+| 예약 추가        | `POST /reservations`            | `{name, date, time_id, theme_id}` | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
+| 예약 조회        | `GET /reservations`             |                                   | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
+| 예약 삭제        | `DELETE /reservations/{id}`     |                                   |                                                                                                       |
+| 시간 추가        | `POST /times`                   | `{startAt}`                       | `{id, startAt}`                                                                                       |
+| 시간 조회        | `GET /times`                    |                                   | `[{id, startAt}, ...]`                                                                                |
+| 예약 가능한 시간 조회 | `GET /times?date={}&themeId={}` |                                   | `[{id, startAt}, ...]`                                                                                |
+| 시간 삭제        | `DELETE /times/{id}`            |                                   |                                                                                                       |
 
 # 응답 코드
 
