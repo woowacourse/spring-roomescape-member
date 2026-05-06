@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -37,6 +38,16 @@ public class ThemeDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<Theme> findAll() {
+        try {
+            return jdbcTemplate.query(
+                    "SELECT id, name, description, thumbnail_url FROM theme",
+                    themeRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {}
+
+        return List.of();
     }
 
     public Long save(String name, String description, String thumbnailUrl) {
