@@ -14,7 +14,7 @@ public record AdminReservationResponse(Long id, String name,
                 reservation.getName(),
                 reservation.getDate(),
                 theme.getName(),
-                reservation.getTime().toString()
+                reservation.getTime().getStartAt().toString()
         );
     }
 }
