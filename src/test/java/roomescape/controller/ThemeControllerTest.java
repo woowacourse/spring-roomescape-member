@@ -2,10 +2,12 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,12 +24,20 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeControllerTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @TestConfiguration
     static class FixedClockConfig {
@@ -45,6 +55,7 @@ class ThemeControllerTest {
     }
 
     @Test
+    @Sql("/clear.sql")
     void 테마_추가_및_삭제() {
 
         Map<String, Object> params = new HashMap<>();
@@ -72,7 +83,10 @@ class ThemeControllerTest {
     }
 
     @Test
-    @Sql("/popular-themes-test-data.sql")
+    @Sql(scripts = {
+            "/clear.sql",
+            "/popular-themes-test-data.sql"
+    })
     void 최근_일주일간_예약이_많은_상위_10개_테마_조회() {
         List<ThemeResponse> popularThemes = RestAssured.given().log().all()
                 .when().get("/themes/popular")
