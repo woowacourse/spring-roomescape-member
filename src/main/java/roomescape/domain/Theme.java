@@ -9,6 +9,13 @@ public class Theme {
     private final String description;
     private final String imageUrl;
 
+    public Theme() {
+        this.id = null;
+        this.name = null;
+        this.description = null;
+        this.imageUrl = null;
+    }
+
     public Theme(Long id, String name, String description, String imageUrl) {
         this.id = id;
         this.name = name;
