@@ -21,7 +21,7 @@ public class TimeTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(200);
 
@@ -32,7 +32,7 @@ public class TimeTest {
                 .body("size()", is(10));
 
         RestAssured.given().log().all()
-                .when().delete("/times/10")
+                .when().delete("/admin/times/10")
                 .then().log().all()
                 .statusCode(200);
     }

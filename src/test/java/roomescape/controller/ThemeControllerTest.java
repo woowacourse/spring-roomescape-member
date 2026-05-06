@@ -30,7 +30,7 @@ class ThemeControllerTest {
     void 테마_조회_API() {
         // when & then
         RestAssured.given().log().all()
-                .when().get("/theme?limit=10")
+                .when().get("/theme/popular?limit=10")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(10));
