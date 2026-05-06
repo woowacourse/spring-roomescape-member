@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
+import roomescape.dto.PopularThemeRequestDto;
 import roomescape.dto.response.AvailableTimeResponseDto;
 
 
@@ -26,11 +27,11 @@ public class ThemeJdbcDao implements ThemeDao {
             );
 
     private static final RowMapper<AvailableTimeResponseDto> AVAILABLE_TIME_MAPPER = (rs, rowNum) ->
-        new AvailableTimeResponseDto(
-                rs.getLong("time_id"),
-                LocalTime.parse(rs.getString("start_at")),
-                rs.getBoolean("already_booked")
-        );
+            new AvailableTimeResponseDto(
+                    rs.getLong("time_id"),
+                    LocalTime.parse(rs.getString("start_at")),
+                    rs.getBoolean("already_booked")
+            );
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -122,5 +123,33 @@ public class ThemeJdbcDao implements ThemeDao {
                 .addValue("date", localDate);
 
         return jdbcTemplate.query(sql, params, AVAILABLE_TIME_MAPPER);
+    }
+
+    @Override
+    public List<Theme> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
+        String sql = """
+                    SELECT
+                        th.id,
+                        th.name,
+                        th.thumbnail_url,
+                        th.description,
+                        COALESCE(r.cnt, 0) AS reservation_count
+                    FROM themes th
+                    LEFT JOIN (
+                        SELECT theme_id, COUNT(*) AS cnt
+                        FROM reservations
+                        WHERE date BETWEEN :startDate AND :endDate
+                        GROUP BY theme_id
+                    ) r ON th.id = r.theme_id
+                    ORDER BY reservation_count DESC
+                    LIMIT :limit;
+                """;
+        LocalDate now = LocalDate.now();
+
+        SqlParameterSource params = new MapSqlParameterSource("startDate", now.minusDays(popularThemeRequestDto.days()))
+                .addValue("endDate", now)
+                .addValue("limit", popularThemeRequestDto.limit());
+
+        return jdbcTemplate.query(sql, params, THEME_ROW_MAPPER);
     }
 }

@@ -16,6 +16,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
+import roomescape.dto.PopularThemeRequestDto;
 import roomescape.dto.response.AvailableTimeResponseDto;
 
 @JdbcTest
@@ -109,7 +110,6 @@ class ThemeJdbcDaoTest {
         Long themeId = saved.getId();
         LocalDate localDate = LocalDate.of(2026, 5, 5);
 
-
         List<AvailableTimeResponseDto> expected = List.of(
                 new AvailableTimeResponseDto(time2.getId(), time2.getStartAt(), false),
                 new AvailableTimeResponseDto(time1.getId(), time1.getStartAt(), true));
@@ -117,5 +117,21 @@ class ThemeJdbcDaoTest {
         List<AvailableTimeResponseDto> availableTimesById = themeDao.findAvailableTimesById(themeId, localDate);
 
         assertThat(availableTimesById).containsAll(expected);
+    }
+
+    @Test
+    void findPopulars() {
+        int limit = 1;
+
+        PopularThemeRequestDto popularThemeRequestDto = new PopularThemeRequestDto(limit, 7);
+        Theme popular = insertThemeHandler(theme1);
+        Theme nonPopular = insertThemeHandler(theme2);
+
+        reservationDao.insert(new Reservation("이름1", LocalDate.parse("2026-05-05"), time1, popular));
+        List<Theme> populars = themeDao.findPopulars(popularThemeRequestDto);
+
+        assertThat(populars)
+                .hasSize(limit)
+                .contains(popular);
     }
 }

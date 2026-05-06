@@ -8,6 +8,7 @@ import java.util.Optional;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
+import roomescape.dto.PopularThemeRequestDto;
 import roomescape.dto.response.AvailableTimeResponseDto;
 
 public class FakeThemeDao implements ThemeDao {
@@ -59,6 +60,11 @@ public class FakeThemeDao implements ThemeDao {
 
     @Override
     public List<AvailableTimeResponseDto> findAvailableTimesById(Long themeId, LocalDate localDate) {
+        return List.of();
+    }
+
+    @Override
+    public List<Theme> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
         return List.of();
     }
 }

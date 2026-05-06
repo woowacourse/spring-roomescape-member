@@ -2,13 +2,12 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
+import roomescape.dto.PopularThemeRequestDto;
 import roomescape.dto.request.ThemeRequestDto;
 import roomescape.dto.response.AvailableTimeResponseDto;
 
@@ -53,5 +52,9 @@ public class ThemeService {
 
     public List<AvailableTimeResponseDto> findAvailableTimesById(Long themeId, LocalDate localDate) {
         return themeDao.findAvailableTimesById(themeId, localDate);
+    }
+
+    public List<Theme> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
+        return themeDao.findPopulars(popularThemeRequestDto);
     }
 }
