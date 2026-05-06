@@ -90,9 +90,9 @@ class ReservationRepositoryTest {
         LocalDate wrongDate = LocalDate.now().plusWeeks(3);
 
         // when & then
-        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeIdAndThemeId(date, time.startAt(), theme.id()))
+        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeAndThemeId(date, time.startAt(), theme.id()))
                 .isTrue();
-        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeIdAndThemeId(wrongDate, time.startAt(), theme.id()))
+        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeAndThemeId(wrongDate, time.startAt(), theme.id()))
                 .isFalse();
     }
 }

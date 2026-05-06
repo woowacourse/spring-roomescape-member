@@ -69,7 +69,7 @@ public class ReservationService {
     }
 
     private void validateDuplicateReservation(ReservationDate date, ReservationTime time, Theme theme) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date.date(), time.startAt(), theme.id())) {
+        if (reservationRepository.existsByDateAndTimeAndThemeId(date.date(), time.startAt(), theme.id())) {
             throw new ConflictException("이미 존재하는 예약 날짜/시간 입니다.");
         }
     }

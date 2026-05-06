@@ -116,7 +116,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     }
 
     @Override
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, LocalTime time, Long themeId){
+    public boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId){
         String sql = "SELECT COUNT(*) FROM reservation WHERE DATE = :date AND start_at = :start_at AND theme_id = :theme_id";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", date)
