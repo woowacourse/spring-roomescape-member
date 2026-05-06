@@ -67,7 +67,7 @@ public class ReservationTimeDao {
     }
 
     public List<AvailableTimeDto> findAvailableTimes(LocalDate date, Long themeId) {
-        String sql = "SELECT rt.id AS timeId, rt.start_at AS time, r.id CASE WHEN r.id IS NULL THEN true ELSE false END AS isAvailable"
+        String sql = "SELECT rt.id AS timeId, rt.start_at AS time, CASE WHEN r.id IS NULL THEN true ELSE false END AS isAvailable"
                 + "FROM reservation_time rt"
                 + "LEFT JOIN reservation AS r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ?"
                 + "ORDER BY rt.time_id";
