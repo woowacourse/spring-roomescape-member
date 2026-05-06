@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.model.Theme;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -64,5 +66,34 @@ class ThemeRepositoryTest {
         assertThat(themes.get(1).getImageUrl()).isEqualTo("경로2");
         assertThat(themes.get(0).getRequiredTime()).isEqualTo(LocalTime.of(2, 0));
         assertThat(themes.get(1).getRequiredTime()).isEqualTo(LocalTime.of(2, 0));
+    }
+
+    @Test
+    void 최근_예약이_많은_순서대로_인기_테마를_조회한다() {
+        jdbcTemplate.update("INSERT INTO \"USER\" (id, name, role) VALUES (?, ?, ?)", 1L, "user1", "USER");
+
+        Long themeId1 = themeRepository.create(new Theme("테마1", "설명1", "경로1", LocalTime.of(2, 0)));
+        Long themeId2 = themeRepository.create(new Theme("테마2", "설명2", "경로2", LocalTime.of(2, 0)));
+
+        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+
+        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
+                1L, themeId1, yesterday, yesterday.plusHours(2));
+        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
+                2L, themeId1, yesterday.plusHours(3), yesterday.plusHours(5));
+        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
+                3L, themeId2, yesterday, yesterday.plusHours(2));
+
+        jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 1L, 1L);
+        jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 2L, 1L);
+        jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 3L, 1L);
+
+        List<PopularThemeResponse> popularThemes = themeRepository.findPopularThemes("reservations", 10, 7);
+
+        assertThat(popularThemes).hasSize(2);
+        assertThat(popularThemes.get(0).getThemeName()).isEqualTo("테마1");
+        assertThat(popularThemes.get(0).getReservationCount()).isEqualTo(2);
+        assertThat(popularThemes.get(1).getThemeName()).isEqualTo("테마2");
+        assertThat(popularThemes.get(1).getReservationCount()).isEqualTo(1);
     }
 }
