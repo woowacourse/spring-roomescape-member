@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -62,6 +63,24 @@ class JdbcReservationTimeRepositoryTest {
                 .orElseThrow();
         //then
         assertThat(result).isEqualTo(saved);
+    }
+
+    @Test
+    @DisplayName("테마 예약 시간 전체 조회")
+    void reservationTime_theme_time_finaAll_test() {
+        //given
+        Theme theme = createTheme("미술관의 밤");
+        ReservationTime nonIdReservationTime1 = ReservationTime.createNew(LocalTime.parse("11:00"), theme);
+        ReservationTime nonIdReservationTime2 = ReservationTime.createNew(LocalTime.parse("13:00"), theme);
+
+        jdbcReservationTimeRepository.save(nonIdReservationTime1);
+        jdbcReservationTimeRepository.save(nonIdReservationTime2);
+
+        //when
+        List<ReservationTime> reservationTimes = jdbcReservationTimeRepository.findAllByThemeId(theme.getId());
+
+        //then
+        assertThat(reservationTimes.size()).isEqualTo(2);
     }
 
     @Test

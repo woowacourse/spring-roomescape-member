@@ -1,5 +1,6 @@
 package roomescape.theme.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,14 @@ public class ThemeService {
     public Theme getById(final long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 테마를 찾을 수 없습니다."));
+    }
+
+    public List<Theme> getPopularThemes(final int period, final int limit) {
+        return themeRepository.findPopularThemes(
+                period,
+                limit,
+                LocalDate.now()
+        );
     }
 
 }

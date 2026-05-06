@@ -23,6 +23,7 @@ VALUES ('10:00:00', 1),
        ('10:00:00', 8),
        ('10:00:00', 9),
        ('10:00:00', 10);
+
 INSERT INTO reservation (name, date, time_id)
 VALUES ('브라운', DATE '2026-05-05', 1),
        ('코니', DATE '2026-05-04', 1),

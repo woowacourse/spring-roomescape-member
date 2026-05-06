@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.service.ReservationTimeService;
 import roomescape.theme.service.ThemeService;
 
 @Controller
@@ -18,13 +19,15 @@ import roomescape.theme.service.ThemeService;
 public class ReservationPageController {
 
     private final ReservationService reservationService;
+    private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
 
     public ReservationPageController(
-            final ReservationService reservationService,
+            final ReservationService reservationService, ReservationTimeService reservationTimeService,
             final ThemeService themeService
     ) {
         this.reservationService = reservationService;
+        this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
     }
 
@@ -38,7 +41,7 @@ public class ReservationPageController {
     ) {
         model.addAttribute("reservations", reservationService.getAll());
         model.addAttribute("themes", themeService.getAll());
-        model.addAttribute("popularThemes", reservationService.getPopularThemes(period, limit));
+        model.addAttribute("popularThemes", themeService.getPopularThemes(period, limit));
         model.addAttribute("selectedThemeId", themeId);
         model.addAttribute("selectedDate", date);
         model.addAttribute("period", period);
@@ -46,7 +49,7 @@ public class ReservationPageController {
 
         List<ReservationTime> availableTimes = List.of();
         if (themeId != null && date != null) {
-            availableTimes = reservationService.findAvailableTimes(date, themeId);
+            availableTimes = reservationTimeService.findAvailableTimes(date, themeId);
         }
         model.addAttribute("availableTimes", availableTimes);
 

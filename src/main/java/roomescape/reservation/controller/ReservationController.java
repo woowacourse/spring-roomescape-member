@@ -52,22 +52,4 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/theme/{themeId}/times/available-times")
-    public ResponseEntity<List<ReservationTime>> read(
-            @PathVariable final Long themeId,
-            @RequestParam final LocalDate date
-    ) {
-        return ResponseEntity.ok()
-                .body(reservationService.findAvailableTimes(date, themeId));
-    }
-
-    @GetMapping("/theme/popular")
-    public ResponseEntity<List<Theme>> read(
-            @RequestParam final int period,
-            @RequestParam final int limit
-    ) {
-        return ResponseEntity.ok()
-                .body(reservationService.getPopularThemes(period, limit));
-    }
-
 }
