@@ -16,11 +16,16 @@ const contentTypes = {
 
 const proxy = async (request, response) => {
   const hasBody = !['GET', 'HEAD'].includes(request.method || '');
-  const body = hasBody ? Buffer.concat(await Array.fromAsync(request)) : undefined;
+  const chunks = [];
+  for await (const chunk of request) {
+    chunks.push(chunk);
+  }
+  const body = hasBody ? Buffer.concat(chunks) : undefined;
 
   const proxiedResponse = await fetch(`${backendOrigin}${request.url}`, {
     method: request.method,
     headers: {
+      authorization: request.headers.authorization || '',
       'content-type': request.headers['content-type'] || 'application/json'
     },
     body
@@ -63,7 +68,17 @@ const serveStatic = async (request, response) => {
 
 createServer(async (request, response) => {
   try {
-    if (request.url?.startsWith('/times') || request.url?.startsWith('/reservations')) {
+    if (request.url === '/favicon.ico') {
+      response.writeHead(204);
+      response.end();
+      return;
+    }
+
+    if (
+      request.url?.startsWith('/times') ||
+      request.url?.startsWith('/themes') ||
+      request.url?.startsWith('/reservations')
+    ) {
       await proxy(request, response);
       return;
     }

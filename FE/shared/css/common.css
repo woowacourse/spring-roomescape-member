@@ -1,14 +1,16 @@
 :root {
   /* Colors */
   --color-pure-black: #000000;
-  --color-light-gray: #f5f5f7;
-  --color-near-black: #1d1d1f;
-  --color-apple-blue: #0071e3;
-  --color-link-blue: #0066cc;
-  --color-bright-blue: #2997ff;
+  --color-light-gray: #f4f5f2;
+  --color-near-black: #151412;
+  --color-apple-blue: #8f1f2f;
+  --color-link-blue: #8f1f2f;
+  --color-bright-blue: #c33a4c;
   --color-white: #ffffff;
   --color-secondary-text: rgba(0, 0, 0, 0.8);
-  --color-tertiary-text: rgba(0, 0, 0, 0.48);
+  --color-tertiary-text: rgba(0, 0, 0, 0.52);
+  --color-line: rgba(21, 20, 18, 0.12);
+  --color-paper: #fbfaf7;
   
   /* Dark Surface Variants */
   --color-dark-surface-1: #272729;
@@ -29,7 +31,7 @@
   --radius-pill: 980px;
   
   /* Shadows */
-  --shadow-card: rgba(0, 0, 0, 0.22) 3px 5px 30px 0px;
+  --shadow-card: rgba(20, 18, 16, 0.14) 0 18px 48px;
 }
 
 * {
@@ -44,9 +46,9 @@ body {
   font-family: var(--font-text);
   font-size: 17px;
   line-height: 1.47;
-  letter-spacing: -0.374px;
+  letter-spacing: 0;
   color: var(--color-near-black);
-  background-color: var(--color-white);
+  background-color: var(--color-paper);
 }
 
 h1, h2, h3, h4 {
@@ -71,7 +73,7 @@ button {
 }
 
 .container {
-  max-width: 980px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -81,8 +83,8 @@ button {
   position: sticky;
   top: 0;
   z-index: 9999;
-  height: 48px;
-  background: rgba(0, 0, 0, 0.8);
+  height: 52px;
+  background: rgba(13, 12, 11, 0.86);
   backdrop-filter: saturate(180%) blur(20px);
   display: flex;
   align-items: center;
@@ -91,7 +93,7 @@ button {
 
 .nav-content {
   width: 100%;
-  max-width: 980px;
+  max-width: 1120px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -104,10 +106,10 @@ button {
 }
 
 .nav-links a {
-  color: #f5f5f7;
-  font-size: 12px;
-  font-weight: 400;
-  opacity: 0.8;
+  color: #f8f5ed;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.74;
   text-decoration: none;
 }
 
@@ -117,7 +119,7 @@ button {
 
 /* Section Rhythm */
 section {
-  padding: 100px 0;
+  padding: 88px 0;
 }
 
 section.dark {
@@ -126,7 +128,7 @@ section.dark {
 }
 
 section.light {
-  background-color: var(--color-light-gray);
+  background-color: var(--color-paper);
   color: var(--color-near-black);
 }
 
@@ -134,19 +136,22 @@ section.light {
 .btn-primary {
   background-color: var(--color-apple-blue);
   color: var(--color-white);
-  padding: 8px 15px;
+  padding: 10px 18px;
   border-radius: var(--radius-standard);
-  font-size: 17px;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: rgba(143, 31, 47, 0.24) 0 10px 24px;
 }
 
 .btn-primary:hover {
-  background-color: #0077ed;
+  background-color: #a7283b;
+  transform: translateY(-1px);
 }
 
 .btn-pill {
   border-radius: var(--radius-pill);
-  padding: 8px 20px;
-  font-size: 14px;
+  padding: 11px 22px;
+  font-size: 15px;
 }
 
 .btn-outline {
