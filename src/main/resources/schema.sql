@@ -27,7 +27,7 @@ CREATE TABLE reservation
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     name     VARCHAR(255) NOT NULL,
     date     DATE         NOT NULL,
-    start_at     TIME         NOT NULL,
+    start_at TIME         NOT NULL,
     theme_id BIGINT       NOT NULL,
     status   ENUM('RESERVED', 'CANCELED') NOT NULL,
     PRIMARY KEY (id),
