@@ -90,6 +90,30 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, ROW_MAPPER, startDate, endDate);
     }
 
+    public boolean existsById(Long themeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM theme
+                    WHERE id = ?
+                )
+                """;
+
+        return jdbcTemplate.queryForObject(sql, boolean.class, themeId);
+    }
+
+    public boolean existsByName(String name) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM theme
+                    WHERE name = ?
+                )
+                """;
+
+        return jdbcTemplate.queryForObject(sql, boolean.class, name);
+    }
+
     public void delete(long themeId) {
         String sql = """
                 DELETE FROM theme
