@@ -87,7 +87,7 @@
     예약 가능 시간 조회    GET /themes/popular             -             [{id, name, description, thumbnail, reservationCount}]
 ```
 - [x] 인기 테마 조회 응답 dto 구현
-- [ ] 인기 테마 도메인 구현
+- [x] 인기 테마 도메인 구현
 - [ ] 인기 테마 조회 dao 구현
 - [ ] 인기 테마 조회 service 구현
 - [ ] 인기 테마 조회 controller 구현
