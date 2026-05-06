@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.holiday.repository.HolidayRepository;
 import roomescape.reservation.domain.ReservationTime;
@@ -14,7 +15,6 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.ThemeBestServiceDto;
-import roomescape.theme.service.dto.ThemeResponseServiceDto;
 import roomescape.theme.service.dto.ThemeSaveServiceDto;
 import roomescape.time.service.TimeService;
 
@@ -25,6 +25,12 @@ public class ThemeServiceImpl implements ThemeService {
     private final TimeService timeService;
     private final HolidayRepository holidayRepository;
     private final ReservationRepository reservationRepository;
+
+    @Value("${theme.dayCount:7}")
+    private int dayCount;
+
+    @Value("${theme.rankCount:10}")
+    private int rankCount;
 
     public ThemeServiceImpl(
             ThemeRepository themeRepository,
@@ -86,11 +92,8 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     @Override
-    public List<ThemeResponseServiceDto> getBestThemes(LocalDate date, int dayCount, int rankCount) {
-        ThemeBestServiceDto themeBestServiceDto = new ThemeBestServiceDto(date, dayCount, rankCount);
-        return themeRepository.findBestThemesByDate(themeBestServiceDto)
-                .stream()
-                .map(ThemeResponseServiceDto::from)
-                .collect(Collectors.toList());
+    public List<Theme> getBestThemes() {
+        ThemeBestServiceDto themeBestServiceDto = new ThemeBestServiceDto(LocalDate.now(), dayCount, rankCount);
+        return themeRepository.findBestThemesByDate(themeBestServiceDto);
     }
 }
