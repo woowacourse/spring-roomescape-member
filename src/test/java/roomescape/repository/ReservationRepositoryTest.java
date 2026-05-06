@@ -27,7 +27,7 @@ class ReservationRepositoryTest {
     private static final String DEFAULT_NAME = "name";
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2025, 1, 1);
     private static final LocalTime DEFAULT_START_AT = LocalTime.of(1, 1);
-    private static final Theme DEFAULT_THEME = Theme.create("themeName", "themeDesrciption", "themeUrl");
+    private static final Theme DEFAULT_THEME = Theme.create("themeName", "themeDescription", "themeUrl");
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
