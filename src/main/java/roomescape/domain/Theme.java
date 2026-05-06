@@ -4,8 +4,8 @@ public class Theme {
 
     private static final int MAX_NAME_LENGTH = 30;
 
-
     private final Long id;
+
     private final String name;
     private final String description;
     private final String thumbnailUrl;
@@ -47,5 +47,20 @@ public class Theme {
         }
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
 
 }
