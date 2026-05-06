@@ -1,8 +1,10 @@
 package roomescape.domain;
 
 import java.util.Objects;
+import lombok.Getter;
 import org.springframework.util.StringUtils;
 
+@Getter
 public class Theme {
 
     private final Long id;
@@ -72,22 +74,6 @@ public class Theme {
         if (!StringUtils.hasText(imageUrl)) {
             throw new IllegalArgumentException("테마엔 이미지가 존재해야 합니다.");
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
     }
 
     @Override
