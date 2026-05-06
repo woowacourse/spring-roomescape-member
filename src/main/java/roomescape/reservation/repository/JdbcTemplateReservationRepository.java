@@ -98,9 +98,9 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.name())
                 .addValue("date", reservation.date())
-                .addValue("time", reservation.time())
+                .addValue("start_at", reservation.time())
                 .addValue("theme_id", reservation.theme().id())
-                .addValue("status", reservation.status());
+                .addValue("status", reservation.status().name());
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 

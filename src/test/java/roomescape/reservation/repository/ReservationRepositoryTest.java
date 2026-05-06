@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import roomescape.date.domain.ReservationDate;
+import roomescape.date.repository.JdbcReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
@@ -23,10 +25,12 @@ class ReservationRepositoryTest {
     private final String name = "한다";
     private final LocalDate date = LocalDate.now().plusMonths(1);
     private ReservationTime time;
+    private ReservationDate reservationDate;
     private Theme theme;
 
     private JdbcTemplateReservationRepository jdbcTemplateReservationRepository;
     private JdbcTemplateReservationTimeRepository jdbcTemplateReservationTimeRepository;
+    private JdbcReservationDateRepository jdbcReservationDateRepository;
     private JdbcThemeRepository jdbcThemeRepository;
     private Long timeId;
     private Long reservationId;
@@ -38,14 +42,16 @@ class ReservationRepositoryTest {
     void setup() {
         jdbcTemplateReservationRepository = new JdbcTemplateReservationRepository(jdbcTemplate);
         jdbcTemplateReservationTimeRepository = new JdbcTemplateReservationTimeRepository(jdbcTemplate);
+        jdbcReservationDateRepository = new JdbcReservationDateRepository(jdbcTemplate);
         jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
 
         timeId = jdbcTemplateReservationTimeRepository.save(ReservationTime.create(LocalTime.of(15, 40)));
+        reservationDate = jdbcReservationDateRepository.save(ReservationDate.create(date));
         time = jdbcTemplateReservationTimeRepository.findById(timeId).get();
         theme = jdbcThemeRepository.save(Theme.create("테마", "설명", "썸네일"));
 
-        reservationId = jdbcTemplateReservationRepository.save(Reservation.create(name, date, time.startAt(), theme));
-        jdbcTemplateReservationRepository.save(Reservation.create("판다", date, time.startAt(), theme));
+        reservationId = jdbcTemplateReservationRepository.save(Reservation.create(name, reservationDate.date(), time.startAt(), theme));
+        jdbcTemplateReservationRepository.save(Reservation.create("판다", reservationDate.date(), time.startAt(), theme));
     }
 
     @Test
