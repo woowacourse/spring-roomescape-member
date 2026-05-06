@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @Repository
 public class JdbcReservationDateRepository implements ReservationDateRepository {
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<ReservationDate> reservationDateRowMapper = (resultSet, rowMapper) ->
@@ -40,7 +41,7 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
     @Override
     public List<ReservationDate> findAll() {
         String sql = "SELECT * FROM reservation_date";
-        return jdbcTemplate.query(sql, new MapSqlParameterSource(), reservationDateRowMapper);
+        return jdbcTemplate.query(sql, reservationDateRowMapper);
     }
 
     @Override
