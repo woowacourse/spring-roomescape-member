@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.time.Clock;
@@ -19,7 +18,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(scripts = "/testData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class ThemeProvideTest {
 
     @LocalServerPort
@@ -43,7 +43,6 @@ public class ThemeProvideTest {
     }
 
     @Test
-    @Sql(scripts = "/testData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("개수 테스트")
     void readAvailableTime() {
         RestAssured.given().log().all()
@@ -55,7 +54,6 @@ public class ThemeProvideTest {
     }
 
     @Test
-    @Sql(scripts = "/testData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("오름차순 테스트")
     void sortThemes() {
         RestAssured.given().log().all()

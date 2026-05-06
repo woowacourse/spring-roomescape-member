@@ -5,7 +5,6 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
@@ -14,12 +13,12 @@ import java.util.Map;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(scripts = "/testReservationData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class AdminThemeTest {
 
     @Test
     @DisplayName("테마를 생성하는지에 대한 테스트")
-    @Sql(scripts = "/testReservationData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void createTheme() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "공포");
@@ -39,7 +38,6 @@ class AdminThemeTest {
 
     @Test
     @DisplayName("테마를 조회하는지에 대한 테스트")
-    @Sql(scripts = "/testReservationData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void readThemes() {
         RestAssured.given().log().all()
                 .when().get("/admin/themes")
@@ -50,7 +48,6 @@ class AdminThemeTest {
 
     @Test
     @DisplayName("예약 없는 테마 삭제 성공")
-    @Sql(scripts = "/testReservationData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void deleteThemeWithoutReservation() {
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/2")
@@ -60,7 +57,6 @@ class AdminThemeTest {
 
     @Test
     @DisplayName("예약 있는 테마 삭제 실패")
-    @Sql(scripts = "/testReservationData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void deleteThemeWithReservation() {
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/1")
