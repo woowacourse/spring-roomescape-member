@@ -1,6 +1,8 @@
 package roomescape.repository;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -92,6 +94,29 @@ class JdbcReservationRepositoryTest {
         assertThat(found.getTheme().getName()).isEqualTo(theme.getName());
         assertThat(found.getTheme().getDescription()).isEqualTo(theme.getDescription());
         assertThat(found.getTheme().getThumbnail()).isEqualTo(theme.getThumbnail());
+    }
+
+    @Test
+    @DisplayName("특정 날짜 및 테마 id를 가진 예약 정보를 조회한다.")
+    public void findByDateAndThemeId() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        Theme targetTheme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Theme nonTargetTheme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+
+        LocalDate targetDate = LocalDate.of(2023, 8, 5);
+        Reservation match = reservationRepository.save(new Reservation("브라운", targetDate, time, targetTheme));
+        Reservation nonMatch1 = reservationRepository.save(new Reservation("브라운", LocalDate.of(2024, 9, 10), time, targetTheme));
+        Reservation nonMatch2 = reservationRepository.save(new Reservation("브라운", targetDate, time, nonTargetTheme));
+
+
+        // when
+        List<Reservation> results = reservationRepository.findByDateAndThemeId(targetDate, targetTheme.getId());
+
+        // then
+        Assertions.assertThat(results).hasSize(1)
+                .contains(match)
+                .doesNotContain(nonMatch1, nonMatch2);
     }
 
     @Test

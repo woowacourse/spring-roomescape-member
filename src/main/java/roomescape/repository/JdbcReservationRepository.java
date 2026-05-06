@@ -13,6 +13,7 @@ import roomescape.exception.InfrastructureException;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -34,12 +35,28 @@ public class JdbcReservationRepository implements ReservationRepository {
             INNER JOIN theme th
                 ON r.theme_id = th.id
             """;
-
+    private static final String FIND_BY_DATE_AND_THEME_ID_QUERY = """
+            SELECT 
+                r.id AS reservation_id,
+                r.name,
+                r.date,
+                t.id AS time_id,
+                t.start_at,
+                th.id AS theme_id,
+                th.name AS theme_name,
+                th.description AS theme_description,
+                th.thumbnail AS theme_thumbnail 
+            FROM reservation r
+            INNER JOIN reservation_time t
+                ON r.time_id = t.id
+            INNER JOIN theme th
+                ON r.theme_id = th.id
+            WHERE date = ? AND theme_Id = ?
+            """;
     private static final String INSERT_SQL = """
             INSERT INTO reservation (name, date, time_id, theme_id)
             VALUES (?, ?, ?, ?)
             """;
-
     private static final String DELETE_SQL = """
             DELETE FROM reservation
             WHERE id = ?
@@ -76,6 +93,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return jdbcTemplate.query(FIND_ALL_SQL, reservationRowMapper);
+    }
+
+    @Override
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+        return jdbcTemplate.query(FIND_BY_DATE_AND_THEME_ID_QUERY, reservationRowMapper, date, themeId);
     }
 
     @Override

@@ -1,6 +1,9 @@
 package roomescape.domain;
 
 
+import lombok.Getter;
+
+@Getter
 public class ReservationTimeAvailability {
     private final ReservationTime reservationTime;
     private final boolean isAvailable;
@@ -11,11 +14,4 @@ public class ReservationTimeAvailability {
         this.isAvailable = isAvailable;
     }
 
-    public ReservationTime getReservationTime() {
-        return reservationTime;
-    }
-
-    public boolean isAvailable() {
-        return isAvailable;
-    }
 }
