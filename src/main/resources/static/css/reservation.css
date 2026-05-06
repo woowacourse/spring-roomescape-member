@@ -12,19 +12,26 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
-/* 카드 사이 단계 연결 화살표 */
-.r-card + .r-card::before {
-  content: '\f054'; /* fa-chevron-right */
+/* 카드 사이 단계 연결 화살표 — 카드 바깥 grid gap 영역에 표시 */
+.reservation-cards {
+  display: grid;
+  grid-template-columns: 320px 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+  position: relative;
+}
+
+.reservation-cards::before,
+.reservation-cards::after {
+  content: '\f054';
   font-family: 'Font Awesome 5 Free';
   font-weight: 900;
   position: absolute;
-  left: -12px;
   top: 22px;
   width: 24px;
   height: 24px;
@@ -35,8 +42,18 @@
   color: var(--accent);
   border: 1px solid var(--border);
   border-radius: 50%;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   z-index: 2;
+}
+
+/* 1→2 화살표: 첫 번째 카드 오른쪽 끝 */
+.reservation-cards::before {
+  left: calc(320px + 4px);
+}
+
+/* 2→3 화살표: 두 번째 카드 오른쪽 끝 */
+.reservation-cards::after {
+  left: calc(320px + 32px + ((100% - 320px - 64px) / 2) + 4px);
 }
 
 .r-card-head {
