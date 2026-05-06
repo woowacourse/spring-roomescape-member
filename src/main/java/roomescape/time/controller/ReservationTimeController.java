@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.service.ThemeService;
 import roomescape.time.controller.dto.ReservationTimeRequest;
 import roomescape.time.controller.dto.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
@@ -22,11 +21,9 @@ import roomescape.time.service.ReservationTimeService;
 public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
-    private final ThemeService themeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService, ThemeService themeService) {
+    public ReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
-        this.themeService = themeService;
     }
 
     @GetMapping("/times")
@@ -43,7 +40,7 @@ public class ReservationTimeController {
             @RequestParam("themeId") Long themeId,
             @RequestParam("date") LocalDate date
     ) {
-        List<ReservationTimeResponse> responses = themeService.findAvailableTimes(themeId, date).availableTimeQueryResults()
+        List<ReservationTimeResponse> responses = reservationTimeService.findAvailableTimes(themeId, date).availableTimeQueryResults()
                 .stream()
                 .map(ReservationTimeResponse::from)
                 .collect(Collectors.toList());

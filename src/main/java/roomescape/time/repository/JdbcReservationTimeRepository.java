@@ -2,6 +2,7 @@ package roomescape.time.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -54,13 +55,31 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
+    public List<ReservationTime> findAll() {
+        return jdbcTemplate.query("select id, start_at from reservation_time", reservationTimeRowMapper);
+    }
+
+    @Override
     public boolean existsByStartAt(LocalTime startAt) {
         String sql = "select exists (select 1 from reservation_time where start_at = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("select id, start_at from reservation_time", reservationTimeRowMapper);
+    public List<AvailableTimeQueryResult> findAvailableTimes(Long themeId, LocalDate date) {
+        String sql = "SELECT rt.id, rt.start_at\n" +
+                "FROM reservation_time rt\n" +
+                "LEFT JOIN reservation r\n" +
+                "  ON rt.id = r.time_id\n" +
+                "  AND r.theme_id = ?\n" +
+                "  AND r.reservation_date = ?\n" +
+                "WHERE r.id IS NULL";
+
+        RowMapper<AvailableTimeQueryResult> reservationTimeMapper = (rs, rowNum) ->
+                new AvailableTimeQueryResult(
+                        rs.getLong("id"),
+                        rs.getTime("start_at").toLocalTime()
+                );
+        return jdbcTemplate.query(sql, reservationTimeMapper, themeId, date);
     }
 }

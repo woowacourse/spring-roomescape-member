@@ -1,8 +1,7 @@
 package roomescape.theme.service.dto;
 
-import roomescape.theme.repository.AvailableTimeQueryResult;
-
 import java.util.List;
+import roomescape.time.repository.AvailableTimeQueryResult;
 
 public record AvailableTimesResult(List<AvailableTimeQueryResult> availableTimeQueryResults) {
 }

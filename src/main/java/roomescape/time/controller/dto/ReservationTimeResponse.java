@@ -1,9 +1,8 @@
 package roomescape.time.controller.dto;
 
-import roomescape.theme.repository.AvailableTimeQueryResult;
-import roomescape.time.domain.ReservationTime;
-
 import java.time.LocalTime;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.AvailableTimeQueryResult;
 
 public record ReservationTimeResponse(Long id, LocalTime startAt) {
 

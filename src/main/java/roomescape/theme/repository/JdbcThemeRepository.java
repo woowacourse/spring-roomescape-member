@@ -1,7 +1,6 @@
 package roomescape.theme.repository;
 
 import java.sql.PreparedStatement;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -65,23 +64,5 @@ public class JdbcThemeRepository implements ThemeRepository {
     public boolean existsByName(String name) {
         String sql = "select exists (select 1 from theme where name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
-    }
-
-    @Override
-    public List<AvailableTimeQueryResult> findAvailableTimes(Long themeId, LocalDate date) {
-        String sql = "SELECT rt.id, rt.start_at\n" +
-                "FROM reservation_time rt\n" +
-                "LEFT JOIN reservation r\n" +
-                "  ON rt.id = r.time_id\n" +
-                "  AND r.theme_id = ?\n" +
-                "  AND r.reservation_date = ?\n" +
-                "WHERE r.id IS NULL";
-
-        RowMapper<AvailableTimeQueryResult> reservationTimeMapper = (rs, rowNum) ->
-                new AvailableTimeQueryResult(
-                        rs.getLong("id"),
-                        rs.getTime("start_at").toLocalTime()
-                );
-        return jdbcTemplate.query(sql, reservationTimeMapper, themeId, date);
     }
 }

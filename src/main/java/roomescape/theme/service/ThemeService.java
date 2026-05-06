@@ -1,13 +1,11 @@
 package roomescape.theme.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.theme.service.dto.AvailableTimesResult;
 import roomescape.theme.service.dto.ThemeCommand;
 
 @Service
@@ -41,9 +39,5 @@ public class ThemeService {
 
     public List<Theme> findAll() {
         return themeRepository.findAll();
-    }
-
-    public AvailableTimesResult findAvailableTimes(Long themeId, LocalDate date) {
-        return new AvailableTimesResult(themeRepository.findAvailableTimes(themeId, date));
     }
 }
