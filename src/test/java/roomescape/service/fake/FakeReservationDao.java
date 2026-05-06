@@ -30,15 +30,17 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Long insert(Reservation reservation) {
+    public Reservation insert(Reservation reservation) {
         Long id = ++sequence;
-        store.put(id, new Reservation(
+        Reservation newReservation = new Reservation(
                 id,
                 reservation.getName(),
                 reservation.getDate(),
                 reservation.getTime(),
-                reservation.getTheme()));
-        return id;
+                reservation.getTheme());
+
+        store.put(id, newReservation);
+        return newReservation;
 
     }
 

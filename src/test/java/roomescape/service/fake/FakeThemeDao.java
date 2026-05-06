@@ -30,10 +30,11 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public Long insert(Theme theme) {
+    public Theme insert(Theme theme) {
         Long id = ++sequence;
-        store.put(id, new Theme(id, theme.getName(), theme.getThumbnailUrl(), theme.getDescription()));
-        return id;
+        Theme newTheme = new Theme(id, theme.getName(), theme.getThumbnailUrl(), theme.getDescription());
+        store.put(id, newTheme);
+        return newTheme;
     }
 
     @Override

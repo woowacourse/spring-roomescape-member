@@ -3,7 +3,11 @@ package roomescape.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -21,40 +25,50 @@ class TimeJdbcDaoTest {
     @Autowired
     private TimeDao timeDao;
 
-    @ParameterizedTest
-    @CsvSource({
-            "1",
-            "2",
-            "3"
-    })
-    void findAll(int count) {
-        for (int i = 0; i < count; i++) {
-            createAndInsertTime();
-        }
-        List<Time> times = timeDao.findAll();
+    private Time time1;
+    private Time time2;
 
-        assertThat(times).hasSize(count);
+    @BeforeEach
+    void setUp() {
+        time1 = new Time(LocalTime.of(11, 0));
+        time2 = new Time(LocalTime.of(11, 24));
     }
 
     @Test
     void findById() {
-        Long savedId = createAndInsertTime();
-        assertThat(timeDao.findById(savedId)).isPresent();
+        Time saved = insertTimeHandler(time1);
+        assertThat(timeDao.findById(saved.getId()))
+                .isPresent()
+                .get().isEqualTo(saved);
+    }
+
+    @Test
+    void findAll() {
+        List<Time> saved = insertTimesHandler(time1, time2);
+        List<Time> find = timeDao.findAll();
+
+        assertThat(find).hasSize(saved.size())
+                .containsAll(saved);
     }
 
     @Test
     void insert() {
-        assertThat(timeDao.insert(new Time(LocalTime.of(10, 0)))).isNotNull();
+        assertThat(timeDao.insert(time1)).isNotNull();
     }
 
     @Test
     void delete() {
-        Long id = createAndInsertTime();
-
-        assertThat(timeDao.delete(id)).isEqualTo(DELETED);
+        Time saved = insertTimeHandler(time1);
+        assertThat(timeDao.delete(saved.getId())).isEqualTo(DELETED);
     }
 
-    private Long createAndInsertTime() {
-        return timeDao.insert(new Time(LocalTime.of(10, 0)));
+    private Time insertTimeHandler(Time time) {
+        return timeDao.insert(time);
+    }
+
+    private List<Time> insertTimesHandler(Time... times) {
+        return Arrays.stream(times)
+                .map(this::insertTimeHandler)
+                .toList();
     }
 }

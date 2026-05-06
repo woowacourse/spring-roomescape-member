@@ -14,10 +14,11 @@ public class FakeTimeDao implements TimeDao {
     private long sequence = 0L;
 
     @Override
-    public Long insert(Time time) {
+    public Time insert(Time time) {
         Long id = ++sequence;
-        store.put(id, new Time(id, time.getStartAt()));
-        return id;
+        Time newTime = new Time(id, time.getStartAt());
+        store.put(id, newTime);
+        return newTime;
     }
 
     @Override
