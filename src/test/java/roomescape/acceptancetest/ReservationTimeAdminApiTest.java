@@ -1,4 +1,4 @@
-package roomescape.reservationtime;
+package roomescape.acceptancetest;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

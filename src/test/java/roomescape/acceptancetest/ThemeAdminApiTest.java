@@ -1,4 +1,4 @@
-package roomescape.theme;
+package roomescape.acceptancetest;
 
 import static org.hamcrest.Matchers.is;
 
