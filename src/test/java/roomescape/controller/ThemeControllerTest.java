@@ -1,10 +1,15 @@
 package roomescape.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -14,27 +19,18 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.reservationTime.ReservationTimeRequestDto;
-import roomescape.dto.reservationTime.ReservationTimeResponseDto;
+import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.theme.PopularThemesResponseDto;
 import roomescape.dto.theme.ThemeRequestDto;
 import roomescape.dto.theme.ThemeResponseDto;
 import roomescape.service.ThemeService;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ThemeControllerTest {
 
     private static final Theme THEME = new Theme(null, "name", "description", "image-url");
     private static final Theme SAVED_THEME = new Theme(1L, "name", "description", "image-url");
-    private static final ThemeResponseDto THEME_RESPONSE = ThemeResponseDto.from(THEME);
 
     @LocalServerPort
     private int port;
@@ -52,23 +48,24 @@ class ThemeControllerTest {
         // given
         List<Theme> themes = List.of(THEME.withId(1L), THEME.withId(2L), THEME.withId(3L));
         List<ThemeResponseDto> dtos = themes.stream()
-                .map(ThemeResponseDto::from)
-                .toList();
+            .map(ThemeResponseDto::from)
+            .toList();
 
         when(themeService.getThemes())
-                .thenReturn(themes);
+            .thenReturn(themes);
 
         // when
         Response response = RestAssured
-                .given().log().all()
-                .when().get("/themes");
+            .given().log().all()
+            .when().get("/themes");
 
         // then
         response
-                .then()
-                .statusCode(HttpStatus.OK.value());
+            .then()
+            .statusCode(HttpStatus.OK.value());
 
-        List<ThemeResponseDto> responseDtos = response.as(new TypeRef<>() {});
+        List<ThemeResponseDto> responseDtos = response.as(new TypeRef<>() {
+        });
         assertThat(responseDtos).hasSize(3);
         assertThat(responseDtos).containsExactlyElementsOf(dtos);
     }
@@ -93,7 +90,8 @@ class ThemeControllerTest {
             .then()
             .statusCode(HttpStatus.OK.value());
 
-        PopularThemesResponseDto actualResponse = response.as(new TypeRef<>() {});
+        PopularThemesResponseDto actualResponse = response.as(new TypeRef<>() {
+        });
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
@@ -105,38 +103,38 @@ class ThemeControllerTest {
             // given
             ThemeRequestDto request = themeRequestDtoFrom(THEME);
             when(themeService.addTheme(any()))
-                    .thenReturn(SAVED_THEME);
+                .thenReturn(SAVED_THEME);
 
             // when
             Response response = RestAssured
-                    .given().log().all()
-                    .queryParam("role", "admin")
-                    .contentType(ContentType.JSON)
-                    .body(request)
-                    .when().post("/themes");
+                .given().log().all()
+                .queryParam("role", "admin")
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/themes");
 
             // then
             response
-                    .then()
-                    .statusCode(HttpStatus.CREATED.value());
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
 
-            ThemeResponseDto responseDto = response.as(ThemeResponseDto.class);
-            assertThat(responseDto).isEqualTo(ThemeResponseDto.from(SAVED_THEME));
+            ResourceIdResponseDto responseDto = response.as(ResourceIdResponseDto.class);
+            assertThat(responseDto).isEqualTo(new ResourceIdResponseDto(SAVED_THEME.getId()));
         }
 
         @Test
         void 관리자는_테마를_삭제할_수_있다() {
             // given & when
             Response response = RestAssured
-                    .given().log().all()
-                    .queryParam("role", "admin")
-                    .pathParam("id", 1)
-                    .when().delete("/themes/{id}");
+                .given().log().all()
+                .queryParam("role", "admin")
+                .pathParam("id", 1)
+                .when().delete("/themes/{id}");
 
             // then
             response
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value());
         }
 
         @Test
@@ -146,32 +144,31 @@ class ThemeControllerTest {
 
             // when
             Response response = RestAssured
-                    .given().log().all()
-                    .queryParam("role", "user")
-                    .contentType(ContentType.JSON)
-                    .body(request)
-                    .when().post("/themes");
-
+                .given().log().all()
+                .queryParam("role", "user")
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/themes");
 
             // then
             response
-                    .then()
-                    .statusCode(HttpStatus.FORBIDDEN.value());
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value());
         }
 
         @Test
         void 관리자가_아닌_사용자가_테마를_삭제하는_경우_예외가_발생한다() {
             // given & when
             Response response = RestAssured
-                    .given().log().all()
-                    .queryParam("role", "user")
-                    .pathParam("id", 1)
-                    .when().delete("/themes/{id}");
+                .given().log().all()
+                .queryParam("role", "user")
+                .pathParam("id", 1)
+                .when().delete("/themes/{id}");
 
             // then
             response
-                    .then()
-                    .statusCode(HttpStatus.FORBIDDEN.value());
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value());
         }
     }
 
@@ -185,9 +182,9 @@ class ThemeControllerTest {
 
     private ThemeRequestDto themeRequestDtoFrom(Theme theme) {
         return new ThemeRequestDto(
-                theme.getName(),
-                theme.getDescription(),
-                theme.getImageUrl()
+            theme.getName(),
+            theme.getDescription(),
+            theme.getImageUrl()
         );
     }
 }

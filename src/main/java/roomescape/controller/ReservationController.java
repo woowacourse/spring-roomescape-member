@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
+import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.service.ReservationService;
@@ -37,9 +38,9 @@ public class ReservationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponseDto addReservation(@Valid @RequestBody ReservationRequestDto requestDto) {
+    public ResourceIdResponseDto addReservation(@Valid @RequestBody ReservationRequestDto requestDto) {
         Reservation reservation = reservationService.addReservation(requestDto);
-        return ReservationResponseDto.from(reservation);
+        return new ResourceIdResponseDto(reservation.getId());
     }
 
     @DeleteMapping("{id}")
