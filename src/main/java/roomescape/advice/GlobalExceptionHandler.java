@@ -1,4 +1,4 @@
-package roomescape.reservation.controller.advice;
+package roomescape.advice;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
