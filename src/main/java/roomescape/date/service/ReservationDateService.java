@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Transactional
 public class ReservationDateService {
 
     private final ReservationDateRepository reservationDateRepository;
@@ -32,13 +33,10 @@ public class ReservationDateService {
         return reservationDateRepository.findAllAfterToday();
     }
 
-
-    @Transactional
     public ReservationDate register(LocalDate date) {
         return reservationDateRepository.save(ReservationDate.create(date));
     }
 
-    @Transactional
     public ReservationDate deregister(Long id) {
         ReservationDate reservationDate = getReservationDate(id);
         reservationDateRepository.delete(reservationDate.id());

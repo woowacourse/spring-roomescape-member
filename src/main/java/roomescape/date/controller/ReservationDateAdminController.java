@@ -33,7 +33,7 @@ public class ReservationDateAdminController {
     }
 
     @PostMapping("/dates")
-    public ResponseEntity<ReservationDateDetailDto> createReservationDate(
+    public ResponseEntity<ReservationDateDetailDto> create(
             @RequestBody ReservationDateSaveDto dto
     ) {
         ReservationDate reservationDate = reservationDateService.register(dto.date());
@@ -42,7 +42,7 @@ public class ReservationDateAdminController {
     }
 
     @DeleteMapping("/dates/{id}")
-    public ResponseEntity<ReservationDateDetailDto> deleteReservationDate(@PathVariable Long id) {
+    public ResponseEntity<ReservationDateDetailDto> delete(@PathVariable Long id) {
         ReservationDate reservationDate = reservationDateService.deregister(id);
         ReservationDateDetailDto responseData = ReservationDateDetailDto.from(reservationDate);
         return ResponseEntity.ok(responseData);
