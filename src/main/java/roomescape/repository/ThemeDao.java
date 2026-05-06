@@ -109,7 +109,7 @@ public class ThemeDao {
         return jdbcInsert.executeAndReturnKey(Map.of(
                 "name", name,
                 "description", description,
-                "thumbnailUrl", thumbnailUrl
+                "thumbnail_url", thumbnailUrl
         )).longValue();
     }
 
