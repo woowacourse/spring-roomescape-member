@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,14 +21,12 @@ public class ThemeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Theme> themeRowMapper = (rs, rowNum) -> {
-        return new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail_image_url")
-        );
-    };
+    private final RowMapper<Theme> themeRowMapper = (rs, rowNum) -> new Theme(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("description"),
+            rs.getString("thumbnail_image_url")
+    );
 
     public List<Theme> findAll() {
         String sql = "SELECT id, name, description, thumbnail_image_url " +
@@ -58,5 +57,26 @@ public class ThemeDao {
         String sql = "SELECT * FROM theme WHERE id = ?";
         List<Theme> results = jdbcTemplate.query(sql, themeRowMapper, id);
         return results.stream().findFirst();
+    }
+
+    public List<Theme> getPopularTop10Themes(LocalDate start, LocalDate end) {
+        String sql = """
+                SELECT
+                t.id, t.name, t.description, t.thumbnail_image_url
+                FROM theme as t
+                JOIN reservation as r
+                ON r.theme_id = t.id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id, t.name, t.description, t.thumbnail_image_url
+                ORDER BY COUNT(*) DESC
+                LIMIT 10;
+                """;
+        return jdbcTemplate.query(
+                sql,
+                themeRowMapper,
+                start,
+                end
+        );
+
     }
 }

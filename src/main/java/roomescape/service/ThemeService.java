@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -34,5 +35,11 @@ public class ThemeService {
 
     public Theme findById(Long id) {
         return themeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 ID입니다."));
+    }
+
+    public List<Theme> getPopularTop10Themes(LocalDate now, Integer days) {
+        LocalDate start = now.minusDays(days);
+        LocalDate end = now.minusDays(1);
+        return themeRepository.getPopularTop10Themes(start, end);
     }
 }

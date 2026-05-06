@@ -1,10 +1,12 @@
 package roomescape.repository;
 
-import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ThemeRepository {
@@ -29,5 +31,9 @@ public class ThemeRepository {
 
     public Optional<Theme> findById(Long id) {
         return themeDao.findById(id);
+    }
+
+    public List<Theme> getPopularTop10Themes(LocalDate start, LocalDate end) {
+        return themeDao.getPopularTop10Themes(start, end);
     }
 }

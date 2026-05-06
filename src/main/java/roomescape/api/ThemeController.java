@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
@@ -14,6 +15,7 @@ import roomescape.dto.ThemeResponse;
 import roomescape.facade.ReservationFacade;
 import roomescape.service.ThemeService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -50,5 +52,14 @@ public class ThemeController {
         reservationFacade.deleteTheme(id);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> searchPopularTop10(@RequestParam(defaultValue = "7") Integer days) {
+        List<ThemeResponse> responses = themeService.getPopularTop10Themes(LocalDate.now(), days).stream()
+                .map(ThemeResponse::from)
+                .toList();
+
+        return ResponseEntity.ok().body(responses);
     }
 }
