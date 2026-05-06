@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;

@@ -6,7 +6,8 @@ public record ThemeResponseDTO(
         Long id,
         String name,
         String description,
-        String imageUrl
+        String imageUrl,
+        Long runningTime
 ) {
 
     public static ThemeResponseDTO from(Theme theme) {
@@ -14,7 +15,8 @@ public record ThemeResponseDTO(
                 theme.getId(),
                 theme.getName(),
                 theme.getDescription(),
-                theme.getImageUrl()
+                theme.getImageUrl(),
+                theme.getRunningTime()
         );
     }
 }

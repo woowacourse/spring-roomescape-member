@@ -4,23 +4,24 @@ import java.util.Objects;
 
 public class Theme {
 
+    private static final long DEFAULT_RUNNING_TIME = 60L;
+
     private final Long id;
     private final String name;
     private final String description;
     private final String imageUrl;
+    private final Long runningTime;
 
     public Theme(Long id, String name, String description, String imageUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.runningTime = DEFAULT_RUNNING_TIME;
     }
 
     public Theme(String name, String description, String imageUrl) {
-        this.id = null;
-        this.name = name;
-        this.description = description;
-        this.imageUrl = imageUrl;
+        this(null, name, description, imageUrl);
     }
 
     public Long getId() {
@@ -37,6 +38,10 @@ public class Theme {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public Long getRunningTime() {
+        return runningTime;
     }
 
     @Override
