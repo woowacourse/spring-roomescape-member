@@ -2,6 +2,7 @@ package roomescape.infrastructure;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.entity.Theme;
+import roomescape.entity.ThemeSortType;
 
 @JdbcTest
 @Import(ThemeJdbcTemplateRepository.class)
@@ -20,11 +23,13 @@ class ThemeJdbcTemplateRepositoryTest {
     private static final String TEST_THEMA_DESCRIPTION = "테스트 테마 설명";
     private static final String TEST_THEMA_THUMBNAIL = "https://good.com/thumb-nail";
 
+    private final JdbcTemplate jdbcTemplate;
     private final ThemeJdbcTemplateRepository themeRepository;
 
     @Autowired
-    public ThemeJdbcTemplateRepositoryTest(ThemeJdbcTemplateRepository themeRepository) {
+    public ThemeJdbcTemplateRepositoryTest(ThemeJdbcTemplateRepository themeRepository, JdbcTemplate jdbcTemplate) {
         this.themeRepository = themeRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Test
@@ -120,5 +125,49 @@ class ThemeJdbcTemplateRepositoryTest {
         Assertions.assertDoesNotThrow(
                 () -> themeRepository.deleteById(notExistThemeId)
         );
+    }
+
+    @Test
+    @DisplayName("기간 내 예약 수가 많은 테마를 상위 N개 조회한다")
+    void findTopNByPeriod_success() {
+        // given
+        Theme theme1 = themeRepository.save(
+                Theme.createWithNullId("인기 테마", "설명1", "thumb1")
+        );
+        Theme theme2 = themeRepository.save(
+                Theme.createWithNullId("덜 인기 테마", "설명2", "thumb2")
+        );
+
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 1L, "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 2L, "11:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 3L, "12:00");
+
+        jdbcTemplate.update("""
+            INSERT INTO reservation (name, date, time_id, theme_id)
+            VALUES (?, ?, ?, ?)
+            """, "예약자1", LocalDate.of(2026, 5, 1), 1L, theme1.id());
+
+        jdbcTemplate.update("""
+            INSERT INTO reservation (name, date, time_id, theme_id)
+            VALUES (?, ?, ?, ?)
+            """, "예약자2", LocalDate.of(2026, 5, 2), 2L, theme1.id());
+
+        jdbcTemplate.update("""
+            INSERT INTO reservation (name, date, time_id, theme_id)
+            VALUES (?, ?, ?, ?)
+            """, "예약자3", LocalDate.of(2026, 5, 3), 3L, theme2.id());
+
+        // when
+        List<Theme> result = themeRepository.findTopNByPeriod(
+                LocalDate.of(2026, 5, 1),
+                LocalDate.of(2026, 5, 7),
+                ThemeSortType.POPULAR,
+                2L
+        );
+
+        // then
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertEquals(theme1.id(), result.get(0).id());
+        Assertions.assertEquals(theme2.id(), result.get(1).id());
     }
 }
