@@ -15,7 +15,8 @@ CREATE TABLE themes
     name          VARCHAR(40) NOT NULL,
     thumbnail_url VARCHAR(2048),
     description   VARCHAR(40),
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE (name)
 );
 
 

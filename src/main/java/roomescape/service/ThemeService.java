@@ -1,13 +1,12 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
 import roomescape.dto.ThemeRequestDto;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,6 +31,10 @@ public class ThemeService {
     @Transactional
     public Theme create(ThemeRequestDto themeRequest) {
         Name name = new Name(themeRequest.name());
+        if (themeDao.existsByName(name)) {
+            throw new IllegalArgumentException("이미 존재하는 테마 이름입니다.");
+        }
+
         Theme theme = new Theme(name, themeRequest.thumbnailUrl(), themeRequest.description());
         return themeDao.insert(theme);
     }

@@ -1,5 +1,9 @@
 package roomescape.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +12,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Import({
@@ -73,5 +72,13 @@ public class ThemeJdbcDaoTest {
 
     private Theme insertThemeHandler(Theme theme) {
         return themeDao.insert(theme);
+    }
+
+    @Test
+    void existsByName() {
+        Theme saved = insertThemeHandler(theme1);
+        Theme notExists = theme2;
+        assertThat(themeDao.existsByName(saved.getName())).isTrue();
+        assertThat(themeDao.existsByName(notExists.getName())).isFalse();
     }
 }

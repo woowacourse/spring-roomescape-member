@@ -1,12 +1,12 @@
 package roomescape.service.fake;
 
-import roomescape.dao.ThemeDao;
-import roomescape.domain.Theme;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import roomescape.dao.ThemeDao;
+import roomescape.domain.Theme;
+import roomescape.domain.vo.Name;
 
 public class FakeThemeDao implements ThemeDao {
     private final Map<Long, Theme> store = new HashMap<>();
@@ -45,5 +45,12 @@ public class FakeThemeDao implements ThemeDao {
             return 0;
         }
         return 1;
+    }
+
+    @Override
+    public boolean existsByName(Name name) {
+        return store.values()
+                .stream()
+                .anyMatch(theme -> theme.getName().equals(name));
     }
 }

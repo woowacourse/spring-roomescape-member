@@ -76,4 +76,16 @@ public class ThemeJdbcDao implements ThemeDao {
 
         return jdbcTemplate.update(sql, params);
     }
+
+    @Override
+    public boolean existsByName(Name name) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 FROM themes WHERE name = :name
+                )
+                """;
+        SqlParameterSource params = new MapSqlParameterSource("name", name.getValue());
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, params, Boolean.class));
+    }
 }
