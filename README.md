@@ -35,6 +35,25 @@
 | `id`     | `Long`    | 시간 ID |
 | `startAt` | `LocalTime` | 시작 시간 |
 
+#### Theme
+
+테마 정보를 관리한다.
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `id` | `Long` | 테마 ID |
+| `name` | `String` | 테마 이름 |
+| `description` | `String` | 테마 설명 |
+
+#### Holiday
+
+영업일이 아닌 날짜(휴일) 정보를 관리한다.
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `id` | `Long` | 휴일 ID |
+| `date` | `LocalDate` | 휴일 날짜 |
+
 ---
 
 ### Controller
@@ -424,6 +443,14 @@ Content-Type: application/json
 
 - [ ] 사용 가능한 날짜 목록을 조회한다.
 - [ ] `month` 쿼리로 특정 월만 필터하여 조회한다.
+- [ ] 영업일이 아닌 날(휴일)은 `holiday` 테이블 기준으로 목록에서 제외한다.
+
+### HolidayDBTest
+
+- [ ] 영업일이 아닌 날(휴일) 정보를 저장하기 위한 `holiday` 테이블을 생성한다.
+- [ ] `holiday` 테이블 컬럼은 `id`, `date`를 가진다.
+- [ ] `holiday` 데이터를 추가하고 조회한다.
+- [ ] `holiday` 데이터를 삭제한다.
 
 ### UserReservationAPITest
 

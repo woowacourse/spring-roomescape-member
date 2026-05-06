@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import roomescape.holiday.domain.Holiday;
 
@@ -14,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class JdbcHolidayRepositoryTest {
 
     @Autowired
@@ -54,7 +56,7 @@ class JdbcHolidayRepositoryTest {
     void delete() {
         Holiday holiday = new Holiday(1L, LocalDate.of(2026, 5, 6));
         holidayRepository.save(holiday);
-        assertThat(holidayRepository.delete(1L)).isTrue();
+        assertThat(holidayRepository.deleteById(1L)).isTrue();
         assertThat(holidayRepository.findAll()).isEmpty();
     }
 }
