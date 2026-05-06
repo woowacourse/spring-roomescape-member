@@ -25,25 +25,19 @@ import roomescape.time.repository.FakeReservationTimeRepository;
 class ReservationServiceTest {
 
     private final String name = "한다";
-    private final LocalDate date = LocalDate.now().plusMonths(1);
-    private final ReservationTime time = ReservationTime.of(1L, LocalTime.of(15, 40));
-    private Theme theme;
-
-    private ReservationService reservationService;
-    private ReservationDate reservationDate;
-    private Long timeId;
-
-    private FakeReservationRepository reservationRepository;
-    private FakeReservationTimeRepository reservationTimeRepository;
-    private FakeReservationDateRepository reservationDateRepository;
-    private FakeThemeRepository themeRepository;
-
     private ReservationTime reservationTime1;
     private ReservationTime reservationTime2;
     private ReservationDate reservationDate1;
     private ReservationDate reservationDate2;
     private Theme theme1;
     private Theme theme2;
+
+    private FakeReservationRepository reservationRepository;
+    private FakeReservationTimeRepository reservationTimeRepository;
+    private FakeReservationDateRepository reservationDateRepository;
+    private FakeThemeRepository themeRepository;
+
+    private ReservationService reservationService;
 
     @BeforeEach
     void setup() {
@@ -89,7 +83,7 @@ class ReservationServiceTest {
     void create() {
         //given & when
         List<Reservation> reservations = List.of();
-        reservationService.create(new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme.id()));
+        reservationService.create(new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id()));
 
         //then
         assertThat(reservationService.findAll())
@@ -101,7 +95,7 @@ class ReservationServiceTest {
     void create_does_not_exist_reservation_time() {
         // given
         Long wrongTimeId = Long.MIN_VALUE;
-        ReservationSaveDto command = new ReservationSaveDto(name, reservationDate.id(), wrongTimeId, theme.id());
+        ReservationSaveDto command = new ReservationSaveDto(name, reservationDate1.id(), wrongTimeId, theme1.id());
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(command))
@@ -113,7 +107,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 삭제한다.")
     void delete() {
         //given
-        List<ReservationSaveDto> reservations = List.of(new ReservationSaveDto(name, reservationDate1.id(), reservationTime1.id(), theme.id()));
+        List<ReservationSaveDto> reservations = List.of(new ReservationSaveDto(name, reservationDate1.id(), reservationTime1.id(), theme1.id()));
         ReservationResponse reservationResponse =  reservationService.create(reservations.getFirst());
 
         //when
@@ -140,8 +134,8 @@ class ReservationServiceTest {
     @DisplayName("이미 존재하는 예약 생성 시 예외를 발생한다.")
     void create_duplicate_reservation() {
         // given
-        reservationService.create(new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme.id()));
-        ReservationSaveDto duplicateDateTimeCommand = new ReservationSaveDto("한다", reservationDate1.id(), reservationTime1.id(), theme.id());
+        reservationService.create(new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id()));
+        ReservationSaveDto duplicateDateTimeCommand = new ReservationSaveDto("한다", reservationDate1.id(), reservationTime1.id(), theme1.id());
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(duplicateDateTimeCommand))
