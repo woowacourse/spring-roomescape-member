@@ -2,5 +2,5 @@ package roomescape.theme.repository;
 
 import java.time.LocalTime;
 
-public record AvailableTimeQueryResult(LocalTime startAt) {
+public record AvailableTimeQueryResult(Long id, LocalTime startAt) {
 }

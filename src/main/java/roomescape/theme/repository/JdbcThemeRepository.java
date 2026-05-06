@@ -59,7 +59,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        return jdbcTemplate.query("select id, name from theme", ThemeMapper);
+        return jdbcTemplate.query("select id, name, description, thumbnail_url from theme", ThemeMapper);
     }
 
     @Override
@@ -74,6 +74,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         RowMapper<AvailableTimeQueryResult> reservationTimeMapper = (rs, rowNum) ->
                 new AvailableTimeQueryResult(
+                        rs.getLong("id"),
                         rs.getTime("start_at").toLocalTime()
                 );
         return jdbcTemplate.query(sql, reservationTimeMapper, themeId, date);
