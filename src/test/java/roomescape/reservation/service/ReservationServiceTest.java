@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
@@ -36,7 +37,7 @@ class ReservationServiceTest {
         timeService.save(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
         ReservationCreateRequest request = new ReservationCreateRequest("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
-        ReservationResponse reservationResponse = reservationService.save(request);
+        ReservationResponse reservationResponse = reservationService.save(request, LocalDateTime.of(2000, 1, 1, 0, 0));
 
         SoftAssertions.assertSoftly(assertSoftly -> {
             assertSoftly.assertThat(reservationResponse.id()).isEqualTo(1L);
@@ -55,12 +56,25 @@ class ReservationServiceTest {
         timeService.save(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
         ReservationCreateRequest firstRequest = new ReservationCreateRequest("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
-        reservationService.save(firstRequest);
+        reservationService.save(firstRequest, LocalDateTime.of(2000, 1, 1, 0, 0));
 
         ReservationCreateRequest secondRequest = new ReservationCreateRequest("카야", LocalDate.of(2026, 5, 6), 1L, 1L);
 
-        Assertions.assertThatThrownBy(() -> reservationService.save(secondRequest))
+        Assertions.assertThatThrownBy(() -> reservationService.save(secondRequest, LocalDateTime.of(2000, 1, 1, 0, 0)))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage("[ERROR] 이미 해당 날짜와 시간에 예약이 존재합니다.");
+    }
+
+    @DisplayName("오늘보다 이전 날짜 혹은 시간 예약 시도 시 예외 발생을 테스트합니다.")
+    @Test
+    void validate_throw_exception_when_reserving_past_date_or_time() {
+        themeService.save(new ThemeCreateRequest("theme name", "theme description", "theme img url"));
+        timeService.save(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+
+        ReservationCreateRequest request = new ReservationCreateRequest("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
+
+        Assertions.assertThatThrownBy(() -> reservationService.save(request, LocalDateTime.of(2026, 5, 6, 11, 0)))
+                .isInstanceOf(ReservationException.class)
+                .hasMessage("[ERROR] 현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
     }
 }

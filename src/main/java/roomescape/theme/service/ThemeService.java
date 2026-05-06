@@ -37,6 +37,9 @@ public class ThemeService {
     }
 
     public int delete(long id) {
+        // 삭제 전 예약들 확인
+        // 예약에서 테마가 사용중인지 확인
+        // 예약 내역에 테마가 해당 예약의 날짜가 이미 지난 날인지 확인
         return themeRepository.delete(id);
     }
 

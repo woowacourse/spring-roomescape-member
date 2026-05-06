@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class ReservationController {
             @Valid @RequestBody ReservationCreateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(reservationService.save(request));
+                .body(reservationService.save(request, LocalDateTime.now()));
     }
 
     @DeleteMapping("/{id}")

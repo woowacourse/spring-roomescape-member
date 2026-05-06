@@ -1,5 +1,9 @@
 package roomescape.reservation.service;
 
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,13 +33,26 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse save(ReservationCreateRequest request) {
-        ThemeResponse themeResponse = themeService.findById(request.themeId());
+    public ReservationResponse save(ReservationCreateRequest request, LocalDateTime currentDateTime) {
         ReservationTimeResponse timeResponse = timeService.findById(request.timeId());
-        validateDuplicateReservation(request);
-        Reservation reservation = request.toEntity(themeResponse.id(), timeResponse.id());
+        validateReservationDateTime(request.date(), timeResponse.startAt(), currentDateTime);
 
+        ThemeResponse themeResponse = themeService.findById(request.themeId());
+        validateDuplicateReservation(request);
+
+        Reservation reservation = request.toEntity(themeResponse.id(), timeResponse.id());
         return ReservationResponse.from(reservationRepository.save(reservation), themeResponse, timeResponse);
+    }
+
+    // TODO : timeResponse의 startAt 전부 LocalTime으로 바꾸기
+    private void validateReservationDateTime(LocalDate date, String startAt, LocalDateTime currentDateTime) {
+        LocalTime localTimeStartAt = LocalTime.parse(startAt);
+
+        LocalDateTime triedDateTime = LocalDateTime.of(date, localTimeStartAt);
+
+        if (triedDateTime.isBefore(currentDateTime)) {
+            throw new ReservationException("[ERROR] 현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
+        }
     }
 
     public int delete(Long id) {
