@@ -37,11 +37,11 @@ public class DatabaseMissionStepTest {
     @Test
     void DB_조회_API_전환() {
         jdbcTemplate.update(
-                "INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)",
+                "INSERT INTO reservation_time (start_time, end_time) VALUES (?, ?)",
                 "15:40", "16:00"
         );
         Long timeId = jdbcTemplate.queryForObject(
-                "SELECT id FROM reservation_time WHERE start_at = ?",
+                "SELECT id FROM reservation_time WHERE start_time = ?",
                 Long.class,
                 "15:40"
         );

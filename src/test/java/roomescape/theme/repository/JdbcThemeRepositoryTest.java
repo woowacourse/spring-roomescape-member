@@ -51,4 +51,6 @@ class JdbcThemeRepositoryTest {
 
         assertThat(jdbcThemeRepository.deleteById(1L)).isFalse();
     }
+
+
 }

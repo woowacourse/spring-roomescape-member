@@ -29,7 +29,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
                 """
-                SELECT r.id, r.name, r.date, r.time_id, rt.start_at
+                SELECT r.id, r.name, r.date, r.time_id, rt.start_time, rt.end_time
                 FROM reservation r
                 LEFT JOIN reservation_time rt ON r.time_id = rt.id
                 """,
@@ -58,7 +58,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             ReservationTime time = null;
             Long timeId = rs.getLong("time_id");
             if (!rs.wasNull()) {
-                time = new ReservationTime(timeId, rs.getString("start_at"));
+                time = new ReservationTime(timeId, rs.getString("start_time"), rs.getString("end_time"));
             }
             Reservation reservation = new Reservation(
                     rs.getString("name"),

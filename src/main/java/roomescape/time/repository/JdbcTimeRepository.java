@@ -28,7 +28,7 @@ public class JdbcTimeRepository implements TimeRepository {
   @Override
   public List<ReservationTime> findAll() {
     return jdbcTemplate.query(
-        "SELECT id, start_at FROM reservation_time ORDER BY id",
+        "SELECT id, start_time, end_time FROM reservation_time ORDER BY id",
         new ReservationTimeRowMapper()
     );
   }
@@ -37,18 +37,18 @@ public class JdbcTimeRepository implements TimeRepository {
   public ReservationTime save(String startAt, String endAt) {
     Number id = timeInsert.executeAndReturnKey(
         new MapSqlParameterSource()
-            .addValue("start_at", startAt)
-            .addValue("end_at", endAt)
+            .addValue("start_time", startAt)
+            .addValue("end_time", endAt)
     );
 
     Long timeId = id.longValue();
-    return new ReservationTime(timeId, startAt);
+    return new ReservationTime(timeId, startAt, endAt);
   }
 
   @Override
   public Optional<ReservationTime> findById(Long id) {
     List<ReservationTime> results = jdbcTemplate.query(
-        "SELECT id, start_at FROM reservation_time WHERE id = ?",
+        "SELECT id, start_time, end_time FROM reservation_time WHERE id = ?",
         new ReservationTimeRowMapper(),
         id
     );
@@ -69,7 +69,8 @@ public class JdbcTimeRepository implements TimeRepository {
     public ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
       return new ReservationTime(
           rs.getLong("id"),
-          rs.getString("start_at")
+          rs.getString("start_time"),
+          rs.getString("end_time")
       );
     }
   }

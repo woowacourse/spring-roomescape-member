@@ -82,6 +82,7 @@ public class MissionStepTest {
     void 시간_관리_API() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
+        params.put("endAt", "16:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -106,7 +107,7 @@ public class MissionStepTest {
     void 예약과_시간_연결() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");
-
+        time.put("endAt", "16:00");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(time)

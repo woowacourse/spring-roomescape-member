@@ -1,12 +1,13 @@
 DROP TABLE IF EXISTS reservation;
 DROP TABLE IF EXISTS reservation_time;
 DROP TABLE IF EXISTS theme;
+DROP TABLE IF EXISTS holiday;
 
 CREATE TABLE reservation_time
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
-    start_at VARCHAR(255) NOT NULL,
-    end_at   VARCHAR(255) NOT NULL,
+    start_time VARCHAR(255) NOT NULL,
+    end_time   VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -27,5 +28,12 @@ CREATE TABLE theme
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     image_url   VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE holiday
+(
+    id          BIGINT      NOT NULL AUTO_INCREMENT,
+    date        DATE        NOT NULL,
     PRIMARY KEY (id)
 );
