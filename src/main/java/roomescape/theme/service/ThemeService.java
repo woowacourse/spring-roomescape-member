@@ -26,6 +26,11 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<Theme> findPopularThemes(int days, int limits) {
+        return themeRepository.findPopularThemes(days, limits);
+    }
+
     @Transactional
     public void deleteById(Long id) {
         themeRepository.deleteById(id);

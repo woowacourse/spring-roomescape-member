@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.entity.ReservationTime;
@@ -91,6 +92,17 @@ class JdbcThemeRepositoryTest {
 
         Optional<Reservation> foundReservation = reservationRepository.findById(reservation.getId());
         assertThat(foundReservation).isEmpty();
+    }
+
+    @Sql("/create_dummies_for_popular_themes.sql")
+    @Test
+    void 인기있는_테마를_조회하는_테스트() {
+        List<Theme> themes = themeRepository.findPopularThemes(7, 10);
+
+        assertThat(themes).hasSize(5);
+        assertThat(themes)
+                .extracting(Theme::getName)
+                .containsExactly("테마5", "테마4", "테마3", "테마2", "테마1");
     }
 
 }

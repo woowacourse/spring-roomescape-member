@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.payload.ThemeResponse;
@@ -21,10 +22,18 @@ public class ThemeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ThemeResponse> getAllTimes() {
-        return themeService.findAll()
+    public List<ThemeResponse> getPopularThemes(@RequestParam(required = false) Integer days,
+                                                @RequestParam(required = false) Integer limits) {
+        if (days == null && limits == null) {
+            return themeService.findAll()
+                    .stream()
+                    .map(ThemeResponse::from)
+                    .toList();
+        }
+        return themeService.findPopularThemes(days, limits)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
+
 }

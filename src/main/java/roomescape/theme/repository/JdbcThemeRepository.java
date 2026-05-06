@@ -76,6 +76,33 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public List<Theme> findPopularThemes(int days, int limit) {
+        String sql = """
+                 SELECT
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.thumbnail_url,
+                    t.runtime
+                FROM theme t
+                LEFT JOIN reservation r
+                    ON t.id = r.theme_id
+                WHERE r.date >= DATEADD('DAY', -?, CURRENT_DATE)
+                GROUP BY
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.thumbnail_url,
+                    t.runtime
+                HAVING COUNT(r.id) > 0
+                ORDER BY COUNT(r.id) DESC
+                LIMIT ?
+                """;
+
+        return jdbcTemplate.query(sql, themeRowMapper, days, limit);
+    }
+
+    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
 
