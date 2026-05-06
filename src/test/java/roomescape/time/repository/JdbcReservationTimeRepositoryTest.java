@@ -1,9 +1,5 @@
 package roomescape.time.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +7,22 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.time.domain.ReservationTime;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
 
+    private final JdbcTemplate jdbcTemplate;
     private final ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
     public JdbcReservationTimeRepositoryTest(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
         this.reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
     }
 
@@ -67,6 +72,16 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 ID로 조회하면 빈 Optional을 반환한다.")
+    void findByIdWhenNotExistsTest() {
+        // when
+        Optional<ReservationTime> found = reservationTimeRepository.findById(999L);
+
+        // then
+        assertThat(found).isEmpty();
+    }
+
+    @Test
     @DisplayName("존재하는 모든 시간 목록을 리스트로 조회한다.")
     void findAllTest() {
         // given
@@ -79,6 +94,16 @@ class JdbcReservationTimeRepositoryTest {
         // then
         assertThat(times).hasSize(2);
         assertThat(times).extracting("startAt").containsExactly(LocalTime.of(10, 0), LocalTime.of(11, 0));
+    }
+
+    @Test
+    @DisplayName("저장된 시간이 없으면 빈 리스트를 반환한다.")
+    void findAllWhenEmptyTest() {
+        // when
+        List<ReservationTime> times = reservationTimeRepository.findAll();
+
+        // then
+        assertThat(times).isEmpty();
     }
 
     @DisplayName("해당 시간이 존재하는지 조회한다.")
@@ -94,5 +119,135 @@ class JdbcReservationTimeRepositoryTest {
         // then
         assertThat(exists).isTrue();
         assertThat(notExists).isFalse();
+    }
+
+    @Test
+    @DisplayName("해당 테마와 날짜에 예약되지 않은 시간만 조회된다.")
+    void findAvailableTimes() {
+        // given
+        Long themeId = 1L;
+        LocalDate date = LocalDate.of(2025, 1, 1);
+
+        jdbcTemplate.update("insert into reservation_time(id, start_at) values (1, '10:00:00')");
+        jdbcTemplate.update("insert into reservation_time(id, start_at) values (2, '11:00:00')");
+        jdbcTemplate.update("insert into reservation_time(id, start_at) values (3, '12:00:00')");
+
+        jdbcTemplate.update("insert into theme(id, name, description, thumbnail_url) values (1, '테마', '설명', 'url')");
+
+        jdbcTemplate.update(
+                "insert into reservation(name, reservation_date, time_id, theme_id) values ('user', ?, 2, ?)",
+                date, themeId
+        );
+
+        // when
+        List<ReservationTime> result = reservationTimeRepository.findAvailableTimes(themeId, date);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result)
+                .extracting(ReservationTime::getStartAt)
+                .containsExactlyInAnyOrder(LocalTime.of(10, 0), LocalTime.of(12, 0));
+    }
+
+    @Test
+    @DisplayName("예약이 하나도 없으면 모든 시간이 조회된다.")
+    void findAvailableTimesWhenNoReservationsTest() {
+        // given
+        Long themeId = 1L;
+        LocalDate date = LocalDate.of(2025, 1, 1);
+
+        jdbcTemplate.update("insert into reservation_time(id, start_at) values (1, '10:00:00')");
+        jdbcTemplate.update("insert into reservation_time(id, start_at) values (2, '11:00:00')");
+
+        jdbcTemplate.update("insert into theme(id, name, description, thumbnail_url) values (1, '테마', '설명', 'url')");
+
+        // when
+        List<ReservationTime> result = reservationTimeRepository.findAvailableTimes(themeId, date);
+
+        // then
+        assertThat(result)
+                .extracting(ReservationTime::getStartAt)
+                .containsExactlyInAnyOrder(LocalTime.of(10, 0), LocalTime.of(11, 0));
+    }
+
+    @Test
+    @DisplayName("모든 시간이 예약되었으면 빈 리스트를 반환한다.")
+    void findAvailableTimesWhenAllReservedTest() {
+        // given
+        Long themeId = 1L;
+        LocalDate date = LocalDate.of(2025, 1, 1);
+
+        jdbcTemplate.update("insert into reservation_time(id, start_at) values (1, '10:00:00')");
+        jdbcTemplate.update("insert into reservation_time(id, start_at) values (2, '11:00:00')");
+
+        jdbcTemplate.update("insert into theme(id, name, description, thumbnail_url) values (1, '테마', '설명', 'url')");
+
+        jdbcTemplate.update(
+                "insert into reservation(name, reservation_date, time_id, theme_id) values ('user1', ?, 1, ?)",
+                date, themeId
+        );
+        jdbcTemplate.update(
+                "insert into reservation(name, reservation_date, time_id, theme_id) values ('user2', ?, 2, ?)",
+                date, themeId
+        );
+
+        // when
+        List<ReservationTime> result = reservationTimeRepository.findAvailableTimes(themeId, date);
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    @DisplayName("동일한 시간이라도 다른 날짜의 예약은 가용 시간 조회에 영향을 주지 않는다.")
+    void findAvailableTimesIgnoresOtherDatesTest() {
+        // given
+        Long themeId = 1L;
+        LocalDate targetDate = LocalDate.of(2025, 1, 1);
+        LocalDate otherDate = LocalDate.of(2025, 1, 2);
+
+        jdbcTemplate.update("insert into reservation_time(id, start_at) values (1, '10:00:00')");
+        jdbcTemplate.update("insert into theme(id, name, description, thumbnail_url) values (1, '테마', '설명', 'url')");
+
+        // 다른 날짜에 예약된 시간은 targetDate 가용 시간 조회에 영향을 주지 않아야 한다.
+        jdbcTemplate.update(
+                "insert into reservation(name, reservation_date, time_id, theme_id) values ('user', ?, 1, ?)",
+                otherDate, themeId
+        );
+
+        // when
+        List<ReservationTime> result = reservationTimeRepository.findAvailableTimes(themeId, targetDate);
+
+        // then
+        assertThat(result)
+                .extracting(ReservationTime::getStartAt)
+                .containsExactly(LocalTime.of(10, 0));
+    }
+
+    @Test
+    @DisplayName("다른 테마의 예약은 해당 테마의 가용 시간 조회에 영향을 주지 않는다.")
+    void findAvailableTimesIgnoresOtherThemesTest() {
+        // given
+        Long targetThemeId = 1L;
+        Long otherThemeId = 2L;
+        LocalDate date = LocalDate.of(2025, 1, 1);
+
+        jdbcTemplate.update("insert into reservation_time(id, start_at) values (1, '10:00:00')");
+        jdbcTemplate.update("insert into theme(id, name, description, thumbnail_url) values (1, '테마1', '설명', 'url1')");
+        jdbcTemplate.update("insert into theme(id, name, description, thumbnail_url) values (2, '테마2', '설명', 'url2')");
+
+        // 다른 테마에 예약된 시간이라도 targetTheme 입장에서는 가용해야 한다.
+        jdbcTemplate.update(
+                "insert into reservation(name, reservation_date, time_id, theme_id) values ('user', ?, 1, ?)",
+                date, otherThemeId
+        );
+
+        // when
+        List<ReservationTime> result = reservationTimeRepository.findAvailableTimes(targetThemeId, date);
+
+        // then
+        assertThat(result)
+                .extracting(ReservationTime::getStartAt)
+                .containsExactly(LocalTime.of(10, 0));
     }
 }
