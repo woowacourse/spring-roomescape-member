@@ -2,7 +2,7 @@ package roomescape.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
-import roomescape.domain.Reservation;
+import roomescape.service.dto.ReservationResult;
 
 public class ReservationResponse {
     private final Long id;
@@ -12,20 +12,24 @@ public class ReservationResponse {
     private final LocalDate date;
 
     private final ReservationTimeResponse time;
+    private final ThemeResponse theme;
 
-    public ReservationResponse(Long id, String name, LocalDate date, ReservationTimeResponse time) {
+    public ReservationResponse(Long id, String name, LocalDate date, ReservationTimeResponse time,
+                               ThemeResponse theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public static ReservationResponse from(Reservation reservation) {
+    public static ReservationResponse from(ReservationResult result) {
         return new ReservationResponse(
-                reservation.getId(),
-                reservation.getName(),
-                reservation.getDate(),
-                ReservationTimeResponse.from(reservation.getTime())
+                result.getId(),
+                result.getName(),
+                result.getDate(),
+                ReservationTimeResponse.from(result.getTime()),
+                ThemeResponse.from(result.getTheme())
         );
     }
 

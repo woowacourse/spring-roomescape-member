@@ -9,6 +9,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.ReservationCreateCommand;
+import roomescape.service.dto.ReservationResult;
 
 @Service
 public class ReservationService {
@@ -31,7 +32,7 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public Reservation create(ReservationCreateCommand command) {
+    public ReservationResult create(ReservationCreateCommand command) {
         ReservationTime time = reservationTimeRepository.findById(command.getTimeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다: " + command.getTimeId()));
 
@@ -39,7 +40,8 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다: " + command.getThemeId()));
 
         Reservation reservation = new Reservation(null, command.getName(), command.getDate(), time, theme);
-        return reservationRepository.save(reservation);
+        Reservation saved = reservationRepository.save(reservation);
+        return ReservationResult.from(saved);
     }
 
     public void delete(Long id) {
