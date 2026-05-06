@@ -11,7 +11,6 @@ import roomescape.repository.ReservationTimeRepository;
 public class ReservationTimeService {
     private static final String TIME_SLOT_DOES_NOT_EXIST = "조회된 타임 슬롯이 없습니다.";
     public static final String INVALID_TIME_ID = "요청한 시간을 찾을 수 없습니다";
-    private static final String INVALID_TEME_ID = "이용 가능한 테마의 시간이 없습니다.";
 
     private final ReservationTimeRepository reservationTimeRepository;
 
