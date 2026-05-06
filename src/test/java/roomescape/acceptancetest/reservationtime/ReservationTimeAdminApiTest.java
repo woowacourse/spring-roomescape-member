@@ -1,5 +1,6 @@
-package roomescape.acceptancetest;
+package roomescape.acceptancetest.reservationtime;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -9,6 +10,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.acceptancetest.RoomecapeAcceptanceTest;
 
 @RoomecapeAcceptanceTest
 class ReservationTimeAdminApiTest {
@@ -58,6 +60,5 @@ class ReservationTimeAdminApiTest {
                 .statusCode(200)
                 .body("size()", is(0));
     }
-
 
 }
