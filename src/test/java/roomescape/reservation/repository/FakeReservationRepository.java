@@ -41,6 +41,7 @@ public class FakeReservationRepository implements ReservationRepository {
         }
     }
 
+    //TODO: themeId 파라미터 추가
     @Override
     public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
         return store.values().stream()

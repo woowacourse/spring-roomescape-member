@@ -80,4 +80,6 @@ public class JdbcThemeRepository implements ThemeRepository{
         int updateCount = jdbcTemplate.update(sql, params);
         return updateCount > 0;
     }
+
+    //TODO: findPoupular ? 인기 테마 조회 추가
 }

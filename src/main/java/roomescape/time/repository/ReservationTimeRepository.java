@@ -15,4 +15,6 @@ public interface ReservationTimeRepository {
     void delete(Long id);
 
     boolean existsByStartAt(LocalTime startAt);
+
+    // TODO: findAvailiableByDateAndThemeId ? 예약 가능 시간 조회
 }

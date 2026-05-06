@@ -5,6 +5,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.theme.dto.response.ThemeDetailDto;
 import roomescape.time.dto.ReservationTimeResponse;
 
+//TODO: status 필드 추가, time LocalTime으로 수정
 public record ReservationResponse(
         Long id,
         String name,

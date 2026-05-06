@@ -7,8 +7,8 @@ import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.ReservationSaveDto;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationSaveDto;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.response.ThemeDetailDto;
@@ -44,6 +44,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
 
+        //TODO: dateId로 ReservationDate 가져오기
         Theme theme = themeRepository.findById(dto.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
 
@@ -60,6 +61,7 @@ public class ReservationService {
     }
 
     private void validateDuplicateReservation(ReservationSaveDto reservationSaveDto) {
+        // TODO: themeId 파라미터 추가
         if (reservationRepository.existsByDateAndTimeId(reservationSaveDto.date(),
                 reservationSaveDto.timeId())) {
             throw new ConflictException("이미 존재하는 예약 날짜/시간 입니다.");

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
+//TODO: status 필드(ENUM) 추가
 public class Reservation {
     private final Long id;
     private final String name;

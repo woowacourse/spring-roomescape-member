@@ -24,4 +24,6 @@ public class ThemeController {
                 .toList();
         return ResponseEntity.ok(responseData);
     }
+
+    // TODO: 인기 조회 테마 추가 
 }

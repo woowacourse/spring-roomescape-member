@@ -37,4 +37,6 @@ public class ReservationTimeController {
     public ResponseEntity<ReservationTimeResponse> delete(@PathVariable Long id) {
         return ResponseEntity.ok(reservationTimeService.delete(id));
     }
+
+    // TODO: 예약가능 시간 조회 엔드포인트 추가 (사용자)
 }

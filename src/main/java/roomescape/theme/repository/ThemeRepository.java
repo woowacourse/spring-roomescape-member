@@ -10,4 +10,5 @@ public interface ThemeRepository {
     List<Theme> findByStatus(boolean status);
     Theme save(Theme theme);
     boolean updateStatus(Theme theme);
+    //TODO: findPoupular ? 인기 테마 조회 추가
 }

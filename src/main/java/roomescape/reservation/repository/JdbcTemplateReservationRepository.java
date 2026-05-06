@@ -122,6 +122,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         }
     }
 
+    // TODO: 시그니처 변경, ThemeId 추가 
     @Override
     public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE DATE = :date AND time_id = :time_id";

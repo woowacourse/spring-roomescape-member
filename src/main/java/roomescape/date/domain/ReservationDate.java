@@ -2,14 +2,6 @@ package roomescape.date.domain;
 
 import java.time.LocalDate;
 
-/*
- *
- * 날짜 등록 (관리자)
- * 날짜 등록 조회 (관리자)
- * 날짜 삭제 (관리자)
- *
- * 날짜 등록 조회 (사용자)
- * */
 public class ReservationDate {
 
     private Long id;

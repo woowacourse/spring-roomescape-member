@@ -74,4 +74,6 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
     }
+
+    // TODO: findAvailiableByDateAndThemeId ? 예약 가능 시간 조회
 }
