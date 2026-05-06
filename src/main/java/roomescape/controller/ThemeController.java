@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.AvailableReservationTimeResponse;
-import roomescape.dto.SearchRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
@@ -21,16 +20,20 @@ public class ThemeController {
     public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
-    
+
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getAllThemes(SearchRequest request) {
-        if (request == null) {
-            return ResponseEntity.ok(themeService.getAllThemes());
+    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
+        return ResponseEntity.ok(themeService.getAllThemes());
+    }
+
+    @GetMapping(params = "condition")
+    public ResponseEntity<List<ThemeResponse>> getThemesByCondition(
+            @RequestParam String condition,
+            @RequestParam(defaultValue = "10") int size) {
+        if ("popular".equals(condition)) {
+            return ResponseEntity.ok(themeService.getPopularThemes(size));
         }
 
-        if (request.condition().equals("popular")) {
-            return ResponseEntity.ok(themeService.getPopularThemes(request.size()));
-        }
         return ResponseEntity.badRequest().build();
     }
 
