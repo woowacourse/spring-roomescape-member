@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ResourceIdResponseDto;
+import roomescape.dto.reservationTime.AvailableReservationTimesResponseDto;
 import roomescape.dto.reservationTime.ReservationTimeRequestDto;
 import roomescape.dto.reservationTime.ReservationTimeResponseDto;
 import roomescape.exception.ForbiddenAccessException;
@@ -67,13 +68,13 @@ public class ReservationTimeController {
 
     @GetMapping("available")
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationTimeResponseDto> getAvailableTimes(
+    public AvailableReservationTimesResponseDto getAvailableTimes(
         @RequestParam("date") String date,
         @RequestParam("themeId") Long themeId
     ) {
         List<ReservationTime> availableTimes = reservationService.getAvailableTimes(LocalDate.parse(date), themeId);
-        return availableTimes.stream()
-            .map(ReservationTimeResponseDto::from)
-            .toList();
+        List<ReservationTime> allTimes = reservationService.getReservationTimes();
+
+        return AvailableReservationTimesResponseDto.of(availableTimes, allTimes);
     }
 }
