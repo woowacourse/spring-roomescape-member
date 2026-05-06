@@ -12,7 +12,7 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.service.ReservationTimeService;
 
 @RestController
-@RequestMapping("/themes/{themeId}/times")
+@RequestMapping("/themes/{themeId}")
 public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;

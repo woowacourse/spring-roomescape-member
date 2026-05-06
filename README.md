@@ -28,9 +28,6 @@
 | 예약 생성       | `POST` `/reservations`                                            | `{name, date, timeId}` | `{id, name, date, time}`        |
 | 예약 삭제       | `DELETE` `/reservations/{reservationId}`                          | -                      | -                               |
 | 예약 조회       | `GET` `/reservations`                                             | -                      | `[{id, name, date, time}, ...]` |
-| 인기 테마 조회    | `GET` `/reservations/theme/popular?period={period}&limit={limit}` | -       | `[{id, name, description, thumbnailUrl}, ...]`                                |
-| 예약 가능 시간 조회 | `GET` `/reservations/theme/{themeId}/available-times?date={yyyy-MM-dd}`     | -                      | `[{id, startAt, theme}, ...]`   |
-
 `Theme`
 
 | 기능 | Http/url | 요청본문 | 응답 |
@@ -38,14 +35,16 @@
 | 관리자 테마 추가 | `POST` `/admin/themes` | `{name, description, thumbnailUrl}` | `{id, name, description, thumbnailUrl}` |
 | 관리자 테마 삭제 | `DELETE` `/admin/themes/{themeId}` | - | - |
 | 관리자 테마 조회  | `GET` `/admin/themes` | - | `[{id, name, description, thumbnailUrl}, ...]` |
+| 인기 테마 조회    | `GET` `/theme/popular?period={period}&limit={limit}` | -       | `[{id, name, description, thumbnailUrl}, ...]`                                |
 
 `ReservationTime`
 
 | 기능 | Http/url | 요청본문 | 응답 |
-|--------------|------------------------------------------|-------------|-----------------------------------------------------|
+|--------------|-----------------------------------------|-------------|-----------------------------------------------------|
 | 관리자 테마 시간 생성 | `POST` `/admin/themes/{themeId}/times` | `{startAt}` | `{id, startAt, theme}` |
-| 관리자 테마 시간 삭제 | `DELETE` `/admin/themes/{themeId}/times/{timeId}` | - | - |
+| 관리자 테마 시간 삭제 | `DELETE` `/admin/themes/times/{timeId}` | - | - |
 | 관리자 테마 시간 조회 | `GET` `/admin/themes/{themeId}/times` | - | `[{id, startAt, theme}, ...]` |
+| 예약 가능 시간 조회 | `GET` `/theme/{themeId}/available-times?date={yyyy-MM-dd}`    | -                      | `[{id, startAt, theme}, ...]`   |
 
 ## 테이블 설계
 
