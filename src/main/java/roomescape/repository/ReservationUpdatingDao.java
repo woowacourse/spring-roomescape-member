@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.ReservationRequest;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
 
 @Repository
 public class ReservationUpdatingDao {
@@ -17,7 +18,7 @@ public class ReservationUpdatingDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void save(Long id, ReservationRequest reservationReq) {
+    public void update(Long id, ReservationRequest reservationReq) {
         String sql = "update reservation SET name = ?, date = ?, time_id = ?, theme_id = ? where id = ?";
         jdbcTemplate.update(sql, reservationReq.getName(), reservationReq.getDate(), reservationReq.getTimeId(), reservationReq.getThemeId(), id);
     }
@@ -27,8 +28,8 @@ public class ReservationUpdatingDao {
         return jdbcTemplate.update(sql, id);
     }
 
-    public Long insert(ReservationRequest reservationReq) {
-        String sql = "insert into reservation(name, date, time_id, theme_id) values(?, ?, ?, ?)";
+    public Long insert(ReservationRequest reservationReq, LocalDateTime now) {
+        String sql = "insert into reservation(name, date, time_id, theme_id, created_at) values(?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -40,6 +41,7 @@ public class ReservationUpdatingDao {
             ps.setObject(2, reservationReq.getDate());
             ps.setLong(3, reservationReq.getTimeId());
             ps.setLong(4, reservationReq.getThemeId());
+            ps.setObject(5, now);
             return ps;
         }, keyHolder);
 

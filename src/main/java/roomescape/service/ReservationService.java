@@ -16,6 +16,7 @@ import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationUpdatingDao;
 import roomescape.repository.ThemeQueryingDao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,14 +60,14 @@ public class ReservationService {
         if (savedReservation.isPresent()) {
             return ReservationResponse.from(savedReservation.get());
         }
-
-        Long generatedId = reservationUpdatingDao.insert(reservationReq);
-        return ReservationResponse.from(new Reservation(generatedId, reservationReq.getName(), reservationReq.getDate(), reservationTimeById, themeById));
+        LocalDateTime now = LocalDateTime.now();
+        Long generatedId = reservationUpdatingDao.insert(reservationReq, now);
+        return ReservationResponse.from(new Reservation(generatedId, reservationReq.getName(), reservationReq.getDate(), reservationTimeById, themeById, now));
     }
 
     @Transactional
     public void update(ReservationRequest newReservationReq, Long id) {
-        reservationUpdatingDao.save(id, newReservationReq);
+        reservationUpdatingDao.update(id, newReservationReq);
     }
 
     @Transactional
