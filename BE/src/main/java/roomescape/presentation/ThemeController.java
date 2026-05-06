@@ -17,6 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.application.ThemeService;
 import roomescape.entity.Theme;
 import roomescape.entity.ThemeSortType;
+import roomescape.global.auth.Admin;
 import roomescape.presentation.dto.ThemeRequest;
 import roomescape.presentation.dto.ThemeResponse;
 
@@ -30,6 +31,7 @@ public class ThemeController {
         this.service = service;
     }
 
+    @Admin
     @PostMapping
     public ResponseEntity<ThemeResponse> saveTheme(
             @RequestBody ThemeRequest request
@@ -83,7 +85,7 @@ public class ThemeController {
         return ResponseEntity.ok(response);
     }
 
-
+    @Admin
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(
             @PathVariable Long id
