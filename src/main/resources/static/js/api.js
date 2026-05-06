@@ -35,9 +35,9 @@ window.api = (function () {
     return {
         listThemes:        ()                      => getJson('/themes'),
         popularThemes:     ()                      => getJson('/themes/popularity'),
-        listReservations:  (userName)              => getJson(userName ? '/reservations?user_name=' + encodeURIComponent(userName) : '/reservations'),
-        createReservation: (payload)               => postJson('/reservations', payload),
-        deleteReservation: (id)                    => del('/reservations/' + id),
+        listReservations:  (userName)              => getJson(userName ? '/api/reservations?user_name=' + encodeURIComponent(userName) : '/api/reservations'),
+        createReservation: (payload)               => postJson('/api/reservations', payload),
+        deleteReservation: (id)                    => del('/api/reservations/' + id),
         listTimes:         ()                      => getJson('/times'),
         availableTimes:    (themeId, date)         => getJson('/times/availablity?themeId=' + encodeURIComponent(themeId) + '&date=' + encodeURIComponent(date)),
         createTheme:       (payload)               => postJson('/admin/themes', payload),

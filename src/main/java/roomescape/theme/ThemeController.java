@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.dto.ThemeResponse;
 
 @RestController
-@RequestMapping("/themes")
+@RequestMapping("/api/themes")
 public class ThemeController {
 
     private final ThemeService themeService;

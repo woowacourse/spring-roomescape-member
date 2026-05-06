@@ -19,7 +19,7 @@
         <nav class="bureau-nav">
             <a th:href="@{/}"
                th:classappend="${active == 'home'} ? 'is-active' : ''">사건 일람</a>
-            <a th:href="@{/reservations/list}"
+            <a th:href="@{/reservations}"
                th:classappend="${active == 'reservations'} ? 'is-active' : ''">예약 명부</a>
             <a th:href="@{/console}"
                th:classappend="${active == 'console'} ? 'is-active' : ''">관리국</a>

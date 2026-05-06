@@ -16,7 +16,7 @@ public class WebController {
         return "booking";
     }
 
-    @GetMapping("/reservations/list")
+    @GetMapping("/reservations")
     public String reservations() {
         return "reservations";
     }

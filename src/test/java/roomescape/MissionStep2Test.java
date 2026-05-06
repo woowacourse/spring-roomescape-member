@@ -44,7 +44,7 @@ class MissionStep2Test {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/api/reservations")
                 .then().log().all()
                 .statusCode(400);
     }
@@ -52,7 +52,7 @@ class MissionStep2Test {
     @Test
     void 존재하지_않는_예약_삭제시_404() {
         RestAssured.given().log().all()
-                .when().delete("/reservations/0")
+                .when().delete("/api/reservations/0")
                 .then().log().all()
                 .statusCode(404);
     }

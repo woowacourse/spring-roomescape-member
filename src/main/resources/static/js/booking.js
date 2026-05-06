@@ -76,7 +76,7 @@
             }
             try {
                 await api.createReservation(payload);
-                location.href = '/reservations/list?user=' + encodeURIComponent(payload.userName);
+                location.href = '/reservations?user=' + encodeURIComponent(payload.userName);
             } catch (err) {
                 await modal.alert({ title: '예약 실패', message: err.message || '서버 오류가 발생했습니다.' });
             }

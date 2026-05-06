@@ -10,7 +10,6 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -29,7 +28,7 @@ public class MissionStep3Test {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get("/api/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(6));
@@ -74,18 +73,18 @@ public class MissionStep3Test {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/api/reservations")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/api/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(18));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/api/reservations/1")
                 .then().log().all()
                 .statusCode(204);
     }

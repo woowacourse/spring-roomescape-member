@@ -20,7 +20,7 @@
         <div class="gate-card">
             <h2>이름으로 조회</h2>
             <p>예약 시 입력한 탐정 이름을 그대로 입력하세요.</p>
-            <form method="get" action="/reservations/list">
+            <form method="get" action="/api/reservations">
                 <input type="text" name="user" required minlength="1"
                        placeholder="예: 동키" autofocus>
                 <button type="submit" class="btn btn-primary">조회</button>
@@ -37,7 +37,7 @@
                 필요 없는 예약은 이 페이지에서 폐기할 수 있습니다.
             </p>
             <div style="display: flex; gap: 0.6rem; margin-top: 1.4rem; flex-wrap: wrap;">
-                <a href="/reservations/list" class="btn btn-ghost btn-sm">← 다른 이름으로 조회</a>
+                <a href="/api/reservations" class="btn btn-ghost btn-sm">← 다른 이름으로 조회</a>
                 <a href="/" class="btn btn-ghost btn-sm">새 사건 예약</a>
             </div>
         </div>
