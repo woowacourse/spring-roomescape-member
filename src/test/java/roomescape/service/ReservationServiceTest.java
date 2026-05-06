@@ -70,7 +70,7 @@ class ReservationServiceTest {
     void 전체_예약_조회_테스트() {
         // given
         reservationService.create("브라운", date, 1L, 1L);
-        reservationService.create("구구", date, 1L, 1L);
+        reservationService.create("구구", date, 2L, 1L);
 
         // when
         List<Reservation> result = reservationService.findAll();

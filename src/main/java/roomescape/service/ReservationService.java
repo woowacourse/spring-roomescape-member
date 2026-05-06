@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -14,7 +13,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -31,17 +29,22 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    @Transactional
     public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
+        validateAlreadyReserved(date, timeId, themeId);
         ReservationTime time = findReservationTime(timeId);
         Theme theme = findTheme(themeId);
         Reservation reservation = new Reservation(null, name, date, time, theme);
         Long id = reservationRepository.insert(reservation);
-        return reservationRepository.findBy(id)
+        return reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 ID입니다."));
     }
 
-    @Transactional
+    private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existWith(date, timeId, themeId)) {
+            throw new IllegalArgumentException("[ERROR] 이미 예약된 시간입니다.");
+        }
+    }
+
     public void delete(Long id) {
         validateId(id);
         reservationRepository.delete(id);

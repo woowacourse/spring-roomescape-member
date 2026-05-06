@@ -43,7 +43,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
-    public Optional<Reservation> findBy(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = "SELECT\n" +
                 "    r.id as reservation_id,\n" +
                 "    r.name as username,\n" +
@@ -106,6 +106,12 @@ public class ReservationRepository {
                 + "AND r.date = ?";
 
         return jdbcTemplate.query(sql, reservationRowMapper, themeId, date);
+    }
+
+    public boolean existWith(LocalDate date, Long timeId, Long themeId) {
+        String sql = "SELECT count(*) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
+        return count != null && count > 0;
     }
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {

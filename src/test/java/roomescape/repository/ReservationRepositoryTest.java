@@ -15,7 +15,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ReservationRepositoryTest {
@@ -58,7 +57,7 @@ class ReservationRepositoryTest {
 
         // then
         List<Reservation> reservations = reservationRepository.findAll();
-        Reservation savedReservation = reservationRepository.findBy(id).get();
+        Reservation savedReservation = reservationRepository.findById(id).get();
         assertAll(
                 () -> assertThat(id).isNotNull(),
                 () -> assertThat(reservations).hasSize(1),
@@ -87,7 +86,7 @@ class ReservationRepositoryTest {
         assertAll(
                 () -> assertThat(deletedCount).isEqualTo(1),
                 () -> assertThat(reservations).hasSize(1),
-                () -> assertThat(reservationRepository.findBy(id1)).isEmpty());
+                () -> assertThat(reservationRepository.findById(id1)).isEmpty());
     }
 
     private ReservationTime findTimeByStartAt(String startAt) {
