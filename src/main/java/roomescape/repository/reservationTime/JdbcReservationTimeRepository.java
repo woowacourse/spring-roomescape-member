@@ -27,7 +27,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private static final String SELECT_ALL_SQL = "SELECT id, start_at FROM reservation_time";
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation_time WHERE id = ?";
     private static final String SELECT_AVAILABLE_SQL = """
-            SELECT t.id AS id, t.start_at AS start_at,
+            SELECT DISTINCT t.id AS id, t.start_at AS start_at,
             CASE
             WHEN r.time_id IS NULL THEN true
             ELSE false
@@ -88,7 +88,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTimeWithAvailable> getReservationTimeByDateAndTheme(ReservationTimeCondition reservationTimeCondition) {
+    public List<ReservationTimeWithAvailable> getAvailableReservationTimeByDateAndTheme(ReservationTimeCondition reservationTimeCondition) {
         return jdbcTemplate.query(
                 SELECT_AVAILABLE_SQL,
                 CONDITION_MAPPER,

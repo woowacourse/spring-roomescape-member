@@ -84,7 +84,7 @@ public class ReservationTimeServiceTest {
             }
 
             @Override
-            public List<ReservationTimeWithAvailable> getReservationTimeByDateAndTheme(ReservationTimeCondition reservationTimeCondition) {
+            public List<ReservationTimeWithAvailable> getAvailableReservationTimeByDateAndTheme(ReservationTimeCondition reservationTimeCondition) {
                 return List.of();
             }
         };

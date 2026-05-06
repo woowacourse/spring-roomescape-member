@@ -91,8 +91,8 @@ public class ReservationTimeRepositoryTest extends BaseRepositoryTest {
 
         insertReservation("브라운", "2023-08-03", 1, 1);
 
-        List<ReservationTimeWithAvailable> reservationTimeWithAvailable1 = reservationTimeRepository.getReservationTimeByDateAndTheme(new ReservationTimeCondition("2023-08-04", 1));
-        List<ReservationTimeWithAvailable> reservationTimeWithAvailable2 = reservationTimeRepository.getReservationTimeByDateAndTheme(new ReservationTimeCondition("2023-08-03", 1));
+        List<ReservationTimeWithAvailable> reservationTimeWithAvailable1 = reservationTimeRepository.getAvailableReservationTimeByDateAndTheme(new ReservationTimeCondition("2023-08-04", 1));
+        List<ReservationTimeWithAvailable> reservationTimeWithAvailable2 = reservationTimeRepository.getAvailableReservationTimeByDateAndTheme(new ReservationTimeCondition("2023-08-03", 1));
 
         assertThat(reservationTimeWithAvailable1).containsAll(List.of(
                 new ReservationTimeWithAvailable(1, "10:00", true),

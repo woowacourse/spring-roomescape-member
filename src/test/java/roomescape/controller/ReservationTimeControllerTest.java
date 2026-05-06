@@ -108,7 +108,7 @@ class ReservationTimeControllerTest {
                 new ReservationTimeWithAvailable(1L, "10:00", true),
                 new ReservationTimeWithAvailable(2L, "12:00", false)
         );
-        given(reservationTimeService.getReservationTimeByDateAndTheme(any()))
+        given(reservationTimeService.getAvailableReservationTimeByDateAndTheme(any()))
                 .willReturn(timesWithAvailable);
 
         mockMvc.perform(get("/times/availability")
