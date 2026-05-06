@@ -868,7 +868,7 @@
                 <div class="popular-rank">${String(i + 1).padStart(2, '0')}</div>
                 <div class="popular-info">
                     <div class="popular-name">${t.name}</div>
-                    <div class="popular-sub">${t.description ? t.description.slice(0, 40) + '...' : '자세한 설명 없음'}</div>
+                    <div class="popular-sub">${t.description ? t.description.slice(0, 40) : '자세한 설명 없음'}</div>
                 </div>
                 <div class="popular-meta">
                     <span class="popular-arrow">→</span>
