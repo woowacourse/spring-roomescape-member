@@ -90,4 +90,4 @@
 - [x] 인기 테마 도메인 구현
 - [x] 인기 테마 조회 dao 구현
 - [x] 인기 테마 조회 service 구현
-- [ ] 인기 테마 조회 controller 구현
+- [x] 인기 테마 조회 controller 구현

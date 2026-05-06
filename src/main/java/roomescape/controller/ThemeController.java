@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Theme;
+import roomescape.dto.PopularThemeResponse;
 import roomescape.dto.ReservationTimeStatusResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
@@ -45,5 +46,10 @@ public class ThemeController {
     @GetMapping("/themes/{themeId}/reservation-times")
     public List<ReservationTimeStatusResponse> read(@RequestParam LocalDate date, @PathVariable Long themeId) {
         return themeService.findReservationTimeByDateAndThemeId(date, themeId);
+    }
+
+    @GetMapping("/themes/popular")
+    public List<PopularThemeResponse> readPopularThemes(){
+        return themeService.findPopularThemes();
     }
 }
