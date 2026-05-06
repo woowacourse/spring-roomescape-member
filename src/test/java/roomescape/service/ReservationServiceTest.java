@@ -43,6 +43,9 @@ class ReservationServiceTest {
         populator.addScript(new ClassPathResource("schema.sql"));
         populator.addScript(new ClassPathResource("data.sql"));
         populator.execute(dataSource);
+        jdbcTemplate.update("DELETE FROM reservation;");
+        jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;");
+
 
         ReservationDao reservationDao = new ReservationDao(jdbcTemplate);
         ReservationTimeDao reservationTimeDao = new ReservationTimeDao(jdbcTemplate);

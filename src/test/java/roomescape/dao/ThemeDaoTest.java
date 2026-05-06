@@ -24,6 +24,7 @@ class ThemeDaoTest {
     @BeforeEach
     void setup() {
         this.themeDao = new ThemeDao(jdbcTemplate);
+        jdbcTemplate.update("DELETE FROM reservation;");
         jdbcTemplate.update("DELETE FROM theme");
     }
 

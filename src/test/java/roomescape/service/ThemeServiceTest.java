@@ -27,6 +27,7 @@ class ThemeServiceTest {
     @BeforeEach
     void setup() {
         this.themeService = new ThemeService(new ThemeDao(jdbcTemplate));
+        jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM theme");
     }
 

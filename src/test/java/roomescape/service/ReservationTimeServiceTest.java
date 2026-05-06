@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,7 +36,6 @@ class ReservationTimeServiceTest {
 
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(new ClassPathResource("schema.sql"));
-        populator.addScript(new ClassPathResource("data.sql"));
         populator.execute(dataSource);
 
         jdbcTemplate.update("DELETE FROM reservation_time;");

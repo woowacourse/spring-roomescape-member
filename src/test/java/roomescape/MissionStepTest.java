@@ -2,6 +2,7 @@ package roomescape;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +30,12 @@ public class MissionStepTest {
 
     @Autowired
     private ReservationController reservationController;
+
+    @BeforeEach
+    void setup() {
+        jdbcTemplate.update("DELETE FROM reservation;");
+        jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;");
+    }
 
     @Test
     void 예약_조회() {
