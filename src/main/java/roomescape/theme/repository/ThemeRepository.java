@@ -7,6 +7,7 @@ import roomescape.theme.mapper.ThemeMapper;
 import roomescape.theme.repository.dao.ThemeDao;
 import roomescape.theme.repository.dto.CreateThemeParams;
 import roomescape.theme.repository.entity.ThemeEntity;
+import roomescape.theme.service.GetThemeRankingsInRecentDaysParams;
 
 @Repository
 public class ThemeRepository {
@@ -40,7 +41,13 @@ public class ThemeRepository {
     public Theme findById(Long id) {
         ThemeEntity themeEntity = themeDao.selectById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-
         return ThemeMapper.toTheme(themeEntity);
+    }
+
+    public List<Theme> findThemesOrderedByReservationCount(GetThemeRankingsInRecentDaysParams params) {
+        return themeDao.findThemesOrderByReservationCountDesc(params.startDate(), params.endDate(), params.limit())
+                .stream()
+                .map(ThemeMapper::toTheme)
+                .toList();
     }
 }

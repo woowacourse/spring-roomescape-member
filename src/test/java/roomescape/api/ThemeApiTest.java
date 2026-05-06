@@ -1,17 +1,26 @@
 package roomescape.api;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.contains;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
+import roomescape.util.TestDataInitializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,6 +28,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeApiTest {
+
+    @Autowired
+    private TestDataInitializer dataInitializer;
 
     @Test
     @DisplayName("테마를 추가한다.")
@@ -94,5 +106,38 @@ class ThemeApiTest {
                 .body(request)
                 .when().post("/themes")
                 .jsonPath().getInt("id");
+    }
+
+    @Test
+    @DisplayName("인기 테마를 예약 많은 순, 예약 수가 같다면 이름 순으로 조회한다.")
+    void getPopularThemes() {
+        Theme themeA = dataInitializer.initializeTheme("A 테마", "설명A", "urlA");
+        Theme themeB = dataInitializer.initializeTheme("B 테마", "설명B", "urlB");
+        Theme themeC = dataInitializer.initializeTheme("C 테마", "설명C", "urlC");
+
+        ReservationTime time = dataInitializer.initializeReservationTime(LocalTime.of(15, 0));
+        LocalDate today = LocalDate.now();
+
+        // 테마 A에 예약 3개
+        dataInitializer.initializeReservation("사용자1", today, time.getId(), themeA.getId());
+        dataInitializer.initializeReservation("사용자2", today, time.getId(), themeA.getId());
+        dataInitializer.initializeReservation("사용자3", today, time.getId(), themeA.getId());
+
+        // 테마 B에 예약 1개
+        dataInitializer.initializeReservation("사용자4", today, time.getId(), themeB.getId());
+
+        // 테마 C에 예약 3개
+        dataInitializer.initializeReservation("사용자5", today, time.getId(), themeC.getId());
+        dataInitializer.initializeReservation("사용자6", today, time.getId(), themeC.getId());
+        dataInitializer.initializeReservation("사용자7", today, time.getId(), themeC.getId());
+
+        RestAssured.given().log().all()
+                .queryParam("days", 7)
+                .queryParam("limit", 10)
+                .when().get("/themes/rank")
+                .then().log().all()
+                .statusCode(200)
+                .body("theme.name", contains("A 테마", "C 테마", "B 테마"))
+                .body("size()", is(3));
     }
 }
