@@ -42,12 +42,14 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest request) {
         try {
-            Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand());
+            Reservation reservationReturned = reservationService.saveUserReservation(request.toSaveCommand());
             ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
 
             return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);
         } catch (NotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 

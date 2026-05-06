@@ -8,6 +8,9 @@
     const submitBtn = document.getElementById('submit-btn');
 
     let selectedTimeId = null;
+    const today = new Date();
+    today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+    dateInput.min = today.toISOString().slice(0, 10);
 
     dateInput.addEventListener('change', loadTimes);
 

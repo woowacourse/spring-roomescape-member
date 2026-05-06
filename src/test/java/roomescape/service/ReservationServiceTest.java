@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -63,6 +64,31 @@ class ReservationServiceTest {
         assertThat(saved.date()).isEqualTo(LocalDate.of(2026, 5, 3));
         assertThat(saved.time().id()).isEqualTo(TIME_ID);
         assertThat(saved.theme().id()).isEqualTo(THEME_ID);
+    }
+
+    @Test
+    void 사용자는_지난_날짜로_예약을_저장할_수_없다() {
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.now().minusDays(1), TIME_ID, THEME_ID);
+
+        assertThatThrownBy(() -> reservationService.saveUserReservation(saveCommand))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 관리자는_지난_날짜로도_예약을_저장할_수_있다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", yesterday, TIME_ID, THEME_ID);
+        Reservation persisted = new Reservation(99L, "브라운", yesterday, time, theme);
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+        given(reservationRepository.addReservation(any(Reservation.class))).willReturn(persisted);
+
+        Reservation saved = reservationService.saveReservation(saveCommand);
+
+        assertThat(saved.date()).isEqualTo(yesterday);
     }
 
     @Test

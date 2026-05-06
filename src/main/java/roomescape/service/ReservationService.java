@@ -10,6 +10,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,6 +35,18 @@ public class ReservationService {
 
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    public Reservation saveUserReservation(ReservationSaveCommand command) {
+        if (isPast(command)) {
+            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
+        }
+
+        return saveReservation(command);
+    }
+
+    private boolean isPast(ReservationSaveCommand command) {
+        return Objects.nonNull(command.date()) && command.date().isBefore(LocalDate.now());
     }
 
     public Reservation saveReservation(ReservationSaveCommand command) {
