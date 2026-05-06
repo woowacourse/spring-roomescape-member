@@ -54,7 +54,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     public Optional<Theme> findById(Long id) {
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue("id", "id");
+                    .addValue("id", id);
 
             Theme theme = jdbcTemplate.queryForObject(
                     FIND_THEME_BY_ID_QUERY,
@@ -99,7 +99,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
-                resultSet.getString("")
+                resultSet.getString("thumbnail_url")
         );
     }
 }

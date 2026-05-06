@@ -10,6 +10,8 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
+import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.repository.ThemeRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -17,14 +19,17 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     @Autowired
     public ReservationService(
             ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> findAllReservations() {
@@ -39,8 +44,13 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "해당 id의 ReservationTime이 존재하지 않습니다. timeId=" + request.timeId()));
 
+        // TODO: 예외 처리는 사이클 2에서 진행
+        Theme theme = themeRepository.findById(request.themeId())
+                .get();
+
         Reservation reservation = new Reservation(
                 request.name(),
+                theme,
                 request.date(),
                 time
         );

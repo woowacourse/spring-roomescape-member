@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 public record ReservationCreateRequest(
         String name,
+        Long themeId,
         LocalDate date,
         Long timeId
 ) {

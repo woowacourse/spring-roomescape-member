@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.service;
+package roomescape.domain.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -18,7 +18,6 @@ import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.request.ThemeCreateRequest;
 import roomescape.domain.theme.response.ThemeResponse;
-import roomescape.domain.theme.service.ThemeService;
 
 @ExtendWith(MockitoExtension.class)
 public class ThemeServiceTest {

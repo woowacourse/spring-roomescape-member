@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
+import roomescape.domain.theme.entity.Theme;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
@@ -19,13 +20,19 @@ public class ReservationJdbcRepository implements ReservationRepository {
     private static final String FIND_ALL_RESERVATIONS_WITH_TIME_QUERY = """
             SELECT
                 r.id AS reservation_id,
-                r.name,
+                r.name AS reservation_name,
                 r.date,
-                t.id AS time_id,
-                t.start_at
+                t.id AS theme_id,
+                t.name AS theme_name,
+                t.description AS theme_description,
+                t.thumbnail_url AS theme_thumbnail_url,
+                rt.id AS time_id,
+                rt.start_at
             FROM reservation AS r
-            INNER JOIN reservation_time AS t
-                ON r.time_id = t.id
+            INNER JOIN reservation_time AS rt
+                ON r.time_id = rt.id
+            INNER JOIN theme AS t
+                ON r.theme_id = t.id
             """;
 
     private static final String DELETE_RESERVATION_BY_ID_QUERY = """
@@ -62,6 +69,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
+                .addValue("theme_id", reservation.getTheme().getId())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId());
 
@@ -87,7 +95,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
     private RowMapper<Reservation> reservationWithTimeRowMapper() {
         return (resultSet, rowNumber) -> new Reservation(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
+                resultSet.getString("reservation_name"),
+                new Theme(
+                        resultSet.getLong("theme_id"),
+                        resultSet.getString("theme_name"),
+                        resultSet.getString("theme_description"),
+                        resultSet.getString("theme_thumbnail_url")
+                ),
                 LocalDate.parse(resultSet.getString("date")),
                 new ReservationTime(
                         resultSet.getLong("time_id"),

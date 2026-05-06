@@ -9,7 +9,7 @@ public class Reservation {
 
     private final String name;
 
-    private Theme theme;
+    private final Theme theme;
 
     private final LocalDate date;
 
@@ -30,19 +30,6 @@ public class Reservation {
         this.time = time;
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-    }
-
-    public Reservation(String name, LocalDate date, ReservationTime time) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
-    }
-
     public Long getId() {
         return id;
     }
@@ -53,6 +40,10 @@ public class Reservation {
 
     public String getName() {
         return name;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     public LocalDate getDate() {
