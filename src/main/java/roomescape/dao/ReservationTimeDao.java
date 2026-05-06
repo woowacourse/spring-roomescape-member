@@ -24,42 +24,18 @@ public class ReservationTimeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
-        return (resultSet, rowNum) -> {
-            ReservationTime reservationTime = new ReservationTime(
-                    resultSet.getLong("id"),
-                    LocalTime.parse(resultSet.getString("start_at"))
-            );
-            return reservationTime;
-        };
-    }
-
-    private ResultSetExtractor<Map<ReservationTime, Boolean>> getMapResultSetExtractor() {
-        return (ResultSet rs) -> {
-            Map<ReservationTime, Boolean> results = new LinkedHashMap<>();
-
-            while (rs.next()) {
-                ReservationTime reservationTime = new ReservationTime(
-                        rs.getLong("time_id"),
-                        rs.getObject("start_at", LocalTime.class)
-                );
-                boolean isAvailable = rs.getBoolean("available");
-                results.put(reservationTime, isAvailable);
-            }
-            return results;
-        };
+    public ReservationTime findById(Long id) {
+        String sql = "SELECT id, start_at from reservation_time WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, getReservationTimeRowMapper(), id);
     }
 
     public List<ReservationTime> findAllReservationTimes() {
-        String sql = "select id, start_at from reservation_time";
-        List<ReservationTime> reservationTimeList = jdbcTemplate.query(
-                sql,
-                getReservationTimeRowMapper());
-        return reservationTimeList;
+        String sql = "SELECT id, start_at FROM reservation_time";
+        return jdbcTemplate.query(sql, getReservationTimeRowMapper());
     }
 
-    public Long insertWithKeyHolder(ReservationTime reservationTime) {
-        String sql = "insert into reservation_time (start_at) values (?)";
+    public Long insertReservationTime(LocalTime time) {
+        String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -67,16 +43,15 @@ public class ReservationTimeDao {
                     sql,
                     new String[]{"id"}
             );
-            ps.setString(1, reservationTime.getStartAt().toString());
+            ps.setString(1, time.toString());
             return ps;
         }, keyHolder);
-        Long id = keyHolder.getKey().longValue();
 
-        return id;
+        return keyHolder.getKey().longValue();
     }
 
     public int delete(Long id) {
-        return jdbcTemplate.update("delete from reservation_time where id = ?", id);
+        return jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 
     public Map<ReservationTime, Boolean> findAvailableTimes(LocalDate date, Long id) {
@@ -93,8 +68,29 @@ public class ReservationTimeDao {
                     ) AS available
                 FROM reservation_time rt;
                 """;
-        Map<ReservationTime, Boolean> reservationTimeBooleanMap = jdbcTemplate.query(sql, getMapResultSetExtractor(),
-                id, date);
-        return reservationTimeBooleanMap;
+        return jdbcTemplate.query(sql, getMapResultSetExtractor(), id, date);
+    }
+
+    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
+        return (resultSet, rowNum) -> new ReservationTime(
+                resultSet.getLong("id"),
+                LocalTime.parse(resultSet.getString("start_at"))
+        );
+    }
+
+    private ResultSetExtractor<Map<ReservationTime, Boolean>> getMapResultSetExtractor() {
+        return (ResultSet rs) -> {
+            Map<ReservationTime, Boolean> results = new LinkedHashMap<>();
+
+            while (rs.next()) {
+                ReservationTime reservationTime = new ReservationTime(
+                        rs.getLong("time_id"),
+                        rs.getObject("start_at", LocalTime.class)
+                );
+                boolean isAvailable = rs.getBoolean("available");
+                results.put(reservationTime, isAvailable);
+            }
+            return results;
+        };
     }
 }

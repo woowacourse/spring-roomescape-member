@@ -21,21 +21,16 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<Reservation> reservationRowMapper() {
-        return (resultSet, rowNum) -> {
-            Reservation newReservation = new Reservation(
-                    resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
-                    LocalDate.parse(resultSet.getString("date")),
-                    new ReservationTime(
-                            resultSet.getLong("time_id"),
-                            LocalTime.parse(resultSet.getString("start_at"))
-                    ),
-                    resultSet.getLong("theme_id")
-            );
-            return newReservation;
-        };
-    }
+    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
+            resultSet.getLong("reservation_id"),
+            resultSet.getString("name"),
+            LocalDate.parse(resultSet.getString("date")),
+            new ReservationTime(
+                    resultSet.getLong("time_id"),
+                    LocalTime.parse(resultSet.getString("start_at"))
+            ),
+            resultSet.getLong("theme_id")
+    );
 
     public List<Reservation> findAllReservations() {
         String sql = """
@@ -50,10 +45,7 @@ public class ReservationDao {
                 INNER JOIN reservation_time as t
                   ON r.time_id = t.id
                 """;
-        List<Reservation> reservations = jdbcTemplate.query(
-                sql,
-                reservationRowMapper());
-        return reservations;
+        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     public Reservation findReservationById(Long id) {
@@ -70,14 +62,11 @@ public class ReservationDao {
                   ON r.time_id = t.id
                 WHERE r.id = ?
                 """;
-        Reservation reservation = jdbcTemplate.queryForObject(
-                sql,
-                reservationRowMapper(), id);
-        return reservation;
+        return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
     }
 
-    public Long insertWithKeyHolder(String name, LocalDate date, Long timeId, Long themeId) {
-        String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
+    public Long insertReservation(String name, LocalDate date, Long timeId, Long themeId) {
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -96,6 +85,6 @@ public class ReservationDao {
     }
 
     public int delete(Long id) {
-        return jdbcTemplate.update("delete from reservation where id = ?", id);
+        return jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 }

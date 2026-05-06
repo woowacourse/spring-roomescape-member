@@ -28,8 +28,8 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTime createReservationTime(ReservationTime reservationTime) {
-        Long id = reservationTimeDao.insertWithKeyHolder(reservationTime);
-        return ReservationTime.withId(id, reservationTime);
+        Long id = reservationTimeDao.insertReservationTime(reservationTime.getStartAt());
+        return reservationTimeDao.findById(id);
     }
 
     @Transactional

@@ -27,7 +27,7 @@ public class ReservationService {
     @Transactional
     public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
         try {
-            Long id = reservationDao.insertWithKeyHolder(name, date, timeId, themeId);
+            Long id = reservationDao.insertReservation(name, date, timeId, themeId);
             return reservationDao.findReservationById(id);
         } catch (DuplicateKeyException e) {
             throw new ReservationAlreadyExistsException();

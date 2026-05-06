@@ -16,27 +16,21 @@ public class ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> {
-        Theme theme = new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("imgUrl")
-        );
-        return theme;
-    };
+    private RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("imgUrl")
+    );
 
-    private RowMapper<PopularTheme> popularThemeRowMapper = (resultSet, rowNum) -> {
-        PopularTheme popularTheme = new PopularTheme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("imgUrl"),
-                resultSet.getLong("theme_rank"),
-                resultSet.getLong("reservation_count")
-        );
-        return popularTheme;
-    };
+    private RowMapper<PopularTheme> popularThemeRowMapper = (resultSet, rowNum) -> new PopularTheme(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("imgUrl"),
+            resultSet.getLong("theme_rank"),
+            resultSet.getLong("reservation_count")
+    );
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -49,11 +43,7 @@ public class ThemeDao {
 
     public List<Theme> findAllThemes() {
         String sql = "SELECT * FROM theme";
-        List<Theme> themes = jdbcTemplate.query(
-                sql,
-                themeRowMapper
-        );
-        return themes;
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     public Long insertTheme(String name, String description, String imgUrl) {
@@ -73,7 +63,7 @@ public class ThemeDao {
     }
 
     public int delete(Long id) {
-        return jdbcTemplate.update("delete from theme where id = ?", id);
+        return jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 
     public List<PopularTheme> findPopularThemes(LocalDate from, LocalDate to) {
@@ -101,8 +91,7 @@ public class ThemeDao {
                 WHERE ranked.theme_rank <= 10
                 ORDER BY ranked.theme_rank;
                 """;
-        List<PopularTheme> popularThemes = jdbcTemplate.query(sql, popularThemeRowMapper, from.toString(),
+        return jdbcTemplate.query(sql, popularThemeRowMapper, from.toString(),
                 to.toString());
-        return popularThemes;
     }
 }
