@@ -21,6 +21,12 @@ public class ThemeController {
     }
 
     @GetMapping
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
+        List<ThemeResponse> responses = themeService.getThemes();
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping(params = "endDate")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam("endDate") LocalDate endDate) {
         List<ThemeResponse> responses = themeService.getPopularThemes(endDate);
         return ResponseEntity.ok(responses);

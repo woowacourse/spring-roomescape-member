@@ -33,6 +33,12 @@ public class ThemeService {
         }
     }
 
+    public List<ThemeResponse> getThemes() {
+        return themeDao.selectAll().stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
     public List<ThemeResponse> getPopularThemes(LocalDate endDate) {
         LocalDate startDate = endDate.minusDays(DATE_DIFFERENCE);
         List<Theme> popularThemes = themeDao.selectPopularThemesByPeriod(startDate, endDate);

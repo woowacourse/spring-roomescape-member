@@ -63,6 +63,16 @@ public class ThemeDao {
         }
     }
 
+    public List<Theme> selectAll() {
+        String sql = """
+                SELECT id, 
+                       name, 
+                       description,
+                       thumbnail
+                FROM theme""";
+        return jdbcTemplate.query(sql, ROW_MAPPER);
+    }
+
     public List<Theme> selectPopularThemesByPeriod(LocalDate startDate, LocalDate endDate) {
         String sql = """
                 SELECT t.id,
