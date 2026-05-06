@@ -38,8 +38,6 @@
 | 관리자 테마 추가 | `POST` `/admin/themes` | `{name, description, thumbnailUrl}` | `{id, name, description, thumbnailUrl}` |
 | 관리자 테마 삭제 | `DELETE` `/admin/themes/{themeId}` | - | - |
 | 관리자 테마 조회  | `GET` `/admin/themes` | - | `[{id, name, description, thumbnailUrl}, ...]` |
-| 인기 테마 조회    | `GET` `/theme/popular?period={period}&limit={limit}` | -       | `[{id, name, description, thumbnailUrl}, ...]`                                |
-
 
 `ReservationTime`
 
