@@ -5,16 +5,10 @@ import java.util.List;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
+import roomescape.dto.Reservation.ReservationCondition;
 import roomescape.dto.Reservation.ReservationResponse;
 import roomescape.dto.Reservation.AddReservationRequest;
 import roomescape.service.RoomReservationService;
@@ -54,8 +48,8 @@ public class ReservationController {
     }
 
     @GetMapping(params = {"name"})
-    public ResponseEntity<List<ReservationResponse>> getReservation(@RequestParam String name) {
-        List<Reservation> reservations = roomReservationService.getAllReservationByName(name);
+    public ResponseEntity<List<ReservationResponse>> getReservation(@ModelAttribute @Valid ReservationCondition reservationCondition) {
+        List<Reservation> reservations = roomReservationService.getAllReservationByName(reservationCondition.name());
         List<ReservationResponse> response = reservations.stream().map(ReservationResponse::from).toList();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
