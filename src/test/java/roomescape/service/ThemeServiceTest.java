@@ -1,6 +1,6 @@
 package roomescape.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -18,6 +18,12 @@ public class ThemeServiceTest {
 
     @Autowired
     private ThemeService themeService;
+
+    @Autowired
+    private ReservationService reservationService;
+
+    @Autowired
+    private ReservationTimeService reservationTimeService;
 
     @Test
     void createTest() {

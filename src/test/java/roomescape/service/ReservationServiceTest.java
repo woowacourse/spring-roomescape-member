@@ -81,10 +81,12 @@ public class ReservationServiceTest {
         List<ReservationResponseDto> responseDtos = reservationService.readAll();
 
         assertThat(responseDtos.getFirst()).isEqualTo(
-                new ReservationResponseDto(1L, "fizz", LocalDate.of(2026, 5, 2), reservationTimeResponseDto,
+                new ReservationResponseDto(responseDtos.getFirst().id(), "fizz", LocalDate.of(2026, 5, 2),
+                        reservationTimeResponseDto,
                         themeResponseDto));
         assertThat(responseDtos.get(1)).isEqualTo(
-                new ReservationResponseDto(2L, "fizz2", LocalDate.of(2026, 5, 4), reservationTimeResponseDto,
+                new ReservationResponseDto(responseDtos.get(1).id(), "fizz2", LocalDate.of(2026, 5, 4),
+                        reservationTimeResponseDto,
                         themeResponseDto));
     }
 

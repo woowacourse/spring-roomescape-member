@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -72,6 +73,33 @@ public class JdbcThemeDao implements ThemeDao {
                     String thumbnailUrl = resultSet.getString("thumbnail_url");
                     return new Theme(id, name, description, thumbnailUrl);
                 }
+        );
+    }
+
+    @Override
+    public List<Theme> readRanking(LocalDate startDate, LocalDate endDate, int limit) {
+        String sql = "SELECT th.id AS theme_id, th.name, th.description, "
+                + "th.thumbnail_url, COUNT(r.id) AS reservation_count "
+                + "FROM theme th "
+                + "LEFT JOIN reservation r "
+                + "ON r.theme_id = th.id "
+                + "AND r.date BETWEEN (?) AND (?) "
+                + "GROUP BY th.id, th.name, th.description, th.thumbnail_url "
+                + "ORDER BY reservation_count DESC, th.id ASC "
+                + "LIMIT (?)";
+
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNumber) -> {
+                    Long id = resultSet.getLong("id");
+                    String name = resultSet.getString("name");
+                    String description = resultSet.getString("description");
+                    String thumbnailUrl = resultSet.getString("thumbnail_url");
+                    return new Theme(id, name, description, thumbnailUrl);
+                },
+                startDate,
+                endDate,
+                limit
         );
     }
 
