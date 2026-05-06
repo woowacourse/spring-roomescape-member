@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.entity.Theme;
 
 @Repository
-public class JdbcThemeRepository implements ThemeRepository {
+public class ThemeJdbcRepository implements ThemeRepository {
 
     private static final String FIND_ALL_THEMES_QUERY = """
             SELECT * FROM theme;
@@ -32,7 +32,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcThemeRepository(
+    public ThemeJdbcRepository(
             NamedParameterJdbcTemplate jdbcTemplate,
             DataSource dataSource
     ) {
