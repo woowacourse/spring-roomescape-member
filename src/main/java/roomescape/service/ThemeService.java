@@ -25,7 +25,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponseDTO> findAllThemes() {
-        return jdbcThemeRepository.getAll().stream().map(ThemeResponseDTO::from)
+        return jdbcThemeRepository.findAll().stream().map(ThemeResponseDTO::from)
                 .collect(Collectors.toList());
     }
 

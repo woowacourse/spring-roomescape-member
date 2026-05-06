@@ -35,7 +35,7 @@ public class JdbcThemeRepository implements ThemeRespository {
     }
 
     @Override
-    public List<Theme> getAll() {
+    public List<Theme> findAll() {
         String sql = "select id, name, description, image_url from theme";
 
         return jdbcTemplate.query(
