@@ -2,20 +2,20 @@ package roomescape.presentation.dto;
 
 import roomescape.entity.Reservation;
 
-public record ReservationResponse(
-        Long id,
+public record AvailableReservationResponse(
         String name,
         String date,
         ReservationTimeResponse time,
-        ThemeResponse theme
+        ThemeResponse theme,
+        boolean isAvailable
 ) {
-    public static ReservationResponse from(Reservation reservation) {
-        return new ReservationResponse(
-                reservation.id(),
+    public static AvailableReservationResponse from(Reservation reservation) {
+        return new AvailableReservationResponse(
                 reservation.name(),
                 reservation.date().toString(),
                 ReservationTimeResponse.from(reservation.time()),
-                ThemeResponse.from(reservation.theme())
+                ThemeResponse.from(reservation.theme()),
+                reservation.id() == null
         );
     }
 }
