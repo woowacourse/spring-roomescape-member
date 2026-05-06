@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeCreateRequest;
 import roomescape.theme.dto.ThemeResponse;
+import roomescape.theme.exception.ThemeException;
 import roomescape.theme.repository.ThemeRepository;
 
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class ThemeService {
 
     private void validateDuplicateTheme(Theme theme) {
         if (themeRepository.existsByNameAndDescription(theme)) {
-            throw new IllegalArgumentException();
+            throw new ThemeException("[ERROR] 이름과 설명이 같은 테마가 이미 존재합니다.");
         }
     }
 }
