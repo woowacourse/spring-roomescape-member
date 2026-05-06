@@ -8,6 +8,7 @@ import roomescape.dto.theme.PopularThemeResponseDto;
 import roomescape.dto.theme.PopularThemesResponseDto;
 import roomescape.dto.theme.ThemeRequestDto;
 import roomescape.dto.theme.ThemeResponseDto;
+import roomescape.exception.ForbiddenAccessException;
 import roomescape.service.ThemeService;
 
 import java.util.List;
@@ -24,14 +25,28 @@ public class ThemeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ThemeResponseDto addTheme(@RequestBody ThemeRequestDto request) {
+    public ThemeResponseDto addTheme(
+            @RequestBody ThemeRequestDto request,
+            @RequestParam("role") String role
+    ) {
+        if (!role.equals("admin")) {
+            throw new ForbiddenAccessException("테마 추가는 관리자만 가능합니다.");
+        }
+
         Theme saved = themeService.addTheme(request);
         return ThemeResponseDto.from(saved);
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTheme(@PathVariable Long id) {
+    public void deleteTheme(
+            @PathVariable Long id,
+            @RequestParam("role") String role
+    ) {
+        if (!role.equals("admin")) {
+            throw new ForbiddenAccessException("테마 삭제는 관리자만 가능합니다.");
+        }
+
         themeService.deleteThemeById(id);
     }
 
