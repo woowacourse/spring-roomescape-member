@@ -56,17 +56,29 @@ public class ThemeDao {
 
     public List<Theme> findRanked(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
         String sql = getReservationSortSql(sort, order, limit);
-        return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
+        return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
     }
 
     private String getReservationSortSql(String sort, String order, Long limit) {
+        String sortColumn = "reservationCount";
+        if ("id".equalsIgnoreCase(sort)) {
+            sortColumn = "id";
+        } else if ("name".equalsIgnoreCase(sort)) {
+            sortColumn = "name";
+        } else if ("reservation".equalsIgnoreCase(sort)) {
+            sortColumn = "reservationCount";
+        } else if ("reservationCount".equalsIgnoreCase(sort)) {
+            sortColumn = "reservationCount";
+        }
+
         String sql =
-                "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount " + "FROM theme t "
+                "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount " + "FROM themes t "
                         + "INNER JOIN reservation r ON t.id = r.theme_id "
                         + "WHERE r.date >= ? AND r.date <= ? "
                         + "GROUP BY t.id, t.name, t.description, t.thumbnail "
                         + "ORDER BY "
-                        + sort
+                        + sortColumn
+                        + " "
                         + order;
 
         if (limit != null) {
@@ -76,7 +88,7 @@ public class ThemeDao {
     }
 
     public Optional<Theme> findById(long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
+        String sql = "SELECT * FROM themes WHERE id = ?";
 
         try {
             Theme theme = jdbcTemplate.queryForObject(sql, rowMapper, id);
