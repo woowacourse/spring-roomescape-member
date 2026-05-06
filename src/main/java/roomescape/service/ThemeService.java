@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ThemeCreateRequest;
@@ -14,6 +15,7 @@ import roomescape.repository.dto.ReservedTheme;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
@@ -47,7 +49,10 @@ public class ThemeService {
         boolean deleted = themeRepository.delete(id);
 
         if (!deleted) {
-            throw new EntityNotFoundException("삭제할 테마를 조회하지 못했습니다. timeId = " + id);
+            throw new EntityNotFoundException(
+                    "삭제할 테마를 조회하지 못했습니다.",
+                    "themeId = " + id
+            );
         }
     }
 }

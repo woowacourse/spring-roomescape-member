@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
@@ -11,6 +12,7 @@ import roomescape.service.command.ReservationTimeCreateCommand;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationTimeService {
 
     private final ReservationTimeRepository repository;
@@ -34,7 +36,10 @@ public class ReservationTimeService {
         boolean deleted = repository.delete(timeId);
 
         if (!deleted) {
-            throw new EntityNotFoundException("삭제할 시간을 조회하지 못했습니다. timeId = " + timeId);
+            throw new EntityNotFoundException(
+                    "삭제할 시간을 조회하지 못했습니다.",
+                    "timeId = " + timeId
+            );
         }
     }
 }

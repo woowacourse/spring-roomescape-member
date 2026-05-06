@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.InUseTimeException;
+import roomescape.exception.InUseEntityException;
 
 @Repository
 public class ReservationTimeRepository {
@@ -67,7 +67,11 @@ public class ReservationTimeRepository {
 
             return isDeleted(deletedRowCount);
         } catch (DataIntegrityViolationException exception) {
-            throw new InUseTimeException("사용중이지 않은 시간만 제거할 수 있습니다. id = " + id);
+            throw new InUseEntityException(
+                    "사용중이지 않은 시간만 제거할 수 있습니다.",
+                    "timeId = " + id,
+                    exception
+            );
         }
     }
 

@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
@@ -15,6 +16,7 @@ import roomescape.service.command.ReservationCreateCommand;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -25,13 +27,8 @@ public class ReservationService {
     public Reservation create(
             ReservationCreateCommand createCommand
     ) {
-        long timeId = createCommand.timeId();
-        ReservationTime time = timeRepository.findById(timeId)
-                .orElseThrow(() -> new EntityNotFoundException("예약 시간을 조회할 수 없습니다. id = " + timeId));
-
-        long themeId = createCommand.themeId();
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new EntityNotFoundException("테마를 조회할 수 없습니다. id = " + themeId));
+        ReservationTime time = findTimeById(createCommand.timeId());
+        Theme theme = findThemeById(createCommand.themeId());
 
         Reservation reservation = Reservation.create(
                 createCommand.name(),
@@ -53,7 +50,26 @@ public class ReservationService {
         boolean deleted = reservationRepository.delete(reservationId);
 
         if (!deleted) {
-            throw new EntityNotFoundException("삭제할 예약을 조회하지 못했습니다. reservationId = " + reservationId);
+            throw new EntityNotFoundException(
+                    "삭제할 예약을 조회하지 못했습니다.",
+                    "reservationId = " + reservationId
+            );
         }
+    }
+
+    private ReservationTime findTimeById(long timeId) {
+        return timeRepository.findById(timeId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "예약 시간을 조회할 수 없습니다.",
+                        "timeId = " + timeId
+                ));
+    }
+
+    private Theme findThemeById(long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "테마를 조회할 수 없습니다.",
+                        "themeId = " + themeId
+                ));
     }
 }
