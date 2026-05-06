@@ -19,12 +19,6 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        final List<ReservationResponse> results = reservationService.getReservations();
-        return ResponseEntity.ok(results);
-    }
-
     @GetMapping(path = "/available-times", params = {"date", "themeId"})
     public ResponseEntity<List<ReservationTimeStatusResponse>> getReservationTimeStatuses(
             @RequestParam(value = "date", required = false) LocalDate date,

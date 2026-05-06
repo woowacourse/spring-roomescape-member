@@ -39,7 +39,7 @@ public class MissionStep2Test {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-08-05", "1", "1");
 
         List<Reservation> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", Reservation.class);
