@@ -21,24 +21,12 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new ReservationTimeException("[ERROR] 존재하지 않는 시간 입니다."));
     }
 
-    public List<ReservationTimeResponse> findAllReservationTimes() {
+    public List<ReservationTimeResponse> findAll() {
         List<ReservationTime> result = reservationTimeRepository.findAll();
 
         return result.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
-    }
-
-    public ReservationTimeResponse saveReservationTime(ReservationTimeCreateRequest request) {
-        ReservationTime reservationTime = request.toEntity();
-
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-
-        return ReservationTimeResponse.from(savedReservationTime);
-    }
-
-    public int deleteReservationTime(Long id) {
-        return reservationTimeRepository.delete(id);
     }
 
     public List<ReservationTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {
@@ -47,5 +35,17 @@ public class ReservationTimeService {
         return reservationTimes.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
+    }
+
+    public ReservationTimeResponse save(ReservationTimeCreateRequest request) {
+        ReservationTime reservationTime = request.toEntity();
+
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+
+        return ReservationTimeResponse.from(savedReservationTime);
+    }
+
+    public int delete(Long id) {
+        return reservationTimeRepository.delete(id);
     }
 }

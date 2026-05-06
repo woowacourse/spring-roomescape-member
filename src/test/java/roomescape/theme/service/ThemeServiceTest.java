@@ -20,7 +20,7 @@ public class ThemeServiceTest {
     @Test
     void save_theme_successfully() {
         ThemeCreateRequest createRequestDto = new ThemeCreateRequest("theme name", "theme description", "theme img url");
-        ThemeResponse themeResponse = themeService.saveTheme(createRequestDto);
+        ThemeResponse themeResponse = themeService.save(createRequestDto);
 
         SoftAssertions.assertSoftly(assertSoftly -> {
             assertSoftly.assertThat(themeResponse.id()).isEqualTo(1L);
@@ -34,9 +34,9 @@ public class ThemeServiceTest {
     @Test
     void save_duplicated_theme_exception() {
         ThemeCreateRequest createRequestDto = new ThemeCreateRequest("theme name", "theme description", "theme img url");
-        themeService.saveTheme(createRequestDto);
+        themeService.save(createRequestDto);
 
-        assertThatThrownBy(() -> themeService.saveTheme(createRequestDto))
+        assertThatThrownBy(() -> themeService.save(createRequestDto))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -44,7 +44,7 @@ public class ThemeServiceTest {
     @Test
     void delete_theme() {
         ThemeCreateRequest createRequestDto = new ThemeCreateRequest("theme name", "theme description", "theme img url");
-        themeService.saveTheme(createRequestDto);
+        themeService.save(createRequestDto);
 
         assertThat(themeService.delete(1L)).isEqualTo(1);
     }
@@ -56,11 +56,11 @@ public class ThemeServiceTest {
         ThemeCreateRequest createRequestDto2 = new ThemeCreateRequest("theme name2", "theme description2", "theme img url2");
         ThemeCreateRequest createRequestDto3 = new ThemeCreateRequest("theme name3", "theme description3", "theme img url3");
 
-        themeService.saveTheme(createRequestDto1);
-        themeService.saveTheme(createRequestDto2);
-        themeService.saveTheme(createRequestDto3);
+        themeService.save(createRequestDto1);
+        themeService.save(createRequestDto2);
+        themeService.save(createRequestDto3);
 
-        List<ThemeResponse> themeResponses = themeService.findAllThemes();
+        List<ThemeResponse> themeResponses = themeService.findAll();
 
         SoftAssertions.assertSoftly(assertSoftly -> {
             assertSoftly.assertThat(themeResponses.size()).isEqualTo(3);

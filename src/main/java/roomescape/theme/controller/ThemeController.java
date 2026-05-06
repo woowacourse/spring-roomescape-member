@@ -23,8 +23,8 @@ public class ThemeController {
     private final ThemeService themeService;
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> findAllThemes() {
-        return ResponseEntity.ok(themeService.findAllThemes());
+    public ResponseEntity<List<ThemeResponse>> findAll() {
+        return ResponseEntity.ok(themeService.findAll());
     }
 
     @PostMapping
@@ -32,7 +32,7 @@ public class ThemeController {
             @RequestBody ThemeCreateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(themeService.saveTheme(request));
+                .body(themeService.save(request));
     }
 
     @DeleteMapping("/{id}")

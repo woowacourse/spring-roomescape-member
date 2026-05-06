@@ -14,32 +14,32 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
 
-    public ThemeResponse saveTheme(ThemeCreateRequest request) {
-        Theme theme = request.toEntity();
-        validateDuplicateTheme(theme);
-
-        return ThemeResponse.from(themeRepository.save(theme));
+    public Theme findById(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마 입니다."));
     }
 
-    private void validateDuplicateTheme(Theme theme) {
-        if (themeRepository.existsByNameAndDescription(theme)) {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    public int delete(long id) {
-        return themeRepository.delete(id);
-    }
-
-    public List<ThemeResponse> findAllThemes() {
+    public List<ThemeResponse> findAll() {
         List<Theme> themes = themeRepository.findAll();
 
         return themes.stream().map(ThemeResponse::from)
                 .toList();
     }
 
-    public Theme findById(Long id) {
-        return themeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마 입니다."));
+    public ThemeResponse save(ThemeCreateRequest request) {
+        Theme theme = request.toEntity();
+        validateDuplicateTheme(theme);
+
+        return ThemeResponse.from(themeRepository.save(theme));
+    }
+
+    public int delete(long id) {
+        return themeRepository.delete(id);
+    }
+
+    private void validateDuplicateTheme(Theme theme) {
+        if (themeRepository.existsByNameAndDescription(theme)) {
+            throw new IllegalArgumentException();
+        }
     }
 }

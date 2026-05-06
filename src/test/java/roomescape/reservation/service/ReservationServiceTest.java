@@ -32,11 +32,11 @@ class ReservationServiceTest {
     @DisplayName("사용자의 방탈출 예약 시간 추가를 테스트합니다.")
     @Test
     void save_user_reservation_successfully() {
-        themeService.saveTheme(new ThemeCreateRequest("theme name", "theme description", "theme img url"));
-        timeService.saveReservationTime(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+        themeService.save(new ThemeCreateRequest("theme name", "theme description", "theme img url"));
+        timeService.save(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
         ReservationCreateRequest request = new ReservationCreateRequest("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
-        ReservationResponse reservationResponse = reservationService.saveReservation(request);
+        ReservationResponse reservationResponse = reservationService.save(request);
 
         SoftAssertions.assertSoftly(assertSoftly -> {
             assertSoftly.assertThat(reservationResponse.id()).isEqualTo(1L);
@@ -51,15 +51,15 @@ class ReservationServiceTest {
     @DisplayName("중복된 시간과 테마에 예약 추가 시 예외 발생을 테스트합니다.")
     @Test
     void validate_duplicated_reservation() {
-        themeService.saveTheme(new ThemeCreateRequest("theme name", "theme description", "theme img url"));
-        timeService.saveReservationTime(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+        themeService.save(new ThemeCreateRequest("theme name", "theme description", "theme img url"));
+        timeService.save(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
         ReservationCreateRequest firstRequest = new ReservationCreateRequest("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
-        reservationService.saveReservation(firstRequest);
+        reservationService.save(firstRequest);
 
         ReservationCreateRequest secondRequest = new ReservationCreateRequest("카야", LocalDate.of(2026, 5, 6), 1L, 1L);
 
-        Assertions.assertThatThrownBy(() -> reservationService.saveReservation(secondRequest))
+        Assertions.assertThatThrownBy(() -> reservationService.save(secondRequest))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage("[ERROR] 이미 해당 날짜와 시간에 예약이 존재합니다.");
     }

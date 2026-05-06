@@ -24,21 +24,21 @@ public class AdminReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> findAllReservationTimes() {
-        return ResponseEntity.ok(reservationTimeService.findAllReservationTimes());
+    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
+        return ResponseEntity.ok(reservationTimeService.findAll());
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> createReservationTime(
+    public ResponseEntity<ReservationTimeResponse> save(
             @Valid @RequestBody ReservationTimeCreateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(reservationTimeService.saveReservationTime(request));
+                .body(reservationTimeService.save(request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
-        int deletedCount = reservationTimeService.deleteReservationTime(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        int deletedCount = reservationTimeService.delete(id);
 
         if (deletedCount == 0) {
             return ResponseEntity.notFound().build();

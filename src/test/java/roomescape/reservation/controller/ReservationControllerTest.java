@@ -18,7 +18,7 @@ class ReservationControllerTest {
 
     @DisplayName("방탈출 예약 추가 API를 테스트합니다.")
     @Test
-    void create_reservation() {
+    void save_reservation() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "스타크");
         params.put("date", "2026-05-06");

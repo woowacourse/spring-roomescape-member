@@ -22,14 +22,14 @@ public class ReservationService {
     private final ThemeService themeService;
     private final ReservationTimeService reservationTimeService;
 
-    public List<ReservationResponse> findAllReservations() {
+    public List<ReservationResponse> findAll() {
         List<ReservationDetail> result = reservationRepository.findAll();
         return result.stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
-    public ReservationResponse saveReservation(ReservationCreateRequest request) {
+    public ReservationResponse save(ReservationCreateRequest request) {
         ThemeResponse themeResponse = ThemeResponse.from(themeService.findById(request.themeId()));
         ReservationTimeResponse timeResponse = ReservationTimeResponse.from(reservationTimeService.findById(request.timeId()));
         validateDuplicateReservation(request);
@@ -38,7 +38,7 @@ public class ReservationService {
         return ReservationResponse.from(reservationRepository.save(reservation), themeResponse, timeResponse);
     }
 
-    public int deleteReservation(Long id) {
+    public int delete(Long id) {
         return reservationRepository.delete(id);
     }
 

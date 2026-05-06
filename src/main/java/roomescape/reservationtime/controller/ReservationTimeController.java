@@ -19,7 +19,7 @@ public class ReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> findAllReservationTimes(
+    public ResponseEntity<List<ReservationTimeResponse>> findAvailableTimes(
             @RequestParam Long themeId,
             @RequestParam LocalDate date
     ) {
