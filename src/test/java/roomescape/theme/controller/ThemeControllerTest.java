@@ -45,7 +45,7 @@ public class ThemeControllerTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/themes/11")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -54,7 +54,7 @@ public class ThemeControllerTest {
     @Test
     void delete_theme_not_found() {
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/themes/100")
                 .then().log().all()
                 .statusCode(404);
     }

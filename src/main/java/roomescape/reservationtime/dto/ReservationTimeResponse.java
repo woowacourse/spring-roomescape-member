@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import roomescape.reservationtime.domain.ReservationTime;
 
-public record ReservationTimeResponse(Long id, String time) {
+public record ReservationTimeResponse(Long id, String startAt) {
 
     public static ReservationTimeResponse from(ReservationTime reservationTime) {
         return new ReservationTimeResponse(
