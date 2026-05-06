@@ -36,8 +36,11 @@ public class AdminReservationController {
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
         ReservationResponse reservationResponse = reservationCommandService.create(request.name(), request.date(), request.timeId(), request.themeId());
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .build()
+        Long savedId = reservationResponse.id();
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedId)
                 .toUri();
 
         return ResponseEntity.created(location).body(reservationResponse);

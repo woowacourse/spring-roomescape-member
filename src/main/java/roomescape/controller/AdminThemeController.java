@@ -34,9 +34,12 @@ public class AdminThemeController {
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
         ThemeResponse themeResponse = themeCommandService.create(request.name(), request.thumbnailUrl(), request.description());
+        Long savedId = themeResponse.id();
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .build()
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedId)
                 .toUri();
 
         return ResponseEntity.created(location).body(themeResponse);
