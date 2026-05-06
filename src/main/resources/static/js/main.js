@@ -102,12 +102,12 @@ async function handleClick(event) {
   }
 
   if (action === "delete-theme") {
-    openConfirm("테마를 삭제할까요?", "이 테마를 사용하는 예약이 있으면 서버에서 삭제를 거부할 수 있습니다.", () => deleteTheme(Number(target.dataset.themeId)));
+    openConfirm("테마를 삭제할까요?", "이 테마를 사용하는 예약까지 함께 삭제될 수 있습니다.", () => deleteTheme(Number(target.dataset.themeId)));
     return;
   }
 
   if (action === "delete-time") {
-    openConfirm("예약 시간을 삭제할까요?", "이 시간을 사용하는 예약이 있으면 서버에서 삭제를 거부할 수 있습니다.", () => deleteTime(Number(target.dataset.timeId)));
+    openConfirm("예약 시간을 삭제할까요?", "이 시간을 사용하는 예약까지 함께 삭제될 수 있습니다.", () => deleteTime(Number(target.dataset.timeId)));
     return;
   }
 
