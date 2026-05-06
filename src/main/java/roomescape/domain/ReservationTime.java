@@ -8,13 +8,22 @@ public class ReservationTime {
 
     private final Long id;
     private final LocalTime startAt;
+    private final TimeStatus status;
 
     public static ReservationTime pending(LocalTime startAt) {
-        return new ReservationTime(null, startAt);
+        return new ReservationTime(null, startAt, null);
     }
 
     public static ReservationTime create(long id, LocalTime startAt) {
-        return new ReservationTime(id, startAt);
+        return new ReservationTime(id, startAt, TimeStatus.AVAILABLE);
+    }
+
+    public ReservationTime hold() {
+        return new ReservationTime(id, startAt, TimeStatus.HOLD);
+    }
+
+    public ReservationTime delete() {
+        return new ReservationTime(this.id, this.startAt, TimeStatus.DELETED);
     }
 
     public long id() {
@@ -23,5 +32,13 @@ public class ReservationTime {
 
     public LocalTime startAt() {
         return startAt;
+    }
+
+    public TimeStatus status() {
+        return status;
+    }
+
+    public boolean isUnavailable() {
+        return status.isUnavailable();
     }
 }
