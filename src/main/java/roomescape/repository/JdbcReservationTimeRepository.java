@@ -1,7 +1,9 @@
 package roomescape.repository;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -61,5 +63,18 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+    }
+
+    @Override
+    public List<ReservationTime> findAvailable(LocalDate date, Long themeId) {
+        String sql = """
+                SELECT id, start_at
+                FROM reservation_time
+                WHERE id NOT IN (
+                    SELECT time_id FROM reservation
+                    WHERE date = ? AND theme_id = ?
+                )
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, Date.valueOf(date), themeId);
     }
 }
