@@ -1,5 +1,6 @@
 package roomescape.theme.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -45,6 +46,28 @@ public class JdbcThemeRepository implements ThemeRepository {
                         .thumbnailImgUrl(rs.getString("thumbnail_img_url"))
                         .build()
         );
+    }
+
+    @Override
+    public List<PopularTheme> findTop10PopularThemesBetween(LocalDate from, LocalDate to) {
+        String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail_img_url, COUNT(*) as reserved_count
+                FROM theme t
+                JOIN reservation r ON t.id = r.theme_id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id, t.name, t.description, t.thumbnail_img_url
+                ORDER BY reserved_count DESC
+                LIMIT 10
+                """;
+
+        return jdbcTemplate.query(sql,
+                (rs, rowNum) -> new PopularTheme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("thumbnail_img_url"),
+                        rs.getInt("reserved_count")
+                ), from, to);
     }
 
     @Override

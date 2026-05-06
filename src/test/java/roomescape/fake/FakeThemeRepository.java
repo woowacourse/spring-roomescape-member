@@ -1,10 +1,12 @@
 package roomescape.fake;
 
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.PopularTheme;
 import roomescape.theme.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
@@ -21,6 +23,11 @@ public class FakeThemeRepository implements ThemeRepository {
     public List<Theme> findAll() {
         return themes.values().stream()
                 .toList();
+    }
+
+    @Override
+    public List<PopularTheme> findTop10PopularThemesBetween(LocalDate from, LocalDate to) {
+        return List.of();
     }
 
     @Override

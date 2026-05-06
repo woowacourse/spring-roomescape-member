@@ -2,8 +2,9 @@ package roomescape.theme.repository;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,11 +25,6 @@ public class JdbcThemeRepositoryTest {
     void setUp() {
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
-
-//    @AfterEach
-//    void clear() {
-//        themeRepository.
-//    }
 
     @DisplayName("db의 정상 저장을 테스트 합니다.")
     @Test
@@ -100,5 +96,19 @@ public class JdbcThemeRepositoryTest {
     @Test
     void find_all_themes() {
         assertThat(themeRepository.findAll().size()).isEqualTo(10);
+    }
+
+    @DisplayName("db에서 최근 7일간 인기있던 테마 상위 10개를 조회를 테스트합니다.")
+    @Test
+    void find_popular_10_themes_during_recent_7days() {
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        List<PopularTheme> popularThemes = themeRepository.findTop10PopularThemesBetween(yesterday.minusWeeks(1), yesterday);
+
+        SoftAssertions.assertSoftly(assertSoftly -> {
+            assertSoftly.assertThat(popularThemes.getFirst().id()).isEqualTo(2L);
+            assertSoftly.assertThat(popularThemes.getFirst().name()).isEqualTo("SF 우주 탐험");
+            assertSoftly.assertThat(popularThemes.get(4).id()).isEqualTo(6L);
+            assertSoftly.assertThat(popularThemes.get(4).name()).isEqualTo("비밀 연구소");
+        });
     }
 }
