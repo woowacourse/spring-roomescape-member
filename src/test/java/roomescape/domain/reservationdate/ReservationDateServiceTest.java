@@ -13,6 +13,7 @@ import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservationdate.dto.AdminReservationDateResponse;
 import roomescape.domain.reservationdate.dto.CreateReservationDateRequest;
 import roomescape.domain.reservationdate.dto.CreateReservationDateResponse;
+import roomescape.domain.theme.Theme;
 import roomescape.support.exception.RoomescapeException;
 
 class ReservationDateServiceTest {
@@ -132,6 +133,11 @@ class ReservationDateServiceTest {
 
         @Override
         public List<Long> findReservedTimes(Long themeId, Long dateId) {
+            return List.of();
+        }
+
+        @Override
+        public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate today) {
             return List.of();
         }
     }

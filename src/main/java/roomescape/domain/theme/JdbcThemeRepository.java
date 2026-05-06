@@ -2,6 +2,7 @@ package roomescape.domain.theme;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.theme.dto.ThemeRankResponse;
 import roomescape.support.exception.RoomescapeErrorCode;
 import roomescape.support.exception.RoomescapeException;
 

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.dto.ThemeRankResponse;
 
 @Repository
 @RequiredArgsConstructor
@@ -50,6 +51,22 @@ public class JdbcReservationRepository implements ReservationRepository {
             select time_id
             from reservation
             where theme_id = ? and date_id = ?
+            """;
+
+    private static final String FIND_POPULAR_THEME_SQL =
+        """
+            select
+                th.id,
+                th.name,
+                th.content,
+                th.url
+            from reservation r
+            join reservation_date rd on r.date_id = rd.id
+            join theme th on r.theme_id = th.id
+            where rd.date between ? and ?
+            group by th.id, th.name, th.content, th.url
+            order by count(r.id) desc, th.id asc
+            limit ?
             """;
 
     private final JdbcTemplate jdbcTemplate;
@@ -108,6 +125,11 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(FIND_BY_THEME_AND_DATE_SQL, reservationTimeIdRowMapper(), themeId, dateId);
     }
 
+    @Override
+    public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate endDay) {
+        return jdbcTemplate.query(FIND_POPULAR_THEME_SQL, popularThemeRowMapper(), startDay, endDay, rankLimit);
+    }
+
     private RowMapper<Reservation> reservationRowMapper() {
         return (rs, rowNum) -> Reservation.of(
             rs.getLong("id"),
@@ -130,6 +152,15 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private RowMapper<Long> reservationTimeIdRowMapper() {
         return (rs, rowNum) -> rs.getLong("time_id");
+    }
+
+    private RowMapper<Theme> popularThemeRowMapper() {
+        return (rs, rowNum) -> Theme.of(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("content"),
+            rs.getString("url")
+        );
     }
 
     private long extractId(KeyHolder keyHolder) {

@@ -15,6 +15,7 @@ import roomescape.admin.AdminRequestValidator;
 import roomescape.domain.theme.dto.AdminThemeResponse;
 import roomescape.domain.theme.dto.CreateThemeRequest;
 import roomescape.domain.theme.dto.CreateThemeResponse;
+import roomescape.domain.theme.dto.ThemeRankResponse;
 import roomescape.domain.theme.dto.ThemeResponse;
 
 @RestController
@@ -55,6 +56,12 @@ public class ThemeController {
     @GetMapping("/themes")
     public ResponseEntity<List<ThemeResponse>> getAllTheme() {
         List<ThemeResponse> response = themeService.getAllTheme();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/themes/rank")
+    public ResponseEntity<List<ThemeRankResponse>> getThemeRank() {
+        List<ThemeRankResponse> response = themeService.getThemeRank();
         return ResponseEntity.ok(response);
     }
 }

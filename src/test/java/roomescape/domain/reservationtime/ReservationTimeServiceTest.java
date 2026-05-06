@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservationtime.dto.CreateTimeRequest;
 import roomescape.domain.reservationtime.dto.CreateTimeResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
+import roomescape.domain.theme.Theme;
 import roomescape.support.exception.RoomescapeException;
 
 class ReservationTimeServiceTest {
@@ -157,6 +159,11 @@ class ReservationTimeServiceTest {
 
         @Override
         public List<Long> findReservedTimes(Long themeId, Long dateId) {
+            return List.of();
+        }
+
+        @Override
+        public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate today) {
             return List.of();
         }
     }

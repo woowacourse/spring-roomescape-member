@@ -3,9 +3,12 @@ package roomescape.domain.theme;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.theme.dto.AdminThemeResponse;
 import roomescape.domain.theme.dto.CreateThemeRequest;
 import roomescape.domain.theme.dto.CreateThemeResponse;
@@ -16,11 +19,12 @@ class ThemeServiceTest {
     @Test
     void 관리자용_테마_목록을_조회한다() {
         // given
-        FakeJdbcThemeRepository themeRepository = new FakeJdbcThemeRepository();
+        FakeThemeRepository themeRepository = new FakeThemeRepository();
+        FakeReservationRepository reservationRepository = new FakeReservationRepository();
         themeRepository.findAllResult = List.of(
             Theme.of(1L, "미스터리", "이게 뭘까? 바로바로 추리 테마", "theme/mystery")
         );
-        ThemeService themeService = new ThemeService(themeRepository);
+        ThemeService themeService = new ThemeService(themeRepository,reservationRepository);
 
         // when
         List<AdminThemeResponse> responses = themeService.getAllThemeForAdmin();
@@ -38,11 +42,12 @@ class ThemeServiceTest {
     @Test
     void 사용자용_테마_목록을_조회한다() {
         // given
-        FakeJdbcThemeRepository themeRepository = new FakeJdbcThemeRepository();
+        FakeThemeRepository themeRepository = new FakeThemeRepository();
+        FakeReservationRepository reservationRepository = new FakeReservationRepository();
         themeRepository.findAllResult = List.of(
             Theme.of(1L, "미스터리", "이게 뭘까? 바로바로 추리 테마", "theme/mystery")
         );
-        ThemeService themeService = new ThemeService(themeRepository);
+        ThemeService themeService = new ThemeService(themeRepository, reservationRepository);
 
         // when
         List<ThemeResponse> responses = themeService.getAllTheme();
@@ -60,8 +65,9 @@ class ThemeServiceTest {
     @Test
     void 테마를_생성한다() {
         // given
-        FakeJdbcThemeRepository themeRepository = new FakeJdbcThemeRepository();
-        ThemeService themeService = new ThemeService(themeRepository);
+        FakeThemeRepository themeRepository = new FakeThemeRepository();
+        FakeReservationRepository reservationRepository = new FakeReservationRepository();
+        ThemeService themeService = new ThemeService(themeRepository, reservationRepository);
 
         // when
         CreateThemeResponse response = themeService.createTheme(
@@ -83,8 +89,9 @@ class ThemeServiceTest {
     @Test
     void 테마를_삭제한다() {
         // given
-        FakeJdbcThemeRepository themeRepository = new FakeJdbcThemeRepository();
-        ThemeService themeService = new ThemeService(themeRepository);
+        FakeThemeRepository themeRepository = new FakeThemeRepository();
+        FakeReservationRepository reservationRepository = new FakeReservationRepository();
+        ThemeService themeService = new ThemeService(themeRepository, reservationRepository);
 
         // when
         themeService.deleteTheme(1L);
@@ -93,15 +100,11 @@ class ThemeServiceTest {
         assertThat(themeRepository.deletedId).isEqualTo(1L);
     }
 
-    private static class FakeJdbcThemeRepository extends JdbcThemeRepository {
+    private static class FakeThemeRepository implements ThemeRepository {
 
         private List<Theme> findAllResult = List.of();
         private Theme savedTheme;
         private Long deletedId;
-
-        private FakeJdbcThemeRepository() {
-            super(null);
-        }
 
         @Override
         public List<Theme> findAll() {
@@ -123,6 +126,44 @@ class ThemeServiceTest {
         public int deleteById(Long id) {
             deletedId = id;
             return 1;
+        }
+    }
+
+    private static class FakeReservationRepository implements ReservationRepository{
+
+        @Override
+        public Reservation save(Reservation reservation) {
+            return null;
+        }
+
+        @Override
+        public List<Reservation> findAll() {
+            return List.of();
+        }
+
+        @Override
+        public int deleteById(Long id) {
+            return 0;
+        }
+
+        @Override
+        public int countByTimeId(Long timeId) {
+            return 0;
+        }
+
+        @Override
+        public int countByReservationDateId(Long dateId) {
+            return 0;
+        }
+
+        @Override
+        public List<Long> findReservedTimes(Long themeId, Long dateId) {
+            return List.of();
+        }
+
+        @Override
+        public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate today) {
+            return List.of();
         }
     }
 }

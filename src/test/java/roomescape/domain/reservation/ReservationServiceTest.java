@@ -184,6 +184,11 @@ class ReservationServiceTest {
         public List<Long> findReservedTimes(Long themeId, Long dateId) {
             return List.of();
         }
+
+        @Override
+        public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate today) {
+            return List.of();
+        }
     }
 
     private static class FakeReservationTimeRepository implements ReservationTimeRepository {
