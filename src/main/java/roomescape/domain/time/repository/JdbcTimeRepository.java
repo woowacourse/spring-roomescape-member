@@ -1,55 +1,46 @@
 package roomescape.domain.time.repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.time.LocalTime;
 import java.util.List;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import java.util.Map;
+import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.time.entity.Time;
 
 @Repository
 public class JdbcTimeRepository implements TimeRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcTimeRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcTimeRepository(DataSource dataSource) {
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+            .withTableName("time")
+            .usingColumns("start_at")
+            .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Time save(Time time) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        Map<String, Object> args = Map.of("start+at", time.getStartAt());
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO reservation_time (start_at) VALUES (?)",
-                Statement.RETURN_GENERATED_KEYS
-            );
+        long generatedKey = simpleJdbcInsert.executeAndReturnKey(args).longValue();
 
-            ps.setString(1, time.getStartAt().toString());
-
-            return ps;
-        }, keyHolder);
-
-        Number key = keyHolder.getKey();
-
-        return jdbcTemplate.queryForObject(
-            "SELECT id, start_at FROM reservation_time WHERE id = ?",
-            (rs, rowNum) -> Time.reconstruct(
-                rs.getLong("id"),
-                LocalTime.parse(rs.getString("start_at"))
-            ),
-            key
-        );
+        return Time.reconstruct(generatedKey, time.getStartAt());
     }
 
     @Override
     public List<Time> findAllTimes() {
+        String sql = "SELECT id, start_at FROM time";
         return jdbcTemplate.query(
-            "SELECT id, start_at FROM reservation_time",
+            sql,
             (rs, rowNum) -> Time.reconstruct(
                 rs.getLong("id"),
                 LocalTime.parse(rs.getString("start_at"))
@@ -58,22 +49,29 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     @Override
-    public Time findTimeById(Long id) {
-        return jdbcTemplate.queryForObject(
-            "SELECT id, start_at FROM reservation_time WHERE id = ?",
-            (rs, rowNum) -> Time.reconstruct(
-                rs.getLong("id"),
-                LocalTime.parse(rs.getString("start_at"))
-            ),
-            id
-        );
+    public Optional<Time> findTimeById(Long id) {
+        String sql = "SELECT id, start_at FROM time WHERE id = :id";
+        SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        try {
+            Time time = jdbcTemplate.queryForObject(
+                sql,
+                parameters,
+                (resultSet, rowNum) -> Time.reconstruct(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime()
+                )
+            );
+            return Optional.ofNullable(time);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public void deleteTimeById(Long id) {
-        jdbcTemplate.update(
-            "DELETE FROM reservation_time WHERE id = ?",
-            id
-        );
+        final String sql = "DELETE FROM time WHERE id = :id";
+        final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+
+        jdbcTemplate.update(sql, parameters);
     }
 }

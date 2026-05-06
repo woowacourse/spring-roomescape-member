@@ -44,7 +44,7 @@ public class ReservationService {
     }
 
     private Reservation createReservation(ReservationCreateRequestDTO requestDTO) {
-        Time time = timeRepository.findTimeById(requestDTO.timeId());
+        Time time = timeRepository.findTimeById(requestDTO.timeId()).orElseThrow();
         Theme theme = themeRepository.findThemeById(requestDTO.themeId()).orElseThrow();
         return Reservation.create(requestDTO.name(), requestDTO.date(), time, theme);
     }
