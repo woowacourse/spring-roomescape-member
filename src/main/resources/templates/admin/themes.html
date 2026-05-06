@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>테마 관리 - 방탈출</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="container py-5">
+    <h2 class="fw-bold mb-4">테마 관리</h2>
+
+    <!-- 추가 폼 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header fw-semibold">테마 추가</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">테마 이름</label>
+                    <input type="text" id="name" class="form-control" placeholder="예: 공포의 저택">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">설명</label>
+                    <input type="text" id="description" class="form-control" placeholder="테마 설명">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">이미지 URL</label>
+                    <input type="text" id="imageUrl" class="form-control" value="https://i.pinimg.com/736x/87/e8/a2/87e8a2af70721d5b886d4343425d1bd4.jpg">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary w-100" onclick="addTheme()">추가</button>
+                </div>
+            </div>
+            <div id="add-error" class="alert alert-danger mt-3 d-none"></div>
+        </div>
+    </div>
+
+    <!-- 목록 -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>썸네일</th>
+                        <th>이름</th>
+                        <th>설명</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="theme-list"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="empty-msg" class="text-center text-muted py-4 d-none">등록된 테마가 없습니다.</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    async function loadThemes() {
+        const res = await fetch('/themes');
+        const themes = await res.json();
+        const tbody = document.getElementById('theme-list');
+        tbody.innerHTML = '';
+
+        if (themes.length === 0) {
+            document.getElementById('empty-msg').classList.remove('d-none');
+            return;
+        }
+        document.getElementById('empty-msg').classList.add('d-none');
+
+        themes.forEach(t => {
+            tbody.innerHTML += `
+                <tr>
+                    <td class="align-middle">${t.id}</td>
+                    <td class="align-middle">
+                        <img src="${t.imageUrl}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;"
+                             onerror="this.style.display='none'">
+                    </td>
+                    <td class="align-middle fw-semibold">${t.name}</td>
+                    <td class="align-middle text-muted small">${t.description ?? ''}</td>
+                    <td class="align-middle text-end">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTheme(${t.id})">삭제</button>
+                    </td>
+                </tr>`;
+        });
+    }
+
+    async function addTheme() {
+        const name = document.getElementById('name').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const imageUrl = document.getElementById('imageUrl').value.trim();
+
+        if (!name || !imageUrl) { showAddError('이름과 이미지 URL은 필수입니다.'); return; }
+
+        const res = await fetch('/themes?role=admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, description, imageUrl })
+        });
+
+        if (res.ok) {
+            document.getElementById('name').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('imageUrl').value = '';
+            document.getElementById('add-error').classList.add('d-none');
+            loadThemes();
+        } else {
+            const err = await res.json();
+            showAddError(Array.isArray(err.message) ? err.message.join(', ') : err.message);
+        }
+    }
+
+    async function deleteTheme(id) {
+        if (!confirm('테마를 삭제하시겠습니까?')) return;
+        await fetch(`/themes/${id}?role=admin`, { method: 'DELETE' });
+        loadThemes();
+    }
+
+    function showAddError(msg) {
+        const el = document.getElementById('add-error');
+        el.textContent = msg;
+        el.classList.remove('d-none');
+    }
+
+    loadThemes();
+</script>
+</body>
+</html>

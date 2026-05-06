@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>방탈출 예약</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0 fw-bold">🏆 이번 주 인기 테마 TOP 10</h2>
+        <a href="/reservation" class="btn btn-primary">예약하기</a>
+    </div>
+
+    <!-- 빈 상태 -->
+    <div id="empty-state" class="d-none text-center py-5">
+        <p class="display-6 mb-3">🎮</p>
+        <h4 class="text-muted mb-2">아직 이번 주 예약 데이터가 없어요</h4>
+        <p class="text-muted mb-4">첫 번째 예약의 주인공이 되어보세요!</p>
+        <a href="/reservation" class="btn btn-primary btn-lg px-5">예약하러 가기</a>
+    </div>
+
+    <!-- 테마 카드 그리드 -->
+    <div id="theme-grid" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 d-none"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    async function loadPopularThemes() {
+        const res = await fetch('/themes/popular/week?limit=10');
+        const data = await res.json();
+        const themes = data.themes;
+
+        if (themes.length === 0) {
+            document.getElementById('empty-state').classList.remove('d-none');
+            return;
+        }
+
+        const grid = document.getElementById('theme-grid');
+        themes.forEach(t => {
+            grid.innerHTML += `
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <img src="${t.imageUrl}"
+                             class="card-img-top"
+                             style="height:200px;object-fit:cover;"
+                             onerror="this.src='https://placehold.co/400x200?text=No+Image'">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="badge bg-warning text-dark fs-6">${t.rank}위</span>
+                                <h5 class="card-title mb-0">${t.name}</h5>
+                            </div>
+                            <p class="card-text text-muted small">${t.description ?? ''}</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a href="/reservation?themeId=${t.id}" class="btn btn-outline-primary w-100">이 테마 예약하기</a>
+                        </div>
+                    </div>
+                </div>`;
+        });
+        grid.classList.remove('d-none');
+    }
+
+    loadPopularThemes();
+</script>
+</body>
+</html>
