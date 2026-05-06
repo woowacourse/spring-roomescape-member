@@ -5,12 +5,14 @@ import java.time.LocalDate;
 public class ReservationSaveServiceDto {
     private final String name;
     private final LocalDate date;
-    private final Long timeId;
+    private final Long themeId;
+    private final String time;
 
-    public ReservationSaveServiceDto(String name, LocalDate date, Long timeId) {
+    public ReservationSaveServiceDto(String name, LocalDate date, Long themeId, String time) {
         this.name = name;
         this.date = date;
-        this.timeId = timeId;
+        this.themeId = themeId;
+        this.time = time;
     }
 
     public String getName() {
@@ -21,7 +23,11 @@ public class ReservationSaveServiceDto {
         return date;
     }
 
-    public Long getTimeId() {
-        return timeId;
+    public Long getThemeId() {
+        return themeId;
+    }
+
+    public String getTime() {
+        return time;
     }
 }

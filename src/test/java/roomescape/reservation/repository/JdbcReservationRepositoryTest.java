@@ -27,8 +27,9 @@ class JdbcReservationRepositoryTest {
         Long timeId2 = insertTime("13:00", "15:00");
 
         LocalDate date = LocalDate.of(2026, 5, 6);
-        insertReservation("윤호준", date, timeId1);
-        insertReservation("박다혜", date, timeId2);
+        Long themeId = insertTheme();
+        insertReservation("윤호준", date, timeId1, themeId);
+        insertReservation("박다혜", date, timeId2, themeId);
 
         assertThat(reservationRepository.findTimeIdsByDate(date))
                 .containsExactly(timeId1, timeId2);
@@ -50,12 +51,27 @@ class JdbcReservationRepositoryTest {
         );
     }
 
-    private void insertReservation(String name, LocalDate date, Long timeId) {
+    private Long insertTheme() {
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
+                "INSERT INTO theme (name, description, image_url) VALUES (?, ?, ?)",
+                "테마",
+                "설명",
+                "https://example.com/theme.png"
+        );
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM theme WHERE name = ?",
+                Long.class,
+                "테마"
+        );
+    }
+
+    private void insertReservation(String name, LocalDate date, Long timeId, Long themeId) {
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 name,
                 Date.valueOf(date),
-                timeId
+                timeId,
+                themeId
         );
     }
 }

@@ -10,16 +10,23 @@ import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.time.service.TimeService;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final TimeService timeService;
+    private final ThemeRepository themeRepository;
 
-    public ReservationServiceImpl(ReservationRepository reservationRepository, TimeService timeService) {
+    public ReservationServiceImpl(
+            ReservationRepository reservationRepository,
+            TimeService timeService,
+            ThemeRepository themeRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.timeService = timeService;
+        this.themeRepository = themeRepository;
     }
 
     @Override
@@ -29,20 +36,29 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Reservation create(ReservationSaveServiceDto reservation) {
-        ReservationTime time = findTime(reservation.getTimeId());
+        ReservationTime time = findTime(reservation.getTime());
+        Long themeId = findThemeId(reservation.getThemeId());
         Reservation newReservation = new Reservation(
                 reservation.getName(),
                 reservation.getDate(),
-                time
+                time,
+                themeId
         );
         return reservationRepository.save(newReservation);
     }
 
-    private ReservationTime findTime(Long timeId) {
-        if (timeId == null) {
-            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+    private ReservationTime findTime(String startAt) {
+        return timeService.findByStartAt(startAt);
+    }
+
+    private Long findThemeId(Long themeId) {
+        if (themeId == null) {
+            throw new IllegalArgumentException("테마는 필수입니다.");
         }
-        return timeService.findById(timeId);
+        if (!themeRepository.existsById(themeId)) {
+            throw new IllegalArgumentException("테마가 존재하지 않습니다. id=" + themeId);
+        }
+        return themeId;
     }
 
     @Override

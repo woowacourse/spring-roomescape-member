@@ -12,5 +12,7 @@ public interface TimeRepository {
 
   Optional<ReservationTime> findById(Long id);
 
+  Optional<ReservationTime> findByStartAt(String startAt);
+
   boolean deleteById(Long id);
 }
