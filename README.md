@@ -6,8 +6,39 @@
 
 ```text
 .
-├── BE   # Spring Boot 백엔드
-└── FE   # 사용자/관리자 화면
+├── BE   # Spring Boot 백엔드 (REST API 전용)
+└── FE   # 사용자/관리자 화면 (Vanilla JS, 빌드 도구 없음)
+```
+
+## 실행 방법
+
+### 사전 요구 사항
+
+- JDK 21
+- Node.js 18+ (FE 서버 실행용)
+
+### 백엔드 실행
+
+```bash
+cd BE
+./gradlew bootRun
+```
+
+### 프론트엔드 실행
+
+```bash
+cd FE
+node dev-server.mjs
+```
+
+- 사용자 페이지: `http://localhost:3000/user/index.html` (또는 `http://localhost:3000/`)
+- 관리자 페이지: `http://localhost:3000/admin/index.html`
+
+### 테스트
+
+```bash
+cd BE
+./gradlew test
 ```
 
 ## 기능 목록
@@ -255,6 +286,7 @@ DELETE /themes/{id}
 응답: `204 No Content`
 
 #### 3.4 인기 테마 조회
+
 ```http
 GET /themes?start={2026-05-01}&end={2026-05-31}&orderBy={popularity}&limit={2}
 ```
