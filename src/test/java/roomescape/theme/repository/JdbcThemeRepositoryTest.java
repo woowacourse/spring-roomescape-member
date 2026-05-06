@@ -3,6 +3,7 @@ package roomescape.theme.repository;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
+import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.repository.PopularTheme;
 import roomescape.theme.domain.repository.ThemeRepository;
@@ -23,10 +27,12 @@ public class JdbcThemeRepositoryTest {
     private JdbcTemplate jdbcTemplate;
 
     ThemeRepository themeRepository;
+    ReservationTimeRepository timeRepository;
 
     @BeforeEach
     void setUp() {
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
+        timeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
     }
 
     @DisplayName("db의 정상 저장을 테스트 합니다.")
@@ -85,12 +91,11 @@ public class JdbcThemeRepositoryTest {
     @DisplayName("db에서 테마 삭제를 테스트 합니다.")
     @Test
     void delete_theme_successfully() {
-        Theme theme1 = Theme.builder()
+        Theme savedTheme = themeRepository.save(Theme.builder()
                 .name("theme name")
                 .description("theme description")
                 .thumbnailImgUrl("theme img url")
-                .build();
-        Theme savedTheme = themeRepository.save(theme1);
+                .build());
 
         assertThat(themeRepository.delete(savedTheme.getId())).isEqualTo(1);
     }
@@ -98,20 +103,54 @@ public class JdbcThemeRepositoryTest {
     @DisplayName("db에서 테마를 전체 조회합니다.")
     @Test
     void find_all_themes() {
-        assertThat(themeRepository.findAll().size()).isEqualTo(10);
+        themeRepository.save(Theme.builder()
+                .name("theme name 1")
+                .description("theme description 1")
+                .thumbnailImgUrl("theme img url 1")
+                .build()
+        );
+        themeRepository.save(Theme.builder()
+                .name("theme name 2")
+                .description("theme description 2")
+                .thumbnailImgUrl("theme img url 2")
+                .build()
+        );
+        themeRepository.save(Theme.builder()
+                .name("theme name 3")
+                .description("theme description 3")
+                .thumbnailImgUrl("theme img url 3")
+                .build()
+        );
+
+        assertThat(themeRepository.findAll().size()).isEqualTo(3);
     }
 
     @DisplayName("db에서 최근 7일간 인기있던 테마 상위 10개를 조회를 테스트합니다.")
     @Test
     void find_popular_10_themes_during_recent_7days() {
+        ReservationTime time1 = timeRepository.save(ReservationTime.builder()
+                .startAt(LocalTime.of(9, 0))
+                .build());
+        ReservationTime time2 = timeRepository.save(ReservationTime.builder()
+                .startAt(LocalTime.of(10, 0))
+                .build());
+
         LocalDate yesterday = LocalDate.now().minusDays(1);
-        List<PopularTheme> popularThemes = themeRepository.findTop10PopularThemesBetween(yesterday.minusWeeks(1), yesterday);
+        Theme theme1 = themeRepository.save(Theme.builder().name("theme name 1").description("theme description 1").thumbnailImgUrl("theme img url 1").build());
+        Theme theme2 = themeRepository.save(Theme.builder().name("theme name 2").description("theme description 2").thumbnailImgUrl("theme img url 2").build());
+
+        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)", "스타크", yesterday, theme1.getId(), time1.getId());
+        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)", "카야", yesterday, theme2.getId(), time2.getId());
+        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)", "스타크", yesterday, theme1.getId(), time1.getId());
+
+        LocalDate today = LocalDate.now();
+        List<PopularTheme> popularThemes = themeRepository.findTop10PopularThemesBetween(today.minusWeeks(1), today.minusDays(1));
 
         SoftAssertions.assertSoftly(assertSoftly -> {
-            assertSoftly.assertThat(popularThemes.getFirst().id()).isEqualTo(2L);
-            assertSoftly.assertThat(popularThemes.getFirst().name()).isEqualTo("SF 우주 탐험");
-            assertSoftly.assertThat(popularThemes.get(4).id()).isEqualTo(6L);
-            assertSoftly.assertThat(popularThemes.get(4).name()).isEqualTo("비밀 연구소");
+            assertSoftly.assertThat(popularThemes.getFirst().id()).isEqualTo(theme1.getId());
+            assertSoftly.assertThat(popularThemes.getFirst().reservedCount()).isEqualTo(2);
+            assertSoftly.assertThat(popularThemes.get(1).id()).isEqualTo(theme2.getId());
+            assertSoftly.assertThat(popularThemes.get(1).reservedCount()).isEqualTo(1);
         });
     }
 }
