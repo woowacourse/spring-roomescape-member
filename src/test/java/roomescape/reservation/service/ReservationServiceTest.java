@@ -147,7 +147,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 취소하면 CANCELED 상태가 된다.")
     void updateStatus_canceled() {
         // given
-        Reservation savedReservation = reservationRepository.saveV2(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme1));
+        Reservation savedReservation = reservationRepository.save(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme1));
         ReservationStatus canceled = ReservationStatus.CANCELED;
 
         // when

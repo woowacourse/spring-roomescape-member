@@ -115,17 +115,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Long save(Reservation reservation) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.name())
-                .addValue("date", reservation.date())
-                .addValue("start_at", reservation.time())
-                .addValue("theme_id", reservation.theme().id())
-                .addValue("status", reservation.status().name());
-        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
-    }
-
-    public Reservation saveV2(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.name())
                 .addValue("date", reservation.date())

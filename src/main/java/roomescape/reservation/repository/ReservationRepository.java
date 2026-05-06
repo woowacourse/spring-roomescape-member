@@ -13,7 +13,7 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
-    Long save(Reservation reservation);
+    Reservation save(Reservation reservation);
 
     // think: theme를 도메인으로 넘길지, themeId로 넘길지
     boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId);

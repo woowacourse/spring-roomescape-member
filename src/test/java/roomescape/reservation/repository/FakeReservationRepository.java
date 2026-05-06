@@ -30,28 +30,20 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Long save(Reservation reservation) {
-        Long id = idGenerator.getAndIncrement();
-        Reservation saved = Reservation.load(id, reservation.name(), reservation.date(), reservation.time(),
-                reservation.theme(), reservation.status());
-        store.put(id, saved);
-        return id;
-    }
-
-    public List<Reservation> saveAll(List<Reservation> reservations) {
-        List<Reservation> savedReservations = new ArrayList<>();
-        for (Reservation reservation : reservations) {
-            savedReservations.add(saveV2(reservation));
-        }
-        return savedReservations;
-    }
-
-    public Reservation saveV2(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         Long id = idGenerator.getAndIncrement();
         Reservation saved = Reservation.load(id, reservation.name(), reservation.date(), reservation.time(),
                 reservation.theme(), reservation.status());
         store.put(id, saved);
         return saved;
+    }
+
+    public List<Reservation> saveAll(List<Reservation> reservations) {
+        List<Reservation> savedReservations = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            savedReservations.add(save(reservation));
+        }
+        return savedReservations;
     }
 
     @Override

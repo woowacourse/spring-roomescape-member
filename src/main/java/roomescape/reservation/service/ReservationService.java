@@ -1,11 +1,11 @@
 package roomescape.reservation.service;
 
 import static roomescape.reservation.domain.ReservationStatus.CANCELED;
-import static roomescape.reservation.domain.ReservationStatus.RESERVED;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
@@ -17,7 +17,6 @@ import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.response.ThemeDetailDto;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
@@ -53,7 +52,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse create(ReservationSaveDto dto) {
+    public Reservation create(ReservationSaveDto dto) {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
 
@@ -65,16 +64,8 @@ public class ReservationService {
 
         validateNotAlreadyBookedByOthers(reservationDate.date(), reservationTime.startAt(), theme);
         validateUserHasNoReservationAtSameTime(dto.name(), reservationDate, reservationTime);
-        Long id = reservationRepository.save(
-                Reservation.create(dto.name(), reservationDate.date(), reservationTime.startAt(), theme));
-
-        return new ReservationResponse(
-                id,
-                dto.name(),
-                reservationDate.date(),
-                reservationTime.startAt(),
-                ThemeDetailDto.from(theme),
-                RESERVED // TODO: save 반환값 Reservation으로 수정
+        return reservationRepository.save(
+                Reservation.create(dto.name(), reservationDate.date(), reservationTime.startAt(), theme)
         );
     }
 

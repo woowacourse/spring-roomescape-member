@@ -66,7 +66,7 @@ class ReservationRepositoryTest {
     @DisplayName("모든 예약 정보를 조회한다.")
     void findAll() {
         // given
-        List<Reservation> reservations = saveAll(List.of(
+        saveAll(List.of(
                 Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme),
                 Reservation.create(name, reservationDate1.date(), reservationTime2.startAt(), theme))
         );
@@ -107,7 +107,7 @@ class ReservationRepositoryTest {
         List<Reservation> emptyReservations = List.of();
 
         // when
-        jdbcReservationRepository.saveV2(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme));
+        jdbcReservationRepository.save(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme));
 
         //then
         assertThat(jdbcReservationRepository.findAll())
@@ -154,7 +154,7 @@ class ReservationRepositoryTest {
     }
 
     private Reservation save(Reservation reservation) {
-        return jdbcReservationRepository.saveV2(reservation);
+        return jdbcReservationRepository.save(reservation);
     }
 
 

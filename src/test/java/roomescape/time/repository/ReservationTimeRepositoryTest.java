@@ -50,7 +50,8 @@ class ReservationTimeRepositoryTest {
         jdbcReservationTimeRepository.save(ReservationTime.create(newTime));
 
         // then
-        assertThat(jdbcReservationTimeRepository.findAll().size()).isEqualTo(emptyTimes.size() + 1);
+        assertThat(jdbcReservationTimeRepository.findAll())
+                .hasSize(emptyTimes.size() + 1);
     }
 
     @Test
@@ -65,7 +66,8 @@ class ReservationTimeRepositoryTest {
         List<ReservationTime> savedTimes = savedAll(reservationTimes);
 
         // when & then
-        assertThat(jdbcReservationTimeRepository.findAll().size()).isEqualTo(savedTimes.size());
+        assertThat(jdbcReservationTimeRepository.findAll())
+                .hasSize(savedTimes.size());
     }
 
     @Test
@@ -83,7 +85,8 @@ class ReservationTimeRepositoryTest {
         jdbcReservationTimeRepository.delete(savedTimes.getFirst().id());
 
         // then
-        assertThat(jdbcReservationTimeRepository.findAll().size()).isEqualTo(savedTimes.size() - 1);
+        assertThat(jdbcReservationTimeRepository.findAll())
+                .hasSize(savedTimes.size() - 1);
     }
 
     @Test
@@ -110,8 +113,8 @@ class ReservationTimeRepositoryTest {
         Theme theme1 = Theme.create("테마1", "테마 설명", "테마 썸네일");
         theme1.updateStatus(true);
         Theme theme2 = jdbcThemeRepository.save(theme1);
-        jdbcReservationRepository.saveV2(Reservation.create("한다", date1.date(), time1.startAt(), theme2));
-        jdbcReservationRepository.saveV2(Reservation.create("한다", date1.date(), time2.startAt(), theme2));
+        jdbcReservationRepository.save(Reservation.create("한다", date1.date(), time1.startAt(), theme2));
+        jdbcReservationRepository.save(Reservation.create("한다", date1.date(), time2.startAt(), theme2));
 
         // when
         List<ReservationTime> availableTimes = jdbcReservationTimeRepository.findAvailableByDateAndThemeId(
