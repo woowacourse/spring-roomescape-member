@@ -2,6 +2,7 @@ package roomescape.repository.collection;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.dto.TimeSlotProjection;
 
 public class MemoryReservationTimeRepository implements ReservationTimeRepository {
 
@@ -49,5 +51,12 @@ public class MemoryReservationTimeRepository implements ReservationTimeRepositor
     @Override
     public List<ReservationTime> findAll() {
         return Collections.unmodifiableList(reservationTimes);
+    }
+
+    @Override
+    public List<TimeSlotProjection> findTimesByThemeWithReservationStatus(long themeId, LocalDate date) {
+        return reservationTimes.stream()
+                .map(time -> new TimeSlotProjection(time.getId(), time.getStartAt(), true))
+                .toList();
     }
 }

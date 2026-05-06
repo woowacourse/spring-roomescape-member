@@ -1,18 +1,26 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.Theme;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.repository.dto.TimeSlotProjection;
 import roomescape.service.command.ThemeRegisterCommand;
 import roomescape.service.result.ThemeRegisterResult;
+import roomescape.service.result.ThemeResult;
+import roomescape.service.result.ThemeTimesResult;
 
 @Service
 @RequiredArgsConstructor
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
 
     public ThemeRegisterResult register(ThemeRegisterCommand command) {
         validateDuplicationName(command);
@@ -28,6 +36,29 @@ public class ThemeService {
                     existingTheme.deactivate();
                     themeRepository.update(existingTheme);
                 });
+    }
+
+    public List<ThemeTimesResult> getThemeReservationStatus(long id, LocalDate date) {
+        return reservationTimeRepository.findTimesByThemeWithReservationStatus(id, date)
+                .stream()
+                .map(projection -> toResultWithTimeCheck(projection, date))
+                .toList();
+    }
+
+    public List<ThemeResult> getAllThemes() {
+        return themeRepository.findAll()
+                .stream().map(ThemeResult::from)
+                .toList();
+    }
+
+    private ThemeTimesResult toResultWithTimeCheck(TimeSlotProjection projection, LocalDate date) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startAt = LocalDateTime.of(date, projection.startAt());
+
+        if (now.isAfter(startAt)) {
+            return ThemeTimesResult.from(projection.disabled());
+        }
+        return ThemeTimesResult.from(projection);
     }
 
     private void validateDuplicationName(ThemeRegisterCommand command) {

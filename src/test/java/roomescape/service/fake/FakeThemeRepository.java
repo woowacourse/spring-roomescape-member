@@ -1,6 +1,7 @@
 package roomescape.service.fake;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -34,6 +35,11 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(long id) {
         return Optional.ofNullable(themes.get(id));
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        return List.of();
     }
 
     @Override

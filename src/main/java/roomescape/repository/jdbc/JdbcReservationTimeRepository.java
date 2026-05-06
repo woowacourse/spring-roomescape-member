@@ -1,9 +1,11 @@
 package roomescape.repository.jdbc;
 
 import static roomescape.repository.jdbc.ReservationTimeEntityMapper.RESERVATION_TIME_MAPPER;
+import static roomescape.repository.jdbc.ReservationTimeEntityMapper.TIME_SLOT_PROJECTION_MAPPER;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +17,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.dto.TimeSlotProjection;
 
 @Repository
 @RequiredArgsConstructor
@@ -63,5 +66,23 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public List<ReservationTime> findAll() {
         String sql = "SELECT * FROM reservation_time";
         return jdbcTemplate.query(sql, RESERVATION_TIME_MAPPER);
+    }
+
+    @Override
+    public List<TimeSlotProjection> findTimesByThemeWithReservationStatus(long themeId, LocalDate date) {
+        String sql = """
+                        SELECT 
+                            rt.id AS time_id, 
+                            rt.start_at AS time_start_at,
+                            (CASE WHEN r.id IS NULL THEN true ELSE false END) AS is_reservable
+                        FROM reservation_time rt                
+                        LEFT JOIN reservation r
+                                ON rt.id = r.time_id
+                                AND r.theme_id = ?
+                                AND r.date = ?
+                        ORDER BY rt.start_at ASC;
+                """;
+
+        return jdbcTemplate.query(sql, TIME_SLOT_PROJECTION_MAPPER, themeId, date);
     }
 }

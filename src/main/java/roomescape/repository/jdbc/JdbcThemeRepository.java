@@ -3,6 +3,7 @@ package roomescape.repository.jdbc;
 import static roomescape.repository.jdbc.ThemeEntityMapper.THEME_MAPPER;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -50,10 +51,10 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public void update(Theme theme) {
         String sql = """
-            UPDATE theme
-            SET name = ?, description = ?, thumbnail_image_url = ?, is_active = ?
-            WHERE id=?
-        """;
+                    UPDATE theme
+                    SET name = ?, description = ?, thumbnail_image_url = ?, is_active = ?
+                    WHERE id=?
+                """;
         System.out.println("dddddd -> " + theme.getId());
         jdbcTemplate.update(sql,
                 theme.getName(),
@@ -73,5 +74,11 @@ public class JdbcThemeRepository implements ThemeRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+        return jdbcTemplate.query(sql, THEME_MAPPER);
     }
 }
