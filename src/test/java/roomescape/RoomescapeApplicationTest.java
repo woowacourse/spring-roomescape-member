@@ -1,5 +1,6 @@
 package roomescape;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -9,6 +10,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -103,4 +105,13 @@ class RoomescapeApplicationTest {
                 .body("size()", is(1));
     }
 
+    @Test
+    @Sql("/data.sql")
+    void 인기_테마_조회() {
+        RestAssured.given().log().all()
+                .when().get("/reservations/popular-themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", contains(2, 1));
+    }
 }

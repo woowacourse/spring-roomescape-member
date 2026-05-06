@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
 import roomescape.service.ReservationService;
@@ -26,6 +27,13 @@ public class ReservationController {
 
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
+    }
+
+    @GetMapping("/popular-themes")
+    @ResponseBody
+    public ResponseEntity<List<Theme>> getPopularThemes() {
+        List<Theme> popularThemes = reservationService.getPopularThemes();
+        return ResponseEntity.ok(popularThemes);
     }
 
     @PostMapping
