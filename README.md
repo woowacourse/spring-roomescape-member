@@ -18,13 +18,13 @@
         "date": "2026-05-04",
         "time": {
             "id": 1,
-            "start_at": "12:30"
+            "startAt": "12:30"
         },
         "theme": {
             "id": 5,
             "name": "공포",
             "description": "짱무섭",
-            "image_url": "..."
+            "imageUrl": "..."
         }
     }
 ]
@@ -41,8 +41,8 @@
 {
     "name": "브라운",
     "date": "2026-05-04",
-    "time_id": 1,
-    "theme_id": 5
+    "timeId": 1,
+    "themeId": 5
 }
 ```
 
@@ -81,7 +81,7 @@
 
 ### (관리자) 예약시간 단건 추가
 
-`POST /times?role=`
+`POST /times?role=admin`
 
 **Request**
 ```json
@@ -101,13 +101,13 @@
 
 ### (관리자) 예약시간 단건 삭제
 
-`DELETE /times/{id}?role=`
+`DELETE /times/{id}?role=admin`
 
 ---
 
 ### 예약 가능 시간 조회
 
-`GET /times?type=available&date={date}&themeId={themeId}`
+`GET /times/available?date={date}&themeId={themeId}`
 
 **Response** `200 OK`
 ```json
@@ -134,7 +134,7 @@
         "id": 1,
         "name": "공포",
         "description": "짱무섭",
-        "image_url": "..."
+        "imageUrl": "..."
     }
 ]
 ```
@@ -143,14 +143,14 @@
 
 ### (관리자) 테마 단건 추가
 
-`POST /themes?role=`
+`POST /themes?role=admin`
 
 **Request**
 ```json
 {
     "name": "",
     "description": "",
-    "image_url": ""
+    "imageUrl": ""
 }
 ```
 
@@ -165,32 +165,34 @@
 
 ### (관리자) 테마 단건 삭제
 
-`DELETE /themes/{id}?role=`
+`DELETE /themes/{id}?role=admin`
 
 ---
 
 ### 인기 테마 조회
 
-`GET /themes/popular?period=week&limit=10`
+`GET /themes/popular/week?limit=10`
 
 **Response** `200 OK`
 ```json
-[
-    {
-        "id": 2,
-        "rank": 1,
-        "name": "프랑켄슈타인",
-        "description": "설명",
-        "image_url": "..."
-    },
-    {
-        "id": 1,
-        "rank": 2,
-        "name": "나폴리탄",
-        "description": "설명",
-        "image_url": "..."
-    }
-]
+{
+    "themes": [
+        {
+            "id": 2,
+            "rank": 1,
+            "name": "프랑켄슈타인",
+            "description": "설명",
+            "imageUrl": "..."
+        },
+        {
+            "id": 1,
+            "rank": 2,
+            "name": "나폴리탄",
+            "description": "설명",
+            "imageUrl": "..."
+        }
+    ]
+}
 ```
 
 ## 1단계 - 테마 도메인 추가
