@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Comparator;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
@@ -18,7 +17,6 @@ import roomescape.date.domain.ReservationDate;
 import roomescape.date.fixture.FakeReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
-import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.theme.domain.Theme;

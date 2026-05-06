@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.response.ReservationResponse;
+import roomescape.reservation.dto.response.ReservationDetailDto;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.service.ReservationService;
 
@@ -20,24 +20,24 @@ public class ReservationAdminController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<ReservationResponse> responseData = reservationService.readAll().stream()
-                .map(ReservationResponse::from)
+    public ResponseEntity<List<ReservationDetailDto>> getReservations() {
+        List<ReservationDetailDto> responseData = reservationService.readAll().stream()
+                .map(ReservationDetailDto::from)
                 .toList();
         return ResponseEntity.ok(responseData);
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationSaveDto dto) {
+    public ResponseEntity<ReservationDetailDto> createReservation(@RequestBody ReservationSaveDto dto) {
         Reservation reservation = reservationService.create(dto);
-        ReservationResponse responseData = ReservationResponse.from(reservation);
+        ReservationDetailDto responseData = ReservationDetailDto.from(reservation);
         return ResponseEntity.ok(responseData);
     }
 
     @PatchMapping("/reservations/{id}")
-    public ResponseEntity<ReservationResponse> cancelReservation(@PathVariable Long id) {
+    public ResponseEntity<ReservationDetailDto> cancelReservation(@PathVariable Long id) {
         Reservation reservation = reservationService.cancel(id);
-        ReservationResponse responseData = ReservationResponse.from(reservation);
+        ReservationDetailDto responseData = ReservationDetailDto.from(reservation);
         return ResponseEntity.ok(responseData);
     }
 

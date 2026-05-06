@@ -13,7 +13,6 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
