@@ -124,4 +124,37 @@ class JdbcReservationRepositoryTest {
         assertThat(target.getTime()).isEqualTo(saved.getTime());
         assertThat(target.getTheme()).isEqualTo(saved.getTheme());
     }
+
+    @Test
+    void 특정_시간_ID를_가지는_예약이_있으면_TRUE를_반환한다() {
+        // given
+        ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        Reservation saved = reservationRepository.createReservation(new Reservation("브라운", "2026-05-01", savedTime, savedTheme));
+
+        // when
+        boolean exists = reservationRepository.existsByTimeId(saved.getTimeId());
+
+        // then
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    void 특정_시간_ID를_가지는_예약이_없으면_FALSE를_반환한다() {
+        // given
+        ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
+        ReservationTime otherTime = timeRepository.createReservationTime(
+            new ReservationTime(2L, "17:00"));
+        Theme savedTheme = themeRepository.createTheme(THEME);
+
+        reservationRepository.createReservation(
+            new Reservation("브라운", "2026-05-01", savedTime, savedTheme));
+
+        // when
+        boolean exists = reservationRepository.existsByTimeId(otherTime.getId());
+
+        // then
+        assertThat(exists).isFalse();
+    }
 }

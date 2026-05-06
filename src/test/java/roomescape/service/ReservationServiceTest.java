@@ -1,13 +1,18 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,8 +23,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.repository.reservation.ReservationRepository;
-import roomescape.repository.time.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
+import roomescape.repository.time.ReservationTimeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -96,6 +101,18 @@ class ReservationServiceTest {
         assertThatCode(() -> reservationService.addReservation(requestDtoFrom(reservation)))
             .doesNotThrowAnyException();
         verify(reservationRepository, times(1)).createReservation(any());
+    }
+
+    @Test
+    void 예약이_존재하는_시간을_삭제하는_경우_예외가_발생한다() {
+        // given
+        when(reservationRepository.existsByTimeId(anyLong()))
+            .thenReturn(true);
+
+        // when & then
+        assertThatCode(() -> reservationService.deleteReservationTime(SAVED_TIME.getId()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("예약이 존재하는");
     }
 
     private ReservationRequestDto requestDtoFrom(Reservation reservation) {

@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.List;
@@ -23,7 +22,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.reservationTime.AvailableReservationTimesResponseDto;
 import roomescape.dto.reservationTime.ReservationTimeRequestDto;
-import roomescape.dto.reservationTime.ReservationTimeResponseDto;
 import roomescape.service.ReservationService;
 import roomescape.service.ThemeService;
 
@@ -49,20 +47,20 @@ class ReservationTimeControllerTest {
         ReservationTime newTime = new ReservationTime(1L, "12:30");
         ReservationTimeRequestDto request = requestDtoFrom(newTime);
         when(reservationService.addReservationTime(any()))
-                .thenReturn(newTime);
+            .thenReturn(newTime);
 
         // when
         Response response = RestAssured
-                .given().log().all()
-                .queryParam("role", "admin")
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/times");
+            .given().log().all()
+            .queryParam("role", "admin")
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/times");
 
         // then
         response
-                .then()
-                .statusCode(HttpStatus.CREATED.value());
+            .then()
+            .statusCode(HttpStatus.CREATED.value());
 
         ResourceIdResponseDto responseDto = response.as(ResourceIdResponseDto.class);
         assertThat(responseDto).isEqualTo(new ResourceIdResponseDto(newTime.getId()));
@@ -72,15 +70,15 @@ class ReservationTimeControllerTest {
     void 관리자는_예약_시간을_삭제할_수_있다() {
         // given & when
         Response response = RestAssured
-                .given().log().all()
-                .queryParam("role", "admin")
-                .pathParam("id", 1)
-                .when().delete("/times/{id}");
+            .given().log().all()
+            .queryParam("role", "admin")
+            .pathParam("id", 1)
+            .when().delete("/times/{id}");
 
         // then
         response
-                .then()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+            .then()
+            .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @Test
@@ -90,13 +88,14 @@ class ReservationTimeControllerTest {
         ReservationTime impossibleTime = new ReservationTime(2L, "14:30");
         List<ReservationTime> allTimes = List.of(availableTime, impossibleTime);
         List<ReservationTime> availableTimes = List.of(availableTime);
-        AvailableReservationTimesResponseDto expected = AvailableReservationTimesResponseDto.of(availableTimes, allTimes);
+        AvailableReservationTimesResponseDto expected = AvailableReservationTimesResponseDto.of(availableTimes,
+            allTimes);
 
         when(reservationService.getAvailableTimes(any(), anyLong()))
             .thenReturn(List.of(availableTime));
 
         when(reservationService.getReservationTimes())
-                .thenReturn(List.of(availableTime, impossibleTime));
+            .thenReturn(List.of(availableTime, impossibleTime));
 
         // when
         Response response = RestAssured
@@ -125,32 +124,31 @@ class ReservationTimeControllerTest {
 
             // when
             Response response = RestAssured
-                    .given().log().all()
-                    .queryParam("role", "user")
-                    .contentType(ContentType.JSON)
-                    .body(request)
-                    .when().post("/times");
-
+                .given().log().all()
+                .queryParam("role", "user")
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/times");
 
             // then
             response
-                    .then()
-                    .statusCode(HttpStatus.FORBIDDEN.value());
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value());
         }
 
         @Test
         void 관리자가_아닌_사용자가_테마를_삭제하는_경우_예외가_발생한다() {
             // given & when
             Response response = RestAssured
-                    .given().log().all()
-                    .queryParam("role", "user")
-                    .pathParam("id", 1)
-                    .when().delete("/times/{id}");
+                .given().log().all()
+                .queryParam("role", "user")
+                .pathParam("id", 1)
+                .when().delete("/times/{id}");
 
             // then
             response
-                    .then()
-                    .statusCode(HttpStatus.FORBIDDEN.value());
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value());
         }
     }
 
