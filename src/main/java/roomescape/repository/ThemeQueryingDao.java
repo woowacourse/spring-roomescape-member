@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,5 +50,22 @@ public class ThemeQueryingDao {
                 FROM theme
                 """;
         return jdbcTemplate.query(sql, themeRowMapper);
+    }
+
+    public List<Theme> findAllByTopTheme() {
+        String sql = """
+                SELECT t.id, t.name, t.description, t.url
+                FROM theme as t
+                INNER JOIN (
+                    SELECT r.theme_id
+                    FROM reservation as r
+                    WHERE r.created_at >= ?
+                    GROUP BY r.theme_id
+                    ORDER BY count(1) DESC
+                    LIMIT 10
+                ) AS top_themes ON t.id = top_themes.theme_id;
+                """;
+        LocalDateTime filtered = LocalDateTime.now().minusWeeks(1);
+        return jdbcTemplate.query(sql, themeRowMapper, filtered);
     }
 }

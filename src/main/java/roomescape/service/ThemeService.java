@@ -5,12 +5,10 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRequest;
 import roomescape.domain.theme.ThemeResponse;
-import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.repository.ThemeQueryingDao;
 import roomescape.repository.ThemeUpdatingDao;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Transactional(readOnly = true)
@@ -33,6 +31,12 @@ public class ThemeService {
 
     public List<ThemeResponse> findAll() {
         return themeQueryingDao.findAllTheme().stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
+    public List<ThemeResponse> findPopularTheme() {
+        return themeQueryingDao.findAllByTopTheme().stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
