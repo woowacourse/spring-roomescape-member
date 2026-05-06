@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 import roomescape.theme.domain.Theme;
+import roomescape.theme.service.dto.ThemeBestServiceDto;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -89,7 +90,7 @@ class JdbcThemeRepositoryTest {
         insertReservation("c_out", LocalDate.of(2026, 5, 2), timeId, theme3.getId());
 
         // when
-        List<Theme> bestThemes = jdbcThemeRepository.findBestThemesByDate(date, dayCount, 10);
+        List<Theme> bestThemes = jdbcThemeRepository.findBestThemesByDate(new ThemeBestServiceDto(date, dayCount, 10));
 
         // then
         assertThat(bestThemes).hasSize(2);

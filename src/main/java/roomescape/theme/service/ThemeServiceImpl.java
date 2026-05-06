@@ -13,6 +13,8 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.service.dto.ThemeBestServiceDto;
+import roomescape.theme.service.dto.ThemeResponseServiceDto;
 import roomescape.theme.service.dto.ThemeSaveServiceDto;
 import roomescape.time.service.TimeService;
 
@@ -81,5 +83,14 @@ public class ThemeServiceImpl implements ThemeService {
         if (themeId == null || !themeRepository.existsById(themeId)) {
             throw new ThemeNotFoundException(themeId);
         }
+    }
+
+    @Override
+    public List<ThemeResponseServiceDto> getBestThemes(LocalDate date, int dayCount, int rankCount) {
+        ThemeBestServiceDto themeBestServiceDto = new ThemeBestServiceDto(date, dayCount, rankCount);
+        return themeRepository.findBestThemesByDate(themeBestServiceDto)
+                .stream()
+                .map(ThemeResponseServiceDto::from)
+                .collect(Collectors.toList());
     }
 }
