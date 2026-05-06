@@ -96,7 +96,7 @@
 
 | 항목 | 상세 내용                                                                                       |
 | :--- |:--------------------------------------------------------------------------------------------|
-| **URL** | `/admin/themes?sort=reservations&limit=10&days=7`                                           |
+| **URL** | `/themes?sort=reservations&limit=10&days=7`                                                 |
 | **HTTP Method** | `GET`                                                                                       |
 | **Request (Query)** | `sort`: 정렬 기준 (예: `reservations`) <br> `limit`: 조회 개수 (예: `10`) <br> `days`: 통계 기간 (예: `7`) |
 | **Response** | `[ { "themeName": "테마명", "reservationCount": 25 }, ... ]`                                   |
