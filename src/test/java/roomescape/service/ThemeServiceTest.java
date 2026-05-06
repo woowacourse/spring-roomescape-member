@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ThemeRequestDto;
 import roomescape.dto.ThemeResponseDto;
 
@@ -18,12 +20,6 @@ public class ThemeServiceTest {
 
     @Autowired
     private ThemeService themeService;
-
-    @Autowired
-    private ReservationService reservationService;
-
-    @Autowired
-    private ReservationTimeService reservationTimeService;
 
     @Test
     void createTest() {
@@ -88,4 +84,21 @@ public class ThemeServiceTest {
         assertThat(responseDtos.size()).isEqualTo(0);
     }
 
+    @Test
+    @Sql(scripts = "/ranking-test-data.sql")
+    void readRankingTest() {
+        List<ThemeResponseDto> responseDtos = themeService.readRanking(LocalDate.of(2026, 5, 1),
+                LocalDate.of(2026, 5, 7));
+
+        assertThat(responseDtos.get(0).id()).isEqualTo(1);
+        assertThat(responseDtos.get(1).id()).isEqualTo(2);
+        assertThat(responseDtos.get(2).id()).isEqualTo(3);
+        assertThat(responseDtos.get(3).id()).isEqualTo(4);
+        assertThat(responseDtos.get(4).id()).isEqualTo(5);
+        assertThat(responseDtos.get(5).id()).isEqualTo(6);
+        assertThat(responseDtos.get(6).id()).isEqualTo(7);
+        assertThat(responseDtos.get(7).id()).isEqualTo(8);
+        assertThat(responseDtos.get(8).id()).isEqualTo(9);
+        assertThat(responseDtos.get(9).id()).isEqualTo(10);
+    }
 }
