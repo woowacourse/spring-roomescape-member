@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.dto.AvailableReservationTimeResponse;
-import roomescape.dto.SearchRequest;
 
 @Repository
 public class ThemeDao {
@@ -52,7 +51,7 @@ public class ThemeDao {
 
     public List<Theme> findAll() {
         try {
-            return jdbcTemplate.query( "SELECT id, name, description, thumbnail_url FROM theme", themeRowMapper);
+            return jdbcTemplate.query("SELECT id, name, description, thumbnail_url FROM theme", themeRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
         }
 
@@ -62,22 +61,22 @@ public class ThemeDao {
     public List<Theme> findPopularThemes(int size, LocalDate from, LocalDate to) {
         try {
             final String sql = """
-                            SELECT
-                                th.id,
-                                th.name,
-                                th.description,
-                                th.thumbnail_url
-                            FROM reservation AS r
-                            INNER JOIN theme AS th ON r.theme_id = th.id
-                            WHERE r.date BETWEEN ? AND ?
-                            GROUP BY
-                                th.id,
-                                th.name,
-                                th.description,
-                                th.thumbnail_url
-                            ORDER BY COUNT(r.id) DESC
-                            LIMIT ?
-                            """;
+                    SELECT
+                        th.id,
+                        th.name,
+                        th.description,
+                        th.thumbnail_url
+                    FROM reservation AS r
+                    INNER JOIN theme AS th ON r.theme_id = th.id
+                    WHERE r.date BETWEEN ? AND ?
+                    GROUP BY
+                        th.id,
+                        th.name,
+                        th.description,
+                        th.thumbnail_url
+                    ORDER BY COUNT(r.id) DESC
+                    LIMIT ?
+                    """;
             return jdbcTemplate.query(sql, themeRowMapper, from, to, size);
         } catch (EmptyResultDataAccessException ignored) {
         }

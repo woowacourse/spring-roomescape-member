@@ -18,9 +18,8 @@ import roomescape.controller.ReservationController;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
-
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationController reservationController;
 
     @Test
     void 시간_관리_API() {
@@ -74,9 +73,6 @@ public class MissionStepTest {
                 .body("size()", is(1));
     }
 
-    @Autowired
-    private ReservationController reservationController;
-
     @Test
     void 계층화_리팩터링() {
         boolean isJdbcTemplateInjected = false;
@@ -90,5 +86,4 @@ public class MissionStepTest {
 
         assertThat(isJdbcTemplateInjected).isFalse();
     }
-
 }

@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,7 +21,8 @@ public class ReservationDao {
             rs.getString("name"),
             rs.getDate("date").toLocalDate(),
             new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
-            new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"), rs.getString("theme_thumbnail"))
+            new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"),
+                    rs.getString("theme_thumbnail"))
     );
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {

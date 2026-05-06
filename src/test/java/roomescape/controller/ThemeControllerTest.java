@@ -28,7 +28,7 @@ class ThemeControllerTest {
     @Test
     @DisplayName("API - Top 10 테마 조회")
     void API_예약_시간_조회() {
-        Map<String,Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("condition", "popular");
         params.put("size", "10");
 

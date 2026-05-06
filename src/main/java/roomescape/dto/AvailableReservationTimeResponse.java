@@ -6,5 +6,4 @@ public record AvailableReservationTimeResponse(long id, String startAt, boolean 
     public static AvailableReservationTimeResponse from(ReservationTime time, boolean isAvailable) {
         return new AvailableReservationTimeResponse(time.getId(), time.getStartAt().toString(), isAvailable);
     }
-
 }

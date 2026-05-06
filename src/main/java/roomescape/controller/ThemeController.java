@@ -41,7 +41,8 @@ public class ThemeController {
     public ResponseEntity<List<AvailableReservationTimeResponse>> getReservationTimes(
             @PathVariable long id,
             @RequestParam String date) {
-        final List<AvailableReservationTimeResponse> reservationTimeResponses = themeService.getAvailableTimeResponses(id, date);
+        final List<AvailableReservationTimeResponse> reservationTimeResponses = themeService.getAvailableTimeResponses(
+                id, date);
         return ResponseEntity.ok(reservationTimeResponses);
     }
 }

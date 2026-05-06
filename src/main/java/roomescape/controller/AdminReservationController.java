@@ -22,6 +22,4 @@ public class AdminReservationController {
         final List<AdminReservationResponse> list = adminReservationService.getAllReservations();
         return ResponseEntity.ok(list);
     }
-
-
 }
