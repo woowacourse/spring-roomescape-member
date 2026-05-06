@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.dto.ThemeRankResponse;
 
 @Repository
 @RequiredArgsConstructor
@@ -68,6 +67,13 @@ public class JdbcReservationRepository implements ReservationRepository {
             order by count(r.id) desc, th.id asc
             limit ?
             """;
+    private static final String COUNT_BY_THEME_ID_SQL =
+        """
+            select count(*)
+            from reservation
+            where theme_id = ?
+            """;
+    ;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -128,6 +134,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate endDay) {
         return jdbcTemplate.query(FIND_POPULAR_THEME_SQL, popularThemeRowMapper(), startDay, endDay, rankLimit);
+    }
+
+    @Override
+    public int countByThemeId(Long themeId) {
+        Integer count = jdbcTemplate.queryForObject(COUNT_BY_THEME_ID_SQL, Integer.class, themeId);
+        if (count == null) {
+            return 0;
+        }
+        return count;
     }
 
     private RowMapper<Reservation> reservationRowMapper() {

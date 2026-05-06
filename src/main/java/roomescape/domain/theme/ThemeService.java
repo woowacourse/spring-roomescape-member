@@ -11,6 +11,8 @@ import roomescape.domain.theme.dto.CreateThemeRequest;
 import roomescape.domain.theme.dto.CreateThemeResponse;
 import roomescape.domain.theme.dto.ThemeRankResponse;
 import roomescape.domain.theme.dto.ThemeResponse;
+import roomescape.support.exception.RoomescapeException;
+import roomescape.support.exception.ThemeErrorCode;
 
 @Slf4j
 @Service
@@ -34,8 +36,10 @@ public class ThemeService {
         return CreateThemeResponse.from(theme);
     }
 
-    // TODO: Reservation에 Theme 연결 후 Theme에 연결된 예약 존재 시 삭제 불가 로직 필요.
     public void deleteTheme(Long id) {
+        if (reservationRepository.countByThemeId(id) > 0) {
+            throw new RoomescapeException(ThemeErrorCode.THEME_IN_USE);
+        }
         int deletedCount = themeRepository.deleteById(id);
         if (deletedCount == 0) {
             log.warn("삭제할 테마가 존재하지 않습니다. themeId = {}", id);
