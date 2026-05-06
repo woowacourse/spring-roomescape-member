@@ -1,6 +1,10 @@
 package roomescape.time.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
@@ -8,66 +12,45 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceImplTest {
 
-    private final FakeReservationTimeRepository fakeRepository = new FakeReservationTimeRepository();
-    private final ReservationTimeServiceImpl reservationTimeService =
-            new ReservationTimeServiceImpl(fakeRepository);
+    @Mock
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @InjectMocks
+    private ReservationTimeServiceImpl reservationTimeService;
 
     @Test
     void 시간_목록을_조회하면_Repository_findAll_결과를_반환한다() {
         List<ReservationTime> times = List.of(new ReservationTime(1L, LocalTime.of(10, 0)));
-        fakeRepository.toReturnAll = times;
+        when(reservationTimeRepository.findAll()).thenReturn(times);
 
         List<ReservationTime> result = reservationTimeService.getTimes();
 
+        verify(reservationTimeRepository).findAll();
         assertThat(result).isSameAs(times);
     }
 
     @Test
-    void 시간_생성을_요청하면_시작_시간을_Repository에_전달하고_save_결과를_반환한다() {
+    void 시간을_생성하면_시작_시간을_Repository_save에_전달하고_결과를_반환한다() {
         ReservationTime saved = new ReservationTime(1L, LocalTime.of(10, 0));
-        fakeRepository.toReturnSaved = saved;
+        when(reservationTimeRepository.save(any())).thenReturn(saved);
 
         ReservationTime result = reservationTimeService.createTime(LocalTime.of(10, 0));
 
+        verify(reservationTimeRepository).save(any());
         assertThat(result).isSameAs(saved);
-        assertThat(fakeRepository.savedStartAt).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test
-    void 시간_삭제를_요청하면_id를_Repository_remove에_전달한다() {
+    void 시간을_삭제하면_Repository_remove에_id를_전달한다() {
         reservationTimeService.removeTime(3L);
 
-        assertThat(fakeRepository.removedId).isEqualTo(3L);
-    }
-
-    static class FakeReservationTimeRepository extends ReservationTimeRepository {
-
-        List<ReservationTime> toReturnAll = List.of();
-        ReservationTime toReturnSaved;
-        LocalTime savedStartAt;
-        Long removedId;
-
-        FakeReservationTimeRepository() {
-            super(null);
-        }
-
-        @Override
-        public List<ReservationTime> findAll() {
-            return toReturnAll;
-        }
-
-        @Override
-        public ReservationTime save(LocalTime startAt) {
-            this.savedStartAt = startAt;
-            return toReturnSaved;
-        }
-
-        @Override
-        public void remove(Long id) {
-            this.removedId = id;
-        }
+        verify(reservationTimeRepository).remove(3L);
     }
 }
