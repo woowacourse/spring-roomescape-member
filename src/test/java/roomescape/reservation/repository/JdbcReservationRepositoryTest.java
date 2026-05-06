@@ -135,22 +135,19 @@ class JdbcReservationRepositoryTest {
         Theme carrotTheme = new Theme(carrotId, "당근", "당근 전용 테마", "https://carrot.com");
 
         ReservationTime time = new ReservationTime(setupTimeId, LocalTime.of(10, 0));
-
-        LocalDate yesterday = LocalDate.now().minusDays(1);
         LocalDate today = LocalDate.now();
-        LocalDate outsidePeriod = LocalDate.now().minusDays(8);
 
-        reservationRepository.save(new Reservation(null, "브라운", yesterday, time, woowaTheme));
-        reservationRepository.save(new Reservation(null, "포비", yesterday, time, woowaTheme));
-        reservationRepository.save(new Reservation(null, "제이슨", yesterday, time, woowaTheme));
+        reservationRepository.save(new Reservation(null, "브라운",today.minusDays(1), time, woowaTheme));
+        reservationRepository.save(new Reservation(null, "포비",today.minusDays(2), time, woowaTheme));
+        reservationRepository.save(new Reservation(null, "제이슨",today.minusDays(3), time, woowaTheme));
 
-        reservationRepository.save(new Reservation(null, "이든", yesterday, time, pairTheme));
-        reservationRepository.save(new Reservation(null, "레아", yesterday, time, pairTheme));
+        reservationRepository.save(new Reservation(null, "이든", today.minusDays(1), time, pairTheme));
+        reservationRepository.save(new Reservation(null, "레아", today.minusDays(2), time, pairTheme));
 
-        reservationRepository.save(new Reservation(null, "웨지", yesterday, time, carrotTheme));
+        reservationRepository.save(new Reservation(null, "웨지", today.minusDays(1), time, carrotTheme));
 
         reservationRepository.save(new Reservation(null, "오늘예약", today, time, carrotTheme));
-        reservationRepository.save(new Reservation(null, "범위밖예약", outsidePeriod, time, carrotTheme));
+        reservationRepository.save(new Reservation(null, "범위밖예약", today.minusDays(8), time, carrotTheme));
 
         // when
         List<Theme> popularThemes = reservationRepository.findPopularThemes(7, 2);
