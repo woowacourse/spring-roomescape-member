@@ -2,13 +2,19 @@ package roomescape.reservationtime.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
+import roomescape.theme.entity.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class JdbcReservationTimeRepositoryTest {
@@ -16,10 +22,15 @@ class JdbcReservationTimeRepositoryTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
+
     @Test
     void 예약_시간을_저장하는_테스트() {
         LocalTime startAt = LocalTime.of(11, 0);
-
         ReservationTime reservationTime = reservationTimeRepository.save(startAt);
 
         assertThat(reservationTime.getId()).isPositive();
@@ -55,6 +66,18 @@ class JdbcReservationTimeRepositoryTest {
 
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         assertThat(reservationTimes).doesNotContain(reservationTime);
+    }
+
+    @Test
+    void 예약_시간을_삭제하면_이를_참조하는_예약도_삭제된다() {
+        ReservationTime reservationTime = reservationTimeRepository.save(LocalTime.of(11, 0));
+        Theme theme = themeRepository.save("테마", "테마 설명", "https://example.com/theme.png");
+        Reservation reservation = reservationRepository.save("밀란", LocalDate.of(2026, 5, 6), reservationTime, theme);
+
+        reservationTimeRepository.deleteById(reservationTime.getId());
+
+        Optional<Reservation> foundReservation = reservationRepository.findById(reservation.getId());
+        assertThat(foundReservation).isEmpty();
     }
 
 }

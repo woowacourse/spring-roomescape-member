@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -83,6 +84,15 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return Reservation.of(id, name, date, reservationTime, theme);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        String sql = SELECT_RESERVATION_WITH_TIME + "WHERE r.id = ?";
+
+        List<Reservation> result = jdbcTemplate.query(sql, reservationRowMapper, id);
+
+        return result.stream().findFirst();
     }
 
     @Override

@@ -3,10 +3,17 @@ package roomescape.theme.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservationtime.entity.ReservationTime;
+import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 
@@ -15,6 +22,12 @@ class JdbcThemeRepositoryTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Test
     void 테마를_저장하는_테스트() {
@@ -66,6 +79,18 @@ class JdbcThemeRepositoryTest {
 
         List<Theme> themes = themeRepository.findAll();
         assertThat(themes).doesNotContain(theme);
+    }
+
+    @Test
+    void 테마를_삭제하면_이를_참조하는_예약도_삭제된다() {
+        ReservationTime reservationTime = reservationTimeRepository.save(LocalTime.of(11, 0));
+        Theme theme = themeRepository.save("테마", "테마 설명", "https://example.com/theme.png");
+        Reservation reservation = reservationRepository.save("밀란", LocalDate.of(2026, 5, 6), reservationTime, theme);
+
+        themeRepository.deleteById(theme.getId());
+
+        Optional<Reservation> foundReservation = reservationRepository.findById(reservation.getId());
+        assertThat(foundReservation).isEmpty();
     }
 
 }

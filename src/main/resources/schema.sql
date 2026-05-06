@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS theme
     PRIMARY KEY (id)
 );
 
-
 CREATE TABLE IF NOT EXISTS reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
