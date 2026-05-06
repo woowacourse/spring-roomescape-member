@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
@@ -29,5 +30,11 @@ public class ThemeService {
 
     public Theme findTime(long timeId) {
         return themeRepository.findById(timeId);
+    }
+
+    public List<Theme> findPopularThemes(Long topCount, Long during) {
+        LocalDate fromDate = LocalDate.now().minusDays(during);
+        LocalDate toDate = LocalDate.now();
+        return themeRepository.findPopularThemes(topCount, fromDate, toDate);
     }
 }
