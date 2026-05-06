@@ -24,7 +24,7 @@ public class MissionStep3Test {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201);
 
@@ -35,7 +35,7 @@ public class MissionStep3Test {
                 .body("size()", is(6));
 
         RestAssured.given().log().all()
-                .when().delete("/times/6")
+                .when().delete("/admin/times/6")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -51,7 +51,7 @@ public class MissionStep3Test {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
@@ -61,7 +61,7 @@ public class MissionStep3Test {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationTimeParams)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201);
 
@@ -98,7 +98,7 @@ public class MissionStep3Test {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(400);
     }
@@ -106,7 +106,7 @@ public class MissionStep3Test {
     @Test
     void 존재하지_않는_예약시간_삭제시_404() {
         RestAssured.given().log().all()
-                .when().delete("/times/0")
+                .when().delete("/admin/times/0")
                 .then().log().all()
                 .statusCode(404);
     }
