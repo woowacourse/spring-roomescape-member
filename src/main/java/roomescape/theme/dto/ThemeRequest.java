@@ -1,6 +1,7 @@
 package roomescape.theme.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
 
@@ -12,7 +13,7 @@ public record ThemeRequest(
         String description,
         String imageUrl,
 
-        @NotBlank(message = "테마 소요 시간은 필수입니다.")
+        @NotNull(message = "테마 소요 시간은 필수입니다.")
         LocalTime requiredTime
 ) {
 }

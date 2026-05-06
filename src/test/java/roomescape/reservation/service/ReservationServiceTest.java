@@ -12,11 +12,9 @@ import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.schedule.model.Schedule;
-import roomescape.schedule.repository.ScheduleRepository;
 import roomescape.theme.model.Theme;
 import roomescape.user.model.Role;
 import roomescape.user.model.User;
-import roomescape.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -38,22 +36,23 @@ class ReservationServiceTest {
     private ReservationRepository reservationRepository;
 
     @Autowired
-    private UserRepository userRepository; // 유저 ID 조회를 위해 주입
-
-    @Autowired
-    private ScheduleRepository scheduleRepository; // 스케줄 ID 조회를 위해 주입
-
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM schedule");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM \"USER\"");
+
         jdbcTemplate.update("INSERT INTO \"USER\" (id, name, role) VALUES (?, ?, ?)",
                 1L, "user1", "USER");
         jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url, required_time) VALUES (?, ?, ?, ?, ?)",
                 1L, "공포", "설명", "경로", LocalTime.of(2, 0));
         jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
                 1L, 1L, "2026-12-10 12:00:00", "2026-12-10 14:00:00");
+        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
+                2L, 1L, "2026-12-10 15:00:00", "2026-12-10 17:00:00");
         reservationRepository.create(new Reservation(user, schedule, theme));
     }
 
@@ -66,15 +65,10 @@ class ReservationServiceTest {
 
     @Test
     void 새로운_예약을_생성한다() {
-        User user = userRepository.findById(1L);
-        Schedule schedule = scheduleRepository.findById(1L);
+        ReservationRequest request = new ReservationRequest("2026-12-10", "15:00", 1L, "user1");
 
-        ReservationRequest request = new ReservationRequest(user.getId(), schedule.getId());
-
-        // 2. When
         ReservationIdResponse response = reservationService.create(request);
 
-        // 3. Then
         assertThat(response.getId()).isNotNull();
         assertThat(reservationService.findAll().getReservationsResponse()).hasSize(2);
     }

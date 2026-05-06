@@ -23,11 +23,11 @@ public class Schedule {
     }
 
     public Schedule(Long id, LocalDateTime startAt, Theme theme) {
-        validateStartAt(startAt);
+        validateStartAt(id, startAt);
         validateTheme(theme);
         this.id = id;
         this.startAt = startAt;
-        this.endAt = calculateEndAt(startAt, theme);
+        this.endAt = calculateEndAt(id, startAt, theme);
         this.theme = theme;
     }
 
@@ -47,24 +47,26 @@ public class Schedule {
         return theme;
     }
 
-    private LocalDateTime calculateEndAt(LocalDateTime startAt, Theme theme) {
+    private LocalDateTime calculateEndAt(Long id, LocalDateTime startAt, Theme theme) {
         LocalTime requiredTime = theme.getRequiredTime();
 
         LocalDateTime endAt = startAt.plusHours(requiredTime.getHour())
                 .plusMinutes(requiredTime.getMinute());
 
-        validateEndAt(endAt);
+        validateEndAt(id, endAt);
         return endAt;
     }
 
-    private void validateStartAt(LocalDateTime startAt) {
+    private void validateStartAt(Long id, LocalDateTime startAt) {
         if (startAt == null) {
             throw new IllegalArgumentException("예약 시작 시간은 필수입니다.");
         }
 
-        if (startAt.isBefore(LocalDateTime.now())) {
+        if (id == null && startAt.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("과거 날짜/시간에는 스케줄을 생성할 수 없습니다.");
         }
+
+        if (id != null) return;
 
         LocalTime startTime = startAt.toLocalTime();
 
@@ -73,10 +75,12 @@ public class Schedule {
         }
     }
 
-    private void validateEndAt(LocalDateTime endAt) {
+    private void validateEndAt(Long id, LocalDateTime endAt) {
         if (endAt == null) {
-            throw new IllegalArgumentException("예약 시작 시간은 필수입니다.");
+            throw new IllegalArgumentException("예약 종료 시간은 필수입니다.");
         }
+
+        if (id != null) return;
 
         LocalTime endTime = endAt.toLocalTime();
 

@@ -1,5 +1,6 @@
 package roomescape.theme.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +12,7 @@ import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.dto.ThemesResponse;
 import roomescape.theme.model.Theme;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -26,6 +28,14 @@ class ThemeServiceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM schedule");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM \"USER\"");
+    }
 
     @Test
     void 새로운_테마를_생성하고_쩡상적으로_응답을_반환한다() {
@@ -72,7 +82,7 @@ class ThemeServiceTest {
         ThemeResponse theme1 = themeService.create(new ThemeRequest("테마1", "설명1", "경로1", LocalTime.of(2, 0)));
         ThemeResponse theme2 = themeService.create(new ThemeRequest("테마2", "설명2", "경로2", LocalTime.of(2, 0)));
 
-        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+        LocalDateTime yesterday = LocalDate.now().minusDays(1).atTime(10, 0);
 
         jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
                 1L, theme1.getId(), yesterday, yesterday.plusHours(2));

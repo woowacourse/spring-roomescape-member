@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.model.Theme;
 
+import org.junit.jupiter.api.BeforeEach;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -23,6 +26,14 @@ class ThemeRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM schedule");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM \"USER\"");
+    }
 
     @Test
     void 테마를_데이터베이스에_성공적으로_저장하고_생성된_ID를_반환한다() {
@@ -75,7 +86,7 @@ class ThemeRepositoryTest {
         Long themeId1 = themeRepository.create(new Theme("테마1", "설명1", "경로1", LocalTime.of(2, 0)));
         Long themeId2 = themeRepository.create(new Theme("테마2", "설명2", "경로2", LocalTime.of(2, 0)));
 
-        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+        LocalDateTime yesterday = LocalDate.now().minusDays(1).atTime(10, 0);
 
         jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
                 1L, themeId1, yesterday, yesterday.plusHours(2));
