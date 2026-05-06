@@ -1,5 +1,9 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
@@ -28,6 +32,12 @@ public class ThemeService {
     public void delete(Long id) {
         validateId(id);
         themeDao.delete(id);
+    }
+
+    public List<Theme> findWeeklyTopTen() {
+        LocalDate startDate = LocalDate.now().minusWeeks(1);
+        LocalDate endDate = startDate.plusDays(6);
+        return themeDao.findPopular(startDate, endDate, 10);
     }
 
     private void validateId(Long id) {

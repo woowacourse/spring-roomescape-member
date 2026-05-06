@@ -52,4 +52,11 @@ public class ThemeController {
     public List<AvailableTimeDto> getAvailableTimes(@PathVariable Long id, @RequestParam("date") LocalDate date) {
         return reservationService.findAvailableTime(id, date);
     }
+
+    @GetMapping("/popular")
+    public List<ThemeResponse> getPopularThemes() {
+        return themeService.findWeeklyTopTen().stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
 }

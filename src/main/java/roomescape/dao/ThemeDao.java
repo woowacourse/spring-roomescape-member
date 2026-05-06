@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -57,5 +58,24 @@ public class ThemeDao {
     public int delete(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?;";
         return jdbcTemplate.update(sql, id);
+    }
+
+    public List<Theme> findPopular(LocalDate startDate, LocalDate endDate, int limit) {
+        String sql = "SELECT\n"
+                + "    t.id,\n"
+                + "    t.name,\n"
+                + "    t.description,\n"
+                + "    t.thumbnail,\n"
+                + "    COUNT(r.id) AS reservation_count\n"
+                + "FROM theme AS t\n"
+                + "LEFT JOIN reservation AS r\n"
+                + "    ON r.theme_id = t.id\n"
+                + "    AND r.date >= ?\n"
+                + "    AND r.date < ?\n"
+                + "GROUP BY t.id, t.name, t.description, t.thumbnail\n"
+                + "ORDER BY reservation_count DESC, t.id ASC\n"
+                + "LIMIT ?";
+
+        return jdbcTemplate.query(sql, actorRowMapper, startDate, endDate, limit);
     }
 }

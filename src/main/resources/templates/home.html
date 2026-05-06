@@ -289,7 +289,7 @@
         }
 
         .section-title {
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Noto Serif KR', serif;
             font-size: clamp(2rem, 4vw, 3.2rem);
             font-weight: 300;
             line-height: 1.2;
@@ -740,7 +740,7 @@
         <!-- 탭 3: 인기 테마 -->
         <div class="tab-content" id="tab-popular">
             <div class="section-label"><span>Popular Themes</span></div>
-            <h2 class="section-title fade-in">지금 가장<br>핫한 테마</h2>
+            <h2 class="section-title fade-in" id="popular-title"></h2>
             <div class="popular-list" id="popular-list">
                 <!-- JS로 렌더링 -->
             </div>
@@ -851,14 +851,16 @@
         triggerFadeIns();
     }
 
+    function getPopularTitle() {
+        return '최근 1주일 인기 테마 TOP 10';
+    }
+
     function renderPopularList(themes) {
         const list = document.getElementById('popular-list');
         list.innerHTML = '';
-        const badges = ['badge-hot', 'badge-hot', 'badge-new', 'badge-sold', 'badge-new'];
-        const badgeLabels = ['HOT', 'HOT', 'NEW', 'SOLD OUT', 'NEW'];
-        const counts = ['이번 달 예약 1위', '만족도 98%', '신규 테마', '예약 마감', '신규 테마'];
-
-        themes.slice(0, 5).forEach((t, i) => {
+        const titleEl = document.getElementById('popular-title');
+        if (titleEl) titleEl.innerHTML = getPopularTitle();
+        themes.forEach((t, i) => {
             const item = document.createElement('a');
             item.href = `/reservation?themeId=${t.id}`;
             item.className = 'popular-item fade-in';
@@ -866,11 +868,9 @@
                 <div class="popular-rank">${String(i + 1).padStart(2, '0')}</div>
                 <div class="popular-info">
                     <div class="popular-name">${t.name}</div>
-                    <div class="popular-sub">${t.description ? t.description.slice(0, 30) + '...' : '자세한 설명 없음'}</div>
+                    <div class="popular-sub">${t.description ? t.description.slice(0, 40) + '...' : '자세한 설명 없음'}</div>
                 </div>
                 <div class="popular-meta">
-                    <span class="popular-badge ${badges[i]}">${badgeLabels[i]}</span>
-                    <span class="popular-count">${counts[i]}</span>
                     <span class="popular-arrow">→</span>
                 </div>
             `;
@@ -879,24 +879,24 @@
         triggerFadeIns();
     }
 
-    // API 호출
+    // API 호출 — 테마 소개 / 인기 테마 분리
+    const dummyThemes = [
+        { id: 1, name: '저주받은 저택', description: '오래된 저택에 숨겨진 100년의 비밀을 밝혀라. 공포와 미스터리가 교차하는 극한의 체험.', thumbnail: '' },
+        { id: 2, name: '우주 정거장 X9', description: '고장난 우주선에서 산소가 떨어지기 전에 지구로 귀환하라. SF 어드벤처의 정수.', thumbnail: '' },
+        { id: 3, name: '마법사의 비밀 서재', description: '실종된 마법사의 서재에서 금지된 마법서를 찾아라. 판타지와 퍼즐이 어우러진 명작.', thumbnail: '' },
+        { id: 4, name: '탐정 사무소 1987', description: '냉전 시대 베를린, 24시간 안에 스파이를 잡아라. 역사와 추리가 만나는 스릴러.', thumbnail: '' },
+        { id: 5, name: '심해 탐사선', description: '수심 3000m, 통신이 끊긴 탐사선에서 살아 돌아올 수 있을까? 최고 난이도의 도전.', thumbnail: '' },
+    ];
+
     fetch('/themes')
         .then(res => res.json())
-        .then(themes => {
-            renderThemeIntroGrid(themes);
-            renderPopularList(themes);
-        })
-        .catch(() => {
-            const dummy = [
-                { id: 1, name: '저주받은 저택', description: '오래된 저택에 숨겨진 100년의 비밀을 밝혀라. 공포와 미스터리가 교차하는 극한의 체험.' },
-                { id: 2, name: '우주 정거장 X9', description: '고장난 우주선에서 산소가 떨어지기 전에 지구로 귀환하라. SF 어드벤처의 정수.' },
-                { id: 3, name: '마법사의 비밀 서재', description: '실종된 마법사의 서재에서 금지된 마법서를 찾아라. 판타지와 퍼즐이 어우러진 명작.' },
-                { id: 4, name: '탐정 사무소 1987', description: '냉전 시대 베를린, 24시간 안에 스파이를 잡아라. 역사와 추리가 만나는 스릴러.' },
-                { id: 5, name: '심해 탐사선', description: '수심 3000m, 통신이 끊긴 탐사선에서 살아 돌아올 수 있을까? 최고 난이도의 도전.' },
-            ];
-            renderThemeIntroGrid(dummy);
-            renderPopularList(dummy);
-        });
+        .then(themes => renderThemeIntroGrid(themes))
+        .catch(() => renderThemeIntroGrid(dummyThemes));
+
+    fetch('/themes/popular')
+        .then(res => res.json())
+        .then(themes => renderPopularList(themes))
+        .catch(() => renderPopularList(dummyThemes));
 </script>
 </body>
 </html>
