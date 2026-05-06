@@ -81,7 +81,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                     "ON t.id = r.theme_id " +
                     "AND PARSEDATETIME(r.date, 'yyyy-MM-dd') >= DATEADD('DAY', -:day, CURRENT_DATE) " +
                 "GROUP BY t.id " +
-                "ORDER BY COUNT(t.id) DESC " +
+                "ORDER BY COUNT(r.theme_id) DESC " +
                 "LIMIT :limit";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
