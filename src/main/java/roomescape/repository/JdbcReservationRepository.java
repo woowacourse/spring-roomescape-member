@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -175,6 +176,31 @@ public class JdbcReservationRepository implements ReservationRepository {
                 }
 
         );
+    }
+
+    @Override
+    public List<Long> getPopularThemeIds() {
+        List<Long> popularThemeIds = new LinkedList<>();
+        String sql = "" +
+                "SELECT theme_id, COUNT(*) AS reservation_count " +
+                "FROM reservation " +
+                "WHERE date >= ? AND date < ?" +
+                "GROUP BY theme_id " +
+                "ORDER BY reservation_count DESC " +
+                "LIMIT 10";
+
+        LocalDate today = LocalDate.now();
+        LocalDate beforeOneWeeks = today.minusWeeks(1);
+
+
+        jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> popularThemeIds.add(resultSet.getLong("theme_id")),
+                beforeOneWeeks,
+                today
+        );
+
+        return popularThemeIds;
     }
 
     @Override

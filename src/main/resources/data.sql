@@ -16,3 +16,15 @@ VALUES
     ('11:00'),
     ('12:00'),
     ('13:00');
+
+INSERT INTO reservation (name, date, time_id, theme_id)
+VALUES ('루드비코', '2026-05-07', 1, 1);
+
+INSERT INTO reservation (name, date, time_id, theme_id)
+VALUES ('어셔', '2026-05-07', 2, 1);
+
+INSERT INTO reservation (name, date, time_id, theme_id)
+VALUES ('브라운', '2026-05-08', 1, 2);
+
+INSERT INTO reservation (name, date, time_id, theme_id)
+VALUES ('제이슨', '2026-05-07', 1, 2);

@@ -13,6 +13,8 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
+    List<Long> getPopularThemeIds();
+
     List<Reservation> findByTimeId(Long timeId);
 
     void delete(Long id);

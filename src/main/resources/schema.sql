@@ -4,6 +4,7 @@ CREATE TABLE reservation_time
     start_at VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
+
 CREATE TABLE theme
 (
     id           BIGINT       NOT NULL AUTO_INCREMENT,

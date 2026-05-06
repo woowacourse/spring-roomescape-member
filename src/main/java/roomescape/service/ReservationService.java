@@ -18,7 +18,6 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
-
     private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
@@ -50,6 +49,14 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<Theme> getPopularThemes() {
+        List<Long> popularThemeIds = reservationRepository.getPopularThemeIds();
+
+        return popularThemeIds.stream()
+                .map(id -> themeRepository.findById(id).get())
+                .toList();
+    }
+
     public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
         ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
                 .orElseThrow(
@@ -65,7 +72,6 @@ public class ReservationService {
         ReservationResponseDTO response = ReservationResponseDTO.from(savedReservation);
         return response;
     }
-
 
     public void deleteReservation(Long id) {
         reservationRepository.delete(id);
