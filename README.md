@@ -79,9 +79,9 @@
 
 ---
 
-### 예약시간 단건 추가
+### (관리자) 예약시간 단건 추가
 
-`POST /times`
+`POST /times?role=`
 
 **Request**
 ```json
@@ -99,9 +99,9 @@
 
 ---
 
-### 예약시간 단건 삭제
+### (관리자) 예약시간 단건 삭제
 
-`DELETE /times/{id}`
+`DELETE /times/{id}?role=`
 
 ---
 
@@ -141,9 +141,9 @@
 
 ---
 
-### 테마 단건 추가
+### (관리자) 테마 단건 추가
 
-`POST /themes`
+`POST /themes?role=`
 
 **Request**
 ```json
@@ -163,9 +163,9 @@
 
 ---
 
-### 테마 단건 삭제
+### (관리자) 테마 단건 삭제
 
-`DELETE /themes/{id}`
+`DELETE /themes/{id}?role=`
 
 ---
 
