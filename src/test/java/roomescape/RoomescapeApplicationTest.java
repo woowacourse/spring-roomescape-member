@@ -28,7 +28,7 @@ class RoomescapeApplicationTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
@@ -49,12 +49,12 @@ class RoomescapeApplicationTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/admin/themes/1")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -67,7 +67,7 @@ class RoomescapeApplicationTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParams)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201);
 
@@ -79,7 +79,7 @@ class RoomescapeApplicationTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 

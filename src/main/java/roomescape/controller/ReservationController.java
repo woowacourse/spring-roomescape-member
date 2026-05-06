@@ -1,11 +1,9 @@
 package roomescape.controller;
 
 import java.net.URI;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,18 +21,6 @@ public class ReservationController {
 
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-    }
-
-    @GetMapping
-    @ResponseBody
-    public List<ReservationResponseDTO> readAll() {
-        return reservationService.readAllReservation();
-    }
-
-    @GetMapping("/{id}")
-    @ResponseBody
-    public List<ReservationResponseDTO> readByTimeId(@PathVariable Long id) {
-        return reservationService.readReservationByTimeId(id);
     }
 
     @PostMapping

@@ -34,11 +34,11 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    public List<ReservationResponseDTO> readReservationByTimeId(Long timeId) {
+/*    public List<ReservationResponseDTO> readReservationByTimeId(Long timeId) {
         return reservationRepository.findByTimeId(timeId).stream()
                 .map(ReservationResponseDTO::from).collect(
                         Collectors.toList());
-    }
+    }*/
 
     public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
         ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
