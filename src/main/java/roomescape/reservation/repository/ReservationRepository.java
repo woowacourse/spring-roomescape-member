@@ -15,6 +15,6 @@ public interface ReservationRepository {
 
     void delete(Long id);
 
-    // TODO: 시그니처 변경, ThemeId 추가 (테마까지 같은지 비교)
-    boolean existsByDateAndTimeId(LocalDate date, LocalTime time);
+    // think: theme를 도메인으로 넘길지, themeId로 넘길지
+    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, LocalTime time, Long themeId);
 }

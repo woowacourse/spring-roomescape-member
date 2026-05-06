@@ -29,7 +29,8 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public Long save(Reservation reservation) {
         Long id = idGenerator.getAndIncrement();
-        Reservation saved = Reservation.of(id, reservation.name(), reservation.date(), reservation.time(), reservation.theme(), reservation.status());
+        Reservation saved = Reservation.of(id, reservation.name(), reservation.date(), reservation.time(),
+                reservation.theme(), reservation.status());
         store.put(id, saved);
         return id;
     }
@@ -48,12 +49,13 @@ public class FakeReservationRepository implements ReservationRepository {
         }
     }
 
-    //TODO: themeId 파라미터 추가
     @Override
-    public boolean existsByDateAndTimeId(LocalDate date, LocalTime time) {
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, LocalTime time, Long themeId) {
         return store.values().stream()
-                .anyMatch(reservation -> reservation.date().equals(date) && reservation.time().equals(time));
+                .anyMatch(reservation ->
+                        reservation.date().equals(date) &&
+                        reservation.time().equals(time) &&
+                        reservation.theme().id().equals(themeId)
+                );
     }
-
-
 }

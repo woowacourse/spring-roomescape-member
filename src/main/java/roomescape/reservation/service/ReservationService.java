@@ -2,8 +2,6 @@ package roomescape.reservation.service;
 
 import static roomescape.reservation.domain.ReservationStatus.RESERVED;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +54,7 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
 
         //TODO: 예약 생성시 동일인이 동일 날짜/시간을 예약할 수 없도록 검증
-        validateDuplicateReservation(reservationDate.date(), reservationTime.startAt());
+        validateDuplicateReservation(reservationDate, reservationTime, theme);
         Long id = reservationRepository.save(
                 Reservation.create(dto.name(), reservationDate.date(), reservationTime.startAt(), theme));
 
@@ -70,9 +68,8 @@ public class ReservationService {
         );
     }
 
-    private void validateDuplicateReservation(LocalDate date, LocalTime time) {
-        // TODO: themeId 파라미터 추가
-        if (reservationRepository.existsByDateAndTimeId(date, time)) {
+    private void validateDuplicateReservation(ReservationDate date, ReservationTime time, Theme theme) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date.date(), time.startAt(), theme.id())) {
             throw new ConflictException("이미 존재하는 예약 날짜/시간 입니다.");
         }
     }

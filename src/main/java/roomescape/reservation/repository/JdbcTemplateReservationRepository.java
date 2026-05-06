@@ -115,13 +115,13 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         }
     }
 
-    // TODO: 시그니처 변경, ThemeId 추가
     @Override
-    public boolean existsByDateAndTimeId(LocalDate date, LocalTime time){
-        String sql = "SELECT COUNT(*) FROM reservation WHERE DATE = :date AND start_at = :start_at";
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, LocalTime time, Long themeId){
+        String sql = "SELECT COUNT(*) FROM reservation WHERE DATE = :date AND start_at = :start_at AND theme_id = :theme_id";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", date)
-                .addValue("start_at", time);
+                .addValue("start_at", time)
+                .addValue("theme_id", themeId);
 
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;

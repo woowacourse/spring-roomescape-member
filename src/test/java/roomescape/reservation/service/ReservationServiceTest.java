@@ -131,7 +131,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("이미 존재하는 예약 생성 시 예외를 발생한다.")
+    @DisplayName("예약 생성 시 예약 날짜/시간/테마가 중복되면 예외를 발생한다.")
     void create_duplicate_reservation() {
         // given
         reservationService.create(new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id()));
