@@ -1,5 +1,6 @@
 package roomescape.time.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -16,5 +17,5 @@ public interface ReservationTimeRepository {
 
     boolean existsByStartAt(LocalTime startAt);
 
-    // TODO: findAvailiableByDateAndThemeId ? 예약 가능 시간 조회
+    List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, Long themeId);
 }

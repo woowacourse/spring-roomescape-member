@@ -1,5 +1,6 @@
 package roomescape.time.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -75,5 +76,22 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return count != null && count > 0;
     }
 
-    // TODO: findAvailiableByDateAndThemeId ? 예약 가능 시간 조회
+    @Override
+    public List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                SELECT * FROM reservation_time
+                WHERE start_at NOT IN (
+                    SELECT start_at FROM reservation
+                    WHERE date = :date
+                    AND theme_id = :theme_id
+                    AND status = 'RESERVED'
+                )
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("theme_id", themeId);
+
+        return jdbcTemplate.query(sql, params, RESERVATION_TIME_ROW_MAPPER);
+    }
 }

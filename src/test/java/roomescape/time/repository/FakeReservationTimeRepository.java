@@ -1,5 +1,6 @@
 package roomescape.time.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
             Long savedId = save(time);
             ReservationTime saved = ReservationTime.of(savedId, time.startAt());
             savedTimes.add(saved);
-        }                                               
+        }
         return savedTimes;
     }
 
@@ -55,5 +56,10 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     public boolean existsByStartAt(LocalTime startAt) {
         return store.values().stream()
                 .anyMatch(time -> time.startAt().equals(startAt));
+    }
+
+    @Override
+    public List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, Long themeId) {
+        return List.of();
     }
 }

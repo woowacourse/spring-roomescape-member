@@ -1,5 +1,6 @@
 package roomescape.time.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -46,5 +47,10 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
         reservationTimeRepository.delete(id);
         return ReservationTimeDetailDto.from(reservationTime);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationTime> readAvailableTimes(LocalDate date, Long themeId) {
+        return reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId);
     }
 }
