@@ -94,20 +94,4 @@ class ThemeDaoTest {
         // then
         assertThat(foundTheme).isEmpty();
     }
-
-    // TODO: 테스트 추가
-//    @Test
-//    void 테마를_삭제한다() {
-//        // given
-//        String name = "방탈출1";
-//        String description = "로지와 러키의 신나는 방탈출";
-//        String thumbnail = "https://abc.asdfdsa";
-//        Theme theme = Theme.createWithoutId(name, description, thumbnail);
-//        Theme savedTheme = themeDao.insert(theme);
-//
-//        // when
-//        themeDao.delete(savedTheme.getId());
-//
-//        // then
-//    }
 }

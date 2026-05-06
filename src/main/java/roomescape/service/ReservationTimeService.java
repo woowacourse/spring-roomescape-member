@@ -33,7 +33,6 @@ public class ReservationTimeService {
         return CreateReservationTimeResponse.from(newReservationTime);
     }
 
-    // TODO: 지난 날짜 검증
     public List<ReservationTimeResponse> getReservationTimes(Long themeId, LocalDate date) {
         validateTheme(themeId);
 
