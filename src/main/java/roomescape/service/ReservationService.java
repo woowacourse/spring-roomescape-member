@@ -12,7 +12,7 @@ import roomescape.domain.Time;
 import roomescape.dto.ReservationRequestDto;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ReservationService {
     private final ReservationDao reservationDao;
     private final TimeDao timeDao;
@@ -24,31 +24,28 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    @Transactional(readOnly = true)
     public List<Reservation> findAll() {
         return reservationDao.findAll();
     }
 
-    @Transactional(readOnly = true)
     public Reservation findById(Long id) {
         return reservationDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
     }
 
+    @Transactional
     public Reservation create(ReservationRequestDto reservationRequest) {
         Time timeById = timeDao.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+
         Theme themeById = themeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), timeById,
-                themeById);
-        Long id = reservationDao.insert(reservation);
-
-        return reservationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), timeById, themeById);
+        return reservationDao.insert(reservation);
     }
 
+    @Transactional
     public void delete(Long id) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));

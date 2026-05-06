@@ -13,6 +13,7 @@ import roomescape.dto.ThemeRequestDto;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class ThemeService {
     private final ThemeDao themeDao;
 
@@ -20,26 +21,25 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
-    @Transactional(readOnly = true)
+
     public List<Theme> findAll() {
         return themeDao.findAll();
     }
 
-    @Transactional(readOnly = true)
+
     public Theme findById(Long id) {
         return themeDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
     }
 
+    @Transactional
     public Theme create(ThemeRequestDto themeRequest) {
         Name name = new Name(themeRequest.name());
         Theme theme = new Theme(name, themeRequest.thumbnailUrl(), themeRequest.description());
-        Long id = themeDao.insert(theme);
-
-        return themeDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+        return themeDao.insert(theme);
     }
 
+    @Transactional
     public void delete(Long id) {
         Theme theme = themeDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));

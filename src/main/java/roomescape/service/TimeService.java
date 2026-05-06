@@ -10,7 +10,7 @@ import roomescape.dto.TimeRequestDto;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class TimeService {
     private final TimeDao timeDao;
 
@@ -18,26 +18,22 @@ public class TimeService {
         this.timeDao = timeDao;
     }
 
-    @Transactional(readOnly = true)
     public List<Time> findAll() {
         return timeDao.findAll();
     }
 
-
-    @Transactional(readOnly = true)
     public Time findById(Long id) {
         return timeDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
     }
 
+    @Transactional
     public Time create(TimeRequestDto timeRequest) {
         Time time = new Time(timeRequest.startAt());
-        Long id = timeDao.insert(time);
-
-        return timeDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+        return timeDao.insert(time);
     }
 
+    @Transactional
     public void delete(Long id) {
         Time time = timeDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
