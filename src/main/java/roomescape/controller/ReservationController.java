@@ -6,10 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationService;
 import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.dto.AdminReservationResponse;
 
 @RestController
 public class ReservationController {
@@ -20,12 +21,12 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public List<ReservationResponse> getReservations() {
-        return reservationService.findAll();
+    public List<AdminReservationResponse> getReservations(@RequestParam String username) {
+        return reservationService.findAllByName(username);
     }
 
     @PostMapping("/reservations")
-    public ReservationResponse createReservation(@RequestBody ReservationRequest request) {
+    public AdminReservationResponse createReservation(@RequestBody ReservationRequest request) {
         return reservationService.save(request);
     }
 

@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -60,5 +61,18 @@ public class ReservationDao {
 
     public void delete(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
+    }
+
+    public List<Reservation> findByName(String username) {
+        String sql = """
+                SELECT r.id AS reservation_id, r.name, r.date,
+                       t.id AS time_id, t.start_at AS time_value,
+                       th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail_url AS theme_thumbnail
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE r.name = ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, username);
     }
 }
