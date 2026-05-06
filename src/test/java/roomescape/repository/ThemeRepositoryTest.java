@@ -34,9 +34,9 @@ public class ThemeRepositoryTest {
 
         // then
         Assertions.assertEquals(18L, newTheme.getId());
-        Assertions.assertEquals(themeRequest.getName(), newTheme.getName());
-        Assertions.assertEquals(themeRequest.getDescription(), newTheme.getDescription());
-        Assertions.assertEquals(themeRequest.getUrl(), newTheme.getUrl());
+        Assertions.assertEquals(themeRequest.name(), newTheme.getName());
+        Assertions.assertEquals(themeRequest.description(), newTheme.getDescription());
+        Assertions.assertEquals(themeRequest.url(), newTheme.getUrl());
     }
 
     @Test
