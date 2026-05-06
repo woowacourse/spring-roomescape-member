@@ -54,6 +54,19 @@ public class ReservationServiceTest {
     }
 
     @Test
+    void duplicatedReservationExceptionTest() {
+        reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
+        themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
+
+        ReservationRequestDto requestDto = new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L);
+        reservationService.create(requestDto);
+
+        assertThatThrownBy(() -> reservationService.create(requestDto))
+                .hasMessage("[ERROR] 동일한 예약이 이미 존재합니다.")
+                .isInstanceOf(CustomException.class);
+    }
+
+    @Test
     void createTest() {
         ReservationTime reservationTime = reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
         ReservationTimeResponseDto reservationTimeResponseDto = ReservationTimeResponseDto.from(reservationTime);
