@@ -39,7 +39,7 @@ window.api = (function () {
         createReservation: (payload)               => postJson('/api/reservations', payload),
         deleteReservation: (id)                    => del('/api/reservations/' + id),
         listTimes:         ()                      => getJson('/api/times'),
-        availableTimes:    (themeId, date)         => getJson('/api/times/availablity?themeId=' + encodeURIComponent(themeId) + '&date=' + encodeURIComponent(date)),
+        availableTimes:    (themeId, date)         => getJson('/api/times/availablity?theme_id=' + encodeURIComponent(themeId) + '&date=' + encodeURIComponent(date)),
         createTheme:       (payload)               => postJson('/admin/themes', payload),
         deleteTheme:       (id)                    => del('/admin/themes/' + id),
         createTime:        (payload)               => postJson('/admin/times', payload),
