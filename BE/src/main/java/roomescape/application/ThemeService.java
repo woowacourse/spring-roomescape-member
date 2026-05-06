@@ -1,11 +1,13 @@
 package roomescape.application;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.entity.Theme;
 import roomescape.entity.ThemeRepository;
+import roomescape.entity.ThemeSortType;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,6 +29,10 @@ public class ThemeService {
 
     public List<Theme> findAll() {
         return themeRepository.findAll();
+    }
+
+    public List<Theme> findTopNByPeriod(LocalDate startAt, LocalDate endAt, ThemeSortType sortType, Long limit) {
+        return themeRepository.findTopNByPeriod(startAt, endAt, sortType, limit);
     }
 
     public void deleteById(Long id) {
