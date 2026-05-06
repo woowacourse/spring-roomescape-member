@@ -15,6 +15,7 @@ import roomescape.admin.AdminRequestValidator;
 import roomescape.domain.reservationdate.dto.AdminReservationDateResponse;
 import roomescape.domain.reservationdate.dto.CreateReservationDateRequest;
 import roomescape.domain.reservationdate.dto.CreateReservationDateResponse;
+import roomescape.domain.reservationdate.dto.ReservationDateResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,5 +55,11 @@ public class ReservationDateController {
         }
         reservationDateService.deleteReservationDate(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/reservation-dates")
+    public ResponseEntity<List<ReservationDateResponse>> getAllReservationDates() {
+        List<ReservationDateResponse> responses = reservationDateService.getAllReservationDate();
+        return ResponseEntity.ok(responses);
     }
 }
