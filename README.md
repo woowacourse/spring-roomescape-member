@@ -1,4 +1,9 @@
-# 방탈출 예약 서비스
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/eb5a8839-ed5b-453b-a764-85ffcc9d0219"/>
+</p>
+
+<h1 align="middle">방탈출 예약 서비스</h1>
+
 ![Static Badge](https://img.shields.io/badge/Java-21-green)
 ![Static Badge](https://img.shields.io/badge/Version-1.0.0-red)
 
