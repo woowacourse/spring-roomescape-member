@@ -46,9 +46,14 @@
 
 - [x] 사용자가 date와 theme를 선택하면 예약 가능한 시간 목록이 표시된다.
     - [x] 예약 가능한 시간이란, admin이 등록한 reservation time 중 해당 date + theme에 아직 reservation이 없는 time이다.
-- [ ] 사용자가 예약 가능한 시간을 선택하여 본인의 name으로 예약한다.
-    - [ ] 예약 가능한 시간이 아니라면 에러를 반환한다.
-- [ ] 같은 date·time이라도 theme가 다르면 각각 예약 가능하다.
+- [x] 사용자가 예약 가능한 시간을 선택하여 본인의 name으로 예약한다.
+    - [x] 예약 가능한 시간이 아니라면 에러를 반환한다.
+- [x] 같은 date·time이라도 theme가 다르면 각각 예약 가능하다.
+
+### 단계 3 - 인기 테마 조회
+
+- [ ] 최근 1주 동안 reservation이 많았던 theme 상위 10개를 조회한다.
+    - [ ] 오늘 5월 8일이면, date가 5월 1일~5월 7일인 reservaion을 집계해 인기 순서대로 10개를 응답한다.
 
 # 💻 기능 요구 사항 (admin)
 
@@ -174,15 +179,21 @@ Content-Type: application/json
 
 # 📝API 명세
 
-| 기능           | 메서드 / URL                       | 요청 본문                             | 응답 본문                                                                                                 |
-|--------------|---------------------------------|-----------------------------------|-------------------------------------------------------------------------------------------------------|
-| 예약 추가        | `POST /reservations`            | `{name, date, time_id, theme_id}` | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
-| 예약 조회        | `GET /reservations`             |                                   | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
-| 예약 삭제        | `DELETE /reservations/{id}`     |                                   |                                                                                                       |
-| 시간 추가        | `POST /times`                   | `{startAt}`                       | `{id, startAt}`                                                                                       |
-| 시간 조회        | `GET /times`                    |                                   | `[{id, startAt}, ...]`                                                                                |
-| 예약 가능한 시간 조회 | `GET /times?date={}&themeId={}` |                                   | `[{id, startAt}, ...]`                                                                                |
-| 시간 삭제        | `DELETE /times/{id}`            |                                   |                                                                                                       |
+| 기능           | 메서드 / URL                       | 요청 본문                                | 응답 본문                                                                                                 |
+|--------------|---------------------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------|
+| (어드민)        |                                 |
+| 시간 추가        | `POST /admin/times`             | `{startAt}`                          | `{id, startAt}`                                                                                       |
+| 시간 삭제        | `DELETE /admin/times/{id}`      |                                      |                                                                                                       |
+| 테마 추가        | `POST /admin/themes`            | `{name, description, thumbnail_url}` | `{theme_id, name, description, thumbnail_url, rumtime}`                                               |
+| 테마 삭제        | `DELETE /admin/themes/{id}`     |                                      |                                                                                                       |
+| (유저)         |                                 |                                      |
+| 예약 추가        | `POST /reservations`            | `{name, date, time_id, theme_id}`    | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
+| 예약 삭제        | `DELETE /reservations/{id}`     |                                      |                                                                                                       |
+| 예약 조회        | `GET /reservations`             |                                      | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
+| 시간 조회        | `GET /times`                    |                                      | `[{id, startAt}, ...]`                                                                                |
+| 예약 가능한 시간 조회 | `GET /times?date={}&themeId={}` |                                      | `[{id, startAt}, ...]`                                                                                |
+| 테마 조회        | `GET /themes`                   |                                      | `[{theme_id, name, description, thumbnail_url, rumtime}, ...]`                                        |
+| 인기 있는 테마 조회  | `GET /themes?days={}&limits={}` |                                      | `[{theme_id, name, description, thumbnail_url, rumtime}, ...]`                                        |
 
 # 응답 코드
 
@@ -193,4 +204,5 @@ Content-Type: application/json
 | `204 No Content`            | 반환값이 없음            |
 | `400 Bad Request`           | 클라이언트 요청값이 올바르지 않음 |
 | `404 Not Found`             | 없는 자원에 대한 접근       |
+| `409 Conflict`              | 서버의 현재 상태와 충돌      |
 | `500 Internal Server Error` | 서버 내부 오류           |
