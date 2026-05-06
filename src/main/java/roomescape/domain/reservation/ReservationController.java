@@ -23,8 +23,11 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final AdminRequestValidator validator;
 
-    @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponse>> getAllReservation() {
+    @GetMapping("/admin/reservations")
+    public ResponseEntity<List<ReservationResponse>> getAllReservation(HttpServletRequest request) {
+        if (validator.isUnauthorized(request)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         List<ReservationResponse> response = reservationService.getAllReservations();
         return ResponseEntity.ok(response);
     }
@@ -37,7 +40,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/admin/reservations/{id}")
-    public ResponseEntity<Void> deleteReservation( HttpServletRequest request, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(HttpServletRequest request, @PathVariable Long id) {
         if (validator.isUnauthorized(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
