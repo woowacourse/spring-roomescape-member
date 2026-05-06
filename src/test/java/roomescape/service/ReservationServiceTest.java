@@ -76,7 +76,7 @@ public class ReservationServiceTest {
         ThemeResponseDto themeResponseDto = ThemeResponseDto.from(theme);
 
         reservationService.create(new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
-        reservationService.create(new ReservationRequestDto("fizz2", LocalDate.of(2026, 5, 2), 1L, 1L));
+        reservationService.create(new ReservationRequestDto("fizz2", LocalDate.of(2026, 5, 4), 1L, 1L));
 
         List<ReservationResponseDto> responseDtos = reservationService.readAll();
 
@@ -84,7 +84,7 @@ public class ReservationServiceTest {
                 new ReservationResponseDto(1L, "fizz", LocalDate.of(2026, 5, 2), reservationTimeResponseDto,
                         themeResponseDto));
         assertThat(responseDtos.get(1)).isEqualTo(
-                new ReservationResponseDto(2L, "fizz2", LocalDate.of(2026, 5, 2), reservationTimeResponseDto,
+                new ReservationResponseDto(2L, "fizz2", LocalDate.of(2026, 5, 4), reservationTimeResponseDto,
                         themeResponseDto));
     }
 
