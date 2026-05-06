@@ -33,13 +33,13 @@ window.api = (function () {
     }
 
     return {
-        listThemes:        ()                      => getJson('/themes'),
-        popularThemes:     ()                      => getJson('/themes/popularity'),
+        listThemes:        ()                      => getJson('/api/themes'),
+        popularThemes:     ()                      => getJson('/api/themes/popularity'),
         listReservations:  (userName)              => getJson(userName ? '/api/reservations?user_name=' + encodeURIComponent(userName) : '/api/reservations'),
         createReservation: (payload)               => postJson('/api/reservations', payload),
         deleteReservation: (id)                    => del('/api/reservations/' + id),
-        listTimes:         ()                      => getJson('/times'),
-        availableTimes:    (themeId, date)         => getJson('/times/availablity?themeId=' + encodeURIComponent(themeId) + '&date=' + encodeURIComponent(date)),
+        listTimes:         ()                      => getJson('/api/times'),
+        availableTimes:    (themeId, date)         => getJson('/api/times/availablity?themeId=' + encodeURIComponent(themeId) + '&date=' + encodeURIComponent(date)),
         createTheme:       (payload)               => postJson('/admin/themes', payload),
         deleteTheme:       (id)                    => del('/admin/themes/' + id),
         createTime:        (payload)               => postJson('/admin/times', payload),
