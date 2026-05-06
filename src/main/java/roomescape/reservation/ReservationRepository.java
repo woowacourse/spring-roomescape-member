@@ -2,7 +2,6 @@ package roomescape.reservation;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;

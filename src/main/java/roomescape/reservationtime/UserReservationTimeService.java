@@ -17,7 +17,6 @@ public class UserReservationTimeService {
     }
 
 
-
     public ScheduleResponse getSchedules(LocalDate date, Long themeId) {
         List<AvailableTime> schedules = reservationTimeRepository.findAvailableTimes(date, themeId);
         return new ScheduleResponse(themeId, date, schedules);

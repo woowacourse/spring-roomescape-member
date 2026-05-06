@@ -57,7 +57,8 @@ class AdminReservationServiceTest {
     void 예약_시간이_없으면_예외가_발생한다() {
         when(reservationTimeRepository.findById(eq(999L))).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> adminReservationService.createForceReservation(2L, "브라운", LocalDate.of(2026, 5, 1), 999L))
+        assertThatThrownBy(
+                () -> adminReservationService.createForceReservation(2L, "브라운", LocalDate.of(2026, 5, 1), 999L))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -67,7 +68,8 @@ class AdminReservationServiceTest {
         when(reservationTimeRepository.findById(eq(1L))).thenReturn(Optional.of(time));
         when(themeRepository.findById(eq(999L))).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> adminReservationService.createForceReservation(999L, "브라운", LocalDate.of(2026, 5, 1), 1L))
+        assertThatThrownBy(
+                () -> adminReservationService.createForceReservation(999L, "브라운", LocalDate.of(2026, 5, 1), 1L))
                 .isInstanceOf(NotFoundException.class);
     }
 }

@@ -22,7 +22,8 @@ public class UserReservationService {
     private final ThemeRepository themeRepository;
 
     public UserReservationService(ReservationRepository reservationRepository,
-                                  ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+                                  ReservationTimeRepository reservationTimeRepository,
+                                  ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -50,7 +51,7 @@ public class UserReservationService {
     @Transactional
     public void deleteReservation(long id, String name) {
         Reservation reservation = reservationRepository.findById(id);
-        if(reservation.getName().equals(name)) {
+        if (reservation.getName().equals(name)) {
             reservationRepository.delete(id);
             return;
         }

@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,10 +31,10 @@ public class UserThemeController {
 
     @GetMapping("/rank")
     public ResponseEntity<?> getRankedThemes(@RequestParam(defaultValue = "reservationCount") String sort,
-                                       @RequestParam(defaultValue = "DESC") String order,
-                                       @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-                                       @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-                                       @RequestParam(defaultValue = "10") Long limit) {
+                                             @RequestParam(defaultValue = "DESC") String order,
+                                             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+                                             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+                                             @RequestParam(defaultValue = "10") Long limit) {
 
         LocalDate actualEndDate = endDate;
         if (actualEndDate == null) {
@@ -47,7 +46,8 @@ public class UserThemeController {
             actualStartDate = actualEndDate.minusDays(7);
         }
 
-        List<ThemeResponse> response = userThemeService.getThemes(sort, order, actualStartDate, actualEndDate, limit).stream()
+        List<ThemeResponse> response = userThemeService.getThemes(sort, order, actualStartDate, actualEndDate, limit)
+                .stream()
                 .map(ThemeResponse::from)
                 .toList();
 

@@ -57,7 +57,8 @@ class ThemeDaoTest {
     @Test
     @Sql(scripts = "classpath:data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void 예약_수_기준으로_테마를_조회할_수_있다() {
-        List<Theme> ranked = themeDao.findRanked("reservationCount", "DESC", LocalDate.of(2026, 5, 1), LocalDate.of(2026, 5, 6), 10L);
+        List<Theme> ranked = themeDao.findRanked("reservationCount", "DESC", LocalDate.of(2026, 5, 1),
+                LocalDate.of(2026, 5, 6), 10L);
 
         assertThat(ranked).hasSize(4);
         assertThat(ranked.get(0).name()).isEqualTo("Theme A");
