@@ -1,8 +1,6 @@
 package roomescape.controller;
 
-import java.net.URI;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,10 +17,10 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("/admin/themes")
-public class ThemeAdminController {
+public class AdminThemeController {
     private final ThemeService themeService;
 
-    public ThemeAdminController(ThemeService themeService) {
+    public AdminThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 

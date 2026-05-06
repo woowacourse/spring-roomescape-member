@@ -11,10 +11,10 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("/admin/times")
-public class ReservationTimeAdminController {
+public class AdminReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeAdminController(ReservationTimeService reservationTimeService) {
+    public AdminReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
