@@ -2,7 +2,6 @@ package roomescape.theme.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.reservation.service.ReservationService;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
@@ -16,11 +15,9 @@ import java.util.stream.Collectors;
 public class ThemeController {
 
     private final ThemeService themeService;
-    private final ReservationService reservationService;
 
-    public ThemeController(ThemeService themeService, ReservationService reservationService) {
+    public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
-        this.reservationService = reservationService;
     }
 
     @GetMapping("/themes")
