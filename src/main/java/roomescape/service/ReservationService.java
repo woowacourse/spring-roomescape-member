@@ -40,7 +40,7 @@ public class ReservationService {
         return reservationRepository.persist(reservation);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Reservation> findAll() {
         return reservationRepository.findAll();
     }

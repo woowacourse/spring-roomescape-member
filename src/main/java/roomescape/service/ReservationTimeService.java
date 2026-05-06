@@ -27,7 +27,7 @@ public class ReservationTimeService {
         return repository.persist(reservationTime);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ReservationTime> findAll() {
         return repository.findAll();
     }

@@ -13,7 +13,6 @@ import roomescape.repository.ThemeRepository;
 import roomescape.repository.dto.ReservedTheme;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class ThemeService {
@@ -25,6 +24,7 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
+    @Transactional
     public Theme create(
             ThemeCreateRequest createRequest
     ) {
@@ -45,6 +45,7 @@ public class ThemeService {
         return themeRepository.findMostReserved(limit, duration);
     }
 
+    @Transactional
     public void delete(long themeId) {
         boolean deleted = themeRepository.delete(themeId);
 
