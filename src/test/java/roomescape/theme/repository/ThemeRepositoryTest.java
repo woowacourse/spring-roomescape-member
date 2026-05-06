@@ -73,7 +73,7 @@ class ThemeRepositoryTest {
         Collections.sort(themes, Comparator.comparing(Theme::name));
 
         // when
-        List<Theme> actual = jdbcThemeRepository.findByStatus(true);
+        List<Theme> actual = jdbcThemeRepository.findByIsActive(true);
 
         // then
         assertThat(actual)

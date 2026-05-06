@@ -13,6 +13,7 @@ import roomescape.theme.domain.Theme;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository{
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Theme> themeRowMapper = (resultSet, rowMapper) ->
@@ -34,20 +35,20 @@ public class JdbcThemeRepository implements ThemeRepository{
     @Override
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
-        return jdbcTemplate.query(sql, new MapSqlParameterSource(), themeRowMapper);
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     @Override
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = :id";
-        SqlParameterSource params = new MapSqlParameterSource("id", id);
+        MapSqlParameterSource params = new MapSqlParameterSource("id", id);
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, themeRowMapper));
     }
 
     @Override
-    public List<Theme> findByStatus(boolean status) {
+    public List<Theme> findByIsActive(boolean isActive) {
         String sql = "SELECT * FROM theme WHERE is_active = :status ORDER BY name ASC";
-        SqlParameterSource params = new MapSqlParameterSource("status", status);
+        MapSqlParameterSource params = new MapSqlParameterSource("status", isActive);
         return jdbcTemplate.query(sql, params, themeRowMapper);
     }
 

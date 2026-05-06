@@ -58,9 +58,9 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findByStatus(boolean status) {
+    public List<Theme> findByIsActive(boolean isActive) {
         return themes.stream()
-                .filter(theme -> theme.isActive() == status)
+                .filter(theme -> theme.isActive() == isActive)
                 .sorted(Comparator.comparing(Theme::name))
                 .toList();
     }

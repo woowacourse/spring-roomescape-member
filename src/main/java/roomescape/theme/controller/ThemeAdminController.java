@@ -18,6 +18,7 @@ import roomescape.theme.service.ThemeService;
 @RestController
 @RequestMapping("/admin")
 public class ThemeAdminController {
+
     private final ThemeService themeService;
 
     public ThemeAdminController(ThemeService themeService) {
@@ -34,7 +35,8 @@ public class ThemeAdminController {
 
     @GetMapping("/themes/{id}")
     public ResponseEntity<ThemeDetailDto> getTheme(@PathVariable Long id) {
-        ThemeDetailDto responseData = ThemeDetailDto.from(themeService.readTheme(id));
+        Theme theme = themeService.readTheme(id);
+        ThemeDetailDto responseData = ThemeDetailDto.from(theme);
         return ResponseEntity.ok(responseData);
     }
 
@@ -51,4 +53,5 @@ public class ThemeAdminController {
         ThemeDetailDto responseData = ThemeDetailDto.from(theme);
         return ResponseEntity.ok(responseData);
     }
+
 }

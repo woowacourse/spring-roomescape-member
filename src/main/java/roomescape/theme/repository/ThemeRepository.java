@@ -7,15 +7,16 @@ import roomescape.theme.domain.Theme;
 
 public interface ThemeRepository {
 
-    List<Theme> findAll();
-
     Optional<Theme> findById(Long id);
 
-    List<Theme> findByStatus(boolean status);
+    List<Theme> findAll();
+
+    List<Theme> findByIsActive(boolean isActive);
+
+    List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit);
 
     Theme save(Theme theme);
 
     boolean updateStatus(Theme theme);
 
-    List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit);
 }

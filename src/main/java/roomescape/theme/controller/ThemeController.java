@@ -12,6 +12,7 @@ import roomescape.theme.service.ThemeService;
 @RestController
 @RequestMapping("/member")
 public class ThemeController {
+
     private final ThemeService themeService;
 
     public ThemeController(ThemeService themeService) {
@@ -33,4 +34,5 @@ public class ThemeController {
                 .toList();
         return ResponseEntity.ok(responseData);
     }
+
 }
