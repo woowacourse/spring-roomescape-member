@@ -41,7 +41,7 @@ public class ReservationService {
     public Reservation save(final String name, final LocalDate date, final Long timeId) {
         ReservationTime reservationTime = reservationTimeService.getById(timeId);
 
-        if(reservationRepository.existsByDateAndTimeId(date, timeId)){
+        if (reservationRepository.existsByDateAndTimeId(date, timeId)) {
             throw new IllegalArgumentException("[ERROR] 동일한 시기에 예약을 할 수 없습니다.");
         }
 
@@ -54,7 +54,7 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<Theme> getPopularThemes(final int period, final int limit){
+    public List<Theme> getPopularThemes(final int period, final int limit) {
         return reservationRepository.findPopularThemes(period, limit);
     }
 }

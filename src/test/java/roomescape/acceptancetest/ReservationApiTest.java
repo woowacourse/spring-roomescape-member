@@ -9,12 +9,9 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 import roomescape.ReservationAcceptanceTest;
 import roomescape.reservation.domain.Reservation;
 
@@ -73,7 +70,8 @@ class ReservationApiTest {
     void DB_조회_API_전환() {
         jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail_url) VALUES (?, ?, ?, ?)",
                 1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at, theme_id) VALUES (?, ?, ?)", 1L, "15:40:00", 1L);
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at, theme_id) VALUES (?, ?, ?)", 1L, "15:40:00",
+                1L);
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", 1L);
 
         List<Reservation> reservations = RestAssured.given().log().all()

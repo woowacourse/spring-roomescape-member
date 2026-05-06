@@ -28,15 +28,15 @@ public class Reservation {
         return new Reservation(id, name, date, time);
     }
 
+    public static void validateId(final Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("[ERROR] Id는 비어있을 수 없습니다.");
+        }
+    }
+
     public Reservation withId(final Long id) {
         validateId(id);
         return new Reservation(id, this.name, this.date, this.time);
-    }
-
-    public static void validateId(final Long id){
-        if(id == null) {
-            throw new IllegalArgumentException("[ERROR] Id는 비어있을 수 없습니다.");
-        }
     }
 
     private void validate(final String name, final LocalDate date, final ReservationTime time) {
@@ -44,11 +44,11 @@ public class Reservation {
             throw new IllegalArgumentException("[ERROR] 잘못된 이름 입력입니다.");
         }
 
-        if(date == null) {
+        if (date == null) {
             throw new IllegalArgumentException("[ERROR] 날짜는 비어있을 수 없습니다.");
         }
 
-        if(time == null) {
+        if (time == null) {
             throw new IllegalArgumentException("[ERROR] 시간은 비어있으면 안됩니다.");
         }
     }
@@ -70,16 +70,15 @@ public class Reservation {
     }
 
     @Override
-    public boolean equals(Object o){
-        if(!(o instanceof Reservation)) {
+    public boolean equals(Object o) {
+        if (!(o instanceof Reservation r)) {
             return false;
         }
-        Reservation r = (Reservation) o;
         return Objects.equals(id, r.getId());
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hash(id);
     }
 }
