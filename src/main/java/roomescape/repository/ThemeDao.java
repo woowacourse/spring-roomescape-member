@@ -1,20 +1,42 @@
 package roomescape.repository;
 
 import java.util.Map;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Theme;
 
 @Repository
 public class ThemeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
+    private final RowMapper<Theme> themeRowMapper = (rs, rowNum) -> new Theme(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("description"),
+            rs.getString("thumbnail_url")
+    );
+
     public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
+    }
+
+    public Optional<Theme> findById(Long id) {
+        try {
+            Theme theme = jdbcTemplate.queryForObject(
+                    "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?",
+                    themeRowMapper, id);
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Long save(String name, String description, String thumbnailUrl) {

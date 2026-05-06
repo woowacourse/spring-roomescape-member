@@ -16,7 +16,7 @@ public class AdminReservationService {
 
     public List<ReservationResponse> getAllReservations() {
         return reservationDao.findAll().stream()
-                .map(ReservationResponse::from)
+                .map(r -> ReservationResponse.from(r, r.getTheme()))
                 .toList();
     }
 }
