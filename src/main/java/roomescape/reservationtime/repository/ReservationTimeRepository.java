@@ -7,7 +7,7 @@ import roomescape.reservationtime.entity.ReservationTime;
 
 public interface ReservationTimeRepository {
 
-    Long save(LocalTime startAt);
+    ReservationTime save(LocalTime startAt);
 
     Optional<ReservationTime> findById(Long id);
 

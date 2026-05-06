@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -63,7 +62,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Long save(String name, LocalDate date, Long timeId, Long themeId) {
+    public Reservation save(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -71,20 +70,13 @@ public class JdbcReservationRepository implements ReservationRepository {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, name);
             ps.setObject(2, date);
-            ps.setLong(3, timeId);
-            ps.setLong(4, themeId);
+            ps.setLong(3, reservationTime.getId());
+            ps.setLong(4, theme.getId());
             return ps;
         }, keyHolder);
 
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
-    }
-
-    @Override
-    public Optional<Reservation> findById(Long id) {
-        String sql = SELECT_RESERVATION_WITH_TIME + "WHERE r.id = ? ";
-        List<Reservation> result = jdbcTemplate.query(sql, reservationRowMapper, id);
-
-        return result.stream().findFirst();
+        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return Reservation.of(id, name, date, reservationTime, theme);
     }
 
     @Override

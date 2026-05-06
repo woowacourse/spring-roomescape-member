@@ -2,14 +2,13 @@ package roomescape.reservation.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservationtime.entity.ReservationTime;
+import roomescape.theme.entity.Theme;
 
 public interface ReservationRepository {
 
-    Long save(String name, LocalDate date, Long timeId, Long themeId);
-
-    Optional<Reservation> findById(Long id);
+    Reservation save(String name, LocalDate date, ReservationTime reservationTime, Theme theme);
 
     List<Reservation> findAll();
 

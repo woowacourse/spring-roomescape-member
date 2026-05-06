@@ -18,9 +18,7 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTime save(ReservationTimeRequest request) {
-        Long id = reservationTimeRepository.save(request.startAt());
-        return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("예약 시간 저장 후 조회에 실패했습니다. id=" + id));
+        return reservationTimeRepository.save(request.startAt());
     }
 
     @Transactional(readOnly = true)

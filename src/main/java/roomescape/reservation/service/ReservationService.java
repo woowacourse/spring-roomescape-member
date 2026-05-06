@@ -6,26 +6,41 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.payload.ReservationRequest;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservationtime.entity.ReservationTime;
+import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
+import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.theme.entity.Theme;
+import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     @Transactional
     public Reservation save(ReservationRequest request) {
-        Long id = reservationRepository.save(
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
+        Theme theme = themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
+
+        return reservationRepository.save(
                 request.name(),
                 request.date(),
-                request.timeId(),
-                request.themeId()
+                reservationTime,
+                theme
         );
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("예약 저장 후 조회에 실패했습니다. id=" + id));
     }
 
     @Transactional(readOnly = true)

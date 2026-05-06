@@ -1,10 +1,15 @@
 package roomescape.reservationtime.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
@@ -24,15 +29,23 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public Long save(LocalTime startAt) {
+    public ReservationTime save(LocalTime startAt) {
         String sql = """
                 MERGE INTO reservation_time (start_at)
                 KEY(start_at)
                 VALUES (?)
                 """;
 
-        jdbcTemplate.update(sql, startAt);
-        return findIdByStartAt(startAt);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setTime(1, Time.valueOf(startAt));
+            return ps;
+        }, keyHolder);
+
+        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return ReservationTime.of(id, startAt);
     }
 
     @Override
@@ -56,11 +69,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         if (affectedRows == 0) {
             throw new ReservationTimeNotFoundException(id);
         }
-    }
-
-    private Long findIdByStartAt(LocalTime startAt) {
-        String sql = "SELECT id FROM reservation_time WHERE start_at = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, startAt);
     }
 
 }
