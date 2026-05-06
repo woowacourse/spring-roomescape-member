@@ -36,7 +36,6 @@ public class ThemeController {
         return ResponseEntity.ok().body(themes);
     }
 
-    // /theme?limit=10
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getTopThemes(
             @RequestParam("limit") long limit
