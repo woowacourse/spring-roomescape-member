@@ -20,7 +20,7 @@ import roomescape.exception.DuplicateException;
 import roomescape.reservation.ReservationRepository;
 
 @ExtendWith(MockitoExtension.class)
-class ReservationTimeServiceTest {
+class AdminReservationTimeServiceTest {
 
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
@@ -29,7 +29,7 @@ class ReservationTimeServiceTest {
     private ReservationRepository reservationRepository;
 
     @InjectMocks
-    private ReservationTimeService reservationTimeService;
+    private AdminReservationTimeService reservationTimeService;
 
     @Test
     void 예약_시간을_등록할_수_있다() {
@@ -71,20 +71,5 @@ class ReservationTimeServiceTest {
                 .doesNotThrowAnyException();
     }
 
-    @Test
-    void 예약_시간_목록을_조회할_수_있다() {
-        List<ReservationTime> times = List.of(
-                new ReservationTime(1L, LocalTime.of(10, 0)),
-                new ReservationTime(2L, LocalTime.of(11, 0))
-        );
 
-        when(reservationTimeRepository.findAll()).thenReturn(times);
-
-        List<ReservationTime> result = reservationTimeService.findReservationTimes();
-
-        assertThat(result).hasSize(2);
-        assertThat(result)
-                .extracting(ReservationTime::startAt)
-                .containsExactly(LocalTime.of(10, 0), LocalTime.of(11, 0));
-    }
 }

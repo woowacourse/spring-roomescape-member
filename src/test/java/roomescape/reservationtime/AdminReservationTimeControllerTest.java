@@ -20,8 +20,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(ReservationTimeController.class)
-class ReservationTimeControllerTest {
+@WebMvcTest(UserReservationTimeController.class)
+class AdminReservationTimeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -30,27 +30,7 @@ class ReservationTimeControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private ReservationTimeService reservationTimeService;
-
-    @Test
-    @DisplayName("예약 시간 목록을 조회할 수 있다")
-    void getReservationTimes() throws Exception {
-        List<ReservationTime> times = List.of(
-                new ReservationTime(1L, LocalTime.of(10, 0)),
-                new ReservationTime(2L, LocalTime.of(11, 0))
-        );
-
-        when(reservationTimeService.findReservationTimes()).thenReturn(times);
-
-        mockMvc.perform(get("/times")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].startAt").value("10:00:00"))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].startAt").value("11:00:00"));
-    }
+    private AdminReservationTimeService reservationTimeService;
 
     @Test
     @DisplayName("예약 시간을 생성할 수 있다")
