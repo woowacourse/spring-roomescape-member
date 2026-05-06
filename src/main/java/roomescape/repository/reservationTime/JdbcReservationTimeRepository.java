@@ -75,7 +75,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     "FROM reservation_time as t " +
                     "LEFT JOIN reservation as r " +
                     "  ON t.id = r.time_id " +
-                    "  AND r.date = ? " +
+                    "  AND r.res_date = ? " +
                     "  AND r.theme_id = ? " +
                     "WHERE r.id IS NULL ",
                 reservationTimeRowMapper(),

@@ -22,7 +22,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         new Reservation(
             rs.getLong("reservation_id"),
             rs.getString("name"),
-            rs.getString("date"),
+            rs.getString("res_date"),
             new ReservationTime(
                 rs.getLong("time_id"),
                 rs.getString("time_value")),
@@ -41,7 +41,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation createReservation(Reservation reservation) {
-        String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?);";
+        String sql = "INSERT INTO reservation(name, res_date, time_id, theme_id) VALUES (?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         template.update(conn -> {
@@ -72,7 +72,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             "SELECT "
                 + "r.id as reservation_id, "
                 + "r.name, "
-                + "r.date, "
+                + "r.res_date, "
                 + "t.id as time_id, "
                 + "t.start_at as time_value, "
                 + "th.id as theme_id, "
@@ -94,7 +94,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             "SELECT "
                 + "r.id as reservation_id, "
                 + "r.name, "
-                + "r.date, "
+                + "r.res_date, "
                 + "t.id as time_id, "
                 + "t.start_at as time_value, "
                 + "th.id as theme_id, "
