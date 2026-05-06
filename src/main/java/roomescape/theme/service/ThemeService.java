@@ -47,9 +47,7 @@ public class ThemeService {
     }
 
     public List<PopularThemeResponse> findPopularThemes(LocalDate today) {
-        LocalDate yesterday = today.minusDays(1);
-
-        return themeRepository.findTop10PopularThemesBetween(yesterday.minusDays(5), yesterday)
+        return themeRepository.findTop10PopularThemesBetween(today.minusWeeks(1), today.minusDays(1))
                 .stream()
                 .map(PopularThemeResponse::from)
                 .toList();

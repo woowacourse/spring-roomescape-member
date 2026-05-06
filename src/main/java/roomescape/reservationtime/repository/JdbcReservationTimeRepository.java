@@ -38,7 +38,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         return jdbcTemplate.query(
-                "SELECT id, start_at FROM reservation_time",
+                "SELECT id, start_at FROM reservation_time ORDER BY start_at ASC",
                 (rs, rowNum) -> ReservationTime.builder()
                         .id(rs.getLong("id"))
                         .startAt(rs.getTime("start_at").toLocalTime())
@@ -70,6 +70,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     FROM reservation
                     WHERE theme_id = ? AND date = ?
                 )
+                ORDER BY start_at ASC
                 """;
 
         return jdbcTemplate.query(sql,

@@ -114,7 +114,7 @@ public class ThemeServiceTest {
         List<PopularThemeResponse> responses = themeService.findPopularThemes(LocalDate.of(2026, 5, 6));
 
         SoftAssertions.assertSoftly(assertSoftly -> {
-            assertSoftly.assertThat(themeRepository.getFrom()).isEqualTo(LocalDate.of(2026, 4, 28));
+            assertSoftly.assertThat(themeRepository.getFrom()).isEqualTo(LocalDate.of(2026, 4, 29));
             assertSoftly.assertThat(themeRepository.getTo()).isEqualTo(LocalDate.of(2026, 5, 5));
             assertSoftly.assertThat(responses).containsExactly(
                     new PopularThemeResponse(1L, "theme name", "theme description", "theme img url", 10)

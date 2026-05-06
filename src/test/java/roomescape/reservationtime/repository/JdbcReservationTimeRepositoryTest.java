@@ -32,11 +32,6 @@ class JdbcReservationTimeRepositoryTest {
     @BeforeEach
     void setUp() {
         timeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
-
-        timeRepository.save(ReservationTime.builder().startAt(LocalTime.parse("09:00")).build());
-        timeRepository.save(ReservationTime.builder().startAt(LocalTime.parse("10:00")).build());
-        timeRepository.save(ReservationTime.builder().startAt(LocalTime.parse("11:00")).build());
-
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
 

@@ -31,6 +31,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                         FROM reservation r
                         JOIN theme t ON r.theme_id = t.id
                         JOIN reservation_time rt ON r.time_id = rt.id
+                        ORDER BY r.date ASC
                         """,
                 (rs, rowNum) ->
                         new ReservationDetail(rs.getLong("id"),

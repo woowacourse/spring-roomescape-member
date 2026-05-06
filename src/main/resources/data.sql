@@ -99,7 +99,7 @@ INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('소낙눈', '20
 INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('피노', '2026-04-26', 2, 3);
 INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('도우너', '2026-04-27', 2, 3);
 INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('스타크', '2026-04-28', 2, 3);
-INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('초록', '2026-04-29', 2, 3);
+INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('초록', '2026-04-28', 2, 3);
 
 INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('피즈', '2026-04-25', 10, 3);
 INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('카야', '2026-04-26', 10, 3);

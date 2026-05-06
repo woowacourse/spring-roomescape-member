@@ -38,7 +38,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        return jdbcTemplate.query("SELECT * FROM theme",
+        return jdbcTemplate.query("SELECT * FROM theme ORDER BY id ASC",
                 (rs, rw) -> Theme.builder()
                         .id(rs.getLong("id"))
                         .name(rs.getString("name"))
