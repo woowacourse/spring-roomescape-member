@@ -9,6 +9,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
+import roomescape.domain.ReservationTheme.PopularThemeCondition;
+import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTime.ReservationTimeCommand;
 import roomescape.domain.ReservationTime.ReservationTimeCondition;
@@ -51,6 +53,11 @@ public class RoomReservationServiceTest {
 
             @Override
             public boolean existsByThemeId(long themeId) {
+                return false;
+            }
+
+            @Override
+            public boolean existsByTimeIdAndThemeIdAndDate(ReservationCommand reservationCommand) {
                 return false;
             }
         };
@@ -112,6 +119,11 @@ public class RoomReservationServiceTest {
             @Override
             public void deleteTheme(long id) {
 
+            }
+
+            @Override
+            public List<ReservationThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
+                return List.of();
             }
         };
     }

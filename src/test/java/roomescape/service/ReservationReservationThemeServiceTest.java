@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
+import roomescape.domain.ReservationTheme.PopularThemeCondition;
+import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTheme.ReservationTheme;
 import roomescape.domain.ReservationTheme.ReservationThemeCommand;
@@ -21,10 +23,6 @@ import roomescape.repository.reservation.ReservationRepository;
 public class ReservationReservationThemeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTheme) {
         return new ReservationRepository() {
-            @Override
-            public List<Reservation> getAllReservation() {
-                return List.of();
-            }
 
             @Override
             public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, ReservationTheme theme) {
@@ -44,6 +42,21 @@ public class ReservationReservationThemeServiceTest {
             @Override
             public boolean existsByThemeId(long themeId) {
                 return isExistTheme;
+            }
+
+            @Override
+            public boolean existsByTimeIdAndThemeIdAndDate(ReservationCommand reservationCommand) {
+                return false;
+            }
+
+            @Override
+            public List<Reservation> getAllReservation() {
+                return List.of();
+            }
+
+            @Override
+            public List<Reservation> getAllReservationByName(String name) {
+                return List.of();
             }
         };
     }
@@ -68,6 +81,11 @@ public class ReservationReservationThemeServiceTest {
             @Override
             public void deleteTheme(long id) {
                 runnable.run();
+            }
+
+            @Override
+            public List<ReservationThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
+                return List.of();
             }
         };
     }

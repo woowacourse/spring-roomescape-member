@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-public abstract class BaseDaoTest {
+public abstract class BaseRepositoryTest {
     protected JdbcTemplate jdbcTemplate;
 
     @BeforeEach

@@ -23,10 +23,6 @@ import roomescape.repository.reservationTime.ReservationTimeRepository;
 public class ReservationTimeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTime) {
         return new ReservationRepository() {
-            @Override
-            public List<Reservation> getAllReservation() {
-                return List.of();
-            }
 
             @Override
             public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, ReservationTheme theme) {
@@ -46,6 +42,21 @@ public class ReservationTimeServiceTest {
             @Override
             public boolean existsByThemeId(long themeId) {
                 return false;
+            }
+
+            @Override
+            public boolean existsByTimeIdAndThemeIdAndDate(ReservationCommand reservationCommand) {
+                return false;
+            }
+
+            @Override
+            public List<Reservation> getAllReservation() {
+                return List.of();
+            }
+
+            @Override
+            public List<Reservation> getAllReservationByName(String name) {
+                return List.of();
             }
         };
     }

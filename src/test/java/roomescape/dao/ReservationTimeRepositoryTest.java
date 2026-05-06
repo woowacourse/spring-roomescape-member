@@ -1,18 +1,21 @@
 package roomescape.dao;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTime.ReservationTimeCommand;
 import roomescape.domain.ReservationTime.ReservationTimeCondition;
 import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
+import roomescape.repository.reservationTime.JdbcReservationTimeRepository;
+import roomescape.repository.reservationTime.ReservationTimeRepository;
 
-public class ReservationTimeDaoTest extends BaseDaoTest {
-    private ReservationTimeDao reservationTimeDao;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class ReservationTimeRepositoryTest extends BaseRepositoryTest {
+    private ReservationTimeRepository reservationTimeRepository;
 
     @Override
     protected void initTable() {
@@ -22,7 +25,7 @@ public class ReservationTimeDaoTest extends BaseDaoTest {
 
         insertReservationTime("10:00");
 
-        this.reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
+        this.reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
     }
 
     @Override
@@ -35,7 +38,7 @@ public class ReservationTimeDaoTest extends BaseDaoTest {
     @Test
     @DisplayName("특정 예약 시간 정상적으로 가져오는 지 테스트")
     void getReservationTimeTest() {
-        Optional<ReservationTime> reservationTime = reservationTimeDao.getReservationTime(1);
+        Optional<ReservationTime> reservationTime = reservationTimeRepository.getReservationTime(1);
 
         assertThat(reservationTime.isPresent()).isTrue();
         assertThat(reservationTime.get()).isEqualTo(new ReservationTime(1, "10:00"));
@@ -44,7 +47,7 @@ public class ReservationTimeDaoTest extends BaseDaoTest {
     @Test
     @DisplayName("존재하지 않는 특정 예약 시간 빈 값으로 가져오는 지 테스트")
     void getInvalidReservationTimeTest() {
-        Optional<ReservationTime> reservationTime = reservationTimeDao.getReservationTime(3);
+        Optional<ReservationTime> reservationTime = reservationTimeRepository.getReservationTime(3);
 
         assertThat(reservationTime.isEmpty()).isTrue();
     }
@@ -52,7 +55,7 @@ public class ReservationTimeDaoTest extends BaseDaoTest {
     @Test
     @DisplayName("전체 예약시간 정상적으로 가져오는 지 테스트")
     void getReservationTimesTest() {
-        List<ReservationTime> reservationTimes = reservationTimeDao.getAllReservationTime();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.getAllReservationTime();
 
         assertThat(reservationTimes).containsExactly(new ReservationTime(1, "10:00"));
     }
@@ -60,8 +63,8 @@ public class ReservationTimeDaoTest extends BaseDaoTest {
     @Test
     @DisplayName("예약 시간 삭제 정상적으로 작동하는 지 테스트")
     void deleteReservationTest() {
-        reservationTimeDao.deleteReservationTime(1);
-        List<ReservationTime> reservationTimes = reservationTimeDao.getAllReservationTime();
+        reservationTimeRepository.deleteReservationTime(1);
+        List<ReservationTime> reservationTimes = reservationTimeRepository.getAllReservationTime();
 
         assertThat(reservationTimes).isNotIn(new ReservationTime(1, "10:00"));
     }
@@ -69,12 +72,12 @@ public class ReservationTimeDaoTest extends BaseDaoTest {
     @Test
     @DisplayName("예약 시간 추가 정상적으로 작동하는 지 테스트")
     void insertReservationTest() {
-        long updatedReservation = reservationTimeDao.insertReservationTime(new ReservationTimeCommand("12:00"));
-        List<ReservationTime> reservations = reservationTimeDao.getAllReservationTime();
+        reservationTimeRepository.addReservationTime(new ReservationTimeCommand("12:00"));
+        List<ReservationTime> reservations = reservationTimeRepository.getAllReservationTime();
 
         ReservationTime expectedReservation = new ReservationTime(2, "12:00");
 
-        assertThat(updatedReservation).isEqualTo(2);
+        assertThat(reservations.size()).isEqualTo(2);
         assertThat(reservations).contains(expectedReservation);
     }
 
@@ -88,8 +91,8 @@ public class ReservationTimeDaoTest extends BaseDaoTest {
 
         insertReservation("브라운", "2023-08-03", 1, 1);
 
-        List<ReservationTimeWithAvailable> reservationTimeWithAvailable1 = reservationTimeDao.getReservationTimeByDateAndTheme(new ReservationTimeCondition("2023-08-04", 1));
-        List<ReservationTimeWithAvailable> reservationTimeWithAvailable2 = reservationTimeDao.getReservationTimeByDateAndTheme(new ReservationTimeCondition("2023-08-03", 1));
+        List<ReservationTimeWithAvailable> reservationTimeWithAvailable1 = reservationTimeRepository.getReservationTimeByDateAndTheme(new ReservationTimeCondition("2023-08-04", 1));
+        List<ReservationTimeWithAvailable> reservationTimeWithAvailable2 = reservationTimeRepository.getReservationTimeByDateAndTheme(new ReservationTimeCondition("2023-08-03", 1));
 
         assertThat(reservationTimeWithAvailable1).containsAll(List.of(
                 new ReservationTimeWithAvailable(1, "10:00", true),

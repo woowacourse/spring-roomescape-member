@@ -9,9 +9,11 @@ import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.repository.reservation.JdbcReservationRepository;
+import roomescape.repository.reservation.ReservationRepository;
 
-public class ReservationDaoTest extends BaseDaoTest {
-    private ReservationDao reservationDao;
+public class ReservationRepositoryTest extends BaseRepositoryTest {
+    private ReservationRepository reservationRepository;
 
     private final Reservation INIT_RESERVATION = new Reservation(
             1,
@@ -30,7 +32,7 @@ public class ReservationDaoTest extends BaseDaoTest {
         insertReservationTime("10:00");
         insertReservationTheme("테마1", "테마 설명", "image url");
         insertReservation("브라운", "2023-08-05", 1, 1);
-        this.reservationDao = new ReservationDao(jdbcTemplate);
+        this.reservationRepository = new JdbcReservationRepository(jdbcTemplate);
     }
 
     @Override
@@ -42,7 +44,7 @@ public class ReservationDaoTest extends BaseDaoTest {
     @Test
     @DisplayName("전체 예약 테스트 정상적으로 가져오는 지 테스트")
     void getReservationTest() {
-        List<Reservation> reservations = reservationDao.getAllReservation();
+        List<Reservation> reservations = reservationRepository.getAllReservation();
 
         assertThat(reservations).containsExactly(INIT_RESERVATION);
     }
@@ -50,8 +52,8 @@ public class ReservationDaoTest extends BaseDaoTest {
     @Test
     @DisplayName("예약 삭제 정상적으로 작동하는 지 테스트")
     void deleteReservationTest() {
-        reservationDao.deleteReservation(1);
-        List<Reservation> reservations = reservationDao.getAllReservation();
+        reservationRepository.deleteReservation(1);
+        List<Reservation> reservations = reservationRepository.getAllReservation();
 
         assertThat(reservations).isNotIn(INIT_RESERVATION);
     }
@@ -59,12 +61,13 @@ public class ReservationDaoTest extends BaseDaoTest {
     @Test
     @DisplayName("예약 추가 정상적으로 작동하는 지 테스트")
     void insertReservationTest() {
-        long updatedReservation = reservationDao.insertReservation(new ReservationCommand("테스트", "2023-08-15", 1, 1));
-        List<Reservation> reservations = reservationDao.getAllReservation();
+        reservationRepository.addReservation(new ReservationCommand("테스트", "2023-08-15", 1, 1), new ReservationTime(1, "15:14"), new ReservationTheme(1, "theme", "description", "imageUrl"));
+
+        List<Reservation> reservations = reservationRepository.getAllReservation();
 
         Reservation expectedReservation = new Reservation(2, "테스트", "2023-08-15", new ReservationTime(1, "10:00"), new ReservationTheme(1, "테마1", "테마 설명", "image url"));
 
-        assertThat(updatedReservation).isEqualTo(2);
+        assertThat(reservations.size()).isEqualTo(2);
         assertThat(reservations).contains(expectedReservation);
     }
 }
