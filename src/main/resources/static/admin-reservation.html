@@ -31,6 +31,37 @@
 
     <div class="container my-5">
         <h2>예약 관리</h2>
+
+        <div class="card my-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">새 예약 추가</h5>
+                <form id="reservation-form" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="date" class="form-label">날짜</label>
+                        <input type="date" id="date" class="form-control" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="theme" class="form-label">테마</label>
+                        <select id="theme" class="form-select" required>
+                            <option value="" disabled selected>테마 선택</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="time" class="form-label">시간</label>
+                        <select id="time" class="form-select" required disabled>
+                            <option value="" disabled selected>시간 선택</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="name" class="form-label">예약자</label>
+                        <input type="text" id="name" class="form-control" placeholder="이름" required>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">추가하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
         
         <table class="table table-hover mt-4">
             <thead class="table-dark">
@@ -64,7 +95,14 @@
             document.getElementById('password-overlay').style.display = 'none';
         }
 
-        document.addEventListener('DOMContentLoaded', fetchReservations);
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchReservations();
+            fetchThemes();
+        });
+
+        document.getElementById('date').addEventListener('change', fetchAvailableTimes);
+        document.getElementById('theme').addEventListener('change', fetchAvailableTimes);
+        document.getElementById('reservation-form').addEventListener('submit', addReservation);
 
         function fetchReservations() {
             fetch('/reservations')
@@ -84,6 +122,74 @@
                         </tr>
                     `).join('');
                 });
+        }
+
+        function fetchThemes() {
+            fetch('/themes')
+                .then(response => response.json())
+                .then(themes => {
+                    const select = document.getElementById('theme');
+                    themes.forEach(theme => {
+                        const option = document.createElement('option');
+                        option.value = theme.id;
+                        option.textContent = theme.name;
+                        select.appendChild(option);
+                    });
+                });
+        }
+
+        function fetchAvailableTimes() {
+            const date = document.getElementById('date').value;
+            const themeId = document.getElementById('theme').value;
+            const timeSelect = document.getElementById('time');
+
+            if (date && themeId) {
+                fetch(`/times?themeId=${themeId}&date=${date}`)
+                    .then(response => response.json())
+                    .then(times => {
+                        timeSelect.innerHTML = '<option value="" disabled selected>시간 선택</option>';
+                        times.forEach(time => {
+                            const option = document.createElement('option');
+                            option.value = time.id;
+                            option.textContent = time.startAt;
+                            if (!time.isNotReserved) {
+                                option.disabled = true;
+                                option.textContent += ' (예약됨)';
+                            }
+                            timeSelect.appendChild(option);
+                        });
+                        timeSelect.disabled = false;
+                    });
+            } else {
+                timeSelect.disabled = true;
+                timeSelect.innerHTML = '<option value="" disabled selected>시간 선택</option>';
+            }
+        }
+
+        function addReservation(event) {
+            event.preventDefault();
+            const payload = {
+                date: document.getElementById('date').value,
+                themeId: document.getElementById('theme').value,
+                timeId: document.getElementById('time').value,
+                name: document.getElementById('name').value
+            };
+
+            fetch('/reservations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('예약이 추가되었습니다.');
+                    fetchReservations();
+                    document.getElementById('reservation-form').reset();
+                    document.getElementById('time').disabled = true;
+                } else {
+                    alert('예약 추가 실패');
+                }
+            });
         }
 
         function deleteReservation(id) {
