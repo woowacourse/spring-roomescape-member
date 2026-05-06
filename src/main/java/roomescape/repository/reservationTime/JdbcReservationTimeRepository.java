@@ -27,16 +27,16 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private static final String SELECT_ALL_SQL = "SELECT id, start_at FROM reservation_time";
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation_time WHERE id = ?";
     private static final String SELECT_AVAILABLE_SQL = """
-            SELECT t.id AS id, t.start_at AS start_at, \s
-            CASE \s
-            WHEN r.time_id IS NULL THEN true \s
-            ELSE false \s
-            END AS available \s
-            FROM reservation_time t \s
-            LEFT JOIN ( \s
-            SELECT r.time_id \s
-            FROM reservation r \s
-            WHERE r.date = ? AND r.theme_id = ? \s
+            SELECT t.id AS id, t.start_at AS start_at,
+            CASE
+            WHEN r.time_id IS NULL THEN true
+            ELSE false
+            END AS available
+            FROM reservation_time t
+            LEFT JOIN (
+            SELECT r.time_id
+            FROM reservation r
+            WHERE r.date = ? AND r.theme_id = ?
             ) AS r ON r.time_id = t.id
             """;
 
