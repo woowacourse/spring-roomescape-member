@@ -47,6 +47,6 @@ public class TimeController {
     @DeleteMapping("/admin/times/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
         timeService.deleteTimeById(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
 }
