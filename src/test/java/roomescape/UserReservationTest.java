@@ -91,10 +91,9 @@ public class UserReservationTest {
 
     private List<ReservationTime> getAvailableTimes(LocalDate date, Long themeId) {
         return RestAssured.given()
-                .queryParam("available", true)
                 .queryParam("date", date.toString())
                 .queryParam("themeId", themeId)
-                .when().get("/times")
+                .when().get("/times/available-times")
                 .then()
                 .statusCode(200)
                 .extract()

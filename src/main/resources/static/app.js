@@ -102,7 +102,7 @@ async function loadAvailableTimes() {
     return;
   }
 
-  state.availableTimes = await api(`/times?available=true&date=${date}&themeId=${themeId}`);
+  state.availableTimes = await api(`/times/available-times?date=${date}&themeId=${themeId}`);
   renderAvailableTimes();
 }
 
