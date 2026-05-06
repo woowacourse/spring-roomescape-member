@@ -102,7 +102,7 @@ GET /reservations HTTP/1.1
 }
 ```
 
-#### 예약 취소 API
+#### 예약 삭제 API
 
 **Request**
 
