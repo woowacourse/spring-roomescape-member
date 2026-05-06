@@ -16,7 +16,14 @@ public enum ErrorCode {
     RESERVATION_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "예약 시간을 찾을 수 없습니다."),
     RESERVATION_TIME_REQUEST_NULL(HttpStatus.BAD_REQUEST, "예약 시간 데이터가 비어있습니다."),
     RESERVATION_TIME_START_AT_NULL(HttpStatus.BAD_REQUEST, "예약 시간이 비어있습니다."),
-    RESERVATION_TIME_ALREADY_USED(HttpStatus.BAD_REQUEST, "참조하고 있는 예약 시간이어서 삭제할 수 없습니다.");
+    RESERVATION_TIME_ALREADY_USED(HttpStatus.BAD_REQUEST, "참조하고 있는 예약 시간이어서 삭제할 수 없습니다."),
+
+    // Theme
+    THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "테마를 찾을 수 없습니다."),
+    THEME_ID_NULL(HttpStatus.BAD_REQUEST, "테마 ID가 비어있습니다."),
+    THEME_REQUEST_DESCRIPTION_NULL(HttpStatus.BAD_REQUEST, "테마 설명은 null 혹은 빈 값일 수 없습니다"),
+    THEME_REQUEST_NAME_NULL(HttpStatus.BAD_REQUEST, "테마 이름은 null 혹은 빈 값일 수 없습니다"),
+    THEME_REQUEST_THUMBNAIL_NULL(HttpStatus.BAD_REQUEST, "테마 썸네일은 null 혹은 빈 값일 수 없습니다");
 
     private final HttpStatus httpStatus;
     private final String message;
