@@ -2,7 +2,9 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import lombok.Getter;
 
+@Getter
 public class ReservationTime {
 
     private final Long id;
@@ -48,14 +50,6 @@ public class ReservationTime {
         if (startAt == null) {
             throw new IllegalArgumentException("예약 시간엔 시간 정보가 존재해야 합니다.");
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
     }
 
     @Override
