@@ -35,20 +35,22 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<Theme> createTheme(@RequestBody ThemeCreateRequest request) {
+    public ResponseEntity<Theme> createTheme(
+            @RequestBody ThemeCreateRequest themeCreateRequest) {
         Theme theme = themeService.createTheme(
-                request.name(),
-                request.description(),
-                request.imgUrl(),
-                request.userName()
+                themeCreateRequest.name(),
+                themeCreateRequest.description(),
+                themeCreateRequest.imgUrl(),
+                themeCreateRequest.userName()
         );
         return ResponseEntity.created(URI.create("/api/v1/themes/" + theme.getId())).body(theme);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id,
-                                            @RequestBody ThemeDeleteRequest request) {
-        themeService.deleteTheme(id, request.userName());
+    public ResponseEntity<Void> deleteTheme(
+            @PathVariable Long id,
+            @RequestBody ThemeDeleteRequest themeDeleteRequest) {
+        themeService.deleteTheme(id, themeDeleteRequest.userName());
         return ResponseEntity.noContent().build();
     }
 

@@ -147,6 +147,7 @@ public class ReservationControllerTest {
     private void createDefaultTimes() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");
+        time.put("userName", "ADMIN");
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time)
@@ -155,6 +156,7 @@ public class ReservationControllerTest {
 
         Map<String, String> time2 = new HashMap<>();
         time2.put("startAt", "11:00");
+        time2.put("userName", "ADMIN");
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time2)
@@ -163,6 +165,7 @@ public class ReservationControllerTest {
 
         Map<String, String> time3 = new HashMap<>();
         time3.put("startAt", "12:00");
+        time3.put("userName", "ADMIN");
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time3)

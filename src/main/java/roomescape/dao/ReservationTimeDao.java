@@ -32,7 +32,7 @@ public class ReservationTimeDao {
         return reservationTimeList;
     }
 
-    public Long insertWithKeyHolder(ReservationTime reservationTime) {
+    public Long insertWithKeyHolder(LocalTime time) {
         String sql = "insert into reservation_time (start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -41,7 +41,7 @@ public class ReservationTimeDao {
                     sql,
                     new String[]{"id"}
             );
-            ps.setString(1, reservationTime.getStartAt().toString());
+            ps.setString(1, time.toString());
             return ps;
         }, keyHolder);
         Long id = keyHolder.getKey().longValue();

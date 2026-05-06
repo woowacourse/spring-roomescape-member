@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,6 +12,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.exception.UnauthorizedException;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,14 +29,16 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTime createReservationTime(ReservationTime reservationTime) {
-        Long id = reservationTimeDao.insertWithKeyHolder(reservationTime);
-        return ReservationTime.withId(id, reservationTime);
+    public ReservationTime createReservationTime(LocalTime time, String userName) {
+        validateAdmin(userName);
+        Long id = reservationTimeDao.insertWithKeyHolder(time);
+        return ReservationTime.withId(id, time);
     }
 
     @Transactional
-    public void deleteReservationTime(Long id) {
+    public void deleteReservationTime(Long id, String userName) {
         try {
+            validateAdmin(userName);
             int deleteCount = reservationTimeDao.delete(id);
             validateDelete(deleteCount);
         } catch (DataIntegrityViolationException e) {
@@ -50,6 +54,12 @@ public class ReservationTimeService {
     private void validateDelete(int deleteCount) {
         if (deleteCount == 0) {
             throw new ReservationTimeNotFoundException();
+        }
+    }
+
+    private void validateAdmin(String userName) {
+        if (!userName.equals("ADMIN")) {
+            throw new UnauthorizedException();
         }
     }
 }

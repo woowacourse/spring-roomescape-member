@@ -53,6 +53,8 @@ public class ReservationTimeControllerTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("userName", "ADMIN"))
                 .when().delete("/api/v1/times/1")
                 .then().log().all()
                 .statusCode(204);
@@ -62,6 +64,36 @@ public class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
+    }
+
+    @Test
+    void 시간_추가시_관리자가_아닌경우_401을_반환한다() {
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(timeParams(Map.of("userName", "정콩이")))
+                .when().post("/api/v1/times")
+                .then().statusCode(401);
+    }
+
+    @Test
+    void 시간_삭제시_관리자가_아닌경우_401을_반환한다() {
+        RestAssured.given().contentType(ContentType.JSON)
+                .body(timeParams())
+                .when().post("/api/v1/times")
+                .then().statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/api/v1/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("userName", "정콩이"))
+                .when().delete("/api/v1/times/1")
+                .then().log().all()
+                .statusCode(401);
     }
 
     @Test
@@ -78,6 +110,8 @@ public class ReservationTimeControllerTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("userName", "ADMIN"))
                 .when().delete("/api/v1/times/1")
                 .then().log().all()
                 .statusCode(409);
@@ -88,6 +122,8 @@ public class ReservationTimeControllerTest {
         createDefaultTimes();
 
         RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("userName", "ADMIN"))
                 .when().delete("/api/v1/times/4")
                 .then().log().all()
                 .statusCode(404);
@@ -139,6 +175,7 @@ public class ReservationTimeControllerTest {
     private void createDefaultTimes() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");
+        time.put("userName", "ADMIN");
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time)
@@ -147,6 +184,7 @@ public class ReservationTimeControllerTest {
 
         Map<String, String> time2 = new HashMap<>();
         time2.put("startAt", "11:00");
+        time2.put("userName", "ADMIN");
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time2)
@@ -155,6 +193,7 @@ public class ReservationTimeControllerTest {
 
         Map<String, String> time3 = new HashMap<>();
         time3.put("startAt", "12:00");
+        time3.put("userName", "ADMIN");
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time3)
@@ -202,9 +241,16 @@ public class ReservationTimeControllerTest {
         return params;
     }
 
-    private Map<String, String> timeParams() {
-        Map<String, String> params = new HashMap<>();
+    private Map<String, Object> timeParams() {
+        Map<String, Object> params = new HashMap<>();
         params.put("startAt", "10:00");
+        params.put("userName", "ADMIN");
+        return params;
+    }
+
+    private Map<String, Object> timeParams(Map<String, Object> overrides) {
+        Map<String, Object> params = timeParams();
+        params.putAll(overrides);
         return params;
     }
 }

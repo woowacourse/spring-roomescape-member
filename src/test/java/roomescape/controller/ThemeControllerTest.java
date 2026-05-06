@@ -112,6 +112,7 @@ public class ThemeControllerTest {
     void 예약이_존재하는_테마를_삭제하면_409를_반환한다() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");
+        time.put("userName", "ADMIN");
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time)

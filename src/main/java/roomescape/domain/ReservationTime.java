@@ -14,10 +14,10 @@ public class ReservationTime {
         this.startAt = time;
     }
 
-    public static ReservationTime withId(Long id, ReservationTime reservationTime) {
+    public static ReservationTime withId(Long id, LocalTime time) {
         return new ReservationTime(
                 id,
-                reservationTime.startAt
+                time
         );
     }
 

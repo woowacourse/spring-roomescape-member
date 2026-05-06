@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.request.ReservationTimeCreateRequest;
+import roomescape.dto.request.ReservationTimeDeleteRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.service.ReservationTimeService;
 
@@ -34,15 +36,20 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTime> createReservationTime(@RequestBody ReservationTime reservationTime) {
-        ReservationTime savedReservationTime = reservationTimeService.createReservationTime(reservationTime);
+    public ResponseEntity<ReservationTime> createReservationTime(
+            @RequestBody ReservationTimeCreateRequest reservationTimeCreateRequest) {
+        ReservationTime savedReservationTime = reservationTimeService.createReservationTime(
+                reservationTimeCreateRequest.startAt(),
+                reservationTimeCreateRequest.userName());
         return ResponseEntity.created(URI.create("/api/v1/times/" + savedReservationTime.getId()))
                 .body(savedReservationTime);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
-        reservationTimeService.deleteReservationTime(id);
+    public ResponseEntity<Void> deleteReservationTime(
+            @PathVariable Long id,
+            @RequestBody ReservationTimeDeleteRequest reservationTimeDeleteRequest) {
+        reservationTimeService.deleteReservationTime(id, reservationTimeDeleteRequest.userName());
         return ResponseEntity.noContent().build();
     }
 
