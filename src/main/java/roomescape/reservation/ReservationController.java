@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -30,8 +31,13 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> read() {
-        return ResponseEntity.ok().body(reservationService.read());
+    public ResponseEntity<List<ReservationResponse>> read(
+            @RequestParam(value = "user_name", required = false) String userName
+    ) {
+        if (userName == null) {
+            return ResponseEntity.ok().body(reservationService.read());
+        }
+        return ResponseEntity.ok().body(reservationService.readByUserName(userName));
     }
 
     @DeleteMapping("/{id}")

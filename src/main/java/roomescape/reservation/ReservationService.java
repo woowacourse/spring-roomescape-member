@@ -49,6 +49,12 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> readByUserName(String userName) {
+        return reservationRepository.findByUserName(userName).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     public void delete(Long id) {
         reservationRepository.findById(id).orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
         reservationRepository.deleteById(id);
