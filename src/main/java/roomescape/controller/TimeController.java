@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,7 +35,8 @@ public class TimeController {
 
     @GetMapping("/{themeId}")
     @ResponseBody
-    public ResponseEntity<List<TimeResponse>> getReservationTimeByThemeIdAndDate(@PathVariable Long themeId, @RequestParam("date")String date) {
+    public ResponseEntity<List<TimeResponse>> getReservationTimeByThemeIdAndDate(@PathVariable Long themeId,
+                                                                                 @RequestParam("date") String date) {
         List<TimeResponse> reservationTimes = timeService.readTimeAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(reservationTimes);
     }
@@ -42,8 +44,8 @@ public class TimeController {
     @PostMapping
     @ResponseBody
     public ResponseEntity<TimeResponse> addReservationTime(@RequestBody TimeRequest timeRequest) {
-        TimeResponse newTimeResponse = timeService.registerTime(timeRequest);
-        return ResponseEntity.ok().body(newTimeResponse);
+        TimeResponse timeResponse = timeService.registerTime(timeRequest);
+        return ResponseEntity.created(URI.create("/times/" + timeResponse.getId())).body(timeResponse);
     }
 
     @DeleteMapping("/{id}")
