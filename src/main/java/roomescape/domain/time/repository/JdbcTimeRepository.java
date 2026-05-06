@@ -29,7 +29,7 @@ public class JdbcTimeRepository implements TimeRepository {
 
     @Override
     public Time save(Time time) {
-        Map<String, Object> args = Map.of("start+at", time.getStartAt());
+        Map<String, Object> args = Map.of("start_at", time.getStartAt());
 
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(args).longValue();
 
