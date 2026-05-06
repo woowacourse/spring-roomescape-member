@@ -138,4 +138,18 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
     }
+
+    public boolean updateStatus(Reservation reservation) {
+        String sql = """
+                UPDATE RESERVATION
+                SET status = :status
+                WHERE id = :id
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", reservation.id())
+                .addValue("status", reservation.status().name());
+        int updatedCount = jdbcTemplate.update(sql, params);
+        return updatedCount > 0;
+    }
+
 }

@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +16,7 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.fixture.FakeReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.repository.FakeReservationRepository;
@@ -66,12 +69,12 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("전체 예약 정보를 가져온다.")
-    void findAll() {
+    void readAll() {
         //given & when
         List<Reservation> reservations = List.of(Reservation.create("한다", reservationDate1.date(), reservationTime1.startAt(), theme1),
                 Reservation.create("송송", reservationDate2.date(), reservationTime1.startAt(), theme2));
         reservationRepository.saveAll(reservations);
-        List<ReservationResponse> reservationsResponse = reservationService.findAll();
+        List<ReservationResponse> reservationsResponse = reservationService.readAll();
 
         //then
         assertThat(reservationsResponse)
@@ -86,7 +89,7 @@ class ReservationServiceTest {
         reservationService.create(new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id()));
 
         //then
-        assertThat(reservationService.findAll())
+        assertThat(reservationService.readAll())
                 .hasSize(reservations.size() + 1);
     }
 
@@ -114,7 +117,7 @@ class ReservationServiceTest {
         reservationService.delete(reservationResponse.id());
 
         //then
-        assertThat(reservationService.findAll())
+        assertThat(reservationService.readAll())
                 .hasSize(reservations.size() - 1);
     }
 
@@ -141,5 +144,20 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.create(duplicateDateTimeCommand))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("해당 날짜/시간/테마는 이미 예약되었습니다.");
+    }
+
+    @Test
+    @DisplayName("예약을 취소하면 CANCELED 상태가 된다.")
+    void updateStatus_canceled() {
+        // given
+        Long savedId = reservationRepository.save(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme1));
+        ReservationStatus canceled = ReservationStatus.CANCELED;
+
+        // when
+        ReservationResponse actual = reservationService.updateStatus(savedId, canceled);
+
+        // then
+        Assertions.assertThat(actual.status())
+                .isEqualTo(canceled);
     }
 }

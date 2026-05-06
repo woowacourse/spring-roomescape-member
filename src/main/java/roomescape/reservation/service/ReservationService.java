@@ -10,6 +10,7 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.repository.ReservationRepository;
@@ -82,9 +83,22 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse delete(Long id) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+        Reservation reservation = getReservation(id);
         reservationRepository.delete(id);
         return ReservationResponse.from(reservation);
     }
+
+    @Transactional
+    public ReservationResponse updateStatus(Long id, ReservationStatus status) {
+        Reservation reservation = getReservation(id);
+        reservation.updateStatus(status);
+        reservationRepository.updateStatus(reservation);
+        return ReservationResponse.from(reservation);
+    }
+
+    private Reservation getReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+    }
+
 }

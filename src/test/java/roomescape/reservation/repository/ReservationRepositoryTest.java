@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.repository.JdbcReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.time.domain.ReservationTime;
@@ -95,4 +97,33 @@ class ReservationRepositoryTest {
         assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeAndThemeId(wrongDate, time.startAt(), theme.id()))
                 .isFalse();
     }
+
+    @Test
+    @DisplayName("예약을 취소하면 상태가 CANCELED가 된다.")
+    void updateState_canceled() {
+        // given
+        Reservation beforeReservation = jdbcTemplateReservationRepository.findById(reservationId).get();
+        ReservationStatus cancelled = ReservationStatus.CANCELED;
+        beforeReservation.updateStatus(ReservationStatus.CANCELED);
+        jdbcTemplateReservationRepository.updateStatus(beforeReservation);
+
+        // when
+        Reservation afterReservation = jdbcTemplateReservationRepository.findById(reservationId).get();
+
+        // then
+        Assertions.assertThat(afterReservation.status())
+                .isEqualTo(cancelled);
+    }
+
+    @Test
+    @DisplayName("예약을 하면 상태가 RESERVED가 된다.")
+    void updateState_reserved() {
+        // when
+        Reservation reservation = jdbcTemplateReservationRepository.findById(reservationId).get();
+
+        // then
+        Assertions.assertThat(reservation.status())
+                .isEqualTo(ReservationStatus.RESERVED);
+    }
+
 }

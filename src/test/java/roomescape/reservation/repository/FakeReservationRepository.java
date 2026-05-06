@@ -68,4 +68,15 @@ public class FakeReservationRepository implements ReservationRepository {
                         reservation.time().equals(time)
                 );
     }
+
+    @Override
+    public boolean updateStatus(Reservation reservation) {
+        Optional<Reservation> findReservation = findById(reservation.id());
+        if (findReservation.isEmpty()) {
+            return false;
+        }
+
+        findReservation.get().updateStatus(reservation.status());
+        return true;
+    }
 }

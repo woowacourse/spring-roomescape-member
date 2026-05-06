@@ -100,4 +100,9 @@ public class Reservation {
     public ReservationStatus status() {
         return status;
     }
+
+    public void updateStatus(ReservationStatus status) {
+        this.status = status;
+    }
+
 }

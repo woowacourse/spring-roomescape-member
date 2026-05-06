@@ -1,5 +1,5 @@
 package roomescape.reservation.domain;
 
 public enum ReservationStatus {
-    RESERVED, CANCELLED;
+    RESERVED, CANCELED;
 }
