@@ -7,9 +7,12 @@ import static org.mockito.Mockito.when;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +20,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.reservationTime.ReservationTimeRequestDto;
 import roomescape.dto.reservationTime.ReservationTimeResponseDto;
 import roomescape.service.ReservationService;
 import roomescape.service.ThemeService;
@@ -61,5 +65,89 @@ class ReservationTimeControllerTest {
         });
         assertThat(responseDtos).hasSize(2);
         assertThat(responseDtos).containsExactlyElementsOf(responseDtos);
+    }
+
+    @Nested
+    @DisplayName("인가 권한 테스트")
+    class RoleForbidden {
+        @Test
+        void 관리자는_예약_시간을_추가할_수_있다() {
+            // given
+            ReservationTime newTime = new ReservationTime(1L, "12:30");
+            ReservationTimeRequestDto request = requestDtoFrom(newTime);
+            when(reservationService.addReservationTime(any()))
+                    .thenReturn(newTime);
+
+            // when
+            Response response = RestAssured
+                    .given().log().all()
+                    .queryParam("role", "admin")
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when().post("/times");
+
+            // then
+            response
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value());
+
+            ReservationTimeResponseDto responseDto = response.as(ReservationTimeResponseDto.class);
+            assertThat(responseDto.id()).isEqualTo(newTime.getId());
+        }
+
+        @Test
+        void 관리자는_예약_시간을_삭제할_수_있다() {
+            // given & when
+            Response response = RestAssured
+                    .given().log().all()
+                    .queryParam("role", "admin")
+                    .pathParam("id", 1)
+                    .when().delete("/times/{id}");
+
+            // then
+            response
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+        }
+
+        @Test
+        void 관리자가_아닌_사용자가_테마를_추가하는_경우_예외가_발생한다() {
+            // given
+            ReservationTime newTime = new ReservationTime(1L, "12:30");
+            ReservationTimeRequestDto request = requestDtoFrom(newTime);
+
+            // when
+            Response response = RestAssured
+                    .given().log().all()
+                    .queryParam("role", "user")
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when().post("/times");
+
+
+            // then
+            response
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value());
+        }
+
+        @Test
+        void 관리자가_아닌_사용자가_테마를_삭제하는_경우_예외가_발생한다() {
+            // given & when
+            Response response = RestAssured
+                    .given().log().all()
+                    .queryParam("role", "user")
+                    .pathParam("id", 1)
+                    .when().delete("/times/{id}");
+
+            // then
+            response
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value());
+        }
+    }
+
+    private ReservationTimeRequestDto requestDtoFrom(ReservationTime time) {
+        return new ReservationTimeRequestDto(time.getStartAt());
     }
 }
