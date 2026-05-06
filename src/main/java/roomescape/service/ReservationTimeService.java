@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.controller.dto.ReservationTimeCreateRequest;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.service.command.ReservationTimeCreateCommand;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +20,9 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTime create(
-            ReservationTimeCreateCommand createCommand
+            ReservationTimeCreateRequest createRequest
     ) {
-        ReservationTime reservationTime = ReservationTime.create(createCommand.startAt());
+        ReservationTime reservationTime = ReservationTime.create(createRequest.startAt());
 
         return repository.persist(reservationTime);
     }

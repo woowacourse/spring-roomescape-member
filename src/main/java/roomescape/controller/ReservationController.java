@@ -15,7 +15,6 @@ import roomescape.controller.dto.ReservationResponse;
 import roomescape.controller.mapper.ReservationMapper;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
-import roomescape.service.command.ReservationCreateCommand;
 
 @RestController
 @RequestMapping("/reservations")
@@ -29,8 +28,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> create(
             @RequestBody ReservationCreateRequest createRequest
     ) {
-        ReservationCreateCommand createCommand = mapper.mapCreateToCommand(createRequest);
-        Reservation createdReservation = service.create(createCommand);
+        Reservation createdReservation = service.create(createRequest);
 
         ReservationResponse response = mapper.mapToResponse(createdReservation);
 

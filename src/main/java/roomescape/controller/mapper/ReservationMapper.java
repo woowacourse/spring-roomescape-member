@@ -2,12 +2,10 @@ package roomescape.controller.mapper;
 
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
-import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.controller.dto.ThemeResponse;
 import roomescape.domain.Reservation;
-import roomescape.service.command.ReservationCreateCommand;
 
 @Component
 @RequiredArgsConstructor
@@ -15,17 +13,6 @@ public class ReservationMapper {
 
     private final ReservationTimeMapper timeMapper;
     private final ThemeMapper themeMapper;
-
-    public ReservationCreateCommand mapCreateToCommand(
-            ReservationCreateRequest createRequest
-    ) {
-        return new ReservationCreateCommand(
-                createRequest.name(),
-                createRequest.date(),
-                createRequest.timeId(),
-                createRequest.themeId()
-        );
-    }
 
     public ReservationResponse mapToResponse(
             Reservation reservation
