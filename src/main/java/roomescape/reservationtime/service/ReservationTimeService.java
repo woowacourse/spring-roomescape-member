@@ -37,8 +37,8 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(savedReservationTime);
     }
 
-    public void deleteReservationTime(Long id) {
-        reservationTimeRepository.delete(id);
+    public int deleteReservationTime(Long id) {
+        return reservationTimeRepository.delete(id);
     }
 
     public List<ReservationTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {

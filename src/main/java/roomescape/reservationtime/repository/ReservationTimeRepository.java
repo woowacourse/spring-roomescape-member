@@ -12,7 +12,7 @@ public interface ReservationTimeRepository {
 
     ReservationTime save(ReservationTime reservationTime);
 
-    void delete(Long id);
+    Integer delete(Long id);
 
     List<ReservationTime> findByThemeAndDate(Long themeId, LocalDate date);
 }

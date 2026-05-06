@@ -38,8 +38,8 @@ public class ReservationService {
         return ReservationResponse.from(reservationRepository.save(reservation), themeResponse, timeResponse);
     }
 
-    public void deleteReservation(Long id) {
-        reservationRepository.delete(id);
+    public int deleteReservation(Long id) {
+        return reservationRepository.delete(id);
     }
 
     private void validateDuplicateReservation(ReservationCreateRequest request) {

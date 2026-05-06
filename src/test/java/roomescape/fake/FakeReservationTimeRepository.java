@@ -37,8 +37,16 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void delete(Long id) {
+    public Integer delete(Long id) {
+        int beforeSize = times.size();
         times.remove(id);
+        int afterSize = times.size();
+
+        if (beforeSize != afterSize) {
+            return 1;
+        }
+
+        return 0;
     }
 
     public void saveReservation(Reservation reservation) {

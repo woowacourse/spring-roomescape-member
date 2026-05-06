@@ -40,7 +40,12 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(
             @PathVariable Long id
     ) {
-        reservationService.deleteReservation(id);
+        int deletedCount = reservationService.deleteReservation(id);
+
+        if (deletedCount == 0) {
+            return ResponseEntity.notFound().build();
+        }
+
         return ResponseEntity.noContent().build();
     }
 }
