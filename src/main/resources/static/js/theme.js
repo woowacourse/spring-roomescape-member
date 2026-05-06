@@ -24,9 +24,9 @@ function render(themes) {
         return;
     }
 
-    themes.forEach(theme => {
+    themes.forEach((theme, index) => {
         const row = tbody.insertRow();
-        row.insertCell().textContent = theme.id;
+        row.insertCell().textContent = index + 1;
 
         const thumbCell = row.insertCell();
         if (theme.thumbnailImageUrl) {

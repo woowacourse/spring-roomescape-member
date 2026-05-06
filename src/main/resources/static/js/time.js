@@ -24,9 +24,9 @@ function render(times) {
         return;
     }
 
-    times.forEach(time => {
+    times.forEach((time, index) => {
         const row = tbody.insertRow();
-        row.insertCell().textContent = time.id;
+        row.insertCell().textContent = index + 1;
         row.insertCell().textContent = time.startAt;
 
         const actions = row.insertCell();

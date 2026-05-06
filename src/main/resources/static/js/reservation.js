@@ -33,10 +33,10 @@ function render(reservations) {
         return;
     }
 
-    reservations.forEach(reservation => {
+    reservations.forEach((reservation, index) => {
         const row = tbody.insertRow();
 
-        row.insertCell().textContent = reservation.id;
+        row.insertCell().textContent = index + 1;
         row.insertCell().textContent = reservation.name;
         row.insertCell().textContent = reservation.theme ? reservation.theme.name : '-';
         row.insertCell().textContent = reservation.date;

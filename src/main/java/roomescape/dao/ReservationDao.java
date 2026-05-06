@@ -7,13 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -63,7 +61,7 @@ public class ReservationDao {
         String sql = """
                 SELECT COUNT(*)
                 FROM reservation
-                WHERE date = ? AND time_id = ? AND theme_id = ?
+                WHERE date = ? AND time_id = ? AND theme_id = ?;
                 """;
         Integer count = jdbcTemplate.queryForObject(
                 sql,
@@ -84,6 +82,7 @@ public class ReservationDao {
                 FROM reservation as r
                 INNER JOIN reservation_time as t ON r.time_id = t.id
                 INNER JOIN theme as th ON r.theme_id = th.id
+                ORDER BY r.date DESC, time_value ASC;
                 """;
 
         return jdbcTemplate.query(sql, reservationRowMapper);

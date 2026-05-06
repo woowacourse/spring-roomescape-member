@@ -3,13 +3,11 @@ package roomescape.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-
 import roomescape.domain.ReservationTime;
 
 @Repository
@@ -27,7 +25,7 @@ public class ReservationTimeDao {
     );
 
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("SELECT id, start_at FROM reservation_time", timeRowMapper);
+        return jdbcTemplate.query("SELECT id, start_at FROM reservation_time ORDER BY start_at;", timeRowMapper);
     }
 
     public Long save(ReservationTime time) {
