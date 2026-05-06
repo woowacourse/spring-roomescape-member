@@ -58,4 +58,12 @@ public class ThemeController {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/themes/best")
+    public ResponseEntity<List<ThemeResponseDto>> getBestThemes() {
+        List<ThemeResponseDto> body = themeService.getBestThemes().stream()
+                .map(ThemeResponseDto::from)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(body);
+    }
 }
