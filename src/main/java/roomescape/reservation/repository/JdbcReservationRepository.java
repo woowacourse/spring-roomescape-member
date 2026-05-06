@@ -1,5 +1,10 @@
 package roomescape.reservation.repository;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,11 +13,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
-
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.util.List;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -40,9 +40,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     };
 
     private final JdbcTemplate jdbcTemplate;
+    private final Clock clock;
 
-    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate, Clock clock) {
         this.jdbcTemplate = jdbcTemplate;
+        this.clock = clock;
     }
 
     @Override
@@ -107,7 +109,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "order by count(r.id) desc, t.id asc " +
                 "limit ?";
 
-        LocalDate endDate = LocalDate.now();
+        LocalDate endDate = LocalDate.now(clock);
         LocalDate startDate = endDate.minusDays(period);
 
         return jdbcTemplate.query(

@@ -1,5 +1,13 @@
 package roomescape.reservation.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,25 +18,24 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @JdbcTest
 class JdbcReservationRepositoryTest {
 
-    private ReservationRepository reservationRepository;
-    private Long setupTimeId;
-    private Long setupThemeId;
+    ReservationRepository reservationRepository;
+    Long setupTimeId;
+    Long setupThemeId;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        reservationRepository = new JdbcReservationRepository(jdbcTemplate);
+        Clock clock = Clock.fixed(
+                Instant.parse("2026-05-06T00:00:00Z"),
+                ZoneId.of("Asia/Seoul")
+        );
+
+        reservationRepository = new JdbcReservationRepository(jdbcTemplate, clock);
 
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         setupTimeId = jdbcTemplate.queryForObject("SELECT id FROM reservation_time WHERE start_at = ?", Long.class, "10:00");
@@ -108,7 +115,7 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("직전 period일 동안의 예약 수를 기준으로 상위 limit 개의 테마들을 조회한다.")
+    @DisplayName("2026년 5월 6일 기준, 직전 period일 동안의 예약 수를 기준으로 상위 limit 개의 테마들을 조회한다.")
     void findPopularThemesTest() {
         // given
         jdbcTemplate.update(
