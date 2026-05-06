@@ -49,7 +49,7 @@ public class ReservationService {
                 .get();
 
         Reservation reservation = new Reservation(
-                request.name(),
+                request.username(),
                 theme,
                 request.date(),
                 time

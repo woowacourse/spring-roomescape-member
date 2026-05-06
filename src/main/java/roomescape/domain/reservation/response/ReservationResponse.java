@@ -6,7 +6,7 @@ import roomescape.domain.theme.response.ThemeResponse;
 
 public record ReservationResponse(
         Long id,
-        String name,
+        String username,
         ThemeResponse theme,
         LocalDate date,
         ReservationTimeResponse time
@@ -15,7 +15,7 @@ public record ReservationResponse(
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getUsername(),
                 ThemeResponse.from(reservation.getTheme()),
                 reservation.getDate(),
                 ReservationTimeResponse.from(reservation.getTime())

@@ -20,7 +20,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     private static final String FIND_ALL_RESERVATIONS_WITH_TIME_QUERY = """
             SELECT
                 r.id AS reservation_id,
-                r.name AS reservation_name,
+                r.username AS username,
                 r.date,
                 t.id AS theme_id,
                 t.name AS theme_name,
@@ -68,7 +68,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         }
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("username", reservation.getUsername())
                 .addValue("theme_id", reservation.getTheme().getId())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId());
@@ -95,7 +95,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     private RowMapper<Reservation> reservationWithTimeRowMapper() {
         return (resultSet, rowNumber) -> new Reservation(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("reservation_name"),
+                resultSet.getString("username"),
                 new Theme(
                         resultSet.getLong("theme_id"),
                         resultSet.getString("theme_name"),

@@ -27,6 +27,7 @@ import roomescape.domain.reservation.request.ReservationCreateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
 import roomescape.domain.reservation.response.ReservationTimeResponse;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.repository.ThemeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -37,6 +38,9 @@ class ReservationServiceTest {
     @Mock
     ReservationTimeRepository reservationTimeRepository;
 
+    @Mock
+    ThemeRepository themeRepository;
+
     @InjectMocks
     ReservationService reservationService;
 
@@ -45,19 +49,20 @@ class ReservationServiceTest {
     void saveReservation() {
         // given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-
         when(reservationTimeRepository.findById(eq(1L)))
                 .thenReturn(Optional.of(reservationTime));
 
-        Long reservationId = 1L;
+        Theme theme = new Theme("theme1", "description1", "thumbnail url 1");
+        when(themeRepository.findById(eq(1L)))
+                .thenReturn(Optional.of(theme));
+
         Reservation reservation = new Reservation(
-                reservationId,
+                1L,
                 "브라운",
-                new Theme("theme1", "description1", "thumbnail url 1"),
+                theme,
                 LocalDate.of(2026, 4, 30),
                 reservationTime
         );
-
         when(reservationRepository.save(any(Reservation.class)))
                 .thenReturn(reservation);
 
@@ -72,8 +77,8 @@ class ReservationServiceTest {
         ReservationResponse response = reservationService.saveReservation(request);
 
         // then
-        assertThat(response.id()).isEqualTo(reservationId);
-        assertThat(response.name()).isEqualTo("브라운");
+        assertThat(response.id()).isEqualTo(1L);
+        assertThat(response.username()).isEqualTo("브라운");
         // TODO: response에 theme 추가 및 검증 추가
         assertThat(response.date()).isEqualTo(LocalDate.of(2026, 4, 30));
         assertThat(response.time().id()).isEqualTo(1L);
@@ -123,7 +128,7 @@ class ReservationServiceTest {
 
         // then
         assertThat(responses).hasSize(2)
-                .extracting("name", "date", "time") // TODO: theme 추가
+                .extracting("username", "date", "time") // TODO: theme 추가
                 .containsExactly(
                         tuple("브라운", LocalDate.of(2026, 4, 30), ReservationTimeResponse.from(time1)),
                         tuple("크루", LocalDate.of(2026, 4, 30), ReservationTimeResponse.from(time2))

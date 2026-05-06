@@ -7,7 +7,7 @@ public class Reservation {
 
     private Long id;
 
-    private final String name;
+    private final String username;
 
     private final Theme theme;
 
@@ -15,16 +15,16 @@ public class Reservation {
 
     private final ReservationTime time;
 
-    public Reservation(Long id, String name, Theme theme, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String username, Theme theme, LocalDate date, ReservationTime time) {
         this.id = id;
-        this.name = name;
+        this.username = username;
         this.theme = theme;
         this.date = date;
         this.time = time;
     }
 
-    public Reservation(String name, Theme theme, LocalDate date, ReservationTime time) {
-        this.name = name;
+    public Reservation(String username, Theme theme, LocalDate date, ReservationTime time) {
+        this.username = username;
         this.theme = theme;
         this.date = date;
         this.time = time;
@@ -38,8 +38,8 @@ public class Reservation {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
     public Theme getTheme() {
