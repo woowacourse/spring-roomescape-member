@@ -44,9 +44,10 @@
 
 ### 단계 2 - 사용자 예약
 
-- [ ] 사용자가 date와 theme를 선택하면 예약 가능한 시간 목록이 표시된다.
-    - [ ] 예약 가능한 시간이란, admin이 등록한 reservation time 중 해당 date + theme에 아직 reservation이 없는 time이다.
+- [x] 사용자가 date와 theme를 선택하면 예약 가능한 시간 목록이 표시된다.
+    - [x] 예약 가능한 시간이란, admin이 등록한 reservation time 중 해당 date + theme에 아직 reservation이 없는 time이다.
 - [ ] 사용자가 예약 가능한 시간을 선택하여 본인의 name으로 예약한다.
+    - [ ] 예약 가능한 시간이 아니라면 에러를 반환한다.
 - [ ] 같은 date·time이라도 theme가 다르면 각각 예약 가능하다.
 
 # 💻 기능 요구 사항 (admin)
