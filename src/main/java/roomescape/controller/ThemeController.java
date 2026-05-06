@@ -38,6 +38,12 @@ public class ThemeController {
         return themeService.create(request);
     }
 
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Theme find(@PathVariable Long id) {
+        return themeService.find(id);
+    }
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Theme> findAll() {
