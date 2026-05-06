@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,8 +35,8 @@ class ScheduleControllerTest {
                 3L,
                 date,
                 List.of(
-                        new AvailableTimeDto(1L, true),
-                        new AvailableTimeDto(2L, false)
+                        new AvailableTimeDto(1L, LocalTime.of(10, 0), true),
+                        new AvailableTimeDto(2L, LocalTime.of(11, 30), false)
                 )
         );
 
@@ -50,9 +51,10 @@ class ScheduleControllerTest {
                 .andExpect(jsonPath("$.themeId").value(3))
                 .andExpect(jsonPath("$.date").value("2026-05-01"))
                 .andExpect(jsonPath("$.schedules[0].timeId").value(1))
+                .andExpect(jsonPath("$.schedules[0].startAt").value("10:00:00"))
                 .andExpect(jsonPath("$.schedules[0].isAvailable").value(true))
                 .andExpect(jsonPath("$.schedules[1].timeId").value(2))
+                .andExpect(jsonPath("$.schedules[1].startAt").value("11:30:00"))
                 .andExpect(jsonPath("$.schedules[1].isAvailable").value(false));
     }
 }
-
