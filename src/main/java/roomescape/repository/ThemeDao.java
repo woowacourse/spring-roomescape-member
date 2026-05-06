@@ -1,7 +1,7 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Repository
-@RequiredArgsConstructor
 public class ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert insertExecutor;
     private final RowMapper<Theme> rowMapper = (rs, rowNum) -> Theme.create(
             rs.getLong("id"),
             rs.getString("name"),
@@ -25,18 +25,20 @@ public class ThemeDao {
             rs.getString("description")
     );
 
+    public ThemeDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.insertExecutor = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
+    }
+
     public Theme save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.name())
                 .addValue("thumbnail_url", theme.thumbnailUrl())
                 .addValue("description", theme.description());
 
-
-        SimpleJdbcInsert themeInsertExecutor = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
-
-        Number themeId = themeInsertExecutor.executeAndReturnKey(params);
+        Number themeId = insertExecutor.executeAndReturnKey(params);
 
         String sql = """
                 SELECT * FROM theme WHERE theme.id = ?

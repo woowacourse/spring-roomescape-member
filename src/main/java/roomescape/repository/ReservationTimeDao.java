@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,23 +14,27 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Repository
-@RequiredArgsConstructor
 public class ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert insertExecutor;
     private final RowMapper<ReservationTime> rowMapper = (rs, rowNum) ->
             ReservationTime.create(
                     rs.getLong("id"),
                     rs.getObject("start_at", LocalTime.class)
             );
 
+    public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.insertExecutor = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
+    }
+    
+
     public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.startAt());
-
-        SimpleJdbcInsert insertExecutor = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
 
         Number newId = insertExecutor.executeAndReturnKey(params);
 
