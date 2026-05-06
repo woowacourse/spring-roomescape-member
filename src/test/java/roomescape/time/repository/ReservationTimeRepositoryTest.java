@@ -14,7 +14,7 @@ import roomescape.time.domain.ReservationTime;
 
 @JdbcTest
 class ReservationTimeRepositoryTest {
-    private JdbcTemplateReservationTimeRepository jdbcTemplateReservationTimeRepository;
+    private JdbcReservationTimeRepository jdbcReservationTimeRepository;
     private Long timeId;
 
     @Autowired
@@ -22,11 +22,11 @@ class ReservationTimeRepositoryTest {
 
     @BeforeEach
     void setup() {
-        jdbcTemplateReservationTimeRepository = new JdbcTemplateReservationTimeRepository(jdbcTemplate);
+        jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
 
-        timeId = jdbcTemplateReservationTimeRepository.save(ReservationTime.create(
+        timeId = jdbcReservationTimeRepository.save(ReservationTime.create(
                 LocalTime.of(15, 40)));
-        jdbcTemplateReservationTimeRepository.save(ReservationTime.create(
+        jdbcReservationTimeRepository.save(ReservationTime.create(
                 LocalTime.of(16, 0)));
     }
 
@@ -34,33 +34,33 @@ class ReservationTimeRepositoryTest {
     @DisplayName("예약 시간을 추가한다.")
     void save() {
         //given & when
-        jdbcTemplateReservationTimeRepository.save(
+        jdbcReservationTimeRepository.save(
                 ReservationTime.create(LocalTime.of(12, 0)));
 
         //then
-        assertThat(jdbcTemplateReservationTimeRepository.findAll().size()).isEqualTo(3);
+        assertThat(jdbcReservationTimeRepository.findAll().size()).isEqualTo(3);
     }
 
     @Test
     @DisplayName("모든 예약 시간 정보를 조회한다.")
     void findAll() {
-        assertThat(jdbcTemplateReservationTimeRepository.findAll().size()).isEqualTo(2);
+        assertThat(jdbcReservationTimeRepository.findAll().size()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("예약을 삭제한다.")
     void delete() {
         //given & when
-        jdbcTemplateReservationTimeRepository.delete(timeId);
+        jdbcReservationTimeRepository.delete(timeId);
 
         //then
-        assertThat(jdbcTemplateReservationTimeRepository.findAll().size()).isEqualTo(1);
+        assertThat(jdbcReservationTimeRepository.findAll().size()).isEqualTo(1);
     }
 
     @Test
     @DisplayName("예약 시작 시간 값으로 예약 시간이 존재하는지 확인한다.")
     void existsByStartAt() {
-        assertThat(jdbcTemplateReservationTimeRepository.existsByStartAt(LocalTime.of(15, 40))).isTrue();
-        assertThat(jdbcTemplateReservationTimeRepository.existsByStartAt(LocalTime.of(12, 0))).isFalse();
+        assertThat(jdbcReservationTimeRepository.existsByStartAt(LocalTime.of(15, 40))).isTrue();
+        assertThat(jdbcReservationTimeRepository.existsByStartAt(LocalTime.of(12, 0))).isFalse();
     }
 }

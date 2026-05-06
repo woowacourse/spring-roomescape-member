@@ -23,7 +23,7 @@ import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.JdbcTemplateReservationTimeRepository;
+import roomescape.time.repository.JdbcReservationTimeRepository;
 
 @JdbcTest
 class ReservationRepositoryTest {
@@ -37,8 +37,8 @@ class ReservationRepositoryTest {
     private ReservationTime reservationTime2;
     private Theme theme;
 
-    private JdbcTemplateReservationRepository jdbcTemplateReservationRepository;
-    private JdbcTemplateReservationTimeRepository jdbcTemplateReservationTimeRepository;
+    private JdbcReservationRepository jdbcReservationRepository;
+    private JdbcReservationTimeRepository jdbcReservationTimeRepository;
     private JdbcReservationDateRepository jdbcReservationDateRepository;
     private JdbcThemeRepository jdbcThemeRepository;
 
@@ -47,15 +47,15 @@ class ReservationRepositoryTest {
 
     @BeforeEach
     void setup() {
-        jdbcTemplateReservationRepository = new JdbcTemplateReservationRepository(jdbcTemplate);
-        jdbcTemplateReservationTimeRepository = new JdbcTemplateReservationTimeRepository(jdbcTemplate);
+        jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate);
+        jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
         jdbcReservationDateRepository = new JdbcReservationDateRepository(jdbcTemplate);
         jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
 
-        Long time1Id = jdbcTemplateReservationTimeRepository.save(ReservationTime.create(LocalTime.of(12, 00)));
-        Long time2Id = jdbcTemplateReservationTimeRepository.save(ReservationTime.create(LocalTime.of(20, 00)));
-        reservationTime1 = jdbcTemplateReservationTimeRepository.findById(time1Id).get();
-        reservationTime2 = jdbcTemplateReservationTimeRepository.findById(time2Id).get();
+        Long time1Id = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(12, 00)));
+        Long time2Id = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(20, 00)));
+        reservationTime1 = jdbcReservationTimeRepository.findById(time1Id).get();
+        reservationTime2 = jdbcReservationTimeRepository.findById(time2Id).get();
 
         reservationDate1 = jdbcReservationDateRepository.save(ReservationDate.create(date1));
         reservationDate2 = jdbcReservationDateRepository.save(ReservationDate.create(date2));
@@ -72,7 +72,7 @@ class ReservationRepositoryTest {
         );
 
         // when
-        List<Reservation> actual = jdbcTemplateReservationRepository.findAll();
+        List<Reservation> actual = jdbcReservationRepository.findAll();
 
         // then
         assertThat(actual)
@@ -92,7 +92,7 @@ class ReservationRepositoryTest {
         Collections.sort(reservations, Comparator.comparing(Reservation::date).thenComparing(Reservation::status));
 
         // when
-        List<Reservation> actual = jdbcTemplateReservationRepository.findAllByNameOrderByDateAndTime(name);
+        List<Reservation> actual = jdbcReservationRepository.findAllByNameOrderByDateAndTime(name);
 
         // then
         Assertions.assertThat(actual)
@@ -107,10 +107,10 @@ class ReservationRepositoryTest {
         List<Reservation> emptyReservations = List.of();
 
         // when
-        jdbcTemplateReservationRepository.save(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme));
+        jdbcReservationRepository.save(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme));
 
         //then
-        assertThat(jdbcTemplateReservationRepository.findAll())
+        assertThat(jdbcReservationRepository.findAll())
                 .hasSize(emptyReservations.size() + 1);
     }
 
@@ -122,9 +122,9 @@ class ReservationRepositoryTest {
         LocalDate wrongDate = LocalDate.now().plusWeeks(3);
 
         // when & then
-        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeAndThemeId(reservationDate1.date(), reservationTime1.startAt(), theme.id()))
+        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(reservationDate1.date(), reservationTime1.startAt(), theme.id()))
                 .isTrue();
-        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeAndThemeId(wrongDate, reservationTime1.startAt(), theme.id()))
+        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(wrongDate, reservationTime1.startAt(), theme.id()))
                 .isFalse();
     }
 
@@ -137,7 +137,7 @@ class ReservationRepositoryTest {
         updateStatus(beforeReservation);
 
         // when
-        Reservation afterReservation = jdbcTemplateReservationRepository.findById(beforeReservation.id()).get();
+        Reservation afterReservation = jdbcReservationRepository.findById(beforeReservation.id()).get();
 
         // then
         Assertions.assertThat(afterReservation.status())
@@ -154,14 +154,14 @@ class ReservationRepositoryTest {
     }
 
     private Reservation save(Reservation reservation) {
-        Long savedId = jdbcTemplateReservationRepository.save(reservation);
+        Long savedId = jdbcReservationRepository.save(reservation);
         return Reservation.of(savedId, reservation.name(), reservation.date(), reservation.time(), reservation.theme(), reservation.status());
     }
 
 
     private void updateStatus(Reservation beforeReservation) {
         beforeReservation.updateStatus(ReservationStatus.CANCELED);
-        jdbcTemplateReservationRepository.updateStatus(beforeReservation);
+        jdbcReservationRepository.updateStatus(beforeReservation);
     }
 
 }

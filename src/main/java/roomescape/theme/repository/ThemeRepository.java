@@ -17,7 +17,5 @@ public interface ThemeRepository {
 
     boolean updateStatus(Theme theme);
 
-    //TODO: findPoupular ? 인기 테마 조회 추가
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit);
-
+    List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit);
 }

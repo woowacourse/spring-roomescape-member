@@ -11,13 +11,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
 
 @Repository
-public class JdbcTemplateReservationRepository implements ReservationRepository {
+public class JdbcReservationRepository implements ReservationRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNumber) -> Reservation.of(
@@ -35,7 +34,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
             ReservationStatus.valueOf(resultSet.getString("status"))
     );
 
-    public JdbcTemplateReservationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
                 .withTableName("reservation")

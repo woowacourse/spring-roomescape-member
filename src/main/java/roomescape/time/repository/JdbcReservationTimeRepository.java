@@ -15,7 +15,7 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
 
 @Repository
-public class JdbcTemplateReservationTimeRepository implements ReservationTimeRepository {
+public class JdbcReservationTimeRepository implements ReservationTimeRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNum) -> ReservationTime.of(
@@ -23,7 +23,7 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
             resultSet.getTime("start_at").toLocalTime()
     );
 
-    public JdbcTemplateReservationTimeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcReservationTimeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
                 .withTableName("reservation_time")

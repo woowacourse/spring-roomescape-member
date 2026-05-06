@@ -26,7 +26,6 @@ public class ThemeController {
         return ResponseEntity.ok(responseData);
     }
 
-    // TODO: 인기 조회 테마 추가
     @GetMapping("/themes/popular")
     public ResponseEntity<List<ThemeDetailDto>> getPopularThemes(@RequestParam int top){
         List<ThemeDetailDto> responseData = themeService.readPopularThemes(top).stream()
@@ -34,5 +33,4 @@ public class ThemeController {
                 .toList();
         return ResponseEntity.ok(responseData);
     }
-
 }
