@@ -42,14 +42,14 @@ public class ReservationTimeService {
         }
     }
 
+    public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long id) {
+        Map<ReservationTime, Boolean> reservationTimeBooleanMap = reservationTimeDao.findAvailableTimes(date, id);
+        return AvailableTimeResponse.toDto(reservationTimeBooleanMap);
+    }
+
     private void validateDelete(int deleteCount) {
         if (deleteCount == 0) {
             throw new ReservationTimeNotFoundException();
         }
-    }
-
-    public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long id) {
-        Map<ReservationTime, Boolean> reservationTimeBooleanMap = reservationTimeDao.findAvailableTimes(date, id);
-        return AvailableTimeResponse.toDto(reservationTimeBooleanMap);
     }
 }

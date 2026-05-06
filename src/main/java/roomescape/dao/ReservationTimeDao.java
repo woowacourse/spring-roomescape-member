@@ -24,32 +24,6 @@ public class ReservationTimeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
-        return (resultSet, rowNum) -> {
-            ReservationTime reservationTime = new ReservationTime(
-                    resultSet.getLong("id"),
-                    LocalTime.parse(resultSet.getString("start_at"))
-            );
-            return reservationTime;
-        };
-    }
-
-    private ResultSetExtractor<Map<ReservationTime, Boolean>> getMapResultSetExtractor() {
-        return (ResultSet rs) -> {
-            Map<ReservationTime, Boolean> results = new LinkedHashMap<>();
-
-            while (rs.next()) {
-                ReservationTime reservationTime = new ReservationTime(
-                        rs.getLong("time_id"),
-                        LocalTime.parse(rs.getString("start_at"))
-                );
-                boolean isAvailable = rs.getBoolean("available");
-                results.put(reservationTime, isAvailable);
-            }
-            return results;
-        };
-    }
-
     public List<ReservationTime> findAllReservationTimes() {
         String sql = "select id, start_at from reservation_time";
         List<ReservationTime> reservationTimeList = jdbcTemplate.query(
@@ -96,5 +70,31 @@ public class ReservationTimeDao {
         Map<ReservationTime, Boolean> reservationTimeBooleanMap = jdbcTemplate.query(sql, getMapResultSetExtractor(),
                 id, date);
         return reservationTimeBooleanMap;
+    }
+
+    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
+        return (resultSet, rowNum) -> {
+            ReservationTime reservationTime = new ReservationTime(
+                    resultSet.getLong("id"),
+                    LocalTime.parse(resultSet.getString("start_at"))
+            );
+            return reservationTime;
+        };
+    }
+
+    private ResultSetExtractor<Map<ReservationTime, Boolean>> getMapResultSetExtractor() {
+        return (ResultSet rs) -> {
+            Map<ReservationTime, Boolean> results = new LinkedHashMap<>();
+
+            while (rs.next()) {
+                ReservationTime reservationTime = new ReservationTime(
+                        rs.getLong("time_id"),
+                        LocalTime.parse(rs.getString("start_at"))
+                );
+                boolean isAvailable = rs.getBoolean("available");
+                results.put(reservationTime, isAvailable);
+            }
+            return results;
+        };
     }
 }

@@ -21,22 +21,6 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<Reservation> reservationRowMapper() {
-        return (resultSet, rowNum) -> {
-            Reservation newReservation = new Reservation(
-                    resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
-                    LocalDate.parse(resultSet.getString("date")),
-                    new ReservationTime(
-                            resultSet.getLong("time_id"),
-                            LocalTime.parse(resultSet.getString("start_at"))
-                    ),
-                    resultSet.getLong("theme_id")
-            );
-            return newReservation;
-        };
-    }
-
     public List<Reservation> findAllReservations() {
         String sql = """
                 SELECT
@@ -97,5 +81,21 @@ public class ReservationDao {
 
     public int delete(Long id) {
         return jdbcTemplate.update("delete from reservation where id = ?", id);
+    }
+
+    private RowMapper<Reservation> reservationRowMapper() {
+        return (resultSet, rowNum) -> {
+            Reservation newReservation = new Reservation(
+                    resultSet.getLong("reservation_id"),
+                    resultSet.getString("name"),
+                    LocalDate.parse(resultSet.getString("date")),
+                    new ReservationTime(
+                            resultSet.getLong("time_id"),
+                            LocalTime.parse(resultSet.getString("start_at"))
+                    ),
+                    resultSet.getLong("theme_id")
+            );
+            return newReservation;
+        };
     }
 }
