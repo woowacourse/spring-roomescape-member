@@ -2,6 +2,7 @@ package roomescape.domain.theme.repository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,7 +46,7 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAllThemes() {
-        return List.of();
+        return Collections.unmodifiableList(themes);
     }
 
     @Override

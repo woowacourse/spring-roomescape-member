@@ -50,19 +50,19 @@ class ThemeServiceTest {
         @Test
         void 성공() {
             // 1. 테마 15개 생성 및 저장
-            List<Theme> themes = IntStream.rangeClosed(1, 15).mapToObj(i -> {
-                return Theme.create("테마" + i, "설명" + i, "https://image.com/" + i + ".png");
-            }).collect(Collectors.toList());
+            List<Theme> themes = IntStream.rangeClosed(1, 15)
+                .mapToObj(i ->
+                    Theme.create("테마" + i, "설명" + i, "https://image.com/" + i + ".png"))
+                .toList();
 
             themeRepository.saveAllThemes(themes);
 
-            // 2. 예약 데이터 대량 생성 (총 100개 이상의 예약)
-            // 상위 1~10번 테마에 예약이 더 많이 몰리도록 설정
             List<Reservation> reservations = new ArrayList<>();
-            LocalDate targetDate = LocalDate.of(2026, 5, 5); // 조회 범위 내 날짜
+            LocalDate targetDate = LocalDate.of(2026, 5, 5);
 
-            for (int i = 0; i < themes.size(); i++) {
-                Theme theme = themes.get(i);
+            List<Theme> savedThemes = themeRepository.findAllThemes();
+            for (int i = 0; i < savedThemes.size(); i++) {
+                Theme theme = savedThemes.get(i);
                 // 테마 번호가 낮을수록 더 많은 예약을 생성 (인기 차등화)
                 int reservationCount = (15 - i) * 5;
 
@@ -75,7 +75,6 @@ class ThemeServiceTest {
                     ));
                 }
             }
-
             themeRepository.saveAllReservations(reservations);
 
             // when
