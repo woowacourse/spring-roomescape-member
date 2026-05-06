@@ -110,6 +110,29 @@
             align-items: start;
         }
 
+        .popular-section {
+            margin-bottom: 20px;
+        }
+
+        .popular-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .popular-range {
+            flex: none;
+            padding: 6px 10px;
+            border: 1px solid rgba(159, 47, 36, 0.18);
+            border-radius: 999px;
+            background: rgba(242, 215, 198, 0.62);
+            color: var(--accent-strong);
+            font-size: 0.82rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
         .section {
             border: 1px solid var(--line);
             border-radius: 10px;
@@ -153,6 +176,87 @@
             margin: 6px 0 0;
             color: var(--muted);
             line-height: 1.55;
+        }
+
+        .popular-list {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 10px;
+            padding: 18px;
+            position: relative;
+        }
+
+        .popular-card {
+            min-height: 152px;
+            padding: 14px;
+            border: 1px solid rgba(215, 198, 174, 0.9);
+            border-radius: 10px;
+            background:
+                    radial-gradient(circle at top right, rgba(159, 47, 36, 0.12), transparent 34%),
+                    #fff8ee;
+            color: var(--text);
+            text-align: left;
+            cursor: pointer;
+            transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease, background 160ms ease;
+            animation: itemIn 220ms ease both;
+        }
+
+        .popular-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .popular-card.selected {
+            border-color: var(--accent);
+            background:
+                    radial-gradient(circle at top right, rgba(159, 47, 36, 0.18), transparent 38%),
+                    var(--accent-soft);
+            box-shadow: inset 0 0 0 1px rgba(159, 47, 36, 0.18);
+        }
+
+        .popular-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .popular-rank {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 28px;
+            border-radius: 999px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+
+        .popular-count {
+            color: var(--accent-strong);
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+
+        .popular-card strong {
+            display: block;
+            font-size: 0.98rem;
+            line-height: 1.38;
+        }
+
+        .popular-card p {
+            display: -webkit-box;
+            margin: 8px 0 0;
+            color: var(--muted);
+            line-height: 1.5;
+            font-size: 0.88rem;
+            overflow: hidden;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
 
         .theme-list {
@@ -457,6 +561,25 @@
             .time-grid {
                 grid-template-columns: 1fr;
             }
+
+            .popular-header {
+                display: block;
+            }
+
+            .popular-range {
+                display: inline-flex;
+                margin-top: 12px;
+            }
+
+            .popular-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (min-width: 821px) and (max-width: 1040px) {
+            .popular-list {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
         }
     </style>
 </head>
@@ -471,6 +594,24 @@
             <span id="statusMessage">테마 목록을 불러오는 중입니다.</span>
         </div>
     </header>
+
+    <section class="section popular-section">
+        <div class="section-header popular-header">
+            <div>
+                <h2 class="section-title">최근 인기 테마</h2>
+                <p class="section-copy">지난 7일 동안 예약이 많았던 테마를 빠르게 선택할 수 있습니다.</p>
+            </div>
+            <span id="popularRangeLabel" class="popular-range">집계 기간 계산 중</span>
+        </div>
+        <div id="popularThemeList" class="popular-list" aria-live="polite">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+        </div>
+        <p id="popularThemeEmpty" class="empty hidden">최근 예약된 인기 테마가 없습니다.</p>
+    </section>
 
     <section class="layout">
         <section class="section">
@@ -539,10 +680,14 @@
 <script>
     const state = {
         themes: [],
+        popularThemes: [],
         selectedThemeId: null,
         selectedTimeId: null
     };
 
+    const popularThemeList = document.getElementById("popularThemeList");
+    const popularThemeEmpty = document.getElementById("popularThemeEmpty");
+    const popularRangeLabel = document.getElementById("popularRangeLabel");
     const themeList = document.getElementById("themeList");
     const themeEmpty = document.getElementById("themeEmpty");
     const reservationDateInput = document.getElementById("reservationDate");
@@ -559,9 +704,10 @@
     const statusMessage = document.getElementById("statusMessage");
 
     document.addEventListener("DOMContentLoaded", () => {
-        reservationDateInput.value = new Date().toISOString().slice(0, 10);
+        reservationDateInput.value = formatDate(new Date());
         bindEvents();
         loadThemes();
+        loadPopularThemes();
     });
 
     function bindEvents() {
@@ -601,6 +747,73 @@
         }
     }
 
+    async function loadPopularThemes() {
+        const range = getPopularDateRange();
+        popularRangeLabel.textContent = `${range.from} ~ ${range.to}`;
+        renderPopularLoading();
+
+        const searchParams = new URLSearchParams({
+            from: range.from,
+            to: range.to
+        });
+
+        try {
+            const response = await fetch(`/api/v1/themes?${searchParams.toString()}`);
+            if (!response.ok) {
+                throw new Error("인기 테마를 불러오지 못했습니다.");
+            }
+
+            state.popularThemes = await response.json();
+            renderPopularThemes();
+        } catch (error) {
+            popularThemeList.innerHTML = "";
+            popularThemeEmpty.textContent = error.message;
+            popularThemeEmpty.classList.remove("hidden");
+        }
+    }
+
+    function renderPopularLoading() {
+        popularThemeEmpty.classList.add("hidden");
+        popularThemeList.innerHTML = "";
+
+        for (let index = 0; index < 5; index += 1) {
+            const skeleton = document.createElement("div");
+            skeleton.className = "skeleton";
+            popularThemeList.appendChild(skeleton);
+        }
+    }
+
+    function renderPopularThemes() {
+        popularThemeList.innerHTML = "";
+
+        if (state.popularThemes.length === 0) {
+            popularThemeEmpty.textContent = "최근 예약된 인기 테마가 없습니다.";
+            popularThemeEmpty.classList.remove("hidden");
+            return;
+        }
+
+        popularThemeEmpty.classList.add("hidden");
+
+        state.popularThemes.forEach((theme) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "popular-card";
+            button.dataset.themeId = String(theme.id);
+            button.innerHTML = `
+                <div class="popular-card-head">
+                    <span class="popular-rank">${theme.rank}위</span>
+                    <span class="popular-count">예약 ${theme.reservationCount}건</span>
+                </div>
+                <strong>${escapeHtml(theme.name)}</strong>
+                <p>${escapeHtml(theme.description)}</p>
+            `;
+            button.addEventListener("click", () => selectTheme(theme.id));
+            popularThemeList.appendChild(button);
+        });
+
+        syncSelectedPopularCard();
+    }
+
     function renderThemes() {
         themeList.innerHTML = "";
 
@@ -634,8 +847,9 @@
         selectedAvailabilityLabel.textContent = "-";
         availabilityStat.textContent = "조회 전";
         syncSelectedThemeCard();
+        syncSelectedPopularCard();
 
-        const theme = state.themes.find((item) => item.id === themeId);
+        const theme = findThemeById(themeId);
         selectedThemeLabel.textContent = theme ? theme.name : "선택 전";
         setStatus(`"${theme ? theme.name : "테마"}"을 선택했습니다.`, "neutral");
     }
@@ -644,6 +858,17 @@
         themeList.querySelectorAll(".theme-card").forEach((card) => {
             card.classList.toggle("selected", Number(card.dataset.themeId) === state.selectedThemeId);
         });
+    }
+
+    function syncSelectedPopularCard() {
+        popularThemeList.querySelectorAll(".popular-card").forEach((card) => {
+            card.classList.toggle("selected", Number(card.dataset.themeId) === state.selectedThemeId);
+        });
+    }
+
+    function findThemeById(themeId) {
+        return state.themes.find((theme) => theme.id === themeId)
+            || state.popularThemes.find((theme) => theme.id === themeId);
     }
 
     async function loadAvailableTimes() {
@@ -803,6 +1028,7 @@
             reservationNameInput.value = "";
             setStatus(`예약이 완료되었습니다. 예약 번호는 ${createdReservation.id}입니다.`, "success");
             await loadAvailableTimes();
+            await loadPopularThemes();
         } catch (error) {
             reserveButton.disabled = !state.selectedTimeId;
             setStatus(error.message, "error");
@@ -816,6 +1042,27 @@
         requestAnimationFrame(() => {
             statusCard.classList.add("bump");
         });
+    }
+
+    function getPopularDateRange() {
+        const today = new Date();
+        const from = new Date(today);
+        const to = new Date(today);
+
+        from.setDate(today.getDate() - 7);
+        to.setDate(today.getDate() - 1);
+
+        return {
+            from: formatDate(from),
+            to: formatDate(to)
+        };
+    }
+
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
     }
 
     function escapeHtml(value) {
