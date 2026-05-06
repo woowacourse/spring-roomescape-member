@@ -48,6 +48,12 @@ public class ReservationService {
         Theme theme = themeRepository.findById(request.themeId());
 
         LocalDateTime startAt = LocalDateTime.of(LocalDate.parse(request.date()), LocalTime.parse(request.time()));
+
+        // 🚨 과거 날짜/시간 예약 방지 로직 추가
+        if (startAt.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("과거 날짜/시간에는 예약할 수 없습니다.");
+        }
+
         Schedule schedule = new Schedule(startAt, theme);
         Long scheduleId = scheduleRepository.create(schedule);
         Schedule savedSchedule = new Schedule(scheduleId, startAt, theme);

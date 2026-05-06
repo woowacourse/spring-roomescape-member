@@ -62,6 +62,10 @@ public class Schedule {
             throw new IllegalArgumentException("예약 시작 시간은 필수입니다.");
         }
 
+        if (startAt.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("과거 날짜/시간에는 스케줄을 생성할 수 없습니다.");
+        }
+
         LocalTime startTime = startAt.toLocalTime();
 
         if (startTime.isBefore(OPENING_TIME)) {

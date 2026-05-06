@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         String errorMessage = ex.getBindingResult()
                 .getAllErrors()
                 .stream()
@@ -22,20 +22,20 @@ public class GlobalExceptionHandler {
 
         log.warn("검증 실패 발생: {}", errorMessage);
 
-        return ResponseEntity.badRequest().body(errorMessage);
+        return ResponseEntity.badRequest().body(new ErrorResponse(errorMessage));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleBusinessExceptions(IllegalArgumentException ex) {
+    public ResponseEntity<ErrorResponse> handleBusinessExceptions(IllegalArgumentException ex) {
         log.warn("비즈니스 로직 에러: {}", ex.getMessage());
 
-        return ResponseEntity.badRequest().body(ex.getMessage());
+        return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleAllExceptions(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
         log.error("예상치 못한 서버 내부 에러 발생!", ex);
 
-        return ResponseEntity.internalServerError().body("서버 내부에서 에러가 발생했습니다. 관리자에게 문의하세요.");
+        return ResponseEntity.internalServerError().body(new ErrorResponse("서버 내부에서 에러가 발생했습니다. 관리자에게 문의하세요."));
     }
 }
