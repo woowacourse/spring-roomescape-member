@@ -63,7 +63,7 @@ public class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
