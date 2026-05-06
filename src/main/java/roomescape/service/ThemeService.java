@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.Theme;
-import roomescape.global.auth.Accessor;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.command.ThemeRegisterCommand;
 import roomescape.service.result.ThemeRegisterResult;
@@ -15,8 +14,7 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
 
-    public ThemeRegisterResult register(Accessor accessor, ThemeRegisterCommand command) {
-        accessor.validateAdmin();
+    public ThemeRegisterResult register(ThemeRegisterCommand command) {
         validateDuplicationName(command);
 
         Theme theme = new Theme(command.name(), command.description(), command.thumbnailImageUrl());
@@ -24,14 +22,12 @@ public class ThemeService {
         return ThemeRegisterResult.from(themeRepository.save(theme));
     }
 
-
-    public void remove(Accessor accessor, long id) {
-        accessor.validateAdmin();
+    public void remove(long id) {
         themeRepository.findById(id)
                 .ifPresent(existingTheme -> {
-                        existingTheme.deactivate();
-                        themeRepository.update(existingTheme);
-                    });
+                    existingTheme.deactivate();
+                    themeRepository.update(existingTheme);
+                });
     }
 
     private void validateDuplicationName(ThemeRegisterCommand command) {

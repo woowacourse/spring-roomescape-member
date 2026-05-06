@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import roomescape.global.auth.Accessor;
 import roomescape.service.ReservationService;
 import roomescape.service.command.ReservationCommand;
 
@@ -24,8 +23,6 @@ class ReservationServiceIntTest extends BaseIntegrationTest {
     private ReservationService reservationService;
     @Autowired
     private ReservationDataSource reservationDataSource;
-
-    private Accessor admin = new Accessor("ADMIN");
 
     @BeforeEach
     void setUp() {
@@ -52,7 +49,7 @@ class ReservationServiceIntTest extends BaseIntegrationTest {
             for (int i = 0; i < threadCount; i++) {
                 executorService.execute(() -> {
                     try {
-                        reservationService.reserve(admin, command);
+                        reservationService.reserve(command);
                     } catch (DataIntegrityViolationException e) {
                         errorCount.incrementAndGet();
                     } finally {
@@ -64,7 +61,7 @@ class ReservationServiceIntTest extends BaseIntegrationTest {
         latch.await();
 
         // then: DB에 예약이 딱 하나만 있어야 하고, DataIntergrityViolation 예외가 한 번 발생해야 됨.
-        assertThat(reservationService.getAllReservations(admin)).hasSize(1);
+        assertThat(reservationService.getAllReservations()).hasSize(1);
         assertThat(errorCount.get()).isEqualTo(1);
     }
 }

@@ -1,6 +1,6 @@
 package roomescape.repository.jdbc;
 
-import static roomescape.repository.jdbc.ThemeEntityMapper.RESERVATION_TIME_MAPPER;
+import static roomescape.repository.jdbc.ThemeEntityMapper.THEME_MAPPER;
 
 import java.sql.PreparedStatement;
 import java.util.Optional;
@@ -68,7 +68,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     public Optional<Theme> findById(long id) {
         try {
             String sql = "SELECT * FROM theme WHERE id = ?";
-            Theme theme = jdbcTemplate.queryForObject(sql, RESERVATION_TIME_MAPPER, id);
+            Theme theme = jdbcTemplate.queryForObject(sql, THEME_MAPPER, id);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

@@ -16,7 +16,6 @@ import roomescape.domain.Theme;
 import roomescape.domain.fixture.ReservationFixture;
 import roomescape.domain.fixture.ReservationTimeFixture;
 import roomescape.domain.fixture.ThemeFixture;
-import roomescape.global.auth.Accessor;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -33,8 +32,6 @@ class ReservationServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
     private ReservationService reservationService;
-
-    private Accessor admin = new Accessor("ADMIN");
 
     @BeforeEach
     void setUp() {
@@ -53,7 +50,7 @@ class ReservationServiceTest {
         ReservationCommand command = new ReservationCommand("이프", reservationDate, theme.getId(), time.getId());
 
         // when: 예약 진행
-        ReservationResult result = reservationService.reserve(admin, command);
+        ReservationResult result = reservationService.reserve(command);
 
         // then: 등록된 예약 정보가 입력값과 일치함
         ReservationTimeResult timeResult = ReservationTimeResult.from(time);
@@ -73,7 +70,7 @@ class ReservationServiceTest {
         ReservationCommand command = new ReservationCommand("이프", LocalDate.now().plusDays(1), 1L, 1L);
 
         // when & then: EntityNotFoundException 발생 확인
-        assertThatThrownBy(() -> reservationService.reserve(admin, command))
+        assertThatThrownBy(() -> reservationService.reserve(command))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("존재하지 않는 테마 정보입니다.");
     }
@@ -85,7 +82,7 @@ class ReservationServiceTest {
         themeRepository.save(ThemeFixture.createDefaultTheme());
 
         // when & then: EntityNotFoundException 발생 확인
-        assertThatThrownBy(() -> reservationService.reserve(admin, command))
+        assertThatThrownBy(() -> reservationService.reserve(command))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("존재하지 않는 시간 정보입니다.");
     }
@@ -104,7 +101,7 @@ class ReservationServiceTest {
         ReservationCommand command = new ReservationCommand("새예약자", date, 1L, 1L);
 
         // when & then: DuplicateEntityException 발생 확인
-        assertThatThrownBy(() -> reservationService.reserve(admin, command))
+        assertThatThrownBy(() -> reservationService.reserve(command))
                 .isInstanceOf(DuplicateEntityException.class)
                 .hasMessageContaining("이미 예약 된 날짜입니다.");
     }
@@ -116,7 +113,7 @@ class ReservationServiceTest {
         reservationRepository.save(ReservationFixture.createDefaultReservationWithName("바니"));
 
         // when: 전체 조회를 요청함
-        List<ReservationResult> results = reservationService.getAllReservations(admin);
+        List<ReservationResult> results = reservationService.getAllReservations();
 
         // then: 2개의 결과가 반환됨
         assertThat(results).hasSize(2);
@@ -128,9 +125,9 @@ class ReservationServiceTest {
         Reservation saved = reservationRepository.save(ReservationFixture.createDefaultReservationWithName("웨지"));
 
         // when: 삭제 요청
-        reservationService.cancelReservation(admin, saved.getId());
+        reservationService.cancelReservation(saved.getId());
 
         // then: 조회 시 목록이 비어있음
-        assertThat(reservationService.getAllReservations(admin)).isEmpty();
+        assertThat(reservationService.getAllReservations()).isEmpty();
     }
 }

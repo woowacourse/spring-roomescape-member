@@ -9,7 +9,6 @@ import roomescape.domain.EntityNotFoundException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.global.auth.Accessor;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -26,9 +25,7 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
 
     @Transactional
-    public ReservationResult reserve(Accessor accessor, ReservationCommand command) {
-        accessor.validateAdmin();
-
+    public ReservationResult reserve(ReservationCommand command) {
         Theme theme = findThemeWithThrow(command);
         ReservationTime time = findTimeWithThrow(command);
         validateAlreadyReservation(command, time);
@@ -40,13 +37,11 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancelReservation(Accessor accessor, long id) {
-        accessor.validateAdmin();
+    public void cancelReservation(long id) {
         reservationRepository.delete(id);
     }
 
-    public List<ReservationResult> getAllReservations(Accessor accessor) {
-        accessor.validateAdmin();
+    public List<ReservationResult> getAllReservations() {
         return reservationRepository.findAll()
                 .stream()
                 .map(ReservationResult::from)
