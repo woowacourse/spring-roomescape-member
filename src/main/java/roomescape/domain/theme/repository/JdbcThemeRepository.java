@@ -1,5 +1,7 @@
 package roomescape.domain.theme.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -30,14 +32,8 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAllThemes() {
         String sql = "SELECT id, name, description, image_url FROM theme";
-        return jdbcTemplate.query(
-            sql,
-            (resultSet, rowNum) -> Theme.reconstruct(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("image_url")
-            ));
+
+        return jdbcTemplate.query(sql, this::mapTheme);
     }
 
     @Override
@@ -63,17 +59,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     public Optional<Theme> findThemeById(Long id) {
         final String sql = "SELECT * FROM theme WHERE id = :id";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+
         try {
-            Theme theme = jdbcTemplate.queryForObject(
-                sql,
-                parameters,
-                (resultSet, rowNum) -> Theme.reconstruct(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("description"),
-                    resultSet.getString("image_url")
-                )
-            );
+            Theme theme = jdbcTemplate.queryForObject(sql, parameters, this::mapTheme);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -97,14 +85,15 @@ public class JdbcThemeRepository implements ThemeRepository {
             "endDate", endDate,
             "limit", limit
         ));
-        return jdbcTemplate.query(
-            sql,
-            parameters,
-            (resultSet, rowNum) -> Theme.reconstruct(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("image_url")
-            ));
+        return jdbcTemplate.query(sql, parameters, this::mapTheme);
+    }
+
+    private Theme mapTheme(ResultSet resultSet, int rowNum) throws SQLException {
+        return Theme.reconstruct(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("image_url")
+        );
     }
 }
