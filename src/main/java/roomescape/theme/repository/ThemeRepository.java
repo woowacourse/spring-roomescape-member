@@ -60,6 +60,17 @@ public class ThemeRepository {
         jdbcTemplate.update(sql, id);
     }
 
+    public Theme findById(Long id) {
+        String sql = "SELECT id, name, description, image_url, required_time FROM theme WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("image_url"),
+                rs.getObject("required_time", LocalTime.class)
+        ), id);
+    }
+
     public List<PopularThemeResponse> findPopularThemes(String sort, int limit, int days) {
         String orderByColumn = "reservation_count";
         if (!"reservations".equals(sort)) {
