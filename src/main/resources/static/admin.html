@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roomescape Admin - 케모</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .active-tab { border-bottom: 4px solid #4f46e5; color: #4f46e5; font-weight: bold; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+<header class="bg-slate-800 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <span class="text-2xl">🔐</span>
+            <h1 class="text-xl font-bold tracking-tight">Roomescape Admin Panel</h1>
+        </div>
+        <a href="index.html" class="text-sm font-medium bg-slate-700 px-4 py-2 rounded hover:bg-slate-600 transition">사용자 페이지로 이동 ➔</a>
+    </div>
+</header>
+
+<nav class="bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 flex space-x-8">
+        <button onclick="switchTab('theme')" id="tab-theme" class="py-4 px-2 font-medium active-tab transition">테마 관리</button>
+        <button onclick="switchTab('time')" id="tab-time" class="py-4 px-2 font-medium text-slate-500 hover:text-slate-800 transition">시간 관리</button>
+        <button onclick="switchTab('res')" id="tab-res" class="py-4 px-2 font-medium text-slate-500 hover:text-slate-800 transition">전체 예약 관리</button>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto p-6 mt-4">
+
+    <!-- [1] Theme Management -->
+    <section id="section-theme" class="space-y-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h3 class="text-lg font-bold mb-4 text-indigo-700">🆕 새 테마 등록</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input type="text" id="t-name" placeholder="테마명 (예: 우테코 탈출)" class="border border-slate-300 p-2 rounded focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="t-desc" placeholder="테마 설명" class="border border-slate-300 p-2 rounded focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="t-thumb" placeholder="이미지 URL (https://...)" class="border border-slate-300 p-2 rounded focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <button onclick="addTheme()" class="mt-4 bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700 transition">테마 추가하기</button>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-slate-100 border-b">
+                <tr><th class="p-4">ID</th><th class="p-4">테마명</th><th class="p-4">설명</th><th class="p-4">관리</th></tr>
+                </thead>
+                <tbody id="admin-theme-list" class="divide-y divide-slate-100"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- [2] Time Management -->
+    <section id="section-time" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 max-w-2xl">
+            <h3 class="text-lg font-bold mb-4 text-indigo-700">🆕 예약 시간 추가</h3>
+            <div class="flex space-x-4">
+                <!-- step="1" 제거: 사용자는 '초'를 선택하지 않고 시:분만 선택하게 됨 -->
+                <input type="time" id="time-at" class="border border-slate-300 p-2 rounded w-48 focus:ring-indigo-500">
+                <button onclick="addTime()" class="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700 transition">시간 추가하기</button>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden max-w-2xl">
+            <table class="w-full text-left">
+                <thead class="bg-slate-100 border-b">
+                <tr><th class="p-4">ID</th><th class="p-4">시작 시간</th><th class="p-4">관리</th></tr>
+                </thead>
+                <tbody id="admin-time-list" class="divide-y divide-slate-100"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- [3] Reservation Management -->
+    <section id="section-res" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h3 class="text-lg font-bold mb-4 text-rose-600">➕ 관리자 강제 예약 생성</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <select id="res-theme" class="border border-slate-300 p-2 rounded focus:ring-rose-500"></select>
+                <select id="res-time" class="border border-slate-300 p-2 rounded focus:ring-rose-500"></select>
+                <input type="date" id="res-date" class="border border-slate-300 p-2 rounded focus:ring-rose-500">
+                <input type="text" id="res-name" placeholder="예약자명 지정" class="border border-slate-300 p-2 rounded focus:ring-rose-500">
+            </div>
+            <button onclick="addForceReservation()" class="mt-4 bg-rose-600 text-white px-6 py-2 rounded font-bold hover:bg-rose-700 transition">강제 예약 확정하기</button>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-slate-100 border-b">
+                <tr><th class="p-4">날짜</th><th class="p-4">테마</th><th class="p-4">시간</th><th class="p-4">예약자</th><th class="p-4">관리</th></tr>
+                </thead>
+                <tbody id="admin-res-list" class="divide-y divide-slate-100"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<script>
+    const API_BASE_URL = '';
+
+    function switchTab(type) {
+        ['theme', 'time', 'res'].forEach(t => {
+            document.getElementById(`section-${t}`).classList.add('hidden');
+            const tab = document.getElementById(`tab-${t}`);
+            tab.classList.remove('active-tab', 'font-bold');
+            tab.classList.add('text-slate-500');
+        });
+        const activeSection = document.getElementById(`section-${type}`);
+        const activeTab = document.getElementById(`tab-${type}`);
+
+        activeSection.classList.remove('hidden');
+        activeTab.classList.remove('text-slate-500');
+        activeTab.classList.add('active-tab', 'font-bold');
+
+        if(type === 'res') loadSelectionData();
+    }
+
+    async function loadThemes() {
+        const res = await fetch(`${API_BASE_URL}/themes`);
+        const data = await res.json();
+        document.getElementById('admin-theme-list').innerHTML = data.map(t => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-4 font-mono text-slate-400">${t.id}</td>
+                    <td class="p-4 font-bold text-slate-800">${t.name}</td>
+                    <td class="p-4 text-slate-500">${t.description}</td>
+                    <td class="p-4"><button onclick="deleteTheme(${t.id})" class="text-red-500 font-bold hover:text-red-700 transition">삭제</button></td>
+                </tr>
+            `).join('');
+    }
+
+    async function addTheme() {
+        const name = document.getElementById('t-name').value;
+        const description = document.getElementById('t-desc').value;
+        const thumbnail = document.getElementById('t-thumb').value;
+
+        if(!name || !description || !thumbnail) {
+            alert("모든 필드를 입력해주세요."); return;
+        }
+
+        await fetch(`${API_BASE_URL}/admin/themes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, description, thumbnail })
+        });
+
+        document.getElementById('t-name').value = '';
+        document.getElementById('t-desc').value = '';
+        document.getElementById('t-thumb').value = '';
+        loadThemes();
+    }
+
+    async function deleteTheme(id) {
+        if(!confirm('🚨 정말 삭제하시겠습니까? 연결된 예약이 모두 삭제됩니다!')) return;
+        await fetch(`${API_BASE_URL}/admin/themes/${id}`, { method: 'DELETE' });
+        loadThemes();
+    }
+
+    async function loadTimes() {
+        const res = await fetch(`${API_BASE_URL}/times`);
+        const data = await res.json();
+        document.getElementById('admin-time-list').innerHTML = data.map(t => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-4 font-mono text-slate-400">${t.id}</td>
+                    <td class="p-4 font-medium">${t.startAt.substring(0, 5)}</td> <!-- 화면에도 깔끔하게 HH:mm만 출력 -->
+                    <td class="p-4"><button onclick="deleteTime(${t.id})" class="text-red-500 font-bold hover:text-red-700 transition">삭제</button></td>
+                </tr>
+            `).join('');
+    }
+
+    async function addTime() {
+        let startAt = document.getElementById('time-at').value; // '14:30' 형태로 들어옴
+        if(!startAt) return alert("시간을 선택해주세요.");
+
+        // ⭐ 백엔드 명세에 맞추기 위해 강제로 ':00'을 붙여줌
+        if (startAt.length === 5) {
+            startAt += ":00";
+        }
+
+        await fetch(`${API_BASE_URL}/admin/times`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ startAt })
+        });
+        loadTimes();
+    }
+
+    async function deleteTime(id) {
+        const res = await fetch(`${API_BASE_URL}/admin/times/${id}`, { method: 'DELETE' });
+        if (res.status === 409) {
+            alert('🚨 예약이 걸려있는 시간은 삭제할 수 없습니다!');
+        } else {
+            loadTimes();
+        }
+    }
+
+    async function loadReservations() {
+        try {
+            const res = await fetch(`${API_BASE_URL}/reservations`);
+            const data = await res.json();
+
+            document.getElementById('admin-res-list').innerHTML = data.map(r => {
+                const themeName = r.themeResponse?.name || r.theme?.name || '테마 정보 없음';
+                const startTime = r.time?.startAt ? r.time.startAt.substring(0, 5) : '시간 없음';
+
+                return `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4">${r.date}</td>
+                            <td class="p-4 font-bold">${themeName}</td>
+                            <td class="p-4">${startTime}</td>
+                            <td class="p-4">${r.name}</td>
+                            <td class="p-4"><button onclick="deleteRes(${r.id})" class="text-red-500 font-bold hover:text-red-700 transition">강제취소</button></td>
+                        </tr>
+                    `;
+            }).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    async function loadSelectionData() {
+        const [tRes, tiRes] = await Promise.all([fetch(`${API_BASE_URL}/themes`), fetch(`${API_BASE_URL}/times`)]);
+        const themes = await tRes.json();
+        const times = await tiRes.json();
+
+        document.getElementById('res-theme').innerHTML = '<option value="">테마 선택</option>' + themes.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+        document.getElementById('res-time').innerHTML = '<option value="">시간 선택</option>' + times.map(t => `<option value="${t.id}">${t.startAt.substring(0,5)}</option>`).join('');
+
+        const today = new Date();
+        const offset = today.getTimezoneOffset() * 60000;
+        document.getElementById('res-date').value = (new Date(today - offset)).toISOString().split('T')[0];
+    }
+
+    async function addForceReservation() {
+        const body = {
+            themeId: document.getElementById('res-theme').value,
+            timeId: document.getElementById('res-time').value,
+            date: document.getElementById('res-date').value,
+            name: document.getElementById('res-name').value
+        };
+
+        if(!body.themeId || !body.timeId || !body.date || !body.name) {
+            alert("모든 필드를 입력해주세요!"); return;
+        }
+
+        const res = await fetch(`${API_BASE_URL}/admin/reservations`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (res.ok) {
+            alert("강제 예약이 생성되었습니다.");
+            document.getElementById('res-name').value = '';
+            loadReservations();
+        } else {
+            alert("예약 생성 실패 (중복 등)");
+        }
+    }
+
+    async function deleteRes(id) {
+        if(!confirm('강제로 예약을 취소하시겠습니까?')) return;
+        await fetch(`${API_BASE_URL}/admin/reservations/${id}`, { method: 'DELETE' });
+        loadReservations();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadThemes();
+        loadTimes();
+        loadReservations();
+    });
+</script>
+</body>
+</html>
