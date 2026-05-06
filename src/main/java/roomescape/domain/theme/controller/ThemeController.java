@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.theme.dto.request.ThemeCreatedRequestDTO;
+import roomescape.domain.theme.dto.request.ThemeCreateRequestDTO;
 import roomescape.domain.theme.dto.response.ThemeResponseDTO;
 import roomescape.domain.theme.service.ThemeService;
 
@@ -39,7 +39,7 @@ public class ThemeController {
     }
 
     @PostMapping("/admin/themes")
-    public ResponseEntity<ThemeResponseDTO> saveTheme(@RequestBody ThemeCreatedRequestDTO requestDTO) {
+    public ResponseEntity<ThemeResponseDTO> saveTheme(@RequestBody ThemeCreateRequestDTO requestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(themeService.saveTheme(requestDTO));
     }
