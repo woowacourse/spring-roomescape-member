@@ -165,5 +165,10 @@ class ThemeServiceTest {
         public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate today) {
             return List.of();
         }
+
+        @Override
+        public int countByThemeId(Long id) {
+            return 0;
+        }
     }
 }
