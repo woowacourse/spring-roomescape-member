@@ -31,7 +31,7 @@ public class ReservationTimeRepository {
         return reservationTimeDao.findById(id);
     }
 
-    public List<AvailableTimeDto> findAvailableTimes(LocalDate date, Long themeId) {
+    public List<AvailableTime> findAvailableTimes(LocalDate date, Long themeId) {
         return reservationTimeDao.findAvailableTimes(date, themeId);
     }
 }

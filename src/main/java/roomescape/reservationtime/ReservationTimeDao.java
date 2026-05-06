@@ -21,7 +21,7 @@ public class ReservationTimeDao {
             rs.getLong("id"),
             rs.getObject("start_at", LocalTime.class)
     );
-    private final RowMapper<AvailableTimeDto> availableTimeRowMapper = (rs, rowNum) -> new AvailableTimeDto(
+    private final RowMapper<AvailableTime> availableTimeRowMapper = (rs, rowNum) -> new AvailableTime(
             rs.getLong("timeId"),
             rs.getObject("time", LocalTime.class),
             rs.getBoolean("isAvailable")
@@ -66,7 +66,7 @@ public class ReservationTimeDao {
         }
     }
 
-    public List<AvailableTimeDto> findAvailableTimes(LocalDate date, Long themeId) {
+    public List<AvailableTime> findAvailableTimes(LocalDate date, Long themeId) {
         String sql = "SELECT rt.id AS timeId, rt.start_at AS time, CASE WHEN r.id IS NULL THEN true ELSE false END AS isAvailable " // 👈 끝에 공백 추가
                 + "FROM reservation_time rt "
                 + "LEFT JOIN reservation AS r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? " // 👈 끝에 공백 추가

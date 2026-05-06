@@ -47,9 +47,9 @@ class UserReservationTimeControllerTest {
         Long themeId = 1L;
         LocalDate date = LocalDate.of(2026, 5, 8);
 
-        List<AvailableTimeDto> mockSchedules = List.of(
-                new AvailableTimeDto(1L, LocalTime.of(10, 0), true),
-                new AvailableTimeDto(2L, LocalTime.of(11, 0), false)
+        List<AvailableTime> mockSchedules = List.of(
+                new AvailableTime(1L, LocalTime.of(10, 0), true),
+                new AvailableTime(2L, LocalTime.of(11, 0), false)
         );
         ScheduleResponse mockResponse = new ScheduleResponse(themeId, date, mockSchedules);
 

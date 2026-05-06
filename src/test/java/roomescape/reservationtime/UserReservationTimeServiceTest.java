@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,9 +48,9 @@ class UserReservationTimeServiceTest {
         LocalDate date = LocalDate.of(2026, 5, 8);
         Long themeId = 1L;
 
-        List<AvailableTimeDto> mockSchedules = List.of(
-                new AvailableTimeDto(1L, LocalTime.of(10, 0), true),   // 예약 가능
-                new AvailableTimeDto(2L, LocalTime.of(11, 0), false)   // 예약 불가 (이미 예약됨)
+        List<AvailableTime> mockSchedules = List.of(
+                new AvailableTime(1L, LocalTime.of(10, 0), true),   // 예약 가능
+                new AvailableTime(2L, LocalTime.of(11, 0), false)   // 예약 불가 (이미 예약됨)
         );
 
         when(reservationTimeRepository.findAvailableTimes(date, themeId))

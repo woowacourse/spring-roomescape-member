@@ -3,7 +3,6 @@ package roomescape.reservationtime;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.ReservationRepository;
 
 @Service
 public class UserReservationTimeService {
@@ -20,7 +19,7 @@ public class UserReservationTimeService {
 
 
     public ScheduleResponse getSchedules(LocalDate date, Long themeId) {
-        List<AvailableTimeDto> schedules = reservationTimeRepository.findAvailableTimes(date, themeId);
+        List<AvailableTime> schedules = reservationTimeRepository.findAvailableTimes(date, themeId);
         return new ScheduleResponse(themeId, date, schedules);
     }
 }
