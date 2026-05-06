@@ -38,7 +38,8 @@ INSERT INTO reservation_time (start_at)
 VALUES ('10:00'),
        ('11:00'),
        ('13:00'),
-       ('15:00');
+       ('15:00'),
+       ('16:00');
 
 INSERT INTO reservation_date (date)
 VALUES ('2026-05-01'),
@@ -48,7 +49,8 @@ VALUES ('2026-05-01'),
        ('2026-05-05'),
        ('2026-05-06'),
        ('2026-05-07'),
-       ('2026-05-08');
+       ('2026-05-08'),
+       ('2026-05-09');
 
 INSERT INTO theme (name, content, url)
 VALUES ('공포', '오금이 저리는 공포입니다.', '/themes/scary'),
