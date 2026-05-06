@@ -20,36 +20,30 @@
 
 ### 3단계 - 인기 테마 조회
 
-- [ ] 일주일 동안 예약이 많았던 테마 상위 10개 조회 기능
-
-## 추가 요구 사항
-
-### API 요구사항 테스트 작성
-
-- [ ] 정상 흐름 검증 (예약 가능 시간 조회 -> 예약 생성 -> 다시 조o회 시 빠짐) 
- 
-## API 명세
+- [x] 일주일 동안 예약이 많았던 테마 상위 10개 조회 기능
 
 ## API 명세
 
-## API 명세
+### 사용자 API
 
-## API 명세
+| 분류 | 기능 | Method | URL | 성공 응답 | 에러 응답 |
+|---|---|---|---|---|---|
+| 예약 | 예약 생성 | `POST` | `/api/reservations` | `201 Created` | `400`, `404`, `409` |
+| 예약 | 예약 목록 조회 | `GET` | `/api/reservations` | `200 OK` | - |
+| 예약 | 예약 삭제 | `DELETE` | `/api/reservations/{id}` | `204 No Content` | `404` |
+| 예약 시간 | 예약 시간 목록 조회 | `GET` | `/api/times` | `200 OK` | - |
+| 예약 시간 | 예약 가능한 시간 조회 | `GET` | `/api/times/availablity?theme_id={theme_id}&date={date}` | `200 OK` | `400`, `404` |
+| 테마 | 테마 목록 조회 | `GET` | `/api/themes` | `200 OK` | - |
+| 테마 | 인기 테마 조회 | `GET` | `/api/themes/popularity` | `200 OK` | - |
 
-| 분류 | 기능 | Method | URL                                          | 성공 응답 | 에러 응답 |
-|------|------|--------|----------------------------------------------|----------|----------|
-| 예약 | 예약 생성 | `POST` | `/reservations`                              | `201 Created` | `400`, `404`, `409` |
-| 예약 | 예약 목록 조회 | `GET` | `/reservations`                              | `200 OK` | - |
-| 예약 | 예약 삭제 | `DELETE` | `/reservations/{id}`                         | `204 No Content` | `404` |
-| 예약 시간 | 예약 시간 생성 | `POST` | `/times`                                     | `201 Created` | `400`, `409` |
-| 예약 시간 | 예약 시간 목록 조회 | `GET` | `/times`                                     | `200 OK` | - |
-| 예약 시간 | 예약 가능한 시간 조회 | `GET` | `/times/slots?themeId={themeId}&date={date}` | `200 OK` | `400`, `404` |
-| 예약 시간 | 예약 시간 삭제 | `DELETE` | `/times/{id}`                                | `204 No Content` | `404`, `409` |
-| 테마 | 테마 생성 | `POST` | `/themes`                                    | `201 Created` | `400`, `409` |
-| 테마 | 테마 목록 조회 | `GET` | `/themes`                                    | `200 OK` | - |
-| 테마 | 인기 테마 조회 | `GET` | `/themes/popularity`                         | `200 OK` | - |
-| 테마 | 테마 삭제 | `DELETE` | `/themes/{id}`                               | `204 No Content` | `404`, `409` |
-| 사용자 (보류) | 사용자 조회 | `GET` | `/users`                                     | `200 OK` | - |
+### 관리자 API
+
+| 분류 | 기능 | Method | URL | 성공 응답 | 에러 응답 |
+|---|---|---|---|---|---|
+| 예약 시간 | 예약 시간 생성 | `POST` | `/admin/times` | `201 Created` | `400`, `409` |
+| 예약 시간 | 예약 시간 삭제 | `DELETE` | `/admin/times/{id}` | `204 No Content` | `404`, `409` |
+| 테마 | 테마 생성 | `POST` | `/admin/themes` | `201 Created` | `400`, `409` |
+| 테마 | 테마 삭제 | `DELETE` | `/admin/themes/{id}` | `204 No Content` | `404`, `409` |
 
 ## **프로그래밍 요구 사항**
 
