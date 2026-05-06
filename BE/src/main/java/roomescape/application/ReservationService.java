@@ -1,8 +1,11 @@
 package roomescape.application;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.entity.Theme;
+import roomescape.entity.ThemeRepository;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ReservationException;
 import roomescape.global.exception.customException.ReservationTimeException;
@@ -10,7 +13,7 @@ import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.ReservationRepository;
 import roomescape.entity.ReservationTimeRepository;
-import roomescape.presentation.dto.ReservationRequest;
+import roomescape.global.exception.customException.ThemeException;
 import roomescape.presentation.dto.ReservationResponse;
 
 @Service
@@ -18,30 +21,31 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     @Transactional
-    public ReservationResponse saveReservation(ReservationRequest request) {
-        if (request == null) {
-            throw new ReservationException(ErrorCode.RESERVATION_REQUEST_NULL);
-        }
-        ReservationTime time = reservationTimeRepository.findById(request.timeId())
+    public Reservation saveReservation(String name, LocalDate date, Long timeId, Long themeId) {
+        ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-//        Reservation reservation = Reservation.createWithNullId(
-//                request.name(),
-//                request.date(),
-//                time
-//        );
-//        Reservation savedReservation = reservationRepository.save(reservation);
-//        return ReservationResponse.from(savedReservation);
-        return null;
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeException(ErrorCode.THEME_NOT_FOUND));
+        Reservation reservation = Reservation.createWithNullId(
+                name,
+                date,
+                time,
+                theme
+        );
+        return reservationRepository.save(reservation);
     }
 
     public List<ReservationResponse> getReservations() {
