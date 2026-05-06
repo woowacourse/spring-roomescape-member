@@ -6,7 +6,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
-import roomescape.time.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -64,7 +63,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date) {
+    public List<AvailableTimeQueryResult> findAvailableTimes(Long themeId, LocalDate date) {
         String sql = "SELECT rt.id, rt.start_at\n" +
                 "FROM reservation_time rt\n" +
                 "LEFT JOIN reservation r\n" +
@@ -73,9 +72,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                 "  AND r.reservation_date = ?\n" +
                 "WHERE r.id IS NULL";
 
-        RowMapper<ReservationTime> reservationTimeMapper = (rs, rowNum) ->
-                new ReservationTime(
-                        rs.getLong("id"),
+        RowMapper<AvailableTimeQueryResult> reservationTimeMapper = (rs, rowNum) ->
+                new AvailableTimeQueryResult(
                         rs.getTime("start_at").toLocalTime()
                 );
         return jdbcTemplate.query(sql, reservationTimeMapper, themeId, date);
