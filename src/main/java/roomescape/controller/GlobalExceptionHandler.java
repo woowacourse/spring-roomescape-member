@@ -29,12 +29,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessageDto handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
+        log.error("[HttpMessageNotReadableException] ", e);
         return new ResponseMessageDto("요청 형식이 올바르지 않습니다.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessageDto handleValidation(MethodArgumentNotValidException e) {
+        log.error("[HttpMessageNotReadableException] ", e);
         List<String> messages = e.getBindingResult().getFieldErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .toList();
@@ -45,18 +47,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessageDto handleIllegalArgument(IllegalArgumentException e) {
+        log.error("[HttpMessageNotReadableException] ", e);
         return new ResponseMessageDto(e.getMessage());
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseMessageDto handleNoSuchElement(NoSuchElementException e) {
+        log.error("[HttpMessageNotReadableException] ", e);
         return new ResponseMessageDto(e.getMessage());
     }
     
     @ExceptionHandler(ForbiddenAccessException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseMessageDto handleIForbiddenAccessException(ForbiddenAccessException e) {
+        log.error("[HttpMessageNotReadableException] ", e);
         return new ResponseMessageDto(e.getMessage());
     }
 }
