@@ -1,17 +1,23 @@
 package roomescape.time.controller;
 
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.controller.dto.ReservationTimeRequest;
 import roomescape.time.controller.dto.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
-
-import java.net.URI;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/times")
@@ -36,7 +42,7 @@ public class ReservationTimeController {
 
     @GetMapping("/available")
     public ResponseEntity<List<ReservationTimeResponse>> readAvailable(
-            @RequestParam("themId") Long themeId,
+            @RequestParam("themeId") Long themeId,
             @RequestParam("date") LocalDate date
     ) {
         List<ReservationTimeResponse> responses = themeService.findAvailableTimes(themeId, date)

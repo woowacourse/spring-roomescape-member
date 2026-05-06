@@ -102,7 +102,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "inner join theme t on r.theme_id = t.id " +
                 "where r.reservation_date >= ? " +
                 "and r.reservation_date < ? " +
-                "group by t.id, t.name, t.description, t.thumbnail_url " +
+                "group by t.id " +
                 "order by count(r.id) desc, t.id asc " +
                 "limit ?";
 
