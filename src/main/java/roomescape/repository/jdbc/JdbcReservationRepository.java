@@ -65,11 +65,4 @@ public class JdbcReservationRepository implements ReservationRepository {
             """;
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
     }
-
-    record testRecord(
-            Long id,
-            String name,
-            LocalDate date,
-            Long theme,
-            Long time){}
 }
