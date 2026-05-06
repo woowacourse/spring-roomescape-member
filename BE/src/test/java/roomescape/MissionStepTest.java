@@ -74,7 +74,7 @@ public class MissionStepTest {
     @Test
     void 예약과_시간_연결() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "김인직", "레전드 방송", "gamst.jpg");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "김인직", "레전드 방송", "gamst.jpg");
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");

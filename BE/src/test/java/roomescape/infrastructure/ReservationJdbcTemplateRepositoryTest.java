@@ -84,68 +84,68 @@ class ReservationJdbcTemplateRepositoryTest {
         Assertions.assertEquals(2, result.size());
     }
 
-//    @Test
-//    @DisplayName("date만 있으면 해당 날짜의 예약만 조회한다.")
-//    void findByDateAndThemeId_filter_by_date_only() {
-//        // given
-//        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
-//        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "2", DATE_TODAY, savedTime2, savedTheme2));
-//        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "3", DATE_TOMORROW, savedTime1, savedTheme1));
-//
-//        // when
-//        List<Reservation> result = reservationRepository.findByDateAndThemeId(DATE_TODAY, null);
-//
-//        // then
-//        Assertions.assertEquals(2, result.size());
-//        Assertions.assertTrue(result.stream().allMatch(r -> r.date().equals(DATE_TODAY)));
-//    }
-//
-//    @Test
-//    @DisplayName("themeId만 있으면 해당 테마의 예약만 조회한다.")
-//    void findByDateAndThemeId_filter_by_theme_only() {
-//        // given
-//        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
-//        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "2", DATE_TOMORROW, savedTime2, savedTheme1));
-//        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "3", DATE_TODAY, savedTime1, savedTheme2));
-//
-//        // when
-//        List<Reservation> result = reservationRepository.findByDateAndThemeId(null, savedTheme1.id());
-//
-//        // then
-//        Assertions.assertEquals(2, result.size());
-//        Assertions.assertTrue(result.stream().allMatch(r -> r.theme().id().equals(savedTheme1.id())));
-//    }
-//
-//    @Test
-//    @DisplayName("date, themeId 모두 있으면 두 조건 모두 일치하는 예약만 조회한다.")
-//    void findByDateAndThemeId_filter_by_date_and_theme() {
-//        // given
-//        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
-//        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "2", DATE_TODAY, savedTime2, savedTheme2));
-//        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "3", DATE_TOMORROW, savedTime1, savedTheme1));
-//
-//        // when
-//        List<Reservation> result = reservationRepository.findByDateAndThemeId(DATE_TODAY, savedTheme1.id());
-//
-//        // then
-//        Assertions.assertEquals(1, result.size());
-//        Reservation only = result.get(0);
-//        Assertions.assertEquals(DATE_TODAY, only.date());
-//        Assertions.assertEquals(savedTheme1.id(), only.theme().id());
-//    }
-//
-//    @Test
-//    @DisplayName("일치하는 예약이 없으면 빈 목록을 반환한다.")
-//    void findByDateAndThemeId_returns_empty_when_no_match() {
-//        // given
-//        reservationRepository.save(Reservation.createWithNullId(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1));
-//
-//        // when
-//        List<Reservation> result = reservationRepository.findAll();
-//
-//        // then
-//        Assertions.assertTrue(result.isEmpty());
-//    }
+    @Test
+    @DisplayName("date만 있으면 해당 날짜의 예약만 조회한다.")
+    void findByDateAndThemeId_filter_by_date_only() {
+        // given
+        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
+        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "2", DATE_TODAY, savedTime2, savedTheme2));
+        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "3", DATE_TOMORROW, savedTime1, savedTheme1));
+
+        // when
+        List<Reservation> result = reservationRepository.findByDateAndThemeId(DATE_TODAY, null);
+
+        // then
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertTrue(result.stream().allMatch(r -> r.date().equals(DATE_TODAY)));
+    }
+
+    @Test
+    @DisplayName("themeId만 있으면 해당 테마의 예약만 조회한다.")
+    void findByDateAndThemeId_filter_by_theme_only() {
+        // given
+        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
+        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "2", DATE_TOMORROW, savedTime2, savedTheme1));
+        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "3", DATE_TODAY, savedTime1, savedTheme2));
+
+        // when
+        List<Reservation> result = reservationRepository.findByDateAndThemeId(null, savedTheme1.id());
+
+        // then
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertTrue(result.stream().allMatch(r -> r.theme().id().equals(savedTheme1.id())));
+    }
+
+    @Test
+    @DisplayName("date, themeId 모두 있으면 두 조건 모두 일치하는 예약만 조회한다.")
+    void findByDateAndThemeId_filter_by_date_and_theme() {
+        // given
+        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
+        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "2", DATE_TODAY, savedTime2, savedTheme2));
+        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "3", DATE_TOMORROW, savedTime1, savedTheme1));
+
+        // when
+        List<Reservation> result = reservationRepository.findByDateAndThemeId(DATE_TODAY, savedTheme1.id());
+
+        // then
+        Assertions.assertEquals(1, result.size());
+        Reservation only = result.get(0);
+        Assertions.assertEquals(DATE_TODAY, only.date());
+        Assertions.assertEquals(savedTheme1.id(), only.theme().id());
+    }
+
+    @Test
+    @DisplayName("일치하는 예약이 없으면 빈 목록을 반환한다.")
+    void findByDateAndThemeId_returns_empty_when_no_match() {
+        // given
+        reservationRepository.save(Reservation.createWithNullId(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1));
+
+        // when
+        List<Reservation> result = reservationRepository.findByDateAndThemeId(DATE_TOMORROW, savedTheme2.id());
+
+        // then
+        Assertions.assertTrue(result.isEmpty());
+    }
 
     @Test
     @DisplayName("특정 시간 ID를 참조하는 예약이 존재하는지 확인한다.")

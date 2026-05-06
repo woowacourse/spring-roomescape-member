@@ -1,5 +1,6 @@
 package roomescape.fake;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,14 @@ public class FakeReservationRepository implements ReservationRepository {
                         .id()
                         .equals(reservationTimeId)
                 );
+    }
+
+    @Override
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+        return store.values().stream()
+                .filter(reservation -> date == null || reservation.date().equals(date))
+                .filter(reservation -> themeId == null || reservation.theme().id().equals(themeId))
+                .toList();
     }
 
     @Override

@@ -1,18 +1,98 @@
 package roomescape.infrastructure;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationRepository;
 import roomescape.entity.ReservationTime;
+import roomescape.entity.Theme;
 
 @Repository
 public class ReservationJdbcTemplateRepository implements ReservationRepository {
+
+    private static final String FIND_BY_DATE_AND_THEME_ID_QUERY = """
+        SELECT r.id,
+               r.name AS reservation_name,
+               r.date,
+               rt.id AS time_id,
+               rt.start_at,
+               t.id AS theme_id,
+               t.name AS theme_name,
+               t.description AS theme_description,
+               t.thumbnail_url
+        FROM reservation r
+        JOIN reservation_time rt ON r.time_id = rt.id
+        JOIN theme t ON r.theme_id = t.id
+        WHERE (? IS NULL OR r.date = ?)
+          AND (? IS NULL OR r.theme_id = ?)
+        ORDER BY r.id
+        """;
+    private static final String FIND_BY_ID_QUERY = """
+        SELECT r.id,
+               r.name AS reservation_name,
+               r.date,
+               rt.id AS time_id,
+               rt.start_at,
+               t.id AS theme_id,
+               t.name AS theme_name,
+               t.description AS theme_description,
+               t.thumbnail_url
+        FROM reservation r
+        JOIN reservation_time rt ON r.time_id = rt.id
+        JOIN theme t ON r.theme_id = t.id
+        WHERE r.id = ?
+        """;
+    private static final String FIND_ALL_QUERY = """
+        SELECT r.id,
+               r.name AS reservation_name,
+               r.date,
+               rt.id AS time_id,
+               rt.start_at,
+               t.id AS theme_id,
+               t.name AS theme_name,
+               t.description AS theme_description,
+               t.thumbnail_url
+        FROM reservation r
+        JOIN reservation_time rt ON r.time_id = rt.id
+        JOIN theme t ON r.theme_id = t.id
+        ORDER BY r.id
+        """;
+    private static final String EXISTS_BY_TIME_ID_QUERY = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation
+                WHERE time_id = ?
+            );
+        """;
+
+    private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> {
+        ReservationTime time = ReservationTime.createWithId(
+                rs.getLong("time_id"),
+                rs.getTime("start_at").toLocalTime()
+        );
+
+        Theme theme = Theme.createWithId(
+                rs.getLong("theme_id"),
+                rs.getString("theme_name"),
+                rs.getString("theme_description"),
+                rs.getString("thumbnail_url")
+        );
+
+        return Reservation.createWithId(
+                rs.getLong("id"),
+                rs.getString("reservation_name"),
+                rs.getDate("date").toLocalDate(),
+                time,
+                theme
+        );
+    };
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -29,7 +109,8 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
         Map<String, Object> params = Map.of(
                 "name", reservation.name(),
                 "date", reservation.date(),
-                "time_id", reservation.time().id()
+                "time_id", reservation.time().id(),
+                "theme_id", reservation.theme().id()
         );
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return reservation.appendId(id);
@@ -37,72 +118,29 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        String sql = """
-        SELECT r.id, r.name, r.date,
-               rt.id AS time_id, rt.start_at
-        FROM reservation r
-        JOIN reservation_time rt ON r.time_id = rt.id
-        WHERE r.id = ?
-        """;
         List<Reservation> reservation = jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> {
-                    ReservationTime time = ReservationTime.createWithId(
-                            rs.getLong("time_id"),
-                            rs.getTime("start_at").toLocalTime()
-                    );
-
-//                    return Reservation.createWithId(
-//                            rs.getLong("id"),
-//                            rs.getString("name"),
-//                            rs.getDate("date").toLocalDate(),
-//                            time
-//                    );
-                    return null;
-                },
+                FIND_BY_ID_QUERY,
+                ROW_MAPPER,
                 id
         );
-
         return reservation.stream()
                 .findFirst();
     }
 
     @Override
     public List<Reservation> findAll() {
-        String sql = """
-        SELECT r.id, r.name, r.date,
-               rt.id as time_id, rt.start_at
-        FROM reservation r
-        JOIN reservation_time rt ON r.time_id = rt.id
-        """;
-
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            ReservationTime time = ReservationTime.createWithId(
-                    rs.getLong("time_id"),
-                    rs.getTime("start_at").toLocalTime()
-            );
-
-//            return Reservation.createWithId(
-//                    rs.getLong("id"),
-//                    rs.getString("name"),
-//                    rs.getDate("date").toLocalDate(),
-//                    time
-//            );
-            return null;
-        });
+        return jdbcTemplate.query(FIND_ALL_QUERY, ROW_MAPPER);
     }
 
     @Override
     public boolean existsByReservationTimeId(Long id) {
-        String sql = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM reservation
-                WHERE time_id = ?
-            );
-        """;
-        Integer result = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        Integer result = jdbcTemplate.queryForObject(EXISTS_BY_TIME_ID_QUERY, Integer.class, id);
         return result != null && result == 1;
+    }
+
+    @Override
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+        return jdbcTemplate.query(FIND_BY_DATE_AND_THEME_ID_QUERY, ROW_MAPPER, date, date, themeId, themeId);
     }
 
     @Override
