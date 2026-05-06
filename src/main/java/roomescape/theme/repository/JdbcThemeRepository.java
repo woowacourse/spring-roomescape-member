@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
@@ -69,20 +70,34 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<AvailableTimeQueryResult> findAvailableTimes(Long themeId, LocalDate date) {
-        String sql = "SELECT rt.id, rt.start_at\n" +
-                "FROM reservation_time rt\n" +
-                "LEFT JOIN reservation r\n" +
-                "  ON rt.id = r.time_id\n" +
-                "  AND r.theme_id = ?\n" +
-                "  AND r.reservation_date = ?\n" +
-                "WHERE r.id IS NULL";
+    public List<Theme> findPopularThemes(int period, int limit) {
+        String sql = "select " +
+                "t.id, " +
+                "t.name, " +
+                "t.description, " +
+                "t.thumbnail_url " +
+                "from reservation r " +
+                "inner join theme t on r.theme_id = t.id " +
+                "where r.reservation_date >= ? " +
+                "and r.reservation_date < ? " +
+                "group by t.id " +
+                "order by count(r.id) desc, t.id asc " +
+                "limit ?";
 
-        RowMapper<AvailableTimeQueryResult> reservationTimeMapper = (rs, rowNum) ->
-                new AvailableTimeQueryResult(
-                        rs.getLong("id"),
-                        rs.getTime("start_at").toLocalTime()
-                );
-        return jdbcTemplate.query(sql, reservationTimeMapper, themeId, date);
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(period);
+
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> new Theme(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail_url")
+                ),
+                Date.valueOf(startDate),
+                Date.valueOf(endDate),
+                limit
+        );
     }
 }

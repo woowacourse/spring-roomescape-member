@@ -9,6 +9,7 @@ import roomescape.time.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -63,5 +64,18 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         return jdbcTemplate.query("select id, start_at from reservation_time", reservationTimeRowMapper);
+    }
+
+    @Override
+    public List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date) {
+        String sql = "SELECT rt.id, rt.start_at\n" +
+                "FROM reservation_time rt\n" +
+                "LEFT JOIN reservation r\n" +
+                "  ON rt.id = r.time_id\n" +
+                "  AND r.theme_id = ?\n" +
+                "  AND r.reservation_date = ?\n" +
+                "WHERE r.id IS NULL";
+
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, themeId, date);
     }
 }

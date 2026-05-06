@@ -2,7 +2,6 @@ package roomescape.theme.repository;
 
 import roomescape.theme.domain.Theme;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,5 +17,5 @@ public interface ThemeRepository {
 
     boolean existsByName(String name);
 
-    List<AvailableTimeQueryResult> findAvailableTimes(Long themeId, LocalDate date);
+    List<Theme> findPopularThemes(int period, int limit);
 }

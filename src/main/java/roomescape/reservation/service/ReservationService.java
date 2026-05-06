@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.service.dto.PopularThemesResult;
 import roomescape.reservation.service.dto.ReservationCommand;
 import roomescape.reservation.service.dto.ReservationResult;
 import roomescape.theme.service.ThemeService;
@@ -59,10 +58,6 @@ public class ReservationService {
                 .stream()
                 .map(ReservationResult::from)
                 .toList();
-    }
-
-    public PopularThemesResult findPopularThemes(int period, int limit) {
-        return new PopularThemesResult(reservationRepository.findPopularThemes(period, limit));
     }
 
     private void checkDuplicateReservation(LocalDate date, Long timeId, Long themeId) {

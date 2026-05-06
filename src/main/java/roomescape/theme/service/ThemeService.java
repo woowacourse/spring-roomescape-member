@@ -5,11 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.theme.service.dto.AvailableTimesResult;
 import roomescape.theme.service.dto.ThemeCommand;
 import roomescape.theme.service.dto.ThemeResult;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -48,8 +46,11 @@ public class ThemeService {
                 .toList();
     }
 
-    public AvailableTimesResult findAvailableTimes(Long themeId, LocalDate date) {
-        return new AvailableTimesResult(themeRepository.findAvailableTimes(themeId, date));
+    public List<ThemeResult> findPopularThemes(int period, int limit) {
+        return themeRepository.findPopularThemes(period, limit)
+                .stream()
+                .map(ThemeResult::from)
+                .toList();
     }
 
     public Theme getById(Long id) {

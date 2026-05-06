@@ -8,6 +8,7 @@ import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.time.service.dto.ReservationTimeCommand;
 import roomescape.time.service.dto.ReservationTimeResult;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -44,7 +45,13 @@ public class ReservationTimeService {
                 .stream()
                 .map(ReservationTimeResult::from)
                 .toList();
+    }
 
+    public List<ReservationTimeResult> findAvailableTimes(Long themeId, LocalDate date) {
+        return reservationTimeRepository.findAvailableTimes(themeId, date)
+                .stream()
+                .map(ReservationTimeResult::from)
+                .toList();
     }
 
     public ReservationTime getById(Long id) {
