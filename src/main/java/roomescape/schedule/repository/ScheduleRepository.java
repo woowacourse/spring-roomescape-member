@@ -1,10 +1,13 @@
 package roomescape.schedule.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.schedule.model.Schedule;
 import roomescape.theme.model.Theme;
 
+import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -17,6 +20,26 @@ public class ScheduleRepository {
 
     public ScheduleRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Long create(Schedule schedule) {
+        String sql = "INSERT INTO schedule (theme_id, start_at, end_at) VALUES (?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setLong(1, schedule.getTheme().getId());
+            ps.setObject(2, schedule.getStartAt());
+
+            LocalDateTime endAt = schedule.getStartAt()
+                    .plusHours(schedule.getTheme().getRequiredTime().getHour())
+                    .plusMinutes(schedule.getTheme().getRequiredTime().getMinute());
+            ps.setObject(3, endAt);
+
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
     }
 
     public List<Schedule> findAll(Long themeId, LocalDate date) {
