@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -12,7 +11,6 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.NotFoundException;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -21,13 +19,14 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
-@Sql("/test-theme.sql")
-@Sql("/test-reservation-time.sql")
+@Sql({"/test-theme.sql", "/test-reservation-time.sql"})
 @Import({JdbcTemplateReservationRepository.class, JdbcTemplateThemeRepository.class})
 class JdbcTemplateReservationRepositoryTest {
+
+    private static final long TIME_ID = 1L;
+    private static final long THEME_ID = 1L;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -38,28 +37,10 @@ class JdbcTemplateReservationRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private long timeId;
-    private long themeId;
-
-    private Theme theme;
-
-    @BeforeEach
-    void setUp() {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(conn -> {
-            PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO reservation_time (start_at) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS);
-            ps.setString(1, "10:00");
-            return ps;
-        }, keyHolder);
-        timeId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        theme = themeRepository.findAll().get(0);
-        themeId = theme.id();
-    }
-
     @Test
     void 예약을_저장하면_id가_채워진_도메인을_반환한다() {
-        ReservationTime time = new ReservationTime(timeId, LocalTime.of(10, 0));
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = themeRepository.findById(THEME_ID).get();
         Reservation toSave = new Reservation(null, "브라운", LocalDate.of(2026, 5, 3), time, theme);
 
         Reservation saved = reservationRepository.addReservation(toSave);
@@ -67,15 +48,15 @@ class JdbcTemplateReservationRepositoryTest {
         assertThat(saved.id()).isNotNull();
         assertThat(saved.name()).isEqualTo("브라운");
         assertThat(saved.date()).isEqualTo(LocalDate.of(2026, 5, 3));
-        assertThat(saved.time().id()).isEqualTo(timeId);
+        assertThat(saved.time().id()).isEqualTo(TIME_ID);
     }
 
     @Test
     void 모든_예약을_조인_조회한다() {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2026-05-03", timeId, themeId);
+                "브라운", "2026-05-03", TIME_ID, THEME_ID);
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "조이", "2026-05-04", timeId, themeId);
+                "조이", "2026-05-04", TIME_ID, THEME_ID);
 
         List<Reservation> reservations = reservationRepository.findAllReservations();
 
@@ -85,17 +66,15 @@ class JdbcTemplateReservationRepositoryTest {
 
     @Test
     void 특정_사용자의_예약을_조회한다() {
-        String name1 = "브라운";
-        String name2 = "조이";
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2026-05-03", TIME_ID, THEME_ID);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2026-05-04", TIME_ID, THEME_ID);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "조이", "2026-05-04", TIME_ID, THEME_ID);
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                name1, "2026-05-03", 1, 1);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                name1, "2026-05-04", 2, 1);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                name2, "2026-05-04", timeId, 2);
+        List<Reservation> reservations = reservationRepository.findReservationsByName("브라운");
 
-        List<Reservation> reservations = reservationRepository.findReservationsByName(name1);
         assertThat(reservations).hasSize(2);
     }
 
@@ -115,9 +94,8 @@ class JdbcTemplateReservationRepositoryTest {
                     PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setString(1, "브라운");
             ps.setString(2, "2026-05-03");
-            ps.setLong(3, timeId);
-            ps.setLong(4, themeId);
-
+            ps.setLong(3, TIME_ID);
+            ps.setLong(4, THEME_ID);
             return ps;
         }, keyHolder);
         long reservationId = Objects.requireNonNull(keyHolder.getKey()).longValue();

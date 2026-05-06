@@ -1,11 +1,9 @@
 # Theme API 명세
 
-## 사용자/공통 테마 조회
-
 ### 테마 목록 조회
 
 ```http
-GET /themes
+GET admin/themes
 ```
 
 Response `200 OK`
@@ -26,8 +24,6 @@ Response `200 OK`
   }
 ]
 ```
-
-## 관리자 테마 관리
 
 ### 테마 생성
 
@@ -64,6 +60,27 @@ DELETE /admin/themes/{themeId}
 ```
 
 Response `204 No Content`
+
+### 이용 가능 시간 조회
+
+```http
+GET /themes/{themeId}/times?date=2024-01-01
+```
+
+Response `200 OK`
+
+```json
+[
+  {
+    "time_id": 1,
+    "start_at": "09:00"
+  },
+  {
+    "time_id": 2,
+    "start_at": "10:00"
+  }
+]
+```
 
 설계 결정
 

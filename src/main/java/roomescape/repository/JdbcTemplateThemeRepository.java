@@ -5,9 +5,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -78,5 +81,27 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date) {
+        return jdbcTemplate.query(
+                "SELECT t.id AS time_id, t.start_at " +
+                        "FROM reservation_time t " +
+                        "WHERE t.id NOT IN (" +
+                        "  SELECT r.time_id FROM reservation r WHERE r.theme_id = ? AND r.date = ?" +
+                        ")",
+
+                (rs, rowNum) -> {
+                    long timeId = rs.getLong("time_id");
+                    LocalTime time = rs.getTime("start_at").toLocalTime();
+
+                    ReservationTime reservationTime = new ReservationTime(timeId, time);
+
+                    return reservationTime;
+                },
+                themeId,
+                date
+        );
     }
 }
