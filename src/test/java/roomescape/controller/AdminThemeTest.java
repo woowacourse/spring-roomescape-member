@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import static org.hamcrest.core.Is.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
@@ -28,12 +30,12 @@ class AdminThemeTest {
                 .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
-//
-//        RestAssured.given().log().all()
-//                .when().get("/admin/themes")
-//                .then().log().all()
-//                .statusCode(200)
-//                .body("size()", is(1));
+
+        RestAssured.given().log().all()
+                .when().get("/admin/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
 
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/1")
