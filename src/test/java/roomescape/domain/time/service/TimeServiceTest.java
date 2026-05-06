@@ -1,8 +1,6 @@
 package roomescape.domain.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -51,11 +49,10 @@ class TimeServiceTest {
             List<TimeResponseDTO> actual = timeService.getTimes();
 
             // then
-            assertAll(
-                () -> assertEquals(3, actual.size()),
-                () -> assertEquals(new TimeResponseDTO(1L, startAt), actual.get(0)),
-                () -> assertEquals(new TimeResponseDTO(2L, startAt.plusHours(1)), actual.get(1)),
-                () -> assertEquals(new TimeResponseDTO(3L, startAt.plusHours(2)), actual.get(2))
+            assertThat(actual).containsExactly(
+                new TimeResponseDTO(1L, startAt),
+                new TimeResponseDTO(2L, startAt.plusHours(1)),
+                new TimeResponseDTO(3L, startAt.plusHours(2))
             );
         }
     }
@@ -72,11 +69,8 @@ class TimeServiceTest {
             TimeResponseDTO actual = timeService.saveTime(request);
 
             // then
-            assertAll(
-                () -> assertEquals(1L, actual.id()),
-                () -> assertEquals(LocalTime.of(15, 30), actual.startAt()),
-                () -> assertEquals(List.of(actual), timeService.getTimes())
-            );
+            assertThat(actual).isEqualTo(new TimeResponseDTO(1L, LocalTime.of(15, 30)));
+            assertThat(timeService.getTimes()).containsExactly(actual);
         }
     }
 
@@ -94,10 +88,7 @@ class TimeServiceTest {
 
             // then
             List<TimeResponseDTO> actual = timeService.getTimes();
-            assertAll(
-                () -> assertEquals(1, actual.size()),
-                () -> assertEquals(LocalTime.of(13, 0), actual.getFirst().startAt())
-            );
+            assertThat(actual).containsExactly(new TimeResponseDTO(2L, LocalTime.of(13, 0)));
         }
     }
 

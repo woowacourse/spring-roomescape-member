@@ -1,8 +1,6 @@
 package roomescape.domain.theme.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.entity.Reservation;
@@ -39,7 +36,7 @@ class ThemeServiceTest {
             List<ThemeResponseDTO> actual = themeService.getThemes();
 
             // then
-            assertEquals(0, actual.size());
+            assertThat(actual).isEmpty();
         }
     }
 
@@ -81,19 +78,9 @@ class ThemeServiceTest {
             );
 
             // then
-            assertAll(
-                () -> assertEquals(10, actual.size()),
-                () -> assertEquals("테마1", actual.get(0).name()),
-                () -> assertEquals("테마2", actual.get(1).name()),
-                () -> assertEquals("테마3", actual.get(2).name()),
-                () -> assertEquals("테마4", actual.get(3).name()),
-                () -> assertEquals("테마5", actual.get(4).name()),
-                () -> assertEquals("테마6", actual.get(5).name()),
-                () -> assertEquals("테마7", actual.get(6).name()),
-                () -> assertEquals("테마8", actual.get(7).name()),
-                () -> assertEquals("테마9", actual.get(8).name()),
-                () -> assertEquals("테마10", actual.get(9).name())
-            );
+            assertThat(actual)
+                .extracting(ThemeResponseDTO::name)
+                .containsExactly("테마1", "테마2", "테마3", "테마4", "테마5", "테마6", "테마7", "테마8", "테마9", "테마10");
         }
     }
 
@@ -113,12 +100,12 @@ class ThemeServiceTest {
             ThemeResponseDTO actual = themeService.saveTheme(request);
 
             // then
-            assertAll(
-                () -> assertEquals(1L, actual.id()),
-                () -> assertEquals("피온", actual.name()),
-                () -> assertEquals("테마 설명", actual.description()),
-                () -> assertEquals("https://roomescape.com/images/themes/prison-room.png", actual.imageUrl())
-            );
+            assertThat(actual).isEqualTo(new ThemeResponseDTO(
+                1L,
+                "피온",
+                "테마 설명",
+                "https://roomescape.com/images/themes/prison-room.png"
+            ));
         }
     }
 
@@ -135,7 +122,7 @@ class ThemeServiceTest {
             List<Theme> actual = themeRepository.findAllThemes();
 
             // then
-            assertThat(actual).asInstanceOf(InstanceOfAssertFactories.LIST).hasSize(0);
+            assertThat(actual).isEmpty();
         }
     }
 }

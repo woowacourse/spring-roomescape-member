@@ -15,7 +15,7 @@ public class ViewController {
     public String userReservationPage() {
         return "user/reservations";
     }
-    
+
     @GetMapping("/admin")
     public String adminReservationPage() {
         return "admin/management";

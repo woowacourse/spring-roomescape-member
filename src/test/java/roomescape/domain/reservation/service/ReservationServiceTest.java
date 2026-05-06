@@ -1,7 +1,6 @@
 package roomescape.domain.reservation.service;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -56,21 +55,12 @@ class ReservationServiceTest {
             List<ReservationResponseDTO> actual = reservationService.getReservations();
 
             // then
-            assertAll(
-                () -> assertEquals(3, actual.size()),
-                () -> assertEquals(
-                    new ReservationResponseDTO(1L, "제이콥", date, time.toResponseDTO(), theme.toResponseDTO()),
-                    actual.get(0)),
-                () -> assertEquals(
-                    new ReservationResponseDTO(2L, "라이", date.plusDays(1),
-                        Time.reconstruct(2L, LocalTime.of(11, 0)).toResponseDTO(), theme.toResponseDTO()),
-                    actual.get(1)
-                ),
-                () -> assertEquals(
-                    new ReservationResponseDTO(3L, "티모", date.plusDays(2),
-                        Time.reconstruct(3L, LocalTime.of(12, 0)).toResponseDTO(), theme.toResponseDTO()),
-                    actual.get(2)
-                )
+            assertThat(actual).containsExactly(
+                new ReservationResponseDTO(1L, "제이콥", date, time.toResponseDTO(), theme.toResponseDTO()),
+                new ReservationResponseDTO(2L, "라이", date.plusDays(1),
+                    Time.reconstruct(2L, LocalTime.of(11, 0)).toResponseDTO(), theme.toResponseDTO()),
+                new ReservationResponseDTO(3L, "티모", date.plusDays(2),
+                    Time.reconstruct(3L, LocalTime.of(12, 0)).toResponseDTO(), theme.toResponseDTO())
             );
         }
     }
@@ -95,14 +85,8 @@ class ReservationServiceTest {
             ReservationCreateResponseDTO actual = reservationService.saveReservation(request);
 
             // then
-            assertAll(
-                () -> assertEquals(1L, actual.id()),
-                () -> assertEquals("보예", actual.name()),
-                () -> assertEquals(LocalDate.of(2026, 5, 1), actual.date()),
-                () -> assertEquals(1L, actual.timeId()),
-                () -> assertEquals(1L, actual.themeId()),
-                () -> assertEquals(1, reservationRepository.findAllReservations().size())
-            );
+            assertThat(actual).isEqualTo(new ReservationCreateResponseDTO(1L, "보예", LocalDate.of(2026, 5, 1), 1L, 1L));
+            assertThat(reservationRepository.findAllReservations()).hasSize(1);
         }
     }
 
@@ -124,10 +108,10 @@ class ReservationServiceTest {
 
             // then
             List<ReservationResponseDTO> actual = reservationService.getReservations();
-            assertAll(
-                () -> assertEquals(1, actual.size()),
-                () -> assertEquals("시오", actual.getFirst().name())
-            );
+            assertThat(actual)
+                .hasSize(1)
+                .extracting(ReservationResponseDTO::name)
+                .containsExactly("시오");
 
         }
     }
