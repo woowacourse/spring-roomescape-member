@@ -52,6 +52,10 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public List<Reservation> getReservationsByDateAndTheme(LocalDate date, Long themeId) {
+        return reservationRepository.findByDateAndThemeId(date, themeId);
+    }
+
     @Transactional
     public void deleteReservation(Long id) {
         if (id == null) {
