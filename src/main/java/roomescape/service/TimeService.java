@@ -36,7 +36,7 @@ public class TimeService {
     }
 
     public TimeResponse registerTime(TimeRequest timeRequest) {
-        ReservationTime reservationTime = timeRepository.saveTime(timeRequest.getStartAt());
+        ReservationTime reservationTime = timeRepository.saveTime(timeRequest.startAt());
         return TimeResponse.from(reservationTime);
     }
 

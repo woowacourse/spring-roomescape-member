@@ -2,12 +2,7 @@ package roomescape.dto;
 
 import java.time.LocalDate;
 
-public class ReservationRequest {
-    private final String name;
-    private final LocalDate date;
-    private final Long timeId;
-    private final Long themeId;
-
+public record ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
     public ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
         this.name = name;
         this.date = date;
@@ -20,21 +15,5 @@ public class ReservationRequest {
         if (name.length() < 2 || name.length() > 20) {
             throw new IllegalArgumentException("[ERROR] 사용자 이름은 2자 이상 20자 이하입니다.");
         }
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public Long getTimeId() {
-        return timeId;
-    }
-
-    public Long getThemeId() {
-        return themeId;
     }
 }

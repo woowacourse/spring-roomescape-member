@@ -31,13 +31,13 @@ public class ThemeRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, themeRequest.getName());
-            ps.setObject(2, themeRequest.getDescription());
-            ps.setObject(3, themeRequest.getUrl());
+            ps.setString(1, themeRequest.name());
+            ps.setObject(2, themeRequest.description());
+            ps.setObject(3, themeRequest.url());
             return ps;
         }, keyHolder);
         Long id = keyHolder.getKey().longValue();
-        return new Theme(id, themeRequest.getName(), themeRequest.getDescription(), themeRequest.getUrl());
+        return new Theme(id, themeRequest.name(), themeRequest.description(), themeRequest.url());
     }
 
     public void delete(Long id) {

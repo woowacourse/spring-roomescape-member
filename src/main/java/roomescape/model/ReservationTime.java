@@ -14,7 +14,7 @@ public class ReservationTime {
     }
 
     public static ReservationTime from(TimeResponse timeResponse) {
-        return new ReservationTime(timeResponse.getId(), timeResponse.getStartAt());
+        return new ReservationTime(timeResponse.id(), timeResponse.startAt());
     }
 
     private void validateStartAt() {

@@ -17,7 +17,7 @@ public class Theme {
     }
 
     public static Theme from(ThemeResponse themeResponse) {
-        return new Theme(themeResponse.getId(), themeResponse.getName(), themeResponse.getDescription(), themeResponse.getUrl());
+        return new Theme(themeResponse.id(), themeResponse.name(), themeResponse.description(), themeResponse.url());
     }
 
     private void validateName(){

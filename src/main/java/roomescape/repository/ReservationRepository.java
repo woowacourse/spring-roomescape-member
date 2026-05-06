@@ -59,15 +59,15 @@ public class ReservationRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservationRequest.getName());
-            ps.setObject(2, reservationRequest.getDate());
-            ps.setLong(3, reservationRequest.getTimeId());
-            ps.setLong(4, reservationRequest.getThemeId());
+            ps.setString(1, reservationRequest.name());
+            ps.setObject(2, reservationRequest.date());
+            ps.setLong(3, reservationRequest.timeId());
+            ps.setLong(4, reservationRequest.themeId());
             return ps;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
 
-        return new Reservation(id, reservationRequest.getName(), reservationRequest.getDate(), ReservationTime.from(timeResponse), Theme.from(themeResponse));
+        return new Reservation(id, reservationRequest.name(), reservationRequest.date(), ReservationTime.from(timeResponse), Theme.from(themeResponse));
     }
 }

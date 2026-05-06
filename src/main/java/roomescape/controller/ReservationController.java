@@ -36,7 +36,7 @@ public class ReservationController {
     @ResponseBody
     public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationRequest reservationRequest) {
         ReservationResponse reservationResponse = reservationService.registerReservation(reservationRequest);
-        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.getId()))
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);
     }
 

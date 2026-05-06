@@ -45,7 +45,7 @@ public class TimeController {
     @ResponseBody
     public ResponseEntity<TimeResponse> addReservationTime(@RequestBody TimeRequest timeRequest) {
         TimeResponse timeResponse = timeService.registerTime(timeRequest);
-        return ResponseEntity.created(URI.create("/times/" + timeResponse.getId())).body(timeResponse);
+        return ResponseEntity.created(URI.create("/times/" + timeResponse.id())).body(timeResponse);
     }
 
     @DeleteMapping("/{id}")

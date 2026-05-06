@@ -36,8 +36,8 @@ public class ReservationService {
     }
 
     public ReservationResponse registerReservation(ReservationRequest reservationRequest) {
-        TimeResponse timeResponse = timeService.findById(reservationRequest.getTimeId());
-        ThemeResponse themeResponse = themeService.findById(reservationRequest.getThemeId());
+        TimeResponse timeResponse = timeService.findById(reservationRequest.timeId());
+        ThemeResponse themeResponse = themeService.findById(reservationRequest.themeId());
         Reservation reservation = reservationRepository.register(reservationRequest, timeResponse, themeResponse);
         return ReservationResponse.from(reservation);
     }
