@@ -23,15 +23,6 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<ReservationListResponse> list() {
-        return ResponseEntity.ok(
-                ReservationListResponse.from(reservationService.findAll()
-                        .stream()
-                        .map(ReservationResponse::from)
-                        .toList()));
-    }
-
     @PostMapping
     public ResponseEntity<ReservationResponse> create(@RequestBody ReservationCreateRequest reservationCreateRequest) {
         Reservation reservation = reservationService.create(

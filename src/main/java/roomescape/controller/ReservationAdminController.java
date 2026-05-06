@@ -2,6 +2,8 @@ package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.dto.ReservationListResponse;
+import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -11,6 +13,15 @@ public class ReservationAdminController {
 
     public ReservationAdminController(ReservationService reservationService) {
         this.reservationService = reservationService;
+    }
+
+    @GetMapping
+    public ResponseEntity<ReservationListResponse> list() {
+        return ResponseEntity.ok(
+                ReservationListResponse.from(reservationService.findAll()
+                        .stream()
+                        .map(ReservationResponse::from)
+                        .toList()));
     }
 
     @DeleteMapping("/{id}")
