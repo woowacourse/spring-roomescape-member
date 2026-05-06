@@ -34,13 +34,14 @@ public class ReservationService {
         }
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new ReservationTimeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-        Reservation reservation = Reservation.createWithNullId(
-                request.name(),
-                request.date(),
-                time
-        );
-        Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationResponse.from(savedReservation);
+//        Reservation reservation = Reservation.createWithNullId(
+//                request.name(),
+//                request.date(),
+//                time
+//        );
+//        Reservation savedReservation = reservationRepository.save(reservation);
+//        return ReservationResponse.from(savedReservation);
+        return null;
     }
 
     public List<ReservationResponse> getReservations() {

@@ -8,7 +8,8 @@ import roomescape.global.exception.customException.ReservationTimeException;
 public record ReservationRequest(
         String name,
         LocalDate date,
-        Long timeId
+        Long timeId,
+        Long themeId
 ) {
     public ReservationRequest{
         validateNameNotEmpty(name);

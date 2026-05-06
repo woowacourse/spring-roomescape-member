@@ -32,12 +32,13 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
                 "time_id", reservation.time().id()
         );
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return Reservation.createWithId(
-                id,
-                reservation.name(),
-                reservation.date(),
-                reservation.time()
-        );
+//        return Reservation.createWithId(
+//                id,
+//                reservation.name(),
+//                reservation.date(),
+//                reservation.time()
+//        );
+        return null;
     }
 
     @Override
@@ -57,12 +58,13 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
                             rs.getTime("start_at").toLocalTime()
                     );
 
-                    return Reservation.createWithId(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getDate("date").toLocalDate(),
-                            time
-                    );
+//                    return Reservation.createWithId(
+//                            rs.getLong("id"),
+//                            rs.getString("name"),
+//                            rs.getDate("date").toLocalDate(),
+//                            time
+//                    );
+                    return null;
                 },
                 id
         );
@@ -86,12 +88,13 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
                     rs.getTime("start_at").toLocalTime()
             );
 
-            return Reservation.createWithId(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getDate("date").toLocalDate(),
-                    time
-            );
+//            return Reservation.createWithId(
+//                    rs.getLong("id"),
+//                    rs.getString("name"),
+//                    rs.getDate("date").toLocalDate(),
+//                    time
+//            );
+            return null;
         });
     }
 
