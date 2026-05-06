@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>방탈출 예약</title>
+    <title>예약 - 방탈출 예약</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,10 +14,10 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #0a0e27;
             min-height: 100vh;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
         .container {
@@ -24,81 +25,200 @@
             margin: 0 auto;
         }
 
-        h1 {
-            color: white;
+        .nav {
+            margin-bottom: 40px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #151932;
+            color: #c5cae9;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid #1f2547;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: #1a1f3a;
+            border-color: #2d3561;
+            color: #ffffff;
+        }
+
+        header {
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 60px;
         }
 
-        .form-section {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            margin-bottom: 30px;
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
         }
 
-        .form-section h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
+        .form-card {
+            background: #151932;
+            border: 1px solid #1f2547;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+
+        .form-card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 24px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            color: #333;
-            font-weight: 600;
+            margin-bottom: 8px;
+            color: #c5cae9;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
-        .form-group input, .form-group select {
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
+            padding: 12px 16px;
+            background: #0a0e27;
+            border: 1px solid #1f2547;
             border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s;
+            font-size: 0.95rem;
+            color: #ffffff;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.2s ease;
         }
 
-        .form-group input:focus, .form-group select:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #667eea;
+            background: #0d1129;
+        }
+
+        .form-group select option {
+            background: #151932;
+            color: #ffffff;
+        }
+
+        .time-picker {
+            background: #10152d;
+            border: 1px solid #1f2547;
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .time-picker-guide {
+            color: #8b93b0;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .time-slots {
+            display: grid;
+            gap: 14px;
+        }
+
+        .time-slot-group-title {
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .time-slot-group-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px;
+        }
+
+        .time-slot-btn {
+            width: 100%;
+            padding: 14px 12px;
+            border-radius: 10px;
+            border: 1px solid #2a315b;
+            background: #151932;
+            color: #c5cae9;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Noto Sans KR', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .time-slot-btn:hover {
+            border-color: #667eea;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .time-slot-btn:focus-visible {
+            outline: 2px solid #8ea2ff;
+            outline-offset: 2px;
+        }
+
+        .time-slot-btn.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.28);
+        }
+
+        .time-slot-empty {
+            padding: 18px;
+            border-radius: 10px;
+            background: #151932;
+            color: #5c6686;
+            text-align: center;
+            font-size: 0.9rem;
+            border: 1px dashed #2a315b;
         }
 
         .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 12px 30px;
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
-            font-size: 1em;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.2s ease;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .reservations-list {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        .list-card {
+            background: #151932;
+            border: 1px solid #1f2547;
+            border-radius: 12px;
+            padding: 32px;
         }
 
-        .reservations-list h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
+        .list-card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 24px;
         }
 
         table {
@@ -107,50 +227,79 @@
         }
 
         th {
-            background: #667eea;
-            color: white;
-            padding: 15px;
+            background: #1a1f3a;
+            color: #c5cae9;
+            padding: 14px;
             text-align: left;
             font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid #1f2547;
         }
 
         td {
-            padding: 15px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 14px;
+            border: 1px solid #1f2547;
+            color: #c5cae9;
+            font-size: 0.9rem;
         }
 
         tr:hover {
-            background: #f8f9fa;
+            background: #1a1f3a;
         }
 
         .btn-delete {
-            background: #e74c3c;
+            background: #f5576c;
             color: white;
-            padding: 6px 15px;
+            padding: 6px 14px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.3s;
+            font-size: 0.85rem;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.2s ease;
         }
 
         .btn-delete:hover {
-            background: #c0392b;
+            background: #f34359;
         }
 
-        .empty-message {
+        .empty-state {
             text-align: center;
-            color: #999;
+            color: #5c6686;
             padding: 40px;
-            font-size: 1.1em;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>방탈출 예약</h1>
+        <nav class="nav">
+            <a href="/" class="back-btn">
+                <span>←</span>
+                <span>메인으로</span>
+            </a>
+        </nav>
 
-        <div class="form-section">
+        <header>
+            <h1>예약하기</h1>
+        </header>
+
+        <div class="form-card">
             <h2>새 예약 만들기</h2>
             <form id="reservationForm">
                 <div class="form-group">
@@ -163,9 +312,13 @@
                 </div>
                 <div class="form-group">
                     <label for="timeId">시간</label>
-                    <select id="timeId" name="timeId" required>
-                        <option value="">시간을 선택하세요</option>
-                    </select>
+                    <div class="time-picker">
+                        <p class="time-picker-guide">직접 입력 없이, 아래에서 원하는 시간대를 눌러 선택하세요.</p>
+                        <div id="timeSlots" class="time-slots">
+                            <div class="time-slot-empty">예약 가능 시간을 불러오는 중입니다...</div>
+                        </div>
+                        <input type="hidden" id="timeId" name="timeId" required>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="themeId">테마</label>
@@ -177,10 +330,10 @@
             </form>
         </div>
 
-        <div class="reservations-list">
+        <div class="list-card">
             <h2>내 예약 목록</h2>
             <div id="reservationsList">
-                <div class="empty-message">로딩 중...</div>
+                <div class="empty-state">로딩 중...</div>
             </div>
         </div>
     </div>
@@ -196,15 +349,75 @@
             fetch('/times')
                 .then(response => response.json())
                 .then(times => {
-                    const select = document.getElementById('timeId');
-                    times.forEach(time => {
-                        const option = document.createElement('option');
-                        option.value = time.id;
-                        option.textContent = time.startAt;
-                        select.appendChild(option);
-                    });
+                    renderTimeSlots(times);
                 })
-                .catch(error => console.error('시간 목록 불러오기 실패:', error));
+                .catch(error => {
+                    console.error('시간 목록 불러오기 실패:', error);
+                    document.getElementById('timeSlots').innerHTML =
+                        '<div class="time-slot-empty">시간 목록을 불러오지 못했습니다.</div>';
+                });
+        }
+
+        function renderTimeSlots(times) {
+            const container = document.getElementById('timeSlots');
+
+            if (times.length === 0) {
+                container.innerHTML = '<div class="time-slot-empty">선택 가능한 시간이 없습니다.</div>';
+                return;
+            }
+
+            const groups = {
+                '오전': [],
+                '오후': [],
+                '저녁': []
+            };
+
+            times.forEach(time => {
+                const hour = parseInt(time.startAt.split(':')[0], 10);
+
+                if (hour < 12) {
+                    groups['오전'].push(time);
+                    return;
+                }
+
+                if (hour < 18) {
+                    groups['오후'].push(time);
+                    return;
+                }
+
+                groups['저녁'].push(time);
+            });
+
+            container.innerHTML = Object.entries(groups)
+                .filter(([, groupTimes]) => groupTimes.length > 0)
+                .map(([label, groupTimes]) => `
+                    <div class="time-slot-group">
+                        <p class="time-slot-group-title">${label}</p>
+                        <div class="time-slot-group-buttons">
+                            ${groupTimes.map(time => `
+                                <button
+                                    type="button"
+                                    class="time-slot-btn"
+                                    data-time-id="${time.id}"
+                                    aria-pressed="false"
+                                    onclick="selectTime(${time.id})"
+                                >
+                                    ${time.startAt}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        function selectTime(timeId) {
+            document.getElementById('timeId').value = timeId;
+
+            document.querySelectorAll('.time-slot-btn').forEach(button => {
+                const isSelected = parseInt(button.dataset.timeId, 10) === timeId;
+                button.classList.toggle('selected', isSelected);
+                button.setAttribute('aria-pressed', String(isSelected));
+            });
         }
 
         function loadThemes() {
@@ -229,7 +442,7 @@
                     const container = document.getElementById('reservationsList');
 
                     if (reservations.length === 0) {
-                        container.innerHTML = '<div class="empty-message">예약 내역이 없습니다.</div>';
+                        container.innerHTML = '<div class="empty-state">예약 내역이 없습니다.</div>';
                         return;
                     }
 
@@ -263,7 +476,7 @@
                 .catch(error => {
                     console.error('예약 목록 불러오기 실패:', error);
                     document.getElementById('reservationsList').innerHTML =
-                        '<div class="empty-message">예약 목록을 불러오는데 실패했습니다.</div>';
+                        '<div class="empty-state">예약 목록을 불러오는데 실패했습니다.</div>';
                 });
         }
 
@@ -277,6 +490,11 @@
                 themeId: parseInt(document.getElementById('themeId').value)
             };
 
+            if (!reservationData.timeId) {
+                alert('예약 시간을 선택해주세요.');
+                return;
+            }
+
             fetch('/reservations', {
                 method: 'POST',
                 headers: {
@@ -288,6 +506,10 @@
                 if (response.ok) {
                     alert('예약이 완료되었습니다!');
                     document.getElementById('reservationForm').reset();
+                    document.querySelectorAll('.time-slot-btn').forEach(button => {
+                        button.classList.remove('selected');
+                        button.setAttribute('aria-pressed', 'false');
+                    });
                     loadReservations();
                 } else {
                     return response.json().then(error => {

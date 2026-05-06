@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>예약 관리</title>
+    <title>예약 관리 - 방탈출 예약</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,10 +14,10 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #0a0e27;
             min-height: 100vh;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
         .container {
@@ -24,25 +25,56 @@
             margin: 0 auto;
         }
 
-        h1 {
-            color: white;
+        .nav {
+            margin-bottom: 40px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #151932;
+            color: #c5cae9;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid #1f2547;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: #1a1f3a;
+            border-color: #2d3561;
+            color: #ffffff;
+        }
+
+        header {
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 60px;
         }
 
-        .reservations-list {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
         }
 
-        .reservations-list h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
+        .list-card {
+            background: #151932;
+            border: 1px solid #1f2547;
+            border-radius: 12px;
+            padding: 32px;
+        }
+
+        .list-card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 24px;
         }
 
         table {
@@ -51,53 +83,82 @@
         }
 
         th {
-            background: #667eea;
-            color: white;
-            padding: 15px;
+            background: #1a1f3a;
+            color: #c5cae9;
+            padding: 14px;
             text-align: left;
             font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid #1f2547;
         }
 
         td {
-            padding: 15px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 14px;
+            border: 1px solid #1f2547;
+            color: #c5cae9;
+            font-size: 0.9rem;
         }
 
         tr:hover {
-            background: #f8f9fa;
+            background: #1a1f3a;
         }
 
         .btn-delete {
-            background: #e74c3c;
+            background: #f5576c;
             color: white;
-            padding: 6px 15px;
+            padding: 6px 14px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.3s;
+            font-size: 0.85rem;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.2s ease;
         }
 
         .btn-delete:hover {
-            background: #c0392b;
+            background: #f34359;
         }
 
-        .empty-message {
+        .empty-state {
             text-align: center;
-            color: #999;
+            color: #5c6686;
             padding: 40px;
-            font-size: 1.1em;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>예약 관리</h1>
+        <nav class="nav">
+            <a href="/" class="back-btn">
+                <span>←</span>
+                <span>메인으로</span>
+            </a>
+        </nav>
 
-        <div class="reservations-list">
+        <header>
+            <h1>예약 관리</h1>
+        </header>
+
+        <div class="list-card">
             <h2>전체 예약 목록</h2>
             <div id="reservationsList">
-                <div class="empty-message">로딩 중...</div>
+                <div class="empty-state">로딩 중...</div>
             </div>
         </div>
     </div>
@@ -114,7 +175,7 @@
                     const container = document.getElementById('reservationsList');
 
                     if (reservations.length === 0) {
-                        container.innerHTML = '<div class="empty-message">예약 내역이 없습니다.</div>';
+                        container.innerHTML = '<div class="empty-state">예약 내역이 없습니다.</div>';
                         return;
                     }
 
@@ -152,7 +213,7 @@
                 .catch(error => {
                     console.error('예약 목록 불러오기 실패:', error);
                     document.getElementById('reservationsList').innerHTML =
-                        '<div class="empty-message">예약 목록을 불러오는데 실패했습니다.</div>';
+                        '<div class="empty-state">예약 목록을 불러오는데 실패했습니다.</div>';
                 });
         }
 
