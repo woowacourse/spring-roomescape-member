@@ -96,9 +96,9 @@
     ```json
     {
       "name": "어셔",
+      "date": "2026-05-04",  
       "themeId": 1,
-      "timeId": 1,
-      "date": "2026-05-04"
+      "timeId": 1
     }
     ```
     
