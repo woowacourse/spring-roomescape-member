@@ -52,8 +52,8 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationTime> findAllReservationTimes() {
-        String sql = "SELECT id, start_at FROM reservation_time";
-        return jdbcTemplate.query(sql, rowMapper);
+        String sql = "SELECT id, start_at FROM reservation_time WHERE status = ?";
+        return jdbcTemplate.query(sql, rowMapper, TimeStatus.AVAILABLE.toString());
     }
 
     public List<ReservationTime> findAvailableReservationTimes(LocalDate date, long themeId) {
@@ -65,6 +65,7 @@ public class ReservationTimeDao {
                     AND r.date = ?
                     AND r.theme_id = ?
                 WHERE r.id IS NULL
+                    AND rt.status = 'AVAILABLE'
                 """;
         return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
