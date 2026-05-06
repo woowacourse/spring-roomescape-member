@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import roomescape.holiday.exception.HolidayNotFoundException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.time.exception.TimeNotFoundException;
@@ -28,6 +29,12 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleThemeNotFound(ThemeNotFoundException e) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(ErrorResponse.of(ErrorCode.THEME_NOT_FOUND, e.getMessage()));
+  }
+
+  @ExceptionHandler(HolidayNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleHolidayNotFound(Exception e) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse.of(ErrorCode.HOLIDAY_NOT_FOUND, e.getMessage()));
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
