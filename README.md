@@ -9,7 +9,8 @@
 
 #### 메서드 / URL
 
-- POST /themes
+- POST /admin/themes
+  -테마 생성은 관리자만 수행할 수 있는 기능이므로, 일반 사용자가 접근하는 API와 명확히 구분하기 위해 `/admin` 하위 경로에 배치한다.
 
 #### 요청
 
@@ -36,7 +37,8 @@ Location: /themes/{id}
 
 #### 메서드 / URL
 
-- DELETE /themes/{id}
+- DELETE /admin/themes/{id}
+  - 테마 삭제 역시 관리자만 수행할 수 있는 기능이므로, 일반 사용자가 접근하는 API와 명확히 구분하기 위해 `/admin` 하위 경로에 배치한다.
 
 #### 응답
 
@@ -57,6 +59,7 @@ Location: /themes/{id}
 #### 메서드 / URL
 
 - GET /times?available=true
+  -  전체 시간 목록 중 특정 날짜와 테마에 대해 이용 가능한 시간만 조회하는 기능, 즉 시간에 대한 필터링이므로, 이용 가능 여부를 나타내는 `available=true` 쿼리 파라미터를 적용한다.
 
 #### 요청
 
@@ -88,6 +91,7 @@ date=2026-05-08&themeId=1
 #### 메서드 / URL
 
 - GET /themes?popular=true
+  -  전체 테마 목록 중 상위 10개 테마만을 조회하는 것이므로, 인기 여부를 나타내는 `popular=true` 쿼리 파라미터를 적용한다.
 
 #### 요청
 
