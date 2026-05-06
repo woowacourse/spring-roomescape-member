@@ -1,12 +1,15 @@
 package roomescape.domain.reservationtime;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservationtime.dto.CreateTimeRequest;
 import roomescape.domain.reservationtime.dto.CreateTimeResponse;
+import roomescape.domain.reservationtime.dto.ReservationTimeAvailabilityResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
 import roomescape.support.exception.ReservationTimeErrorCode;
 import roomescape.support.exception.RoomescapeException;
@@ -38,5 +41,25 @@ public class ReservationTimeService {
         if (deletedCount == 0) {
             log.warn("이미 삭제된 예약 시간 삭제 요청이 들어왔습니다. timeId={}", id);
         }
+    }
+
+    public List<ReservationTimeAvailabilityResponse> getReservationTimeAvailability(Long themeId, Long dateId) {
+        List<ReservationTime> allReservationTime = reservationTimeRepository.findAll();
+        Set<Long> reservedTimeIds = getReservedTimeIds(themeId, dateId);
+        return allReservationTime.stream()
+            .map(reservationTime -> ReservationTimeAvailabilityResponse.of(
+                reservationTime,
+                isAvailable(reservationTime, reservedTimeIds)
+            ))
+            .toList();
+    }
+
+    private Set<Long> getReservedTimeIds(Long themeId, Long dateId) {
+        List<Long> reservedTimeIds = reservationRepository.findReservedTimes(themeId, dateId);
+        return new HashSet<>(reservedTimeIds);
+    }
+
+    private static boolean isAvailable(ReservationTime reservationTime, Set<Long> reservedTimeIds) {
+        return !reservedTimeIds.contains(reservationTime.getId());
     }
 }

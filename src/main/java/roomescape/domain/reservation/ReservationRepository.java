@@ -1,6 +1,7 @@
 package roomescape.domain.reservation;
 
 import java.util.List;
+
 public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
@@ -12,4 +13,6 @@ public interface ReservationRepository {
     int countByTimeId(Long timeId);
 
     int countByReservationDateId(Long dateId);
+
+    List<Long> findReservedTimes(Long themeId, Long dateId);
 }

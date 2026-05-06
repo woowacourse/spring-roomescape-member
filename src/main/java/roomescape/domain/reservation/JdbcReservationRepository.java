@@ -45,6 +45,12 @@ public class JdbcReservationRepository implements ReservationRepository {
             where date_id = ?
             """;
     private static final String DELETE_BY_ID_SQL = "delete from reservation where id = ?";
+    private static final String FIND_BY_THEME_AND_DATE_SQL =
+        """
+            select time_id
+            from reservation
+            where theme_id = ? and date_id = ?
+            """;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -97,6 +103,11 @@ public class JdbcReservationRepository implements ReservationRepository {
         return count;
     }
 
+    @Override
+    public List<Long> findReservedTimes(Long themeId, Long dateId) {
+        return jdbcTemplate.query(FIND_BY_THEME_AND_DATE_SQL, reservationTimeIdRowMapper(), themeId, dateId);
+    }
+
     private RowMapper<Reservation> reservationRowMapper() {
         return (rs, rowNum) -> Reservation.of(
             rs.getLong("id"),
@@ -115,6 +126,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                 rs.getString("theme_url")
             )
         );
+    }
+
+    private RowMapper<Long> reservationTimeIdRowMapper() {
+        return (rs, rowNum) -> rs.getLong("time_id");
     }
 
     private long extractId(KeyHolder keyHolder) {
