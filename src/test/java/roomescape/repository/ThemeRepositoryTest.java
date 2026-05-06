@@ -35,9 +35,9 @@ class ThemeRepositoryTest {
     }
 
     @Nested
-    class 예약_시간을_저장한다 {
+    class 테마를_저장한다 {
         @Test
-        void 새로운_시간_정보를_저장한다() {
+        void 새로운_테마를_저장한다() {
             // given
             Theme theme = Theme.create(
                     DEFAULT_NAME,
@@ -60,7 +60,7 @@ class ThemeRepositoryTest {
         }
 
         @Test
-        void 저장한_시간_정보를_반환한다() {
+        void 저장한_테마를_반환한다() {
             // given
             Theme transientTheme = Theme.create(
                     DEFAULT_NAME,
@@ -82,7 +82,7 @@ class ThemeRepositoryTest {
     }
 
     @Test
-    void 저장된_모든_예약_시간을_조회한다() {
+    void 저장된_모든_테마를_조회한다() {
         // given
         int insertCount = 5;
         insertThemeAsAmount(insertCount);
@@ -95,10 +95,10 @@ class ThemeRepositoryTest {
     }
 
     @Nested
-    class 예약_시간을_ID_기준으로_조회한다 {
+    class 테마를_ID_기준으로_조회한다 {
 
         @Test
-        void 예약_시간을_ID_기준으로_조회한다() {
+        void 테마를_ID_기준으로_조회한다() {
             // given
             long id = DEFAULT_ID;
             String name = DEFAULT_NAME;
@@ -126,10 +126,10 @@ class ThemeRepositoryTest {
     }
 
     @Nested
-    class 예약_시간_정보를_제거한다 {
+    class 테마를_제거한다 {
 
         @Test
-        void ID_기반으로_예약_시간을_제거한다() {
+        void ID_기반으로_테마를_제거한다() {
             // given
             long id = DEFAULT_ID;
             insertTheme(
