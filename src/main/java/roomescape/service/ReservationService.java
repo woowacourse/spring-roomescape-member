@@ -46,7 +46,7 @@ public class ReservationService {
         return reservationRepository.existsByThemeId(themeId);
     }
 
-    public boolean hasReservationsBy(String date, Long timeId, Long themeId) {
+    public boolean hasReservationsBy(LocalDate date, Long timeId, Long themeId) {
         return reservationRepository.existsBy(date, timeId, themeId);
     }
 

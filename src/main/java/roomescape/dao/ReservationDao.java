@@ -1,20 +1,22 @@
 package roomescape.dao;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.utils.DateTimeConverter;
 
 @Repository
 public class ReservationDao {
@@ -28,7 +30,7 @@ public class ReservationDao {
     private final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) -> {
         ReservationTime time = new ReservationTime(
                 rs.getLong("time_id"),
-                DateTimeConverter.timeConverter(rs.getString("time_value"))
+                rs.getTime("time_value").toLocalTime()
         );
         Theme theme = new Theme(
                 rs.getLong("theme_id"),
@@ -39,7 +41,7 @@ public class ReservationDao {
         return new Reservation(
                 rs.getLong("reservation_id"),
                 rs.getString("name"),
-                DateTimeConverter.dateConverter(rs.getString("date")),
+                rs.getDate("date").toLocalDate(),
                 time,
                 theme
         );
@@ -57,7 +59,7 @@ public class ReservationDao {
         return count != null && count > 0;
     }
 
-    public boolean existsBy(String date, Long timeId, Long themeId) {
+    public boolean existsBy(LocalDate date, Long timeId, Long themeId) {
         String sql = """
                 SELECT COUNT(*)
                 FROM reservation
@@ -94,7 +96,7 @@ public class ReservationDao {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
+            ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
             return ps;

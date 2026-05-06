@@ -13,7 +13,6 @@ import roomescape.dto.TimeWithStatusResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
-import roomescape.utils.DateTimeConverter;
 
 @Component
 public class ReservationFacade {
@@ -59,7 +58,7 @@ public class ReservationFacade {
         }
         return reservationService.addReservation(new Reservation(
                         request.name(),
-                        DateTimeConverter.dateConverter(request.date()),
+                        request.date(),
                         reservationTime,
                         theme
                 )

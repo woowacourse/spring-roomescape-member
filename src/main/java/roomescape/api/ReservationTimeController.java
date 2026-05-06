@@ -17,7 +17,6 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.TimeWithStatusResponse;
 import roomescape.facade.ReservationFacade;
 import roomescape.service.ReservationTimeService;
-import roomescape.utils.DateTimeConverter;
 
 @RestController
 @RequestMapping("/times")
@@ -50,7 +49,7 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> add(@RequestBody ReservationTimeRequest request) {
-        ReservationTime time = new ReservationTime(null, DateTimeConverter.timeConverter(request.startAt()));
+        ReservationTime time = new ReservationTime(null, request.startAt());
         ReservationTimeResponse response = ReservationTimeResponse.from(reservationTimeService.addTime(time));
 
         return ResponseEntity.ok().body(response);

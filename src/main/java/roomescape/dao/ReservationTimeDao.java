@@ -3,13 +3,14 @@ package roomescape.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
 import roomescape.domain.ReservationTime;
-import roomescape.utils.DateTimeConverter;
 
 @Repository
 public class ReservationTimeDao {
@@ -22,7 +23,7 @@ public class ReservationTimeDao {
 
     private final RowMapper<ReservationTime> timeRowMapper = (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
-            DateTimeConverter.timeConverter(rs.getString("start_at"))
+            rs.getTime("start_at").toLocalTime()
     );
 
     public List<ReservationTime> findAll() {

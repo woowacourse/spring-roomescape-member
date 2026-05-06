@@ -41,7 +41,7 @@ public class ReservationRepository {
         return reservationDao.existsByThemeId(themeId);
     }
 
-    public boolean existsBy(String date, Long timeId, Long themeId) {
+    public boolean existsBy(LocalDate date, Long timeId, Long themeId) {
         return reservationDao.existsBy(date, timeId, themeId);
     }
 
