@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -36,7 +35,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
@@ -75,7 +74,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
@@ -87,7 +86,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams2)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
@@ -140,7 +139,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
@@ -161,7 +160,7 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("name", hasItem("브라운"));
+                .body("[0].name", is("브라운"));
     }
 
     @Test
@@ -184,7 +183,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
