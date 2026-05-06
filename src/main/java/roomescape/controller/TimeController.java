@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.TimeRequest;
 import roomescape.controller.dto.TimeResponse;
@@ -26,14 +25,13 @@ public class TimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<TimeResponse>> times() {
-//        return ResponseEntity.ok(convertToTimeResponses(reservationTimeService.allTimes()));
-//    }
-
     @GetMapping
-    public ResponseEntity<List<TimeResponse>> getAvailableTimes(@RequestParam("themeId") long themeId,
-                                                                @RequestParam("date") LocalDate date) {
+    public ResponseEntity<List<TimeResponse>> times() {
+        return ResponseEntity.ok(convertToTimeResponses(reservationTimeService.allTimes()));
+    }
+
+    @GetMapping(params = {"themeId", "date"})
+    public ResponseEntity<List<TimeResponse>> getAvailableTimes(long themeId, LocalDate date) {
         List<Time> allTimes = reservationTimeService.allTimes();
         List<Long> reservedTimeId = reservationTimeService.findReserved(themeId, date);
         return ResponseEntity.ok(TimeResponse.availableOf(allTimes, reservedTimeId));
