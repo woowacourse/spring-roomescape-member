@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.context.annotation.Primary;
@@ -41,13 +42,13 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public ReservationTime read(Long id) {
-        String sql = "SELECT * FROM `reservation_time` WHERE `id` = id";
+        String sql = "SELECT * FROM `reservation_time` WHERE `id` = (?)";
 
         try {
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 LocalTime startAt = rs.getTime("start_at").toLocalTime();
                 return new ReservationTime(id, startAt);
-            });
+            }, id);
         } catch (EmptyResultDataAccessException exception) {
             throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
         }
@@ -62,6 +63,21 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
             LocalTime startAt = rs.getTime("start_at").toLocalTime();
             return new ReservationTime(id, startAt);
         });
+    }
+
+    @Override
+    public List<Long> bookedTimeIdByDateAndTheme(LocalDate date, Long themeId) {
+        String sql = "SELECT t.id as time_id " +
+                "FROM `reservation_time` t " +
+                "INNER JOIN `reservation` r ON r.time_id = t.id " +
+                "WHERE r.date = (?) AND r.theme_id = (?) ";
+
+        return jdbcTemplate.query(sql,
+                (resultSet, rowNum) ->
+                        resultSet.getLong("time_id"),
+                date,
+                themeId
+        );
     }
 
     @Override

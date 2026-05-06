@@ -41,7 +41,7 @@ public class JdbcThemeDao implements ThemeDao {
 
     @Override
     public Theme read(Long id) {
-        String sql = "SELECT * FROM `theme` WHERE `id` = id";
+        String sql = "SELECT * FROM `theme` WHERE `id` = (?)";
 
         try {
             return jdbcTemplate.queryForObject(
@@ -51,7 +51,8 @@ public class JdbcThemeDao implements ThemeDao {
                         String description = resultSet.getString("description");
                         String thumbnailUrl = resultSet.getString("thumbnail_url");
                         return new Theme(id, name, description, thumbnailUrl);
-                    }
+                    },
+                    id
             );
         } catch (EmptyResultDataAccessException exception) {
             throw new CustomException(ErrorCode.NOT_FOUND_THEME);
