@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Time;
-import roomescape.dto.TimeRequestDto;
-import roomescape.dto.TimeResponseDto;
+import roomescape.dto.request.TimeRequestDto;
+import roomescape.dto.response.TimeResponseDto;
 import roomescape.service.TimeService;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class TimeController {
                 .toList());
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<TimeResponseDto> findById(@PathVariable Long id) {
         Time timeById = timeService.findById(id);
         return ResponseEntity.ok(TimeResponseDto.from(timeById));

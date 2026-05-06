@@ -6,7 +6,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.TimeDao;
-import roomescape.dto.TimeRequestDto;
+import roomescape.dto.request.TimeRequestDto;
 import roomescape.service.fake.FakeTimeDao;
 
 class TimeServiceTest {

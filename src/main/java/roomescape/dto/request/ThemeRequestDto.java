@@ -1,4 +1,4 @@
-package roomescape.dto;
+package roomescape.dto.request;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Size;

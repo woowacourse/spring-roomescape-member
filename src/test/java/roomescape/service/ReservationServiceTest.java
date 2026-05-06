@@ -12,7 +12,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
-import roomescape.dto.ReservationRequestDto;
+import roomescape.dto.request.ReservationRequestDto;
 import roomescape.service.fake.FakeReservationDao;
 import roomescape.service.fake.FakeThemeDao;
 import roomescape.service.fake.FakeTimeDao;

@@ -1,5 +1,6 @@
 package roomescape.service.fake;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,9 +8,11 @@ import java.util.Optional;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
+import roomescape.dto.response.AvailableTimeResponseDto;
 
 public class FakeThemeDao implements ThemeDao {
     private final Map<Long, Theme> store = new HashMap<>();
+
     private long sequence = 0L;
 
 
@@ -52,5 +55,10 @@ public class FakeThemeDao implements ThemeDao {
         return store.values()
                 .stream()
                 .anyMatch(theme -> theme.getName().equals(name));
+    }
+
+    @Override
+    public List<AvailableTimeResponseDto> findAvailableTimesById(Long themeId, LocalDate localDate) {
+        return List.of();
     }
 }

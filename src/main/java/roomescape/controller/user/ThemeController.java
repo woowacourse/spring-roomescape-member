@@ -1,34 +1,28 @@
-package roomescape.controller.admin;
+package roomescape.controller.user;
 
-import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import roomescape.domain.Theme;
-import roomescape.dto.request.ThemeRequestDto;
+import roomescape.dto.response.AvailableTimeResponseDto;
 import roomescape.dto.response.ThemeResponseDto;
 import roomescape.service.ThemeService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/themes")
+@RequestMapping("/themes")
 public class ThemeController {
     private final ThemeService themeService;
 
     public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
-    }
-
-    @PostMapping
-    public ResponseEntity<ThemeResponseDto> create(@Valid @RequestBody ThemeRequestDto themeRequest) {
-        Theme theme = themeService.create(themeRequest);
-        return ResponseEntity.ok(ThemeResponseDto.from(theme));
     }
 
     @GetMapping
@@ -45,9 +39,9 @@ public class ThemeController {
         return ResponseEntity.ok(ThemeResponseDto.from(themeById));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Valid @PathVariable Long id) {
-        themeService.delete(id);
-        return ResponseEntity.ok().build();
+    @GetMapping("/{id}/reservations/times")
+    public ResponseEntity<List<AvailableTimeResponseDto>> findAvailableTimesById(@PathVariable Long themeId,
+                                                                                 @RequestParam LocalDate localDate) {
+        return ResponseEntity.ok(themeService.findAvailableTimesById(themeId, localDate));
     }
 }

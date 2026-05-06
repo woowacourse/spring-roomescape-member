@@ -19,7 +19,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     rs.getString("name"),
                     LocalDate.parse(rs.getString("date")),
                     TimeJdbcDao.ROW_MAPPER.mapRow(rs, rowNum),
-                    ThemeJdbcDao.ROW_MAPPER.mapRow(rs, rowNum)
+                    ThemeJdbcDao.THEME_ROW_MAPPER.mapRow(rs, rowNum)
             );
 
 

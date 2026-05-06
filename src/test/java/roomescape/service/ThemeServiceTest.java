@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeRequestDto;
+import roomescape.dto.request.ThemeRequestDto;
 import roomescape.service.fake.FakeThemeDao;
 
 public class ThemeServiceTest {

@@ -7,7 +7,6 @@ public class Time {
     private final Long id;
     private final LocalTime startAt;
 
-
     public Time(Long id, LocalTime startAt) {
         validate(startAt);
         this.id = id;

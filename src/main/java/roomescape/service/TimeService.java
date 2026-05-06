@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.TimeDao;
 import roomescape.domain.Time;
-import roomescape.dto.TimeRequestDto;
+import roomescape.dto.request.TimeRequestDto;
 
 @Service
 @Transactional(readOnly = true)

@@ -1,22 +1,26 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
-import roomescape.dto.ThemeRequestDto;
+import roomescape.dto.request.ThemeRequestDto;
+import roomescape.dto.response.AvailableTimeResponseDto;
 
 @Service
 @Transactional(readOnly = true)
 public class ThemeService {
     private final ThemeDao themeDao;
 
+
     public ThemeService(ThemeDao themeDao) {
         this.themeDao = themeDao;
     }
-
 
     public List<Theme> findAll() {
         return themeDao.findAll();
@@ -45,5 +49,9 @@ public class ThemeService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
         themeDao.delete(theme.getId());
+    }
+
+    public List<AvailableTimeResponseDto> findAvailableTimesById(Long themeId, LocalDate localDate) {
+        return themeDao.findAvailableTimesById(themeId, localDate);
     }
 }

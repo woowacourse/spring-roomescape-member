@@ -9,7 +9,7 @@ import roomescape.dao.TimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
-import roomescape.dto.ReservationRequestDto;
+import roomescape.dto.request.ReservationRequestDto;
 
 @Service
 @Transactional(readOnly = true)
