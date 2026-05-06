@@ -1,8 +1,9 @@
 package roomescape.view;
 
+import roomescape.domain.Reservation.Reservation;
+import roomescape.domain.ReservationTime.ReservationTime;
+
 import java.util.List;
-import roomescape.dto.Reservation.ReservationResponse;
-import roomescape.dto.ReservationTime.ReservationTimeResponse;
 
 public class OutputView {
     private static final String RESERVATION_LIST_TITLE = "전체 예약 조회";
@@ -16,11 +17,11 @@ public class OutputView {
     private static final String RESERVATION_FORMAT = "id: %d, name: %s, date: %s, timeId: %d, time: %s";
     private static final String TIME_FORMAT = "id: %d, startAt: %s";
 
-    public static void printReservations(List<ReservationResponse> reservations) {
+    public static void printReservations(List<Reservation> reservations) {
         printList(RESERVATION_LIST_TITLE, reservations, OutputView::formatReservation);
     }
 
-    public static void printAddedReservation(ReservationResponse reservation) {
+    public static void printAddedReservation(Reservation reservation) {
         printSingle(RESERVATION_ADDED_MSG, formatReservation(reservation));
     }
 
@@ -28,11 +29,11 @@ public class OutputView {
         printMessageWithSpacing(RESERVATION_DELETED_MSG);
     }
 
-    public static void printReservationTimes(List<ReservationTimeResponse> reservationTimes) {
+    public static void printReservationTimes(List<ReservationTime> reservationTimes) {
         printList(TIME_LIST_TITLE, reservationTimes, OutputView::formatTime);
     }
 
-    public static void printAddedReservationTime(ReservationTimeResponse reservationTime) {
+    public static void printAddedReservationTime(ReservationTime reservationTime) {
         printSingle(TIME_ADDED_MSG, formatTime(reservationTime));
     }
 
@@ -64,12 +65,12 @@ public class OutputView {
         System.out.println();
     }
 
-    private static String formatReservation(ReservationResponse res) {
+    private static String formatReservation(Reservation res) {
         return String.format(RESERVATION_FORMAT,
                 res.id(), res.name(), res.date(), res.time().id(), res.time().startAt());
     }
 
-    private static String formatTime(ReservationTimeResponse time) {
+    private static String formatTime(ReservationTime time) {
         return String.format(TIME_FORMAT, time.id(), time.startAt());
     }
 }

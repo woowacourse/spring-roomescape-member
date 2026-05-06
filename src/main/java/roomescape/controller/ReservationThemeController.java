@@ -17,10 +17,7 @@ import roomescape.domain.ReservationTheme.ReservationTheme;
 import roomescape.domain.ReservationTheme.ReservationThemeCommand;
 import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
 import roomescape.dto.theme.AddThemeRequest;
-import roomescape.dto.theme.AddThemeResponse;
-import roomescape.dto.theme.AllThemeResponse;
 import roomescape.dto.theme.PopularConditionRequest;
-import roomescape.dto.theme.PopularThemeResponse;
 import roomescape.service.ReservationThemeService;
 
 @RestController
@@ -33,18 +30,18 @@ public class ReservationThemeController {
     }
 
     @GetMapping()
-    public ResponseEntity<AllThemeResponse> getThemes() {
+    public ResponseEntity<List<ReservationTheme>> getThemes() {
         List<ReservationTheme> themes = reservationThemeService.getAllTheme();
 
-        return new ResponseEntity<>(new AllThemeResponse(themes), HttpStatus.OK);
+        return new ResponseEntity<>(themes, HttpStatus.OK);
     }
 
     @PostMapping()
-    public ResponseEntity<AddThemeResponse> addTheme(@RequestBody @Valid AddThemeRequest addThemeRequest) {
+    public ResponseEntity<ReservationTheme> addTheme(@RequestBody @Valid AddThemeRequest addThemeRequest) {
         ReservationThemeCommand reservationThemeCommand = addThemeRequest.from();
         ReservationTheme addedReservationTheme = reservationThemeService.addTheme(reservationThemeCommand);
 
-        return new ResponseEntity<>(new AddThemeResponse(addedReservationTheme), HttpStatus.CREATED);
+        return new ResponseEntity<>(addedReservationTheme, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
@@ -55,10 +52,10 @@ public class ReservationThemeController {
     }
 
     @GetMapping(value = "/popular", params = {"start_date", "end_date", "size", "order"})
-    public ResponseEntity<PopularThemeResponse> getPopularTheme(@ModelAttribute PopularConditionRequest popularConditionRequest) {
+    public ResponseEntity<List<ReservationThemeWithCount>> getPopularTheme(@ModelAttribute PopularConditionRequest popularConditionRequest) {
         PopularThemeCondition popularThemeCondition = popularConditionRequest.to();
         List<ReservationThemeWithCount> reservationThemeWithCounts = reservationThemeService.getPopularTheme(popularThemeCondition);
 
-        return new ResponseEntity<>(PopularThemeResponse.from(reservationThemeWithCounts), HttpStatus.OK);
+        return new ResponseEntity<>(reservationThemeWithCounts, HttpStatus.OK);
     }
 }

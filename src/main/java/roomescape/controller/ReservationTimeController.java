@@ -18,8 +18,6 @@ import roomescape.domain.ReservationTime.ReservationTimeCommand;
 import roomescape.domain.ReservationTime.ReservationTimeCondition;
 import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
 import roomescape.dto.ReservationTime.AddReservationTimeRequest;
-import roomescape.dto.ReservationTime.ReservationTimeResponse;
-import roomescape.dto.ReservationTime.ReservationTimeWithAvailableResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -33,22 +31,18 @@ public class ReservationTimeController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
+    public ResponseEntity<List<ReservationTime>> getReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTime();
-        List<ReservationTimeResponse> reservationTimeResponses = reservationTimes.stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
 
-        return new ResponseEntity<>(reservationTimeResponses, HttpStatus.OK);
+        return new ResponseEntity<>(reservationTimes, HttpStatus.OK);
     }
 
     @PostMapping()
-    public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody @Valid AddReservationTimeRequest addReservationTimeRequest) {
+    public ResponseEntity<ReservationTime> addReservationTime(@RequestBody @Valid AddReservationTimeRequest addReservationTimeRequest) {
         ReservationTimeCommand reservationTimeCommand = new ReservationTimeCommand(addReservationTimeRequest.startAt());
         ReservationTime reservationTime = reservationTimeService.addReservationTime(reservationTimeCommand);
-        ReservationTimeResponse reservationTimeResponse = ReservationTimeResponse.from(reservationTime);
 
-        return new ResponseEntity<>(reservationTimeResponse, HttpStatus.OK);
+        return new ResponseEntity<>(reservationTime, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -59,10 +53,10 @@ public class ReservationTimeController {
     }
 
     @GetMapping(value = "/availability", params = {"date", "themeId"})
-    public ResponseEntity<ReservationTimeWithAvailableResponse> getReservationTimeWithAvailable(@ModelAttribute ReservationTimeCondition reservationTimeCondition) {
+    public ResponseEntity<List<ReservationTimeWithAvailable>> getReservationTimeWithAvailable(@ModelAttribute ReservationTimeCondition reservationTimeCondition) {
         ReservationTimeCondition reservationTimeWithAvailableCondition = new ReservationTimeCondition(reservationTimeCondition.date(), reservationTimeCondition.themeId());
         List<ReservationTimeWithAvailable> reservationTimesWithAvailable  = reservationTimeService.getReservationTimeByDateAndTheme(reservationTimeWithAvailableCondition);
 
-        return new ResponseEntity<>(new ReservationTimeWithAvailableResponse(reservationTimesWithAvailable), HttpStatus.OK);
+        return new ResponseEntity<>(reservationTimesWithAvailable, HttpStatus.OK);
     }
 }

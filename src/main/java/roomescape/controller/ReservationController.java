@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.dto.Reservation.ReservationCondition;
-import roomescape.dto.Reservation.ReservationResponse;
 import roomescape.dto.Reservation.AddReservationRequest;
 import roomescape.service.RoomReservationService;
 
@@ -24,20 +23,18 @@ public class ReservationController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
+    public ResponseEntity<List<Reservation>> getReservations() {
         List<Reservation> reservations = roomReservationService.getAllReservation();
-        List<ReservationResponse> response = reservations.stream().map(ReservationResponse::from).toList();
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 
     @PostMapping()
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody @Valid AddReservationRequest addReservationRequest) {
+    public ResponseEntity<Reservation> addReservation(@RequestBody @Valid AddReservationRequest addReservationRequest) {
         ReservationCommand reservationCommand = addReservationRequest.to();
         Reservation addedReservation = roomReservationService.addReservation(reservationCommand);
-        ReservationResponse response = ReservationResponse.from(addedReservation);
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(addedReservation, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -48,10 +45,9 @@ public class ReservationController {
     }
 
     @GetMapping(params = {"name"})
-    public ResponseEntity<List<ReservationResponse>> getReservation(@ModelAttribute @Valid ReservationCondition reservationCondition) {
+    public ResponseEntity<List<Reservation>> getReservation(@ModelAttribute @Valid ReservationCondition reservationCondition) {
         List<Reservation> reservations = roomReservationService.getAllReservationByName(reservationCondition.name());
-        List<ReservationResponse> response = reservations.stream().map(ReservationResponse::from).toList();
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 }
