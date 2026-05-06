@@ -59,4 +59,14 @@ class JdbcHolidayRepositoryTest {
         assertThat(holidayRepository.deleteById(1L)).isTrue();
         assertThat(holidayRepository.findAll()).isEmpty();
     }
+
+    @Test
+    void existsByDate() {
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        assertThat(holidayRepository.existsByDate(date)).isFalse();
+
+        holidayRepository.save(new Holiday(date));
+        assertThat(holidayRepository.existsByDate(date)).isTrue();
+        assertThat(holidayRepository.existsByDate(date.plusDays(1))).isFalse();
+    }
 }
