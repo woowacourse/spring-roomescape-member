@@ -14,7 +14,7 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.service.ReservationTimeService;
 
 @RestController
-@RequestMapping("/admin/themes/{themeId}/times")
+@RequestMapping("/admin/themes")
 public class ReservationTimeAdminController {
 
     private final ReservationTimeService reservationTimeService;
@@ -23,27 +23,26 @@ public class ReservationTimeAdminController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping
+    @GetMapping("/{themeId}/times")
     public ResponseEntity<List<ReservationTime>> read(@PathVariable final Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeService.findAllByThemeId(themeId);
         return ResponseEntity.ok()
                 .body(reservationTimes);
     }
 
-    @PostMapping
+    @PostMapping("/{themeId}/times")
     public ResponseEntity<ReservationTime> create(
             @PathVariable final Long themeId,
             @RequestBody final ReservationTimeCreateRequest request
     ) {
         ReservationTime reservationTime = reservationTimeService.save(request.startAt(), themeId);
 
-        return ResponseEntity.status(201)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(reservationTime);
     }
 
     @DeleteMapping("/{timeId}")
-    public ResponseEntity<Void> delete(@PathVariable final Long themeId,
-                                       @PathVariable final Long timeId) {
+    public ResponseEntity<Void> delete(@PathVariable final Long timeId) {
         reservationTimeService.deleteById(timeId);
         return ResponseEntity.noContent()
                 .build();
