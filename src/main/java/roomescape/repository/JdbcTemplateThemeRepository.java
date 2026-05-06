@@ -53,4 +53,9 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
                 theme.description(),
                 theme.thumbnailUrl());
     }
+
+    @Override
+    public void delete(Long id) {
+        jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+    }
 }

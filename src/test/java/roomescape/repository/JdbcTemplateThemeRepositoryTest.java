@@ -45,4 +45,13 @@ class JdbcTemplateThemeRepositoryTest {
         assertThat(savedTheme.description()).isEqualTo("마법 학교의 마지막 시험을 통과하세요.");
         assertThat(savedTheme.thumbnailUrl()).isEqualTo("https://example.com/theme10.jpg");
     }
+
+    @Test
+    void 테마를_삭제한다() {
+        Theme theme = new Theme(null, "마법 학교", "마법 학교의 마지막 시험을 통과하세요.", "https://example.com/theme10.jpg");
+        long id = themeRepository.save(theme).id();
+
+        themeRepository.delete(id);
+        assertThat(themeRepository.findAll().size()).isEqualTo(DEFAULT_THEME_SIZE);
+    }
 }

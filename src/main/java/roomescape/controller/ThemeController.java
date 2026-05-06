@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.response.ThemeResponse;
 import roomescape.service.ThemeService;
@@ -15,6 +16,7 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
+    @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes() {
         List<ThemeResponse> themeResponses = ThemeResponse.from(themeService.getThemes());
 
