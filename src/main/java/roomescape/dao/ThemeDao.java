@@ -35,6 +35,18 @@ public class ThemeDao {
         );
     }
 
+    public List<Theme> findAllThemes() {
+        return jdbcTemplate.query(
+                "SELECT id, name, description, url FROM theme",
+                (rs, rowNum) -> new Theme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("url")
+                )
+        );
+    }
+
     public List<Theme> findTopThemes(Long count) {
         return jdbcTemplate.query(
                 """

@@ -1,4 +1,6 @@
 package roomescape.dto.request;
 
-public record ThemeRequest(String name, String description, String url) {
+import org.springframework.web.multipart.MultipartFile;
+
+public record ThemeRequest(String name, String description, MultipartFile file) {
 }
