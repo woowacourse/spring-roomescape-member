@@ -11,6 +11,7 @@ import roomescape.service.dto.TimeAvailabilityDto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -30,12 +31,20 @@ public class ReservationService {
     }
 
     public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
+        validateAlreadyReserved(date, timeId, themeId);
         ReservationTime time = findReservationTime(timeId);
         Theme theme = findTheme(themeId);
         Reservation reservation = new Reservation(null, name, date, time, theme);
         Long id = reservationRepository.insert(reservation);
-        return reservationRepository.findBy(id)
+        return reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 ID입니다."));
+    }
+
+    private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
+        Optional<Reservation> result = reservationRepository.findWith(date, timeId, themeId);
+        if (result.isPresent()) {
+            throw new IllegalArgumentException("[ERROR] 이미 예약된 시간입니다.");
+        }
     }
 
     public void delete(Long id) {
