@@ -17,6 +17,7 @@ import roomescape.global.exception.customException.ThemeException;
 import roomescape.presentation.dto.ReservationResponse;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -55,6 +56,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public void deleteReservation(Long id) {
         if (id == null) {
             throw new ReservationException(ErrorCode.RESERVATION_ID_NULL);
