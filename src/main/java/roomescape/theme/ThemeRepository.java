@@ -22,8 +22,12 @@ public class ThemeRepository {
         themeDao.delete(id);
     }
 
-    public List<Theme> findAll(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
-        return themeDao.findAll(sort, order, startDate, endDate, limit);
+    public List<Theme> findRanked(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
+        return themeDao.findRanked(sort, order, startDate, endDate, limit);
+    }
+
+    public List<Theme> findAll() {
+        return themeDao.findAll();
     }
 
     public Optional<Theme> findById(long id) {

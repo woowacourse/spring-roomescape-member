@@ -20,7 +20,17 @@ public class UserThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getThemes(@RequestParam(defaultValue = "id") String sort,
+    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
+
+        List<ThemeResponse> response = userThemeService.getAllThemes().stream()
+                .map(ThemeResponse::from)
+                .toList();
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/rank")
+    public ResponseEntity<?> getRankedThemes(@RequestParam(defaultValue = "reservation") String sort,
                                        @RequestParam(defaultValue = "DESC") String order,
                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
@@ -29,7 +39,10 @@ public class UserThemeController {
         LocalDate actualEndDate = (endDate != null) ? endDate : LocalDate.now();
         LocalDate actualStartDate = (startDate != null) ? startDate : actualEndDate.minusDays(7);
 
-        List<ThemeResponse> response = userThemeService.findThemes(sort, order, actualStartDate, actualEndDate, limit);
+        List<ThemeResponse> response = userThemeService.getThemes(sort, order, actualStartDate, actualEndDate, limit).stream()
+                .map(ThemeResponse::from)
+                .toList();
+
         return ResponseEntity.ok().body(response);
     }
 }

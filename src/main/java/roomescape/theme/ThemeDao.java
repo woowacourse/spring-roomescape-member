@@ -49,7 +49,12 @@ public class ThemeDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public List<Theme> findAll(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM themes";
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public List<Theme> findRanked(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
         String sql = getReservationSortSql(sort, order, limit);
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
     }
