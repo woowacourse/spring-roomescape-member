@@ -1,11 +1,10 @@
 package roomescape.date.fixture;
 
-import roomescape.date.domain.ReservationDate;
-import roomescape.date.repository.ReservationDateRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import roomescape.date.domain.ReservationDate;
+import roomescape.date.repository.ReservationDateRepository;
 
 public class FakeReservationDateRepository implements ReservationDateRepository {
     private final List<ReservationDate> reservationDates = new ArrayList<>();
@@ -29,6 +28,15 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
         ReservationDate savedReservationDate = ReservationDate.load(autoIncrement, reservationDate.date());
         this.reservationDates.add(savedReservationDate);
         return savedReservationDate;
+    }
+
+    public List<ReservationDate> saveAll(List<ReservationDate> reservationDates) {
+        List<ReservationDate> savedReservationDates = new ArrayList<>();
+        for (ReservationDate reservationDate : reservationDates) {
+            ReservationDate savedReservationDate = save(reservationDate);
+            savedReservationDates.add(savedReservationDate);
+        }
+        return savedReservationDates;
     }
 
     private void autoIncrement() {

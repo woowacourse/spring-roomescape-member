@@ -20,8 +20,13 @@ public class FakeThemeRepository implements ThemeRepository {
         return savedTheme;
     }
 
-    public void saveAll(List<Theme> themes) {
-        themes.forEach(this::save);
+    public List<Theme> saveAll(List<Theme> themes) {
+        List<Theme> savedThemes = new ArrayList<>();
+        for(Theme theme : themes){
+            Theme savedTheme = save(theme);
+            savedThemes.add(savedTheme);
+        }
+        return savedThemes;
     }
 
     private void autoIncrement() {

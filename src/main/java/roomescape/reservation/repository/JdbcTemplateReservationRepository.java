@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,8 +13,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
-import roomescape.time.domain.ReservationTime;
 
 @Repository
 public class JdbcTemplateReservationRepository implements ReservationRepository {
@@ -23,17 +24,15 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
             resultSet.getLong("reservation_id"),
             resultSet.getString("name"),
             resultSet.getDate("date").toLocalDate(),
-            ReservationTime.of(
-                    resultSet.getLong("time_id"),
-                    resultSet.getTime("start_at").toLocalTime()
-            ),
+            resultSet.getTime("start_at").toLocalTime(),
             Theme.load(
                     resultSet.getLong("theme_id"),
                     resultSet.getString("theme_name"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail_url"),
                     resultSet.getBoolean("is_active")
-            )
+            ),
+            ReservationStatus.valueOf(resultSet.getString("status"))
     );
 
     public JdbcTemplateReservationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -45,26 +44,19 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
     @Override
     public List<Reservation> findAll() {
-//        String sql = """
-//                SELECT r.id AS reservation_id, r.name, r.date, rt.id, rt.start_at
-//                FROM reservation r
-//                INNER JOIN reservation_time rt ON r.time_id = rt.id
-//                """;
-
         String sql = """
                 SELECT
                     r.id AS reservation_id,
                     r.name,
+                    r.start_at, 
                     r.date,
-                    rt.id AS time_id,
-                    rt.start_at,
+                    r.status,
                     t.id AS theme_id,
                     t.name AS theme_name,
                     t.description,
                     t.thumbnail_url,
                     t.is_active
                 FROM reservation r
-                INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme t ON r.theme_id = t.id
                 """;
 
@@ -79,19 +71,19 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 SELECT
                     r.id AS reservation_id,
                     r.name,
+                    r.start_at, 
                     r.date,
-                    rt.id AS time_id,
-                    rt.start_at,
+                    r.status,
                     t.id AS theme_id,
                     t.name AS theme_name,
                     t.description,
                     t.thumbnail_url,
                     t.is_active
                 FROM reservation r
-                INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme t ON r.theme_id = t.id
                 WHERE r.id = :id
                 """;
+
 
         SqlParameterSource params = new MapSqlParameterSource("id", id);
         try {
@@ -106,8 +98,9 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.name())
                 .addValue("date", reservation.date())
-                .addValue("time_id", reservation.time().id())
-                .addValue("theme_id", reservation.theme().id());
+                .addValue("time", reservation.time())
+                .addValue("theme_id", reservation.theme().id())
+                .addValue("status", reservation.status());
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
@@ -122,13 +115,13 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         }
     }
 
-    // TODO: 시그니처 변경, ThemeId 추가 
+    // TODO: 시그니처 변경, ThemeId 추가
     @Override
-    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE DATE = :date AND time_id = :time_id";
+    public boolean existsByDateAndTimeId(LocalDate date, LocalTime time){
+        String sql = "SELECT COUNT(*) FROM reservation WHERE DATE = :date AND start_at = :start_at";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", date)
-                .addValue("time_id", timeId);
+                .addValue("start_at", time);
 
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;

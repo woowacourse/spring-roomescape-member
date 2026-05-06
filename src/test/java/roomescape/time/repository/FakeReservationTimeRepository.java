@@ -1,12 +1,12 @@
 package roomescape.time.repository;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-
 import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
 
@@ -31,6 +31,16 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
         ReservationTime saved = ReservationTime.of(id, reservationTime.startAt());
         store.put(id, saved);
         return id;
+    }
+
+    public List<ReservationTime> saveAll(List<ReservationTime> times) {
+        List<ReservationTime> savedTimes = new ArrayList<>();
+        for (ReservationTime time : times) {
+            Long savedId = save(time);
+            ReservationTime saved = ReservationTime.of(savedId, time.startAt());
+            savedTimes.add(saved);
+        }                                               
+        return savedTimes;
     }
 
     @Override

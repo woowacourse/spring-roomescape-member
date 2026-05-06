@@ -44,8 +44,8 @@ class ReservationRepositoryTest {
         time = jdbcTemplateReservationTimeRepository.findById(timeId).get();
         theme = jdbcThemeRepository.save(Theme.create("테마", "설명", "썸네일"));
 
-        reservationId = jdbcTemplateReservationRepository.save(Reservation.create(name, date, time, theme));
-        jdbcTemplateReservationRepository.save(Reservation.create("판다", date, time, theme));
+        reservationId = jdbcTemplateReservationRepository.save(Reservation.create(name, date, time.startAt(), theme));
+        jdbcTemplateReservationRepository.save(Reservation.create("판다", date, time.startAt(), theme));
     }
 
     @Test
@@ -59,7 +59,7 @@ class ReservationRepositoryTest {
     @DisplayName("예약을 추가한다.")
     void save() {
         //given & when
-        jdbcTemplateReservationRepository.save(Reservation.create("새로운사람", date, time, theme));
+        jdbcTemplateReservationRepository.save(Reservation.create("새로운사람", date, time.startAt(), theme));
 
         //then
         assertThat(jdbcTemplateReservationRepository.findAll())
@@ -84,9 +84,9 @@ class ReservationRepositoryTest {
         LocalDate wrongDate = LocalDate.now().plusWeeks(3);
 
         // when & then
-        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeId(date, timeId))
+        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeId(date, time.startAt()))
                 .isTrue();
-        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeId(wrongDate, timeId))
+        assertThat(jdbcTemplateReservationRepository.existsByDateAndTimeId(wrongDate, time.startAt()))
                 .isFalse();
     }
 }

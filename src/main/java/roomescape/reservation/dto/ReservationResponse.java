@@ -1,17 +1,18 @@
 package roomescape.reservation.dto;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.dto.response.ThemeDetailDto;
-import roomescape.time.dto.ReservationTimeResponse;
 
-//TODO: status 필드 추가, time LocalTime으로 수정
 public record ReservationResponse(
         Long id,
         String name,
         LocalDate date,
-        ReservationTimeResponse time,
-        ThemeDetailDto theme
+        LocalTime time,
+        ThemeDetailDto theme,
+        ReservationStatus status
 ) {
 
     public static ReservationResponse from(Reservation reservation) {
@@ -19,8 +20,9 @@ public record ReservationResponse(
                 reservation.id(),
                 reservation.name(),
                 reservation.date(),
-                ReservationTimeResponse.from(reservation.time()),
-                ThemeDetailDto.from(reservation.theme())
+                reservation.time(),
+                ThemeDetailDto.from(reservation.theme()),
+                reservation.status()
         );
     }
 

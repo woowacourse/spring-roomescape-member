@@ -1,23 +1,22 @@
 package roomescape.reservation.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static roomescape.reservation.domain.ReservationStatus.RESERVED;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.theme.domain.Theme;
-import roomescape.time.domain.ReservationTime;
 
 class ReservationTest {
     private final String name = "한다";
     private final LocalDate date = LocalDate.now().plusMonths(1);
-    private final ReservationTime time = ReservationTime.of(1L, LocalTime.of(15, 40));
+    private final LocalTime startAt = LocalTime.of(15, 40);
     private final Theme theme = Theme.load(1L, "테마", "설명", "썸네일", true);
-    private final Reservation reservation = Reservation.of(1L, name, date, time, theme);
+    private final Reservation reservation = Reservation.of(1L, name, date, startAt, theme, RESERVED);
 
     @Test
     @DisplayName("예약 id를 가져온다.")
@@ -59,13 +58,13 @@ class ReservationTest {
     }
 
     @Test
-    @DisplayName("예약시간 id를 가져온다.")
+    @DisplayName("예약시간을 가져온다.")
     void getTime() {
         //given
-        Long expected = 1L;
+        LocalTime expected = startAt;
 
         //when
-        Long actual = reservation.time().id();
+        LocalTime actual = reservation.time();
 
         //then
         assertEquals(expected, actual);
@@ -75,34 +74,23 @@ class ReservationTest {
     @DisplayName("두 예약 객체의 동등성을 비교한다.")
     void equals() {
         //given & when
-        Reservation otherReservation = Reservation.of(1L, "한다", LocalDate.now().plusMonths(1),
-                ReservationTime.of(1L, LocalTime.of(15, 40)),
-                Theme.load(1L, "테마", "설명", "썸네일", true)
-        );
+        Reservation otherReservation = Reservation.of(1L, name, date, startAt, theme, RESERVED);
 
         //then
-        Assertions.assertThat(reservation)
+        assertThat(reservation)
                 .usingRecursiveComparison()
                 .isEqualTo(otherReservation);
     }
 
     @Test
-    @DisplayName("아직 DB에 추가되지 않은 예약끼리와는 동등하지 않다.")
-    void equals_null_id() {
+    @DisplayName("아직 DB에 추가되지 않은 예약은 id가 없다.")
+    void unpersist_reservation_null_id() {
         //given & when
-        Reservation reservation1 = Reservation.create("한다", LocalDate.now().plusWeeks(1),
-                ReservationTime.of(1L, LocalTime.of(10, 0)),
-                Theme.load(1L, "테마", "설명", "썸네일", true)
-        );
-        Reservation reservation2 = Reservation.create("한다", LocalDate.now().plusWeeks(1),
-                ReservationTime.of(1L, LocalTime.of(10, 0)),
-                Theme.load(1L, "테마", "설명", "썸네일", true)
-        );
+        Reservation unpersistReservation = Reservation.create("한다", date, startAt, theme);
 
         //then
-        Assertions.assertThat(reservation1)
-                .usingRecursiveComparison()
-                .isEqualTo(reservation2);
+        assertThat(unpersistReservation.id())
+                .isNull();
     }
 
     @Test
@@ -112,7 +100,7 @@ class ReservationTest {
         LocalDate pastDate = LocalDate.now().minusDays(1);
 
         //then
-        assertThatThrownBy(() -> Reservation.create(name, pastDate, time, theme))
+        assertThatThrownBy(() -> Reservation.create(name, pastDate, startAt, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("과거 날짜/시간으로는 예약할 수 없습니다.");
     }
@@ -123,11 +111,11 @@ class ReservationTest {
         String nullName = null;
         String emptyName = "";
 
-        assertThatThrownBy(() -> Reservation.create(nullName, date, time, theme))
+        assertThatThrownBy(() -> Reservation.create(nullName, date, startAt, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약자 이름은 필수입니다.");
 
-        assertThatThrownBy(() -> Reservation.create(emptyName, date, time, theme))
+        assertThatThrownBy(() -> Reservation.create(emptyName, date, startAt, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약자 이름은 필수입니다.");
     }
@@ -135,7 +123,7 @@ class ReservationTest {
     @Test
     @DisplayName("예약 시간이 유효하지 않은 경우 생성 시 예외가 발생한다.")
     void validateTime() {
-        ReservationTime nullTime = null;
+        LocalTime nullTime = null;
 
         assertThatThrownBy(() -> Reservation.create(name, date, nullTime, theme))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -147,7 +135,7 @@ class ReservationTest {
     void validateDate() {
         LocalDate nullDate = null;
 
-        assertThatThrownBy(() -> Reservation.create(name, nullDate, time, theme))
+        assertThatThrownBy(() -> Reservation.create(name, nullDate, startAt, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 날짜는 필수입니다.");
     }
@@ -157,7 +145,7 @@ class ReservationTest {
     void validateId() {
         Long nullId = null;
 
-        assertThatThrownBy(() -> Reservation.of(nullId, name, date, time, theme))
+        assertThatThrownBy(() -> Reservation.of(nullId, name, date, startAt, theme, RESERVED))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 ID는 필수입니다.");
     }

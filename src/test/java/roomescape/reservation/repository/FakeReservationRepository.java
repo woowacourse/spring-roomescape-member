@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +29,15 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public Long save(Reservation reservation) {
         Long id = idGenerator.getAndIncrement();
-        Reservation saved = Reservation.of(id, reservation.name(), reservation.date(), reservation.time(), reservation.theme());
+        Reservation saved = Reservation.of(id, reservation.name(), reservation.date(), reservation.time(), reservation.theme(), reservation.status());
         store.put(id, saved);
         return id;
+    }
+
+    public void saveAll(List<Reservation> reservations) {
+        for (Reservation reservation : reservations) {
+            save(reservation);
+        }
     }
 
     @Override
@@ -43,8 +50,10 @@ public class FakeReservationRepository implements ReservationRepository {
 
     //TODO: themeId 파라미터 추가
     @Override
-    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
+    public boolean existsByDateAndTimeId(LocalDate date, LocalTime time) {
         return store.values().stream()
-                .anyMatch(reservation -> reservation.date().equals(date) && reservation.time().id().equals(timeId));
+                .anyMatch(reservation -> reservation.date().equals(date) && reservation.time().equals(time));
     }
+
+
 }
