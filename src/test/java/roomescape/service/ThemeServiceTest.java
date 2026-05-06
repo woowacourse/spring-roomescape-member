@@ -32,7 +32,6 @@ class ThemeServiceTest {
 
     @Test
     void 테마가_3개면_결과_반환() {
-        // 3 elements of themes
         List<Theme> themes = List.of(
                 new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg"),
                 new Theme(2L, "escape2", "방탈출2", "http://example.com/img2.jpg"),

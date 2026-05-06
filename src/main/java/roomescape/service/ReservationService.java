@@ -4,21 +4,27 @@ import org.springframework.stereotype.Service;
 import roomescape.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<Reservation> findAllReservations() {
@@ -32,7 +38,10 @@ public class ReservationService {
     public Reservation saveReservation(ReservationSaveCommand command) {
         ReservationTime reservationTime = reservationTimeRepository.findById(command.timeId())
                 .orElseThrow(() -> new NotFoundException("reservation"));
-        Reservation reservation = new Reservation(null, command.name(), command.date(), reservationTime);
+        Theme theme = themeRepository.findById(command.themeId())
+                .orElseThrow(() -> new NotFoundException("theme"));
+        Reservation reservation = new Reservation(null, command.name(), command.date(), reservationTime, theme);
+
         return reservationRepository.addReservation(reservation);
     }
 }

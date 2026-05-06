@@ -3,11 +3,18 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public record Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
     public Reservation {
         validateName(name);
         validateDate(date);
         validateTime(time);
+        validateTheme(theme);
+    }
+
+    private void validateTheme(Theme theme) {
+        if (Objects.isNull(theme)) {
+            throw new IllegalArgumentException("유효하지 않는 테마입니다.");
+        }
     }
 
     private void validateTime(ReservationTime time) {
@@ -33,6 +40,10 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
 
     public long timeId() {
         return time.id();
+    }
+
+    public long themeId() {
+        return theme.id();
     }
 
     @Override

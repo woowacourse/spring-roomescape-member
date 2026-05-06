@@ -1,57 +1,97 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.test.annotation.DirtiesContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.exception.NotFoundException;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
     private static final long TIME_ID = 1L;
+    private static final long THEME_ID = 1L;
 
-    @Autowired
+    @Mock
+    private ReservationRepository reservationRepository;
+
+    @Mock
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Mock
+    private ThemeRepository themeRepository;
+
+    @InjectMocks
     private ReservationService reservationService;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-    }
 
     @Test
     void 예약을_저장하면_id가_채워진_도메인을_반환한다() {
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 3), TIME_ID);
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 3), TIME_ID, THEME_ID);
+        Reservation persisted = new Reservation(99L, "브라운", LocalDate.of(2026, 5, 3), time, theme);
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+        given(reservationRepository.addReservation(any(Reservation.class))).willReturn(persisted);
 
         Reservation saved = reservationService.saveReservation(saveCommand);
 
-        assertThat(saved.id()).isNotNull();
+        assertThat(saved.id()).isEqualTo(99L);
         assertThat(saved.name()).isEqualTo("브라운");
         assertThat(saved.date()).isEqualTo(LocalDate.of(2026, 5, 3));
         assertThat(saved.time().id()).isEqualTo(TIME_ID);
+        assertThat(saved.theme().id()).isEqualTo(THEME_ID);
+    }
+
+    @Test
+    void 존재하지_않는_시간으로_저장하면_예외가_발생한다() {
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 3), TIME_ID, THEME_ID);
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void 존재하지_않는_테마로_저장하면_예외가_발생한다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 3), TIME_ID, THEME_ID);
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void 저장된_모든_예약을_조회한다() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
-                "브라운", "2026-05-03", TIME_ID);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
-                "조이", "2026-05-04", TIME_ID);
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        List<Reservation> stored = List.of(
+                new Reservation(1L, "브라운", LocalDate.of(2026, 5, 3), time, theme),
+                new Reservation(2L, "조이", LocalDate.of(2026, 5, 4), time, theme));
+        given(reservationRepository.findAllReservations()).willReturn(stored);
 
         List<Reservation> reservations = reservationService.findAllReservations();
 
@@ -60,6 +100,8 @@ class ReservationServiceTest {
 
     @Test
     void 예약이_없으면_빈_리스트를_반환한다() {
+        given(reservationRepository.findAllReservations()).willReturn(List.of());
+
         List<Reservation> reservations = reservationService.findAllReservations();
 
         assertThat(reservations).isEmpty();
@@ -67,19 +109,10 @@ class ReservationServiceTest {
 
     @Test
     void id로_예약을_삭제한다() {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(conn -> {
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO reservation (name, date, time_id) " +
-                    "VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
-            ps.setString(1, "브라운");
-            ps.setString(2, "2026-05-03");
-            ps.setLong(3, TIME_ID);
-            return ps;
-        }, keyHolder);
+        long reservationId = 1L;
 
-        reservationService.deleteById(keyHolder.getKey().longValue());
+        reservationService.deleteById(reservationId);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM reservation", Integer.class);
-        assertThat(count).isEqualTo(0);
+        verify(reservationRepository).deleteById(eq(reservationId));
     }
 }

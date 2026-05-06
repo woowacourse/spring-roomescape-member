@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -9,6 +10,7 @@ import roomescape.domain.Theme;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class JdbcTemplateThemeRepository implements ThemeRepository {
@@ -57,5 +59,24 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
     @Override
     public void delete(Long id) {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+    }
+
+    @Override
+    public Optional<Theme> findById(Long id) {
+        try {
+            Theme theme = jdbcTemplate.queryForObject(
+                    "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?",
+                    (rs, rowNum) -> new Theme(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            rs.getString("thumbnail_url")
+                    ),
+                    id);
+
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

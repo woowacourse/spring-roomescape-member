@@ -6,9 +6,9 @@ import roomescape.domain.ReservationTime;
 
 import java.time.LocalDate;
 
-public record ReservationRequest(String name, LocalDate date, Long timeId) {
+public record ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
 
     public ReservationSaveCommand toSaveCommand() {
-        return new ReservationSaveCommand(name, date, timeId);
+        return new ReservationSaveCommand(name, date, timeId, themeId);
     }
 }
