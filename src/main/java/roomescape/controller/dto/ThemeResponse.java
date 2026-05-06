@@ -1,23 +1,29 @@
-package roomescape.service.dto;
+package roomescape.controller.dto;
 
-import roomescape.domain.Theme;
+import roomescape.service.dto.ThemeResult;
 
-public class ThemeResult {
+public class ThemeResponse {
 
     private final Long id;
     private final String name;
     private final String description;
     private final String thumbnailUrl;
 
-    public ThemeResult(Long id, String name, String description, String thumbnailUrl) {
+    public ThemeResponse(Long id, String name, String description, String thumbnailUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public static ThemeResult from(Theme theme) {
-        return new ThemeResult(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
+
+    public static ThemeResponse from(ThemeResult result) {
+        return new ThemeResponse(
+                result.getId(),
+                result.getName(),
+                result.getDescription(),
+                result.getThumbnailUrl()
+        );
     }
 
     public Long getId() {
@@ -32,7 +38,7 @@ public class ThemeResult {
         return description;
     }
 
-    public String getThumbnailUrl() {
+    public String getThumbnail() {
         return thumbnailUrl;
     }
 }
