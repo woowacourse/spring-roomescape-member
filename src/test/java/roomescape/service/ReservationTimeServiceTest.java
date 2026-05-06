@@ -9,8 +9,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import roomescape.repository.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.ReservationTimeRepository;
 
 import java.time.LocalTime;
 import java.util.List;
