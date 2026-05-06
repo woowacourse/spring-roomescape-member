@@ -16,33 +16,6 @@ import java.util.Optional;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
-    private static final String FIND_ALL_SQL = """
-            SELECT id, start_at
-            FROM reservation_time
-            """;
-
-    private static final String FIND_BY_ID_SQL = """
-            SELECT id, start_at
-            FROM reservation_time
-            WHERE id = ?
-            """;
-
-    private static final String EXISTS_BY_START_AT_SQL = """
-            SELECT COUNT(*)
-            FROM reservation_time
-            WHERE start_at = ?
-            """;
-
-    private static final String INSERT_SQL = """
-            INSERT INTO reservation_time (start_at)
-            VALUES (?)
-            """;
-
-    private static final String DELETE_SQL = """
-            DELETE FROM reservation_time
-            WHERE id = ?
-            """;
-
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
             new ReservationTime(
                     resultSet.getLong("id"),
@@ -68,31 +41,48 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query(FIND_ALL_SQL, reservationTimeRowMapper);
+        return jdbcTemplate.query("""
+                SELECT id, start_at
+                FROM reservation_time
+                """, reservationTimeRowMapper);
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE_SQL, id);
+        jdbcTemplate.update("""
+                DELETE FROM reservation_time
+                WHERE id = ?
+                """, id);
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        return jdbcTemplate.query(FIND_BY_ID_SQL, reservationTimeRowMapper, id)
+        return jdbcTemplate.query("""
+                        SELECT id, start_at
+                        FROM reservation_time
+                        WHERE id = ?
+                        """, reservationTimeRowMapper, id)
                 .stream()
                 .findFirst();
     }
 
     @Override
     public boolean existsByStartAt(LocalTime startAt) {
-        Integer count = jdbcTemplate.queryForObject(EXISTS_BY_START_AT_SQL, Integer.class, startAt.toString());
+        Integer count = jdbcTemplate.queryForObject("""
+                SELECT COUNT(*)
+                FROM reservation_time
+                WHERE start_at = ?
+                """, Integer.class, startAt.toString());
         return count != null && count > 0;
     }
 
     private int insert(ReservationTime reservationTime, KeyHolder keyHolder) {
         return jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    INSERT_SQL,
+                    """
+                            INSERT INTO reservation_time (start_at)
+                            VALUES (?)
+                            """,
                     new String[]{"id"}
             );
             preparedStatement.setString(1, reservationTime.getStartAt().toString());
