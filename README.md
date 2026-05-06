@@ -7,11 +7,12 @@
 
 #### API 명세
 
-`GET /theme` 테마 리스트 조회
+`GET /theme` 사용자 테마 리스트 조회
+`GET /admin/theme` 관리자 테마 리스트 조회
 
-`POST /admin/themes` 테마 생성 (관리자)
+`POST /admin/themes` 관리자 테마 생성
 
-`DELETE /admin/themes/{id}` 테마 삭제 (관리자)
+`DELETE /admin/themes/{id}` 관리자 테마 삭제
 
 ### 2단계 - 사용자 예약
 
@@ -20,7 +21,8 @@
 
 #### API 명세
 
-`GET /themes/{id}/times?date={date}` 예약 가능한 시간 목록 조회
+`GET /themes/{id}/times?date={date}` 사용자 예약 가능한 시간 목록 조회
+`GET /admin/themes/{id}/times?date={date}` 관리자 예약 가능한 시간 목록 조회
 
 ### 3단계 - 인기 테마 조회
 
@@ -29,4 +31,5 @@
 
 #### API 명세
 
-`GET /themes/popular?limit={limit}`
+`GET /themes/popular?limit={limit}` 사용자 최근 일주일 인기 테마 조회
+`GET /admin/themes/popular?limit={limit}` 관리자 최근 일주일 인기 테마 조회
