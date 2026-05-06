@@ -14,4 +14,6 @@ public interface ThemeService {
     List<Theme> getThemes();
 
     List<AvailableTime> getAvailableTimes(Long id, LocalDate date);
+
+    List<PopularTheme> getPopularThemes(int days, int limit);
 }

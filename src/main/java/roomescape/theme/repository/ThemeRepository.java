@@ -71,4 +71,20 @@ public class ThemeRepository {
                 rs.getLong("id")
         );
     }
+
+    public List<Theme> findPopularThemes(LocalDate endDate, LocalDate startDate, int limit) {
+        String sql = "SELECT r.theme_id, t.name, t.description, t.thumbnail " +
+                "FROM reservation r " +
+                "JOIN theme t ON r.theme_id = t.id " +
+                "WHERE r.date BETWEEN ? AND ? " +
+                "GROUP BY r.theme_id " +
+                "ORDER BY count(r.theme_id) DESC " +
+                "LIMIT ?";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("thumbnail")));
+    }
 }

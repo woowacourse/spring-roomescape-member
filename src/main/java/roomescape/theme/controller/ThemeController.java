@@ -2,9 +2,11 @@ package roomescape.theme.controller;
 
 import org.springframework.web.bind.annotation.*;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.ResponsePopularTheme;
 import roomescape.theme.dto.ResponseTheme;
 import roomescape.theme.dto.ResponseThemeAvailableTime;
 import roomescape.theme.service.AvailableTime;
+import roomescape.theme.service.PopularTheme;
 import roomescape.theme.service.ThemeService;
 
 import java.time.LocalDate;
@@ -33,6 +35,14 @@ public class ThemeController {
         List<AvailableTime> availableTimes = themeService.getAvailableTimes(id, date);
         return availableTimes.stream()
                 .map(ResponseThemeAvailableTime::from)
+                .toList();
+    }
+
+    @GetMapping("/popular")
+    public List<ResponsePopularTheme> getPopularThemes(@RequestParam int days, @RequestParam int limit) {
+        List<PopularTheme> popularThemes = themeService.getPopularThemes(days, limit);
+        return popularThemes.stream()
+                .map(ResponsePopularTheme::from)
                 .toList();
     }
 }

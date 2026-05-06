@@ -52,4 +52,20 @@ public class ThemeServiceImpl implements ThemeService {
 
         return response;
     }
+
+    @Override
+    public List<PopularTheme> getPopularThemes(int days, int limit) {
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(days);
+        List<Theme> themes = themeRepository.findPopularThemes(endDate, startDate, limit);
+
+        return themes.stream()
+                .map(theme -> new PopularTheme(
+                        theme.getId(),
+                        theme.getName(),
+                        theme.getDescription(),
+                        theme.getThumbnail(),
+                        themes.indexOf(theme) + 1))
+                .toList();
+    }
 }
