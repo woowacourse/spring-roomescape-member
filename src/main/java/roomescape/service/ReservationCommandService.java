@@ -21,7 +21,7 @@ public class ReservationCommandService {
 
     public Reservation create(String name, LocalDate date, long timeId, long themeId) {
         validateDuplicate(date, timeId, themeId);
-        return reservationDao.save(Reservation.pending(name, date), timeId, themeId);
+        return reservationDao.save(name, date, timeId, themeId);
     }
 
     public void delete(long reservationId) {

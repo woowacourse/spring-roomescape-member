@@ -32,11 +32,11 @@ public class ThemeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Theme save(Theme theme) {
+    public Theme save(String name, String thumbnailUrl, String description) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", theme.name())
-                .addValue("thumbnail_url", theme.thumbnailUrl())
-                .addValue("description", theme.description());
+                .addValue("name", name)
+                .addValue("thumbnail_url", thumbnailUrl)
+                .addValue("description", description);
 
         Number themeId = insertExecutor.executeAndReturnKey(params);
 

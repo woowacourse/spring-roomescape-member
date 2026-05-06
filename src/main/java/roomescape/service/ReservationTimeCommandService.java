@@ -15,7 +15,7 @@ public class ReservationTimeCommandService {
     private final ReservationTimeDao reservationTimeDao;
 
     public ReservationTime create(LocalTime startAt) {
-        return reservationTimeDao.save(ReservationTime.pending(startAt));
+        return reservationTimeDao.save(startAt);
 
     }
 

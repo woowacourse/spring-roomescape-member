@@ -49,11 +49,11 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Reservation save(Reservation reservation, long timeId, long themeId) {
+    public Reservation save(String name, LocalDate date, long timeId, long themeId) {
 
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.username())
-                .addValue("date", reservation.reservationDate())
+                .addValue("name", name)
+                .addValue("date", date)
                 .addValue("time_id", timeId)
                 .addValue("theme_id", themeId);
 

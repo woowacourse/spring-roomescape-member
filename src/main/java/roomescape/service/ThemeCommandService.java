@@ -13,7 +13,7 @@ public class ThemeCommandService {
     private final ThemeDao themeDao;
 
     public Theme create(String name, String thumbnailUrl, String description) {
-        return themeDao.save(Theme.pending(name, thumbnailUrl, description));
+        return themeDao.save(name, thumbnailUrl, description);
     }
 
     public void delete(long themeId) {

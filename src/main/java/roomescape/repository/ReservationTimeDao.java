@@ -32,15 +32,15 @@ public class ReservationTimeDao {
     }
     
 
-    public ReservationTime save(ReservationTime reservationTime) {
+    public ReservationTime save(LocalTime startAt) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.startAt());
+                .addValue("start_at", startAt);
 
         Number newId = insertExecutor.executeAndReturnKey(params);
 
         return ReservationTime.create(
                 newId.longValue(),
-                reservationTime.startAt()
+                startAt
         );
     }
 
