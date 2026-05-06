@@ -4,9 +4,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.model.Theme;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -55,5 +58,34 @@ public class ThemeRepository {
     public void delete(Long id) {
         String sql = "DELETE FROM theme WHERE id=?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public List<PopularThemeResponse> findPopularThemes(String sort, int limit, int days) {
+        String orderByColumn = "reservation_count";
+        if (!"reservations".equals(sort)) {
+            throw new IllegalArgumentException("예약 순으로만 정렬이 가능합니다.");
+        }
+
+        String sql = """
+                SELECT t.name AS theme_name, COUNT(r.id) AS reservation_count
+                FROM theme t
+                INNER JOIN schedule s ON t.id = s.theme_id
+                INNER JOIN reservation r ON s.id = r.schedule_id
+                WHERE s.start_at >= ? AND s.start_at < ? 
+                GROUP BY t.id, t.name
+                ORDER BY %s DESC, t.id ASC
+                LIMIT ? 
+                """.formatted(orderByColumn);
+
+        LocalDate today = LocalDate.now();
+        LocalDateTime startAt = today.minusDays(days).atStartOfDay();
+        LocalDateTime endAt = today.atStartOfDay();
+
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
+            return PopularThemeResponse.of(
+                    resultSet.getString("theme_name"),
+                    resultSet.getInt("reservation_count")
+            );
+        }, startAt, endAt, limit);
     }
 }
