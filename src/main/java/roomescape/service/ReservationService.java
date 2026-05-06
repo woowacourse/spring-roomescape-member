@@ -3,34 +3,40 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
 import roomescape.repository.ReservationDao;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeDao;
+import roomescape.repository.ThemeDao;
 
 @Service
 public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
+        this.themeDao = themeDao;
     }
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
-                .map(ReservationResponse::from)
+                .map(r -> ReservationResponse.from(r, r.getTheme()))
                 .toList();
     }
 
     public ReservationResponse save(ReservationRequest request) {
         ReservationTime time = reservationTimeDao.findById(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+        Theme theme = themeDao.findById(request.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         Reservation.validate(request.name(), request.date(), time);
-        Long id = reservationDao.save(request.name(), request.date(), request.timeId());
-        return ReservationResponse.from(new Reservation(id, request.name(), request.date(), time));
+        Long id = reservationDao.save(request.name(), request.date(), request.timeId(), request.themeId());
+        return ReservationResponse.from(new Reservation(id, request.name(), request.date(), time, theme), theme);
     }
 
     public void delete(Long id) {
