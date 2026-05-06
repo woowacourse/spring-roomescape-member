@@ -168,9 +168,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                 ORDER BY COUNT(*) DESC, t.id ASC
                 LIMIT ?
                 """;
+        LocalDate yesterday = now.minusDays(1);
         LocalDate start = now.minusDays(period);
 
-        return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(now), limit);
+        return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(yesterday), limit);
     }
 
 }
