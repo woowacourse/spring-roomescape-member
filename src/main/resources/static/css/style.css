@@ -293,3 +293,12 @@ table.data .actions {
     font-size: 0.9rem;
     color: var(--text-muted);
 }
+
+.time-option-unavailable {
+    color: var(--text-muted);
+    background: var(--surface-muted);
+}
+
+.time-option-available {
+    color: var(--text);
+}

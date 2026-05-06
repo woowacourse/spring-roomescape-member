@@ -1,11 +1,10 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -17,8 +16,12 @@ public class ReservationTimeService {
         this.timeRepository = timeRepository;
     }
 
-    public List<ReservationTime> getTimes() {
+    public List<ReservationTime> findAll() {
         return timeRepository.findAll();
+    }
+
+    public ReservationTime findById(Long id) {
+        return timeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
     }
 
     @Transactional
@@ -30,10 +33,5 @@ public class ReservationTimeService {
     @Transactional
     public void deleteTime(Long id) {
         timeRepository.deleteById(id);
-    }
-
-    @Transactional(readOnly = true)
-    public ReservationTime findById(Long id) {
-        return timeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
     }
 }

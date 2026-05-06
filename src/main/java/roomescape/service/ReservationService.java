@@ -1,11 +1,12 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationRepository;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -43,5 +44,13 @@ public class ReservationService {
 
     public boolean hasReservationsByThemeId(Long themeId) {
         return reservationRepository.existsByThemeId(themeId);
+    }
+
+    public boolean hasReservationsBy(String date, Long timeId, Long themeId) {
+        return reservationRepository.existsBy(date, timeId, themeId);
+    }
+
+    public Set<Long> findReservedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
+        return reservationRepository.findReservedTimeIdsByDateAndThemeId(date, themeId);
     }
 }

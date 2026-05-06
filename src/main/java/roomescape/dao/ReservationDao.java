@@ -1,5 +1,11 @@
 package roomescape.dao;
 
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -9,10 +15,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.utils.DateTimeConverter;
-
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class ReservationDao {
@@ -52,6 +54,22 @@ public class ReservationDao {
     public boolean existsByThemeId(Long themeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
+        return count != null && count > 0;
+    }
+
+    public boolean existsBy(String date, Long timeId, Long themeId) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE date = ? AND time_id = ? AND theme_id = ?
+                """;
+        Integer count = jdbcTemplate.queryForObject(
+                sql,
+                Integer.class,
+                date,
+                timeId,
+                themeId
+        );
         return count != null && count > 0;
     }
 
@@ -103,5 +121,14 @@ public class ReservationDao {
 
         List<Reservation> results = jdbcTemplate.query(sql, reservationRowMapper, id);
         return results.stream().findFirst();
+    }
+
+    public Set<Long> findReservedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                SELECT time_id
+                FROM reservation
+                WHERE date = ? AND theme_id = ?;
+                """;
+        return new HashSet<>(jdbcTemplate.queryForList(sql, Long.class, date, themeId));
     }
 }

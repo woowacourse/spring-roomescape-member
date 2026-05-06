@@ -1,11 +1,12 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
-
-import java.util.List;
-import java.util.Optional;
 
 @Component
 public class ReservationRepository {
@@ -38,5 +39,13 @@ public class ReservationRepository {
 
     public boolean existsByThemeId(Long themeId) {
         return reservationDao.existsByThemeId(themeId);
+    }
+
+    public boolean existsBy(String date, Long timeId, Long themeId) {
+        return reservationDao.existsBy(date, timeId, themeId);
+    }
+
+    public Set<Long> findReservedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
+        return reservationDao.findReservedTimeIdsByDateAndThemeId(date, themeId);
     }
 }
