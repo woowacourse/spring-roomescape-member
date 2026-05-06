@@ -14,9 +14,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Void> handleDuplicateReservation(IllegalStateException exception) {
-        return ResponseEntity.badRequest().build();
+    @ExceptionHandler(DuplicateReservationException.class)
+    public ResponseEntity<String> handleDuplicateReservation(DuplicateReservationException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
+    @ExceptionHandler(DeletionNotAllowedException.class)
+    public ResponseEntity<String> handleDeletionNotAllowed(DeletionNotAllowedException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
 }

@@ -3,6 +3,7 @@ package roomescape.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.repository.ReservationDao;
 
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ public class ReservationCommandService {
 
     private void validateDuplicate(LocalDate date, Long timeId, Long themeId) {
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new IllegalStateException("중복된 예약이 존재합니다.");
+            throw new DuplicateReservationException("중복된 예약이 존재합니다.");
         }
     }
 
