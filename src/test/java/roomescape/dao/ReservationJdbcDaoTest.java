@@ -1,5 +1,11 @@
 package roomescape.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +16,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Import({
@@ -88,5 +87,17 @@ class ReservationJdbcDaoTest {
 
     private Reservation insertReservationHandler(Reservation reservation) {
         return reservationDao.insert(reservation);
+    }
+
+    @Test
+    void existsByThemeIdAndTimeIdAndDate() {
+        Reservation saved = insertReservationHandler(reservaton1);
+        Reservation notExists = reservaton2;
+
+        assertThat(reservationDao.existsByThemeIdAndTimeIdAndDate(saved.getTheme().getId(), saved.getTime().getId(),
+                saved.getDate())).isTrue();
+
+        assertThat(reservationDao.existsByThemeIdAndTimeIdAndDate(notExists.getTheme().getId(),
+                notExists.getTime().getId(), notExists.getDate())).isFalse();
     }
 }

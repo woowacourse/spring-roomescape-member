@@ -28,7 +28,8 @@ CREATE TABLE reservations
     theme_id BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES times (id),
-    FOREIGN KEY (theme_id) REFERENCES themes (id)
+    FOREIGN KEY (theme_id) REFERENCES themes (id),
+    UNIQUE (theme_id, time_id, date)
 );
 
 

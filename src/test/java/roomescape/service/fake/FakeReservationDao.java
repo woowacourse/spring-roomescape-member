@@ -1,12 +1,12 @@
 package roomescape.service.fake;
 
-import roomescape.dao.ReservationDao;
-import roomescape.domain.Reservation;
-
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import roomescape.dao.ReservationDao;
+import roomescape.domain.Reservation;
 
 public class FakeReservationDao implements ReservationDao {
 
@@ -53,5 +53,15 @@ public class FakeReservationDao implements ReservationDao {
             return 0;
         }
         return 1;
+    }
+
+    @Override
+    public boolean existsByThemeIdAndTimeIdAndDate(Long themeId, Long timeId, LocalDate date) {
+        return store.values()
+                .stream()
+                .anyMatch(reservation ->
+                        reservation.getTheme().getId().equals(themeId)
+                                && reservation.getTime().getId().equals(timeId)
+                                && reservation.getDate().equals(date));
     }
 }

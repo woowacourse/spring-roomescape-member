@@ -1,5 +1,8 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -7,10 +10,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class ReservationJdbcDao implements ReservationDao {
@@ -104,5 +103,24 @@ public class ReservationJdbcDao implements ReservationDao {
                 """;
         SqlParameterSource params = new MapSqlParameterSource("id", id);
         return jdbcTemplate.update(sql, params);
+    }
+
+    @Override
+    public boolean existsByThemeIdAndTimeIdAndDate(Long themeId, Long timeId, LocalDate date) {
+        String sql = """
+                SELECT EXISTS(
+                    SELECT 1 FROM reservations r
+                    WHERE r.theme_id = :themeId
+                    AND r.time_id = :timeId
+                    AND r.date = :date
+                    )
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("themeId", themeId)
+                .addValue("timeId", timeId)
+                .addValue("date", date);
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, params, Boolean.class));
+
     }
 }
