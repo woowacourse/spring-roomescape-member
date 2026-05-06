@@ -10,6 +10,7 @@ import roomescape.exception.ErrorCode;
 import roomescape.exception.InfrastructureException;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,21 @@ public class JdbcThemeRepository implements ThemeRepository {
             SELECT id, name, description, thumbnail
             FROM theme
             WHERE id = ?
+            """;
+
+    private static final String FIND_TOP_THEMES_BY_RESERVATION_COUNT_SQL = """
+            SELECT
+                t.id,
+                t.name,
+                t.description,
+                t.thumbnail
+            FROM theme t
+            INNER JOIN reservation r
+                ON r.theme_id = t.id
+            WHERE r.date BETWEEN ? AND ?
+            GROUP BY t.id, t.name, t.description, t.thumbnail
+            ORDER BY COUNT(r.id) DESC
+            LIMIT ?
             """;
 
     private static final String INSERT_SQL = """
@@ -64,6 +80,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         return jdbcTemplate.query(FIND_ALL_SQL, themeRowMapper);
+    }
+
+    @Override
+    public List<Theme> findTopThemesByReservationCount(LocalDate startDate, LocalDate endDate, int limit) {
+        return jdbcTemplate.query(FIND_TOP_THEMES_BY_RESERVATION_COUNT_SQL, themeRowMapper,
+                startDate, endDate, limit);
     }
 
     @Override
