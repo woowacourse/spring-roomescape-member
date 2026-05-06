@@ -2,8 +2,7 @@ package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -31,7 +30,7 @@ public class ReservationTimeControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .body("id", notNullValue());
     }
 
     @Test
@@ -80,7 +79,7 @@ public class ReservationTimeControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .body("id", notNullValue());
 
         List<ReservationTimeResponse> responses = RestAssured.given().log().all()
                 .when().get("/times?themeId=1&date=2026-05-05")
@@ -90,15 +89,12 @@ public class ReservationTimeControllerTest {
                 .jsonPath()
                 .getList(".", ReservationTimeResponse.class);
 
-        assertAll(
-                () -> assertThat(responses).hasSize(2),
-                () -> assertThat(responses)
-                        .extracting("startAt", "isAvailable")
-                        .containsExactlyInAnyOrder(
-                                tuple(LocalTime.of(10, 0), false),
-                                tuple(LocalTime.of(11, 0), true)
-                        )
-        );
+        assertThat(responses)
+                .extracting("startAt", "isNotReserved")
+                .containsExactlyInAnyOrder(
+                        tuple(LocalTime.of(10, 0), false),
+                        tuple(LocalTime.of(11, 0), true)
+                );
     }
 
     @Test
@@ -106,15 +102,16 @@ public class ReservationTimeControllerTest {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
-        RestAssured.given().log().all()
+        int timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().path("id");
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/" + timeId)
                 .then().log().all()
                 .statusCode(204);
     }
