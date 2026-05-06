@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ReservationTimeService;
 import roomescape.entity.ReservationTime;
@@ -15,6 +16,7 @@ import roomescape.presentation.dto.ReservationTimeRequest;
 import roomescape.presentation.dto.ReservationTimeResponse;
 
 @RestController
+@RequestMapping("/times")
 public class ReservationTimeController {
 
     private final ReservationTimeService service;
@@ -23,7 +25,7 @@ public class ReservationTimeController {
         this.service = service;
     }
 
-    @PostMapping("/times")
+    @PostMapping
     public ResponseEntity<ReservationTimeResponse> saveTime(
             @RequestBody ReservationTimeRequest request
     ) {
@@ -33,7 +35,7 @@ public class ReservationTimeController {
                 .body(response);
     }
 
-    @GetMapping("/times")
+    @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getTimes() {
         List<ReservationTime> times = service.getTimes();
         List<ReservationTimeResponse> responses = times.stream()
@@ -42,7 +44,7 @@ public class ReservationTimeController {
         return ResponseEntity.ok(responses);
     }
 
-    @DeleteMapping("/times/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(
             @PathVariable Long id
     ) {

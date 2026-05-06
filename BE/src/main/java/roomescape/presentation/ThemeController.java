@@ -1,0 +1,68 @@
+package roomescape.presentation;
+
+import java.net.URI;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import roomescape.application.ThemeService;
+import roomescape.entity.Theme;
+import roomescape.presentation.dto.ThemeRequest;
+import roomescape.presentation.dto.ThemeResponse;
+
+@RestController
+@RequestMapping("/themes")
+public class ThemeController {
+
+    private final ThemeService service;
+
+    public ThemeController(ThemeService service) {
+        this.service = service;
+    }
+
+    @PostMapping
+    public ResponseEntity<ThemeResponse> saveTheme(
+            @RequestBody ThemeRequest request
+    ) {
+        Theme saved = service.save(
+                request.name(),
+                request.description(),
+                request.thumbnail()
+        );
+
+        ThemeResponse result = ThemeResponse.from(saved);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(result.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(result);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
+        List<Theme> result = service.findAll();
+
+        List<ThemeResponse> response = result.stream()
+                .map(ThemeResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTheme(
+            @PathVariable Long id
+    ) {
+        service.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+}
