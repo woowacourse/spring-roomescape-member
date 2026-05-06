@@ -25,8 +25,8 @@ import roomescape.test.util.TestDatabaseUtils;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
-    private static final int INITIALED_RESERVATION_COUNT = 3;
-    private static final int INITIALED_TIME_COUNT = 2;
+    private static final int INITIALIZED_RESERVATION_COUNT = 3;
+    private static final int INITIALIZED_TIME_COUNT = 2;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -39,7 +39,7 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(INITIALED_RESERVATION_COUNT));
+                .body("size()", is(INITIALIZED_RESERVATION_COUNT));
     }
 
     @Test
@@ -277,7 +277,7 @@ public class MissionStepTest {
         boolean reservedTimeNotExist = availableTimes.stream()
                 .noneMatch(availableTime -> availableTime.id() == reservedTimeId);
         assertThat(reservedTimeNotExist).isTrue();
-        assertThat(availableTimes).hasSize(INITIALED_TIME_COUNT - 1);
+        assertThat(availableTimes).hasSize(INITIALIZED_TIME_COUNT - 1);
     }
 
     private void createTime() {
