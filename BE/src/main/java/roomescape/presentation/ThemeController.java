@@ -3,7 +3,6 @@ package roomescape.presentation;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
