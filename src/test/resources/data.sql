@@ -37,3 +37,7 @@ INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES
 -- Theme D: 1건
 INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES
   (13, 'User13', '2026-05-05', 3, 4);
+
+ALTER TABLE themes ALTER COLUMN id RESTART WITH 10;
+ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 10;
+ALTER TABLE reservation ALTER COLUMN id RESTART WITH 20;
