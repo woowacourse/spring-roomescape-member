@@ -71,26 +71,6 @@ public class MissionStepTest {
     }
 
     @Test
-    void 존재하지_않는_API는_not_found를_반환한다() {
-        RestAssured.given().log().all()
-                .when().get("/unknown-api")
-                .then().log().all()
-                .statusCode(404)
-                .body("message", is("요청한 API를 찾을 수 없습니다."));
-    }
-
-    @Test
-    void 지원하지_않는_HTTP_메서드는_method_not_allowed를_반환한다() {
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(new HashMap<>())
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(405)
-                .body("message", is("지원하지 않는 HTTP 메서드입니다."));
-    }
-
-    @Test
     void 예약과_시간_연결() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");

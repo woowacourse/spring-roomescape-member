@@ -64,11 +64,11 @@ public class ReservationTimeService {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         return reservationTimes.stream()
-                .map(reservationTime -> new ReservationTimeAvailability(
-                        reservationTime,
-                        reservations.stream()
-                                .noneMatch(reservation -> reservation.isSameTime(reservationTime))
-                ))
+                .map(reservationTime -> reservations.stream()
+                        .noneMatch(reservation -> reservation.isSameTime(reservationTime))
+                        ? ReservationTimeAvailability.available(reservationTime)
+                        : ReservationTimeAvailability.unavailable(reservationTime)
+                )
                 .toList();
     }
 }
