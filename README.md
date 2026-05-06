@@ -29,7 +29,7 @@
 | 예약 삭제       | `DELETE` `/reservations/{reservationId}`                          | -                      | -                               |
 | 예약 조회       | `GET` `/reservations`                                             | -                      | `[{id, name, date, time}, ...]` |
 | 인기 테마 조회    | `GET` `/reservations/theme/popular?period={period}&limit={limit}` | -       | `[{id, name, description, thumbnailUrl}, ...]`                                |
-| 예약 가능 시간 조회 | `GET` `/reservations/theme/{themeId}/times?date={yyyy-MM-dd}`     | -                      | `[{id, startAt, theme}, ...]`   |
+| 예약 가능 시간 조회 | `GET` `/reservations/theme/{themeId}/available-times?date={yyyy-MM-dd}`     | -                      | `[{id, startAt, theme}, ...]`   |
 
 `Theme`
 
@@ -88,21 +88,6 @@ CREATE TABLE theme
   UNIQUE (name)
   );
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## API 설계 룰
 
