@@ -19,7 +19,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime time = new ReservationTime(
                 resultSet.getLong("time_id"),
-                resultSet.getTime("start_at").toLocalTime()
+                resultSet.getTime("time_start_at").toLocalTime()
         );
 
         Theme theme = new Theme(
@@ -74,7 +74,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "r.name as reservation_name, " +
                 "r.reservation_date, " +
                 "r.time_id, " +
-                "t.start_at, " +
+                "t.start_at as time_start_at, " +
                 "h.id as theme_id, " +
                 "h.name as theme_name, " +
                 "h.description as theme_description, " +
