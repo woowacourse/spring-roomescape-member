@@ -19,6 +19,12 @@ import roomescape.domain.TimeStatus;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeDaoTest {
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private ReservationTimeDao reservationTimeDao;
+
     private final RowMapper<ReservationTime> rowMapper = (rs, rowNum) -> {
         if (rs.getString("status").equals(TimeStatus.DELETED.toString())) {
             return new ReservationTime(
@@ -34,11 +40,16 @@ class ReservationTimeDaoTest {
         );
     };
 
-    @Autowired
-    private ReservationTimeDao reservationTimeDao;
+    @Test
+    @DisplayName("시간 생성 테스트")
+    void createReservationTimeTest() {
+        ReservationTime reservationTime = ReservationTime.pending(LocalTime.of(9, 0));
+        ReservationTime saved = reservationTimeDao.save(reservationTime);
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+        ReservationTime reservationTimeFromQuery = jdbcTemplate.queryForObject("SELECT * FROM reservation_time WHERE id = ?", rowMapper, saved.id());
+
+        assertThat(saved.id()).isEqualTo(reservationTimeFromQuery.id());
+    }
 
     @Test
     @DisplayName("시간 삭제 테스트")

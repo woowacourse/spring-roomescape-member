@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.TimeStatus;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,7 +27,8 @@ public class ReservationTimeDao {
 
     public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.startAt());
+                .addValue("start_at", reservationTime.startAt())
+                .addValue("status", TimeStatus.AVAILABLE.toString());
 
         SimpleJdbcInsert insertExecutor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")

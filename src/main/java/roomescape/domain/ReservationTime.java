@@ -11,7 +11,7 @@ public class ReservationTime {
     private final TimeStatus status;
 
     public static ReservationTime pending(LocalTime startAt) {
-        return new ReservationTime(null, startAt, null);
+        return new ReservationTime(null, startAt, TimeStatus.DRAFT);
     }
 
     public static ReservationTime create(long id, LocalTime startAt) {
