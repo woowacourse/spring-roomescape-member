@@ -28,18 +28,18 @@ Query Variable:
 
 RequestBody:
 {
-    "name": String,
-    "description" : String,
-    "imgUrl" : String,
-    "userName" : String,
+"name": String,
+"description" : String,
+"imgUrl" : String,
+"userName" : String,
 }
 
 ResponseBody:
 {
-    "id" : Long,
-    "name": String,
-    "description" : String,
-    "imgUrl" : String,
+"id" : Long,
+"name": String,
+"description" : String,
+"imgUrl" : String,
 }
 
 Status Code: 201
@@ -54,7 +54,7 @@ Query Variable:
 
 RequestBody:
 {
-    "userName" : String
+"userName" : String
 }
 
 ResponseBody:
@@ -93,14 +93,14 @@ RequestBody:
 
 ResponseBody:
 {
-    "availableTime" [
-        {
-            "id" : 1,
-            "startAt" : 10:00,
-            "available" : true
-        },
-        ...
-    ]
+"availableTime" [
+{
+"id" : 1,
+"startAt" : 10:00,
+"available" : true
+},
+...
+]
 }
 
 Status Code: 200
@@ -139,16 +139,16 @@ RequestBody:
 
 ResponseBody:
 {
-    "themes" : [
-        {
-            "id" : Long,
-            "name": String,
-            "description" : String,
-            "imgUrl" : String,
-            "rank" : Long
-        }
-        ...
-    ]
+"themes" : [
+{
+"id" : Long,
+"name": String,
+"description" : String,
+"imgUrl" : String,
+"rank" : Long
+}
+...
+]
 }
 
 Status Code: 200
@@ -162,6 +162,13 @@ Status Code: 200
 rank 추가 이유
 → 백엔드에서 정렬해서 보내줄 수도 있지만, 프론트에서 볼 때 백엔드에서 넘어온 값이 순서대로
 rank라는 보장이 없기 때문에, 가독성과 디버깅 편의성을 위해 rank를 추가해서 값을 넘겨줬습니다.
+
+최근 1주 API를 from/to로 받은 이유
+→ 인기 테마 조회 API는 조회 기간을 명시적으로 표현하기 위해 `from`, `to` 쿼리 파라미터를 사용했다.
+프론트가 현재 날짜만 전달하고 백엔드가 최근 1주를 계산하는 방식도 가능하지만,
+이번 API에서는 클라이언트가 조회하고 싶은 기간을 명확히 전달하도록 설계했다.
+이를 통해 `/api/v1/themes?from=2026-05-01&to=2026-05-07`처럼 어떤 기간의 인기 테마를 조회하는지 URL만 보고도 이해할 수 있다.
+즉, 현재 날짜 하나만 전달하는 방식보다 `from`, `to`를 사용한 방식이 조회 조건을 더 명시적으로 드러낸다고 판단했다.
 ```
 
 ### API 설계 규칙
