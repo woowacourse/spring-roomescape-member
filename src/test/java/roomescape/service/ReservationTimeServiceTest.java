@@ -45,7 +45,7 @@ public class ReservationTimeServiceTest {
             }
 
             @Override
-            public boolean existsByTimeIdAndThemeIdAndDate(ReservationCommand reservationCommand) {
+            public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, String date) {
                 return false;
             }
 

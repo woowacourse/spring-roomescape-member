@@ -42,7 +42,7 @@ public class RoomReservationService {
         ReservationTheme theme = reservationThemeRepository.getTheme(reservationCommand.themeId())
                 .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_THEME_ID));
 
-        if (reservationRepository.existsByTimeIdAndThemeIdAndDate(reservationCommand)) {
+        if (reservationRepository.existsByTimeIdAndThemeIdAndDate(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date())) {
             throw new DuplicatedReservationRequestException(ErrorMessage.DUPLICATED_RESERVATION_REQUEST);
         }
 

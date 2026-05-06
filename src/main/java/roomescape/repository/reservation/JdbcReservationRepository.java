@@ -138,8 +138,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByTimeIdAndThemeIdAndDate(ReservationCommand reservationCommand) {
+    public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, String date) {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE,
-                Boolean.class, reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date()));
+                Boolean.class, timeId, themeId, date));
     }
 }
