@@ -90,7 +90,8 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
                         "FROM reservation_time t " +
                         "WHERE t.id NOT IN (" +
                         "  SELECT r.time_id FROM reservation r WHERE r.theme_id = ? AND r.date = ?" +
-                        ")",
+                        ") " +
+                        "ORDER BY t.start_at",
 
                 (rs, rowNum) -> {
                     long timeId = rs.getLong("time_id");
