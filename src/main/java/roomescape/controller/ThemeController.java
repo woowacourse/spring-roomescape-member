@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.AvailableReservationTimeResponse;
+import roomescape.dto.SearchRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
@@ -22,9 +23,15 @@ public class ThemeController {
     }
     
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
-        final List<ThemeResponse> themes = themeService.getAllThemes();
-        return ResponseEntity.ok(themes);
+    public ResponseEntity<List<ThemeResponse>> getAllThemes(SearchRequest request) {
+        if (request == null) {
+            return ResponseEntity.ok(themeService.getAllThemes());
+        }
+
+        if (request.condition().equals("popular")) {
+            return ResponseEntity.ok(themeService.getPopularThemes(request.size()));
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     @GetMapping("/{id}/times")
@@ -34,10 +41,4 @@ public class ThemeController {
         final List<AvailableReservationTimeResponse> reservationTimeResponses = themeService.getAvailableTimeResponses(id, date);
         return ResponseEntity.ok(reservationTimeResponses);
     }
-
-
-    /*
-    사용자 테마 시간 조회 기능	GET /themes/{id}/times	-	200 [{id: 1, start_at:"10:00", available:true},...]
-     */
-
 }
