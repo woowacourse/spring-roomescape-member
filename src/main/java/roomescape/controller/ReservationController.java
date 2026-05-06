@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.request.ReservationCreateRequest;
+import roomescape.service.dto.response.ReservationOptionResponse;
 import roomescape.service.dto.response.ReservationResponse;
 import roomescape.service.dto.response.ReservationTimeStatusResponse;
 
@@ -25,6 +26,12 @@ public class ReservationController {
             @RequestParam(value = "themeId", required = false) Long themeId
     ) {
         final List<ReservationTimeStatusResponse> results = reservationService.getReservationTimeStatuses(date, themeId);
+        return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("/date-and-theme")
+    public ResponseEntity<ReservationOptionResponse> getReservationOptions() {
+        final ReservationOptionResponse results = reservationService.getReservationOptions();
         return ResponseEntity.ok(results);
     }
 

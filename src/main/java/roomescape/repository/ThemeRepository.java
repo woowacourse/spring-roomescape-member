@@ -32,6 +32,15 @@ public class ThemeRepository {
         return themeId;
     }
 
+    public List<Theme> findAll() {
+        final String sql = """
+                SELECT id, name, description, thumbnail_url
+                FROM theme
+                """;
+
+        return jdbcTemplate.query(sql, this::mapToDomain).stream().toList();
+    }
+
     public Optional<Theme> findById(final Long themeId) {
         final String sql = """
                 SELECT id, name, description, thumbnail_url

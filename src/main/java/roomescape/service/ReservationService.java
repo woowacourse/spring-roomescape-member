@@ -10,9 +10,12 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.request.ReservationCreateRequest;
+import roomescape.service.dto.response.ReservationOptionResponse;
 import roomescape.service.dto.response.ReservationResponse;
 import roomescape.service.dto.response.ReservationTimeStatusResponse;
+import roomescape.service.dto.response.ThemeResponse;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,6 +26,9 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
+
+    private static final int RESERVABLE_DAYS_RANGE = 14;
 
     public List<ReservationResponse> getReservations() {
         return reservationRepository.findAll()
@@ -65,5 +71,17 @@ public class ReservationService {
         if (!deleted) {
             throw new IllegalArgumentException("존재하지 않는 예약입니다.");
         }
+    }
+
+    public ReservationOptionResponse getReservationOptions() {
+        LocalDate today = LocalDate.now(clock);
+        List<LocalDate> dates = today.datesUntil(today.plusDays(RESERVABLE_DAYS_RANGE)).toList();
+
+        List<ThemeResponse> themes = themeRepository.findAll()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
+
+        return new ReservationOptionResponse(dates, themes);
     }
 }
