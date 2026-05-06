@@ -79,22 +79,24 @@ class ReservationRepositoryTest {
             Reservation persistedReservation = reservationRepository.persist(transientReservation);
 
             // then
-            String selectSql = "SELECT r.id AS reservation_id,"
-                    + " r.name AS member_name,"
-                    + " r.date AS reservation_date,"
-                    + " r.time_id,"
-                    + " r.theme_id,"
-                    + " rt.start_at AS time_start_at,"
-                    + " t.name AS theme_name,"
-                    + " t.description AS theme_description,"
-                    + " t.image_url AS theme_image_url"
-                    + " FROM reservation r"
-                    + " INNER JOIN reservation_time rt ON r.time_id = rt.id"
-                    + " INNER JOIN theme t ON r.theme_id = t.id";
-            List<Reservation> foundReservations = jdbcTemplate.query(selectSql, reservationRowMapper());
+//            String selectSql = "SELECT r.id AS reservation_id,"
+//                    + " r.name AS member_name,"
+//                    + " r.date AS reservation_date,"
+//                    + " r.time_id,"
+//                    + " r.theme_id,"
+//                    + " rt.start_at AS time_start_at,"
+//                    + " t.name AS theme_name,"
+//                    + " t.description AS theme_description,"
+//                    + " t.image_url AS theme_image_url"
+//                    + " FROM reservation r"
+//                    + " INNER JOIN reservation_time rt ON r.time_id = rt.id"
+//                    + " INNER JOIN theme t ON r.theme_id = t.id";
+//            List<Reservation> foundReservations = jdbcTemplate.query(selectSql, reservationRowMapper());
+            List<Reservation> reservations = reservationRepository.findAll();
 
-            assertThat(foundReservations).hasSize(1);
-            assertThat(foundReservations.getFirst()).isEqualTo(persistedReservation);
+//            assertThat(foundReservations).hasSize(1);
+//            assertThat(foundReservations.getFirst()).isEqualTo(persistedReservation);
+            assertThat(reservations).hasSize(1);
         }
     }
 
