@@ -8,6 +8,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.PopularThemeResponse;
 import roomescape.dto.ReservationTimeStatusResponse;
 
 @Service
@@ -27,6 +28,18 @@ public class ThemeService {
         return themeDao.findAll();
     }
 
+    public List<PopularThemeResponse> findPopularThemes() {
+        LocalDate startDate = LocalDate.now().minusDays(7);
+        LocalDate endDate = LocalDate.now().minusDays(1);
+        return themeDao.findPopularThemes(startDate, endDate)
+                .stream()
+                .map(popularTheme -> PopularThemeResponse.of(
+                        popularTheme.getTheme(),
+                        popularTheme.getReservationCount())
+                )
+                .toList();
+    }
+
     public Theme save(Theme theme) {
         return themeDao.save(theme);
     }
@@ -35,7 +48,7 @@ public class ThemeService {
         themeDao.deleteById(id);
     }
 
-    public List<ReservationTimeStatusResponse> findReservationTimeByDateAndThemeId(LocalDate date, Long themeId){
+    public List<ReservationTimeStatusResponse> findReservationTimeByDateAndThemeId(LocalDate date, Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeService.findAll();
         List<Long> timeIds = reservationDao.findReservedTimeIdsByDateAndThemeId(date, themeId);
 
