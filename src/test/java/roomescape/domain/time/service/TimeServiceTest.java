@@ -40,7 +40,6 @@ class TimeServiceTest {
 
         @Test
         void 성공() {
-
             // given
             LocalTime startAt = LocalTime.of(10, 0);
 
@@ -66,7 +65,6 @@ class TimeServiceTest {
 
         @Test
         void 성공() {
-
             // given
             TimeCreateRequestDTO request = new TimeCreateRequestDTO(LocalTime.of(15, 30));
 
@@ -87,7 +85,6 @@ class TimeServiceTest {
 
         @Test
         void 성공() {
-
             // given
             Time savedTime = timeRepository.save(Time.create(LocalTime.of(12, 0)));
             timeRepository.save(Time.create(LocalTime.of(13, 0)));
@@ -109,7 +106,6 @@ class TimeServiceTest {
 
         @Test
         void 성공() {
-
             // given
             Time time1 = timeRepository.save(Time.create(LocalTime.of(18, 0)));
             Time time2 = timeRepository.save(Time.create(LocalTime.of(19, 0)));

@@ -35,7 +35,6 @@ class ThemeServiceTest {
 
         @Test
         void 성공() {
-
             // when
             List<ThemeResponseDTO> actual = themeService.getThemes();
 
@@ -99,11 +98,10 @@ class ThemeServiceTest {
     }
 
     @Nested
-    class saveThemeTest {
+    class SaveThemeTest {
 
         @Test
         void 성공() {
-
             // given
             ThemeCreateRequestDTO request = new ThemeCreateRequestDTO(
                 "피온",
@@ -125,18 +123,18 @@ class ThemeServiceTest {
     }
 
     @Nested
-    class deleteThemeTest {
+    class DeleteThemeTest {
 
         @Test
         void 성공() {
-
             // given
             themeRepository.save(Theme.create("브라운", "테마 설명", "https://roomescape.com/images/themes/prison-room.png"));
 
-            // then
-            themeRepository.deleteThemeById(1L);
+            // when
+            themeService.deleteThemeById(1L);
             List<Theme> actual = themeRepository.findAllThemes();
 
+            // then
             assertThat(actual).asInstanceOf(InstanceOfAssertFactories.LIST).hasSize(0);
         }
     }

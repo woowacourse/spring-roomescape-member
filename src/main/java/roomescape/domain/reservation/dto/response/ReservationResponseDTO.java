@@ -6,5 +6,4 @@ import roomescape.domain.time.dto.response.TimeResponseDTO;
 
 public record ReservationResponseDTO(Long id, String name, LocalDate date, TimeResponseDTO time,
                                      ThemeResponseDTO theme) {
-
 }

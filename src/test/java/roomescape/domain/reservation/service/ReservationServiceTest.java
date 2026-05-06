@@ -40,7 +40,6 @@ class ReservationServiceTest {
 
         @Test
         void 성공() {
-
             // given
             LocalDate date = LocalDate.of(2026, 4, 30);
             Time time = Time.reconstruct(1L, LocalTime.of(10, 0));
@@ -81,7 +80,6 @@ class ReservationServiceTest {
 
         @Test
         void 성공() {
-
             // given
             ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
                 "보예",
@@ -113,7 +111,6 @@ class ReservationServiceTest {
 
         @Test
         void 성공() {
-
             // given
             Reservation savedReservation = reservationRepository.save(
                 Reservation.create("제이슨", LocalDate.of(2026, 5, 2), Time.reconstruct(1L, LocalTime.of(12, 0)),

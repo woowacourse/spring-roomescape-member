@@ -58,7 +58,7 @@ public class JdbcTimeRepository implements TimeRepository {
                 parameters,
                 (resultSet, rowNum) -> Time.reconstruct(
                     resultSet.getLong("id"),
-                    resultSet.getTime("start_at").toLocalTime()
+                    LocalTime.parse(resultSet.getString("start_at"))
                 )
             );
             return Optional.ofNullable(time);

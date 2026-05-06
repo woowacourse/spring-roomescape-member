@@ -16,7 +16,7 @@ public class Time {
     public Long getId() {
         return id;
     }
-    
+
     public LocalTime getStartAt() {
         return startAt;
     }

@@ -9,7 +9,6 @@ public class Theme {
     private final String description;
     private final String imageUrl;
 
-
     private Theme(Long id, String name, String description, String imageUrl) {
         this.id = id;
         this.name = name;
