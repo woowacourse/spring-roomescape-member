@@ -5,8 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>방탈출 예약</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; color: #333; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
 
         header {
             background: #2c3e50;
@@ -30,24 +39,45 @@
             border-bottom: 3px solid transparent;
         }
 
-        .tab.active { color: white; border-bottom-color: #3498db; }
+        .tab.active {
+            color: white;
+            border-bottom-color: #3498db;
+        }
 
-        .container { max-width: 860px; margin: 40px auto; padding: 0 16px; }
+        .container {
+            max-width: 860px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
 
-        .section { display: none; }
-        .section.active { display: block; }
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
 
         .card {
             background: white;
             border-radius: 8px;
             padding: 24px;
             margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        .card h2 { font-size: 1.1rem; margin-bottom: 16px; color: #2c3e50; }
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            color: #2c3e50;
+        }
 
-        label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 4px; }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 4px;
+        }
 
         input[type="date"], input[type="text"] {
             width: 100%;
@@ -66,10 +96,23 @@
             font-size: 0.95rem;
         }
 
-        .btn-primary { background: #2c3e50; color: white; }
-        .btn-primary:hover { background: #3d5166; }
-        .btn-success { background: #27ae60; color: white; }
-        .btn-success:hover { background: #219a52; }
+        .btn-primary {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3d5166;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #219a52;
+        }
 
         /* 테마 카드 */
         .theme-grid {
@@ -87,8 +130,14 @@
             transition: border-color 0.15s;
         }
 
-        .theme-card:hover { border-color: #2c3e50; }
-        .theme-card.selected { border-color: #2c3e50; box-shadow: 0 0 0 2px #2c3e50; }
+        .theme-card:hover {
+            border-color: #2c3e50;
+        }
+
+        .theme-card.selected {
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 2px #2c3e50;
+        }
 
         .theme-card img {
             width: 100%;
@@ -97,9 +146,21 @@
             display: block;
         }
 
-        .theme-card-body { padding: 8px 10px; }
-        .theme-card-body .name { font-size: 0.9rem; font-weight: bold; margin-bottom: 4px; }
-        .theme-card-body .desc { font-size: 0.78rem; color: #888; line-height: 1.4; }
+        .theme-card-body {
+            padding: 8px 10px;
+        }
+
+        .theme-card-body .name {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .theme-card-body .desc {
+            font-size: 0.78rem;
+            color: #888;
+            line-height: 1.4;
+        }
 
         /* 인기 테마 */
         .popular-grid {
@@ -122,9 +183,21 @@
             display: block;
         }
 
-        .popular-card-body { padding: 10px 12px; }
-        .popular-card-body .name { font-size: 0.95rem; font-weight: bold; margin-bottom: 4px; }
-        .popular-card-body .desc { font-size: 0.8rem; color: #888; line-height: 1.4; }
+        .popular-card-body {
+            padding: 10px 12px;
+        }
+
+        .popular-card-body .name {
+            font-size: 0.95rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .popular-card-body .desc {
+            font-size: 0.8rem;
+            color: #888;
+            line-height: 1.4;
+        }
 
         .rank-badge {
             position: absolute;
@@ -139,7 +212,12 @@
         }
 
         /* 시간 선택 */
-        .time-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+        .time-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
 
         .time-btn {
             padding: 10px 18px;
@@ -150,8 +228,16 @@
             font-size: 0.95rem;
         }
 
-        .time-btn:hover { border-color: #2c3e50; color: #2c3e50; }
-        .time-btn.selected { border-color: #2c3e50; background: #2c3e50; color: white; }
+        .time-btn:hover {
+            border-color: #2c3e50;
+            color: #2c3e50;
+        }
+
+        .time-btn.selected {
+            border-color: #2c3e50;
+            background: #2c3e50;
+            color: white;
+        }
 
         .alert {
             padding: 12px 16px;
@@ -159,10 +245,22 @@
             margin-bottom: 16px;
             font-size: 0.9rem;
         }
-        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
-        .hidden { display: none; }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -230,7 +328,7 @@
     }
 
     async function loadThemes() {
-        const res = await fetch('/admin/themes');
+        const res = await fetch('/themes');
         const themes = await res.json();
         const grid = document.getElementById('themeGrid');
         grid.innerHTML = themes.map(t => `
@@ -291,13 +389,19 @@
         const name = document.getElementById('name').value.trim();
         const date = document.getElementById('date').value;
 
-        if (!selectedTimeId) { showAlert('시간을 선택해주세요.', 'error'); return; }
-        if (!name) { showAlert('이름을 입력해주세요.', 'error'); return; }
+        if (!selectedTimeId) {
+            showAlert('시간을 선택해주세요.', 'error');
+            return;
+        }
+        if (!name) {
+            showAlert('이름을 입력해주세요.', 'error');
+            return;
+        }
 
         const res = await fetch('/reservations', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, date, timeId: selectedTimeId, themeId: Number(selectedThemeId) })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, date, timeId: selectedTimeId, themeId: Number(selectedThemeId)})
         });
 
         if (res.ok) {
