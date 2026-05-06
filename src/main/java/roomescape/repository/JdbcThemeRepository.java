@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
 @Repository
-public class JdbcThemeRepository implements ThemeRespository {
+public class JdbcThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 

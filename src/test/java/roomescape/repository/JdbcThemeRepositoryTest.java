@@ -18,7 +18,7 @@ import roomescape.domain.Theme;
 class JdbcThemeRepositoryTest {
 
     @Autowired
-    ThemeRespository themeRespository;
+    ThemeRepository themeRespository;
 
     @DisplayName("테마를 저장한다")
     @Test
