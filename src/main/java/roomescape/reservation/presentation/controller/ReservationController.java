@@ -1,4 +1,4 @@
-package roomescape.reservation.controller;
+package roomescape.reservation.presentation.controller;
 
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.dto.ReservationCreateRequest;
-import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.application.dto.ReservationCreateCommand;
+import roomescape.reservation.application.service.ReservationService;
+import roomescape.reservation.presentation.dto.ReservationCreateRequest;
+import roomescape.reservation.presentation.dto.ReservationResponse;
 
 @RequiredArgsConstructor
 @RequestMapping("/reservations")
@@ -26,15 +27,21 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAll() {
-        return ResponseEntity.ok(reservationService.findAll());
+        List<ReservationResponse> responses = reservationService.findAll().stream()
+                .map(ReservationResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> save(
             @Valid @RequestBody ReservationCreateRequest request
     ) {
+        ReservationCreateCommand createCommand = request.toCommand();
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(reservationService.save(request, LocalDateTime.now()));
+                .body(ReservationResponse.from(reservationService.save(createCommand, LocalDateTime.now())));
     }
 
     @DeleteMapping("/{id}")

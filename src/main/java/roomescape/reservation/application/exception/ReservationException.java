@@ -1,4 +1,4 @@
-package roomescape.reservation.exception;
+package roomescape.reservation.application.exception;
 
 import roomescape.exception.RoomEscapeException;
 

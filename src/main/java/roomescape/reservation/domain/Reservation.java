@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.theme.domain.Theme;
 
 @Builder
 @Getter

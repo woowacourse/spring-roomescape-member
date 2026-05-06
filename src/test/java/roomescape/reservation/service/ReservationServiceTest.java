@@ -10,10 +10,11 @@ import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.fake.FakeThemeRepository;
-import roomescape.reservation.dto.ReservationCreateRequest;
-import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.exception.ReservationException;
-import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.application.dto.ReservationCreateCommand;
+import roomescape.reservation.application.dto.ReservationQueryResult;
+import roomescape.reservation.application.service.ReservationService;
+import roomescape.reservation.application.exception.ReservationException;
+import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservationtime.dto.ReservationTimeCreateRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.service.ReservationTimeService;
@@ -36,15 +37,15 @@ class ReservationServiceTest {
         themeService.save(new ThemeCreateRequest("theme name", "theme description", "theme img url"));
         timeService.save(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
-        ReservationCreateRequest request = new ReservationCreateRequest("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
-        ReservationResponse reservationResponse = reservationService.save(request, LocalDateTime.of(2000, 1, 1, 0, 0));
+        ReservationCreateCommand request = new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
+        ReservationQueryResult reservationQueryResult = reservationService.save(request, LocalDateTime.of(2000, 1, 1, 0, 0));
 
         SoftAssertions.assertSoftly(assertSoftly -> {
-            assertSoftly.assertThat(reservationResponse.id()).isEqualTo(1L);
-            assertSoftly.assertThat(reservationResponse.name()).isEqualTo("스타크");
-            assertSoftly.assertThat(reservationResponse.date()).isEqualTo("2026-05-06");
-            assertSoftly.assertThat(reservationResponse.time()).isEqualTo(new ReservationTimeResponse(1L, LocalTime.of(10,0)));
-            assertSoftly.assertThat(reservationResponse.theme())
+            assertSoftly.assertThat(reservationQueryResult.id()).isEqualTo(1L);
+            assertSoftly.assertThat(reservationQueryResult.name()).isEqualTo("스타크");
+            assertSoftly.assertThat(reservationQueryResult.date()).isEqualTo("2026-05-06");
+            assertSoftly.assertThat(reservationQueryResult.time()).isEqualTo(new ReservationTimeResponse(1L, LocalTime.of(10,0)));
+            assertSoftly.assertThat(reservationQueryResult.theme())
                     .isEqualTo(new ThemeResponse(1L, "theme name", "theme description", "theme img url"));
         });
     }
@@ -55,10 +56,10 @@ class ReservationServiceTest {
         themeService.save(new ThemeCreateRequest("theme name", "theme description", "theme img url"));
         timeService.save(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
-        ReservationCreateRequest firstRequest = new ReservationCreateRequest("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
+        ReservationCreateCommand firstRequest = new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
         reservationService.save(firstRequest, LocalDateTime.of(2000, 1, 1, 0, 0));
 
-        ReservationCreateRequest secondRequest = new ReservationCreateRequest("카야", LocalDate.of(2026, 5, 6), 1L, 1L);
+        ReservationCreateCommand secondRequest = new ReservationCreateCommand("카야", LocalDate.of(2026, 5, 6), 1L, 1L);
 
         Assertions.assertThatThrownBy(() -> reservationService.save(secondRequest, LocalDateTime.of(2000, 1, 1, 0, 0)))
                 .isInstanceOf(ReservationException.class)
@@ -71,7 +72,7 @@ class ReservationServiceTest {
         themeService.save(new ThemeCreateRequest("theme name", "theme description", "theme img url"));
         timeService.save(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
-        ReservationCreateRequest request = new ReservationCreateRequest("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
+        ReservationCreateCommand request = new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
 
         Assertions.assertThatThrownBy(() -> reservationService.save(request, LocalDateTime.of(2026, 5, 6, 11, 0)))
                 .isInstanceOf(ReservationException.class)

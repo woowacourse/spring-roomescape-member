@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import lombok.NoArgsConstructor;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.ReservationDetail;
-import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.domain.repository.ReservationDetail;
+import roomescape.reservation.domain.repository.ReservationRepository;
 
 @NoArgsConstructor
 public class FakeReservationRepository implements ReservationRepository {

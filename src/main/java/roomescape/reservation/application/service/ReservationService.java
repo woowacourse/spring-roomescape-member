@@ -1,6 +1,5 @@
-package roomescape.reservation.service;
+package roomescape.reservation.application.service;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -8,11 +7,11 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.ReservationCreateRequest;
-import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.exception.ReservationException;
-import roomescape.reservation.repository.ReservationDetail;
-import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.application.dto.ReservationCreateCommand;
+import roomescape.reservation.application.dto.ReservationQueryResult;
+import roomescape.reservation.application.exception.ReservationException;
+import roomescape.reservation.domain.repository.ReservationDetail;
+import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.service.ReservationTimeService;
 import roomescape.theme.dto.ThemeResponse;
@@ -26,14 +25,14 @@ public class ReservationService {
     private final ThemeService themeService;
     private final ReservationTimeService timeService;
 
-    public List<ReservationResponse> findAll() {
+    public List<ReservationQueryResult> findAll() {
         List<ReservationDetail> result = reservationRepository.findAll();
         return result.stream()
-                .map(ReservationResponse::from)
+                .map(ReservationQueryResult::from)
                 .toList();
     }
 
-    public ReservationResponse save(ReservationCreateRequest request, LocalDateTime currentDateTime) {
+    public ReservationQueryResult save(ReservationCreateCommand request, LocalDateTime currentDateTime) {
         ReservationTimeResponse timeResponse = timeService.findById(request.timeId());
         validateReservationDateTime(request.date(), timeResponse.startAt(), currentDateTime);
 
@@ -41,7 +40,7 @@ public class ReservationService {
         validateDuplicateReservation(request);
 
         Reservation reservation = request.toEntity(themeResponse.id(), timeResponse.id());
-        return ReservationResponse.from(reservationRepository.save(reservation), themeResponse, timeResponse);
+        return ReservationQueryResult.from(reservationRepository.save(reservation), themeResponse, timeResponse);
     }
 
     private void validateReservationDateTime(LocalDate date, LocalTime startAt, LocalDateTime currentDateTime) {
@@ -56,7 +55,7 @@ public class ReservationService {
         return reservationRepository.delete(id);
     }
 
-    private void validateDuplicateReservation(ReservationCreateRequest request) {
+    private void validateDuplicateReservation(ReservationCreateCommand request) {
         Boolean existsByDateAndTime = reservationRepository.existsByDateAndThemeAndTime(request.date(),
                 request.themeId(),
                 request.timeId()
