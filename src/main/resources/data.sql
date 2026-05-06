@@ -10,7 +10,7 @@ INSERT INTO reservation_time (start_at) VALUES ('17:00');
 INSERT INTO reservation_time (start_at) VALUES ('18:00');
 
 -- 테마 데이터
-INSERT INTO theme (name, description, thumbnail_url) VALUES ('우주 정거장', '우주 정거장에서 탈출하세요.', 'https://example.com/theme1.jpg');
+INSERT INTO theme (name, description, thumbnail_url) VALUES ('우주 정거장', '우주 정거장에서 탈출하세요.', 'https://picsum.photos/seed/우주 정거장/400/300');
 INSERT INTO theme (name, description, thumbnail_url) VALUES ('공포의 지하실', '지하실에 갇힌 당신, 살아남을 수 있을까요?', 'https://example.com/theme2.jpg');
 INSERT INTO theme (name, description, thumbnail_url) VALUES ('박물관이 살아있다', '밤이 되면 살아나는 박물관에서의 모험.', 'https://example.com/theme3.jpg');
 INSERT INTO theme (name, description, thumbnail_url) VALUES ('비밀의 정원', '아름답지만 치명적인 비밀이 숨겨진 정원.', 'https://example.com/theme4.jpg');
