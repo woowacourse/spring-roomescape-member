@@ -29,7 +29,7 @@ public class Reservation {
         return new Reservation(null, name, date, time, theme, ReservationStatus.RESERVED);
     }
 
-    public static Reservation of(Long id, String name, LocalDate date, LocalTime time, Theme theme, ReservationStatus status) {
+    public static Reservation load(Long id, String name, LocalDate date, LocalTime time, Theme theme, ReservationStatus status) {
         validateId(id);
         return new Reservation(id, name, date, time, theme, status);
     }

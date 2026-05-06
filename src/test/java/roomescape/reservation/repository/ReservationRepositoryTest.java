@@ -107,7 +107,7 @@ class ReservationRepositoryTest {
         List<Reservation> emptyReservations = List.of();
 
         // when
-        jdbcReservationRepository.save(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme));
+        jdbcReservationRepository.saveV2(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme));
 
         //then
         assertThat(jdbcReservationRepository.findAll())
@@ -154,8 +154,7 @@ class ReservationRepositoryTest {
     }
 
     private Reservation save(Reservation reservation) {
-        Long savedId = jdbcReservationRepository.save(reservation);
-        return Reservation.of(savedId, reservation.name(), reservation.date(), reservation.time(), reservation.theme(), reservation.status());
+        return jdbcReservationRepository.saveV2(reservation);
     }
 
 

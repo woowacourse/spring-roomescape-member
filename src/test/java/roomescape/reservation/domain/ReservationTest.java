@@ -16,7 +16,7 @@ class ReservationTest {
     private final LocalDate date = LocalDate.now().plusMonths(1);
     private final LocalTime startAt = LocalTime.of(15, 40);
     private final Theme theme = Theme.load(1L, "테마", "설명", "썸네일", true);
-    private final Reservation reservation = Reservation.of(1L, name, date, startAt, theme, RESERVED);
+    private final Reservation reservation = Reservation.load(1L, name, date, startAt, theme, RESERVED);
 
     @Test
     @DisplayName("예약 id를 가져온다.")
@@ -74,7 +74,7 @@ class ReservationTest {
     @DisplayName("두 예약 객체의 동등성을 비교한다.")
     void equals() {
         //given & when
-        Reservation otherReservation = Reservation.of(1L, name, date, startAt, theme, RESERVED);
+        Reservation otherReservation = Reservation.load(1L, name, date, startAt, theme, RESERVED);
 
         //then
         assertThat(reservation)
@@ -145,7 +145,7 @@ class ReservationTest {
     void validateId() {
         Long nullId = null;
 
-        assertThatThrownBy(() -> Reservation.of(nullId, name, date, startAt, theme, RESERVED))
+        assertThatThrownBy(() -> Reservation.load(nullId, name, date, startAt, theme, RESERVED))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 ID는 필수입니다.");
     }

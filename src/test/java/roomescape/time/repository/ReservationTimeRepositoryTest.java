@@ -110,8 +110,8 @@ class ReservationTimeRepositoryTest {
         Theme theme1 = Theme.create("테마1", "테마 설명", "테마 썸네일");
         theme1.updateStatus(true);
         Theme theme2 = jdbcThemeRepository.save(theme1);
-        jdbcReservationRepository.save(Reservation.create("한다", date1.date(), time1.startAt(), theme2));
-        jdbcReservationRepository.save(Reservation.create("한다", date1.date(), time2.startAt(), theme2));
+        jdbcReservationRepository.saveV2(Reservation.create("한다", date1.date(), time1.startAt(), theme2));
+        jdbcReservationRepository.saveV2(Reservation.create("한다", date1.date(), time2.startAt(), theme2));
 
         // when
         List<ReservationTime> availableTimes = jdbcReservationTimeRepository.findAvailableByDateAndThemeId(

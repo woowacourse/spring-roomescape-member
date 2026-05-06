@@ -19,7 +19,7 @@ import roomescape.theme.domain.Theme;
 public class JdbcReservationRepository implements ReservationRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNumber) -> Reservation.of(
+    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNumber) -> Reservation.load(
             resultSet.getLong("reservation_id"),
             resultSet.getString("name"),
             resultSet.getDate("date").toLocalDate(),
@@ -123,6 +123,24 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("theme_id", reservation.theme().id())
                 .addValue("status", reservation.status().name());
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    }
+
+    public Reservation saveV2(Reservation reservation) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", reservation.name())
+                .addValue("date", reservation.date())
+                .addValue("start_at", reservation.time())
+                .addValue("theme_id", reservation.theme().id())
+                .addValue("status", reservation.status().name());
+        Long savedId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return Reservation.load(
+                savedId,
+                reservation.name(),
+                reservation.date(),
+                reservation.time(),
+                reservation.theme(),
+                reservation.status()
+        );
     }
 
     @Override
