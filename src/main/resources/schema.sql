@@ -1,18 +1,18 @@
-CREATE TABLE reservation_time
+CREATE TABLE IF NOT EXISTS reservation_time
 (
     id       BIGINT NOT NULL AUTO_INCREMENT,
     start_at TIME   NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
 
-CREATE TABLE reservation_date
+CREATE TABLE IF NOT EXISTS reservation_date
 (
     id   BIGINT NOT NULL AUTO_INCREMENT,
     date DATE   NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
 
-CREATE TABLE theme
+CREATE TABLE IF NOT EXISTS theme
 (
     id            BIGINT       NOT NULL AUTO_INCREMENT,
     name          VARCHAR(255) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE theme
     PRIMARY KEY (id)
 );
 
-CREATE TABLE reservation
+CREATE TABLE IF NOT EXISTS reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     name     VARCHAR(255) NOT NULL,
