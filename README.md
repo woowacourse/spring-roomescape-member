@@ -23,10 +23,10 @@ Phase 2 - Reservation에 Theme 연결
 
 Phase 3 - 사용자 API
 
-- [ ]  사용자 테마 조회 API 추가 (GET /user/themes)
-- [ ]  예약 가능 시간 조회 쿼리 추가 (NOT IN)
-- [ ]  예약 가능 시간 조회 API 추가 (GET /user/themes/{id}/available-times)
-- [ ]  사용자 예약 추가 API (POST /user/reservations)
+- [x]  사용자 테마 조회 API 추가 (GET /user/themes)
+- [x]  예약 가능 시간 조회 쿼리 추가 (NOT IN)
+- [x]  예약 가능 시간 조회 API 추가 (GET /user/themes/{id}/available-times)
+- [x]  사용자 예약 추가 API (POST /user/reservations)
 
 Phase 4 - 인기 테마 조회
 
