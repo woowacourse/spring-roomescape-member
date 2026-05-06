@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
 import roomescape.domain.Time;
 
 @JdbcTest
@@ -48,7 +49,8 @@ class ReservationDaoTest {
     @Test
     @DisplayName("예약을 저장하고 영속화된 객체를 반환한다.")
     void save() {
-        Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTime);
+        Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTime,
+                new Theme(1L, null, null, null));
         Reservation savedReservation = reservationDao.save(reservation);
         assertThat(savedReservation.id()).isPositive();
     }
@@ -56,7 +58,8 @@ class ReservationDaoTest {
     @Test
     @DisplayName("식별자로 예약 객체를 조회한다.")
     void findById() {
-        Reservation savedReservation = reservationDao.save(Reservation.transientOf("브라운", LocalDate.now(), savedTime));
+        Reservation savedReservation = reservationDao.save(Reservation.transientOf("브라운", LocalDate.now(), savedTime,
+                new Theme(1L, null, null, null)));
         Reservation foundReservation = reservationDao.findById(savedReservation.id());
         assertThat(foundReservation.name()).isEqualTo("브라운");
     }
@@ -64,7 +67,8 @@ class ReservationDaoTest {
     @Test
     @DisplayName("모든 예약 객체 목록을 조회한다.")
     void findAll() {
-        reservationDao.save(Reservation.transientOf("브라운", LocalDate.now(), savedTime));
+        reservationDao.save(Reservation.transientOf("브라운", LocalDate.now(), savedTime,
+                new Theme(1L, null, null, null)));
         List<Reservation> reservations = reservationDao.findAll();
         assertThat(reservations).hasSize(1);
     }
@@ -72,7 +76,8 @@ class ReservationDaoTest {
     @Test
     @DisplayName("식별자로 예약을 삭제한다.")
     void deleteById() {
-        Reservation savedReservation = reservationDao.save(Reservation.transientOf("브라운", LocalDate.now(), savedTime));
+        Reservation savedReservation = reservationDao.save(Reservation.transientOf("브라운", LocalDate.now(), savedTime,
+                new Theme(1L, null, null, null)));
         reservationDao.deleteById(savedReservation.id());
         assertThat(reservationDao.findAll()).isEmpty();
     }

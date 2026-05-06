@@ -9,21 +9,26 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.repository.FakeReservationDao;
+import roomescape.repository.FakeThemeDao;
 import roomescape.repository.FakeTimeDao;
 
 class ReservationServiceTest {
 
     private ReservationService reservationService;
     private Time savedTime;
+    private Theme savedTheme;
 
     @BeforeEach
     void setUp() {
         FakeTimeDao fakeReservationTimeDao = new FakeTimeDao();
         FakeReservationDao fakeReservationDao = new FakeReservationDao();
-        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao);
+        FakeThemeDao fakeThemeDao = new FakeThemeDao();
+        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);
         savedTime = fakeReservationTimeDao.save(Time.transientOf(LocalTime.of(10, 0)));
+        savedTheme = fakeThemeDao.save(Theme.transientOf("이름", "설명", "test.com"));
     }
 
     @Test
@@ -31,7 +36,7 @@ class ReservationServiceTest {
     void saveReservation() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTime.id(),
-                reservationRequest.themeId());
+                savedTheme.id());
         assertThat(reservation.time().startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
@@ -40,7 +45,7 @@ class ReservationServiceTest {
     void removeReservation() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTime.id(),
-                reservationRequest.themeId());
+                savedTheme.id());
         reservationService.removeReservation(reservation.id());
         assertThat(reservationService.allReservations()).isEmpty();
     }
@@ -49,7 +54,7 @@ class ReservationServiceTest {
     @DisplayName("모든 예약 목록을 조회하여 반환한다.")
     void allReservations() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
-        reservationService.saveReservation("브라운", futureDate, savedTime.id(), reservationRequest.themeId());
+        reservationService.saveReservation("브라운", futureDate, savedTime.id(), savedTheme.id());
         List<Reservation> reservations = reservationService.allReservations();
         assertThat(reservations).hasSize(1);
     }
@@ -59,7 +64,7 @@ class ReservationServiceTest {
     void findReservation() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation savedReservation = reservationService.saveReservation("브라운", futureDate, savedTime.id(),
-                reservationRequest.themeId());
+                savedTheme.id());
         Reservation foundReservation = reservationService.findReservation(savedReservation.id());
         assertThat(foundReservation.name()).isEqualTo("브라운");
     }
