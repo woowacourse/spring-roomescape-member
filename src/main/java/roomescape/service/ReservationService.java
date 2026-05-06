@@ -40,7 +40,7 @@ public class ReservationService {
             throw new IllegalArgumentException("요청하신 테마 ID가 존재하지 않습니다.");
         }
 
-        if (reservationDao.existsBy(theme, time)) {
+        if (reservationDao.existsBy(request.date(), theme, time)) {
             throw new IllegalArgumentException("이미 존재하는 예약 건입니다.");
         }
 
