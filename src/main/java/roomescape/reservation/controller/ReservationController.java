@@ -30,7 +30,7 @@ public class ReservationController {
         return ResponseEntity.ok(responseData);
     }
 
-    @PatchMapping("/reservation/{id}")
+    @PatchMapping("/reservations/{id}")
     public ResponseEntity<ReservationResponse> cancel(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.cancel(id));
     }

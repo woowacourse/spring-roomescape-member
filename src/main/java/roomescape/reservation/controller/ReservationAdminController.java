@@ -27,13 +27,7 @@ public class ReservationAdminController {
         return ResponseEntity.ok(reservationService.create(dto));
     }
 
-    //TODO: API 삭제
-    @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<ReservationResponse> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(reservationService.delete(id));
-    }
-
-    @PatchMapping("/reservation/{id}")
+    @PatchMapping("/reservations/{id}")
     public ResponseEntity<ReservationResponse> cancel(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.cancel(id));
     }

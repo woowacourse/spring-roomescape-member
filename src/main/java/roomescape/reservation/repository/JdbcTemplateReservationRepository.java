@@ -126,17 +126,6 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
-    // TODO boolean으로 변환후 예외처리는 비즈니스로직에서 수행
-    @Override
-    public void delete(Long id) {
-        String sql = "DELETE FROM reservation WHERE id = :id";
-        SqlParameterSource params = new MapSqlParameterSource("id", id);
-        int deletedCount = jdbcTemplate.update(sql, params);
-        if (deletedCount == 0) {
-            throw new NotFoundException("예약을 삭제할 수 없습니다.");
-        }
-    }
-
     @Override
     public boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId){
         String sql = "SELECT COUNT(*) FROM reservation WHERE DATE = :date AND start_at = :start_at AND theme_id = :theme_id";

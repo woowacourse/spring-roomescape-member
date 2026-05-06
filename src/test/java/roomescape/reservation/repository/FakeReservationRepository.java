@@ -56,14 +56,6 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        Reservation removed = store.remove(id);
-        if (removed == null) {
-            throw new NotFoundException("예약을 삭제할 수 없습니다.");
-        }
-    }
-
-    @Override
     public boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId) {
         return store.values().stream()
                 .anyMatch(reservation ->

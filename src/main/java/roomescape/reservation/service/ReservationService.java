@@ -91,13 +91,6 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse delete(Long id) {
-        Reservation reservation = getReservation(id);
-        reservationRepository.delete(id);
-        return ReservationResponse.from(reservation);
-    }
-
-    @Transactional
     public ReservationResponse cancel(Long id) {
         Reservation reservation = getReservation(id);
         reservation.updateStatus(CANCELED);

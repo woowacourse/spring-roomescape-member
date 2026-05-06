@@ -131,33 +131,6 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 삭제한다.")
-    void delete() {
-        //given
-        List<ReservationSaveDto> reservations = List.of(new ReservationSaveDto(name, reservationDate1.id(), reservationTime1.id(), theme1.id()));
-        ReservationResponse reservationResponse =  reservationService.create(reservations.getFirst());
-
-        //when
-        reservationService.delete(reservationResponse.id());
-
-        //then
-        assertThat(reservationService.readAll())
-                .hasSize(reservations.size() - 1);
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 예약을 삭제하면 예외를 발생한다.")
-    void delete_does_not_exist() {
-        // given
-        Long wrongReservationId = Long.MIN_VALUE;
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.delete(wrongReservationId))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약입니다.");
-    }
-
-    @Test
     @DisplayName("예약 생성 시 예약 날짜/시간/테마가 중복되면 예외를 발생한다.")
     void create_duplicate_reservation() {
         // given
