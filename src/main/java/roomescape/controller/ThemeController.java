@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.Theme;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeQueryService;
 
@@ -29,8 +30,12 @@ public class ThemeController {
         LocalDate startAt = today.minusWeeks(1L);
         LocalDate endAt = today.minusDays(1);
 
-        List<ThemeResponse> popularThemesBy = themeQueryService.findPopularThemesBy(startAt, endAt, limit);
+        List<Theme> popularThemesBy = themeQueryService.findPopularThemesBy(startAt, endAt, limit);
 
-        return ResponseEntity.ok(popularThemesBy);
+        List<ThemeResponse> themeResponses = popularThemesBy.stream()
+                .map(ThemeResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(themeResponses);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeCommandService;
@@ -28,20 +29,25 @@ public class AdminTimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getAllTimes() {
-        return ResponseEntity.ok(reservationTimeQueryService.findAllReservationTimes());
+        List<ReservationTime> allReservationTimes = reservationTimeQueryService.findAllReservationTimes();
+        List<ReservationTimeResponse> reservationTimeResponse = allReservationTimes.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+        return ResponseEntity.ok(reservationTimeResponse);
     }
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody ReservationTimeRequest request) {
-        ReservationTimeResponse reservationTimeResponse = reservationTimeCommandService.create(request.startAt());
-        Long savedId = reservationTimeResponse.id();
+        ReservationTime reservationTime = reservationTimeCommandService.create(request.startAt());
+        Long savedId = reservationTime.id();
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(savedId)
                 .toUri();
 
-        return ResponseEntity.created(location).body(reservationTimeResponse);
+        return ResponseEntity.created(location)
+                .body(ReservationTimeResponse.from(reservationTime));
     }
 
     @DeleteMapping("/{id}")

@@ -3,7 +3,6 @@ package roomescape.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
-import roomescape.dto.response.ReservationResponse;
 import roomescape.repository.ReservationDao;
 
 import java.time.LocalDate;
@@ -20,10 +19,9 @@ public class ReservationCommandService {
         }
     }
 
-    public ReservationResponse create(String name, LocalDate date, long timeId, long themeId) {
+    public Reservation create(String name, LocalDate date, long timeId, long themeId) {
         validateDuplicate(date, timeId, themeId);
-        Reservation savedReservation = reservationDao.save(Reservation.pending(name, date), timeId, themeId);
-        return ReservationResponse.from(savedReservation);
+        return reservationDao.save(Reservation.pending(name, date), timeId, themeId);
     }
 
     public void delete(long reservationId) {

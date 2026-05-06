@@ -2,7 +2,7 @@ package roomescape.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeDao;
 
 import java.time.LocalDate;
@@ -14,15 +14,13 @@ public class ReservationTimeQueryService {
 
     private final ReservationTimeDao reservationTimeDao;
 
-    public List<ReservationTimeResponse> findAllReservationTimes() {
+    public List<ReservationTime> findAllReservationTimes() {
         return reservationTimeDao.findAllReservationTimes().stream()
-                .map(ReservationTimeResponse::from)
                 .toList();
     }
 
-    public List<ReservationTimeResponse> findAvailableReservationTimes(LocalDate date, long themeId) {
+    public List<ReservationTime> findAvailableReservationTimes(LocalDate date, long themeId) {
         return reservationTimeDao.findAvailableReservationTimes(date, themeId).stream()
-                .map(ReservationTimeResponse::from)
                 .toList();
     }
 }

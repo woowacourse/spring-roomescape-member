@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeQueryService;
 
@@ -23,6 +24,10 @@ public class TimeController {
     public ResponseEntity<List<ReservationTimeResponse>> getAvailableTimes(
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") long themeId) {
-        return ResponseEntity.ok(reservationTimeQueryService.findAvailableReservationTimes(date, themeId));
+        List<ReservationTime> availableReservationTimes = reservationTimeQueryService.findAvailableReservationTimes(date, themeId);
+        List<ReservationTimeResponse> reservationTimeResponses = availableReservationTimes.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+        return ResponseEntity.ok(reservationTimeResponses);
     }
 }

@@ -21,7 +21,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
-        ReservationResponse reservationResponse = reservationCommandService.create(request.name(), request.date(), request.timeId(), request.themeId());
+        ReservationResponse reservationResponse = ReservationResponse.from(
+                reservationCommandService.create(request.name(), request.date(), request.timeId(), request.themeId()));
 
         Long savedId = reservationResponse.id();
 
