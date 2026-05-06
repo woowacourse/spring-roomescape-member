@@ -1,4 +1,4 @@
-package roomescape.reservationtime.controller;
+package roomescape.reservationtime.presentation.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservationtime.dto.ReservationTimeCreateRequest;
-import roomescape.reservationtime.dto.ReservationTimeResponse;
-import roomescape.reservationtime.service.ReservationTimeService;
+import roomescape.reservationtime.application.service.ReservationTimeService;
+import roomescape.reservationtime.presentation.dto.ReservationTimeCreateRequest;
+import roomescape.reservationtime.presentation.dto.ReservationTimeResponse;
 
 @RequiredArgsConstructor
 @RequestMapping("/admin/times")
@@ -25,7 +25,11 @@ public class AdminReservationTimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
-        return ResponseEntity.ok(timeService.findAll());
+        return ResponseEntity.ok(
+                timeService.findAll().stream()
+                        .map(ReservationTimeResponse::from)
+                        .toList()
+        );
     }
 
     @PostMapping
@@ -33,7 +37,7 @@ public class AdminReservationTimeController {
             @Valid @RequestBody ReservationTimeCreateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(timeService.save(request));
+                .body(ReservationTimeResponse.from(timeService.save(request.toCommand())));
     }
 
     @DeleteMapping("/{id}")

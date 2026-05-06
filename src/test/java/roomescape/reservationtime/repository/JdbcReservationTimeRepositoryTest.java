@@ -15,9 +15,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.reservationtime.domain.repository.AvailableReservationTime;
+import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
+import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.JdbcThemeRepository;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.infra.JdbcThemeRepository;
+import roomescape.theme.domain.repository.ThemeRepository;
 
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {

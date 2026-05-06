@@ -11,8 +11,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.repository.AvailableReservationTime;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.reservationtime.domain.repository.AvailableReservationTime;
+import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
 

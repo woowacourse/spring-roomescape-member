@@ -1,4 +1,4 @@
-package roomescape.reservationtime.controller;
+package roomescape.reservationtime.presentation.controller;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
-import roomescape.reservationtime.service.ReservationTimeService;
+import roomescape.reservationtime.application.service.ReservationTimeService;
+import roomescape.reservationtime.presentation.dto.AvailableReservationTimeResponse;
 
 @RequiredArgsConstructor
 @RequestMapping("/times")
@@ -23,6 +23,10 @@ public class ReservationTimeController {
             @RequestParam Long themeId,
             @RequestParam LocalDate date
     ) {
-        return ResponseEntity.ok(timeService.findAvailableTimes(themeId, date));
+        return ResponseEntity.ok(
+                timeService.findAvailableTimes(themeId, date).stream()
+                        .map(AvailableReservationTimeResponse::from)
+                        .toList()
+        );
     }
 }

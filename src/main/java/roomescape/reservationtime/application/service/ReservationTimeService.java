@@ -1,4 +1,4 @@
-package roomescape.reservationtime.service;
+package roomescape.reservationtime.application.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -7,14 +7,12 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
-import roomescape.reservationtime.dto.ReservationTimeCreateRequest;
-import roomescape.reservationtime.dto.ReservationTimeResponse;
-import roomescape.reservationtime.exception.ReservationTimeException;
-import roomescape.reservationtime.repository.AvailableReservationTime;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.ThemeException;
+import roomescape.reservationtime.application.dto.AvailableReservationTimeQueryResult;
+import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
+import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
+import roomescape.reservationtime.application.exception.ReservationTimeException;
+import roomescape.reservationtime.domain.repository.AvailableReservationTime;
+import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 
 @RequiredArgsConstructor
 @Service
@@ -22,34 +20,34 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository timeRepository;
 
-    public ReservationTimeResponse findById(Long timeId) {
-        return ReservationTimeResponse.from(timeRepository.findById(timeId)
+    public ReservationTimeQueryResult findById(Long timeId) {
+        return ReservationTimeQueryResult.from(timeRepository.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeException("[ERROR] 존재하지 않는 시간 입니다.")));
     }
 
-    public List<ReservationTimeResponse> findAll() {
+    public List<ReservationTimeQueryResult> findAll() {
         List<ReservationTime> times = timeRepository.findAll();
 
         return times.stream()
-                .map(ReservationTimeResponse::from)
+                .map(ReservationTimeQueryResult::from)
                 .toList();
     }
 
-    public List<AvailableReservationTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {
+    public List<AvailableReservationTimeQueryResult> findAvailableTimes(Long themeId, LocalDate date) {
         List<AvailableReservationTime> times = timeRepository.findByThemeAndDate(themeId, date);
 
         return times.stream()
-                .map(AvailableReservationTimeResponse::from)
+                .map(AvailableReservationTimeQueryResult::from)
                 .toList();
     }
 
-    public ReservationTimeResponse save(ReservationTimeCreateRequest request) {
+    public ReservationTimeQueryResult save(ReservationTimeCreateCommand request) {
         validateDuplicateTime(request.startAt());
         ReservationTime time = request.toEntity();
 
         ReservationTime savedTime = timeRepository.save(time);
 
-        return ReservationTimeResponse.from(savedTime);
+        return ReservationTimeQueryResult.from(savedTime);
     }
 
     public int delete(Long id) {

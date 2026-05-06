@@ -11,10 +11,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservationtime.application.service.ReservationTimeService;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
-import roomescape.reservationtime.dto.ReservationTimeCreateRequest;
-import roomescape.reservationtime.exception.ReservationTimeException;
+import roomescape.reservationtime.application.dto.AvailableReservationTimeQueryResult;
+import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
+import roomescape.reservationtime.application.exception.ReservationTimeException;
 
 class ReservationTimeServiceTest {
 
@@ -39,11 +40,11 @@ class ReservationTimeServiceTest {
         Long themeId = 1L;
         LocalDate date = LocalDate.of(2026, 5, 6);
 
-        List<AvailableReservationTimeResponse> timeResponses = timeService.findAvailableTimes(themeId, date);
+        List<AvailableReservationTimeQueryResult> timeResponses = timeService.findAvailableTimes(themeId, date);
 
         Assertions.assertThat(timeResponses).containsExactly(
-                new AvailableReservationTimeResponse(1L, LocalTime.of(9,0), true),
-                new AvailableReservationTimeResponse(2L, LocalTime.of(10,0), true)
+                new AvailableReservationTimeQueryResult(1L, LocalTime.of(9,0), true),
+                new AvailableReservationTimeQueryResult(2L, LocalTime.of(10,0), true)
         );
     }
 
@@ -61,18 +62,18 @@ class ReservationTimeServiceTest {
                 .build()
         );
 
-        List<AvailableReservationTimeResponse> timeResponses = timeService.findAvailableTimes(themeId, date);
+        List<AvailableReservationTimeQueryResult> timeResponses = timeService.findAvailableTimes(themeId, date);
 
         Assertions.assertThat(timeResponses).containsExactly(
-                new AvailableReservationTimeResponse(1L, LocalTime.of(9,0), false),
-                new AvailableReservationTimeResponse(2L, LocalTime.of(10,0), true)
+                new AvailableReservationTimeQueryResult(1L, LocalTime.of(9,0), false),
+                new AvailableReservationTimeQueryResult(2L, LocalTime.of(10,0), true)
         );
     }
 
     @DisplayName("중복된 타임 추가 시 예외 발생을 테스트합니다.")
     @Test
     void save_duplicated_time_exception() {
-        ReservationTimeCreateRequest createRequestDto = new ReservationTimeCreateRequest(LocalTime.of(9, 0));
+        ReservationTimeCreateCommand createRequestDto = new ReservationTimeCreateCommand(LocalTime.of(9, 0));
 
         assertThatThrownBy(() -> timeService.save(createRequestDto))
                 .isInstanceOf(ReservationTimeException.class)
