@@ -1,3 +1,12 @@
+CREATE TABLE themes
+(
+    id          BIGINT        NOT NULL AUTO_INCREMENT,
+    name        VARCHAR(255)  NOT NULL UNIQUE,
+    description VARCHAR(255)  NOT NULL,
+    thumbnail   VARCHAR(2048) NOT NULL,
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE reservation_time
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
@@ -18,13 +27,4 @@ CREATE TABLE reservation
     CONSTRAINT unique_reservation UNIQUE (date, time_id, theme_id)
 
 );
-
-CREATE TABLE themes
-(
-    id          BIGINT        NOT NULL AUTO_INCREMENT,
-    name        VARCHAR(255)  NOT NULL UNIQUE,
-    description VARCHAR(255)  NOT NULL,
-    thumbnail   VARCHAR(2048) NOT NULL,
-    PRIMARY KEY (id)
-)
 
