@@ -1,13 +1,12 @@
 package roomescape.date.controller;
 
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.date.dto.ReservationDateDetailDto;
+import roomescape.date.dto.response.ReservationDateDetailDto;
 import roomescape.date.service.ReservationDateService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/member")
