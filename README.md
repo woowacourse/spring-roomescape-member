@@ -24,6 +24,14 @@
 
 ## API 명세서
 
+| 기능          | Http/url                                                  | 요청본문                   | 응답                              |
+| ----------- |-----------------------------------------------------------| ---------------------- | ------------------------------- |
+| 예약 생성       | `POST` `/reservations`                                    | `{name, date, timeId}` | `{id, name, date, time}`        |
+| 예약 삭제       | `DELETE` `/reservations/{reservation_id}`                 | -                      | -                               |
+| 예약 조회       | `GET` `/reservations`                                     | -                      | `[{id, name, date, time}, ...]` |
+| 예약 가능 시간 조회 | `GET` `/reservations/themes/{theme_id}/times?date={date}` | -                      | `[{id, startAt}, ...]`          |
+
+
 - 1단계
 
 | 기능 | Http/url                           | 요청본문                                    | 응답                                                  | 
