@@ -28,8 +28,11 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Reservation> findAll() {
-        return reservationRepository.findAll();
+
+    public List<ReservationResult> findAll() {
+        return reservationRepository.findAll().stream()
+                .map(ReservationResult::from)
+                .toList();
     }
 
     public ReservationResult create(ReservationCreateCommand command) {

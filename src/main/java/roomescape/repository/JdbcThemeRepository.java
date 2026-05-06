@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.service.dto.PopularTheme;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -20,6 +21,16 @@ public class JdbcThemeRepository implements ThemeRepository {
             rs.getString("name"),
             rs.getString("description"),
             rs.getString("thumbnail_url")
+    );
+
+    private static final RowMapper<PopularTheme> POPULAR_ROW_MAPPER = (rs, rowNum) -> new PopularTheme(
+            new Theme(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("thumbnail")
+            ),
+            rs.getLong("reservation_count")
     );
 
 
@@ -66,4 +77,21 @@ public class JdbcThemeRepository implements ThemeRepository {
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
+
+    @Override
+    public List<PopularTheme> findPopular() {
+        String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail,
+                       COUNT(r.id) AS reservation_count
+                FROM theme t
+                INNER JOIN reservation r ON t.id = r.theme_id
+                WHERE r.date >= DATEADD('DAY', -7, CURRENT_DATE)
+                  AND r.date <  CURRENT_DATE
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY reservation_count DESC
+                LIMIT 10
+                """;
+        return jdbcTemplate.query(sql, POPULAR_ROW_MAPPER);
+    }
+
 }

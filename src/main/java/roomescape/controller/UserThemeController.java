@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.dto.PopularThemeResponse;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.controller.dto.ThemeResponse;
 import roomescape.service.ReservationTimeService;
@@ -45,5 +46,11 @@ public class UserThemeController {
                 .toList();
     }
 
+    @GetMapping("/popular")
+    public List<PopularThemeResponse> popular() {
+        return themeService.findPopular().stream()
+                .map(PopularThemeResponse::from)
+                .toList();
+    }
 
 }

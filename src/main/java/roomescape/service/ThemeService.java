@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.PopularThemeResult;
 import roomescape.service.dto.ThemeCreateCommand;
 import roomescape.service.dto.ThemeResult;
 
@@ -32,4 +33,13 @@ public class ThemeService {
     public void delete(Long id) {
         themeRepository.deleteById(id);
     }
+
+    public List<PopularThemeResult> findPopular() {
+        return themeRepository.findPopular().stream()
+                .map(p -> new PopularThemeResult(
+                        ThemeResult.from(p.getTheme()),
+                        p.getReservationCount()))
+                .toList();
+    }
+
 }

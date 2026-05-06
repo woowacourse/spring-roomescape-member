@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationTimeRequest;
 import roomescape.controller.dto.ReservationTimeResponse;
-import roomescape.domain.ReservationTime;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.dto.ReservationTimeResult;
 
 @RequestMapping("/admin/times")
 @RestController
@@ -32,7 +32,7 @@ public class AdminReservationTimeController {
 
     @PostMapping()
     public ReservationTimeResponse create(@RequestBody ReservationTimeRequest request) {
-        ReservationTime saved = reservationTimeService.create(request.toCommand());
+        ReservationTimeResult saved = reservationTimeService.create(request.toCommand());
         return ReservationTimeResponse.from(saved);
     }
 
