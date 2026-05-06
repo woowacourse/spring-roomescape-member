@@ -54,4 +54,21 @@ public class ThemeRepository {
         String sql = "SELECT * FROM THEME";
         return jdbcTemplate.query(sql, themeRowMapper);
     }
+
+    public List<Theme> findByRanks(String currentDate, String lastWeekDate, int limit) {
+        String sql = """
+                SELECT
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.url
+                FROM theme t
+                INNER JOIN reservation r ON r.theme_id = t.id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id
+                order by (COUNT(r.id)) desc, t.id asc
+                limit ?;
+                """;
+        return jdbcTemplate.query(sql, themeRowMapper, lastWeekDate, currentDate, limit);
+    }
 }

@@ -37,6 +37,12 @@ public class ThemeController {
         return ResponseEntity.ok().body(themeResponses);
     }
 
+    @GetMapping("/ranks")
+    public ResponseEntity<List<ThemeResponse>> getThemeRanks() {
+        List<ThemeResponse> themeResponses = themeService.getThemeRanks();
+        return ResponseEntity.ok().body(themeResponses);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeTheme(@PathVariable Long id) {
         themeService.removeTheme(id);

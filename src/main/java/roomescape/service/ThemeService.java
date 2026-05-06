@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,8 @@ import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
+
+    private final static int RANKS_LIMIT_COUNT = 10;
 
     private final ThemeRepository themeRepository;
 
@@ -28,6 +31,16 @@ public class ThemeService {
 
     public List<ThemeResponse> getThemeAll() {
         List<Theme> themes = themeRepository.findAll();
+        return themes.stream()
+                .map(ThemeResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<ThemeResponse> getThemeRanks() {
+        LocalDate currentDay = LocalDate.now().minusDays(1);
+        LocalDate lastWeekDay = currentDay.minusWeeks(1);
+        List<Theme> themes = themeRepository.findByRanks(currentDay.toString(), lastWeekDay.toString(),
+                RANKS_LIMIT_COUNT);
         return themes.stream()
                 .map(ThemeResponse::from)
                 .collect(Collectors.toList());
