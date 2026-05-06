@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ResourceIdResponseDto;
+import roomescape.dto.reservationTime.AvailableReservationTimesResponseDto;
 import roomescape.dto.reservationTime.ReservationTimeRequestDto;
 import roomescape.dto.reservationTime.ReservationTimeResponseDto;
 import roomescape.service.ReservationService;
@@ -84,11 +85,18 @@ class ReservationTimeControllerTest {
 
     @Test
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
-        ReservationTime availableTime1 = new ReservationTime(1L, "12:30");
-        ReservationTime availableTime2 = new ReservationTime(2L, "14:30");
         // given
+        ReservationTime availableTime = new ReservationTime(1L, "12:30");
+        ReservationTime impossibleTime = new ReservationTime(2L, "14:30");
+        List<ReservationTime> allTimes = List.of(availableTime, impossibleTime);
+        List<ReservationTime> availableTimes = List.of(availableTime);
+        AvailableReservationTimesResponseDto expected = AvailableReservationTimesResponseDto.of(availableTimes, allTimes);
+
         when(reservationService.getAvailableTimes(any(), anyLong()))
-            .thenReturn(List.of(availableTime1, availableTime2));
+            .thenReturn(List.of(availableTime));
+
+        when(reservationService.getReservationTimes())
+                .thenReturn(List.of(availableTime, impossibleTime));
 
         // when
         Response response = RestAssured
@@ -102,10 +110,8 @@ class ReservationTimeControllerTest {
             .then()
             .statusCode(HttpStatus.OK.value());
 
-        List<ReservationTimeResponseDto> responseDtos = response.as(new TypeRef<>() {
-        });
-        assertThat(responseDtos).hasSize(2);
-        assertThat(responseDtos).containsExactlyElementsOf(responseDtos);
+        AvailableReservationTimesResponseDto responseDto = response.as(AvailableReservationTimesResponseDto.class);
+        assertThat(responseDto).isEqualTo(expected);
     }
 
     @Nested
