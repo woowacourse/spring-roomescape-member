@@ -1,14 +1,14 @@
-INSERT INTO reservation_time (id, start_time, end_time)
+INSERT INTO reservation_time (start_time, end_time)
 VALUES
-    (1, '10:00', '11:00'),
-    (2, '11:00', '12:00'),
-    (3, '12:00', '13:00');
+    ('10:00', '11:00'),
+    ('11:00', '12:00'),
+    ('12:00', '13:00');
 
-INSERT INTO theme (id, name, description, image_url)
+INSERT INTO theme (name, description, image_url)
 VALUES
-    (1, '미궁의 유산', '고대 미궁에서 탈출하세요.', 'https://example.com/themes/1.png'),
-    (2, '시간의 균열', '시간이 무너지는 방을 구하세요.', 'https://example.com/themes/2.png'),
-    (3, '심해 기지', '심해 기지의 비밀을 밝혀라.', 'https://example.com/themes/3.png');
+    ('미궁의 유산', '고대 미궁에서 탈출하세요.', 'https://example.com/themes/1.png'),
+    ('시간의 균열', '시간이 무너지는 방을 구하세요.', 'https://example.com/themes/2.png'),
+    ('심해 기지', '심해 기지의 비밀을 밝혀라.', 'https://example.com/themes/3.png');
 
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES
