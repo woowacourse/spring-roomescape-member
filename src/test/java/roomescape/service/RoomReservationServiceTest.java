@@ -17,6 +17,7 @@ import roomescape.domain.ReservationTime.ReservationTimeCondition;
 import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
 import roomescape.domain.ReservationTheme.ReservationTheme;
 import roomescape.domain.ReservationTheme.ReservationThemeCommand;
+import roomescape.exception.DuplicatedReservationRequestException;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.ReservationTheme.ReservationThemeRepository;
@@ -24,7 +25,7 @@ import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 public class RoomReservationServiceTest {
-    private ReservationRepository createReservationRepository() {
+    private ReservationRepository createReservationRepository(boolean isExist) {
         return new ReservationRepository() {
             @Override
             public List<Reservation> getAllReservation() {
@@ -58,7 +59,7 @@ public class RoomReservationServiceTest {
 
             @Override
             public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, String date) {
-                return false;
+                return isExist;
             }
         };
     }
@@ -134,7 +135,7 @@ public class RoomReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1, "10:00");
         ReservationTheme reservationTheme = new ReservationTheme(1, "name", "description", "image");
 
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(), createReservationTimeRepository(reservationTime), createThemeRepository(
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(reservationTime), createThemeRepository(
                 reservationTheme));
         ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
 
@@ -146,7 +147,7 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 시간ID인 경우 예외 테스트")
     void addReservationFailByInvalidTimeIdTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(), createReservationTimeRepository(null), createThemeRepository(new ReservationTheme(1, "테마1", "설명", "url")));
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(null), createThemeRepository(new ReservationTheme(1, "테마1", "설명", "url")));
         ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationCommand))
@@ -157,11 +158,29 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 테마 ID인 경우 예외 테스트")
     void addReservationFailByInvalidThemeIdTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(), createReservationTimeRepository(new ReservationTime(1, "10:00")), createThemeRepository(null));
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(new ReservationTime(1, "10:00")), createThemeRepository(null));
         ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationCommand))
                 .isExactlyInstanceOf(NotFoundResourceException.class)
                 .hasMessage(ErrorMessage.INVALID_THEME_ID.getMessage());
+    }
+
+    @Test
+    @DisplayName("같은 시간, 날짜, themeId가 존재하는 경우, 예약 생성 시 예외 테스트")
+    void test() {
+        ReservationTime reservationTime = new ReservationTime(1, "10:00");
+        ReservationTheme reservationTheme = new ReservationTheme(1, "name", "description", "image");
+
+        RoomReservationService reservationService = new RoomReservationService(
+                createReservationRepository(true),
+                createReservationTimeRepository(reservationTime),
+                createThemeRepository(reservationTheme)
+        );
+
+        assertThatThrownBy(() -> reservationService.addReservation(new ReservationCommand("test", "2023-08-05", 1, 1)))
+                .isExactlyInstanceOf(DuplicatedReservationRequestException.class)
+                .hasMessage(ErrorMessage.DUPLICATED_RESERVATION_REQUEST.getMessage()
+        );
     }
 }
