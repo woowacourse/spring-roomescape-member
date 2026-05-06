@@ -20,9 +20,9 @@ public class AdminThemeController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> addTheme(@RequestBody ThemeRequest themeRequest) {
-        Long id = adminThemeService.save(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
-        return ResponseEntity.status(HttpStatus.CREATED).body(id);
+    public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeRequest themeRequest) {
+        Theme theme = adminThemeService.save(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ThemeResponse.from(theme));
     }
 
     @DeleteMapping("/{id}")

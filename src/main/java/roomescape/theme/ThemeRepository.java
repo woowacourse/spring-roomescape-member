@@ -14,7 +14,7 @@ public class ThemeRepository {
         this.themeDao = themeDao;
     }
 
-    public long save(String name, String description, String thumbnail) {
+    public Theme save(String name, String description, String thumbnail) {
         return themeDao.save(name, description, thumbnail);
     }
 

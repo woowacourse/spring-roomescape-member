@@ -27,7 +27,7 @@ public class ThemeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long save(String name, String description, String thumbnail) {
+    public Theme save(String name, String description, String thumbnail) {
         String sql = "INSERT INTO themes (name, description, thumbnail) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -39,7 +39,8 @@ public class ThemeDao {
             return ps;
         }, keyHolder);
 
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Theme(id, name, description, thumbnail);
     }
 
     public void delete(long id) {
