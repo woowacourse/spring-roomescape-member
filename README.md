@@ -30,8 +30,8 @@ Phase 3 - 사용자 API
 
 Phase 4 - 인기 테마 조회
 
-- [ ]  인기 테마 조회 쿼리 추가 (JOIN + GROUP BY + COUNT)
-- [ ]  인기 테마 조회 API 추가 (GET /user/themes/popular)
+- [x]  인기 테마 조회 쿼리 추가 (JOIN + GROUP BY + COUNT)
+- [x]  인기 테마 조회 API 추가 (GET /user/themes/popular)
 
 Phase 5 - 테스트 & 초기 데이터
 
