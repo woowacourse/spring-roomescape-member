@@ -77,6 +77,7 @@ public class ReservationDao {
         params.put("name", reservation.getName());
         params.put("date", reservation.getDate());
         params.put("time_id", reservation.getTime().getId());
+        params.put("theme_id", reservation.getTheme().getId());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
