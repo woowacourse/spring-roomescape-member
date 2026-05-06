@@ -1,11 +1,9 @@
-package roomescape.domain.reservations.entity;
+package roomescape.entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservations.entity.Reservation;
-import roomescape.reservations.entity.ReservationTime;
 
 public class ReservationTest {
 

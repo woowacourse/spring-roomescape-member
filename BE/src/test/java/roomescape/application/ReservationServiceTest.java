@@ -1,4 +1,4 @@
-package roomescape.domain.reservations.application;
+package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,14 +11,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.global.exception.customException.ReservationException;
 import roomescape.global.exception.customException.ReservationTimeException;
-import roomescape.reservations.application.ReservationService;
-import roomescape.domain.reservations.FakeReservationRepository;
-import roomescape.domain.reservations.FakeReservationTimeRepository;
-import roomescape.reservations.entity.ReservationTime;
-import roomescape.reservations.entity.ReservationRepository;
-import roomescape.reservations.entity.ReservationTimeRepository;
-import roomescape.reservations.presentation.dto.ReservationRequest;
-import roomescape.reservations.presentation.dto.ReservationResponse;
+import roomescape.FakeReservationRepository;
+import roomescape.FakeReservationTimeRepository;
+import roomescape.entity.ReservationTime;
+import roomescape.entity.ReservationRepository;
+import roomescape.entity.ReservationTimeRepository;
+import roomescape.presentation.dto.ReservationRequest;
+import roomescape.presentation.dto.ReservationResponse;
 
 class ReservationServiceTest {
 

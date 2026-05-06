@@ -1,4 +1,4 @@
-package roomescape.reservations.entity;
+package roomescape.entity;
 
 import java.util.List;
 import java.util.Optional;

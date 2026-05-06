@@ -1,6 +1,6 @@
-package roomescape.reservations.presentation.dto;
+package roomescape.presentation.dto;
 
-import roomescape.reservations.entity.ReservationTime;
+import roomescape.entity.ReservationTime;
 
 public record ReservationTimeResponse(
         Long id,
