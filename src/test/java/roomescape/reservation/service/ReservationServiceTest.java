@@ -140,6 +140,6 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.create(duplicateDateTimeCommand))
                 .isInstanceOf(ConflictException.class)
-                .hasMessage("이미 존재하는 예약 날짜/시간 입니다.");
+                .hasMessage("해당 날짜/시간/테마는 이미 예약되었습니다.");
     }
 }

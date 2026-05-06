@@ -53,8 +53,8 @@ public class ReservationService {
         Theme theme = themeRepository.findById(dto.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
 
-        //TODO: 예약 생성시 동일인이 동일 날짜/시간을 예약할 수 없도록 검증
-        validateDuplicateReservation(reservationDate, reservationTime, theme);
+        validateNotAlreadyBookedByOthers(reservationDate, reservationTime, theme);
+        validateUserHasNoReservationAtSameTime(dto.name(), reservationDate, reservationTime);
         Long id = reservationRepository.save(
                 Reservation.create(dto.name(), reservationDate.date(), reservationTime.startAt(), theme));
 
@@ -68,9 +68,15 @@ public class ReservationService {
         );
     }
 
-    private void validateDuplicateReservation(ReservationDate date, ReservationTime time, Theme theme) {
+    private void validateNotAlreadyBookedByOthers(ReservationDate date, ReservationTime time, Theme theme) {
         if (reservationRepository.existsByDateAndTimeAndThemeId(date.date(), time.startAt(), theme.id())) {
-            throw new ConflictException("이미 존재하는 예약 날짜/시간 입니다.");
+            throw new ConflictException("해당 날짜/시간/테마는 이미 예약되었습니다.");
+        }
+    }
+
+    private void validateUserHasNoReservationAtSameTime(String name, ReservationDate date, ReservationTime time) {
+        if (reservationRepository.existsByNameAndDateAndTime(name, date.date(), time.startAt())) {
+            throw new ConflictException("동일한 날짜와 시간에 예약이 존재합니다.");
         }
     }
 

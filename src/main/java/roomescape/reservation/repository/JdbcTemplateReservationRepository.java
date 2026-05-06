@@ -126,4 +126,16 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
     }
+
+    @Override
+    public boolean existsByNameAndDateAndTime(String name, LocalDate date, LocalTime time) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE name = :name AND date = :date AND start_at = :start_at";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", name)
+                .addValue("date", date)
+                .addValue("start_at", time);
+
+        Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count != null && count > 0;
+    }
 }
