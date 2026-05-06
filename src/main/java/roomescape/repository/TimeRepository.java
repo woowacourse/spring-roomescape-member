@@ -62,4 +62,9 @@ public class TimeRepository {
         String sql = "select * from reservation_time where id = ?";
         return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
     }
+
+    public int existsByStartAt(LocalTime startAt) {
+        String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, startAt);
+    }
 }
