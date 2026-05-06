@@ -129,6 +129,11 @@ class ReservationDateServiceTest {
         public int countByReservationDateId(Long dateId) {
             return countByReservationDateIdResult;
         }
+
+        @Override
+        public List<Long> findReservedTimes(Long themeId, Long dateId) {
+            return List.of();
+        }
     }
 
     private static class FakeReservationDateRepository implements ReservationDateRepository {

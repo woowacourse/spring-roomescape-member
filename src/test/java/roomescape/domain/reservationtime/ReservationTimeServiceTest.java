@@ -154,5 +154,10 @@ class ReservationTimeServiceTest {
         public int countByReservationDateId(Long dateId) {
             return 0;
         }
+
+        @Override
+        public List<Long> findReservedTimes(Long themeId, Long dateId) {
+            return List.of();
+        }
     }
 }
