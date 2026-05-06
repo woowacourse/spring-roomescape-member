@@ -150,6 +150,17 @@ public class RestExceptionHandlerTest {
     }
 
     @Test
+    void 파라미터가_누락된_경우_400() {
+        // when & then
+        RestAssuredMockMvc.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON)
+                .when().get("/dummy/param")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("test 파라미터가 누락 되었습니다."));
+    }
+
+    @Test
     void 나머지_예외는_서버_예외() {
         // when & then
         RestAssuredMockMvc.given().log().all()

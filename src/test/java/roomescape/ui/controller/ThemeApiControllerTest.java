@@ -70,9 +70,11 @@ class ThemeApiControllerTest extends BaseControllerUnitTest {
 
     @Test
     void 테마_목록_조회_요청에_성공하면_정상_응답이_반환된다() {
+        // given
         ThemeResult result = ThemeResult.from(ThemeFixture.createThemeWithId());
         when(themeService.getAllThemes()).thenReturn(List.of(result));
 
+        // when & then
         List<ThemeResponse> response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .when().get("/api/themes")
                 .then().log().all()
@@ -83,4 +85,44 @@ class ThemeApiControllerTest extends BaseControllerUnitTest {
         assertThat(response).containsOnly(ThemeResponse.from(result));
     }
 
+    @Test
+    void 인기_테마_목록_조회_요청에_성공하면_정상_응답이_반환된다() {
+        // given
+        ThemeResult result = ThemeResult.from(ThemeFixture.createThemeWithId());
+        when(themeService.getPopularThemes(any(LocalDate.class), any(LocalDate.class))).thenReturn(List.of(result));
+
+        // when & then
+        List<ThemeResponse> response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .queryParam("startDate", "2026-05-06")
+                .queryParam("endDate", "2026-05-09")
+                .when().get("/api/themes/popular")
+                .then().log().all()
+                .status(HttpStatus.OK)
+                .extract().as(new TypeRef<>() {
+                });
+
+        assertThat(response).containsOnly(ThemeResponse.from(result));
+    }
+
+    @Test
+    void 인기_테마_목록_조회_요청_시_시작일이_없으면_400_BAD_REQUEST() {
+        // when & then
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .queryParam("endDate", "2026-05-06")
+                .when().get("/api/themes/popular")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("startDate 파라미터가 누락 되었습니다."));
+    }
+
+    @Test
+    void 인기_테마_목록_조회_요청_시_종료일이_없으면_400_BAD_REQUEST() {
+        // when & then
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .queryParam("startDate", "2026-05-06")
+                .when().get("/api/themes/popular")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("endDate 파라미터가 누락 되었습니다."));
+    }
 }

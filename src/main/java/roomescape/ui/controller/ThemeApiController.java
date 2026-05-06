@@ -45,4 +45,15 @@ public class ThemeApiController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
+    ) {
+        List<ThemeResponse> response = themeService.getPopularThemes(startDate, endDate)
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok().body(response);
+    }
 }

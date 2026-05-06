@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import integration.BaseIntegrationTest;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,12 +20,12 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
     private ThemeRepository themeRepository;
 
     @Autowired
-    private ThemeDataSource themeDataSource;
+    private ThemeDataSource dataSource;
 
     @BeforeEach
     void setUp() {
-        themeDataSource.clearId();
-        themeDataSource.clearTable();
+        dataSource.clearId();
+        dataSource.clearTable();
     }
 
     @Test
@@ -89,5 +91,27 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
         Optional<Theme> found = themeRepository.findById(savedTheme.getId());
         assertThat(found).isPresent();
         assertThat(found.get().isActive()).isFalse();
+    }
+
+    @Test
+    void 예약이_많은_순서대로_상위_10개의_테마를_조회한다() {
+        // given: 15개 테마가 존재
+        dataSource.insertThemesByCount(15);
+        dataSource.insertTimeByStartToEndWithOneHourRotation(10, 18);
+
+        // 테마1에 예약 3개, 테마 2에 예약 2개, 테마 3에 예약 1개
+        dataSource.insertReservationByTheme(2L, 3);
+        dataSource.insertReservationByTheme(1L, 2);
+        dataSource.insertReservationByTheme(3L, 1);
+
+        // when
+        LocalDate now = LocalDate.now();
+        List<Theme> popularThemes = themeRepository.findTop10ByReservationCount(now.minusDays(7), now.plusDays(1));
+
+        // then
+        assertThat(popularThemes).hasSize(10);
+        assertThat(popularThemes.get(0).getId()).isEqualTo(2L);
+        assertThat(popularThemes.get(1).getId()).isEqualTo(1L);
+        assertThat(popularThemes.get(2).getId()).isEqualTo(3L);
     }
 }

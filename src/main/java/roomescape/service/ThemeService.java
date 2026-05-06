@@ -51,6 +51,13 @@ public class ThemeService {
                 .toList();
     }
 
+    public List<ThemeResult> getPopularThemes(LocalDate startDate, LocalDate endDate) {
+        return themeRepository.findTop10ByReservationCount(startDate, endDate)
+                .stream()
+                .map(ThemeResult::from)
+                .toList();
+    }
+
     private ThemeTimesResult toResultWithTimeCheck(TimeSlotProjection projection, LocalDate date) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startAt = LocalDateTime.of(date, projection.startAt());

@@ -4,7 +4,7 @@ CREATE TABLE theme
     name                VARCHAR(20)  NOT NULL,
     description         VARCHAR(255) NOT NULL,
     thumbnail_image_url VARCHAR(500) NOT NULL,
-    is_active           TINYINT      NOT NULL DEFAULT 0,
+    is_active           TINYINT      NOT NULL DEFAULT 1,
     active_name         VARCHAR(20) AS (CASE WHEN is_active = 1 THEN name ELSE NULL END),
     PRIMARY KEY (id),
     CONSTRAINT uk_active_name UNIQUE (active_name)
@@ -26,5 +26,5 @@ CREATE TABLE reservation (
     PRIMARY KEY (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    CONSTRAINT uk_reservation_date_time UNIQUE (date, time_id)
+    CONSTRAINT uk_reservation_date_theme_time UNIQUE (date, theme_id, time_id)
 );

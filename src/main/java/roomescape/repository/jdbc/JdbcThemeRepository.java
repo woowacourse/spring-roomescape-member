@@ -3,6 +3,7 @@ package roomescape.repository.jdbc;
 import static roomescape.repository.jdbc.ThemeEntityMapper.THEME_MAPPER;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +56,6 @@ public class JdbcThemeRepository implements ThemeRepository {
                     SET name = ?, description = ?, thumbnail_image_url = ?, is_active = ?
                     WHERE id=?
                 """;
-        System.out.println("dddddd -> " + theme.getId());
         jdbcTemplate.update(sql,
                 theme.getName(),
                 theme.getDescription(),
@@ -80,5 +80,27 @@ public class JdbcThemeRepository implements ThemeRepository {
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
         return jdbcTemplate.query(sql, THEME_MAPPER);
+    }
+
+    @Override
+    public List<Theme> findTop10ByReservationCount(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+            SELECT 
+                t.id AS id, 
+                t.name AS name, 
+                t.description AS description, 
+                t.thumbnail_image_url AS thumbnail_image_url, 
+                t.is_active AS is_active
+            FROM theme t
+            LEFT JOIN reservation r 
+                   ON t.id = r.theme_id 
+                  AND r.date BETWEEN ? AND ?
+            WHERE t.is_active = 1
+            GROUP BY t.id, t.name, t.description, t.thumbnail_image_url, t.is_active
+            ORDER BY COUNT(r.id) DESC
+            LIMIT 10
+        """;
+
+        return jdbcTemplate.query(sql, THEME_MAPPER, startDate, endDate);
     }
 }
