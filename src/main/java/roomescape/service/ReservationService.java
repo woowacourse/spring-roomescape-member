@@ -24,14 +24,14 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public AdminReservationResponse save(ReservationRequest request) {
+    public ReservationResponse save(ReservationRequest request) {
         ReservationTime time = reservationTimeDao.findById(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
         Theme theme = themeDao.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         Reservation.validate(request.name(), request.date(), time);
         Long id = reservationDao.save(request.name(), request.date(), request.timeId(), request.themeId());
-        return AdminReservationResponse.from(new Reservation(id, request.name(), request.date(), time, theme), theme);
+        return ReservationResponse.from(new Reservation(id, request.name(), request.date(), time, theme), theme);
     }
 
     public void delete(Long id) {
