@@ -19,11 +19,6 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
 
-    @Transactional(readOnly = true)
-    public List<Theme> findAll() {
-        return themeRepository.findAll();
-    }
-
     @Transactional
     public Theme create(
             ThemeCreateRequest createRequest
@@ -35,6 +30,11 @@ public class ThemeService {
         );
 
         return themeRepository.persist(theme);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Theme> findAll() {
+        return themeRepository.findAll();
     }
 
     @Transactional(readOnly = true)
