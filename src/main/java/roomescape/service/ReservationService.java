@@ -16,6 +16,7 @@ import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationUpdatingDao;
 import roomescape.repository.ThemeQueryingDao;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +56,9 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationTimeNotFoundException(reservationReq.getTimeId()));
         Theme themeById = themeQueryingDao.findThemeById(reservationReq.getThemeId())
                 .orElseThrow(() -> new ThemeNotFoundException(reservationReq.getThemeId()));
+
+        if (reservationReq.getDate().isBefore(LocalDate.now()))
+            throw new IllegalArgumentException("현재보다 이전의 날짜는 예약할 수 없습니다.");
 
         Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(themeById.getId(), reservationReq.getDate(), reservationTimeById.getId());
         if (savedReservation.isPresent()) {
