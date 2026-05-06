@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
