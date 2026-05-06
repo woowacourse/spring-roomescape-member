@@ -12,11 +12,11 @@ public class AdminThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public long save(String name, String description, String thumbnail) {
+    public Theme save(String name, String description, String thumbnail) {
         try {
             return themeRepository.save(name, description, thumbnail);
         } catch (DataIntegrityViolationException e) {
-            throw new DuplicateThemeException("같은 이름의 테마가 존재합니다.");
+            throw new ThemeDuplicateException("같은 이름의 테마가 존재합니다.");
         }
 
     }
