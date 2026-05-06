@@ -1,30 +1,25 @@
 package roomescape.reservationtime;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.ApiException;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.ResourceInUseException;
 import roomescape.reservation.ReservationRepository;
 
 @Service
-public class ReservationTimeService {
+public class AdminReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
-                                  ReservationRepository reservationRepository) {
+    public AdminReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+                                      ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
 
-    public List<ReservationTime> findReservationTimes() {
-        return reservationTimeRepository.findAll();
-    }
 
     @Transactional
     public ReservationTime createReservationTime(LocalTime startAt) {
@@ -44,10 +39,5 @@ public class ReservationTimeService {
         }
 
         reservationTimeRepository.delete(id);
-    }
-
-    public ScheduleResponse getSchedules(LocalDate date, Long themeId) {
-        List<AvailableTimeDto> schedules = reservationTimeRepository.findAvailableTimes(date, themeId);
-        return new ScheduleResponse(themeId, date, schedules);
     }
 }
