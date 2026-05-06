@@ -82,7 +82,7 @@ class ReservationDateServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationDateService.deleteReservationDate(1L))
             .isInstanceOf(RoomescapeException.class)
-            .hasMessage("이미 얘약이 존재하는 날짜는 삭제할 수 없습니다.");
+            .hasMessage("이미 예약이 존재하는 날짜는 삭제할 수 없습니다.");
     }
 
     @Test
