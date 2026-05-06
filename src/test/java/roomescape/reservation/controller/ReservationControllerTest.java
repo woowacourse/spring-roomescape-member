@@ -98,6 +98,29 @@ class ReservationControllerTest {
                 .statusCode(404);
     }
 
+    @Test
+    void 날짜_시간_테마가_같은_예약을_등록요청하면_409를_응답한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "밀란");
+        params.put("date", "2026-05-06");
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409);
+    }
+
     @ParameterizedTest(name = "{0}은 1에서 10자 이내의 예약자 이름이 아니다")
     @ValueSource(strings = {"", "12345678901"})
     void 예약을_추가할_때_이름이_1자에서_10자이내가_아니면_400을_응답한다(String name) {
