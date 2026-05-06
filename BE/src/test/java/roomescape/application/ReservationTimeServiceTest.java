@@ -9,16 +9,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.entity.Reservation;
+import roomescape.entity.ReservationRepository;
 import roomescape.entity.ReservationTime;
-import roomescape.global.exception.customException.ReservationTimeException;
+import roomescape.entity.ReservationTimeRepository;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
-import roomescape.entity.ReservationRepository;
-import roomescape.entity.ReservationTimeRepository;
+import roomescape.global.exception.customException.ReservationTimeException;
 
 class ReservationTimeServiceTest {
 
-    private final  ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+    private final ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
     private final ReservationRepository reservationRepository = new FakeReservationRepository();
 
     private ReservationTimeService reservationTimeService;
@@ -31,47 +31,47 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("예약 시간을 저장한다")
-    void saveTime_success() {
+    void save_success() {
         // given
         LocalTime testStartAt = LocalTime.now();
 
         // when & then
         Assertions.assertDoesNotThrow(
-                () -> reservationTimeService.saveTime(testStartAt)
+                () -> reservationTimeService.save(testStartAt)
         );
     }
 
     @Test
     @DisplayName("예약 시간 목록을 조회 시 오류가 발생하지 않음")
-    void getTimes_success() {
+    void findAll_success() {
         // given
         LocalTime testStartAt = LocalTime.now();
-        reservationTimeService.saveTime(testStartAt);
+        reservationTimeService.save(testStartAt);
 
         // when & then
         Assertions.assertDoesNotThrow(
-                () -> reservationTimeService.getTimes()
+                () -> reservationTimeService.findAll()
         );
     }
 
     @Test
     @DisplayName("예약 시간이 없으도 오류를 발생시키지 않음")
-    void getTimesWhenEmpty() {
+    void findAllWhenEmpty() {
         // when & then
         Assertions.assertDoesNotThrow(
-                () -> reservationTimeService.getTimes()
+                () -> reservationTimeService.findAll()
         );
     }
 
     @Test
     @DisplayName("예약 시간을 삭제 시 값이 있으면 오류를 발생시키지 않음")
-    void deleteTime() {
+    void deleteById() {
         // given
         LocalTime testStartAt = LocalTime.now();
-        ReservationTime saved = reservationTimeService.saveTime(testStartAt);
+        ReservationTime saved = reservationTimeService.save(testStartAt);
 
         Assertions.assertDoesNotThrow(
-                () -> reservationTimeService.deleteTime(saved.id())
+                () -> reservationTimeService.deleteById(saved.id())
         );
     }
 
@@ -80,20 +80,20 @@ class ReservationTimeServiceTest {
     void deleteNotFoundTime() {
         // when & then
         Assertions.assertDoesNotThrow(
-                () -> reservationTimeService.deleteTime(999L)
+                () -> reservationTimeService.deleteById(999L)
         );
     }
 
     @Test
     @DisplayName("예약 시간 id가 참조되고 있으면 삭제할 때 예외가 발생한다")
-    void deleteTimeWithReferencedReservationTime() {
+    void deleteTimeWithReferencedReservationById() {
         // given
         LocalTime testStartAt = LocalTime.now();
-        ReservationTime savedReservationTime = reservationTimeService.saveTime(testStartAt);
+        ReservationTime savedReservationTime = reservationTimeService.save(testStartAt);
         reservationRepository.save(Reservation.createWithNullId("테스터", LocalDate.now(), savedReservationTime, null));
 
         // when & then
-        assertThatThrownBy(() -> reservationTimeService.deleteTime(savedReservationTime.id()))
+        assertThatThrownBy(() -> reservationTimeService.deleteById(savedReservationTime.id()))
                 .isInstanceOf(ReservationTimeException.class);
     }
 }

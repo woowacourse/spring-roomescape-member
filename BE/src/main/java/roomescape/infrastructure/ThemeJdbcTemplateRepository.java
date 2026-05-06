@@ -1,7 +1,6 @@
 package roomescape.infrastructure;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +30,8 @@ public class ThemeJdbcTemplateRepository implements ThemeRepository {
             ORDER BY %s
             LIMIT ?
             """;
+    private static final String DELETE_BY_ID_QUERY = "DELETE FROM theme WHERE id = ?";
+
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> new Theme(
             rs.getLong("id"),
             rs.getString("name"),
@@ -66,10 +67,7 @@ public class ThemeJdbcTemplateRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(Long id) {
-        List<Theme> findTheme = jdbcTemplate.query(FIND_QUERY,
-                THEME_ROW_MAPPER,
-                id
-        );
+        List<Theme> findTheme = jdbcTemplate.query(FIND_QUERY, THEME_ROW_MAPPER, id);
         return findTheme.stream()
                 .findFirst();
     }
@@ -92,6 +90,6 @@ public class ThemeJdbcTemplateRepository implements ThemeRepository {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+        jdbcTemplate.update(DELETE_BY_ID_QUERY, id);
     }
 }

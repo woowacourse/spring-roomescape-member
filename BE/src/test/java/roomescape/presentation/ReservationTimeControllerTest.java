@@ -59,7 +59,7 @@ class ReservationTimeControllerTest {
     void createReservationTimes_success() throws Exception {
         // given
         LocalTime startAt = LocalTime.of(10, 0);
-        given(reservationTimeService.saveTime(startAt)).willReturn(ReservationTime.createWithId(1L, startAt));
+        given(reservationTimeService.save(startAt)).willReturn(ReservationTime.createWithId(1L, startAt));
 
         Map<String, Object> body = new HashMap<>();
         body.put("startAt", "10:00");
@@ -69,19 +69,19 @@ class ReservationTimeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/times/1"))
+                .andExpect(header().string("Location", "http://localhost/times/1"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.startAt").value("10:00"));
 
-        then(reservationTimeService).should().saveTime(startAt);
+        then(reservationTimeService).should().save(startAt);
     }
 
     @Test
     @DisplayName("GET /times - 예약 시간 전체 조회 요청을 서비스에 전달하고 200 응답을 반환한다.")
     void readReservationTimes_success() throws Exception {
         // given
-        given(reservationTimeService.getTimes()).willReturn(
+        given(reservationTimeService.findAll()).willReturn(
                 List.of(ReservationTime.createWithId(1L, LocalTime.of(10, 0)))
         );
 
@@ -93,7 +93,7 @@ class ReservationTimeControllerTest {
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].startAt").value("10:00"));
 
-        then(reservationTimeService).should().getTimes();
+        then(reservationTimeService).should().findAll();
     }
 
     @Test
@@ -104,6 +104,6 @@ class ReservationTimeControllerTest {
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
 
-        then(reservationTimeService).should().deleteTime(1L);
+        then(reservationTimeService).should().deleteById(1L);
     }
 }

@@ -1,5 +1,7 @@
 package roomescape.infrastructure;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -18,81 +20,85 @@ import roomescape.entity.Theme;
 public class ReservationJdbcTemplateRepository implements ReservationRepository {
 
     private static final String FIND_BY_DATE_AND_THEME_ID_QUERY = """
-        SELECT r.id,
-               r.name AS reservation_name,
-               r.date,
-               rt.id AS time_id,
-               rt.start_at,
-               t.id AS theme_id,
-               t.name AS theme_name,
-               t.description AS theme_description,
-               t.thumbnail_url
-        FROM reservation r
-        JOIN reservation_time rt ON r.time_id = rt.id
-        JOIN theme t ON r.theme_id = t.id
-        WHERE (? IS NULL OR r.date = ?)
-          AND (? IS NULL OR r.theme_id = ?)
-        ORDER BY r.id
-        """;
+            SELECT r.id,
+                   r.name AS reservation_name,
+                   r.date,
+                   rt.id AS time_id,
+                   rt.start_at,
+                   t.id AS theme_id,
+                   t.name AS theme_name,
+                   t.description AS theme_description,
+                   t.thumbnail_url
+            FROM reservation r
+            JOIN reservation_time rt ON r.time_id = rt.id
+            JOIN theme t ON r.theme_id = t.id
+            WHERE (? IS NULL OR r.date = ?)
+              AND (? IS NULL OR r.theme_id = ?)
+            ORDER BY r.id
+            """;
     private static final String FIND_BY_ID_QUERY = """
-        SELECT r.id,
-               r.name AS reservation_name,
-               r.date,
-               rt.id AS time_id,
-               rt.start_at,
-               t.id AS theme_id,
-               t.name AS theme_name,
-               t.description AS theme_description,
-               t.thumbnail_url
-        FROM reservation r
-        JOIN reservation_time rt ON r.time_id = rt.id
-        JOIN theme t ON r.theme_id = t.id
-        WHERE r.id = ?
-        """;
+            SELECT r.id,
+                   r.name AS reservation_name,
+                   r.date,
+                   rt.id AS time_id,
+                   rt.start_at,
+                   t.id AS theme_id,
+                   t.name AS theme_name,
+                   t.description AS theme_description,
+                   t.thumbnail_url
+            FROM reservation r
+            JOIN reservation_time rt ON r.time_id = rt.id
+            JOIN theme t ON r.theme_id = t.id
+            WHERE r.id = ?
+            """;
     private static final String FIND_ALL_QUERY = """
-        SELECT r.id,
-               r.name AS reservation_name,
-               r.date,
-               rt.id AS time_id,
-               rt.start_at,
-               t.id AS theme_id,
-               t.name AS theme_name,
-               t.description AS theme_description,
-               t.thumbnail_url
-        FROM reservation r
-        JOIN reservation_time rt ON r.time_id = rt.id
-        JOIN theme t ON r.theme_id = t.id
-        ORDER BY r.id
-        """;
+            SELECT r.id,
+                   r.name AS reservation_name,
+                   r.date,
+                   rt.id AS time_id,
+                   rt.start_at,
+                   t.id AS theme_id,
+                   t.name AS theme_name,
+                   t.description AS theme_description,
+                   t.thumbnail_url
+            FROM reservation r
+            JOIN reservation_time rt ON r.time_id = rt.id
+            JOIN theme t ON r.theme_id = t.id
+            ORDER BY r.id
+            """;
     private static final String EXISTS_BY_TIME_ID_QUERY = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM reservation
-                WHERE time_id = ?
-            );
-        """;
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
+                );
+            """;
 
-    private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> {
-        ReservationTime time = ReservationTime.createWithId(
+    private static final String DELETE_BY_ID_QUERY = "DELETE FROM reservation WHERE id = ?";
+
+    private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> Reservation.createWithId(
+            rs.getLong("id"),
+            rs.getString("reservation_name"),
+            rs.getDate("date").toLocalDate(),
+            createReservationTimeFromResultSet(rs),
+            createThemeFromResultSet(rs)
+    );
+
+    private static ReservationTime createReservationTimeFromResultSet(ResultSet rs) throws SQLException {
+        return ReservationTime.createWithId(
                 rs.getLong("time_id"),
                 rs.getTime("start_at").toLocalTime()
         );
+    }
 
-        Theme theme = Theme.createWithId(
+    private static Theme createThemeFromResultSet(ResultSet rs) throws SQLException {
+        return Theme.createWithId(
                 rs.getLong("theme_id"),
                 rs.getString("theme_name"),
                 rs.getString("theme_description"),
                 rs.getString("thumbnail_url")
         );
-
-        return Reservation.createWithId(
-                rs.getLong("id"),
-                rs.getString("reservation_name"),
-                rs.getDate("date").toLocalDate(),
-                time,
-                theme
-        );
-    };
+    }
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -106,23 +112,23 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
 
     @Override
     public Reservation save(Reservation reservation) {
-        Map<String, Object> params = Map.of(
+        Map<String, Object> params = prepareInsertParameters(reservation);
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return reservation.appendId(id);
+    }
+
+    private Map<String, Object> prepareInsertParameters(Reservation reservation) {
+        return Map.of(
                 "name", reservation.name(),
                 "date", reservation.date(),
                 "time_id", reservation.time().id(),
                 "theme_id", reservation.theme().id()
         );
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return reservation.appendId(id);
     }
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        List<Reservation> reservation = jdbcTemplate.query(
-                FIND_BY_ID_QUERY,
-                ROW_MAPPER,
-                id
-        );
+        List<Reservation> reservation = jdbcTemplate.query(FIND_BY_ID_QUERY, ROW_MAPPER, id);
         return reservation.stream()
                 .findFirst();
     }
@@ -145,6 +151,6 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
+        jdbcTemplate.update(DELETE_BY_ID_QUERY, id);
     }
 }

@@ -70,7 +70,7 @@ class ReservationControllerTest {
         // given
         LocalDate date = LocalDate.of(2026, 5, 5);
         Reservation reservation = sampleReservation(1L, "브라운", date, 1L, "10:00", 1L, "테스트-테마");
-        given(reservationService.saveReservation("브라운", date, 1L, 1L)).willReturn(reservation);
+        given(reservationService.save("브라운", date, 1L, 1L)).willReturn(reservation);
 
         Map<String, Object> body = new HashMap<>();
         body.put("name", "브라운");
@@ -83,7 +83,7 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/reservations/1"))
+                .andExpect(header().string("Location", "http://localhost/reservations/1"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("브라운"))
@@ -93,7 +93,7 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.theme.id").value(1))
                 .andExpect(jsonPath("$.theme.name").value("테스트-테마"));
 
-        then(reservationService).should().saveReservation("브라운", date, 1L, 1L);
+        then(reservationService).should().save("브라운", date, 1L, 1L);
     }
 
     @Test
@@ -104,7 +104,7 @@ class ReservationControllerTest {
                 sampleReservation(1L, "브라운", LocalDate.of(2026, 5, 5), 1L, "10:00", 1L, "테마A"),
                 sampleReservation(2L, "리오", LocalDate.of(2026, 5, 6), 2L, "11:00", 2L, "테마B")
         );
-        given(reservationService.getReservations()).willReturn(reservations);
+        given(reservationService.findAll()).willReturn(reservations);
 
         // when & then
         mockMvc.perform(get("/reservations"))
@@ -113,7 +113,7 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$[0].name").value("브라운"))
                 .andExpect(jsonPath("$[1].name").value("리오"));
 
-        then(reservationService).should().getReservations();
+        then(reservationService).should().findAll();
     }
 
     @Test
@@ -125,7 +125,7 @@ class ReservationControllerTest {
                 sampleReservation(null, null, date, 1L, "10:00", 1L, "테마A"),
                 sampleReservation(1L, "브라운", date, 2L, "11:00", 1L, "테마A")
         );
-        given(reservationService.getReservationsByDateAndTheme(date, 1L)).willReturn(reservations);
+        given(reservationService.findAllByDateAndThemeId(date, 1L)).willReturn(reservations);
 
         // when & then
         mockMvc.perform(get("/reservations")
@@ -138,7 +138,7 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$[1].time.id").value(2))
                 .andExpect(jsonPath("$[1].isAvailable").value(false));
 
-        then(reservationService).should().getReservationsByDateAndTheme(date, 1L);
+        then(reservationService).should().findAllByDateAndThemeId(date, 1L);
     }
 
     @Test
@@ -149,6 +149,6 @@ class ReservationControllerTest {
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
 
-        then(reservationService).should().deleteReservation(1L);
+        then(reservationService).should().deleteById(1L);
     }
 }

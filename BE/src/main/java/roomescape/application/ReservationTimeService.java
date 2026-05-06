@@ -4,13 +4,11 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationTimeException;
 import roomescape.entity.ReservationRepository;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.ReservationTimeRepository;
-import roomescape.presentation.dto.ReservationTimeRequest;
-import roomescape.presentation.dto.ReservationTimeResponse;
+import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.customException.ReservationTimeException;
 
 @Service
 public class ReservationTimeService {
@@ -26,20 +24,17 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTime saveTime(LocalTime startAt) {
+    public ReservationTime save(LocalTime startAt) {
         ReservationTime reservationTime = ReservationTime.createWithNullId(startAt);
         return reservationTimeRepository.save(reservationTime);
     }
 
-    public List<ReservationTime> getTimes() {
+    public List<ReservationTime> findAll() {
         return reservationTimeRepository.findAll();
-//        return times.stream()
-//                .map(ReservationTimeResponse::from)
-//                .toList();
     }
 
     @Transactional
-    public void deleteTime(Long id) {
+    public void deleteById(Long id) {
         if (reservationRepository.existsByReservationTimeId(id)) {
             throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_ALREADY_USED);
         }

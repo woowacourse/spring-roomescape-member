@@ -104,7 +104,7 @@ class ThemeControllerTest {
     }
 
     @Test
-    @DisplayName("GET /themes?sortBy=... - 기간 기준 인기 테마 조회 요청을 서비스에 전달한다.")
+    @DisplayName("GET /themes?sortType=... - 기간 기준 인기 테마 조회 요청을 서비스에 전달한다.")
     void readThemes_top_n_by_period_success() throws Exception {
         // given
         LocalDate from = LocalDate.of(2026, 5, 1);
@@ -118,7 +118,7 @@ class ThemeControllerTest {
 
         // when & then
         mockMvc.perform(get("/themes")
-                        .param("sortBy", "popular")
+                        .param("sortType", "POPULAR")
                         .param("from", "2026-05-01")
                         .param("to", "2026-05-31")
                         .param("limit", "2"))

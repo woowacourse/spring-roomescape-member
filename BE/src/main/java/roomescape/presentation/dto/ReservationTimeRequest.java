@@ -8,10 +8,10 @@ public record ReservationTimeRequest(
         LocalTime startAt
 ) {
     public ReservationTimeRequest {
-        validatStartAtNotEmpty(startAt);
+        validateStartAtNotEmpty(startAt);
     }
 
-    private void validatStartAtNotEmpty(LocalTime startAt) {
+    private void validateStartAtNotEmpty(LocalTime startAt) {
         if (startAt == null) {
             throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_START_AT_NULL);
         }

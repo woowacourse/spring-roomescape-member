@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.application.ReservationService;
 import roomescape.entity.Reservation;
 import roomescape.presentation.dto.AvailableReservationResponse;
@@ -29,10 +30,10 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> saveReservation(
+    public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody ReservationRequest request
     ) {
-        Reservation created = service.saveReservation(
+        Reservation created = service.save(
                 request.name(),
                 request.date(),
                 request.timeId(),
@@ -40,47 +41,48 @@ public class ReservationController {
         );
 
         ReservationResponse response = ReservationResponse.from(created);
-        return ResponseEntity.created(URI.create("/reservations/" + created.id()))
+        return ResponseEntity.created(parseCreatedResourceURI(response))
                 .body(response);
     }
 
+    private URI parseCreatedResourceURI(ReservationResponse response) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+    }
+
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<Reservation> reservations = service.getReservations();
-
-        List<ReservationResponse> response = parseToReservationResponse(reservations);
-
+    public ResponseEntity<List<ReservationResponse>> readAllReservations() {
+        List<Reservation> reservations = service.findAll();
+        List<ReservationResponse> response = convertToReservationResponse(reservations);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<AvailableReservationResponse>> getReservationsByDateAndThemeId(
-            @RequestParam LocalDate date,
-            @RequestParam Long themeId
-    ) {
-        List<Reservation> reservations = service.getReservationsByDateAndTheme(date, themeId);
-        List<AvailableReservationResponse> response = parseToAvailableReservationResponse(reservations);
-
+    public ResponseEntity<List<AvailableReservationResponse>> readReservationsByDateAndTheme(
+            @RequestParam LocalDate date, @RequestParam Long themeId) {
+        List<Reservation> reservations = service.findAllByDateAndThemeId(date, themeId);
+        List<AvailableReservationResponse> response = convertToAvailableReservationResponse(reservations);
         return ResponseEntity.ok(response);
     }
 
-    private List<ReservationResponse> parseToReservationResponse(List<Reservation> reservations) {
+    private List<ReservationResponse> convertToReservationResponse(List<Reservation> reservations) {
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
-    private List<AvailableReservationResponse> parseToAvailableReservationResponse(List<Reservation> reservations) {
+    private List<AvailableReservationResponse> convertToAvailableReservationResponse(List<Reservation> reservations) {
         return reservations.stream()
                 .map(AvailableReservationResponse::from)
                 .toList();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(
-            @PathVariable Long id
-    ) {
-        service.deleteReservation(id);
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+        service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

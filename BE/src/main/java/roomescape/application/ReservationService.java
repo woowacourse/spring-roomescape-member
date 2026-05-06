@@ -4,15 +4,15 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.entity.Reservation;
+import roomescape.entity.ReservationRepository;
+import roomescape.entity.ReservationTime;
+import roomescape.entity.ReservationTimeRepository;
 import roomescape.entity.Theme;
 import roomescape.entity.ThemeRepository;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ReservationException;
 import roomescape.global.exception.customException.ReservationTimeException;
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationTime;
-import roomescape.entity.ReservationRepository;
-import roomescape.entity.ReservationTimeRepository;
 import roomescape.global.exception.customException.ThemeException;
 
 @Service
@@ -34,7 +34,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation saveReservation(String name, LocalDate date, Long timeId, Long themeId) {
+    public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(themeId)
@@ -48,16 +48,16 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    public List<Reservation> getReservations() {
+    public List<Reservation> findAll() {
         return reservationRepository.findAll();
     }
 
-    public List<Reservation> getReservationsByDateAndTheme(LocalDate date, Long themeId) {
+    public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
         return reservationRepository.findByDateAndThemeId(date, themeId);
     }
 
     @Transactional
-    public void deleteReservation(Long id) {
+    public void deleteById(Long id) {
         if (id == null) {
             throw new ReservationException(ErrorCode.RESERVATION_ID_NULL);
         }

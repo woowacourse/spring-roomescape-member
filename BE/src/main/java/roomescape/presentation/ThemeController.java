@@ -32,7 +32,7 @@ public class ThemeController {
 
     @Admin
     @PostMapping
-    public ResponseEntity<ThemeResponse> saveTheme(
+    public ResponseEntity<ThemeResponse> createTheme(
             @RequestBody ThemeRequest request
     ) {
         Theme saved = service.save(
@@ -40,55 +40,54 @@ public class ThemeController {
                 request.description(),
                 request.thumbnail()
         );
-
         ThemeResponse result = ThemeResponse.from(saved);
+        return ResponseEntity.created(parseCreatedResourceURI(result))
+                .body(result);
+    }
 
-        URI location = ServletUriComponentsBuilder
+    private URI parseCreatedResourceURI(ThemeResponse result) {
+        return ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(result.id())
                 .toUri();
-
-        return ResponseEntity.created(location).body(result);
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getThemes() {
+    public ResponseEntity<List<ThemeResponse>> readThemes() {
         List<Theme> result = service.findAll();
-
-        List<ThemeResponse> response = result.stream()
-                .map(ThemeResponse::from)
-                .toList();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(convertToThemeResponses(result));
     }
 
-    @GetMapping(params = {"sortBy", "from", "to", "limit"})
-    public ResponseEntity<List<ThemeResponse>> getTopNByPeriod(
-            @RequestParam String sortBy,
+    @GetMapping(params = {"sortType", "from", "to", "limit"})
+    public ResponseEntity<List<ThemeResponse>> readTopNThemesByPeriod(
+            @RequestParam ThemeSortType sortType,
             @RequestParam LocalDate from,
             @RequestParam LocalDate to,
             @RequestParam(required = false) Long limit
-            ) {
-
-        Long countLimit = 10L;
-        if(limit != null) {
-            countLimit = limit;
-        }
-
-        ThemeSortType sortType = ThemeSortType.valueOf(sortBy.toUpperCase());
+    ) {
+        Long countLimit = defineLimitCount(limit);
         List<Theme> result = service.findTopNByPeriod(from, to, sortType, countLimit);
-        List<ThemeResponse> response = result.stream()
+        return ResponseEntity.ok(convertToThemeResponses(result));
+    }
+
+    private List<ThemeResponse> convertToThemeResponses(List<Theme> result) {
+        return result.stream()
                 .map(ThemeResponse::from)
                 .toList();
-        return ResponseEntity.ok(response);
+    }
+
+    private Long defineLimitCount(Long limit) {
+        Long countLimit = 10L;
+        if (limit != null) {
+            countLimit = limit;
+        }
+        return countLimit;
     }
 
     @Admin
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(
-            @PathVariable Long id
-    ) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }

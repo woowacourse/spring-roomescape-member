@@ -149,7 +149,7 @@ export const api = {
 
   async getPopularThemes({ from, to, limit = 10 } = {}) {
     const query = new URLSearchParams({
-      sortBy: 'popular',
+      sortType: 'POPULAR',
       from,
       to,
       limit
