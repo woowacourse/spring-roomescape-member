@@ -61,24 +61,26 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findByThemeAndDate(Long themeId, LocalDate date) {
+    public List<AvailableReservationTime> findByThemeAndDate(Long themeId, LocalDate date) {
         String sql = """
-                SELECT id, start_at
-                FROM reservation_time
-                WHERE id NOT IN (
-                    SELECT time_id
-                    FROM reservation
-                    WHERE theme_id = ? AND date = ?
-                )
-                ORDER BY start_at ASC
+                SELECT rt.id, rt.start_at,
+                    NOT EXISTS (
+                        SELECT 1
+                        FROM reservation r
+                        WHERE r.time_id = rt.id
+                            AND r.theme_id = ?
+                            AND r.date = ?
+                    ) AS available
+                FROM reservation_time rt
+                ORDER BY rt.start_at ASC
                 """;
 
         return jdbcTemplate.query(sql,
-                (rs, rowNum) ->
-                        ReservationTime.builder()
-                                .id(rs.getLong("id"))
-                                .startAt(rs.getTime("start_at").toLocalTime())
-                                .build(),
+                (rs, rowNum) -> new AvailableReservationTime(
+                        rs.getLong("id"),
+                        rs.getTime("start_at").toLocalTime(),
+                        rs.getBoolean("available")
+                ),
                 themeId, date);
     }
 

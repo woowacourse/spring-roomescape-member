@@ -1,6 +1,7 @@
 package roomescape.reservationtime.controller;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -25,6 +26,7 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(10))
-                .body("startAt", containsInAnyOrder("09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"));
+                .body("startAt", containsInAnyOrder("09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"))
+                .body("available", everyItem(is(true)));
     }
 }

@@ -7,9 +7,11 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.ReservationTimeCreateRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.exception.ReservationTimeException;
+import roomescape.reservationtime.repository.AvailableReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeException;
@@ -33,11 +35,11 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<ReservationTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {
-        List<ReservationTime> times = timeRepository.findByThemeAndDate(themeId, date);
+    public List<AvailableReservationTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {
+        List<AvailableReservationTime> times = timeRepository.findByThemeAndDate(themeId, date);
 
         return times.stream()
-                .map(ReservationTimeResponse::from)
+                .map(AvailableReservationTimeResponse::from)
                 .toList();
     }
 

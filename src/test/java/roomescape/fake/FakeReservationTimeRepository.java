@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.repository.AvailableReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
@@ -51,7 +52,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findByThemeAndDate(Long themeId, LocalDate date) {
+    public List<AvailableReservationTime> findByThemeAndDate(Long themeId, LocalDate date) {
         Set<Long> reservedTimeIds = reservations.stream()
                 .filter(reservation -> reservation.getThemeId().equals(themeId))
                 .filter(reservation -> reservation.getDate().equals(date))
@@ -59,7 +60,11 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
                 .collect(Collectors.toSet());
 
         return times.values().stream()
-                .filter(time -> !reservedTimeIds.contains(time.getId()))
+                .map(time -> new AvailableReservationTime(
+                        time.getId(),
+                        time.getStartAt(),
+                        !reservedTimeIds.contains(time.getId())
+                ))
                 .toList();
     }
 

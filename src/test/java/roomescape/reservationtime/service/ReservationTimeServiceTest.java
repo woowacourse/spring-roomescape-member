@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.ReservationTimeCreateRequest;
-import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.exception.ReservationTimeException;
 
 class ReservationTimeServiceTest {
@@ -39,11 +39,11 @@ class ReservationTimeServiceTest {
         Long themeId = 1L;
         LocalDate date = LocalDate.of(2026, 5, 6);
 
-        List<ReservationTimeResponse> timeResponses = timeService.findAvailableTimes(themeId, date);
+        List<AvailableReservationTimeResponse> timeResponses = timeService.findAvailableTimes(themeId, date);
 
         Assertions.assertThat(timeResponses).containsExactly(
-                new ReservationTimeResponse(1L, LocalTime.of(9,0)),
-                new ReservationTimeResponse(2L, LocalTime.of(10,0))
+                new AvailableReservationTimeResponse(1L, LocalTime.of(9,0), true),
+                new AvailableReservationTimeResponse(2L, LocalTime.of(10,0), true)
         );
     }
 
@@ -61,10 +61,11 @@ class ReservationTimeServiceTest {
                 .build()
         );
 
-        List<ReservationTimeResponse> timeResponses = timeService.findAvailableTimes(themeId, date);
+        List<AvailableReservationTimeResponse> timeResponses = timeService.findAvailableTimes(themeId, date);
 
         Assertions.assertThat(timeResponses).containsExactly(
-                new ReservationTimeResponse(2L, LocalTime.of(10,0))
+                new AvailableReservationTimeResponse(1L, LocalTime.of(9,0), false),
+                new AvailableReservationTimeResponse(2L, LocalTime.of(10,0), true)
         );
     }
 

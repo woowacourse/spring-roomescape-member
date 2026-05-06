@@ -15,7 +15,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
@@ -53,11 +52,12 @@ class JdbcReservationTimeRepositoryTest {
         Theme savedTheme = themeRepository.save(theme);
         LocalDate date = LocalDate.of(2026, 5, 4);
 
-        List<ReservationTime> times = timeRepository
+        List<AvailableReservationTime> times = timeRepository
                 .findByThemeAndDate(savedTheme.getId(), date);
 
         for (int i = 0; i < 3; i++) {
-            assertThat(times.get(i).getStartAt()).isEqualTo(expectedTimes.get(i));
+            assertThat(times.get(i).startAt()).isEqualTo(expectedTimes.get(i));
+            assertThat(times.get(i).available()).isTrue();
         }
     }
 
