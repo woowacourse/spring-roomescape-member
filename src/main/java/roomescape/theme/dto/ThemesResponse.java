@@ -1,5 +1,6 @@
 package roomescape.theme.dto;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import roomescape.theme.model.Theme;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class ThemesResponse {
         return new ThemesResponse(responses);
     }
 
+    @JsonValue
     public List<ThemeResponse> getThemeResponses() {
         return themeResponses;
     }
