@@ -13,7 +13,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
-import roomescape.service.dto.AvailableTimeDto;
+import roomescape.service.dto.TimeAvailabilityDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -123,10 +123,10 @@ class ReservationServiceTest {
         reservationService.create("브라운", date, 1L, 1L);
 
         // when
-        List<AvailableTimeDto> result = reservationService.findAvailableTime(1L, date);
+        List<TimeAvailabilityDto> result = reservationService.findAvailableTime(1L, date);
 
         // then
-        assertThat(result).extracting(AvailableTimeDto::available)
+        assertThat(result).extracting(TimeAvailabilityDto::available)
                 .containsOnlyOnce(false);
     }
 }

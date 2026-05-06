@@ -8,7 +8,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.service.dto.AvailableTimeDto;
+import roomescape.service.dto.TimeAvailabilityDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -43,12 +43,12 @@ public class ReservationService {
         reservationDao.delete(id);
     }
 
-    public List<AvailableTimeDto> findAvailableTime(Long themeId, LocalDate date) {
+    public List<TimeAvailabilityDto> findAvailableTime(Long themeId, LocalDate date) {
         List<ReservationTime> times = reservationTimeDao.findAll();
         List<Reservation> reservations = reservationDao.findReservationsByThemeAndDate(themeId, date);
 
         return times.stream()
-                .map(time -> new AvailableTimeDto(
+                .map(time -> new TimeAvailabilityDto(
                         time,
                         isAvailable(time, reservations)
                 ))

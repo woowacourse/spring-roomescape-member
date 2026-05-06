@@ -7,7 +7,7 @@ import roomescape.controller.dto.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.service.ReservationService;
 import roomescape.service.ThemeService;
-import roomescape.service.dto.AvailableTimeDto;
+import roomescape.service.dto.TimeAvailabilityDto;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -49,7 +49,7 @@ public class ThemeController {
     }
 
     @GetMapping("/{id}/times")
-    public List<AvailableTimeDto> getAvailableTimes(@PathVariable Long id, @RequestParam("date") LocalDate date) {
+    public List<TimeAvailabilityDto> getAvailableTimes(@PathVariable Long id, @RequestParam("date") LocalDate date) {
         return reservationService.findAvailableTime(id, date);
     }
 
