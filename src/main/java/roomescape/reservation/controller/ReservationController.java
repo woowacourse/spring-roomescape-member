@@ -21,10 +21,6 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(@RequestBody ReservationSaveDto dto) {
-        System.out.println(dto.dateId());
-        System.out.println(dto.themeId());
-        System.out.println(dto.name());
-        System.out.println(dto.timeId());
         return ResponseEntity.ok(reservationService.create(dto));
     }
 
