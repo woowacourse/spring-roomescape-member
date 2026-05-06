@@ -11,10 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeControllerTest {
 
     @Test
@@ -68,11 +66,6 @@ class ReservationTimeControllerTest {
                 .when().delete("/admin/times/" + id)
                 .then().log().all()
                 .statusCode(204);
-
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200);
     }
 
     @Test

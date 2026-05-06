@@ -11,22 +11,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 
+@Sql({"/create_reservation_time.sql", "/create_theme.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationControllerTest {
 
     @Test
     void 예약을_추가한다() {
-        createReservationTime();
-        createTheme();
-
         Map<String, Object> params = new HashMap<>();
         params.put("name", "밀란");
         params.put("date", "2026-05-03");
-        params.put("timeId", 1);
-        params.put("themeId", 1);
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -42,9 +39,6 @@ class ReservationControllerTest {
 
     @Test
     void 예약_목록을_조회한다() {
-        createReservationTime();
-        createTheme();
-
         Map<String, Object> params = new HashMap<>();
         params.put("name", "밀란");
         params.put("date", "2026-05-03");
@@ -66,12 +60,9 @@ class ReservationControllerTest {
                 .body("date", hasItem("2026-05-03"))
                 .body("time.id", hasItem(1));
     }
-    
+
     @Test
     void 예약을_삭제한다() {
-        createReservationTime();
-        createTheme();
-
         Map<String, Object> params = new HashMap<>();
         params.put("name", "밀란");
         params.put("date", "2026-05-03");
@@ -96,7 +87,7 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("find { it.id == " + id + " }", is((Object) null));
+                .body("size()", is(0));
     }
 
     @Test
@@ -123,30 +114,4 @@ class ReservationControllerTest {
                 .statusCode(400);
     }
 
-    private static void createTheme() {
-        Map<String, Object> theme = new HashMap<>();
-        theme.put("name", "테마A");
-        theme.put("description", "테마A란...");
-        theme.put("thumbnailUrl", "www.d.d.d");
-        theme.put("runtime", 1L);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201);
-    }
-
-    private static void createReservationTime() {
-        Map<String, Object> reservationTime = new HashMap<>();
-        reservationTime.put("startAt", "12:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/admin/times")
-                .then().log().all()
-                .statusCode(201);
-    }
 }
