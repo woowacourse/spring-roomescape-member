@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Time;
+import roomescape.repository.FakeReservationDao;
 import roomescape.repository.FakeTimeDao;
 
 class TimeServiceTest {
@@ -16,8 +17,9 @@ class TimeServiceTest {
 
     @BeforeEach
     void setUp() {
-        FakeTimeDao fakeReservationTimeDao = new FakeTimeDao();
-        reservationTimeService = new TimeService(fakeReservationTimeDao);
+        FakeTimeDao fakeTimeDao = new FakeTimeDao();
+        FakeReservationDao fakeReservationDao = new FakeReservationDao();
+        reservationTimeService = new TimeService(fakeTimeDao, fakeReservationDao);
     }
 
     @Test

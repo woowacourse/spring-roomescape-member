@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,15 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
+    public List<Long> findByThemeIdAndDate(long themeId, LocalDate date) {
+        return List.of();
+    }
+
+    @Override
     public Reservation save(Reservation reservation) {
         long id = sequence++;
-        Reservation savedReservation = new Reservation(id, reservation.name(), reservation.date(), reservation.time());
+        Reservation savedReservation = new Reservation(id, reservation.name(), reservation.date(), reservation.time(),
+                reservation.theme());
         storage.put(id, savedReservation);
         return savedReservation;
     }
