@@ -7,8 +7,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.ReservationRequestDto;
-import roomescape.dto.reservationTime.AvailableReservationTimeRequestDto;
-import roomescape.dto.reservationTime.ReservationTimeRequesetDto;
+import roomescape.dto.reservationTime.ReservationTimeRequestDto;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
@@ -57,7 +56,7 @@ public class ReservationService {
         return reservationTimeRepository.findAll();
     }
 
-    public ReservationTime addReservationTime(ReservationTimeRequesetDto requestDto) {
+    public ReservationTime addReservationTime(ReservationTimeRequestDto requestDto) {
         return reservationTimeRepository.createReservationTime(
             new ReservationTime(requestDto.startAt()));
     }
