@@ -34,8 +34,13 @@ public class ReservationService {
                 .toList();
     }
 
-    public Reservation save(final String name, final LocalDate date, final Long timeId, final Long themeId) {
-        ReservationTime reservationTime = reservationTimeService.getByTimeIdAndThemeId(timeId, themeId);
+<<<<<<< HEAD
+    public Reservation save(final String name, final LocalDate date, final Long timeId) {
+        ReservationTime reservationTime = reservationTimeService.getById(timeId);
+=======
+    public Reservation save(final String name, final LocalDate date, final Long timeId) {
+        ReservationTime reservationTime = reservationTimeService.getById(timeId);
+>>>>>>> 7251e8a (refactor: reservationTime 조회 조건 변경)
 
         if(reservationRepository.existsByDateAndTimeId(date, timeId)){
             throw new IllegalArgumentException("[ERROR] 동일한 시기에 예약을 할 수 없습니다.");

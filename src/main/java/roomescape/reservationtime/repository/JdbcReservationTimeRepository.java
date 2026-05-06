@@ -83,18 +83,18 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public Optional<ReservationTime> findByTimeIdAndThemeId(final long timeId, final long themeId) {
-        String sql = RESERVATION_TIME_BASE_SELECT + " WHERE rt.id = ? AND rt.theme_id = ?";
+    public Optional<ReservationTime> findById(final long timeId) {
+        String sql = RESERVATION_TIME_BASE_SELECT + " WHERE rt.id = ?";
 
-        return jdbcTemplate.query(sql, reservationTimeRowMapper, timeId, themeId)
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, timeId)
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public void deleteByTimeIdAndThemeId(final long timeId, final long themeId) {
-        String sql = "DELETE FROM reservation_time WHERE id = ? AND theme_id = ? ";
-        jdbcTemplate.update(sql, timeId, themeId);
+    public void deleteById(final long timeId) {
+        String sql = "DELETE FROM reservation_time WHERE id = ?";
+        jdbcTemplate.update(sql, timeId);
     }
 
     @Override

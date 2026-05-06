@@ -9,8 +9,6 @@ public record ReservationCreateRequest(
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
 
-        Long timeId,
-
-        Long themeId
+        Long timeId
 ) {
 }

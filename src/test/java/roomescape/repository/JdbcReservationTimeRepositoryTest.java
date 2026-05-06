@@ -60,7 +60,7 @@ class JdbcReservationTimeRepositoryTest {
 
         //when
         ReservationTime result = jdbcReservationTimeRepository.save(nonIdReservationTime);
-        ReservationTime saved = jdbcReservationTimeRepository.findByTimeIdAndThemeId(result.getId(), theme.getId())
+        ReservationTime saved = jdbcReservationTimeRepository.findById(result.getId())
                 .orElseThrow();
         //then
         assertThat(result).isEqualTo(saved);
@@ -93,7 +93,7 @@ class JdbcReservationTimeRepositoryTest {
         int beforeSize = jdbcReservationTimeRepository.findAll().size();
 
         // when
-        jdbcReservationTimeRepository.deleteByTimeIdAndThemeId(reservationTime.getId(), theme.getId());
+        jdbcReservationTimeRepository.deleteById(reservationTime.getId());
 
         // then
         int afterSize = jdbcReservationTimeRepository.findAll().size();

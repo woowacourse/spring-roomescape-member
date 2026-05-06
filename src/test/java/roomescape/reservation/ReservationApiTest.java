@@ -46,7 +46,6 @@ class ReservationApiTest {
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -102,7 +101,6 @@ class ReservationApiTest {
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -132,7 +130,6 @@ class ReservationApiTest {
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -158,7 +155,6 @@ class ReservationApiTest {
         reservation.put("name", "브라운");
         reservation.put("date", "2026-05-10");
         reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -191,9 +187,8 @@ class ReservationApiTest {
     }
 
     private void createReservationTime(final String startAt, final Long themeId) {
-        Map<String, Object> time = new HashMap<>();
+        Map<String, String> time = new HashMap<>();
         time.put("startAt", startAt);
-        time.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

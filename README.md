@@ -13,8 +13,8 @@
   - [x] 관리자가 테마를 추가, 삭제할 수 있다.
 
 - 2단계 - 사용자 예약
-  - [ ] 사용자가 날짜와 테마를 선택하면 예약 가능한 시간 목록이 표시된다.
-    - [ ] 예약 가능한 시간이란, 관리자가 등록한 시간 중 해당 날짜+테마에 아직 예약이 없는 시간이다.
+  - [x] 사용자가 날짜와 테마를 선택하면 예약 가능한 시간 목록이 표시된다.
+    - [x] 예약 가능한 시간이란, 관리자가 등록한 시간 중 해당 날짜+테마에 아직 예약이 없는 시간이다.
   - [x] 사용자가 예약 가능한 시간을 선택하여 본인의 이름으로 예약한다.
   - [x] 같은 날짜·시간이라도 테마가 다르면 각각 예약 가능하다.
 
@@ -24,30 +24,30 @@
 
 ## API 명세서
 
-| 기능          | Http/url                                                  | 요청본문                   | 응답                              |
-| ----------- |-----------------------------------------------------------| ---------------------- | ------------------------------- |
-| 예약 생성       | `POST` `/reservations`                                    | `{name, date, timeId}` | `{id, name, date, time}`        |
-| 예약 삭제       | `DELETE` `/reservations/{reservation_id}`                 | -                      | -                               |
-| 예약 조회       | `GET` `/reservations`                                     | -                      | `[{id, name, date, time}, ...]` |
-| 예약 가능 시간 조회 | `GET` `/reservations/themes/{theme_id}/times?date={date}` | -                      | `[{id, startAt}, ...]`          |
+`Resrevation`
 
+| 기능 | Http/url | 요청본문 | 응답 |
+| ----------- |----------------------------------------------------------|---------------------------------| ------------------------------- |
+| 예약 생성 | `POST` `/reservations` | `{name, date, timeId, themeId}` | `{id, name, date, time}` |
+| 예약 삭제 | `DELETE` `/reservations/{reservationId}` | - | - |
+| 예약 조회 | `GET` `/reservations` | - | `[{id, name, date, time}, ...]` |
+| 예약 가능 시간 조회 | `GET` `/reservations/theme/{themeId}/times?date={yyyy-MM-dd}` | - | `[{id, startAt, theme}, ...]` |
 
-- 1단계
+`Theme`
 
-| 기능 | Http/url                           | 요청본문                                    | 응답                                                  | 
+| 기능 | Http/url | 요청본문 | 응답 |
 |--------|------------------------------------|-----------------------------------------|-----------------------------------------------------|
-| 관리자 테마 추가 | `Post`/`/admin/theme`              | {`name`, `description`,`thumbnail_url`} | {`id`,`name`, `description`,`thumbnail_url`}        |
-| 관리자 테마 삭제 | `Delete`/`/admin/theme/{theme_id}` | -                                       | -                                                   |
-| 관리자 테마 조회  | `Get`/`/admin/theme`               | -                                       | {{`id`,`name`, `description`,`thumbnail_url`}, ...} |
+| 관리자 테마 추가 | `POST` `/admin/themes` | `{name, description, thumbnailUrl}` | `{id, name, description, thumbnailUrl}` |
+| 관리자 테마 삭제 | `DELETE` `/admin/themes/{themeId}` | - | - |
+| 관리자 테마 조회  | `GET` `/admin/themes` | - | `[{id, name, description, thumbnailUrl}, ...]` |
 
-- 2단계 
+`ReservationTime`
 
-| 기능          | Http/url                                        | 요청본문         | 응답                                                  | 
-|-------------|-------------------------------------------------|--------------|-----------------------------------------------------|
-| 예약 가능 시간 조회 | `Post`/`/admin/theme/{theme_id}/times`          | {`start_at'} | {`start_at`}                                         |
-| 관리자 테마 삭제   | `Delete`/`/admin/theme/{theme_id}/times/{time_id}`        | -            | -                                                   |
-| 관리자 테마 조회   | `Get`/`/admin/theme/{theme_id}/times/{time_id}` | -            | {{`id`,`name`, `description`,`thumbnail_url`}, ...} |
-| | | | 
+| 기능 | Http/url | 요청본문 | 응답 |
+|--------------|------------------------------------------|-------------|-----------------------------------------------------|
+| 관리자 테마 시간 생성 | `POST` `/admin/themes/{themeId}/times` | `{startAt}` | `{id, startAt, theme}` |
+| 관리자 테마 시간 삭제 | `DELETE` `/admin/themes/{themeId}/times/{timeId}` | - | - |
+| 관리자 테마 시간 조회 | `GET` `/admin/themes/{themeId}/times` | - | `[{id, startAt, theme}, ...]` |
 
 ## 테이블 설계 
 

@@ -35,12 +35,12 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAllByThemeId(themeId);
     }
 
-    public void deleteByTimeIdAndThemeId(long timeId, long themeId) {
-        reservationTimeRepository.deleteByTimeIdAndThemeId(timeId, themeId);
+    public void deleteById(final long timeId) {
+        reservationTimeRepository.deleteById(timeId);
     }
 
-    public ReservationTime getByTimeIdAndThemeId(long timeId, long themeId) {
-        return reservationTimeRepository.findByTimeIdAndThemeId(timeId, themeId)
+    public ReservationTime getById(final long timeId) {
+        return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 찾는 시간이 없습니다"));
     }
 

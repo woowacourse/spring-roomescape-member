@@ -38,8 +38,7 @@ public class ReservationController {
         Reservation reservation = reservationService.save(
                 reservationRequest.name(),
                 reservationRequest.date(),
-                reservationRequest.timeId(),
-                reservationRequest.themeId()
+                reservationRequest.timeId()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
