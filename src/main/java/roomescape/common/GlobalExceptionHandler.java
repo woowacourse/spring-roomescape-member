@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 
@@ -16,6 +17,11 @@ public class GlobalExceptionHandler {
     })
     public ResponseEntity<String> handleNotFound(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(ReservationDuplicatedException.class)
+    public ResponseEntity<String> handleReservationAlreadyExists(ReservationDuplicatedException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
 }
