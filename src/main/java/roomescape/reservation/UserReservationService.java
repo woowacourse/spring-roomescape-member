@@ -6,11 +6,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.DuplicateException;
+import roomescape.exception.NotFoundException;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.ReservationTimeRepository;
-import roomescape.reservationtime.ReservationTimeNotFoundException;
 import roomescape.theme.Theme;
-import roomescape.theme.ThemeNotFoundException;
 import roomescape.theme.ThemeRepository;
 
 @Service
@@ -29,13 +29,13 @@ public class UserReservationService {
     @Transactional
     public Reservation createReservation(String name, LocalDate date, long timeId, long themeId) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new ReservationTimeNotFoundException("예약 시간을 찾을 수 없습니다"));
+                .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다"));
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new ThemeNotFoundException("해당 테마를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));
         try {
             return reservationRepository.save(theme, name, date, reservationTime);
         } catch (DuplicateKeyException e) {
-            throw new DuplicateReservationException("해당 날짜의 해당 시간은 이미 예약되었습니다");
+            throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다");
         } catch (DataIntegrityViolationException e) {
             throw new ReservationException("요청이 데이터 무결성 조건을 위반했습니다");
         }

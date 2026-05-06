@@ -8,14 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.reservation.DuplicateReservationException;
 import roomescape.reservation.ReservationException;
-import roomescape.reservation.ReservationNotFoundException;
-import roomescape.reservationtime.DuplicateReservationTimeException;
 import roomescape.reservationtime.ReservationTimeException;
-import roomescape.reservationtime.ReservationTimeNotFoundException;
 import roomescape.reservationtime.ReservationTimeNotEmptyException;
-import roomescape.theme.ThemeDuplicateException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,16 +32,16 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(DuplicateReservationException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateReservation(DuplicateReservationException e) {
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicate(DuplicateException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(response);
     }
 
-    @ExceptionHandler(ReservationNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleReservationNotFound(ReservationNotFoundException e) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -55,30 +50,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ReservationException.class)
     public ResponseEntity<ErrorResponse> handleReservationException(ReservationException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(response);
-    }
-
-    @ExceptionHandler(ReservationTimeNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleReservationTimeNotFound(ReservationTimeNotFoundException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(response);
-    }
-
-    @ExceptionHandler(DuplicateReservationTimeException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateReservationTime(DuplicateReservationTimeException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(response);
-    }
-
-    @ExceptionHandler(ThemeDuplicateException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateTheme(ThemeDuplicateException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

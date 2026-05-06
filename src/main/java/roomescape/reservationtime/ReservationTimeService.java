@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.DuplicateException;
 import roomescape.reservation.ReservationRepository;
 
 @Service
@@ -28,7 +29,7 @@ public class ReservationTimeService {
         try {
             return reservationTimeRepository.save(startAt);
         } catch (DataIntegrityViolationException e) {
-            throw new DuplicateReservationTimeException("이미 존재하는 예약 시간입니다");
+            throw new DuplicateException("이미 존재하는 예약 시간입니다");
         }
     }
 

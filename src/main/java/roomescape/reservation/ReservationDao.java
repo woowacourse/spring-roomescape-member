@@ -50,11 +50,12 @@ public class ReservationDao {
 
     List<Reservation> findAll() {
         String sql = "SELECT r.id AS reservation_id, r.name, r.date, " +
-                "t.id AS time_id, t.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, " +
-                "t.description AS theme_description, t.thumbnail AS theme_thumbnail " +
+                "rt.id AS time_id, rt.start_at AS time_value, " +
+                "th.id AS theme_id, th.name AS theme_name, " +
+                "th.description AS theme_description, th.thumbnail AS theme_thumbnail " +
                 "FROM reservation AS r " +
-                "INNER JOIN reservation_time AS t ON r.time_id = t.id" +
-                "INNER JOIN theme AS t ON r.theme_id = t.id";
+                "INNER JOIN reservation_time AS rt ON r.time_id = rt.id " +
+                "INNER JOIN themes AS th ON r.theme_id = th.id";
 
         return jdbcTemplate.query(sql, rowMapper);
     }
@@ -76,7 +77,14 @@ public class ReservationDao {
     }
 
     Reservation findById(long id) {
-        String sql = "SELECT * FROM reservation WHERE id = ?";
+        String sql = "SELECT r.id AS reservation_id, r.name, r.date, " +
+                "rt.id AS time_id, rt.start_at AS time_value, " +
+                "th.id AS theme_id, th.name AS theme_name, " +
+                "th.description AS theme_description, th.thumbnail AS theme_thumbnail " +
+                "FROM reservation AS r " +
+                "INNER JOIN reservation_time AS rt ON r.time_id = rt.id " +
+                "INNER JOIN themes AS th ON r.theme_id = th.id " +
+                "WHERE r.id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 }
