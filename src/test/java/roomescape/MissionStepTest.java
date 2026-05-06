@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.ReservationController;
+import roomescape.domain.Reservation;
+import roomescape.dto.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -34,16 +37,16 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParams)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
     }
 
     //1단계
@@ -69,7 +72,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("id", is(1));
 
         RestAssured.given().log().all()
@@ -79,9 +82,9 @@ public class MissionStepTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -105,22 +108,21 @@ public class MissionStepTest {
         }
     }
 
-    /*
     @Test
     void DB_조회_API_전환() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", "1");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05", "1", "1");
 
-        List<Reservation> reservations = RestAssured.given().log().all()
+        List<ReservationResponse> reservationResponses = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
+                .jsonPath().getList(".", ReservationResponse.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
-        assertThat(reservations.size()).isEqualTo(count);
+        assertThat(reservationResponses.size()).isEqualTo(count);
     }
-    */
+
 
     @Test
     void DB_추가_삭제_API_전환() {
@@ -135,15 +137,15 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
@@ -153,15 +155,15 @@ public class MissionStepTest {
     @Test
     void 시간_관리_API() {
         RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get("/admin/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/admin/times/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     @Test
@@ -177,7 +179,7 @@ public class MissionStepTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
