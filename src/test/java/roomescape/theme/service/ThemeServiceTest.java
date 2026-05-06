@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDate;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeThemeRepository;
@@ -17,8 +18,14 @@ import roomescape.theme.domain.repository.PopularTheme;
 
 public class ThemeServiceTest {
 
-    private FakeThemeRepository themeRepository = new FakeThemeRepository();
-    private ThemeService themeService = new ThemeService(themeRepository);
+    private FakeThemeRepository themeRepository;
+    private ThemeService themeService;
+
+    @BeforeEach
+    void setUp() {
+        themeRepository = new FakeThemeRepository();
+        themeService = new ThemeService(themeRepository);
+    }
 
     @DisplayName("테마의 정상 추가를 테스트합니다.")
     @Test

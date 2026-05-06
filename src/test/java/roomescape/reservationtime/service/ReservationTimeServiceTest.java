@@ -19,11 +19,13 @@ import roomescape.reservationtime.application.exception.ReservationTimeException
 
 class ReservationTimeServiceTest {
 
-    private FakeReservationTimeRepository timeRepository = new FakeReservationTimeRepository();
-    private ReservationTimeService timeService = new ReservationTimeService(timeRepository);
+    private FakeReservationTimeRepository timeRepository;
+    private ReservationTimeService timeService;
 
     @BeforeEach
     void setUp() {
+        timeRepository = new FakeReservationTimeRepository();
+        timeService = new ReservationTimeService(timeRepository);
         timeRepository.save(ReservationTime.builder()
                 .startAt(LocalTime.of(9, 0))
                 .build()

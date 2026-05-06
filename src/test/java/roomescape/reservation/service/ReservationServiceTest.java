@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeReservationRepository;
@@ -24,12 +25,17 @@ import roomescape.theme.application.service.ThemeService;
 
 class ReservationServiceTest {
 
-    private ThemeService themeService = new ThemeService(new FakeThemeRepository());
-    private ReservationTimeService timeService = new ReservationTimeService(new FakeReservationTimeRepository());
+    private ThemeService themeService;
+    private ReservationTimeService timeService;
+    private ReservationService reservationService;
 
-    private ReservationRepository reservationRepository = new FakeReservationRepository();
-    private ReservationService reservationService = new ReservationService(reservationRepository, themeService,
-            timeService);
+    @BeforeEach
+    void setUp() {
+        themeService = new ThemeService(new FakeThemeRepository());
+        timeService = new ReservationTimeService(new FakeReservationTimeRepository());
+        ReservationRepository reservationRepository = new FakeReservationRepository();
+        reservationService = new ReservationService(reservationRepository, themeService, timeService);
+    }
 
     @DisplayName("사용자의 방탈출 예약 시간 추가를 테스트합니다.")
     @Test

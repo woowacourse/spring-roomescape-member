@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
+import roomescape.support.RepositoryTestHelper;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.repository.PopularTheme;
 import roomescape.theme.domain.repository.ThemeRepository;
@@ -28,11 +29,13 @@ public class JdbcThemeRepositoryTest {
 
     ThemeRepository themeRepository;
     ReservationTimeRepository timeRepository;
+    RepositoryTestHelper testHelper;
 
     @BeforeEach
     void setUp() {
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
         timeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+        testHelper = new RepositoryTestHelper(jdbcTemplate);
     }
 
     @DisplayName("db의 정상 저장을 테스트 합니다.")
@@ -139,9 +142,9 @@ public class JdbcThemeRepositoryTest {
         Theme theme1 = themeRepository.save(Theme.builder().name("theme name 1").description("theme description 1").thumbnailImgUrl("theme img url 1").build());
         Theme theme2 = themeRepository.save(Theme.builder().name("theme name 2").description("theme description 2").thumbnailImgUrl("theme img url 2").build());
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)", "스타크", yesterday, theme1.getId(), time1.getId());
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)", "카야", yesterday, theme2.getId(), time2.getId());
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)", "스타크", yesterday, theme1.getId(), time1.getId());
+        testHelper.insertReservation("스타크", yesterday, theme1.getId(), time1.getId());
+        testHelper.insertReservation("카야", yesterday, theme2.getId(), time2.getId());
+        testHelper.insertReservation("스타크", yesterday, theme1.getId(), time1.getId());
 
         LocalDate today = LocalDate.now();
         List<PopularTheme> popularThemes = themeRepository.findTop10PopularThemesBetween(today.minusWeeks(1), today.minusDays(1));

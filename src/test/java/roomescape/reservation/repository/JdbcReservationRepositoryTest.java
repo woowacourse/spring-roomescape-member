@@ -12,12 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.infra.JdbcReservationRepository;
-import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
-import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.repository.ThemeRepository;
-import roomescape.theme.infra.JdbcThemeRepository;
+import roomescape.support.RepositoryTestHelper;
 
 @JdbcTest
 class JdbcReservationRepositoryTest {
@@ -26,33 +21,25 @@ class JdbcReservationRepositoryTest {
     private JdbcTemplate jdbcTemplate;
 
     ReservationRepository reservationRepository;
-    ReservationTimeRepository timeRepository;
-    ThemeRepository themeRepository;
+    RepositoryTestHelper testHelper;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new JdbcReservationRepository(jdbcTemplate);
-        timeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
-        themeRepository = new JdbcThemeRepository(jdbcTemplate);
+        testHelper = new RepositoryTestHelper(jdbcTemplate);
     }
 
     @DisplayName("사용자의 방탈출 예약 시간 추가를 테스트합니다.")
     @Test
     void save_user_reservation() {
-        ReservationTime savedTime = timeRepository.save(ReservationTime.builder()
-                .startAt(LocalTime.of(9, 0))
-                .build());
-        Theme savedTheme = themeRepository.save(Theme.builder()
-                .name("theme name")
-                .description("theme description")
-                .thumbnailImgUrl("theme img url")
-                .build());
+        Long timeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
+        Long themeId = testHelper.insertTheme("theme name", "theme description", "theme img url");
 
         Reservation reservation = Reservation.builder()
                 .name("name")
                 .date(LocalDate.of(2026, 5, 4))
-                .themeId(savedTheme.getId())
-                .timeId(savedTime.getId())
+                .themeId(themeId)
+                .timeId(timeId)
                 .build();
 
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -60,8 +47,8 @@ class JdbcReservationRepositoryTest {
         SoftAssertions.assertSoftly(assertSoftly -> {
             assertSoftly.assertThat(savedReservation.getName()).isEqualTo("name");
             assertSoftly.assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 4));
-            assertSoftly.assertThat(savedReservation.getThemeId()).isEqualTo(savedTheme.getId());
-            assertSoftly.assertThat(savedReservation.getTimeId()).isEqualTo(savedTime.getId());
+            assertSoftly.assertThat(savedReservation.getThemeId()).isEqualTo(themeId);
+            assertSoftly.assertThat(savedReservation.getTimeId()).isEqualTo(timeId);
         });
     }
 }

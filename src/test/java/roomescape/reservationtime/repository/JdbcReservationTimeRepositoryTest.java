@@ -17,6 +17,7 @@ import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.infra.JdbcThemeRepository;
 import roomescape.theme.domain.repository.ThemeRepository;
+import roomescape.support.RepositoryTestHelper;
 
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
@@ -26,14 +27,16 @@ class JdbcReservationTimeRepositoryTest {
 
     ReservationTimeRepository timeRepository;
     ThemeRepository themeRepository;
+    RepositoryTestHelper testHelper;
 
     @BeforeEach
     void setUp() {
         timeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('09:00')");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('11:00')");
+        testHelper = new RepositoryTestHelper(jdbcTemplate);
+        testHelper.insertReservationTime(LocalTime.of(9, 0));
+        testHelper.insertReservationTime(LocalTime.of(10, 0));
+        testHelper.insertReservationTime(LocalTime.of(11, 0));
     }
 
     @DisplayName("날짜/테마 선택 시 예약 가능한 시간 조회하는 테스트입니다.")
