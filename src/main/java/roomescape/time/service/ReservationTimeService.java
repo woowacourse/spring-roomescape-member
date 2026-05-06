@@ -19,7 +19,7 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTime save(ReservationTimeCommand command) {
-        if (reservationTimeRepository.existStartAt(command.startAt())) {
+        if (reservationTimeRepository.existsByStartAt(command.startAt())) {
             throw new IllegalArgumentException("해당 시간이 이미 존재합니다.");
         }
 

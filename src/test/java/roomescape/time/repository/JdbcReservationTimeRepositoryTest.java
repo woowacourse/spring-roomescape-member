@@ -88,8 +88,8 @@ class JdbcReservationTimeRepositoryTest {
         reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
 
         // when
-        boolean exists = reservationTimeRepository.existStartAt(LocalTime.of(10, 0));
-        boolean notExists = reservationTimeRepository.existStartAt(LocalTime.of(11, 0));
+        boolean exists = reservationTimeRepository.existsByStartAt(LocalTime.of(10, 0));
+        boolean notExists = reservationTimeRepository.existsByStartAt(LocalTime.of(11, 0));
 
         // then
         assertThat(exists).isTrue();

@@ -13,7 +13,7 @@ public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(Long id);
 
-    boolean existStartAt(LocalTime startAt);
+    boolean existsByStartAt(LocalTime startAt);
 
     List<ReservationTime> findAll();
 }

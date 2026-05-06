@@ -1,15 +1,14 @@
 package roomescape.theme.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.AvailableTimesResult;
 import roomescape.theme.service.dto.ThemeCommand;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -23,6 +22,10 @@ public class ThemeService {
 
     @Transactional
     public Theme save(ThemeCommand command) {
+        if (themeRepository.existsByName(command.name())) {
+            throw new IllegalArgumentException("이미 존재하는 테마 이름입니다.");
+        }
+
         Theme theme = Theme.create(command.name(), command.description(), command.thumbnailUrl());
         return themeRepository.save(theme);
     }
