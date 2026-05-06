@@ -1,4 +1,4 @@
-CREATE TABLE `theme` (
+CREATE TABLE IF NOT EXISTS `theme` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     `description` VARCHAR(255) NULL,
@@ -7,14 +7,14 @@ CREATE TABLE `theme` (
     CONSTRAINT `PK_THEME` PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `user` (
+CREATE TABLE IF NOT EXISTS `user` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     `role` VARCHAR(30) NOT NULL,
     CONSTRAINT `PK_USER` PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `schedule` (
+CREATE TABLE IF NOT EXISTS `schedule` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `theme_id` BIGINT NOT NULL,
     `start_at` DATETIME NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE `schedule` (
     CONSTRAINT `FK_SCHEDULE_THEME` FOREIGN KEY (`theme_id`) REFERENCES `THEME` (`id`)
 );
 
-CREATE TABLE `reservation` (
+CREATE TABLE IF NOT EXISTS `reservation` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `user_id` BIGINT NOT NULL,
     `schedule_id` BIGINT NOT NULL,
