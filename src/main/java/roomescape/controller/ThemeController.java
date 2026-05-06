@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.CreateThemeRequest;
+import roomescape.dto.PopularThemeResponse;
 import roomescape.dto.ThemeReservationTimeResponse;
+import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -45,5 +47,11 @@ public class ThemeController {
                                                                              @RequestParam LocalDate date) {
         List<ThemeReservationTimeResponse> themeTimes = themeService.getThemeTimes(id, date);
         return ResponseEntity.ok().body(themeTimes);
+    }
+
+    @GetMapping("/themes/popular")
+    public ResponseEntity<List<PopularThemeResponse>> readPopularThemes(@RequestParam Integer limit) {
+        List<PopularThemeResponse> popularThemes = themeService.getPopularThemes(limit);
+        return ResponseEntity.ok().body(popularThemes);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.CreateThemeRequest;
+import roomescape.dto.PopularThemeResponse;
 import roomescape.dto.ThemeReservationTimeResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
@@ -13,6 +14,8 @@ import roomescape.repository.ThemeDao;
 
 @Service
 public class ThemeService {
+
+    private static final Integer POPULAR_THEME_PERIOD_DAYS = 7;
 
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
@@ -44,5 +47,13 @@ public class ThemeService {
                         reservedTimeIds.contains(time.getId())
                 ))
                 .toList();
+    }
+
+    public List<PopularThemeResponse> getPopularThemes(Integer limit) {
+        LocalDate today = LocalDate.now();
+        LocalDate to = today.minusDays(1);
+        LocalDate from = today.minusDays(POPULAR_THEME_PERIOD_DAYS);
+
+        return themeDao.findPopularThemes(from, to, limit);
     }
 }

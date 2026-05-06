@@ -23,3 +23,10 @@
 `GET /themes/{id}/times?date={date}` 예약 가능한 시간 목록 조회
 
 ### 3단계 - 인기 테마 조회
+
+- [x] 최근 1주 동안 예약이 많았던 테마 목록 내림차순 조회
+    - 지정한 최대 갯수만큼 인기 테마를 조회할 수 있다.
+
+#### API 명세
+
+`GET /themes/popular?limit={limit}`
