@@ -1,10 +1,14 @@
 package roomescape.reservation.controller;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.RequestReservation;
-import roomescape.reservation.dto.ResponseReservation;
 import roomescape.reservation.service.ReservationService;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -13,89 +17,81 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(ReservationController.class)
+@ExtendWith(MockitoExtension.class)
 class ReservationControllerTest {
 
-    private final FakeReservationService fakeReservationService;
-    private final ReservationController reservationController;
+    @Autowired
+    MockMvc mockMvc;
 
-    public ReservationControllerTest() {
-        this.fakeReservationService = new FakeReservationService();
-        this.reservationController = new ReservationController(fakeReservationService);
-    }
+    @MockitoBean
+    private ReservationService reservationService;
 
     @Test
-    void 예약_목록_조회_요청을_Service에_전달하고_결과를_반환한다() {
+    void 예약_목록_조회_요청을_Service에_전달하고_결과를_반환한다() throws Exception {
         List<Reservation> reservations = List.of(
-                new Reservation(
-                        1L, "브라운", LocalDate.of(2026, 5, 10),
-                        new ReservationTime(1L, LocalTime.of(10, 0)),
-                        new Theme(1L, "공포방", "무서운방입니다.", "image-url")
-                )
+                new Reservation(1L, "레서",
+                        LocalDate.of(2026, 5, 6),
+                        new ReservationTime(1L, LocalTime.of(18, 0)),
+                        new Theme(1L, "공포방", "무서운방입니다.", "image-url")),
+                new Reservation(2L, "어셔",
+                        LocalDate.of(2026, 5, 7),
+                        new ReservationTime(2L, LocalTime.of(20, 0)),
+                        new Theme(2L, "추리방", "추리하는방입니다.", "image-url2"))
         );
-        fakeReservationService.toReturnReservations = reservations;
-        List<ResponseReservation> result = reservationController.getReservations();
+        when(reservationService.getReservations()).thenReturn(reservations);
 
-        Assertions.assertThat(result).hasSize(1);
-        Assertions.assertThat(result.get(0).id()).isEqualTo(1L);
-        Assertions.assertThat(result.get(0).name()).isEqualTo("브라운");
-        Assertions.assertThat(result.get(0).date()).isEqualTo(LocalDate.of(2026, 5, 10));
-        Assertions.assertThat(result.get(0).time().id()).isEqualTo(1L);
-        Assertions.assertThat(result.get(0).time().startAt()).isEqualTo(LocalTime.of(10, 0));
+        mockMvc.perform(get("/reservations"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("레서"))
+                .andExpect(jsonPath("$[0].date").value("2026-05-06"))
+                .andExpect(jsonPath("$[0].time.startAt").value("18:00"))
+                .andExpect(jsonPath("$[0].theme.name").value("공포방"))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].name").value("어셔"));
     }
 
     @Test
-    void 예약_생성_요청을_받으면_DTO_필드를_Service에_전달하고_결과를_반환한다() {
-        RequestReservation request = new RequestReservation("브라운", LocalDate.of(2026, 5, 10), 1L, 1L);
-        Reservation created = new Reservation(
-                99L, "브라운", LocalDate.of(2026, 5, 10),
-                new ReservationTime(1L, LocalTime.of(10, 0)),
-                new Theme(1L, "공포방", "무서운방입니다.", "image-url")
-        );
-        fakeReservationService.toReturn = created;
+    void 예약_생성_요청을_받으면_DTO의_이름_날짜_시간_id_테마_id를_Service에_전달하고_결과를_반환한다() throws Exception {
+        Reservation created = new Reservation(1L, "레서", LocalDate.of(2026, 5, 6),
+                new ReservationTime(1L, LocalTime.of(18,0)),
+                new Theme(1L, "공포방", "무서운방입니다.", "image-url"));
 
-        ResponseReservation result = reservationController.createReservation(request);
-
-        Assertions.assertThat(fakeReservationService.capturedName).isEqualTo("브라운");
-        Assertions.assertThat(fakeReservationService.capturedDate).isEqualTo(LocalDate.of(2026, 5, 10));
-        Assertions.assertThat(fakeReservationService.capturedTimeId).isEqualTo(1L);
-        Assertions.assertThat(result.id()).isEqualTo(99L);
-        Assertions.assertThat(result.name()).isEqualTo("브라운");
-        Assertions.assertThat(result.date()).isEqualTo(LocalDate.of(2026, 5, 10));
-        Assertions.assertThat(result.time().id()).isEqualTo(1L);
-        Assertions.assertThat(result.time().startAt()).isEqualTo(LocalTime.of(10, 0));
+        when(reservationService.createReservation(any(), any(), any(), any())).thenReturn(created);
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                  {
+                                    "name": "레서",
+                                    "date": "2026-05-06",
+                                    "timeId": 1,
+                                    "themeId": 1
+                                  }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("레서"))
+                .andExpect(jsonPath("$.date").value("2026-05-06"))
+                .andExpect(jsonPath("$.time.id").value(1))
+                .andExpect(jsonPath("$.time.startAt").value("18:00"))
+                .andExpect(jsonPath("$.theme.id").value(1))
+                .andExpect(jsonPath("$.theme.name").value("공포방"))
+                .andExpect(jsonPath("$.theme.description").value("무서운방입니다."))
+                .andExpect(jsonPath("$.theme.thumbnail").value("image-url"));
     }
 
     @Test
-    void 예약_삭제_요청을_받으면_PathVariable_id를_Service에_전달한다() {
-        reservationController.deleteReservation(7L);
-        Assertions.assertThat(fakeReservationService.deletedId).isEqualTo(7L);
-    }
-
-    static class FakeReservationService implements ReservationService {
-
-        String capturedName;
-        LocalDate capturedDate;
-        Long capturedTimeId;
-        Long deletedId;
-        List<Reservation> toReturnReservations = List.of();
-        Reservation toReturn;
-
-        @Override
-        public List<Reservation> getReservations() {
-            return toReturnReservations;
-        }
-
-        @Override
-        public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
-            this.capturedName = name;
-            this.capturedDate = date;
-            this.capturedTimeId = timeId;
-            return toReturn;
-        }
-
-        @Override
-        public void deleteReservation(Long id) {
-            this.deletedId = id;
-        }
+    void 예약_삭제_요청을_받으면_PathVariable_id를_Service에_전달한다() throws Exception {
+        mockMvc.perform(delete("/reservations/1"))
+                .andExpect(status().isNoContent());
+        verify(reservationService, times(1)).deleteReservation(any());
     }
 }
