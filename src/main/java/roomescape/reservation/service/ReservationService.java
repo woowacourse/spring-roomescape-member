@@ -11,6 +11,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.time.repository.dto.FindReservedTimeParams;
 
 @Service
 public class ReservationService {
@@ -36,7 +37,10 @@ public class ReservationService {
         ReservationTime time = reservationTimeRepository.findById(request.getTimeId());
         Theme theme = themeRepository.findById(request.getThemeId());
 
-
+        List<Long> reservedIds = reservationTimeRepository.findIdByCondition(new FindReservedTimeParams(theme.getId(), request.getDate()));
+        if(reservedIds.contains(request.getTimeId())) {
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+        }
         CreateReservationParams params = new CreateReservationParams(request.getName(), request.getDate(),
                 time.getId(), request.getTimeId());
         Reservation reservation = reservationRepository.save(params);
