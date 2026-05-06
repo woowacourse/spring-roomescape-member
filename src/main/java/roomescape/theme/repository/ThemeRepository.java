@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import roomescape.theme.model.Theme;
 
 import java.sql.PreparedStatement;
+import java.time.LocalTime;
+import java.util.List;
 
 @Repository
 public class ThemeRepository {
@@ -15,6 +17,23 @@ public class ThemeRepository {
 
     public ThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> {
+                    return new Theme(
+                            resultSet.getLong("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("description"),
+                            resultSet.getString("image_url"),
+                            resultSet.getObject("required_time", LocalTime.class)
+                    );
+                }
+        );
     }
 
     public Long create(Theme theme) {
