@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,12 +42,12 @@ class JdbcThemeRepositoryTest {
         """, date, themeId);
 
         // when
-        List<ReservationTime> result = repository.findAvailableTimes(themeId, date);
+        List<AvailableTimeQueryResult> result = repository.findAvailableTimes(themeId, date);
 
         // then
         assertThat(result).hasSize(2);
         assertThat(result)
-                .extracting(ReservationTime::getId)
-                .containsExactlyInAnyOrder(1L, 3L);
+                .extracting(AvailableTimeQueryResult::startAt)
+                .containsExactlyInAnyOrder(LocalTime.of(10, 0), LocalTime.of(12, 0));
     }
 }

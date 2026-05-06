@@ -1,7 +1,6 @@
 package roomescape.theme.repository;
 
 import roomescape.theme.domain.Theme;
-import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,5 +16,5 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
-    List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date);
+    List<AvailableTimeQueryResult> findAvailableTimes(Long themeId, LocalDate date);
 }

@@ -1,11 +1,17 @@
 package roomescape.time.controller.dto;
 
-import java.time.LocalTime;
+import roomescape.theme.repository.AvailableTimeQueryResult;
 import roomescape.time.domain.ReservationTime;
 
-public record ReservationTimeResponse(Long id, LocalTime startAt) {
+import java.time.LocalTime;
+
+public record ReservationTimeResponse(LocalTime startAt) {
 
     public static ReservationTimeResponse from(ReservationTime time) {
-        return new ReservationTimeResponse(time.getId(), time.getStartAt());
+        return new ReservationTimeResponse(time.getStartAt());
+    }
+
+    public static ReservationTimeResponse from(AvailableTimeQueryResult time) {
+        return new ReservationTimeResponse(time.startAt());
     }
 }
