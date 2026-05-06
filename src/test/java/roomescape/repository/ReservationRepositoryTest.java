@@ -185,6 +185,7 @@ class ReservationRepositoryTest {
         Long themeId = persistTheme(DEFAULT_THEME)
                 .getId();
 
+        LocalDate currentDate = DEFAULT_DATE;
         for (int i = 0; i < count; i++) {
             String insertSql = "INSERT INTO reservation(name, date, time_id, theme_id)"
                     + " VALUES (?, ?, ?, ?)";
@@ -192,10 +193,11 @@ class ReservationRepositoryTest {
             jdbcTemplate.update(
                     insertSql,
                     DEFAULT_NAME,
-                    DEFAULT_DATE,
+                    currentDate,
                     timeId,
                     themeId
             );
+            currentDate = currentDate.plusDays(1);
         }
     }
 
