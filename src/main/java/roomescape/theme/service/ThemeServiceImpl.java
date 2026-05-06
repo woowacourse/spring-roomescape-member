@@ -44,9 +44,9 @@ public class ThemeServiceImpl implements ThemeService {
     @Override
     public Theme create(ThemeSaveServiceDto theme) {
         Theme newTheme = new Theme(
-                theme.getName(),
-                theme.getDescription(),
-                theme.getImageUrl()
+                theme.name(),
+                theme.description(),
+                theme.imageUrl()
         );
         return themeRepository.save(newTheme);
     }

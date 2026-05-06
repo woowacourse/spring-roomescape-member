@@ -11,7 +11,6 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
-import roomescape.time.repository.TimeRepository;
 import roomescape.time.service.TimeService;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -21,20 +20,17 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeService timeService;
     private final ThemeRepository themeRepository;
-    private final TimeRepository timeRepository;
     private final HolidayService holidayService;
 
     public ReservationServiceImpl(
             ReservationRepository reservationRepository,
             TimeService timeService,
             ThemeRepository themeRepository,
-            TimeRepository timeRepository,
             HolidayService holidayService
     ) {
         this.reservationRepository = reservationRepository;
         this.timeService = timeService;
         this.themeRepository = themeRepository;
-        this.timeRepository = timeRepository;
         this.holidayService = holidayService;
     }
 
@@ -46,16 +42,16 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Reservation create(ReservationSaveServiceDto reservation) {
-        ReservationTime time = findTime(reservation.getTime());
-        Long themeId = findThemeId(reservation.getThemeId());
-        LocalDate date = reservation.getDate();
-        if (holidayService.isHoliday(reservation.getDate())) {
+        ReservationTime time = findTime(reservation.time());
+        Long themeId = findThemeId(reservation.themeId());
+        LocalDate date = reservation.date();
+        if (holidayService.isHoliday(reservation.date())) {
             throw new IllegalArgumentException("휴일은 예약이 불가합니다.");
         }
         validateDuplicatedReservation(themeId, time, date);
         Reservation newReservation = new Reservation(
-                reservation.getName(),
-                reservation.getDate(),
+                reservation.name(),
+                reservation.date(),
                 time,
                 themeId
         );
