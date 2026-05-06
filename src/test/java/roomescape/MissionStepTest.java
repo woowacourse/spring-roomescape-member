@@ -94,7 +94,7 @@ public class MissionStepTest {
                 .body("theme.id", is(themeId));
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("reservations.find { it.time.id == " + timeId + " }.theme.id", is(themeId));
