@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,17 +152,7 @@ class ReservationApiTest {
         createReservationTime("10:00", 1L);
         createReservationTime("11:00", 1L);
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", "2026-05-10");
-        reservation.put("timeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
+        createReservation("브라운", "2026-05-10", 1L);
 
         RestAssured.given().log().all()
                 .queryParam("date", "2026-05-10")
@@ -172,9 +163,46 @@ class ReservationApiTest {
                 .body("[0].startAt", is("11:00:00"));
     }
 
+    @Test
+    void 인기_테마_조회() {
+        LocalDate today = LocalDate.now();
+
+        createTheme("미술관의 밤");
+        createTheme("심해 연구소");
+        createTheme("폐병원 탈출");
+
+        createReservationTime("10:00", 1L);
+        createReservationTime("11:00", 2L);
+        createReservationTime("12:00", 3L);
+
+        createReservation("쿠다", today.minusDays(1).toString(), 1L);
+        createReservation("아루", today.minusDays(2).toString(), 1L);
+        createReservation("도기", today.minusDays(3).toString(), 1L);
+
+        createReservation("포비", today.minusDays(1).toString(), 2L);
+        createReservation("솔라", today.minusDays(2).toString(), 2L);
+
+        createReservation("레오", today.minusDays(1).toString(), 3L);
+        createReservation("오래된예약", today.minusDays(10).toString(), 3L);
+
+        RestAssured.given().log().all()
+                .queryParam("period", 7)
+                .queryParam("limit", 2)
+                .when().get("/reservations/theme/popular")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2))
+                .body("[0].name", is("미술관의 밤"))
+                .body("[1].name", is("심해 연구소"));
+    }
+
     private void createTheme() {
+        createTheme("미술관의 밤");
+    }
+
+    private void createTheme(final String name) {
         Map<String, String> theme = new HashMap<>();
-        theme.put("name", "미술관의 밤");
+        theme.put("name", name);
         theme.put("description", "추리 테마");
         theme.put("thumbnailUrl", "https://example.com/theme.png");
 
@@ -194,6 +222,20 @@ class ReservationApiTest {
                 .contentType(ContentType.JSON)
                 .body(time)
                 .when().post("/admin/themes/" + themeId + "/times")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    private void createReservation(final String name, final String date, final Long timeId) {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", name);
+        reservation.put("date", date);
+        reservation.put("timeId", timeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
     }

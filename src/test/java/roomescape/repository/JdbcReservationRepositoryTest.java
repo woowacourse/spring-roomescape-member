@@ -157,6 +157,44 @@ class JdbcReservationRepositoryTest {
                 .containsExactlyInAnyOrder(firstThemeFirstTime.getId(), firstThemeSecondTime.getId());
     }
 
+    @Test
+    @DisplayName("최근 기간 기준 인기 테마를 예약 수 순서대로 조회한다")
+    void findPopularThemes_test() {
+        // given
+        LocalDate today = LocalDate.now();
+        Theme firstTheme = createTheme("미술관의 밤");
+        Theme secondTheme = createTheme("심해 연구소");
+        Theme thirdTheme = createTheme("폐병원 탈출");
+
+        ReservationTime firstThemeTime = jdbcReservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.parse("10:00"), firstTheme)
+        );
+        ReservationTime secondThemeTime = jdbcReservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.parse("11:00"), secondTheme)
+        );
+        ReservationTime thirdThemeTime = jdbcReservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.parse("12:00"), thirdTheme)
+        );
+
+        jdbcReservationRepository.save(Reservation.createNew("쿠다", today.minusDays(1), firstThemeTime));
+        jdbcReservationRepository.save(Reservation.createNew("아루", today.minusDays(2), firstThemeTime));
+        jdbcReservationRepository.save(Reservation.createNew("도기", today.minusDays(3), firstThemeTime));
+
+        jdbcReservationRepository.save(Reservation.createNew("포비", today.minusDays(1), secondThemeTime));
+        jdbcReservationRepository.save(Reservation.createNew("솔라", today.minusDays(2), secondThemeTime));
+
+        jdbcReservationRepository.save(Reservation.createNew("레오", today.minusDays(1), thirdThemeTime));
+        jdbcReservationRepository.save(Reservation.createNew("오래된예약", today.minusDays(10), thirdThemeTime));
+
+        // when
+        List<Theme> popularThemes = jdbcReservationRepository.findPopularThemes(7, 2);
+
+        // then
+        assertThat(popularThemes).hasSize(2);
+        assertThat(popularThemes.get(0).getId()).isEqualTo(firstTheme.getId());
+        assertThat(popularThemes.get(1).getId()).isEqualTo(secondTheme.getId());
+    }
+
     private void clearTables() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");

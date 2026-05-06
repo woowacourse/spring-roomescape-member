@@ -3,9 +3,13 @@ package roomescape.reservation.repository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
 
 public class MemoryReservationRepository implements ReservationRepository {
     List<Reservation> reservations = new ArrayList<>();
@@ -59,4 +63,28 @@ public class MemoryReservationRepository implements ReservationRepository {
                 .map(reservation -> reservation.getTime().getId())
                 .toList();
     }
+
+    @Override
+    public List<Theme> findPopularThemes(final int period, final int limit) {
+        LocalDate end = LocalDate.now();
+        LocalDate start = end.minusDays(period);
+
+        return reservations.stream()
+                .filter(reservation ->
+                        !reservation.getDate().isBefore(start) &&
+                                !reservation.getDate().isAfter(end)
+                )
+                .map(reservation -> reservation.getTime().getTheme())
+                .collect(Collectors.groupingBy(
+                        Function.identity(),
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<Theme, Long>comparingByValue().reversed())
+                .limit(limit)
+                .map(Map.Entry::getKey)
+                .toList();
+    }
+
 }

@@ -16,6 +16,7 @@ import roomescape.reservation.controller.dto.ReservationCreateRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 @RestController
 @RequestMapping("/reservations")
@@ -58,6 +59,15 @@ public class ReservationController {
     ) {
         return ResponseEntity.ok()
                 .body(reservationService.findAvailableTimes(date, themeId));
+    }
+
+    @GetMapping("/theme/popular")
+    public ResponseEntity<List<Theme>> read(
+            @RequestParam final int period,
+            @RequestParam final int limit
+    ) {
+        return ResponseEntity.ok()
+                .body(reservationService.getPopularThemes(period, limit));
     }
 
 }

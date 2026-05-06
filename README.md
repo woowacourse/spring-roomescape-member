@@ -27,8 +27,8 @@
 `Resrevation`
 
 | 기능 | Http/url | 요청본문 | 응답 |
-| ----------- |----------------------------------------------------------|---------------------------------| ------------------------------- |
-| 예약 생성 | `POST` `/reservations` | `{name, date, timeId, themeId}` | `{id, name, date, time}` |
+| ----------- |----------------------------------------------------------|------------------------| ------------------------------- |
+| 예약 생성 | `POST` `/reservations` | `{name, date, timeId}` | `{id, name, date, time}` |
 | 예약 삭제 | `DELETE` `/reservations/{reservationId}` | - | - |
 | 예약 조회 | `GET` `/reservations` | - | `[{id, name, date, time}, ...]` |
 | 예약 가능 시간 조회 | `GET` `/reservations/theme/{themeId}/times?date={yyyy-MM-dd}` | - | `[{id, startAt, theme}, ...]` |

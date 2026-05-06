@@ -39,6 +39,15 @@ public class JdbcReservationRepository implements ReservationRepository {
         );
     };
 
+    private static final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> {
+        return Theme.of(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail_url")
+        );
+    };
+
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcReservationRepository(final JdbcTemplate jdbcTemplate) {
@@ -142,6 +151,27 @@ public class JdbcReservationRepository implements ReservationRepository {
                 themeId,
                 Date.valueOf(date)
         );
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(final int period, final int limit) {
+        final String sql = """
+                SELECT t.id AS theme_id,
+                       t.name AS theme_name,
+                       t.description,
+                       t.thumbnail_url
+                FROM reservation r
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                INNER JOIN theme t ON rt.theme_id = t.id
+                WHERE r.date >= ? AND r.date <= ?
+                GROUP BY t.id, t.name, t.description, t.thumbnail_url
+                ORDER BY COUNT(*) DESC, t.id ASC
+                LIMIT ?
+                """;
+        LocalDate end = LocalDate.now();
+        LocalDate start = end.minusDays(period);
+
+        return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(end), limit);
     }
 
 }
