@@ -1,5 +1,7 @@
 package roomescape.schedule;
 
-public record AvailableTimeDto(long timeId, boolean isAvailable) {
+import java.time.LocalTime;
+
+public record AvailableTimeDto(long timeId, LocalTime startAt, boolean isAvailable) {
 
 }
