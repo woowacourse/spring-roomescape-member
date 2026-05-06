@@ -51,7 +51,8 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public Theme save(Theme theme) {
-        Theme savedTheme = Theme.reconstruct(id.addAndGet(1), theme.getName(), theme.getDescription(),
+        Theme savedTheme = Theme.reconstruct(id.addAndGet(1), theme.getName(),
+            theme.getDescription(),
             theme.getImageUrl());
         themes.add(savedTheme);
         return savedTheme;
@@ -70,10 +71,13 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, Integer limit) {
+    public List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate,
+        Integer limit) {
         List<Theme> filteredThemes = reservations.stream()
-            .filter(reservation -> reservation.getDate().isAfter(startDate) || reservation.getDate().isEqual(startDate))
-            .filter(reservation -> reservation.getDate().isBefore(endDate) || reservation.getDate().isEqual(endDate))
+            .filter(reservation -> reservation.getDate().isAfter(startDate) || reservation.getDate()
+                .isEqual(startDate))
+            .filter(reservation -> reservation.getDate().isBefore(endDate) || reservation.getDate()
+                .isEqual(endDate))
             .map(Reservation::getTheme)
             .toList();
         List<Theme> distinctThemes = filteredThemes.stream()
@@ -83,7 +87,8 @@ public class FakeThemeRepository implements ThemeRepository {
 
         return distinctThemes.stream()
             .sorted(Comparator.comparingLong((Theme theme) -> counterMap.get(theme.getId()))
-                .reversed())
+                .reversed()
+                .thenComparing(Theme::getId))
             .limit(limit)
             .toList();
     }
