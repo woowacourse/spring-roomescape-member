@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>방탈출 관리자 페이지</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="container">
+    <header class="page-header">
+      <h1>관리자 페이지</h1>
+      <div class="link-row">
+        <a class="link-button" href="./index.html">홈</a>
+        <a class="link-button" href="./common.html">공통 페이지</a>
+      </div>
+    </header>
+
+    <section class="theme-admin-section">
+      <h2>테마 관리</h2>
+      <div class="admin-grid">
+        <article class="admin-card">
+          <h3>테마 추가</h3>
+          <form id="theme-form" class="row-form admin-form">
+            <label>이름 <input type="text" id="theme-name" required></label>
+            <label>설명 <input type="text" id="theme-description" required></label>
+            <label>썸네일 URL <input type="url" id="theme-thumbnail" required></label>
+            <button type="submit" class="search-button">테마 추가</button>
+          </form>
+        </article>
+
+        <article class="admin-card">
+          <h3>테마 삭제</h3>
+          <form id="theme-delete-form" class="row-form inline-form">
+            <label>테마 ID <input type="number" id="theme-delete-id" min="1" required></label>
+            <button type="submit" class="danger-button">테마 삭제</button>
+          </form>
+        </article>
+      </div>
+
+      <div class="reservation-toolbar">
+        <button id="theme-refresh" class="search-button">테마 목록 조회</button>
+      </div>
+      <ul id="theme-list" class="list reservation-list"></ul>
+    </section>
+
+    <section class="reservation-admin-section">
+      <h2>예약 관리</h2>
+      <div class="admin-grid">
+        <article class="admin-card">
+          <h3>예약 추가</h3>
+          <form id="reservation-form" class="row-form admin-form">
+            <label>예약자명 <input type="text" id="reservation-name" placeholder="예: kim" required></label>
+            <label>날짜 <input type="date" id="reservation-date" required></label>
+            <label>시간 ID <input type="number" id="reservation-time-id" min="1" required></label>
+            <label>테마 ID <input type="number" id="reservation-theme-id" min="1" required></label>
+            <button type="submit" class="search-button">예약 추가</button>
+          </form>
+        </article>
+
+        <article class="admin-card">
+          <h3>예약 삭제</h3>
+          <form id="reservation-delete-form" class="row-form inline-form">
+            <label>예약 ID <input type="number" id="reservation-delete-id" min="1" required></label>
+            <button type="submit" class="danger-button">예약 삭제</button>
+          </form>
+        </article>
+      </div>
+
+      <div class="reservation-toolbar">
+        <button id="reservation-refresh" class="search-button">예약 목록 조회</button>
+      </div>
+      <ul id="reservation-list" class="list reservation-list"></ul>
+    </section>
+
+    <section class="time-admin-section">
+      <h2>시간 슬롯 관리</h2>
+      <div class="admin-grid">
+        <article class="admin-card">
+          <h3>시간 슬롯 추가</h3>
+          <form id="time-form" class="row-form admin-form">
+            <label>시작 시간(HH:mm) <input type="time" id="time-start-at" required></label>
+            <button type="submit" class="search-button">시간 슬롯 추가</button>
+          </form>
+        </article>
+
+        <article class="admin-card">
+          <h3>시간 슬롯 삭제</h3>
+          <form id="time-delete-form" class="row-form inline-form">
+            <label>시간 슬롯 ID <input type="number" id="time-delete-id" min="1" required></label>
+            <button type="submit" class="danger-button">시간 슬롯 삭제</button>
+          </form>
+        </article>
+      </div>
+
+      <div class="reservation-toolbar">
+        <button id="time-refresh" class="search-button">시간 슬롯 조회</button>
+      </div>
+      <ul id="time-list" class="list reservation-list"></ul>
+    </section>
+
+<!--    <p id="status" class="status-bar"></p>-->
+  </main>
+
+  <div id="confirm-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <h3 id="confirm-title">확인</h3>
+      <p id="confirm-message" class="modal-message"></p>
+      <div class="modal-actions">
+        <button type="button" id="confirm-cancel" class="link-button">취소</button>
+        <button type="button" id="confirm-ok" class="danger-button">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="result-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <h3 id="result-title">처리 결과</h3>
+      <p id="result-message" class="modal-message"></p>
+      <div class="modal-actions">
+        <button type="button" id="result-ok" class="search-button">확인</button>
+      </div>
+    </div>
+  </div>
+  <script src="./admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>방탈출 예약 - 공통 페이지</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<main class="container">
+  <header class="page-header">
+    <h1>방탈출 예약하기</h1>
+    <div class="link-row">
+      <a class="link-button" href="./index.html">홈</a>
+      <a class="link-button admin-link" href="./admin.html">관리자 설정</a>
+    </div>
+  </header>
+
+  <!-- 예약 섹션 -->
+  <section class="booking-section">
+    <div class="section-title-area">
+      <h2>01. 날짜 및 테마 선택</h2>
+    </div>
+
+    <form id="theme-by-date-form" class="row-form">
+      <label>예약 방문 날짜 <input type="date" id="theme-date" required></label>
+      <button type="submit" class="search-button">조회하기</button>
+    </form>
+
+    <div class="selection-summary">
+      <span id="selected-theme-label" class="summary-pill">테마: 미선택</span>
+      <span id="selected-time-label" class="summary-pill">시간: 미선택</span>
+    </div>
+
+    <ul id="theme-list" class="list theme-list"></ul>
+
+    <div class="section-title-area mt-40">
+      <h3>02. 예약 가능 시간</h3>
+    </div>
+    <div id="available-times" class="chips-container"></div>
+
+    <div class="section-title-area mt-40">
+      <h3>03. 예약 정보 입력</h3>
+    </div>
+    <form id="reservation-form" class="row-form reservation-form">
+      <label>예약자 성함 <input type="text" id="reservation-name" placeholder="이름을 입력하세요" required></label>
+      <button type="submit" id="reservation-submit" class="primary-button" disabled>지금 예약하기</button>
+    </form>
+  </section>
+
+  <hr class="divider">
+
+  <!-- 인기 테마 섹션 -->
+  <section class="popular-section">
+    <h2>🔥 인기 테마 TOP</h2>
+    <form id="popular-form" class="row-form popular-filter">
+      <label>기준일(최근 N일) <input type="number" id="popular-day" min="1" value="7" required></label>
+      <label>표시 개수 <input type="number" id="popular-limit" min="1" value="10" required></label>
+      <button type="submit">확인하기</button>
+    </form>
+    <ol id="popular-list" class="list popular-ranking"></ol>
+  </section>
+
+<!--  <p id="status" class="status-bar"></p>-->
+</main>
+<script src="./common.js"></script>
+</body>
+</html>
