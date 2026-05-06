@@ -2,8 +2,9 @@ import { createServer } from 'node:http';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const frontendRoot = new URL('.', import.meta.url).pathname;
+const frontendRoot = fileURLToPath(new URL('.', import.meta.url));
 const backendOrigin = process.env.BE_ORIGIN || 'http://localhost:8080';
 const port = Number(process.env.PORT || 3000);
 
