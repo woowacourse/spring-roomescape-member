@@ -1,26 +1,32 @@
 package roomescape.fake;
 
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
-    private final Map<Long, ReservationTime> times = new HashMap<>();
+    private final Map<Long, ReservationTime> times = new LinkedHashMap<>();
+    private final List<Reservation> reservations = new ArrayList<>();
     private Long idHoler = 1L;
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        return Optional.of(times.get(id));
+        return Optional.ofNullable(times.get(id));
     }
 
     @Override
     public List<ReservationTime> findAll() {
-        return List.of();
+        return times.values().stream()
+                .toList();
     }
 
     @Override
@@ -32,11 +38,23 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public void delete(Long id) {
+        times.remove(id);
+    }
 
+    public void saveReservation(Reservation reservation) {
+        reservations.add(reservation);
     }
 
     @Override
     public List<ReservationTime> findByThemeAndDate(Long themeId, LocalDate date) {
-        return List.of();
+        Set<Long> reservedTimeIds = reservations.stream()
+                .filter(reservation -> reservation.getThemeId().equals(themeId))
+                .filter(reservation -> reservation.getDate().equals(date))
+                .map(Reservation::getTimeId)
+                .collect(Collectors.toSet());
+
+        return times.values().stream()
+                .filter(reservationTime -> !reservedTimeIds.contains(reservationTime.getId()))
+                .toList();
     }
 }

@@ -1,7 +1,7 @@
 package roomescape.fake;
 
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import roomescape.reservation.repository.ReservationRepository;
 @NoArgsConstructor
 public class FakeReservationRepository implements ReservationRepository {
 
-    private final Map<Long, Reservation> reservations = new HashMap<>();
+    private final Map<Long, Reservation> reservations = new LinkedHashMap<>();
     private Long idHoler = 1L;
 
     @Override

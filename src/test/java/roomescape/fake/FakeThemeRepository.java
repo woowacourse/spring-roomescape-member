@@ -1,6 +1,6 @@
 package roomescape.fake;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,17 +9,18 @@ import roomescape.theme.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 
-    private final Map<Long, Theme> themes = new HashMap<>();
+    private final Map<Long, Theme> themes = new LinkedHashMap<>();
     private Long idHoler = 1L;
 
     @Override
     public Optional<Theme> findById(Long id) {
-        return Optional.of(themes.get(id));
+        return Optional.ofNullable(themes.get(id));
     }
 
     @Override
     public List<Theme> findAll() {
-        return List.of();
+        return themes.values().stream()
+                .toList();
     }
 
     @Override
@@ -31,6 +32,14 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public Integer delete(long id) {
+        int beforeSize = themes.size();
+        themes.remove(id);
+        int afterSize = themes.size();
+
+        if (beforeSize != afterSize) {
+            return 1;
+        }
+
         return 0;
     }
 
