@@ -31,7 +31,6 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-    // date&themeId로 구분된 모든 reservation 가져오고, 모든 reservationTime과 차집합.
     @Transactional(readOnly = true)
     public List<ReservationTime> findAvailableReservationTimes(LocalDate date, Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
@@ -39,7 +38,7 @@ public class ReservationTimeService {
                 reservationRepository.findReservedTimeIdsByDateAndThemeId(date, themeId);
 
         return reservationTimes.stream()
-                .filter(reservationTime -> reservedTimeIdsByDateAndThemeId.contains(reservationTime.getId()))
+                .filter(reservationTime -> !reservedTimeIdsByDateAndThemeId.contains(reservationTime.getId()))
                 .toList();
     }
 

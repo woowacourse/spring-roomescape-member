@@ -32,25 +32,23 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times")
-    public ResponseEntity<List<ReservationTimeResponse>> getAllTimes() {
-        List<ReservationTimeResponse> responses = reservationTimeService.findAll()
+    public ResponseEntity<List<ReservationTimeResponse>> getAvailableReservationTimes(
+            @RequestParam(required = false) LocalDate date,
+            @RequestParam(required = false) Long themeId) {
+        if (date == null && themeId == null) {
+            List<ReservationTimeResponse> responses = reservationTimeService.findAll()
+                    .stream()
+                    .map(ReservationTimeResponse::from)
+                    .toList();
+            return ResponseEntity.ok().body(responses);
+        }
+
+        List<ReservationTimeResponse> responses = reservationTimeService.findAvailableReservationTimes(date, themeId)
                 .stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
-
         return ResponseEntity.ok().body(responses);
     }
-
-    @GetMapping("/times")
-    public ResponseEntity<List<ReservationTimeResponse>> getAvailableReservationTimes(@RequestParam LocalDate date,
-                                                                                      @RequestParam Long themeId) {
-        List<ReservationTimeResponse> availableReservationTimes =
-                reservationTimeService.findAvailableReservationTimes(date, themeId).stream()
-                        .map(ReservationTimeResponse::from)
-                        .toList();
-        return ResponseEntity.ok().body(availableReservationTimes);
-    }
-
 
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> deleteTimes(@PathVariable Long id) {
