@@ -99,14 +99,12 @@ GET /times?date=2026-05-04&themeId=1HTTP/1.1
 ### 3. 사용자가 날짜, 테마, 예약 시간을 통해 예약 등록 API
 
 ```json
-POST /
-reservations HTTP/1.1
+POST /reservations HTTP/1.1
 
 {
   "themeId": 1,
   "date": "2026-05-03",
-  "timeId"
-  =1,
+  "timeId": 1,
   "name": "브라운"
 }
 ```
@@ -119,8 +117,6 @@ reservations HTTP/1.1
 
 - 반환값은 테마 10개.
 
-```jsx
-GET / theme / popular
-HTTP / 1.1
-GET / theme ? top = 10 & during = 7 HTTP / 1.1 
+```json
+GET /themes?topCount=10&during=7 HTTP / 1.1 
 ```
