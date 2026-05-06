@@ -28,7 +28,7 @@ public class MissionStep3Test {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/times")
@@ -45,7 +45,8 @@ public class MissionStep3Test {
     @Test
     void 예약과_시간_연결() {
         jdbcTemplate.update("insert into reservation_time(start_at) values ('10:00')");
-        jdbcTemplate.update("insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
+        jdbcTemplate.update(
+                "insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
@@ -58,7 +59,7 @@ public class MissionStep3Test {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
