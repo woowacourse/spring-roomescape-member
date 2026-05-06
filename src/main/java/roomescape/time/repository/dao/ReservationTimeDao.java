@@ -1,6 +1,7 @@
 package roomescape.time.repository.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -61,5 +62,13 @@ public class ReservationTimeDao {
     public int deleteById(Long id) {
         String sql = "delete from reservation_time where id = ?;";
         return jdbcTemplate.update(sql, id);
+    }
+
+    public List<Long> selectReservedTimeIds(Long themeId, LocalDate date) {
+        String sql = "select time_id " +
+                "from reservation " +
+                "where theme_id = ? and date = ?;";
+
+        return jdbcTemplate.queryForList(sql, Long.class, themeId, date.toString());
     }
 }
