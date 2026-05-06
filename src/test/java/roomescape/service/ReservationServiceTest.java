@@ -9,21 +9,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.Time;
 import roomescape.repository.FakeReservationDao;
-import roomescape.repository.FakeReservationTimeDao;
+import roomescape.repository.FakeTimeDao;
 
 class ReservationServiceTest {
 
     private ReservationService reservationService;
-    private ReservationTime savedTime;
+    private Time savedTime;
 
     @BeforeEach
     void setUp() {
-        FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao();
+        FakeTimeDao fakeReservationTimeDao = new FakeTimeDao();
         FakeReservationDao fakeReservationDao = new FakeReservationDao();
         reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao);
-        savedTime = fakeReservationTimeDao.save(ReservationTime.transientOf(LocalTime.of(10, 0)));
+        savedTime = fakeReservationTimeDao.save(Time.transientOf(LocalTime.of(10, 0)));
     }
 
     @Test
@@ -32,7 +32,7 @@ class ReservationServiceTest {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTime.id(),
                 reservationRequest.themeId());
-        assertThat(reservation.reservationTime().startAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(reservation.time().startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test

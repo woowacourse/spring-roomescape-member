@@ -1,5 +1,10 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,13 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import roomescape.domain.Time;
 
 @JdbcTest
 class ReservationDaoTest {
@@ -22,7 +21,7 @@ class ReservationDaoTest {
     private JdbcTemplate jdbcTemplate;
 
     private ReservationDao reservationDao;
-    private ReservationTime savedTime;
+    private Time savedTime;
 
     @BeforeEach
     void setUp() {
@@ -33,16 +32,17 @@ class ReservationDaoTest {
 
     private void executeSchema() {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS reservation_time (id BIGINT AUTO_INCREMENT PRIMARY KEY, start_at TIME)");
-        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS reservation (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), date DATE, time_id BIGINT)");
+        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS time (id BIGINT AUTO_INCREMENT PRIMARY KEY, start_at TIME)");
+        jdbcTemplate.execute(
+                "CREATE TABLE IF NOT EXISTS reservation (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), date DATE, time_id BIGINT)");
         jdbcTemplate.execute("TRUNCATE TABLE reservation");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.execute("TRUNCATE TABLE time");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     private void insertDependencyData() {
-        ReservationTimeDao timeDao = new ReservationTimeDao(jdbcTemplate);
-        savedTime = timeDao.save(ReservationTime.transientOf(LocalTime.of(10, 0)));
+        TimeDao timeDao = new TimeDao(jdbcTemplate);
+        savedTime = timeDao.save(Time.transientOf(LocalTime.of(10, 0)));
     }
 
     @Test
