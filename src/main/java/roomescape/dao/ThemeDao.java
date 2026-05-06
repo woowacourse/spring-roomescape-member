@@ -4,9 +4,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.PopularTheme;
 import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,6 +39,33 @@ public class ThemeDao {
                         resultSet.getString("name"),
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail")));
+    }
+
+    public List<PopularTheme> findPopularThemes(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                select th.id, th.name, th.description, th.thumbnail, count(r.id) as reservation_count 
+                from theme th 
+                inner join reservation r 
+                on th.id = r.theme_id
+                where r.date between ? and ? 
+                group by th.id, th.name, th.description, th.thumbnail 
+                order by reservation_count desc 
+                limit 10
+                """;
+
+        return jdbcTemplate.query(sql,
+                (resultSet,rowNum)-> new PopularTheme(
+
+                        new Theme(resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("description"),
+                                resultSet.getString("thumbnail")
+                        ),
+                        resultSet.getInt("reservation_count")
+                )
+                ,startDate
+                ,endDate
+                );
     }
 
     public Theme save(Theme theme) {
