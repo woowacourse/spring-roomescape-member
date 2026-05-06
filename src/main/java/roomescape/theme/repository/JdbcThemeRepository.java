@@ -85,8 +85,8 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findPopularThemes(final int period, final int limit, final LocalDate now) {
         final String sql = """
-                SELECT t.id AS theme_id,
-                       t.name AS theme_name,
+                SELECT t.id
+                       t.name
                        t.description,
                        t.thumbnail_url
                 FROM reservation r
