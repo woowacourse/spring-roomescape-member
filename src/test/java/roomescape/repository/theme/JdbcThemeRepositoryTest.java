@@ -16,8 +16,8 @@ import roomescape.domain.Theme;
 import java.util.List;
 import roomescape.repository.reservation.JdbcReservationRepository;
 import roomescape.repository.reservation.ReservationRepository;
-import roomescape.repository.reservationTime.JdbcReservationTimeRepository;
-import roomescape.repository.reservationTime.ReservationTimeRepository;
+import roomescape.repository.time.JdbcReservationTimeRepository;
+import roomescape.repository.time.ReservationTimeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;

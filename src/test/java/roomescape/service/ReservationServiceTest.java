@@ -18,7 +18,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.repository.reservation.ReservationRepository;
-import roomescape.repository.reservationTime.ReservationTimeRepository;
+import roomescape.repository.time.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
 
 @ExtendWith(MockitoExtension.class)

@@ -9,7 +9,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservationTime.ReservationTimeRequestDto;
 import roomescape.repository.reservation.ReservationRepository;
-import roomescape.repository.reservationTime.ReservationTimeRepository;
+import roomescape.repository.time.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
 
 @Service

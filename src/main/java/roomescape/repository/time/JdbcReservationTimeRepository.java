@@ -1,6 +1,5 @@
-package roomescape.repository.reservationTime;
+package roomescape.repository.time;
 
-import java.time.LocalTime;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
