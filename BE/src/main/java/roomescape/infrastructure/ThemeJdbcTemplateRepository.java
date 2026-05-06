@@ -1,5 +1,7 @@
 package roomescape.infrastructure;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,12 +11,26 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.Theme;
 import roomescape.entity.ThemeRepository;
+import roomescape.entity.ThemeSortType;
 
 @Repository
 public class ThemeJdbcTemplateRepository implements ThemeRepository {
 
     private static final String FIND_QUERY = "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?";
     private static final String FIND_ALL_QUERY = "SELECT id, name, description, thumbnail_url FROM theme";
+    private static final String FIND_TOP_N_BY_PERIOD_QUERY = """
+            SELECT
+                t.id,
+                t.name,
+                t.description,
+                t.thumbnail_url
+            FROM theme t
+            JOIN reservation r ON r.theme_id = t.id
+            WHERE r.date BETWEEN ? AND ?
+            GROUP BY t.id, t.name
+            ORDER BY %s
+            LIMIT ?
+            """;
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> new Theme(
             rs.getLong("id"),
             rs.getString("name"),
@@ -60,8 +76,18 @@ public class ThemeJdbcTemplateRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        List<Theme> themes = jdbcTemplate.query(FIND_ALL_QUERY, THEME_ROW_MAPPER);
-        return themes;
+        return jdbcTemplate.query(FIND_ALL_QUERY, THEME_ROW_MAPPER);
+    }
+
+    @Override
+    public List<Theme> findTopNByPeriod(LocalDate startAt, LocalDate endAt, ThemeSortType sortType, Long limit) {
+        return jdbcTemplate.query(
+                FIND_TOP_N_BY_PERIOD_QUERY.formatted(sortType.getSql()),
+                THEME_ROW_MAPPER,
+                startAt,
+                endAt,
+                limit
+        );
     }
 
     @Override
