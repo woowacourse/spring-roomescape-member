@@ -425,6 +425,129 @@ body {
     outline: none;
 }
 
+.lookup-container {
+    padding-top: 70px;
+    padding-bottom: 80px;
+}
+
+.lookup-hero {
+    margin-bottom: 34px;
+}
+
+.lookup-hero h1 {
+    margin: 0;
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+}
+
+.lookup-hero p {
+    margin: 14px 0 0;
+    color: #b5b5b5;
+    font-size: 16px;
+}
+
+.lookup-search-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 42px;
+}
+
+.search-input-box {
+    width: 420px;
+    height: 52px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #222832;
+    border-radius: 8px;
+    background: #07090c;
+}
+
+.search-input-box span {
+    color: #8b8f97;
+    font-size: 15px;
+}
+
+.search-input-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #ffffff;
+    font-size: 15px;
+}
+
+.primary-button.search {
+    width: 88px;
+    height: 52px;
+    flex-shrink: 0;
+}
+
+/* 예약 조회 */
+.lookup-result-section {
+    margin-top: 42px;
+}
+
+.reservation-result-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.reservation-card {
+    width: 560px;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 22px;
+    padding: 22px;
+    border: 1px solid #1e2228;
+    border-radius: 14px;
+    background: #0b0d10;
+    align-items: center;
+}
+
+.reservation-card img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.reservation-info h3 {
+    margin: 0 0 12px;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.reservation-info p {
+    margin: 6px 0;
+    color: #bdbdbd;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.cancel-button {
+    width: 120px;
+    height: 36px;
+    margin-top: 14px;
+    border: 1px solid #343944;
+    border-radius: 6px;
+    background: transparent;
+    color: #d8d8d8;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.cancel-button:hover {
+    border-color: #d2b44c;
+    color: #ffffff;
+}
+
 @media (max-width: 1000px) {
     .header {
         padding: 0 30px;
@@ -448,5 +571,15 @@ body {
 
     .hero p {
         width: 100%;
+    }
+
+    .reservation-card {
+        width: 100%;
+        grid-template-columns: 100px 1fr;
+    }
+
+    .reservation-card img {
+        width: 100px;
+        height: 100px;
     }
 }
