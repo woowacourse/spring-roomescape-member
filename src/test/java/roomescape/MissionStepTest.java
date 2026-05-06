@@ -226,5 +226,23 @@ public class MissionStepTest {
                 .when().get("/themes/1/times?date=2026-05-05")
                 .then().log().all()
                 .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().get("/themes/popular")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    void View컨트롤러_테스트() {
+        RestAssured.given().log().all()
+                .when().get("/")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().get("/reservation")
+                .then().log().all()
+                .statusCode(200);
     }
 }

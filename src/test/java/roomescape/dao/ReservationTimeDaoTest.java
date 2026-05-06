@@ -9,7 +9,6 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.domain.ReservationTime;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -42,7 +41,7 @@ class ReservationTimeDaoTest {
     @Test
     void 시간_추가_테스트() {
         // given
-        ReservationTime time = new ReservationTime(null, LocalTime.of(8,0));
+        ReservationTime time = new ReservationTime(null, LocalTime.of(8, 0));
 
         // when
         Long id = dao.insert(time);
