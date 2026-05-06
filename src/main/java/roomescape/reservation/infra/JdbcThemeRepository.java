@@ -102,4 +102,11 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         return result.stream().findFirst();
     }
+
+    @Override
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+
+        return template.query(sql, themeRowMapper);
+    }
 }

@@ -34,4 +34,9 @@ public class ThemeService {
         List<Theme> themes = themeRepository.findByDayAndLimit(day, limit);
         return ThemeFindResponse.of(themes);
     }
+
+    public List<ThemeFindResponse> findAll(){
+        List<Theme> themes = themeRepository.findAll();
+        return ThemeFindResponse.of(themes);
+    }
 }

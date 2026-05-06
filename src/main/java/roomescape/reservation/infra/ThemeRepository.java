@@ -16,4 +16,6 @@ public interface ThemeRepository {
     List<Theme> findByDayAndLimit(int day, int limit);
 
     Optional<Theme> findById(long id);
+
+    List<Theme> findAll();
 }
