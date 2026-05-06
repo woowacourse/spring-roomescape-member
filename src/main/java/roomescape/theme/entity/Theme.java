@@ -1,6 +1,7 @@
 package roomescape.theme.entity;
 
 import java.time.Duration;
+import java.util.Objects;
 
 public class Theme {
 
@@ -41,4 +42,19 @@ public class Theme {
     public Duration getRuntime() {
         return runtime;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Theme theme = (Theme) o;
+        return Objects.equals(id, theme.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
 }

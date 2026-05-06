@@ -1,6 +1,7 @@
 package roomescape.reservation.entity;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.theme.entity.Theme;
 
@@ -42,5 +43,19 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Reservation that = (Reservation) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
