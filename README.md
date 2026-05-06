@@ -98,7 +98,7 @@ date=2026-05-08&themeId=1
 - query parameter
 
 ```text
-period=7d&limit=10
+period=7&limit=10
 ```
 
 #### 응답
