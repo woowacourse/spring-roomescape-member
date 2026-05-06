@@ -14,15 +14,15 @@ public class ReservationTime {
         return new ReservationTime(null, startAt, TimeStatus.DRAFT);
     }
 
-    public static ReservationTime create(long id, LocalTime startAt) {
+    public static ReservationTime of(long id, LocalTime startAt) {
         return new ReservationTime(id, startAt, TimeStatus.AVAILABLE);
     }
 
     public ReservationTime hold() {
-        return new ReservationTime(id, startAt, TimeStatus.HOLD);
+        return new ReservationTime(this.id, this.startAt, TimeStatus.HOLD);
     }
 
-    public ReservationTime delete() {
+    public ReservationTime deleted() {
         return new ReservationTime(this.id, this.startAt, TimeStatus.DELETED);
     }
 

@@ -28,7 +28,7 @@ public class ReservationDao {
                 rs.getString("theme_description")
         );
 
-        ReservationTime reservationTime = ReservationTime.create(
+        ReservationTime reservationTime = ReservationTime.of(
                 rs.getLong("time_id"),
                 rs.getObject("time_value", LocalTime.class)
         );

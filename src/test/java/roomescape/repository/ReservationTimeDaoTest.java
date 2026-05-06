@@ -1,10 +1,8 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +32,7 @@ class ReservationTimeDaoTest {
             );
         }
 
-        return ReservationTime.create(
+        return ReservationTime.of(
                 rs.getLong("id"),
                 rs.getObject("start_at", LocalTime.class)
         );
@@ -42,7 +40,7 @@ class ReservationTimeDaoTest {
 
     @Test
     @DisplayName("시간 생성 테스트")
-    void createReservationTimeTest() {
+    void ofReservationTimeTest() {
         ReservationTime reservationTime = ReservationTime.pending(LocalTime.of(9, 0));
         ReservationTime saved = reservationTimeDao.save(reservationTime);
 

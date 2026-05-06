@@ -19,11 +19,22 @@ import roomescape.domain.TimeStatus;
 public class ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<ReservationTime> rowMapper = (rs, rowNum) ->
-            ReservationTime.create(
-                    rs.getLong("id"),
-                    rs.getObject("start_at", LocalTime.class)
-            );
+    private final RowMapper<ReservationTime> rowMapper = (rs, rowNum) -> {
+        ReservationTime reservationTime = ReservationTime.of(
+                rs.getLong("id"),
+                rs.getObject("start_at", LocalTime.class)
+        );
+
+        if(TimeStatus.DELETED.toString().equals(rs.getString("status"))) {
+            return reservationTime.deleted();
+        }
+
+        if(TimeStatus.HOLD.toString().equals(rs.getString("status"))) {
+            return reservationTime.hold();
+        }
+
+        return reservationTime;
+    };
 
     public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource params = new MapSqlParameterSource()
@@ -36,7 +47,7 @@ public class ReservationTimeDao {
 
         Number newId = insertExecutor.executeAndReturnKey(params);
 
-        return ReservationTime.create(
+        return ReservationTime.of(
                 newId.longValue(),
                 reservationTime.startAt()
         );
@@ -46,19 +57,22 @@ public class ReservationTimeDao {
         String sql = "UPDATE reservation_time SET status = 'DELETED' WHERE id = ?";
         int affected = jdbcTemplate.update(sql, timeId);
 
-        if(affected == 0) {
+        if (affected == 0) {
             throw new NoSuchElementException("[ERROR] 삭제할 id에 해당하는 시간이 존재하지 않습니다.");
         }
     }
 
     public List<ReservationTime> findAllReservationTimes() {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE status = ?";
+        String sql = "SELECT id, start_at, status FROM reservation_time WHERE status = ?";
         return jdbcTemplate.query(sql, rowMapper, TimeStatus.AVAILABLE.toString());
     }
 
     public List<ReservationTime> findAvailableReservationTimes(LocalDate date, long themeId) {
         String sql = """
-                SELECT rt.id, rt.start_at
+                SELECT 
+                    rt.id, 
+                    rt.start_at,
+                    rt.status
                 FROM reservation_time rt
                 LEFT JOIN reservation r
                     ON rt.id = r.time_id
@@ -67,6 +81,7 @@ public class ReservationTimeDao {
                 WHERE r.id IS NULL
                     AND rt.status = 'AVAILABLE'
                 """;
+
         return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
 }
