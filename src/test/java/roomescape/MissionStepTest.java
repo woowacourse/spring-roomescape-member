@@ -5,15 +5,12 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,8 +50,10 @@ class MissionStepTest {
     void DB_조회_API_전환() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
         jdbcTemplate.update("INSERT INTO reservation_date (date) VALUES (?)", "2099-01-01");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "테마1", "테마1 설명", "테마1 썸네일");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, start_at, theme_id, status) VALUES (?, ?, ?, ?, ?)", "브라운", "2099-01-01", "15:40", 1, "RESERVED");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "테마1", "테마1 설명",
+                "테마1 썸네일");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, start_at, theme_id, status) VALUES (?, ?, ?, ?, ?)",
+                "브라운", "2099-01-01", "15:40", 1, "RESERVED");
 
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -102,7 +101,6 @@ class MissionStepTest {
                 .then().log().all()
                 .statusCode(200);
 
-
         Map<String, Object> theme = new HashMap<>();
         theme.put("name", "테마1");
         theme.put("description", "테마1 설명");
@@ -114,10 +112,18 @@ class MissionStepTest {
                 .then().log().all()
                 .statusCode(200);
 
+        Map<String, Object> date = new HashMap<>();
+        date.put("date", "2099-01-01");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(date)
+                .when().post("/admin/dates")
+                .then().log().all()
+                .statusCode(200);
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().plusWeeks(1).toString());
+        reservation.put("dateId", 1);
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
