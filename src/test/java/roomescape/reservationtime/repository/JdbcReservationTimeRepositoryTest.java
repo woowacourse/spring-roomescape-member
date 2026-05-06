@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -39,7 +40,6 @@ class JdbcReservationTimeRepositoryTest {
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
 
-
     public static Stream<Arguments> createTimes() {
         return Stream.of(
                 Arguments.of(List.of(LocalTime.parse("09:00"), LocalTime.parse("10:00"), LocalTime.parse("11:00")))
@@ -64,5 +64,16 @@ class JdbcReservationTimeRepositoryTest {
         for (int i = 0; i < 3; i++) {
             assertThat(times.get(i).getStartAt()).isEqualTo(expectedTimes.get(i));
         }
+    }
+
+    @DisplayName("db에 특정 시간이 존재하는 것을 테스트 합니다.")
+    @Test
+    void check_exists_successfully() {
+        ReservationTime reservationTime = ReservationTime.builder()
+                .startAt(LocalTime.of(9, 0))
+                .build();
+
+        Boolean alreadyExists = timeRepository.existsByStartAt(reservationTime);
+        assertThat(alreadyExists).isTrue();
     }
 }

@@ -62,6 +62,11 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
                 .toList();
     }
 
+    @Override
+    public Boolean existsByStartAt(ReservationTime time) {
+        return null;
+    }
+
     public void saveReservation(Reservation reservation) {
         reservations.add(reservation);
     }
