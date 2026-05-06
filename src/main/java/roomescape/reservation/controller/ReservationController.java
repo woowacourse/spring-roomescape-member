@@ -35,7 +35,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<Reservation> create(@RequestBody ReservationCreateRequest reservationRequest) {
+    public ResponseEntity<Reservation> create(@RequestBody final ReservationCreateRequest reservationRequest) {
         Reservation reservation = reservationService.save(
                 reservationRequest.name(),
                 reservationRequest.date(),
@@ -47,7 +47,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable final Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

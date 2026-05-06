@@ -12,7 +12,7 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(final ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
     }
 
