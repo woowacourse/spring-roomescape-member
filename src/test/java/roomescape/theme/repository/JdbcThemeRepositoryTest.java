@@ -52,5 +52,14 @@ class JdbcThemeRepositoryTest {
         assertThat(jdbcThemeRepository.deleteById(1L)).isFalse();
     }
 
+    @Test
+    void existsById() {
+        assertThat(jdbcThemeRepository.existsById(1L)).isFalse();
+
+        jdbcThemeRepository.save(new Theme("테마", "설명", "https://img.test/a.png"));
+
+        assertThat(jdbcThemeRepository.existsById(1L)).isTrue();
+        assertThat(jdbcThemeRepository.existsById(2L)).isFalse();
+    }
 
 }
