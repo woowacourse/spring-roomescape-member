@@ -40,10 +40,10 @@ class JdbcReservationTimeRepositoryTest {
         ReservationTime saved = jdbcReservationTimeRepository.save(reservationTime);
 
         // when
-        Optional<ReservationTime> found = jdbcReservationTimeRepository.findById(saved.getId());
+        Optional<ReservationTime> result = jdbcReservationTimeRepository.findById(saved.getId());
 
         // then
-        assertThat(found.get()).isEqualTo(saved);
+        assertThat(result.get()).isEqualTo(saved);
     }
 
     @DisplayName("저장된 모든 예약시간을 조회한다")
@@ -73,11 +73,11 @@ class JdbcReservationTimeRepositoryTest {
 
         // when
         jdbcReservationTimeRepository.delete(reservationTime.getId());
-        Optional<ReservationTime> found = jdbcReservationTimeRepository.findById(
+        Optional<ReservationTime> result = jdbcReservationTimeRepository.findById(
                 reservationTime.getId()
         );
 
         // then
-        assertThat(found).isNotPresent();
+        assertThat(result).isNotPresent();
     }
 }

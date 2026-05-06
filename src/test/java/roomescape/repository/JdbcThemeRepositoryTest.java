@@ -40,10 +40,10 @@ class JdbcThemeRepositoryTest {
         );
 
         // when
-        Optional<Theme> found = themeRespository.findById(saved.getId());
+        Optional<Theme> result = themeRespository.findById(saved.getId());
 
         // then
-        assertThat(found.get()).isEqualTo(saved);
+        assertThat(result.get()).isEqualTo(saved);
     }
 
     @DisplayName("저장된 모든 테마를 조회한다")
@@ -79,9 +79,9 @@ class JdbcThemeRepositoryTest {
 
         // when
         themeRespository.delete(savedHorror.getId());
-        Optional<Theme> found = themeRespository.findById(savedHorror.getId());
+        Optional<Theme> result = themeRespository.findById(savedHorror.getId());
 
         // then
-        assertThat(found).isNotPresent();
+        assertThat(result).isNotPresent();
     }
 }
