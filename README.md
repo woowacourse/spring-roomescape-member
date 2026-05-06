@@ -11,8 +11,8 @@
 ```
 JSON
 {
-"message": "string",
-"timestamp": "2026-05-01T12:34:56.789"
+  "message": "string",
+  "timestamp": "2026-05-01T12:34:56.789"
 }
 ```
 ### GlobalExceptionHandler 기준 공통 상태 코드:  
@@ -29,12 +29,12 @@ JSON
 
 ```JSON
 [
-{
-"id": 1,
-"name": "Roomescape A",
-"description": "...",
-"thumbnail": "https://example.com/a.png"
-}
+  {
+    "id": 1,
+    "name": "Roomescape A",
+    "description": "...",
+    "thumbnail": "https://example.com/a.png"
+  }
 ]
 ```
 ### GET /themes/rank
@@ -46,11 +46,12 @@ JSON
 - startDate (선택, 형식 yyyy-MM-dd)
 - endDate (선택, 형식 yyyy-MM-dd)
 - limit (기본값: 10)
+
 서버 기본값:
 - endDate: 오늘 날짜
 - startDate: endDate - 7 days
 
-- 응답: 200 OK
+응답: 200 OK
 
 ### POST /admin/themes
 새로운 테마를 추가합니다.
@@ -58,9 +59,9 @@ JSON
 요청 본문:
 ``` JSON
 {
-"name": "Roomescape A",
-"description": "...",
-"thumbnail": "https://example.com/a.png"
+  "name": "Roomescape A",
+  "description": "...",
+  "thumbnail": "https://example.com/a.png"
 }
 ```
 
@@ -78,10 +79,10 @@ JSON
 응답: 200 OK
 ```JSON
 [
-{
-"id": 1,
-"startAt": "10:00:00"
-}
+  {
+    "id": 1,
+    "startAt": "10:00:00"
+  }
 ]
 ```
 ### POST /admin/times
@@ -91,7 +92,7 @@ JSON
 
 ```JSON
 {
-"startAt": "10:00:00"
+  "startAt": "10:00:00"
 }
 ```
 응답: 201 Created
@@ -112,17 +113,18 @@ JSON
 
 ``` JSON
 {
-"themeId": 1,
-"date": "2026-05-01",
-"schedules": [
-{
-"timeId": 1,
-"startAt": "10:00:00",
-"isAvailable": true
-}
-]
+  "themeId": 1,
+  "date": "2026-05-01",
+  "schedules": [
+    {
+      "timeId": 1,
+      "startAt": "10:00:00",
+      "isAvailable": true
+    }
+  ]
 }
 ```
+
 ## 예약
 ### GET /reservations
 본인의 예약 목록을 조회합니다.
@@ -131,21 +133,21 @@ JSON
 
 ``` JSON
 [
-{
-"id": 1,
-"themeResponse": {
-"id": 2,
-"name": "Roomescape A",
-"description": "...",
-"thumbnail": "https://example.com/a.png"
-},
-"name": "Brown",
-"date": "2026-05-01",
-"time": {
-"id": 1,
-"startAt": "10:00:00"
-}
-}
+  {
+    "id": 1,
+    "name": "Brown",
+    "date": "2026-05-01",
+    "time": {
+      "id": 1,
+      "startAt": "10:00:00"
+    },
+    "theme": {
+      "id": 2,
+      "name": "Roomescape A",
+      "description": "...",
+      "thumbnail": "https://example.com/a.png"
+    }
+  }
 ]
 ```
 
@@ -156,10 +158,10 @@ JSON
 
 ``` JSON
 {
-"themeId": 2,
-"name": "Brown",
-"date": "2026-05-01",
-"timeId": 1
+  "themeId": 2,
+  "name": "Brown",
+  "date": "2026-05-01",
+  "timeId": 1
 }
 ```
 응답: 201 Created
@@ -171,7 +173,7 @@ JSON
 
 ``` JSON
 {
-"name": "Brown"
+  "name": "Brown"
 }
 ```
 응답: 204 No Content
@@ -184,10 +186,10 @@ JSON
 
 ``` JSON
 {
-"themeId": 2,
-"name": "Brown",
-"date": "2026-05-01",
-"timeId": 1
+  "themeId": 2,
+  "name": "Brown",
+  "date": "2026-05-01",
+  "timeId": 1
 }
 ```
 응답: 201 Created
