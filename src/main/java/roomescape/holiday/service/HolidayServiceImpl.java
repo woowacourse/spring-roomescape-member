@@ -7,6 +7,7 @@ import roomescape.holiday.exception.HolidayNotFoundException;
 import roomescape.holiday.repository.HolidayRepository;
 import roomescape.holiday.service.dto.HolidaySaveServiceDto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -34,5 +35,10 @@ public class HolidayServiceImpl implements HolidayService {
         if (!deleted) {
             throw new HolidayNotFoundException(id);
         }
+    }
+
+    @Override
+    public boolean isHoliday(LocalDate date) {
+        return holidayRepository.existsByDate(date);
     }
 }

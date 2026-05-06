@@ -14,5 +14,7 @@ public interface TimeRepository {
 
   Optional<ReservationTime> findByStartAt(String startAt);
 
+  boolean existsById(Long id);
+
   boolean deleteById(Long id);
 }

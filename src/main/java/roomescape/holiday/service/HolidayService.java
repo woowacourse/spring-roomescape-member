@@ -1,5 +1,6 @@
 package roomescape.holiday.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import roomescape.holiday.domain.Holiday;
@@ -11,4 +12,6 @@ public interface HolidayService {
     Holiday create(HolidaySaveServiceDto holiday);
 
     void delete(Long id);
+
+    boolean isHoliday(LocalDate date);
 }
