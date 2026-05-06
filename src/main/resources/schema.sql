@@ -18,7 +18,7 @@ CREATE TABLE reservation (
      date    VARCHAR(255) NOT NULL,
      time_id BIGINT NOT NULL,
      theme_id BIGINT NOT NULL,
-     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     created_at DATE DEFAULT CURRENT_DATE,
      PRIMARY KEY (id),
      FOREIGN KEY (time_id) REFERENCES reservation_time (id),
      FOREIGN KEY (theme_id) REFERENCES reservation_theme (id)

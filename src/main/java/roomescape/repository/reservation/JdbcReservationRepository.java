@@ -97,7 +97,9 @@ public class JdbcReservationRepository implements ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TABLE_NAME)
-                .usingGeneratedKeyColumns(COLUMN_ID);    }
+                .usingGeneratedKeyColumns(COLUMN_ID)
+                .usingColumns("name", "date", "time_id", "theme_id");
+    }
 
     @Override
     public List<Reservation> getAllReservation() {
