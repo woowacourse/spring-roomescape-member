@@ -269,7 +269,7 @@ public class MissionStepTest {
                         "themeId", "1",
                         "date", "2026-05-05"
                 ))
-                .when().get("times/available-times")
+                .when().get("/times/available-times")
                 .then().log().all()
                 .extract().jsonPath().getList(".", ReservationTimeResponse.class);
 
