@@ -66,3 +66,4 @@
 - [x] 예약에 테마 정보 포함하도록 기존 메인 코드 변경
 - [x] 예약에 테마 정보 포함하도록 기존 테스트 코드 변경
 - [x] http메서드에 상태코드 구현
+- [x] `ThemeDao`, `ThemeService`, `ReservationDAO`, `ReservationService` 테스트 구현
