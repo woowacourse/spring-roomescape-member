@@ -22,7 +22,6 @@ class ThemeServiceTest {
 
     private static final Theme THEME = new Theme(null, "name", "description", "image-url");
     private static final Theme SAVED_THEME = new Theme(1L, "name", "description", "image-url");
-    private static final ThemeRequestDto THEME_REQUEST = ThemeRequestDto.from(THEME);
 
     @Mock
     private ThemeRepository themeRepository;
@@ -37,7 +36,7 @@ class ThemeServiceTest {
             .thenReturn(SAVED_THEME);
 
         // when
-        Theme saved = themeService.addTheme(THEME_REQUEST);
+        Theme saved = themeService.addTheme(themeRequestDtoFrom(THEME));
 
         // then
         assertThat(saved).isEqualTo(SAVED_THEME);
@@ -89,5 +88,13 @@ class ThemeServiceTest {
             themes.add(new Theme((long) i, "테마" + i, "테마" + i, "테마" + i));
         }
         return themes;
+    }
+
+    ThemeRequestDto themeRequestDtoFrom(Theme theme) {
+        return new ThemeRequestDto(
+                theme.getName(),
+                theme.getDescription(),
+                theme.getImageUrl()
+        );
     }
 }
