@@ -29,6 +29,12 @@ public class ReservationService {
         ReservationTime time = timeDao.selectById(timeId);
         Reservation reservation = new Reservation(name, date, time, themeId);
 
+        boolean isAvailable = reservationDao.isAvailable(themeId, date, timeId);
+
+        if (!isAvailable) {
+            throw new IllegalArgumentException("[ERROR] 예약할 수 없습니다.");
+        }
+
         return reservationDao.insert(reservation);
     }
 

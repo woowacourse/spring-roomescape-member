@@ -2,6 +2,7 @@ package roomescape.user.controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,14 +35,19 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request) {
-        Reservation reservation = reservationService.add(
-                request.name(),
-                request.date(),
-                request.timeId(),
-                request.themeId()
-        );
-        return ResponseEntity.ok(ReservationResponse.from(reservation));
+    public ResponseEntity<?> create(@RequestBody ReservationRequest request) {
+        try {
+            Reservation reservation = reservationService.add(
+                    request.name(),
+                    request.date(),
+                    request.timeId(),
+                    request.themeId()
+            );
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(reservation));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예약 불가");
+        }
     }
 
     @DeleteMapping("/reservations/{id}")
