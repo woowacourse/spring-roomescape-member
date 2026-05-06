@@ -16,7 +16,8 @@
       "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" \"http://localhost:8080/themes/famous?date=2026-05-05&limit=5\")",
       "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" \"http://localhost:8080/themes/famous?days=7&limit=5\")",
       "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" \"http://localhost:8080/themes/famous?days=7&date=2026-05-05\")",
-      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" \"http://localhost:8080/themes/famous\")"
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" \"http://localhost:8080/themes/famous\")",
+      "Bash(git -C /Users/songminseo/woowacourse/spring-roomescape-member-full/spring-roomescape-member diff --cached src/test/resources/data.sql)"
     ]
   }
 }

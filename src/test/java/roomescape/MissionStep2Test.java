@@ -26,7 +26,8 @@ public class MissionStep2Test {
     @BeforeEach
     void init() {
         jdbcTemplate.update("insert into reservation_time(start_at) values ('10:00')");
-        jdbcTemplate.update("insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
+        jdbcTemplate.update(
+                "insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
     }
 
     @Test
@@ -42,7 +43,8 @@ public class MissionStep2Test {
 
     @Test
     void DB_조회_API_전환() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05",
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+                "2023-08-05",
                 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
@@ -69,7 +71,7 @@ public class MissionStep2Test {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);

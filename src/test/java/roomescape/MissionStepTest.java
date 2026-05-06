@@ -22,7 +22,8 @@ public class MissionStepTest {
     @BeforeEach
     void init() {
         jdbcTemplate.update("insert into reservation_time(start_at) values ('10:00')");
-        jdbcTemplate.update("insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
+        jdbcTemplate.update(
+                "insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
     }
 
     @Test
@@ -48,7 +49,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("id", is(1));
 
         RestAssured.given().log().all()
