@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.ApiException;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
 import roomescape.reservationtime.ReservationTime;
@@ -114,7 +115,7 @@ class UserReservationServiceTest {
         when(reservationRepository.findById(eq(3L))).thenReturn(savedReservation);
 
         assertThatThrownBy(() -> userReservationService.deleteReservation(3L, "코니"))
-                .isInstanceOf(ReservationException.class)
+                .isInstanceOf(ApiException.class)
                 .extracting(Throwable::getMessage)
                 .isEqualTo("예약자 이름이 일치하지 않습니다.");
     }

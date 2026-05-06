@@ -2,10 +2,10 @@ package roomescape.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class DuplicateException extends ApiException {
-    private final HttpStatus status = HttpStatus.BAD_REQUEST;
+public class ResourceInUseException extends ApiException {
+    private final HttpStatus status = HttpStatus.CONFLICT;
 
-    public DuplicateException(String message) {
+    public ResourceInUseException(String message) {
         super(message);
     }
 

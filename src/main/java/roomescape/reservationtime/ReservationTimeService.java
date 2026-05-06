@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ApiException;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.ResourceInUseException;
 import roomescape.reservation.ReservationRepository;
 
 @Service
@@ -38,7 +40,7 @@ public class ReservationTimeService {
         int reservationCount = reservationRepository.countByTimeId(id);
 
         if (reservationCount > 0) {
-            throw new ReservationTimeNotEmptyException("예약이 있어 삭제할 수 없습니다");
+            throw new ResourceInUseException("예약이 있어 삭제할 수 없습니다");
         }
 
         reservationTimeRepository.delete(id);

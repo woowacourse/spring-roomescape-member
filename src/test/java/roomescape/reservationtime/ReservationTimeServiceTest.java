@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import roomescape.exception.ApiException;
 import roomescape.exception.DuplicateException;
 import roomescape.reservation.ReservationRepository;
 
@@ -57,7 +58,7 @@ class ReservationTimeServiceTest {
         when(reservationRepository.countByTimeId(eq(1L))).thenReturn(1);
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
-                .isInstanceOf(ReservationTimeNotEmptyException.class)
+                .isInstanceOf(ApiException.class)
                 .extracting(Throwable::getMessage)
                 .isEqualTo("예약이 있어 삭제할 수 없습니다");
     }

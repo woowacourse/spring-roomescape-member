@@ -8,9 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.reservation.ReservationException;
-import roomescape.reservationtime.ReservationTimeException;
-import roomescape.reservationtime.ReservationTimeNotEmptyException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -32,43 +29,11 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(DuplicateException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicate(DuplicateException e) {
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ErrorResponse> handleApiException(ApiException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(response);
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(response);
-    }
-
-    @ExceptionHandler(ReservationException.class)
-    public ResponseEntity<ErrorResponse> handleReservationException(ReservationException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(response);
-    }
-
-    @ExceptionHandler(ReservationTimeNotEmptyException.class)
-    public ResponseEntity<ErrorResponse> handleReservationTimeNotEmpty(ReservationTimeNotEmptyException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(response);
-    }
-
-    @ExceptionHandler(ReservationTimeException.class)
-    public ResponseEntity<ErrorResponse> handleReservationTimeException(ReservationTimeException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(e.getStatus())
                 .body(response);
     }
 
