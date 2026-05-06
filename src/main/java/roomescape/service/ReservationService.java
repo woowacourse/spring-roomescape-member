@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -34,11 +35,20 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-/*    public List<ReservationResponseDTO> readReservationByTimeId(Long timeId) {
-        return reservationRepository.findByTimeId(timeId).stream()
-                .map(ReservationResponseDTO::from).collect(
-                        Collectors.toList());
-    }*/
+    public List<ReservationTime> findReservedTimes(LocalDate targetDate, Long targetThemeId) {
+        List<Long> reservedTimesOfTargetThemeOnTargetDate = reservationRepository.findAll()
+                .stream()
+                .filter(reservation -> reservation.getDate().equals(targetDate))
+                .filter(reservation -> reservation.getTheme().getId().equals(targetThemeId))
+                .map(reservation -> reservation.getTimeId())
+                .toList();
+
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+
+        return reservationTimes.stream()
+                .filter(reservationTime -> reservedTimesOfTargetThemeOnTargetDate.contains(reservationTime.getId()))
+                .toList();
+    }
 
     public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
         ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
