@@ -23,14 +23,25 @@ import roomescape.controller.ReservationController;
 public class MissionStepTest {
 
     @BeforeEach
-    void 시간_넣어주기(){
+    void 시간_테마_넣어주기(){
         Map<String, String> timeParams = new HashMap<>();
         timeParams.put("startAt", "10:00");
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "공포");
+        themeParams.put("description", "무서움");
+        themeParams.put("thumbnail", "https://roomescape.com");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParams)
                 .when().post("/times")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -51,6 +62,7 @@ public class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
+        params.put("themeId",1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -116,6 +128,7 @@ public class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
+        params.put("themeId",1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -157,6 +170,7 @@ public class MissionStepTest {
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId",1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

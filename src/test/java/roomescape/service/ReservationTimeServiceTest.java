@@ -10,8 +10,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -25,15 +27,17 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private ReservationDao reservationDao;
+    @Autowired
+    private ThemeDao themeDao;
 
     @Test
     void 중복된_시간을_저장하면_예외가_발생한다() {
         // given
-        ReservationTime existTime = new ReservationTime(null, LocalTime.parse("10:00"));
+        ReservationTime existTime = new ReservationTime(LocalTime.parse("10:00"));
         reservationTimeDao.save(existTime);
 
         // when & then
-        ReservationTime newTime = new ReservationTime(null, LocalTime.parse("10:00"));
+        ReservationTime newTime = new ReservationTime(LocalTime.parse("10:00"));
 
         //then
         assertThatThrownBy(() -> reservationTimeService.save(newTime))
@@ -44,9 +48,11 @@ class ReservationTimeServiceTest {
     @Test
     void 이미_예약시간이_차있으면_삭제할_수_없다(){
         //given
-        ReservationTime existTime = new ReservationTime(null, LocalTime.parse("10:00"));
+        ReservationTime existTime = new ReservationTime( LocalTime.parse("10:00"));
         ReservationTime savedTime = reservationTimeDao.save(existTime);
-        Reservation reservation = new Reservation(null, "pobi", LocalDate.parse("2026-05-02"), savedTime);
+        Theme theme = new Theme("공포", "무서움", "https://roomescape.com");
+        Theme savedTheme = themeDao.save(theme);
+        Reservation reservation = new Reservation("pobi", LocalDate.parse("2026-05-02"), savedTime, savedTheme);
         reservationDao.save(reservation);
         Long savedId = savedTime.getId();
 

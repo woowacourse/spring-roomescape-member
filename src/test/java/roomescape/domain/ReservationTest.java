@@ -16,12 +16,11 @@ class ReservationTest {
     void 불가한_이름(String name){
         //given
         ReservationTime reservationTime = new ReservationTime(null, java.time.LocalTime.parse("10:00"));
+        Theme theme = new Theme("공포", "무서움", "https://roomescape.com");
 
         //when & then
-        assertThatThrownBy(()-> new Reservation(null, name, java.time.LocalDate.parse("2023-04-10"), reservationTime))
+        assertThatThrownBy(()-> new Reservation(name, java.time.LocalDate.parse("2023-04-10"), reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이름 형식");
     }
-
-
 }
