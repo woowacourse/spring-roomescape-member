@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -145,5 +146,15 @@ public class ThemeControllerTest {
                 .when().delete("/api/v1/themes/1")
                 .then().log().all()
                 .statusCode(409);
+    }
+
+    @Test
+    @Sql("/popular-themes.sql")
+    void 최근_1주동안_예약이_많았던_테마_상위_10개를_조회한다() {
+        RestAssured.given().log().all()
+                .when().get("/api/v1/themes?from=2026-05-01&to=2026-05-07")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(10));
     }
 }

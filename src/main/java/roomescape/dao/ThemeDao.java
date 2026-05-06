@@ -1,13 +1,15 @@
 package roomescape.dao;
 
-import java.sql.PreparedStatement;
-import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public class ThemeDao {
@@ -60,5 +62,23 @@ public class ThemeDao {
 
     public int delete(Long id) {
         return jdbcTemplate.update("delete from theme where id = ?", id);
+    }
+
+    public List<Theme> findPopularThemes(LocalDate from, LocalDate to) {
+        String sql = """
+                SELECT
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.imgUrl
+                FROM theme t
+                JOIN reservation r ON t.id = r.theme_id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id, t.name, t.description, t.imgUrl
+                ORDER BY COUNT(r.id) DESC
+                LIMIT 10
+                """;
+        List<Theme> themes = jdbcTemplate.query(sql, themeRowMapper, from.toString(), to.toString());
+        return themes;
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,10 @@ public class ThemeService {
 
     public List<Theme> getThemes() {
         return themeDao.findAllThemes();
+    }
+
+    public List<Theme> getPopularThemes(LocalDate from, LocalDate to) {
+        return themeDao.findPopularThemes(from, to);
     }
 
     private void validateDelete(int deleteCount) {
