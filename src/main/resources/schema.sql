@@ -8,6 +8,7 @@ CREATE TABLE theme
     name          VARCHAR(255) NOT NULL,
     thumbnail_url VARCHAR(255),
     description   VARCHAR(500),
+    status   VARCHAR(20) CHECK ( status IN ('AVAILABLE', 'DELETED')),
     PRIMARY KEY (id)
 );
 
