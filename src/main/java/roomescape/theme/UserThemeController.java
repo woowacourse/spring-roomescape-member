@@ -34,7 +34,7 @@ public class UserThemeController {
                                        @RequestParam(defaultValue = "DESC") String order,
                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-                                       @RequestParam(required = false) Long limit) {
+                                       @RequestParam(defaultValue = "10") Long limit) {
 
         LocalDate actualEndDate = (endDate != null) ? endDate : LocalDate.now();
         LocalDate actualStartDate = (startDate != null) ? startDate : actualEndDate.minusDays(7);
