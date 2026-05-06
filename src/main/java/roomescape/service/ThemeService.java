@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
@@ -28,6 +27,12 @@ public class ThemeService {
     public List<ThemeResponseDTO> findAllThemes() {
         return jdbcThemeRepository.findAll().stream().map(ThemeResponseDTO::from)
                 .collect(Collectors.toList());
+    }
+
+    public ThemeResponseDTO findById(Long id) {
+        Theme result = jdbcThemeRepository.findById(id)
+                .orElseThrow();
+        return ThemeResponseDTO.from(result);
     }
 
     public void deleteTheme(Long id) {

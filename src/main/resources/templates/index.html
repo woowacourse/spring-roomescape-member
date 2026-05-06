@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>방탈출 예약</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: sans-serif;
+    }
+    .container {
+      text-align: center;
+      border: 2px solid #000;
+      padding: 20px;
+    }
+    select {
+      padding: 10px;
+      font-size: 16px;
+      width: 300px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>방탈출 테마 예약</h1>
+
+  <select id="theme-selector">
+    <option value="">-- 테마를 선택하세요 --</option>
+  </select>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const selector = document.getElementById('theme-selector');
+
+    fetch('/themes')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error();
+      }
+      return response.json();
+    })
+    .then(themes => {
+      themes.forEach(theme => {
+        const option = document.createElement('option');
+        option.value = theme.id;
+        option.textContent = theme.name;
+        selector.appendChild(option);
+      });
+    })
+    .catch(error => {
+      const errorOption = document.createElement('option');
+      errorOption.textContent = '불러오기 실패';
+      selector.appendChild(errorOption);
+    });
+  });
+
+  document.getElementById('theme-selector').addEventListener('change', (e) => {
+    const themeId = e.target.value;
+    if (themeId) {
+      window.location.href = `/reservations?themeId=${themeId}`;
+    }
+  });
+</script>
+
+</body>
+</html>
