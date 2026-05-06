@@ -3,10 +3,10 @@ package roomescape.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.ReservationTimeAvailability;
-import roomescape.dto.AvailableTimeListResponse;
-import roomescape.dto.AvailableTimeResponse;
-import roomescape.dto.ReservationTimeListResponse;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.controller.dto.AvailableTimeListResponse;
+import roomescape.controller.dto.AvailableTimeResponse;
+import roomescape.controller.dto.ReservationTimeListResponse;
+import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
 import java.time.LocalDate;
