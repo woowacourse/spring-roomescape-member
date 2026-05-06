@@ -19,7 +19,7 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping
+    @GetMapping(params = {"themeId", "date"})
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes(@RequestParam(value = "themeId") long themeId,
                                                                              @RequestParam(value = "date") LocalDate date) {
         List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes(themeId, date);
