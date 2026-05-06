@@ -126,6 +126,37 @@ class JdbcReservationRepositoryTest {
         assertThat(afterSize).isEqualTo(beforeSize - 1);
     }
 
+    @Test
+    @DisplayName("날짜와 테마로 예약된 시간 ID를 조회한다")
+    void findAllByDateAndThemeId_test() {
+        // given
+        LocalDate date = LocalDate.parse("2026-08-06");
+        Theme firstTheme = createTheme("미술관의 밤");
+        Theme secondTheme = createTheme("심해 연구소");
+
+        ReservationTime firstThemeFirstTime = jdbcReservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.parse("10:00"), firstTheme)
+        );
+        ReservationTime firstThemeSecondTime = jdbcReservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.parse("11:00"), firstTheme)
+        );
+        ReservationTime secondThemeTime = jdbcReservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.parse("10:00"), secondTheme)
+        );
+
+        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, firstThemeFirstTime));
+        jdbcReservationRepository.save(Reservation.createNew("아루", date, firstThemeSecondTime));
+        jdbcReservationRepository.save(Reservation.createNew("도기", date.plusDays(1), firstThemeFirstTime));
+        jdbcReservationRepository.save(Reservation.createNew("포비", date, secondThemeTime));
+
+        // when
+        List<Long> reservedTimeIds = jdbcReservationRepository.findAllByDateAndThemeId(date, firstTheme.getId());
+
+        // then
+        assertThat(reservedTimeIds)
+                .containsExactlyInAnyOrder(firstThemeFirstTime.getId(), firstThemeSecondTime.getId());
+    }
+
     private void clearTables() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
