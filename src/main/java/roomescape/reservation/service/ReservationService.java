@@ -1,7 +1,10 @@
 package roomescape.reservation.service;
 
+import static roomescape.reservation.domain.ReservationStatus.CANCELED;
 import static roomescape.reservation.domain.ReservationStatus.RESERVED;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +13,6 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.repository.ReservationRepository;
@@ -61,7 +63,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(dto.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
 
-        validateNotAlreadyBookedByOthers(reservationDate, reservationTime, theme);
+        validateNotAlreadyBookedByOthers(reservationDate.date(), reservationTime.startAt(), theme);
         validateUserHasNoReservationAtSameTime(dto.name(), reservationDate, reservationTime);
         Long id = reservationRepository.save(
                 Reservation.create(dto.name(), reservationDate.date(), reservationTime.startAt(), theme));
@@ -76,8 +78,8 @@ public class ReservationService {
         );
     }
 
-    private void validateNotAlreadyBookedByOthers(ReservationDate date, ReservationTime time, Theme theme) {
-        if (reservationRepository.existsByDateAndTimeAndThemeId(date.date(), time.startAt(), theme.id())) {
+    private void validateNotAlreadyBookedByOthers(LocalDate date, LocalTime time, Theme theme) {
+        if (reservationRepository.existsByDateAndTimeAndThemeId(date, time, theme.id())) {
             throw new ConflictException("해당 날짜/시간/테마는 이미 예약되었습니다.");
         }
     }
@@ -96,9 +98,9 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse updateStatus(Long id, ReservationStatus status) {
+    public ReservationResponse cancel(Long id) {
         Reservation reservation = getReservation(id);
-        reservation.updateStatus(status);
+        reservation.updateStatus(CANCELED);
         reservationRepository.updateStatus(reservation);
         return ReservationResponse.from(reservation);
     }

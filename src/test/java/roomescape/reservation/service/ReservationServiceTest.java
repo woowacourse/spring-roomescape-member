@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -179,7 +178,7 @@ class ReservationServiceTest {
         ReservationStatus canceled = ReservationStatus.CANCELED;
 
         // when
-        ReservationResponse actual = reservationService.updateStatus(savedId, canceled);
+        ReservationResponse actual = reservationService.cancel(savedId);
 
         // then
         Assertions.assertThat(actual.status())

@@ -3,6 +3,7 @@ package roomescape.reservation.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.dto.request.ReservationSaveDto;
+import roomescape.reservation.dto.request.ReservationStatusUpdateDto;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
@@ -29,5 +30,8 @@ public class ReservationController {
         return ResponseEntity.ok(responseData);
     }
 
-    // TODO: PATCH /member/reservations/{id} - 사용자 예약 상태 변경 (취소)
+    @PatchMapping("/reservation/{id}")
+    public ResponseEntity<ReservationResponse> cancel(@PathVariable Long id) {
+        return ResponseEntity.ok(reservationService.cancel(id));
+    }
 }

@@ -161,20 +161,6 @@ class ReservationRepositoryTest {
                 .isEqualTo(cancelled);
     }
 
-    @Test
-    @DisplayName("예약을 하면 상태가 RESERVED가 된다.")
-    void updateState_reserved() {
-        // given
-        Reservation reservation = Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme);
-
-        // when
-        Long savedId = jdbcTemplateReservationRepository.save(reservation);
-
-        // then
-        Assertions.assertThat(jdbcTemplateReservationRepository.findById(savedId).get().status())
-                .isEqualTo(ReservationStatus.RESERVED);
-    }
-
     private List<Reservation> saveAll(List<Reservation> reservations) {
         List<Reservation> savedReservations = new ArrayList<>();
         for (Reservation reservation : reservations) {

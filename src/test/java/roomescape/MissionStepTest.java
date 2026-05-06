@@ -29,7 +29,7 @@ class MissionStepTest {
     @Test
     void 예약_조회() {
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -48,6 +48,7 @@ class MissionStepTest {
 
     @Test
     void DB_조회_API_전환() {
+        String reservationName = "브라운";
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
         jdbcTemplate.update("INSERT INTO reservation_date (date) VALUES (?)", "2099-01-01");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "테마1", "테마1 설명",
@@ -56,7 +57,7 @@ class MissionStepTest {
                 "브라운", "2099-01-01", "15:40", 1, "RESERVED");
 
         List<Reservation> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/member/reservations/" + reservationName)
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", Reservation.class);
@@ -122,7 +123,8 @@ class MissionStepTest {
                 .statusCode(200);
 
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
+        String reservationName = "브라운";
+        reservation.put("name", reservationName);
         reservation.put("dateId", 1);
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
@@ -130,12 +132,12 @@ class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/reservations")
+                .when().post("/member/reservations")
                 .then().log().all()
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/member/reservations/" + reservationName)
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
