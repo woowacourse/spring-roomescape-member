@@ -61,15 +61,15 @@ public class ThemeRepository {
                 rs.getString("thumbnail")));
     }
 
-    public List<Long> findAvailableTimes(Long id, LocalDate date) {
+    public List<Long> findNotAvailableTimes(Long id, LocalDate date) {
         String sql = "SELECT r.time_id FROM reservation r " +
                 "JOIN reservation_time rt ON r.time_id = rt.id " +
-                "WHERE r.theme_id = ? AND date = ?";
+                "WHERE r.theme_id = ? AND r.date = ?";
 
 
         return jdbcTemplate.query(sql, (rs, rowNum) ->
-                rs.getLong("id")
-        );
+                rs.getLong("time_id"),
+                id, date);
     }
 
     public List<Theme> findPopularThemes(LocalDate endDate, LocalDate startDate, int limit) {
@@ -82,9 +82,10 @@ public class ThemeRepository {
                 "LIMIT ?";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
+                rs.getLong("theme_id"),
                 rs.getString("name"),
                 rs.getString("description"),
-                rs.getString("thumbnail")));
+                rs.getString("thumbnail")),
+                startDate, endDate, limit);
     }
 }
