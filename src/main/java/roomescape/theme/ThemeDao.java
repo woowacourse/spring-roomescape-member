@@ -65,26 +65,27 @@ public class ThemeDao {
             sortColumn = "id";
         } else if ("name".equalsIgnoreCase(sort)) {
             sortColumn = "name";
-        } else if ("reservation".equalsIgnoreCase(sort)) {
-            sortColumn = "reservationCount";
-        } else if ("reservationCount".equalsIgnoreCase(sort)) {
-            sortColumn = "reservationCount";
         }
 
-        String sql =
-                "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount " + "FROM themes t "
-                        + "INNER JOIN reservation r ON t.id = r.theme_id "
-                        + "WHERE r.date >= ? AND r.date <= ? "
-                        + "GROUP BY t.id, t.name, t.description, t.thumbnail "
-                        + "ORDER BY "
-                        + sortColumn
-                        + " "
-                        + order;
+        String sortOrder = "DESC";
+        if ("ASC".equalsIgnoreCase(order)) {
+            sortOrder = "ASC";
+        }
+
+        StringBuilder sql = new StringBuilder(
+                "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount " +
+                        "FROM themes t " +
+                        "INNER JOIN reservation r ON t.id = r.theme_id " +
+                        "WHERE r.date >= ? AND r.date <= ? " +
+                        "GROUP BY t.id, t.name, t.description, t.thumbnail " +
+                        "ORDER BY " + sortColumn + " " + sortOrder
+        );
 
         if (limit != null) {
-            sql += " LIMIT " + limit;
+            sql.append(" LIMIT ").append(limit);
         }
-        return sql;
+
+        return sql.toString();
     }
 
     public Optional<Theme> findById(long id) {
