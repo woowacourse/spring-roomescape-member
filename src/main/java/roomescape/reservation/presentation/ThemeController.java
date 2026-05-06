@@ -40,6 +40,13 @@ public class ThemeController {
     }
 
     @GetMapping
+    public ResponseEntity<List<ThemeFindResponse>> findAll() {
+        List<ThemeFindResponse> responses = themeService.findAll();
+
+        return ResponseEntity.status(HttpStatus.OK).body(responses);
+    }
+
+    @GetMapping(params = "date")
     public ResponseEntity<List<ThemeFindResponse>> findByDate(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {

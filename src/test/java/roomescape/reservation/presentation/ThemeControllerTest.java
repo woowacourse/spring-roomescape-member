@@ -81,4 +81,23 @@ public class ThemeControllerTest {
                 .body("[1].id", is(2))
                 .body("[2].id", is(1));
     }
+
+    @Test
+    void 테마_전체_조회_API_테스트(){
+        RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(10))
+                .body("[0].id", is(1))
+                .body("[1].id", is(2))
+                .body("[2].id", is(3))
+                .body("[3].id", is(4))
+                .body("[4].id", is(5))
+                .body("[5].id", is(6))
+                .body("[6].id", is(7))
+                .body("[7].id", is(8))
+                .body("[8].id", is(9))
+                .body("[9].id", is(10));
+    }
 }
