@@ -11,9 +11,6 @@ public record Reservation(Long id, String name, LocalDate date, Time time, Theme
         if (date == null) {
             throw new IllegalArgumentException("예약 날짜는 필수입니다.");
         }
-        if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("지나간 날짜로는 예약할 수 없습니다.");
-        }
         if (time == null) {
             throw new IllegalArgumentException("유효하지 않은 예약 시간대입니다.");
         }
