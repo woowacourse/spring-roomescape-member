@@ -26,14 +26,14 @@ import roomescape.service.ThemeService;
 @RequiredArgsConstructor
 public class ThemeController {
 
-    private final ThemeService themeService;
-    private final ThemeMapper themeMapper;
+    private final ThemeService service;
+    private final ThemeMapper mapper;
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> findAll() {
-        List<ThemeResponse> responses = themeService.findAll()
+        List<ThemeResponse> responses = service.findAll()
                 .stream()
-                .map(themeMapper::mapToResponse)
+                .map(mapper::mapToResponse)
                 .toList();
 
         return ResponseEntity.ok(responses);
@@ -43,8 +43,8 @@ public class ThemeController {
     public ResponseEntity<ThemeResponse> create(
             @RequestBody ThemeCreateRequest themeCreateRequest
     ) {
-        Theme theme = themeService.create(themeCreateRequest);
-        ThemeResponse response = themeMapper.mapToResponse(theme);
+        Theme theme = service.create(themeCreateRequest);
+        ThemeResponse response = mapper.mapToResponse(theme);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -53,7 +53,7 @@ public class ThemeController {
     public ResponseEntity<Void> delete(
             @PathVariable long id
     ) {
-        themeService.delete(id);
+        service.delete(id);
         return ResponseEntity.ok().build();
     }
 
@@ -64,7 +64,7 @@ public class ThemeController {
             @RequestParam(required = false) LocalDate endDate
     ) {
         Duration duration = new Duration(startDate, endDate);
-        List<ReservedTheme> responses = themeService.findMostReserved(limit, duration);
+        List<ReservedTheme> responses = service.findMostReserved(limit, duration);
 
         return ResponseEntity.ok(responses);
     }
