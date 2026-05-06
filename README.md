@@ -1,10 +1,10 @@
 ### 기능명세서
 
-**화면**
+#### 화면
 
 - [x]  사용자는 화면을 통해 예약을 할 수 있다
 
-**1단계**
+#### 1단계
 
 - [x]  모든 테마의 시작 시간과 소요 시간은 동일하다고 가정한다.
 - [x]  테마는 이름, 설명, 썸네일 이미지 url을 가진다.
@@ -15,51 +15,60 @@
 - [x]  존재하지 않는 테마는 삭제할 수 없다.
 - [x]  예약이 걸려있는 테마는 삭제할 수 없다.
 
-**API 명세서**
+#### API 명세서
 
 ```markdown
 Theme - 01
+
 API 설명: 관리자가 테마를 추가할 수 있다.
 URI: /api/v1/themes
 Method: POST
 Path Variable:
 Query Variable:
+
 RequestBody:
 {
-"name": String,
-"description" : String,
-"imgUrl" : String,
-"userName" : String,
+    "name": String,
+    "description" : String,
+    "imgUrl" : String,
+    "userName" : String,
 }
+
 ResponseBody:
 {
-"id" : Long,
-"name": String,
-"description" : String,
-"imgUrl" : String,
+    "id" : Long,
+    "name": String,
+    "description" : String,
+    "imgUrl" : String,
 }
+
 Status Code: 201
 
 Theme - 02
+
 API 설명: 관리자가 테마를 삭제할 수 있다.
 URI: /api/v1/themes/{id}
 Method: DELETE
 Path Variable: themeId
 Query Variable:
+
 RequestBody:
 {
-"userName" : String
+    "userName" : String
 }
+
 ResponseBody:
+
 Status Code: 204
 
 - 이유
+
 - theme에 필요한 값들을 요청 필드로 받아서 post 요청을 보냈고,
   반환 값에서는 id를 추가해줘서 했다. 중간에 userName을 추가한 이유는 admin을 확인하기 위함이다.
 - delete도 현재 userName을 식별하여 admin일 때만 삭제할 수 있게 했다.
 ```
 
-**2단계**
+#### 2단계
 
 - [x]  사용자가 **날짜와 테마를 선택** 하면 예약 가능한 시간을 조회할 수 있다.
 - [x]  예약 가능한 시간이란, 관리자가 등록한 시간 중 해당 날짜+테마에 아직 예약이 없는 시간이다.
@@ -67,29 +76,33 @@ Status Code: 204
 - [x]  사용자가 예약된 시간을 예약할 경우 예외를 던진다.
 - [x]  같은 날짜·시간이라도 테마가 다르면 각각 예약 가능하다.
 
-**API 명세서**
+#### API 명세서
 
 ```markdown
 Times - 01
+
 API 설명: 사용자가 예약 가능한 시간을 조회할 수 있다.
 URI: /api/v1/times?date=2026-05-08&themeId=1
 Method: GET
 Path Variable:
 Query Variable: date, themeId
+
 RequestBody:
 {
 }
+
 ResponseBody:
 {
-"availableTime" [
-{
-"id" : 1,
-"startAt" : 10:00,
-"available" : true
-},
-...
-]
+    "availableTime" [
+        {
+            "id" : 1,
+            "startAt" : 10:00,
+            "available" : true
+        },
+        ...
+    ]
 }
+
 Status Code: 200
 
 - 이유: 토론 활동에서 정한 규칙을 적용했습니다.
@@ -104,36 +117,40 @@ Status Code: 200
 
 ```
 
-**3단계**
+#### 3단계
 
 - [x] 최근 1주 동안 예약이 많았던 테마 상위 10개를 조회한다.
 - [x] 예: 오늘이 5월 8일이면, 게임 날짜가 5월 1일~5월 7일인 예약을 집계해 인기 순서대로 10개를 응답한다.
 
-**API 명세서**
+#### API 명세서
 
 ```markdown
 Theme - 03
+
 API 설명: 최근 1주 동안 예약이 많았던 테마 상위 10개를 내림차순으로 조회한다.
 URI: /api/v1/themes?from=2026-05-01&to=2026-05-07
 Method: GET
 Path Variable:
 Query Variable: from, to
+
 RequestBody:
 {
 }
+
 ResponseBody:
 {
-"themes" : [
-{
-"id" : Long,
-"name": String,
-"description" : String,
-"imgUrl" : String,
-"rank" : Long
+    "themes" : [
+        {
+            "id" : Long,
+            "name": String,
+            "description" : String,
+            "imgUrl" : String,
+            "rank" : Long
+        }
+        ...
+    ]
 }
-...
-]
-}
+
 Status Code: 200
 
 - 이유
@@ -146,3 +163,55 @@ rank 추가 이유
 → 백엔드에서 정렬해서 보내줄 수도 있지만, 프론트에서 볼 때 백엔드에서 넘어온 값이 순서대로
 rank라는 보장이 없기 때문에, 가독성과 디버깅 편의성을 위해 rank를 추가해서 값을 넘겨줬습니다.
 ```
+
+### API 설계 규칙
+
+1. 리소스 식별 기준
+
+(If-Then) 만약 사용자가 실제로 조회하고 싶은 대상이 있고, 다른 값들은 그 대상을 좁히기 위한 조건이라면
+→ 조회 대상은 리소스로 두고, 나머지 값들은 쿼리 파라미터로 표현한다.
+(이유: 리소스는 사용자가 받고 싶은 핵심 대상을 기준으로 식별하고, 조건 값들은 그 결과를 필터링하는 역할이기 때문이다.)
+
+2. 서버/클라이언트 책임 기준
+
+(If-Then) 만약 어떤 값의 판단은 서버만 할 수 있지만, 그 결과를 어떻게 보여줄지는 클라이언트가 결정해도 된다면
+→ 서버는 판단 결과를 포함한 원본 데이터를 내려주고, 클라이언트가 이를 기준으로 필터링하거나 표시 방식을 결정한다.
+(이유: 정합성과 비즈니스 규칙 판단은 서버의 책임이고, 화면 표현과 사용자 경험은 클라이언트의 책임이기 때문이다.)
+
+3. 관리자/사용자 API 분리 기준
+
+(If-Then) 만약 관리자와 사용자가 같은 리소스를 조회하더라도, 권한에 따라 제공해야 하는 정보나 수행 가능한 동작이 달라진다면
+
+→ URL은 같게 두고 권한으로 분기한다.
+
+(이유: 같은 리소스를 다루더라도 목적, 응답 범위, 책임이 달라지면 엔드포인트를 분리하는 편이 더 명확하다.)
+
+4. 우리 그룹의 "좋은 API" 정의
+
+만약 API를 추가해야한다면
+
+-> 이미 구현되어있는 API를 재사용 할 수 있는지 확인한다.
+
+(재사용 가능한 API를 좋은 API라고 부른다.)
+
+(우선순위) URL을 결정할 때 순서:
+
+1. 리소스를 명확히 한다 (명사형, 복수형)
+2. 행위를 HTTP 메서드로 표현한다
+3. 부가 조건은 쿼리/경로/본문 중 의미에 맞게 배치
+
+(금지)
+
+1. 이번 사이클에서 동사형 URL은 쓰지 않는다 (예: /reservations/create)
+   이유: HTTP 메서드가 이미 동사 역할을 한다
+
+2. 화면 명세가 바뀌었을 때 API가 바뀌면 안된다.
+   이유: 화면 명세가 바뀌었을 때 API가 수정되면, 화면에 API가 종속되어 재사용이 불가능하다는 신호이기 때문이다.
+
+(페어규칙)
+
+Controller는 가능한 Response DTO를 반환한다.
+
+단, 단순 조회 API는 현재 단계에서 도메인 반환을 허용한다.
+
+계산값, 조합값, 화면 전용 필드가 포함되는 응답은 반드시 Response DTO를 사용한다.
