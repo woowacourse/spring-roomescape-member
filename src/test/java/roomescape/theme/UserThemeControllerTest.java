@@ -28,21 +28,21 @@ class UserThemeControllerTest {
     private UserThemeService userThemeService;
 
     @Test
-    @DisplayName("테마 목록을 조회할 수 있다")
-    void getThemes() throws Exception {
+    @DisplayName("테마 랭킹 목록을 조회할 수 있다")
+    void getRankedThemes() throws Exception {
         LocalDate startDate = LocalDate.of(2026, 5, 1);
         LocalDate endDate = LocalDate.of(2026, 5, 31);
 
-        List<ThemeResponse> response = List.of(
-                new ThemeResponse(1L, "Mystery", "Find the clues", "thumb1"),
-                new ThemeResponse(2L, "Horror", "Escape the room", "thumb2")
+        List<Theme> themes = List.of(
+                new Theme(1L, "Mystery", "Find the clues", "thumb1"),
+                new Theme(2L, "Horror", "Escape the room", "thumb2")
         );
 
-        when(userThemeService.findThemes(eq("id"), eq("DESC"), eq(startDate), eq(endDate), eq(10L)))
-                .thenReturn(response);
+        when(userThemeService.getThemes(eq("reservationCount"), eq("DESC"), eq(startDate), eq(endDate), eq(10L)))
+                .thenReturn(themes);
 
-        mockMvc.perform(get("/themes")
-                        .param("sort", "id")
+        mockMvc.perform(get("/themes/rank")
+                        .param("sort", "reservationCount")
                         .param("order", "DESC")
                         .param("startDate", "2026-05-01")
                         .param("endDate", "2026-05-31")
@@ -62,14 +62,14 @@ class UserThemeControllerTest {
 
     @Test
     @DisplayName("정렬 기본값이 적용된다")
-    void getThemesWithDefaultSortAndOrder() throws Exception {
+    void getRankedThemesWithDefaultSortAndOrder() throws Exception {
         LocalDate startDate = LocalDate.of(2026, 5, 1);
         LocalDate endDate = LocalDate.of(2026, 5, 31);
 
-        when(userThemeService.findThemes(eq("id"), eq("DESC"), eq(startDate), eq(endDate), eq(10L)))
+        when(userThemeService.getThemes(eq("reservationCount"), eq("DESC"), eq(startDate), eq(endDate), eq(10L)))
                 .thenReturn(List.of());
 
-        mockMvc.perform(get("/themes")
+        mockMvc.perform(get("/themes/rank")
                         .param("startDate", "2026-05-01")
                         .param("endDate", "2026-05-31")
                         .param("limit", "10")
@@ -80,16 +80,36 @@ class UserThemeControllerTest {
 
     @Test
     @DisplayName("기본값이 적용된다")
-    void getThemesWithDefaults() throws Exception {
+    void getRankedThemesWithDefaults() throws Exception {
         LocalDate today = LocalDate.now();
         LocalDate weekAgo = today.minusDays(7);
 
-        when(userThemeService.findThemes(eq("id"), eq("DESC"), eq(weekAgo), eq(today), isNull()))
+        when(userThemeService.getThemes(eq("reservationCount"), eq("DESC"), eq(weekAgo), eq(today), isNull()))
                 .thenReturn(List.of());
+
+        mockMvc.perform(get("/themes/rank")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("전체 테마 목록을 조회할 수 있다")
+    void getAllThemes() throws Exception {
+        List<Theme> themes = List.of(
+                new Theme(1L, "Mystery", "Find the clues", "thumb1"),
+                new Theme(2L, "Horror", "Escape the room", "thumb2")
+        );
+
+        when(userThemeService.getAllThemes()).thenReturn(themes);
 
         mockMvc.perform(get("/themes")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("Mystery"))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].name").value("Horror"));
     }
 }
