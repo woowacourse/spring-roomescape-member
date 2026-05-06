@@ -2,6 +2,7 @@ package roomescape.theme.service;
 
 import roomescape.theme.domain.Theme;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ThemeService {
@@ -11,4 +12,6 @@ public interface ThemeService {
     void removeTheme(Long id);
 
     List<Theme> getThemes();
+
+    List<AvailableTime> getAvailableTimes(Long id, LocalDate date);
 }

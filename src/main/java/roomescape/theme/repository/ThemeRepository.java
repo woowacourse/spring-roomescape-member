@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -58,5 +59,16 @@ public class ThemeRepository {
                 rs.getString("name"),
                 rs.getString("description"),
                 rs.getString("thumbnail")));
+    }
+
+    public List<Long> findAvailableTimes(Long id, LocalDate date) {
+        String sql = "SELECT r.time_id FROM reservation r " +
+                "JOIN reservation_time rt ON r.time_id = rt.id " +
+                "WHERE r.theme_id = ? AND date = ?";
+
+
+        return jdbcTemplate.query(sql, (rs, rowNum) ->
+                rs.getLong("id")
+        );
     }
 }

@@ -61,26 +61,29 @@
     ]
     ```
 
-- [ ] 특정 테마의 예약 시간별 예약 가능 여부를 조회할 수 있다.
+- [x] 특정 테마와 날짜의 예약 가능 시간 조회할 수 있다.
 
     ```
     GET /themes/{id}/available-times?date=2026-05-04
     ```
     
     **Response (200 OK)**
-    
-    ```json
-    [
+  ```json
+  {
+    "availableTimes": [
       {
+        "timeId": 1,
         "time": "18:00",
         "isAvailable": true
       },
       {
+        "timeId": 2,
         "time": "21:00",
         "isAvailable": false
       }
     ]
-    ```
+  }
+  ```
 
 - [ ] 사용자가 예약할 수 있다.
 
@@ -140,6 +143,7 @@
 - 삭제 성공 시 200과 204 중 어떤 상태 코드를 반환할지
 - adminController 따로 만들지 아니면 해당 도메인 내에 넣을지
 - DB에_저장된_예약을_API로_조회하면_DB_건수와_응답_건수가_같다 jsonPath v1에선 Reservation 반환했는데 통과 v2에선 통과 x
+- 테마 시간별 예약 가능 여부 조회 메서드 네이밍 및 DTO 네이밍
 
 ---
 
