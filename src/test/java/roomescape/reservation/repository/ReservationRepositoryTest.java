@@ -52,10 +52,10 @@ class ReservationRepositoryTest {
         jdbcReservationDateRepository = new JdbcReservationDateRepository(jdbcTemplate);
         jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
 
-        Long time1Id = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(12, 00)));
-        Long time2Id = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(20, 00)));
-        reservationTime1 = jdbcReservationTimeRepository.findById(time1Id).get();
-        reservationTime2 = jdbcReservationTimeRepository.findById(time2Id).get();
+        ReservationTime time1 = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(12, 00)));
+        ReservationTime time2 = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(20, 00)));
+        reservationTime1 = jdbcReservationTimeRepository.findById(time1.id()).get();
+        reservationTime2 = jdbcReservationTimeRepository.findById(time2.id()).get();
 
         reservationDate1 = jdbcReservationDateRepository.save(ReservationDate.create(date1));
         reservationDate2 = jdbcReservationDateRepository.save(ReservationDate.create(date2));

@@ -11,13 +11,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.request.ReservationTimeSaveDto;
 import roomescape.time.dto.response.ReservationTimeDetailDto;
 import roomescape.time.repository.FakeReservationTimeRepository;
 
 class ReservationTimeServiceTest {
+
     private ReservationTimeService reservationTimeService;
 
+    // TODO @BeforeEach 삭제 후 필요한 곳에서 Insert
     @BeforeEach
     void setup() {
         FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
@@ -30,11 +33,12 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("모든 예약 시간 정보를 조회한다.")
     void findAll() {
-        //given & when
-        List<ReservationTimeDetailDto> result = reservationTimeService.findAll();
+        // when
+        List<ReservationTimeDetailDto> actual = reservationTimeService.findAll();
 
-        //then
-        assertThat(result.size()).isEqualTo(2);
+        // then
+        assertThat(actual)
+                .hasSize(2);
     }
 
     @Test
@@ -44,22 +48,23 @@ class ReservationTimeServiceTest {
         reservationTimeService.create(new ReservationTimeSaveDto(LocalTime.of(12, 0)));
 
         //then
-        assertThat(reservationTimeService.findAll().size()).isEqualTo(3);
+        assertThat(reservationTimeService.findAll())
+                .hasSize(3);
     }
 
     @Test
     @DisplayName("예약 시간을 삭제한다.")
     void delete() {
         //given
-        ReservationTimeDetailDto response = reservationTimeService.create(
+        ReservationTime reservationTime = reservationTimeService.create(
                 new ReservationTimeSaveDto(LocalTime.of(12, 0)));
-        Long id = response.id();
 
         //when
-        reservationTimeService.delete(id);
+        reservationTimeService.delete(reservationTime.id());
 
         //then
-        assertThat(reservationTimeService.findAll().size()).isEqualTo(2);
+        assertThat(reservationTimeService.findAll())
+                .hasSize(2);
     }
 
     @Test

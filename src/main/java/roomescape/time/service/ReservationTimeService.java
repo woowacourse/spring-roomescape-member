@@ -28,11 +28,9 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTimeDetailDto create(ReservationTimeSaveDto reservationTimeSaveDto) {
-        LocalTime startAt = reservationTimeSaveDto.startAt();
-        validateDuplicateTimeExist(startAt);
-        Long id = reservationTimeRepository.save(ReservationTime.create(startAt));
-        return new ReservationTimeDetailDto(id, startAt);
+    public ReservationTime create(ReservationTimeSaveDto dto) {
+        validateDuplicateTimeExist(dto.startAt());
+        return reservationTimeRepository.save(ReservationTime.create(dto.startAt()));
     }
 
     private void validateDuplicateTimeExist(LocalTime startAt) {

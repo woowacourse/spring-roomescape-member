@@ -17,9 +17,10 @@ import roomescape.time.domain.ReservationTime;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNum) -> ReservationTime.of(
+    private final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNum) -> ReservationTime.load(
             resultSet.getLong("id"),
             resultSet.getTime("start_at").toLocalTime()
     );
@@ -53,9 +54,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public Long save(ReservationTime reservationTime) {
+    public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource params = new MapSqlParameterSource("start_at", reservationTime.startAt());
-        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        Long savedId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return ReservationTime.load(savedId, reservationTime.startAt());
     }
 
     @Override

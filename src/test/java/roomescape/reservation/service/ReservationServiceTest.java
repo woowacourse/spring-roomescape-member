@@ -53,13 +53,8 @@ class ReservationServiceTest {
         this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
                 reservationDateRepository, themeRepository);
 
-        LocalTime time1 =  LocalTime.of(15, 40);
-        Long savedTimeId1 = reservationTimeRepository.save(ReservationTime.create(time1));
-        reservationTime1 = ReservationTime.of(savedTimeId1, time1);
-
-        LocalTime time2 =  LocalTime.of(16, 0);
-        Long savedTimeId2 = reservationTimeRepository.save(ReservationTime.create(time2));
-        reservationTime2 = ReservationTime.of(savedTimeId2, time2);
+        reservationTime1 = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(15, 0)));
+        reservationTime2 = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(16, 0)));
 
         reservationDate1 = reservationDateRepository.save(ReservationDate.create(LocalDate.now().plusWeeks(1)));
         reservationDate2 = reservationDateRepository.save(ReservationDate.create(LocalDate.now().plusWeeks(2)));

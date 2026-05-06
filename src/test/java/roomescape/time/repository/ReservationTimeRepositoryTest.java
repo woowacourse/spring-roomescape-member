@@ -134,7 +134,6 @@ class ReservationTimeRepositoryTest {
     }
 
     private ReservationTime savedTime(ReservationTime reservationTime){
-        Long savedId = jdbcReservationTimeRepository.save(reservationTime);
-        return ReservationTime.of(savedId, reservationTime.startAt());
+        return jdbcReservationTimeRepository.save(reservationTime);
     }
 }
