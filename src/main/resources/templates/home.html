@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESCAPE ROOM ADMIN</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div class="container-fluid page">
+  <div class="row no-gutters">
+    <div id="sidebar-container" class="col-md-2">
+      <nav id="sidebar">
+        <div class="sidebar-brand">
+          <i class="fas fa-lock brand-icon"></i>
+          <span class="brand-title">Escape</span>
+          <span class="brand-subtitle">Admin</span>
+        </div>
+        <ul>
+          <li><a href="/reservation"><i class="fas fa-lock"></i>예약 관리</a></li>
+          <li><a href="/time"><i class="fas fa-hourglass-half"></i>시간 관리</a></li>
+          <li><a href="/theme"><i class="fas fa-theater-masks"></i>테마 관리</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div id="content-container" class="col-md-10">
+      <h1 class="page-title">Dashboard</h1>
+      <div class="welcome-box">
+        <h2>ESCAPE ROOM ADMIN</h2>
+        <p>좌측 메뉴에서 관리할 항목을 선택하세요.</p>
+      </div>
+      <div class="nav-cards">
+        <a href="/reservation" class="nav-card">
+          <i class="fas fa-lock"></i>
+          <span>예약 관리</span>
+        </a>
+        <a href="/time" class="nav-card">
+          <i class="fas fa-hourglass-half"></i>
+          <span>시간 관리</span>
+        </a>
+        <a href="/theme" class="nav-card">
+          <i class="fas fa-theater-masks"></i>
+          <span>테마 관리</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
