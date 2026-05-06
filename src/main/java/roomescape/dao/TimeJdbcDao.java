@@ -47,7 +47,7 @@ public class TimeJdbcDao implements TimeDao {
     }
 
     @Override
-    public Long insert(Time time) {
+    public Time insert(Time time) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = """
                 INSERT INTO times
@@ -60,7 +60,8 @@ public class TimeJdbcDao implements TimeDao {
             return pstmt;
         }, keyHolder);
 
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Time(id, time.getStartAt());
     }
 
     @Override

@@ -73,7 +73,7 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public Long insert(Reservation reservation) {
+    public Reservation insert(Reservation reservation) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
                 .withTableName("reservations")
                 .usingGeneratedKeyColumns("id")
@@ -84,8 +84,15 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
-        
-        return simpleJdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
+
+        Long id = simpleJdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
+        return new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
     }
 
     @Override

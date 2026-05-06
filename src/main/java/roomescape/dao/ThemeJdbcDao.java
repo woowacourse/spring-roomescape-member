@@ -51,7 +51,7 @@ public class ThemeJdbcDao implements ThemeDao {
     }
 
     @Override
-    public Long insert(Theme theme) {
+    public Theme insert(Theme theme) {
         String sql = """
                 INSERT INTO themes(name, thumbnail_url, description)
                 VALUES(:name, :thumbnailUrl, :description)
@@ -64,8 +64,11 @@ public class ThemeJdbcDao implements ThemeDao {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(sql, params, keyHolder);
+        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        return new Theme(
+                id, theme.getName(), theme.getThumbnailUrl(), theme.getDescription()
+        );
     }
 
     @Override
