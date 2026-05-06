@@ -1,17 +1,16 @@
 package roomescape.theme.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Import(JdbcThemeRepository.class)
@@ -49,5 +48,20 @@ class JdbcThemeRepositoryTest {
         assertThat(result)
                 .extracting(AvailableTimeQueryResult::startAt)
                 .containsExactlyInAnyOrder(LocalTime.of(10, 0), LocalTime.of(12, 0));
+    }
+
+    @DisplayName("해당 시간이 존재하는지 조회한다.")
+    @Test
+    void existsByNameTest() {
+        // given
+        jdbcTemplate.update("insert into theme(id, name, description, thumbnail_url) values (1, '테마', '설명', 'url')");
+
+        // when
+        boolean exists = repository.existsByName("테마");
+        boolean notExists = repository.existsByName("other");
+
+        // then
+        assertThat(exists).isTrue();
+        assertThat(notExists).isFalse();
     }
 }
