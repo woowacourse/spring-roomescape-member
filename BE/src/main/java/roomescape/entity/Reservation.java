@@ -16,4 +16,8 @@ public record Reservation(
     public static Reservation createWithId(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         return new Reservation(id, name, date, time, theme);
     }
+
+    public Reservation appendId(Long id) {
+        return new Reservation(id, name, date, time, theme);
+    }
 }

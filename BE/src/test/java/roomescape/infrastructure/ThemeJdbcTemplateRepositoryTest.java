@@ -1,5 +1,7 @@
 package roomescape.infrastructure;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -56,6 +58,17 @@ class ThemeJdbcTemplateRepositoryTest {
     }
 
     @Test
+    @DisplayName("아이디를 기반으로 테마를 찾는다 - 없어도 오류가 발생하지 않는다. - Optional<Empty> 반환")
+    void findById_success_even_if_no_theme() {
+        // when
+        Long notExistThemeId = 999L;
+        Optional<Theme> foundTheme = themeRepository.findById(notExistThemeId);
+
+        // then
+        assertTrue(foundTheme.isEmpty());
+    }
+
+    @Test
     @DisplayName("모든 테마를 가져온다")
     void findAll_success() {
         // given
@@ -72,6 +85,16 @@ class ThemeJdbcTemplateRepositoryTest {
     }
 
     @Test
+    @DisplayName("모든 테마를 가져온다 - 없는 경우에는 빈 리스트 반환")
+    void findAll_success_even_if_no_theme() {
+        // when
+        List<Theme> result = themeRepository.findAll();
+
+        // then
+        Assertions.assertEquals(0, result.size());
+    }
+
+    @Test
     @DisplayName("아이디를 기반으로 테마를 삭제한다")
     void deleteById_success() {
         // given
@@ -84,5 +107,18 @@ class ThemeJdbcTemplateRepositoryTest {
         // then
         Optional<Theme> result = themeRepository.findById(savedTheme.id());
         Assertions.assertFalse(result.isPresent());
+    }
+
+    @Test
+    @DisplayName("없는 ID 기반으로 테마를 삭제해도 오류가 발생하지 않는다")
+    void deleteById_success_even_if_no_theme() {
+        // when
+        Long notExistThemeId = 999L;
+        themeRepository.deleteById(notExistThemeId);
+
+        // then
+        Assertions.assertDoesNotThrow(
+                () -> themeRepository.deleteById(notExistThemeId)
+        );
     }
 }

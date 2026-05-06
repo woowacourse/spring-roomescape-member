@@ -32,13 +32,7 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
                 "time_id", reservation.time().id()
         );
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-//        return Reservation.createWithId(
-//                id,
-//                reservation.name(),
-//                reservation.date(),
-//                reservation.time()
-//        );
-        return null;
+        return reservation.appendId(id);
     }
 
     @Override
