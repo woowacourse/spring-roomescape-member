@@ -15,11 +15,11 @@ public class Theme {
         return new Theme(null, name, thumbnailUrl, description, ThemeStatus.DRAFT);
     }
 
-    public static Theme create(long id, String name, String thumbnailUrl, String description) {
+    public static Theme of(long id, String name, String thumbnailUrl, String description) {
         return new Theme(id, name, thumbnailUrl, description, ThemeStatus.AVAILABLE);
     }
 
-    public Theme delete() {
+    public Theme deleted() {
         return new Theme(this.id, this.name, this.thumbnailUrl ,this.description, ThemeStatus.DELETED);
     }
 

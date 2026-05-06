@@ -21,7 +21,7 @@ public class ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Reservation> rowMapper = (rs, rowNum) -> {
-        Theme theme = Theme.create(
+        Theme theme = Theme.of(
                 rs.getLong("theme_id"),
                 rs.getString("theme_name"),
                 rs.getString("thumbnail_url"),

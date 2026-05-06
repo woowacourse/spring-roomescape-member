@@ -20,7 +20,7 @@ public class ThemeDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Theme> rowMapper = (rs, rowNum) -> {
 
-        Theme theme = Theme.create(
+        Theme theme = Theme.of(
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("thumbnail_url"),
@@ -28,7 +28,7 @@ public class ThemeDao {
         );
 
         if (rs.getString("status").equals(ThemeStatus.DELETED.toString())) {
-            return theme.delete();
+            return theme.deleted();
         }
 
         return theme;
@@ -47,7 +47,7 @@ public class ThemeDao {
 
         Number themeId = themeInsertExecutor.executeAndReturnKey(params);
 
-        return Theme.create(
+        return Theme.of(
                 themeId.longValue(),
                 theme.name(),
                 theme.thumbnailUrl(),
