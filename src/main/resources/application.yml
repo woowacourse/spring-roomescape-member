@@ -9,4 +9,4 @@ spring:
 
 logging:
   level:
-    root: warn
+    root: info

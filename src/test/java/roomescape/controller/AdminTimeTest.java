@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +17,9 @@ import static org.hamcrest.Matchers.is;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminTimeTest {
     @Test
-    @DisplayName("시간 관리 api 테스트")
-    void timeReadTest() {
+    @DisplayName("테마를 생성하는지에 대한 테스트")
+    @Sql(scripts = "/testReservationData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void createTheme() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "11:00");
 
@@ -26,17 +28,42 @@ class AdminTimeTest {
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .body("startAt", is("11:00"));
+    }
 
+    @Test
+    @DisplayName("시간을 조회하는지에 대한 테스트")
+    @Sql(scripts = "/testReservationData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void readThemes() {
         RestAssured.given().log().all()
                 .when().get("/admin/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(2));
+    }
 
+
+    @Test
+    @DisplayName("예약 없는 시간 삭제 성공")
+    @Sql(scripts = "/testReservationData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void deleteThemeWithoutReservation() {
         RestAssured.given().log().all()
-                .when().delete("/admin/times/1")
+                .when().delete("/admin/times/2")
                 .then().log().all()
                 .statusCode(204);
     }
+
+    @Test
+    @DisplayName("예약 있는 시간 삭제 실패")
+    @Sql(scripts = "/testReservationData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void deleteThemeWithReservation() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/times/1")
+                .then().log().all()
+                .statusCode(400);
+    }
+
 }
+
+
