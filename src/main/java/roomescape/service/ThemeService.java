@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
+import roomescape.dto.response.PopularThemeResponse;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.exception.UnauthorizedException;
@@ -42,8 +43,8 @@ public class ThemeService {
         return themeDao.findAllThemes();
     }
 
-    public List<Theme> getPopularThemes(LocalDate from, LocalDate to) {
-        return themeDao.findPopularThemes(from, to);
+    public List<PopularThemeResponse> getPopularThemes(LocalDate from, LocalDate to) {
+        return PopularThemeResponse.toDto(themeDao.findPopularThemes(from, to));
     }
 
     private void validateDelete(int deleteCount) {

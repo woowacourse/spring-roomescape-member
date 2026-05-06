@@ -1,17 +1,16 @@
 package roomescape.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Theme;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import roomescape.dto.PopularTheme;
 
 @JdbcTest
 @ActiveProfiles("test")
@@ -24,12 +23,12 @@ public class ThemeDaoTest {
     @Test
     @Sql("/popular-themes.sql")
     void 최근_1주동안_예약이_많았던_테마_상위_10개를_조회한다() {
-        List<Theme> popularThemes = themeDao.findPopularThemes(
+        List<PopularTheme> popularThemes = themeDao.findPopularThemes(
                 LocalDate.of(2026, 5, 1), LocalDate.of(2026, 5, 7));
 
         assertThat(popularThemes).hasSize(10);
         assertThat(popularThemes)
-                .extracting(Theme::getName)
+                .extracting(PopularTheme::name)
                 .containsExactly(
                         "이든의 공포 하우스",
                         "정콩이의 방탈출",

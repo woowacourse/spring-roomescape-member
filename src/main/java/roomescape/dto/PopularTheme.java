@@ -1,9 +1,11 @@
 package roomescape.dto;
 
-public record ThemeCreateRequest(
+public record PopularTheme(
+        Long id,
         String name,
         String description,
         String imgUrl,
-        String userName
+        Long rank,
+        Long reservationCount
 ) {
 }

@@ -3,13 +3,20 @@ package roomescape.controller;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeCreateRequest;
-import roomescape.dto.ThemeDeleteRequest;
+import roomescape.dto.request.ThemeCreateRequest;
+import roomescape.dto.request.ThemeDeleteRequest;
+import roomescape.dto.response.PopularThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -46,9 +53,10 @@ public class ThemeController {
     }
 
     @GetMapping(params = {"from", "to"})
-    public ResponseEntity<List<Theme>> getPopularTheme(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
-                                                 @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
-        List<Theme> themes = themeService.getPopularThemes(from, to);
-        return ResponseEntity.ok().body(themes);
+    public ResponseEntity<List<PopularThemeResponse>> getPopularTheme(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
+        List<PopularThemeResponse> popularThemes = themeService.getPopularThemes(from, to);
+        return ResponseEntity.ok().body(popularThemes);
     }
 }
