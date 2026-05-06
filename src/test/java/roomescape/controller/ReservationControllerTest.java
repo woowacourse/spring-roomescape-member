@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -124,30 +125,36 @@ public class ReservationControllerTest {
         Map<String, String> timeParams = new HashMap<>();
         timeParams.put("startAt", "10:00");
 
-        RestAssured.given().log().all()
+        Integer timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParams)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract()
+                .jsonPath()
+                .getInt("id");
 
         Map<String, String> themeParams = new HashMap<>();
         themeParams.put("name", "방탈출1");
         themeParams.put("description", "다함께 탈출해요 방탈출.");
         themeParams.put("thumbnail", "https://asdfsdf.sdfs");
 
-        RestAssured.given().log().all()
+        Integer themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract()
+                .jsonPath()
+                .getInt("id");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
-        params.put("timeId", 1);
-        params.put("themeId", 1);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -160,7 +167,7 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("[0].name", is("브라운"));
+                .body("name", hasItem("브라운"));
     }
 
     @Test
