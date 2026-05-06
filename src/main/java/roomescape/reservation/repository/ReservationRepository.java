@@ -20,5 +20,5 @@ public interface ReservationRepository {
 
     List<Long> findAllByDateAndThemeId(LocalDate date, long themeId);
 
-    List<Theme> findPopularThemes(int period, int limit);
+    List<Theme> findPopularThemes(int period, int limit, LocalDate now);
 }

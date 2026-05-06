@@ -7,9 +7,8 @@ import java.sql.SQLException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.ReservationAcceptanceTest;
 
-@ReservationAcceptanceTest
+@RoomecapeAcceptanceTest
 class MissionStepTest {
 
     @Autowired

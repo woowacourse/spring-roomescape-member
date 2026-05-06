@@ -154,7 +154,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(final int period, final int limit) {
+    public List<Theme> findPopularThemes(final int period, final int limit, final LocalDate now) {
         final String sql = """
                 SELECT t.id AS theme_id,
                        t.name AS theme_name,
@@ -168,10 +168,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                 ORDER BY COUNT(*) DESC, t.id ASC
                 LIMIT ?
                 """;
-        LocalDate end = LocalDate.now();
-        LocalDate start = end.minusDays(period);
+        LocalDate start = now.minusDays(period);
 
-        return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(end), limit);
+        return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(now), limit);
     }
 
 }

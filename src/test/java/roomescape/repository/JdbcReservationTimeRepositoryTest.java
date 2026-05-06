@@ -12,12 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.TestExecutionListeners;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
+import roomescape.testexecutionlistener.TestDatabaseInitializer;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 
-@JdbcTest
+@RommescapeRepositoryTest
 class JdbcReservationTimeRepositoryTest {
 
     private JdbcReservationTimeRepository jdbcReservationTimeRepository;
@@ -28,7 +30,6 @@ class JdbcReservationTimeRepositoryTest {
 
     @BeforeEach
     void setup() {
-        clearTables();
         jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
         jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
@@ -99,14 +100,6 @@ class JdbcReservationTimeRepositoryTest {
         int afterSize = jdbcReservationTimeRepository.findAll().size();
 
         assertThat(afterSize).isEqualTo(beforeSize - 1);
-    }
-
-    private void clearTables() {
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM reservation_time");
-        jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
 
     private Theme createTheme(final String name) {

@@ -12,10 +12,9 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.ReservationAcceptanceTest;
 import roomescape.reservation.domain.Reservation;
 
-@ReservationAcceptanceTest
+@RoomecapeAcceptanceTest
 class ReservationApiTest {
 
     @Autowired

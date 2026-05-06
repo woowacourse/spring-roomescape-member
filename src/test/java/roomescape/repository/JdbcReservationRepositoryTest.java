@@ -13,14 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.TestExecutionListeners;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
+import roomescape.testexecutionlistener.TestDatabaseInitializer;
+import roomescape.testexecutionlistener.TestPortInitializer;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 
-@JdbcTest
+@RommescapeRepositoryTest
 class JdbcReservationRepositoryTest {
 
     private JdbcReservationRepository jdbcReservationRepository;
@@ -32,7 +35,6 @@ class JdbcReservationRepositoryTest {
 
     @BeforeEach
     void setup() {
-        clearTables();
         jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate);
         jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
         jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
@@ -131,8 +133,8 @@ class JdbcReservationRepositoryTest {
     void findAllByDateAndThemeId_test() {
         // given
         LocalDate date = LocalDate.parse("2026-08-06");
-        Theme firstTheme = createTheme("미술관의 밤");
-        Theme secondTheme = createTheme("심해 연구소");
+        Theme firstTheme = createTheme("우테코의 밤");
+        Theme secondTheme = createTheme("우테코 연구소");
 
         ReservationTime firstThemeFirstTime = jdbcReservationTimeRepository.save(
                 ReservationTime.createNew(LocalTime.parse("10:00"), firstTheme)
@@ -187,21 +189,12 @@ class JdbcReservationRepositoryTest {
         jdbcReservationRepository.save(Reservation.createNew("오래된예약", today.minusDays(10), thirdThemeTime));
 
         // when
-        List<Theme> popularThemes = jdbcReservationRepository.findPopularThemes(7, 2);
+        List<Theme> popularThemes = jdbcReservationRepository.findPopularThemes(7, 2, LocalDate.parse("2026-05-06"));
 
         // then
         assertThat(popularThemes).hasSize(2);
         assertThat(popularThemes.get(0).getId()).isEqualTo(firstTheme.getId());
         assertThat(popularThemes.get(1).getId()).isEqualTo(secondTheme.getId());
-    }
-
-    private void clearTables() {
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM reservation_time");
-        jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
 
     private Theme createTheme(final String name) {

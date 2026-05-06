@@ -55,6 +55,6 @@ public class ReservationService {
     }
 
     public List<Theme> getPopularThemes(final int period, final int limit) {
-        return reservationRepository.findPopularThemes(period, limit);
+        return reservationRepository.findPopularThemes(period, limit, LocalDate.now());
     }
 }
