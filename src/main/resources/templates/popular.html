@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('인기 방탈출')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <h1>인기 방탈출</h1>
+    <p style="color:#666;">최근 일주일간 예약이 많았던 테마입니다.</p>
+
+    <div th:if="${popularThemes.isEmpty()}" style="color:#888; padding: 32px 0;">
+        아직 집계된 인기 테마가 없습니다.
+    </div>
+
+    <div class="theme-grid" th:if="${!popularThemes.isEmpty()}">
+        <div class="theme-card" th:each="t, iter : ${popularThemes}">
+            <img th:src="${t.thumbnailUrl()}" th:alt="${t.name()}"/>
+            <div class="theme-card-body">
+                <p class="theme-card-name">
+                    <span th:text="${iter.index + 1} + '위'" style="color:#a44; font-weight:700; margin-right:6px;"></span>
+                    <span th:text="${t.name()}"></span>
+                </p>
+                <p class="theme-card-desc" th:text="${t.description()}"></p>
+                <a class="btn btn-sm" th:href="@{/reservation(themeId=${t.id()})}">예약</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

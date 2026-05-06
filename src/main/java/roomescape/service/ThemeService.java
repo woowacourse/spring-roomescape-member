@@ -5,6 +5,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
+import roomescape.exception.NotFoundException;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -21,6 +23,11 @@ public class ThemeService {
 
     public List<Theme> getThemes() {
         return themeRepository.findAll();
+    }
+
+    public Theme findById(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("theme"));
     }
 
     public Theme saveTheme(Theme theme) {

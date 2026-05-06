@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('예약하기')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <h1>예약하기</h1>
+
+    <div th:if="${selectedTheme != null}" class="selected-theme"
+         th:attr="data-theme-id=${selectedTheme.id()}">
+        <img th:src="${selectedTheme.thumbnailUrl()}" th:alt="${selectedTheme.name()}"/>
+        <div>
+            <h3 th:text="${selectedTheme.name()}"></h3>
+            <p th:text="${selectedTheme.description()}"></p>
+        </div>
+    </div>
+
+    <p th:if="${selectedTheme == null}" style="color:#a00;">
+        선택된 테마가 없습니다. <a th:href="@{/}">홈</a>에서 테마를 선택하세요.
+    </p>
+
+    <div th:if="${selectedTheme != null}">
+        <div class="form-row">
+            <label for="date-input">날짜 선택</label>
+            <input type="date" id="date-input"/>
+        </div>
+
+        <div>
+            <label>가능한 시간</label>
+            <div id="time-list" class="time-list">
+                <span style="color:#888; font-size:13px;">날짜를 먼저 선택하세요.</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label for="name-input">예약자 이름</label>
+            <input type="text" id="name-input" placeholder="이름을 입력하세요"/>
+        </div>
+
+        <button id="submit-btn" class="btn btn-lg" type="button">예약 등록</button>
+    </div>
+</main>
+
+<script th:src="@{/js/reservation.js}"></script>
+</body>
+</html>

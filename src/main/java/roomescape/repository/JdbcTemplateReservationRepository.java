@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -9,7 +10,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,28 +24,34 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     @Override
     public List<Reservation> findAllReservations() {
         return jdbcTemplate.query(
-                "SELECT r.id, r.name, r.date, t.id AS time_id, th.id AS theme_id, th.name, th.description, " +
-                        "th.thumbnail_url, t.start_at " +
+                "SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, " +
+                        "t.id AS time_id, t.start_at, " +
+                        "th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, " +
+                        "th.thumbnail_url AS theme_thumbnail_url " +
                         "FROM reservation r " +
                         "JOIN reservation_time t ON r.time_id = t.id " +
                         "JOIN theme th ON r.theme_id = th.id",
-                (rs, rowNum) ->
-                {
-                    long timeId = rs.getLong("time_id");
-                    long themeId = rs.getLong("theme_id");
-
-                    LocalTime time = rs.getTime("start_at").toLocalTime();
-                    ReservationTime reservationTime = new ReservationTime(timeId, time);
-
-                    Theme theme = new Theme(themeId, rs.getString("name"), rs.getString("description"), rs.getString("thumbnail_url"));
-
-                    return new Reservation(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getDate("date").toLocalDate(),
-                            reservationTime, theme);
-                }
+                reservationRowMapper()
         );
+    }
+
+    private RowMapper<Reservation> reservationRowMapper() {
+        return (rs, rowNum) -> {
+            ReservationTime reservationTime = new ReservationTime(
+                    rs.getLong("time_id"),
+                    rs.getTime("start_at").toLocalTime());
+            Theme theme = new Theme(
+                    rs.getLong("theme_id"),
+                    rs.getString("theme_name"),
+                    rs.getString("theme_description"),
+                    rs.getString("theme_thumbnail_url"));
+            return new Reservation(
+                    rs.getLong("reservation_id"),
+                    rs.getString("reservation_name"),
+                    rs.getDate("date").toLocalDate(),
+                    reservationTime,
+                    theme);
+        };
     }
 
     @Override
@@ -81,27 +87,15 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     @Override
     public List<Reservation> findReservationsByName(String name) {
         return jdbcTemplate.query(
-                "SELECT r.id, r.name, r.date, t.id AS time_id, th.id AS theme_id, th.name, th.description, " +
-                        "th.thumbnail_url, t.start_at " +
+                "SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, " +
+                        "t.id AS time_id, t.start_at, " +
+                        "th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, " +
+                        "th.thumbnail_url AS theme_thumbnail_url " +
                         "FROM reservation r " +
                         "JOIN reservation_time t ON r.time_id = t.id " +
                         "JOIN theme th ON r.theme_id = th.id " +
                         "WHERE r.name = ?",
-                (rs, rowNum) -> {
-                    long timeId = rs.getLong("time_id");
-                    long themeId = rs.getLong("theme_id");
-
-                    LocalTime time = rs.getTime("start_at").toLocalTime();
-                    ReservationTime reservationTime = new ReservationTime(timeId, time);
-
-                    Theme theme = new Theme(themeId, rs.getString("name"), rs.getString("description"), rs.getString("thumbnail_url"));
-
-                    return new Reservation(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getDate("date").toLocalDate(),
-                            reservationTime, theme);
-                },
+                reservationRowMapper(),
                 name
         );
     }

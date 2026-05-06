@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('테마 관리')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <h1>테마 관리</h1>
+
+    <div class="form-inline">
+        <div class="form-row">
+            <label for="th-name">이름</label>
+            <input type="text" id="th-name"/>
+        </div>
+        <div class="form-row">
+            <label for="th-desc">설명</label>
+            <input type="text" id="th-desc"/>
+        </div>
+        <div class="form-row">
+            <label for="th-thumb">썸네일 URL</label>
+            <input type="text" id="th-thumb"/>
+        </div>
+        <button id="add-btn" class="btn" type="button">추가</button>
+    </div>
+
+    <table class="data-table">
+        <thead><tr><th>번호</th><th>이름</th><th>설명</th><th>썸네일</th><th></th></tr></thead>
+        <tbody id="rows">
+        <tr th:each="th : ${themes}" th:attr="data-id=${th.id()}">
+            <td th:text="${th.id()}"></td>
+            <td th:text="${th.name()}"></td>
+            <td th:text="${th.description()}"></td>
+            <td><img th:src="${th.thumbnailUrl()}" alt="" style="width:60px;height:45px;object-fit:cover;"/></td>
+            <td><button class="btn btn-danger btn-sm delete-btn" type="button">삭제</button></td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<script th:src="@{/js/admin-theme.js}"></script>
+</body>
+</html>
