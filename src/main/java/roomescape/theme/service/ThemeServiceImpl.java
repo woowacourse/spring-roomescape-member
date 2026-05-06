@@ -37,12 +37,12 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     @Override
-    public List<Theme> getThemes() {
+    public List<Theme> getAll() {
         return themeRepository.findAll();
     }
 
     @Override
-    public Theme save(ThemeSaveServiceDto theme) {
+    public Theme create(ThemeSaveServiceDto theme) {
         Theme newTheme = new Theme(
                 theme.getName(),
                 theme.getDescription(),

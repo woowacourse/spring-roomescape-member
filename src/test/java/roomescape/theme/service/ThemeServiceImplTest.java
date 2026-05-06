@@ -2,7 +2,6 @@ package roomescape.theme.service;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Set;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,23 +45,23 @@ class ThemeServiceImplTest {
     private ThemeServiceImpl themeService;
 
     @Test
-    void getThemes() {
+    void getAll() {
         List<Theme> themes = List.of(
                 new Theme("a", "b", "c").withId(1L),
                 new Theme("d", "e", "f").withId(2L));
         when(themeRepository.findAll()).thenReturn(themes);
 
-        assertThat(themeService.getThemes()).isEqualTo(themes);
+        assertThat(themeService.getAll()).isEqualTo(themes);
         verify(themeRepository).findAll();
     }
 
     @Test
-    void save() {
+    void create() {
         ThemeSaveServiceDto dto = new ThemeSaveServiceDto("이름", "설명", "https://url");
         Theme persisted = new Theme("이름", "설명", "https://url").withId(10L);
         when(themeRepository.save(any(Theme.class))).thenReturn(persisted);
 
-        Theme result = themeService.save(dto);
+        Theme result = themeService.create(dto);
 
         assertThat(result).isEqualTo(persisted);
 
