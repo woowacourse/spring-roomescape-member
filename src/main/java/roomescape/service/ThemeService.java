@@ -27,6 +27,10 @@ public class ThemeService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
+    public List<Theme> getThemes() {
+        return themeDao.findAll();
+    }
+
     public Theme createTheme(CreateThemeRequest request) {
         Long newThemeId = themeDao.save(request);
         return themeDao.findById(newThemeId);

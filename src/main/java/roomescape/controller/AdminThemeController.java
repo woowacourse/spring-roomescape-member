@@ -16,6 +16,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.CreateThemeRequest;
 import roomescape.dto.PopularThemeResponse;
 import roomescape.dto.ThemeReservationTimeResponse;
+import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -28,6 +29,14 @@ public class AdminThemeController {
         this.themeService = themeService;
     }
 
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> readThemes() {
+        List<Theme> themes = themeService.getThemes();
+        return ResponseEntity.ok().body(themes.stream()
+                .map(ThemeResponse::from)
+                .toList());
+    }
+    
     @PostMapping
     public ResponseEntity<Void> createTheme(@RequestBody CreateThemeRequest createThemeRequest) {
         Theme createdTheme = themeService.createTheme(createThemeRequest);

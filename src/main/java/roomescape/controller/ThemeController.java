@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
 import roomescape.dto.PopularThemeResponse;
 import roomescape.dto.ThemeReservationTimeResponse;
+import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -20,6 +23,14 @@ public class ThemeController {
 
     public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> readThemes() {
+        List<Theme> themes = themeService.getThemes();
+        return ResponseEntity.ok().body(themes.stream()
+                .map(ThemeResponse::from)
+                .toList());
     }
 
     @GetMapping("/{id}/times")

@@ -31,6 +31,11 @@ public class ThemeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public List<Theme> findAll() {
+        String sql = "select id, name, description, thumbnail_image_url from theme";
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
     public Theme findById(Long id) {
         String sql = "select id, name, description, thumbnail_image_url from theme where id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);

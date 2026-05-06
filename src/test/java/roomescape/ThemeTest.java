@@ -20,6 +20,20 @@ public class ThemeTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
+    void 테마_전체_목록_반환() {
+        insertTheme();
+        insertTheme();
+
+        List<Map<String, Object>> themes = RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".");
+
+        assertThat(themes).hasSize(2);
+    }
+
+    @Test
     void 테마_예약_시간_전체_목록_반환() {
         insertTheme();
         jdbcTemplate.execute("INSERT INTO reservation_time(start_at) VALUES ('10:00:00')");

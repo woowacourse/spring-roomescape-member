@@ -22,6 +22,20 @@ public class AdminThemeTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
+    void 테마_전체_목록_반환() {
+        insertTheme();
+        insertTheme();
+
+        List<Map<String, Object>> themes = RestAssured.given().log().all()
+                .when().get("/admin/themes")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".");
+
+        assertThat(themes).hasSize(2);
+    }
+
+    @Test
     void 테마_추가() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "테마명");
