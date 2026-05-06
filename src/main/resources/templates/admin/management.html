@@ -39,10 +39,14 @@
       <h2 class="section-title mb-0">전체 예약 관리</h2>
       <button type="button" class="btn btn-outline-secondary btn-sm" onclick="loadReservations()">새로고침</button>
     </div>
-    <form id="reservationForm" class="row g-2 bg-white border rounded p-3 mb-3">
-      <div class="col-md-3">
-        <label for="reservationName" class="form-label">예약자 이름</label>
-        <input type="text" id="reservationName" class="form-control" required>
+	    <form id="reservationForm" class="row g-2 bg-white border rounded p-3 mb-3">
+	      <div class="col-12">
+	        <h3 class="h5 mb-1">예약 추가</h3>
+	        <p class="text-muted mb-2">관리자가 예약자 이름, 날짜, 테마, 시간을 선택해 새 예약을 등록합니다.</p>
+	      </div>
+	      <div class="col-md-3">
+	        <label for="reservationName" class="form-label">예약자 이름</label>
+	        <input type="text" id="reservationName" class="form-control" required>
       </div>
       <div class="col-md-3">
         <label for="reservationDate" class="form-label">날짜</label>
@@ -60,11 +64,49 @@
           <option value="">날짜와 테마를 선택하세요</option>
         </select>
       </div>
-      <div class="col-md-1 d-flex align-items-end">
-        <button type="submit" class="btn btn-primary w-100">추가</button>
-      </div>
-    </form>
-    <div class="table-responsive bg-white border rounded">
+	      <div class="col-md-1 d-flex align-items-end">
+	        <button type="submit" class="btn btn-primary w-100">추가</button>
+	      </div>
+	    </form>
+	    <div class="row g-2 bg-white border rounded p-3 mb-3">
+	      <div class="col-12">
+	        <h3 class="h5 mb-1">예약 목록 필터 및 정렬</h3>
+	        <p class="text-muted mb-2">등록된 예약 목록을 이름, 날짜 범위, 테마로 좁히고 원하는 기준으로 정렬합니다.</p>
+	      </div>
+	      <div class="col-md-3">
+	        <label for="reservationKeywordFilter" class="form-label">예약자 검색</label>
+	        <input type="search" id="reservationKeywordFilter" class="form-control" placeholder="이름 입력">
+	      </div>
+	      <div class="col-md-2">
+	        <label for="reservationStartDateFilter" class="form-label">시작일</label>
+	        <input type="date" id="reservationStartDateFilter" class="form-control">
+	      </div>
+	      <div class="col-md-2">
+	        <label for="reservationEndDateFilter" class="form-label">종료일</label>
+	        <input type="date" id="reservationEndDateFilter" class="form-control">
+	      </div>
+	      <div class="col-md-2">
+	        <label for="reservationThemeFilter" class="form-label">테마</label>
+	        <select id="reservationThemeFilter" class="form-select">
+	          <option value="">전체 테마</option>
+	        </select>
+	      </div>
+	      <div class="col-md-2">
+	        <label for="reservationSortFilter" class="form-label">정렬</label>
+	        <select id="reservationSortFilter" class="form-select">
+	          <option value="idAsc">ID 빠른순</option>
+	          <option value="dateAsc">날짜 빠른순</option>
+	          <option value="dateDesc">날짜 늦은순</option>
+	          <option value="themeAsc">테마명 가나다순</option>
+	          <option value="nameAsc">예약자 가나다순</option>
+	          <option value="idDesc">최근 등록순</option>
+	        </select>
+	      </div>
+	      <div class="col-md-1 d-flex align-items-end">
+	        <button type="button" class="btn btn-outline-secondary w-100" onclick="resetReservationFilters()">초기화</button>
+	      </div>
+	    </div>
+	    <div class="table-responsive bg-white border rounded">
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
         <tr>
@@ -144,9 +186,10 @@
 </main>
 
 <script>
-  const RESERVATIONS_PER_PAGE = 20;
-  let reservations = [];
-  let currentReservationPage = 1;
+	  const RESERVATIONS_PER_PAGE = 20;
+	  let allReservations = [];
+	  let reservations = [];
+	  let currentReservationPage = 1;
 
   function emptyRow(colspan, message) {
     return `<tr><td colspan="${colspan}" class="text-center text-muted py-4">${message}</td></tr>`;
@@ -175,37 +218,34 @@
       const data = await requestJson('/api/admin/reservations');
       const list = document.getElementById('reservationList');
 
-      if (data.length === 0) {
-        reservations = [];
-        list.innerHTML = emptyRow(6, '등록된 예약이 없습니다.');
-        renderReservationPagination();
-        return;
-      }
+	      allReservations = data;
 
-      reservations = [...data].sort((a, b) => {
-        const dateCompare = a.date.localeCompare(b.date);
-        if (dateCompare !== 0) return dateCompare;
+	      if (allReservations.length === 0) {
+	        reservations = [];
+	        list.innerHTML = emptyRow(6, '등록된 예약이 없습니다.');
+	        renderReservationPagination();
+	        return;
+	      }
 
-        const timeCompare = a.time.startAt.localeCompare(b.time.startAt);
-        if (timeCompare !== 0) return timeCompare;
-
-        return a.id - b.id;
-      });
-
-      const totalPages = Math.ceil(reservations.length / RESERVATIONS_PER_PAGE);
-      currentReservationPage = Math.min(currentReservationPage, totalPages);
-      renderReservations();
-    } catch (error) {
-      document.getElementById('reservationList').innerHTML = emptyRow(6, '예약 목록을 불러오지 못했습니다.');
-      document.getElementById('reservationPageInfo').innerText = '';
+	      applyReservationFilters(false);
+	    } catch (error) {
+	      document.getElementById('reservationList').innerHTML = emptyRow(6, '예약 목록을 불러오지 못했습니다.');
+	      document.getElementById('reservationPageInfo').innerText = '';
       document.getElementById('reservationPagination').innerHTML = '';
     }
   }
 
-  function renderReservations() {
-    const list = document.getElementById('reservationList');
-    const startIndex = (currentReservationPage - 1) * RESERVATIONS_PER_PAGE;
-    const pageReservations = reservations.slice(startIndex, startIndex + RESERVATIONS_PER_PAGE);
+	  function renderReservations() {
+	    const list = document.getElementById('reservationList');
+
+	    if (reservations.length === 0) {
+	      list.innerHTML = emptyRow(6, '조건에 맞는 예약이 없습니다.');
+	      renderReservationPagination();
+	      return;
+	    }
+
+	    const startIndex = (currentReservationPage - 1) * RESERVATIONS_PER_PAGE;
+	    const pageReservations = reservations.slice(startIndex, startIndex + RESERVATIONS_PER_PAGE);
 
     list.innerHTML = pageReservations.map(res => `
         <tr>
@@ -221,20 +261,20 @@
     renderReservationPagination();
   }
 
-  function renderReservationPagination() {
+	  function renderReservationPagination() {
     const pageInfo = document.getElementById('reservationPageInfo');
     const pagination = document.getElementById('reservationPagination');
     const totalPages = Math.ceil(reservations.length / RESERVATIONS_PER_PAGE);
 
-    if (reservations.length === 0) {
-      pageInfo.innerText = '';
-      pagination.innerHTML = '';
-      return;
-    }
+	    if (reservations.length === 0) {
+	      pageInfo.innerText = allReservations.length === 0 ? '' : `전체 ${allReservations.length}건 중 0건 표시`;
+	      pagination.innerHTML = '';
+	      return;
+	    }
 
     const start = (currentReservationPage - 1) * RESERVATIONS_PER_PAGE + 1;
     const end = Math.min(currentReservationPage * RESERVATIONS_PER_PAGE, reservations.length);
-    pageInfo.innerText = `전체 ${reservations.length}건 중 ${start}-${end}건`;
+	    pageInfo.innerText = `전체 ${allReservations.length}건 중 ${reservations.length}건 표시, ${start}-${end}건`;
 
     let pageItems = `
         <li class="page-item ${currentReservationPage === 1 ? 'disabled' : ''}">
@@ -259,15 +299,76 @@
     pagination.innerHTML = pageItems;
   }
 
-  function changeReservationPage(page) {
+	  function changeReservationPage(page) {
     const totalPages = Math.ceil(reservations.length / RESERVATIONS_PER_PAGE);
     if (page < 1 || page > totalPages || page === currentReservationPage) {
       return;
     }
 
     currentReservationPage = page;
-    renderReservations();
-  }
+	    renderReservations();
+	  }
+
+	  function applyReservationFilters(resetPage = true) {
+	    const keyword = document.getElementById('reservationKeywordFilter').value.trim().toLowerCase();
+	    const startDate = document.getElementById('reservationStartDateFilter').value;
+	    const endDate = document.getElementById('reservationEndDateFilter').value;
+	    const themeId = document.getElementById('reservationThemeFilter').value;
+	    const sortType = document.getElementById('reservationSortFilter').value;
+
+	    reservations = allReservations.filter(res => {
+	      const matchesKeyword = !keyword || res.name.toLowerCase().includes(keyword);
+	      const matchesStartDate = !startDate || res.date >= startDate;
+	      const matchesEndDate = !endDate || res.date <= endDate;
+	      const matchesTheme = !themeId || String(res.theme.id) === themeId;
+
+	      return matchesKeyword && matchesStartDate && matchesEndDate && matchesTheme;
+	    }).sort((a, b) => compareReservations(a, b, sortType));
+
+	    const totalPages = Math.max(1, Math.ceil(reservations.length / RESERVATIONS_PER_PAGE));
+	    currentReservationPage = resetPage ? 1 : Math.min(currentReservationPage, totalPages);
+	    renderReservations();
+	  }
+
+	  function compareReservations(a, b, sortType) {
+	    if (sortType === 'dateDesc') {
+	      return compareDateTime(b, a) || a.id - b.id;
+	    }
+
+	    if (sortType === 'themeAsc') {
+	      return a.theme.name.localeCompare(b.theme.name) || compareDateTime(a, b) || a.id - b.id;
+	    }
+
+	    if (sortType === 'nameAsc') {
+	      return a.name.localeCompare(b.name) || compareDateTime(a, b) || a.id - b.id;
+	    }
+
+	    if (sortType === 'idDesc') {
+	      return b.id - a.id;
+	    }
+
+	    if (sortType === 'idAsc') {
+	      return a.id - b.id;
+	    }
+
+	    return compareDateTime(a, b) || a.id - b.id;
+	  }
+
+	  function compareDateTime(a, b) {
+	    const dateCompare = a.date.localeCompare(b.date);
+	    if (dateCompare !== 0) return dateCompare;
+
+	    return a.time.startAt.localeCompare(b.time.startAt);
+	  }
+
+	  function resetReservationFilters() {
+	    document.getElementById('reservationKeywordFilter').value = '';
+	    document.getElementById('reservationStartDateFilter').value = '';
+	    document.getElementById('reservationEndDateFilter').value = '';
+	    document.getElementById('reservationThemeFilter').value = '';
+	    document.getElementById('reservationSortFilter').value = 'idAsc';
+	    applyReservationFilters();
+	  }
 
   async function deleteReservation(id) {
     if (!confirm('정말 삭제하시겠습니까?')) return;
@@ -282,12 +383,15 @@
 
   async function loadThemes() {
     try {
-      const themes = await requestJson('/api/themes');
-      const list = document.getElementById('themeList');
-      const reservationThemeSelect = document.getElementById('reservationThemeId');
+	      const themes = await requestJson('/api/themes');
+	      const list = document.getElementById('themeList');
+	      const reservationThemeSelect = document.getElementById('reservationThemeId');
+	      const reservationThemeFilter = document.getElementById('reservationThemeFilter');
 
-      reservationThemeSelect.innerHTML = '<option value="">테마를 선택하세요</option>' +
-          themes.map(theme => `<option value="${theme.id}">${theme.name}</option>`).join('');
+	      reservationThemeSelect.innerHTML = '<option value="">테마를 선택하세요</option>' +
+	          themes.map(theme => `<option value="${theme.id}">${theme.name}</option>`).join('');
+	      reservationThemeFilter.innerHTML = '<option value="">전체 테마</option>' +
+	          themes.map(theme => `<option value="${theme.id}">${theme.name}</option>`).join('');
 
       if (themes.length === 0) {
         list.innerHTML = emptyRow(5, '등록된 테마가 없습니다.');
@@ -441,10 +545,15 @@
     }
   }
 
-  document.getElementById('reservationForm').addEventListener('submit', createReservation);
-  document.getElementById('reservationDate').addEventListener('change', loadAvailableReservationTimes);
-  document.getElementById('reservationThemeId').addEventListener('change', loadAvailableReservationTimes);
-  document.getElementById('themeForm').addEventListener('submit', createTheme);
+	  document.getElementById('reservationForm').addEventListener('submit', createReservation);
+	  document.getElementById('reservationDate').addEventListener('change', loadAvailableReservationTimes);
+	  document.getElementById('reservationThemeId').addEventListener('change', loadAvailableReservationTimes);
+	  document.getElementById('reservationKeywordFilter').addEventListener('input', () => applyReservationFilters());
+	  document.getElementById('reservationStartDateFilter').addEventListener('change', () => applyReservationFilters());
+	  document.getElementById('reservationEndDateFilter').addEventListener('change', () => applyReservationFilters());
+	  document.getElementById('reservationThemeFilter').addEventListener('change', () => applyReservationFilters());
+	  document.getElementById('reservationSortFilter').addEventListener('change', () => applyReservationFilters());
+	  document.getElementById('themeForm').addEventListener('submit', createTheme);
   document.getElementById('timeForm').addEventListener('submit', createTime);
 
   window.onload = () => {
