@@ -20,14 +20,14 @@ public class AdminThemeController {
         this.adminThemeService = adminThemeService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ThemeResponse> addTheme(@Valid @RequestBody ThemeRequest themeRequest) {
         Theme theme = adminThemeService.save(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
         return ResponseEntity.status(HttpStatus.CREATED).body(ThemeResponse.from(theme));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTheme(@PathVariable long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
         adminThemeService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

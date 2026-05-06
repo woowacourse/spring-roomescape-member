@@ -20,7 +20,7 @@ public class AdminReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createForceReservation(@Valid @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<ReservationResponse> createForceReservation(@Valid @RequestBody ReservationRequest reservationRequest) {
         Reservation reservation = adminReservationService.createForceReservation(reservationRequest.themeId(),
                 reservationRequest.name(), reservationRequest.date(), reservationRequest.timeId());
 
