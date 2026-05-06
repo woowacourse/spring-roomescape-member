@@ -13,7 +13,9 @@ import roomescape.time.dto.response.ReservationTimeDetailDto;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
+@Transactional
 public class ReservationTimeService {
+
     private final ReservationTimeRepository reservationTimeRepository;
 
     public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
@@ -27,19 +29,11 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    @Transactional
-    public ReservationTime create(ReservationTimeSaveDto dto) {
+    public ReservationTime register(ReservationTimeSaveDto dto) {
         validateDuplicateTimeExist(dto.startAt());
         return reservationTimeRepository.save(ReservationTime.create(dto.startAt()));
     }
 
-    private void validateDuplicateTimeExist(LocalTime startAt) {
-        if (reservationTimeRepository.existsByStartAt(startAt)) {
-            throw new ConflictException("이미 존재하는 예약 시간입니다.");
-        }
-    }
-
-    @Transactional
     public ReservationTimeDetailDto delete(Long id) {
         ReservationTime reservationTime = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
@@ -51,4 +45,11 @@ public class ReservationTimeService {
     public List<ReservationTime> readAvailableTimes(LocalDate date, Long themeId) {
         return reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId);
     }
+
+    private void validateDuplicateTimeExist(LocalTime startAt) {
+        if (reservationTimeRepository.existsByStartAt(startAt)) {
+            throw new ConflictException("이미 존재하는 예약 시간입니다.");
+        }
+    }
+
 }

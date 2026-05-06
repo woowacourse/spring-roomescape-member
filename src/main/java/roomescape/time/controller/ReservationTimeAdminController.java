@@ -32,7 +32,7 @@ public class ReservationTimeAdminController {
     public ResponseEntity<ReservationTimeDetailDto> create(
             @RequestBody ReservationTimeSaveDto reservationTimeSaveDto
     ) {
-        ReservationTime reservationTime = reservationTimeService.create(reservationTimeSaveDto);
+        ReservationTime reservationTime = reservationTimeService.register(reservationTimeSaveDto);
         ReservationTimeDetailDto responseData = ReservationTimeDetailDto.from(reservationTime);
         return ResponseEntity.ok(responseData);
     }
