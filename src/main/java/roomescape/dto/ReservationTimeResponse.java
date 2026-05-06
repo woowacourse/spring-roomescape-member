@@ -1,14 +1,16 @@
 package roomescape.dto;
 
 import roomescape.domain.ReservationTime;
-
-import java.time.format.DateTimeFormatter;
+import roomescape.utils.DateTimeConverter;
 
 public record ReservationTimeResponse(
         Long id,
         String startAt
 ) {
     public static ReservationTimeResponse from(ReservationTime reservationTime) {
-        return new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().format(DateTimeFormatter.ofPattern("HH:mm")));
+        return new ReservationTimeResponse(
+                reservationTime.getId(),
+                reservationTime.getStartAt().format(DateTimeConverter.TIME_FORMATTER)
+        );
     }
 }

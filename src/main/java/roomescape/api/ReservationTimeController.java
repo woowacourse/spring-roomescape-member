@@ -34,7 +34,7 @@ public class ReservationTimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> search() {
-        List<ReservationTimeResponse> responses = reservationTimeService.findAll()
+        List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes()
                 .stream()
                 .map(ReservationTimeResponse::from)
                 .toList();

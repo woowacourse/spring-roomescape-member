@@ -16,7 +16,7 @@ public class ReservationTimeService {
         this.timeRepository = timeRepository;
     }
 
-    public List<ReservationTime> findAll() {
+    public List<ReservationTime> getReservationTimes() {
         return timeRepository.findAll();
     }
 

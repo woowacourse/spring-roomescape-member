@@ -1,7 +1,7 @@
 package roomescape.dto;
 
-import java.time.format.DateTimeFormatter;
 import roomescape.domain.ReservationTime;
+import roomescape.utils.DateTimeConverter;
 
 public record TimeWithStatusResponse(
         Long id,
@@ -9,7 +9,10 @@ public record TimeWithStatusResponse(
         boolean reserved
 ) {
     public static TimeWithStatusResponse from(ReservationTime reservationTime, boolean reserved) {
-        return new TimeWithStatusResponse(reservationTime.getId(), reservationTime.getStartAt().format(
-                DateTimeFormatter.ofPattern("HH:mm")), reserved);
+        return new TimeWithStatusResponse(
+                reservationTime.getId(),
+                reservationTime.getStartAt().format(DateTimeConverter.TIME_FORMATTER),
+                reserved
+        );
     }
 }

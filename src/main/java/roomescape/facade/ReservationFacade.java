@@ -67,7 +67,7 @@ public class ReservationFacade {
     }
 
     public List<TimeWithStatusResponse> getTimesWithAvailability(LocalDate date, Long themeId) {
-        List<ReservationTime> times = reservationTimeService.findAll();
+        List<ReservationTime> times = reservationTimeService.getReservationTimes();
         Set<Long> reservedTimeIds = reservationService.findReservedTimeIdsByDateAndThemeId(date, themeId);
 
         return times.stream()

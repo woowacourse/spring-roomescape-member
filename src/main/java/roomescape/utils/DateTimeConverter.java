@@ -7,15 +7,18 @@ import java.time.format.ResolverStyle;
 
 public class DateTimeConverter {
 
-    private static final String DATE_FORMAT = "uuuu-MM-dd";
-    private static final String TIME_FORMAT = "HH:mm";
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd")
+            .withResolverStyle(ResolverStyle.STRICT);
+    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
+    private DateTimeConverter() {
+    }
 
     public static LocalDate dateConverter(String date) {
-        return LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_FORMAT)
-                .withResolverStyle(ResolverStyle.STRICT));
+        return LocalDate.parse(date, DATE_FORMATTER);
     }
 
     public static LocalTime timeConverter(String time) {
-        return LocalTime.parse(time, DateTimeFormatter.ofPattern(TIME_FORMAT));
+        return LocalTime.parse(time, TIME_FORMATTER);
     }
 }
