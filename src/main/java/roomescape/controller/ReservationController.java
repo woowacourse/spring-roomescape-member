@@ -27,7 +27,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public AdminReservationResponse createReservation(@RequestBody ReservationRequest request) {
+    public ReservationResponse createReservation(@RequestBody ReservationRequest request) {
         return reservationService.save(request);
     }
 
