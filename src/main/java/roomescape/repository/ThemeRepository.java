@@ -87,18 +87,18 @@ public class ThemeRepository {
         );
     }
 
-    public boolean delete(long id) {
+    public boolean delete(long themeId) {
         String deleteSql = "DELETE FROM theme"
                 + " WHERE id = ?";
 
         try {
-            int deletedRowCount = jdbcTemplate.update(deleteSql, id);
+            int deletedRowCount = jdbcTemplate.update(deleteSql, themeId);
 
             return isDeleted(deletedRowCount);
         } catch (DataIntegrityViolationException exception) {
             throw new InUseEntityException(
                     "사용중이지 않은 테마만 제거할 수 있습니다.",
-                    "themeId = " + id,
+                    "themeId = " + themeId,
                     exception
             );
         }

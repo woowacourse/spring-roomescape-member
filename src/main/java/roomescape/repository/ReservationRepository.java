@@ -55,11 +55,11 @@ public class ReservationRepository {
         return jdbcTemplate.query(findSql, reservationRowMapper());
     }
 
-    public boolean delete(long id) {
+    public boolean delete(long reservationId) {
         String deleteSql = "DELETE FROM reservation"
                 + " WHERE id = ?";
 
-        int deletedRowCount = jdbcTemplate.update(deleteSql, id);
+        int deletedRowCount = jdbcTemplate.update(deleteSql, reservationId);
 
         return isDeleted(deletedRowCount);
     }

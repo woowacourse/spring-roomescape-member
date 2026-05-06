@@ -45,13 +45,13 @@ public class ThemeService {
         return themeRepository.findMostReserved(limit, duration);
     }
 
-    public void delete(long id) {
-        boolean deleted = themeRepository.delete(id);
+    public void delete(long themeId) {
+        boolean deleted = themeRepository.delete(themeId);
 
         if (!deleted) {
             throw new EntityNotFoundException(
                     "삭제할 테마를 조회하지 못했습니다.",
-                    "themeId = " + id
+                    "themeId = " + themeId
             );
         }
     }

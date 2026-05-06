@@ -58,18 +58,18 @@ public class ReservationTimeRepository {
         }
     }
 
-    public boolean delete(long id) {
+    public boolean delete(long timeId) {
         String deleteSql = "DELETE FROM reservation_time"
                 + " WHERE id = ?";
 
         try {
-            int deletedRowCount = jdbcTemplate.update(deleteSql, id);
+            int deletedRowCount = jdbcTemplate.update(deleteSql, timeId);
 
             return isDeleted(deletedRowCount);
         } catch (DataIntegrityViolationException exception) {
             throw new InUseEntityException(
                     "사용중이지 않은 시간만 제거할 수 있습니다.",
-                    "timeId = " + id,
+                    "timeId = " + timeId,
                     exception
             );
         }
