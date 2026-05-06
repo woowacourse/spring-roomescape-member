@@ -5,8 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>방탈출 관리자</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
 
         header {
             background: #1a252f;
@@ -30,24 +39,45 @@
             border-bottom: 3px solid transparent;
         }
 
-        .tab.active { color: white; border-bottom-color: #3498db; }
+        .tab.active {
+            color: white;
+            border-bottom-color: #3498db;
+        }
 
-        .container { max-width: 900px; margin: 30px auto; padding: 0 16px; }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 16px;
+        }
 
-        .section { display: none; }
-        .section.active { display: block; }
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
 
         .card {
             background: white;
             border-radius: 8px;
             padding: 24px;
             margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
         }
 
-        .card h2 { font-size: 1rem; margin-bottom: 16px; color: #2c3e50; }
+        .card h2 {
+            font-size: 1rem;
+            margin-bottom: 16px;
+            color: #2c3e50;
+        }
 
-        .form-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 0; }
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 0;
+        }
 
         input, select {
             padding: 9px 12px;
@@ -66,18 +96,62 @@
             font-size: 0.9rem;
         }
 
-        .btn-primary { background: #2c3e50; color: white; }
-        .btn-danger { background: #e74c3c; color: white; }
-        .btn-primary:hover { background: #3d5166; }
-        .btn-danger:hover { background: #c0392b; }
+        .btn-primary {
+            background: #2c3e50;
+            color: white;
+        }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-        th { background: #f8f9fa; padding: 10px 12px; text-align: left; font-size: 0.85rem; color: #666; border-bottom: 2px solid #eee; }
-        td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; vertical-align: middle; }
-        tr:hover td { background: #fafafa; }
-        .thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 4px; }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
 
-        .empty { color: #aaa; font-size: 0.9rem; padding: 16px 0; }
+        .btn-primary:hover {
+            background: #3d5166;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 0.85rem;
+            color: #666;
+            border-bottom: 2px solid #eee;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: #fafafa;
+        }
+
+        .thumb {
+            width: 64px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .empty {
+            color: #aaa;
+            font-size: 0.9rem;
+            padding: 16px 0;
+        }
     </style>
 </head>
 <body>
@@ -106,7 +180,15 @@
         <div class="card">
             <h2>테마 목록</h2>
             <table>
-                <thead><tr><th>ID</th><th>이름</th><th>설명</th><th>썸네일</th><th></th></tr></thead>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>이름</th>
+                    <th>설명</th>
+                    <th>썸네일</th>
+                    <th></th>
+                </tr>
+                </thead>
                 <tbody id="theme-list"></tbody>
             </table>
         </div>
@@ -124,7 +206,13 @@
         <div class="card">
             <h2>예약 시간 목록</h2>
             <table>
-                <thead><tr><th>ID</th><th>시작 시간</th><th></th></tr></thead>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>시작 시간</th>
+                    <th></th>
+                </tr>
+                </thead>
                 <tbody id="time-list"></tbody>
             </table>
         </div>
@@ -145,7 +233,16 @@
         <div class="card">
             <h2>예약 목록</h2>
             <table>
-                <thead><tr><th>ID</th><th>이름</th><th>날짜</th><th>시간</th><th>테마</th><th></th></tr></thead>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>이름</th>
+                    <th>날짜</th>
+                    <th>시간</th>
+                    <th>테마</th>
+                    <th></th>
+                </tr>
+                </thead>
                 <tbody id="reservation-list"></tbody>
             </table>
         </div>
@@ -191,8 +288,8 @@
         if (!name) return;
         await fetch('/admin/themes', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, thumbnailUrl, description })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, thumbnailUrl, description})
         });
         document.getElementById('theme-name').value = '';
         document.getElementById('theme-thumb').value = '';
@@ -201,7 +298,7 @@
     }
 
     async function deleteTheme(id) {
-        await fetch(`/admin/themes/${id}`, { method: 'DELETE' });
+        await fetch(`/admin/themes/${id}`, {method: 'DELETE'});
         loadThemes();
     }
 
@@ -229,14 +326,14 @@
         if (!startAt) return;
         await fetch('/admin/times', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ startAt })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({startAt})
         });
         loadTimes();
     }
 
     async function deleteTime(id) {
-        await fetch(`/admin/times/${id}`, { method: 'DELETE' });
+        await fetch(`/admin/times/${id}`, {method: 'DELETE'});
         loadTimes();
     }
 
@@ -266,14 +363,14 @@
         if (!name || !date) return;
         await fetch('/admin/reservations', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, date, timeId, themeId })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, date, timeId, themeId})
         });
         loadReservations();
     }
 
     async function deleteReservation(id) {
-        await fetch(`/admin/reservations/${id}`, { method: 'DELETE' });
+        await fetch(`/admin/reservations/${id}`, {method: 'DELETE'});
         loadReservations();
     }
 
