@@ -37,4 +37,9 @@ public class ThemeService {
         return themes.stream().map(ThemeResponse::from)
                 .toList();
     }
+
+    public Theme findById(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마 입니다."));
+    }
 }

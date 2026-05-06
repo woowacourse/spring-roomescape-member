@@ -10,6 +10,8 @@ import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.service.ReservationTimeService;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.service.ThemeService;
 
 @RequiredArgsConstructor
 @Service
@@ -31,7 +33,7 @@ public class ReservationService {
         Theme theme = themeService.findById(request.themeId());
         ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
         validateDuplicateReservation(request);
-        Reservation reservation = request.toEntity(reservationTime);
+        Reservation reservation = request.toEntity(theme, reservationTime);
 
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
@@ -41,7 +43,10 @@ public class ReservationService {
     }
 
     private void validateDuplicateReservation(ReservationCreateRequest request) {
-        Boolean existsByDateAndTime = reservationRepository.existsByDateAndTime(request.date(), request.timeId());
+        Boolean existsByDateAndTime = reservationRepository.existsByDateAndThemeAndTime(request.date(),
+                request.themeId(),
+                request.timeId()
+        );
         if (existsByDateAndTime) {
             throw new ReservationException("[ERROR] 이미 해당 날짜와 시간에 예약이 존재합니다.");
         }

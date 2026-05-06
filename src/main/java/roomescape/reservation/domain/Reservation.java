@@ -31,7 +31,7 @@ public class Reservation {
                 .id(generatedId)
                 .name(this.name)
                 .date(this.date)
-                .theme(theme)
+                .theme(this.theme)
                 .time(this.time)
                 .build();
     }

@@ -63,7 +63,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Boolean existsByDateAndTime(LocalDate date, Long timeId) {
+    public Boolean existsByDateAndThemeAndTime(LocalDate date, Long themeId, Long timeId) {
         return jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)",
                 Boolean.class,
