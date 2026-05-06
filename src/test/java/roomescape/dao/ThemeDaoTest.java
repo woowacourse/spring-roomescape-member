@@ -41,5 +41,8 @@ public class ThemeDaoTest {
                         "시간의 문",
                         "사라진 탐정"
                 );
+        assertThat(popularThemes)
+                .extracting(PopularTheme::rank)
+                .containsExactly(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
     }
 }

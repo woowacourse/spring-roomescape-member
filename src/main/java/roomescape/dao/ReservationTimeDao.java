@@ -41,7 +41,7 @@ public class ReservationTimeDao {
             while (rs.next()) {
                 ReservationTime reservationTime = new ReservationTime(
                         rs.getLong("time_id"),
-                        rs.getObject("start_at", LocalTime.class)
+                        LocalTime.parse(rs.getString("start_at"))
                 );
                 boolean isAvailable = rs.getBoolean("available");
                 results.put(reservationTime, isAvailable);

@@ -43,9 +43,7 @@ public class ReservationTimeServiceTest {
     @Test
     void 시간_삭제() {
         when(reservationTimeDao.delete(1L)).thenReturn(1);
-
         reservationTimeService.deleteReservationTime(1L);
-
         verify(reservationTimeDao).delete(1L);
     }
 }
