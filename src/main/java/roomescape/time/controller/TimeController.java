@@ -26,7 +26,7 @@ public class TimeController {
 
   @PostMapping("/times")
   public ResponseEntity<TimeResponseDto> create(@RequestBody TimeSaveRequestDto request) {
-    TimeResponseDto body = TimeResponseDto.from(timeService.create(request.getStartAt(), request.getEndAt()));
+    TimeResponseDto body = TimeResponseDto.from(timeService.create(request.startAt(), request.endAt()));
     return ResponseEntity.status(HttpStatus.CREATED).body(body);
   }
 
