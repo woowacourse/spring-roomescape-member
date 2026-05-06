@@ -3,10 +3,18 @@ package roomescape.dto.theme;
 import roomescape.domain.Theme;
 
 public record ThemeResponseDto(
-    Long id
+    Long id,
+    String name,
+    String description,
+    String imageUrl
 ) {
 
     public static ThemeResponseDto from(Theme theme) {
-        return new ThemeResponseDto(theme.getId());
+        return new ThemeResponseDto(
+            theme.getId(),
+            theme.getName(),
+            theme.getDescription(),
+            theme.getImageUrl()
+        );
     }
 }
