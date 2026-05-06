@@ -25,7 +25,7 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> times() {
+    public ResponseEntity<List<ThemeResponse>> themes() {
         return ResponseEntity.ok(convertToTimeResponses(themeService.allTheme()));
     }
 

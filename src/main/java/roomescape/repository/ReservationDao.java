@@ -9,8 +9,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.Time;
 
 @Repository
 public class ReservationDao implements ReservationRepository {
@@ -37,7 +37,7 @@ public class ReservationDao implements ReservationRepository {
                 FROM 
                     reservation r 
                         INNER JOIN 
-                        reservation_time t 
+                        time t 
                             INNER JOIN 
                         theme theme
                             ON r.time_id = t.id 
@@ -49,7 +49,7 @@ public class ReservationDao implements ReservationRepository {
     @Override
     public Reservation findById(long reservationId) {
         String sql = "SELECT r.id AS r_id, r.name, r.date, t.id AS t_id, t.start_at " +
-                "FROM reservation r INNER JOIN reservation_time t ON r.time_id = t.id " +
+                "FROM reservation r INNER JOIN time t ON r.time_id = t.id " +
                 "WHERE r.id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper(), reservationId);
     }
@@ -59,7 +59,7 @@ public class ReservationDao implements ReservationRepository {
         SimpleJdbcInsert insert = createInsert();
         Map<String, Object> params = createParams(reservation);
         long reservationId = insert.executeAndReturnKey(params).longValue();
-        return new Reservation(reservationId, reservation.name(), reservation.date(), reservation.reservationTime(),
+        return new Reservation(reservationId, reservation.name(), reservation.date(), reservation.time(),
                 reservation.theme());
     }
 
@@ -73,7 +73,7 @@ public class ReservationDao implements ReservationRepository {
         return Map.of(
                 "name", reservation.name(),
                 "date", reservation.date(),
-                "time_id", reservation.reservationTime().id(),
+                "time_id", reservation.time().id(),
                 "theme_id", reservation.theme().id()
         );
     }
@@ -89,7 +89,7 @@ public class ReservationDao implements ReservationRepository {
                 rs.getLong("r_id"),
                 rs.getString("name"),
                 rs.getObject("date", LocalDate.class),
-                new ReservationTime(
+                new Time(
                         rs.getLong("t_id"),
                         rs.getObject("start_at", LocalTime.class)),
                 new Theme(

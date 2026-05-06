@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
-import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.controller.dto.ThemeResponse;
+import roomescape.controller.dto.TimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 
@@ -56,7 +56,7 @@ public class ReservationController {
                 reservation.id(),
                 reservation.name(),
                 reservation.date(),
-                ReservationTimeResponse.from(reservation.reservationTime()),
+                TimeResponse.from(reservation.time()),
                 ThemeResponse.from(reservation.theme())
         );
     }

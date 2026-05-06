@@ -1,30 +1,29 @@
 package roomescape.repository;
 
-import roomescape.domain.ReservationTime;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import roomescape.domain.Time;
 
 public class FakeReservationTimeDao implements ReservationTimeRepository {
 
-    private final Map<Long, ReservationTime> storage = new HashMap<>();
+    private final Map<Long, Time> storage = new HashMap<>();
     private long sequence = 1L;
 
     @Override
-    public List<ReservationTime> findAll() {
+    public List<Time> findAll() {
         return List.copyOf(storage.values());
     }
 
     @Override
-    public ReservationTime findById(long id) {
+    public Time findById(long id) {
         return storage.get(id);
     }
 
     @Override
-    public ReservationTime save(ReservationTime reservationTime) {
+    public Time save(Time time) {
         long id = sequence++;
-        ReservationTime savedTime = new ReservationTime(id, reservationTime.startAt());
+        Time savedTime = new Time(id, time.startAt());
         storage.put(id, savedTime);
         return savedTime;
     }

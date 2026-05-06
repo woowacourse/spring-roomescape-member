@@ -19,8 +19,8 @@ public class ThemeService {
     }
 
     public Theme saveTime(String name, String description, String thumbnailUrl) {
-        Theme reservationTime = Theme.transientOf(name, description, thumbnailUrl);
-        return themeRepository.save(reservationTime);
+        Theme time = Theme.transientOf(name, description, thumbnailUrl);
+        return themeRepository.save(time);
     }
 
     public void removeTime(long timeId) {

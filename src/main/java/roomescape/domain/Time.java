@@ -2,14 +2,14 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 
-public record ReservationTime(Long id, LocalTime startAt) {
+public record Time(Long id, LocalTime startAt) {
 
-    public ReservationTime {
+    public Time {
         validate(startAt);
     }
 
-    public static ReservationTime transientOf(LocalTime startAt) {
-        return new ReservationTime(null, startAt);
+    public static Time transientOf(LocalTime startAt) {
+        return new Time(null, startAt);
     }
 
     private void validate(LocalTime startAt) {

@@ -4,23 +4,23 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.Time;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.repository.TimeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
+    private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+                              TimeRepository timeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
+        this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
     }
 
@@ -29,9 +29,9 @@ public class ReservationService {
     }
 
     public Reservation saveReservation(String name, LocalDate date, Long reservationTimeId, Long themeId) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationTimeId);
+        Time time = timeRepository.findById(reservationTimeId);
         Theme theme = themeRepository.findById(themeId);
-        Reservation transientReservation = Reservation.transientOf(name, date, reservationTime, theme);
+        Reservation transientReservation = Reservation.transientOf(name, date, time, theme);
         return reservationRepository.save(transientReservation);
     }
 
