@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -27,9 +28,14 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.name AS reservation_name,
                     r.date AS reservation_date,
                     t.id AS time_id,
-                    t.start_at AS time_start_at
+                    t.start_at AS time_start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail_url AS theme_thumbnail
                 FROM reservation r
                 INNER JOIN reservation_time t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
                 """;
 
         RowMapper<Reservation> rowMapper = (rs, rowNum) -> new Reservation(
@@ -39,13 +45,19 @@ public class JdbcReservationRepository implements ReservationRepository {
                 new ReservationTime(
                         rs.getLong("time_id"),
                         rs.getTime("time_start_at").toLocalTime()
+                ),
+                new Theme(
+                        rs.getLong("theme_id"),
+                        rs.getString("theme_name"),
+                        rs.getString("theme_description"),
+                        rs.getString("theme_thumbnail")
                 )
         );
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     public Reservation save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -53,11 +65,13 @@ public class JdbcReservationRepository implements ReservationRepository {
             ps.setString(1, reservation.getName());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
     public void deleteById(Long id) {

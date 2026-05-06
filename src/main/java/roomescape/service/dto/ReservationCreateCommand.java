@@ -7,10 +7,13 @@ public class ReservationCreateCommand {
     private final LocalDate date;
     private final Long timeId;
 
-    public ReservationCreateCommand(String name, LocalDate date, Long timeId) {
+    private final Long themeId;
+
+    public ReservationCreateCommand(String name, LocalDate date, Long timeId, Long themeId) {
         this.name = name;
         this.date = date;
         this.timeId = timeId;
+        this.themeId = themeId;
     }
 
     public String getName() {
@@ -23,5 +26,9 @@ public class ReservationCreateCommand {
 
     public Long getTimeId() {
         return timeId;
+    }
+
+    public Long getThemeId() {
+        return themeId;
     }
 }

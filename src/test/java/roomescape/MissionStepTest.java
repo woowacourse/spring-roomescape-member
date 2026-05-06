@@ -82,10 +82,22 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200);
 
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "섬나라");
+        themeParams.put("description", "섬나라");
+        themeParams.put("thumbnailUrl", "섬나라");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(200);
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

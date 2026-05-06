@@ -9,12 +9,13 @@ public class ReservationRequest {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
     private Long timeId;
+    private Long themeId;
 
     public ReservationRequest() {
     }
 
     public ReservationCreateCommand toCommand() {
-        return new ReservationCreateCommand(name, date, timeId);
+        return new ReservationCreateCommand(name, date, timeId, themeId);
     }
 
     public String getName() {
@@ -27,5 +28,9 @@ public class ReservationRequest {
 
     public Long getTimeId() {
         return timeId;
+    }
+
+    public Long getThemeId() {
+        return themeId;
     }
 }
