@@ -19,7 +19,6 @@ public class ReservationDate {
 
     public static ReservationDate load(Long id, LocalDate date) {
         validateId(id);
-        validateDate(date);
         return new ReservationDate(id, date);
     }
 

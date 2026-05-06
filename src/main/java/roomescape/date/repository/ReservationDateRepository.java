@@ -13,6 +13,8 @@ public interface ReservationDateRepository {
 
     List<ReservationDate> findAll();
 
+    List<ReservationDate> findAllAfterToday();
+
     ReservationDate save(ReservationDate reservationDate);
 
     boolean delete(Long id);

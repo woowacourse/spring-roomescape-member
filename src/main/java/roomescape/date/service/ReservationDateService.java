@@ -27,6 +27,12 @@ public class ReservationDateService {
         return reservationDateRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<ReservationDate> readDatesAfterToday() {
+        return reservationDateRepository.findAllAfterToday();
+    }
+
+
     @Transactional
     public ReservationDate register(LocalDate date) {
         return reservationDateRepository.save(ReservationDate.create(date));

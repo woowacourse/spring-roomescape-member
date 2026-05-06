@@ -20,7 +20,7 @@ public class ReservationDateController {
 
     @GetMapping("/dates")
     public ResponseEntity<List<ReservationDateDetailDto>> getReservationDates() {
-        List<ReservationDateDetailDto> responseData = reservationDateService.readDates().stream()
+        List<ReservationDateDetailDto> responseData = reservationDateService.readDatesAfterToday().stream()
                 .map(ReservationDateDetailDto::from)
                 .toList();
         return ResponseEntity.ok(responseData);

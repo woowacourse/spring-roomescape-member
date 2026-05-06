@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.date.domain.ReservationDate;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +41,15 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
     public List<ReservationDate> findAll() {
         String sql = "SELECT * FROM reservation_date";
         return jdbcTemplate.query(sql, new MapSqlParameterSource(), reservationDateRowMapper);
+    }
+
+    @Override
+    public List<ReservationDate> findAllAfterToday() {
+        String sql = "SELECT id, date FROM reservation_date WHERE date >= :today ORDER BY date ASC";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("today", LocalDate.now());
+
+        return jdbcTemplate.query(sql, params, reservationDateRowMapper);
     }
 
     @Override

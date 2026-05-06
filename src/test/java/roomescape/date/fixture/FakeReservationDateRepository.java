@@ -23,6 +23,11 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
     }
 
     @Override
+    public List<ReservationDate> findAllAfterToday() {
+        return List.of();
+    }
+
+    @Override
     public ReservationDate save(ReservationDate reservationDate) {
         autoIncrement();
         ReservationDate savedReservationDate = ReservationDate.load(autoIncrement, reservationDate.date());
