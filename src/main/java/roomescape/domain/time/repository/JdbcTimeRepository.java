@@ -22,7 +22,7 @@ public class JdbcTimeRepository implements TimeRepository {
     public JdbcTimeRepository(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-            .withTableName("time")
+            .withTableName("reservation_time")
             .usingColumns("start_at")
             .usingGeneratedKeyColumns("id");
     }
@@ -38,7 +38,7 @@ public class JdbcTimeRepository implements TimeRepository {
 
     @Override
     public List<Time> findAllTimes() {
-        String sql = "SELECT id, start_at FROM time";
+        String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(
             sql,
             (rs, rowNum) -> Time.reconstruct(
@@ -50,7 +50,7 @@ public class JdbcTimeRepository implements TimeRepository {
 
     @Override
     public Optional<Time> findTimeById(Long id) {
-        String sql = "SELECT id, start_at FROM time WHERE id = :id";
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         try {
             Time time = jdbcTemplate.queryForObject(
@@ -69,7 +69,7 @@ public class JdbcTimeRepository implements TimeRepository {
 
     @Override
     public void deleteTimeById(Long id) {
-        final String sql = "DELETE FROM time WHERE id = :id";
+        final String sql = "DELETE FROM reservation_time WHERE id = :id";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
 
         jdbcTemplate.update(sql, parameters);
