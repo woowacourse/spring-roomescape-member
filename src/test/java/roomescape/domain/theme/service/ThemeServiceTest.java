@@ -14,7 +14,7 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.entity.Reservation;
-import roomescape.domain.theme.dto.request.ThemeCreatedRequestDTO;
+import roomescape.domain.theme.dto.request.ThemeCreateRequestDTO;
 import roomescape.domain.theme.dto.response.ThemeResponseDTO;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.FakeThemeRepository;
@@ -45,27 +45,23 @@ class ThemeServiceTest {
     }
 
     @Nested
-    class test {
+    class GetPopularThemesTest {
 
         @Test
         void 성공() {
-            // 1. 테마 15개 생성 및 저장
             List<Theme> themes = IntStream.rangeClosed(1, 15).mapToObj(i -> {
                 return Theme.create("테마" + i, "설명" + i, "https://image.com/" + i + ".png");
             }).collect(Collectors.toList());
 
             themeRepository.saveAllThemes(themes);
 
-            // 2. 예약 데이터 대량 생성 (총 100개 이상의 예약)
-            // 상위 1~10번 테마에 예약이 더 많이 몰리도록 설정
             List<Reservation> reservations = new ArrayList<>();
             LocalDate targetDate = LocalDate.of(2026, 5, 5); // 조회 범위 내 날짜
 
-            for (int i = 0; i < themes.size(); i++) {
-                Theme theme = themes.get(i);
-                // 테마 번호가 낮을수록 더 많은 예약을 생성 (인기 차등화)
+            List<Theme> savedThemes = themeRepository.findAllThemes();
+            for (int i = 0; i < savedThemes.size(); i++) {
+                Theme theme = savedThemes.get(i);
                 int reservationCount = (15 - i) * 5;
-
                 for (int j = 0; j < reservationCount; j++) {
                     reservations.add(Reservation.create(
                         "예약자" + j,
@@ -109,7 +105,7 @@ class ThemeServiceTest {
         void 성공() {
 
             // given
-            ThemeCreatedRequestDTO request = new ThemeCreatedRequestDTO(
+            ThemeCreateRequestDTO request = new ThemeCreateRequestDTO(
                 "피온",
                 "테마 설명",
                 "https://roomescape.com/images/themes/prison-room.png"
@@ -137,13 +133,11 @@ class ThemeServiceTest {
             // given
             themeRepository.save(Theme.create("브라운", "테마 설명", "https://roomescape.com/images/themes/prison-room.png"));
 
-            // when
-
             // then
+            themeRepository.deleteThemeById(1L);
             List<Theme> actual = themeRepository.findAllThemes();
 
-            assertThat(actual).asInstanceOf(InstanceOfAssertFactories.LIST)
-                .hasSize(0);
+            assertThat(actual).asInstanceOf(InstanceOfAssertFactories.LIST).hasSize(0);
         }
     }
 }
