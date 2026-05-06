@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.dto.CreateReservationTimeRequest;
-import roomescape.time.dto.ReservationTimeResponse;
+import roomescape.time.dto.request.ReservationTimeSaveDto;
+import roomescape.time.dto.response.ReservationTimeDetailDto;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
@@ -20,18 +20,18 @@ public class ReservationTimeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationTimeResponse> findAll() {
+    public List<ReservationTimeDetailDto> findAll() {
         return reservationTimeRepository.findAll().stream()
-                .map(ReservationTimeResponse::from)
+                .map(ReservationTimeDetailDto::from)
                 .toList();
     }
 
     @Transactional
-    public ReservationTimeResponse create(CreateReservationTimeRequest createReservationTimeRequest) {
-        LocalTime startAt = createReservationTimeRequest.startAt();
+    public ReservationTimeDetailDto create(ReservationTimeSaveDto reservationTimeSaveDto) {
+        LocalTime startAt = reservationTimeSaveDto.startAt();
         validateDuplicateTimeExist(startAt);
         Long id = reservationTimeRepository.save(ReservationTime.create(startAt));
-        return new ReservationTimeResponse(id, startAt);
+        return new ReservationTimeDetailDto(id, startAt);
     }
 
     private void validateDuplicateTimeExist(LocalTime startAt) {
@@ -41,10 +41,10 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTimeResponse delete(Long id) {
+    public ReservationTimeDetailDto delete(Long id) {
         ReservationTime reservationTime = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
         reservationTimeRepository.delete(id);
-        return ReservationTimeResponse.from(reservationTime);
+        return ReservationTimeDetailDto.from(reservationTime);
     }
 }

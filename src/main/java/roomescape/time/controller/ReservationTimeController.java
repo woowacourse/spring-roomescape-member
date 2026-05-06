@@ -2,41 +2,18 @@ package roomescape.time.controller;
 
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.time.dto.CreateReservationTimeRequest;
-import roomescape.time.dto.ReservationTimeResponse;
-import roomescape.time.service.ReservationTimeService;
+import roomescape.time.dto.response.ReservationTimeDetailDto;
 
 @RestController
-@RequestMapping("/times")
+@RequestMapping("/member")
 public class ReservationTimeController {
-    private final ReservationTimeService reservationTimeService;
-
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
-        this.reservationTimeService = reservationTimeService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> read() {
-        return ResponseEntity.ok(reservationTimeService.findAll());
-    }
-
-    @PostMapping
-    public ResponseEntity<ReservationTimeResponse> create(
-            @RequestBody CreateReservationTimeRequest createReservationTimeRequest) {
-        return ResponseEntity.ok(reservationTimeService.create(createReservationTimeRequest));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ReservationTimeResponse> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(reservationTimeService.delete(id));
-    }
-
     // TODO: 예약가능 시간 조회 엔드포인트 추가 (사용자)
+    @GetMapping("/times")
+    public ResponseEntity<List<ReservationTimeDetailDto>> read(@RequestParam("date") String date, @RequestParam("themeId") Long themeId){
+        return null;
+    }
 }
