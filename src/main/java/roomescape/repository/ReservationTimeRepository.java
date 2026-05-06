@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,26 @@ public class ReservationTimeRepository {
                 + " FROM reservation_time";
 
         return jdbcTemplate.query(findSql, reservationTimeRowMapper());
+    }
+
+    public List<ReservationTime> findReservationAvailableTimes(
+            long themeId,
+            LocalDate date
+    ) {
+        String findSql = "SELECT rt.id, rt.start_at"
+                + " FROM reservation_time rt"
+                + " WHERE NOT EXISTS ("
+                + "   SELECT 1"
+                + "   FROM reservation r"
+                + "   WHERE r.time_id = rt.id AND r.theme_id = ? AND r.date = ?"
+                + " )";
+
+        return jdbcTemplate.query(
+                findSql,
+                reservationTimeRowMapper(),
+                themeId,
+                date
+        );
     }
 
     public Optional<ReservationTime> findById(long id) {

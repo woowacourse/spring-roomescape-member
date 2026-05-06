@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,14 @@ public class ReservationTimeService {
     @Transactional
     public List<ReservationTime> findAll() {
         return repository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationTime> findAvailableTimes(
+            long themeId,
+            LocalDate date
+    ) {
+        return repository.findReservationAvailableTimes(themeId, date);
     }
 
     @Transactional

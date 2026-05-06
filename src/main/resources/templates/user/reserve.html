@@ -52,10 +52,9 @@
     const status = document.getElementById('status');
 
     let themes = [];
-    let times = [];
-    let reservations = [];
     let selectedThemeId = null;
     let selectedTimeId = null;
+    let availableTimesAbort = null;
 
     function localYmd(d) {
         const y = d.getFullYear();
@@ -76,21 +75,15 @@
         }[c]));
     }
 
-    async function refreshReservations() {
-        const res = await fetch('/reservations');
-        if (!res.ok) throw new Error('예약 목록을 불러오지 못했습니다.');
-        reservations = await res.json();
+    function timeChipLabel(startAt) {
+        if (typeof startAt === 'string') return startAt.slice(0, 5);
+        if (Array.isArray(startAt) && startAt.length >= 2) {
+            return String(startAt[0]).padStart(2, '0') + ':' + String(startAt[1]).padStart(2, '0');
+        }
+        return String(startAt).slice(0, 5);
     }
 
-    function bookedTimeIds(dateStr, themeId) {
-        return new Set(
-            reservations
-                .filter(r => r.date === dateStr && r.theme.id === themeId)
-                .map(r => r.time.id)
-        );
-    }
-
-    function renderTimes() {
+    async function loadAvailableTimes() {
         timeChips.innerHTML = '';
         selectedTimeId = null;
         submitBtn.disabled = true;
@@ -99,28 +92,39 @@
             timeHint.textContent = '날짜와 테마를 먼저 선택하세요.';
             return;
         }
-        const taken = bookedTimeIds(dateStr, selectedThemeId);
-        const available = times.filter(t => !taken.has(t.id));
-        timeHint.textContent = available.length
-            ? '시간을 선택하세요.'
-            : '이 날짜·테마에 예약 가능한 시간이 없습니다. (관리자에게 시간 등록을 요청하세요)';
-        for (const t of times) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'time-chip';
-            const label = typeof t.startAt === 'string' ? t.startAt.slice(0, 5) : String(t.startAt).slice(0, 5);
-            btn.textContent = label;
-            const dis = taken.has(t.id);
-            btn.disabled = dis;
-            if (dis) btn.title = '이미 예약됨';
-            btn.addEventListener('click', () => {
-                if (btn.disabled) return;
-                selectedTimeId = t.id;
-                timeChips.querySelectorAll('.time-chip').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                submitBtn.disabled = !memberName.value.trim();
+        if (availableTimesAbort) {
+            availableTimesAbort.abort();
+        }
+        availableTimesAbort = new AbortController();
+        const { signal } = availableTimesAbort;
+        timeHint.textContent = '예약 가능한 시간을 불러오는 중…';
+        try {
+            const params = new URLSearchParams({
+                themeId: String(selectedThemeId),
+                date: dateStr
             });
-            timeChips.appendChild(btn);
+            const res = await fetch('/times/available-times?' + params.toString(), { signal });
+            if (!res.ok) throw new Error('예약 가능한 시간을 불러오지 못했습니다.');
+            const list = await res.json();
+            timeHint.textContent = list.length
+                ? '시간을 선택하세요.'
+                : '이 날짜·테마에 예약 가능한 시간이 없습니다. (관리자에게 시간 등록을 요청하세요)';
+            for (const t of list) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'time-chip';
+                btn.textContent = timeChipLabel(t.startAt);
+                btn.addEventListener('click', () => {
+                    selectedTimeId = t.id;
+                    timeChips.querySelectorAll('.time-chip').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    submitBtn.disabled = !memberName.value.trim();
+                });
+                timeChips.appendChild(btn);
+            }
+        } catch (e) {
+            if (e.name === 'AbortError') return;
+            timeHint.textContent = e.message;
         }
     }
 
@@ -145,14 +149,14 @@
                 selectedThemeId = th.id;
                 themePick.querySelectorAll('.theme-option').forEach(el => el.classList.remove('selected'));
                 b.classList.add('selected');
-                renderTimes();
+                void loadAvailableTimes();
             });
             themePick.appendChild(b);
         }
     }
 
     gameDate.addEventListener('change', () => {
-        renderTimes();
+        void loadAvailableTimes();
     });
 
     memberName.addEventListener('input', () => {
@@ -175,8 +179,7 @@
             });
             if (!res.ok) throw new Error('예약에 실패했습니다.');
             showStatus('예약이 완료되었습니다.', true);
-            await refreshReservations();
-            renderTimes();
+            await loadAvailableTimes();
             memberName.value = '';
             submitBtn.disabled = true;
         } catch (e) {
@@ -188,17 +191,11 @@
         const today = new Date();
         gameDate.value = localYmd(today);
         try {
-            const [tr, ts, rr] = await Promise.all([
-                fetch('/themes'),
-                fetch('/times'),
-                fetch('/reservations')
-            ]);
-            if (!tr.ok || !ts.ok || !rr.ok) throw new Error('데이터를 불러오지 못했습니다.');
+            const tr = await fetch('/themes');
+            if (!tr.ok) throw new Error('데이터를 불러오지 못했습니다.');
             themes = await tr.json();
-            times = await ts.json();
-            reservations = await rr.json();
             renderThemes();
-            renderTimes();
+            await loadAvailableTimes();
         } catch (e) {
             themeHint.textContent = e.message;
         }
