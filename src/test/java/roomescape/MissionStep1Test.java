@@ -1,6 +1,8 @@
 package roomescape;
 
 import io.restassured.RestAssured;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -13,7 +15,11 @@ public class MissionStep1Test {
 
     @Test
     void 예약_조회() {
-        RestAssured.given().log().all()
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2026-05-06");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all().params(params)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)

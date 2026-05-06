@@ -49,7 +49,7 @@ public class MissionStep3Test {
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(themeParams)
-            .when().post("/admin/theme")
+            .when().post("/admin/themes")
             .then().log().all()
             .statusCode(200);
 
