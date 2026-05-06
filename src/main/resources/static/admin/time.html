@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>시간 관리 — RoomEscape Admin</title>
+    <meta content="방탈출 예약 시간 관리 - 관리자" name="description">
+    <link href="../style.css" rel="stylesheet">
+</head>
+<body>
+<div class="layout">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-text">🔐 RoomEscape</div>
+            <div class="logo-sub">Admin Panel</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">관리</div>
+            <a class="nav-item" href="reservation.html">
+                <span class="icon">📋</span> 예약 관리
+            </a>
+            <a class="nav-item active" href="time.html">
+                <span class="icon">🕐</span> 시간 관리
+            </a>
+            <a class="nav-item" href="theme.html">
+                <span class="icon">🎭</span> 테마 관리
+            </a>
+        </div>
+        <div class="sidebar-section" style="margin-top: auto;">
+            <div class="sidebar-section-label">사용자</div>
+            <a class="nav-item" href="../index.html">
+                <span class="icon">🏠</span> 사용자 페이지
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+        <div class="page-header">
+            <h1 class="page-title">시간 관리</h1>
+            <p class="page-subtitle">예약 가능한 시간대를 추가하거나 삭제합니다.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card green">
+                <div class="stat-value" id="time-count">–</div>
+                <div class="stat-label">등록된 시간</div>
+            </div>
+        </div>
+
+        <!-- Add Time -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">새 시간 추가</span>
+            </div>
+            <div style="display: flex; gap: 14px; align-items: flex-end;">
+                <div class="form-group" style="flex: 1; max-width: 260px;">
+                    <label for="new-time">시작 시간</label>
+                    <input id="new-time" placeholder="HH:MM" type="time">
+                </div>
+                <button class="btn btn-primary" onclick="createTime()" style="margin-bottom: 0;">
+                    <span>➕</span> 추가
+                </button>
+            </div>
+        </div>
+
+        <!-- Time List -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">시간 목록</span>
+                <button class="btn btn-ghost btn-sm" onclick="loadTimes()">🔄 새로고침</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>시작 시간</th>
+                        <th>액션</th>
+                    </tr>
+                    </thead>
+                    <tbody id="time-table-body">
+                    <tr>
+                        <td colspan="3">
+                            <div class="empty-state">
+                                <div class="spinner"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+    function toast(msg, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+        el.className = `toast toast-${type}`;
+        el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+        container.appendChild(el);
+        setTimeout(() => el.remove(), 3200);
+    }
+
+    async function api(method, url, body) {
+        const opts = {method, headers: {'Content-Type': 'application/json'}};
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(url, opts);
+        if (!res.ok) {
+            const text = await res.text().catch(() => '');
+            throw new Error(text || `HTTP ${res.status}`);
+        }
+        const ct = res.headers.get('Content-Type') || '';
+        return ct.includes('json') ? res.json() : null;
+    }
+
+    async function loadTimes() {
+        try {
+            const data = await api('GET', '/admin/times');
+            document.getElementById('time-count').textContent = data.length;
+            const tbody = document.getElementById('time-table-body');
+
+            if (!data.length) {
+                tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><div class="empty-icon">⏰</div><p>등록된 시간이 없습니다.</p></div></td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.map(t => `
+        <tr>
+          <td><span class="badge badge-gray">#${t.id}</span></td>
+          <td>
+            <span style="font-size:18px; font-weight:700; color: var(--accent);">
+              ${t.startAt}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteTime(${t.id})">
+              🗑 삭제
+            </button>
+          </td>
+        </tr>
+      `).join('');
+        } catch (e) {
+            toast(`시간 조회 실패: ${e.message}`, 'error');
+        }
+    }
+
+    async function createTime() {
+        const startAt = document.getElementById('new-time').value;
+        if (!startAt) {
+            toast('시간을 입력해주세요.', 'error');
+            return;
+        }
+        try {
+            await api('POST', '/admin/times', {startAt});
+            toast(`${startAt} 시간이 추가되었습니다.`, 'success');
+            document.getElementById('new-time').value = '';
+            await loadTimes();
+        } catch (e) {
+            toast(`추가 실패: ${e.message}`, 'error');
+        }
+    }
+
+    async function deleteTime(id) {
+        if (!confirm(`시간 #${id}를 삭제할까요? 연관된 예약에 영향이 있을 수 있습니다.`)) return;
+        try {
+            await api('DELETE', `/admin/times/${id}`);
+            toast('시간이 삭제되었습니다.', 'success');
+            await loadTimes();
+        } catch (e) {
+            toast(`삭제 실패: ${e.message}`, 'error');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadTimes);
+</script>
+</body>
+</html>
