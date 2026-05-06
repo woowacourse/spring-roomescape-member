@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
 
@@ -8,6 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
@@ -20,12 +22,14 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
+    @Transactional
     public ReservationTime create(LocalTime startAt) {
         Long id = reservationTimeRepository.insert(new ReservationTime(null, startAt));
         return reservationTimeRepository.findBy(id)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다."));
     }
 
+    @Transactional
     public void delete(Long id) {
         validateId(id);
         reservationTimeRepository.delete(id);
