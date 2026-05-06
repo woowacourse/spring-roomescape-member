@@ -9,6 +9,8 @@ import roomescape.reservation.domain.Reservation;
 public interface ReservationRepository {
     List<Reservation> findAll();
 
+    List<Reservation> findAllByNameOrderByDateAndTime(String name);
+
     Optional<Reservation> findById(Long id);
 
     Long save(Reservation reservation);

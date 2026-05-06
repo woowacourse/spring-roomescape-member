@@ -63,8 +63,6 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         return jdbcTemplate.query(sql, new MapSqlParameterSource(), reservationRowMapper);
     }
 
-
-
     @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
@@ -84,13 +82,37 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 WHERE r.id = :id
                 """;
 
-
         SqlParameterSource params = new MapSqlParameterSource("id", id);
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, reservationRowMapper));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Reservation> findAllByNameOrderByDateAndTime(String name) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.start_at, 
+                    r.date,
+                    r.status,
+                    t.id AS theme_id,
+                    t.name AS theme_name,
+                    t.description,
+                    t.thumbnail_url,
+                    t.is_active
+                FROM reservation r
+                INNER JOIN theme t ON r.theme_id = t.id
+                WHERE r.name = :name
+                ORDER BY r.date ASC, r.start_at ASC
+                """;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", name);
+
+        return jdbcTemplate.query(sql, params, reservationRowMapper);
     }
 
     @Override

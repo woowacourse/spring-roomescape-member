@@ -19,7 +19,7 @@ public class ReservationAdminController {
 
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> read() {
-        return ResponseEntity.ok(reservationService.findAll());
+        return ResponseEntity.ok(reservationService.readAll());
     }
 
     @PostMapping("/reservations")

@@ -37,8 +37,15 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> findAll() {
+    public List<ReservationResponse> readAll() {
         return reservationRepository.findAll().stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationResponse> readAllByName(String name) {
+        return reservationRepository.findAllByNameOrderByDateAndTime(name).stream()
                 .map(ReservationResponse::from)
                 .toList();
     }

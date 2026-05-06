@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
@@ -79,6 +81,29 @@ class ReservationServiceTest {
         //then
         assertThat(reservationsResponse)
                 .hasSize(reservations.size());
+    }
+
+    @Test
+    @DisplayName("나의 예약들을 조회하면 날짜/시간 오름차순으로 정렬해 모두 조회한다.")
+    void readAllByName() {
+        // given
+        List<ReservationResponse> reservationDtoList = reservationRepository.saveAll(
+                        List.of(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme1),
+                                Reservation.create(name, reservationDate1.date(), reservationTime2.startAt(), theme1),
+                                Reservation.create(name, reservationDate2.date(), reservationTime1.startAt(), theme1),
+                                Reservation.create(name, reservationDate2.date(), reservationTime2.startAt(), theme1))
+                ).stream()
+                .map(ReservationResponse::from)
+                .sorted(Comparator.comparing(ReservationResponse::date).thenComparing(ReservationResponse::status))
+                .toList();
+
+        // when
+        List<ReservationResponse> actual = reservationService.readAllByName(name);
+
+        // then
+        Assertions.assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(reservationDtoList);
     }
 
     @Test
