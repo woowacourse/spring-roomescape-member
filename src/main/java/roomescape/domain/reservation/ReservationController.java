@@ -1,7 +1,9 @@
 package roomescape.domain.reservation;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.admin.AdminRequestValidator;
 import roomescape.domain.reservation.dto.CreateReservationRequest;
 import roomescape.domain.reservation.dto.CreateReservationResponse;
 import roomescape.domain.reservation.dto.ReservationResponse;
@@ -18,6 +21,7 @@ import roomescape.domain.reservation.dto.ReservationResponse;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final AdminRequestValidator validator;
 
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> getAllReservation() {
@@ -29,12 +33,15 @@ public class ReservationController {
     public ResponseEntity<CreateReservationResponse> createReservation(@RequestBody CreateReservationRequest request) {
         request.validate();
         CreateReservationResponse response = reservationService.createReservation(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+    @DeleteMapping("/admin/reservations/{id}")
+    public ResponseEntity<Void> deleteReservation( HttpServletRequest request, @PathVariable Long id) {
+        if (validator.isUnauthorized(request)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         reservationService.deleteReservation(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
