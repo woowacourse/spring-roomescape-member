@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeNotFoundException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,6 +34,23 @@ public class JdbcThemeRepository implements ThemeRepository {
                         """,
                 new JdbcThemeRepository.ThemeRowMapper()
         );
+    }
+
+    @Override
+    public Theme findById(Long id) {
+        List<Theme> themes = jdbcTemplate.query(
+                """
+                        SELECT t.id, t.name, t.description, t.image_url
+                        FROM theme t
+                        WHERE t.id = ?
+                        """,
+                new JdbcThemeRepository.ThemeRowMapper(),
+                id
+        );
+        if (themes.isEmpty()) {
+            throw new ThemeNotFoundException(id);
+        }
+        return themes.get(0);
     }
 
     @Override

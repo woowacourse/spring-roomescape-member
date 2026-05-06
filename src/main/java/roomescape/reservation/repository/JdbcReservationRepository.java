@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -31,9 +32,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
                 """
-                SELECT r.id, r.name, r.date, r.time_id, r.theme_id, rt.start_time, rt.end_time
+                SELECT r.id,
+                       r.name,
+                       r.date,
+                       r.time_id,
+                       r.theme_id,
+                       rt.start_time,
+                       rt.end_time,
+                       t.name AS theme_name,
+                       t.description AS theme_description,
+                       t.image_url AS theme_image_url
                 FROM reservation r
                 LEFT JOIN reservation_time rt ON r.time_id = rt.id
+                LEFT JOIN theme t ON r.theme_id = t.id
                 """,
                 new ReservationRowMapper()
         );
@@ -84,13 +95,24 @@ public class JdbcReservationRepository implements ReservationRepository {
             if (!rs.wasNull()) {
                 time = new ReservationTime(timeId, rs.getString("start_time"), rs.getString("end_time"));
             }
+
+            Theme theme = null;
+            String themeName = rs.getString("theme_name");
+            if (themeName != null) {
+                theme = new Theme(
+                        themeName,
+                        rs.getString("theme_description"),
+                        rs.getString("theme_image_url")
+                ).withId(rs.getLong("theme_id"));
+            }
+
             Reservation reservation = new Reservation(
                     rs.getString("name"),
                     rs.getDate("date").toLocalDate(),
                     time,
                     rs.getLong("theme_id")
             );
-            return reservation.withId(rs.getLong("id"));
+            return reservation.withId(rs.getLong("id")).withTheme(theme);
         }
     }
 }

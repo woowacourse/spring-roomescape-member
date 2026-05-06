@@ -59,7 +59,8 @@ public class ReservationServiceImpl implements ReservationService {
                 time,
                 themeId
         );
-        return reservationRepository.save(newReservation);
+        Reservation saved = reservationRepository.save(newReservation);
+        return saved.withTheme(themeRepository.findById(themeId));
     }
 
     private void validateDuplicatedReservation(Long themeId, ReservationTime time, LocalDate date) {
