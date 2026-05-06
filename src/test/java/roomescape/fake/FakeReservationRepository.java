@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.NoArgsConstructor;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationDetail;
 import roomescape.reservation.repository.ReservationRepository;
 
 @NoArgsConstructor
@@ -15,7 +16,7 @@ public class FakeReservationRepository implements ReservationRepository {
     private Long idHoler = 1L;
 
     @Override
-    public List<Reservation> findAll() {
+    public List<ReservationDetail> findAll() {
         return List.of();
     }
 

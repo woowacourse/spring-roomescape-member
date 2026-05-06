@@ -9,30 +9,22 @@ import roomescape.theme.domain.Theme;
 
 @Builder
 @Getter
-@EqualsAndHashCode(of = {"name", "date", "theme", "time"})
+@EqualsAndHashCode(of = {"name", "date", "themeId", "timeId"})
 public class Reservation {
 
     private final Long id;
     private final String name;
     private final LocalDate date;
-    private final Theme theme;
-    private final ReservationTime time;
-
-    public Long getThemeId() {
-        return theme.getId();
-    }
-
-    public Long getTimeId() {
-        return time.getId();
-    }
+    private final Long themeId;
+    private final Long timeId;
 
     public Reservation withId(Long generatedId) {
         return Reservation.builder()
                 .id(generatedId)
                 .name(this.name)
                 .date(this.date)
-                .theme(this.theme)
-                .time(this.time)
+                .themeId(this.themeId)
+                .timeId(this.timeId)
                 .build();
     }
 }

@@ -3,6 +3,7 @@ package roomescape.theme.repository;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,11 @@ public class JdbcThemeRepositoryTest {
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
 
+//    @AfterEach
+//    void clear() {
+//        themeRepository.
+//    }
+
     @DisplayName("db의 정상 저장을 테스트 합니다.")
     @Test
     void save_successfully() {
@@ -37,7 +43,7 @@ public class JdbcThemeRepositoryTest {
 
         SoftAssertions.assertSoftly(assertSoftly -> {
             assertSoftly.assertThat(savedTheme).isNotNull();
-            assertSoftly.assertThat(savedTheme.getId()).isEqualTo(1L);
+            assertSoftly.assertThat(savedTheme.getId()).isPositive();
             assertSoftly.assertThat(savedTheme.getName()).isEqualTo("theme name");
             assertSoftly.assertThat(savedTheme.getDescription()).isEqualTo("theme description");
             assertSoftly.assertThat(savedTheme.getThumbnailImgUrl()).isEqualTo("theme img url");

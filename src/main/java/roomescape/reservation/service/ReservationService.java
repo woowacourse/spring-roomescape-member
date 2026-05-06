@@ -7,10 +7,11 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationCreateRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.exception.ReservationException;
+import roomescape.reservation.repository.ReservationDetail;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.service.ReservationTimeService;
-import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
 @RequiredArgsConstructor
@@ -22,20 +23,19 @@ public class ReservationService {
     private final ReservationTimeService reservationTimeService;
 
     public List<ReservationResponse> findAllReservations() {
-        List<Reservation> result = reservationRepository.findAll();
-
+        List<ReservationDetail> result = reservationRepository.findAll();
         return result.stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
     public ReservationResponse saveReservation(ReservationCreateRequest request) {
-        Theme theme = themeService.findById(request.themeId());
-        ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
+        ThemeResponse themeResponse = ThemeResponse.from(themeService.findById(request.themeId()));
+        ReservationTimeResponse timeResponse = ReservationTimeResponse.from(reservationTimeService.findById(request.timeId()));
         validateDuplicateReservation(request);
-        Reservation reservation = request.toEntity(theme, reservationTime);
+        Reservation reservation = request.toEntity(themeResponse.id(), timeResponse.id());
 
-        return ReservationResponse.from(reservationRepository.save(reservation));
+        return ReservationResponse.from(reservationRepository.save(reservation), themeResponse, timeResponse);
     }
 
     public void deleteReservation(Long id) {

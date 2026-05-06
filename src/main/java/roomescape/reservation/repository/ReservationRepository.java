@@ -5,7 +5,7 @@ import java.util.List;
 import roomescape.reservation.domain.Reservation;
 
 public interface ReservationRepository {
-    List<Reservation> findAll();
+    List<ReservationDetail> findAll();
 
     Reservation save(Reservation reservation);
 

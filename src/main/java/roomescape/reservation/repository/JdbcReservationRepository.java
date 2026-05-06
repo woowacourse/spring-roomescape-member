@@ -24,24 +24,24 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<ReservationDetail> findAll() {
         return jdbcTemplate.query(
                 """
-                        SELECT r.id, r.name, r.date, t.id AS time_id, t.start_at as time_value
+                        SELECT r.id, r.name, r.date, r.theme_id, t.name as theme_name, t.description, t.thumbnail_img_url, r.time_id, rt.start_at
                         FROM reservation r
-                        JOIN reservation_time t ON r.time_id = t.id
+                        JOIN theme t ON r.theme_id = t.id
+                        JOIN reservation_time rt ON r.time_id = rt.id
                         """,
-                (rs, rowNum) -> (
-                        Reservation.builder()
-                                .id(rs.getLong("id"))
-                                .name(rs.getString("name"))
-                                .date(rs.getDate("date").toLocalDate())
-                                .time(ReservationTime.builder()
-                                        .id(rs.getLong("time_id"))
-                                        .startAt(rs.getTime("time_value").toLocalTime())
-                                        .build())
-                                .build()
-                )
+                (rs, rowNum) ->
+                        new ReservationDetail(rs.getLong("id"),
+                                 rs.getString("name"),
+                                 rs.getDate("date").toLocalDate(),
+                                 rs.getLong("theme_id"),
+                                 rs.getString("theme_name"),
+                                 rs.getString("description"),
+                                 rs.getString("thumbnail_img_url"),
+                                 rs.getLong("time_id"),
+                                 rs.getTime("start_at").toLocalTime())
         );
     }
 
