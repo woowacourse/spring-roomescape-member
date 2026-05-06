@@ -1,5 +1,9 @@
 package roomescape.theme.controller;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -7,13 +11,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.theme.controller.dto.ThemeAvailableTimeResponseDto;
 import roomescape.theme.controller.dto.ThemeResponseDto;
 import roomescape.theme.controller.dto.ThemeSaveRequestDto;
 import roomescape.theme.service.ThemeService;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class ThemeController {
@@ -25,7 +28,7 @@ public class ThemeController {
     
     @GetMapping("/themes")
     public ResponseEntity<List<ThemeResponseDto>> getAll() {
-        List<ThemeResponseDto> body = themeService.getThemes().stream()
+        List<ThemeResponseDto> body = themeService.getAll().stream()
                 .map(ThemeResponseDto::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(body);
@@ -35,8 +38,19 @@ public class ThemeController {
     public ResponseEntity<ThemeResponseDto> create(
             @RequestBody ThemeSaveRequestDto themeRequest) {
         ThemeResponseDto body = ThemeResponseDto.from(
-                themeService.save(themeRequest.toServiceDto()));
+                themeService.create(themeRequest.toServiceDto()));
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
+    }
+
+    @GetMapping("/themes/{themeId}/times")
+    public ResponseEntity<List<ThemeAvailableTimeResponseDto>> getAvailableTimes(
+            @PathVariable Long themeId,
+            @RequestParam LocalDate date
+    ) {
+        List<ThemeAvailableTimeResponseDto> body = themeService.getAvailableTimes(themeId, date).stream()
+                .map(ThemeAvailableTimeResponseDto::from)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(body);
     }
 
     @DeleteMapping("/themes/{id}")
