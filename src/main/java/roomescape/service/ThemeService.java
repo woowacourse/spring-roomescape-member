@@ -1,10 +1,8 @@
 package roomescape.service;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
-import roomescape.response.ThemeResponse;
 
 import java.util.List;
 
@@ -19,5 +17,9 @@ public class ThemeService {
 
     public List<Theme> getThemes() {
         return themeRepository.findAll();
+    }
+
+    public Theme saveTheme(Theme theme) {
+        return themeRepository.save(theme);
     }
 }

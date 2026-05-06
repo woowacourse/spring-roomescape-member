@@ -33,4 +33,7 @@ class JdbcTemplateThemeRepositoryTest {
 
         assertThat(themes.size()).isEqualTo(DEFAULT_THEME_SIZE);
     }
+
+    @Test
+    void 테마를 저장한다.
 }

@@ -2,10 +2,7 @@ package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.request.ThemeRequest;
@@ -16,16 +13,17 @@ import java.net.URI;
 import java.util.List;
 
 @RestController("/admin/themes")
-public class ThemeController {
+public class AdminThemeController {
     private static final String DEFAULT_PATH = "/themes/";
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public AdminThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
     public ResponseEntity<List<ThemeResponse>> getThemes() {
         List<ThemeResponse> themeResponses = ThemeResponse.from(themeService.getThemes());
+
         return ResponseEntity.ok(themeResponses);
     }
 
