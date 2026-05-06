@@ -1,6 +1,7 @@
 package roomescape.schedule;
 
 import java.time.LocalDate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,8 +17,9 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ScheduleResponse getSchedules(@RequestParam LocalDate date,
-                                         @RequestParam Long themeId) {
-        return scheduleService.getSchedules(date, themeId);
+    public ResponseEntity<ScheduleResponse> getSchedules(@RequestParam LocalDate date,
+                                                         @RequestParam Long themeId) {
+        ScheduleResponse response = scheduleService.getSchedules(date, themeId);
+        return ResponseEntity.ok(response);
     }
 }
