@@ -136,26 +136,32 @@
 
 ## 4️⃣ API 명세
 
-### 관리자 API(`/admin`)
-| 기능               | 메서드 / URL        | 요청 본문                                | 응답                                                                                                                         |
-|:-----------------|:-----------------|:-------------------------------------|:---------------------------------------------------------------------------------------------------------------------------|
-| **관리자 테마 추가 기능** | `POST /themes`   | `{name, description, thumbnail_url}` | `201 header: {location}`                                                                                                   |
-| **관리자 테마 삭제 기능** | `DELETE /themes` | `{id}`                               | `204`                                                                                                                      |
-| **관리자 예약 조회 기능** | `GET /reservations`      | -                                  | `200 [{id: 1, name: "브라운", theme_name: "호러", theme_description, theme_thumbnail: "...", date:"2021-05-20", time: "10:00"}]` |
-| **관리자 예약 삭제**    | `DELETE /reservations/{id}` | — | `204 OK`                                                                                                                   |
-| **관리자 시간 추가**    | `POST /times` | `{startAt}` | `{id, startAt}`                                                                                                            |
-| **관리자 시간 조회**    | `GET /times` | — | `[{id, startAt}, ...]`                                                                                                     |
-| **관리자 시간 삭제**    | `DELETE /times/{id}` | — | `200 OK`                                                                                                                   |
+### 관리자 API (`/admin`)
+
+| 기능               | 메서드 / URL                     | 요청 본문                                  | 응답                                                                    |
+|:-----------------|:-------------------------------|:---------------------------------------|:----------------------------------------------------------------------|
+| **관리자 테마 추가**    | `POST /admin/themes`           | `{name, description, thumbnail_url}`   | `201 Location: /themes/{id}`                                          |
+| **관리자 테마 삭제**    | `DELETE /admin/themes/{id}`    | —                                      | `204`                                                                 |
+| **관리자 예약 조회**    | `GET /admin/reservations`      | —                                      | `200 [{id, name, date, themeName, time}]`                             |
+
+### 공통 API (시간)
+
+| 기능            | 메서드 / URL          | 요청 본문       | 응답                    |
+|:--------------|:--------------------|:------------|:----------------------|
+| **시간 조회**     | `GET /times`        | —           | `200 [{id, startAt}]` |
+| **시간 추가**     | `POST /times`       | `{startAt}` | `201 {id, startAt}`   |
+| **시간 삭제**     | `DELETE /times/{id}` | —          | `204`                 |
 
 ### 사용자 API
 
-| 기능                  | 메서드 / URL                   | 요청 본문                              | 응답                                                                                                                            |
-|:--------------------|:----------------------------|:-----------------------------------|:------------------------------------------------------------------------------------------------------------------------------|
-| **사용자 테마 조회 기능**    | `GET /themes`               | -                                  | `200 [{id, name, description, thumbnail_url}]`                                                                                |
-| **사용자 테마 시간 조회 기능** | `GET /themes/{id}/times`    | -                                  | `200 [{id: 1, start_at:"10:00", available:true},...]`                                                                         |
-| **사용자 예약 추가 기능**    | `POST /reservations`        | `{name, date, time_id, theme_id }` | `201`                                                                                                                         |
-| **사용자 예약 조회 기능**    | `GET /reservations`         | -                                  | `200 [{id: "1", name: "브라운", theme_name: "호러", theme_description, theme_thumbnail: "...", date:"2021-05-20", time: "10:00"}]` |
-| **사용자 예약 삭제**       | `DELETE /reservations/{id}` | `{name}`                           | `204 OK`                                                                                                                      |
+| 기능                  | 메서드 / URL                          | 요청 본문 / 쿼리 파라미터                     | 응답                                                                       |
+|:--------------------|:------------------------------------|:---------------------------------------|:-------------------------------------------------------------------------|
+| **테마 전체 조회**        | `GET /themes`                       | —                                      | `200 [{id, name, description, thumbnailUrl}]`                            |
+| **인기 테마 조회**        | `GET /themes?condition=popular&size={n}` | —                                 | `200 [{id, name, description, thumbnailUrl}]`                            |
+| **테마별 예약 가능 시간 조회** | `GET /themes/{id}/times?date={date}` | —                                     | `200 [{id, startAt, isAvailable}]`                                       |
+| **예약 조회**           | `GET /reservations?username={name}` | —                                      | `200 [{id, date, themeName, themeDescription, themeThumbnailUrl, time}]` |
+| **예약 추가**           | `POST /reservations`                | `{name, date, timeId, themeId}`        | `201 {id, date, themeName, themeDescription, themeThumbnailUrl, time}`   |
+| **예약 삭제**           | `DELETE /reservations/{id}`         | —                                      | `204`                                                                    |
 
 ---
 
