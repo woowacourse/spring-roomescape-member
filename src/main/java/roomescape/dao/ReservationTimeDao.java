@@ -7,13 +7,11 @@ import java.time.LocalTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
@@ -95,7 +93,8 @@ public class ReservationTimeDao {
                     ) AS available
                 FROM reservation_time rt;
                 """;
-        Map<ReservationTime, Boolean> reservationTimeBooleanMap = jdbcTemplate.query(sql, getMapResultSetExtractor(), id, date);
+        Map<ReservationTime, Boolean> reservationTimeBooleanMap = jdbcTemplate.query(sql, getMapResultSetExtractor(),
+                id, date);
         return reservationTimeBooleanMap;
     }
 }

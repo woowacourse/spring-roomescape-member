@@ -31,14 +31,16 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<Reservation> createReservation(@RequestBody ReservationCreateRequest reservationCreateRequest) {
+    public ResponseEntity<Reservation> createReservation(
+            @RequestBody ReservationCreateRequest reservationCreateRequest) {
         Reservation savedReservation = reservationService.createReservation(
                 reservationCreateRequest.name(),
                 reservationCreateRequest.date(),
                 reservationCreateRequest.timeId(),
                 reservationCreateRequest.themeId()
         );
-        return ResponseEntity.created(URI.create("/api/v1/reservations/" + savedReservation.getId())).body(savedReservation);
+        return ResponseEntity.created(URI.create("/api/v1/reservations/" + savedReservation.getId()))
+                .body(savedReservation);
     }
 
     @DeleteMapping("/{id}")

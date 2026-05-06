@@ -3,10 +3,16 @@ package roomescape.controller;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableTimeResponse;
 import roomescape.service.ReservationTimeService;
@@ -30,7 +36,8 @@ public class ReservationTimeController {
     @PostMapping
     public ResponseEntity<ReservationTime> createReservationTime(@RequestBody ReservationTime reservationTime) {
         ReservationTime savedReservationTime = reservationTimeService.createReservationTime(reservationTime);
-        return ResponseEntity.created(URI.create("/api/v1/times/" + savedReservationTime.getId())).body(savedReservationTime);
+        return ResponseEntity.created(URI.create("/api/v1/times/" + savedReservationTime.getId()))
+                .body(savedReservationTime);
     }
 
     @DeleteMapping("/{id}")
@@ -40,8 +47,9 @@ public class ReservationTimeController {
     }
 
     @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(@RequestParam(name = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-                                                             @RequestParam(name = "themeId") Long id) {
+    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(
+            @RequestParam(name = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+            @RequestParam(name = "themeId") Long id) {
         List<AvailableTimeResponse> availableTimeResponses = reservationTimeService.getAvailableTimes(date, id);
         return ResponseEntity.ok().body(availableTimeResponses);
     }
