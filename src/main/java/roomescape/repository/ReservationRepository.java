@@ -36,6 +36,9 @@ public class ReservationRepository {
             )
     );
 
+    private final RowMapper<Long> timeMapper = (resultSet, rowNum) ->
+            resultSet.getLong("time_id");
+
     public ReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -53,25 +56,14 @@ public class ReservationRepository {
         return Reservation.of(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
-    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+    public List<Long> findTimeByDateAndThemeId(LocalDate date, Long themeId) {
         String query = """
-                SELECT
-                    r.id as reservation_id,
-                    r.name,
-                    r.date,
-                    t.id as time_id,
-                    t.start_at as time_start_at,
-                    t.finish_at as time_finish_at,
-                    th.id as theme_id,
-                    th.name as theme_name,
-                    th.description as theme_description,
-                    th.image_url as theme_image_url
-                FROM reservation as r
-                INNER JOIN reservation_time as t ON r.time_id = t.id
-                INNER JOIN theme as th ON r.theme_id = th.id
-                WHERE r.date = ? AND th.id = ?
+                SELECT                                                                                                                                                                                                                                \s
+                      r.time_id                                                                                                                                                                                                                \s
+                  FROM reservation as r                                                                                                                                                                               \s
+                  WHERE r.date = ? AND r.theme_id = ?
                 """;
-        return jdbcTemplate.query(query, rowMapper, date, themeId);
+        return jdbcTemplate.query(query, timeMapper, date, themeId);
     }
 
     public void deleteById(Long id) {

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.TimeResponse;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -33,10 +34,10 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponse>> getReservations(
-        @RequestParam LocalDate date, Long themeId
+    public ResponseEntity<List<TimeResponse>> getReservations(
+        @RequestParam LocalDate date, @RequestParam Long themeId
     ) {
-        List<ReservationResponse> responses = reservationService.getReservations(date, themeId);
+        List<TimeResponse> responses = reservationService.getReservations(date, themeId);
         return ResponseEntity.ok(responses);
     }
 

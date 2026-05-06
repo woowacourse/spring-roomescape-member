@@ -24,7 +24,7 @@ public class ReservationTimeService {
                 request.finishAt()
         );
         ReservationTime saved = timeRepository.save(time);
-        return TimeResponse.from(saved);
+        return TimeResponse.of(saved);
     }
 
     public List<TimeResponse> getAllTimes() {
@@ -32,7 +32,7 @@ public class ReservationTimeService {
 
         List<TimeResponse> responses = new ArrayList<>();
         for (ReservationTime time : times) {
-            TimeResponse response = TimeResponse.from(time);
+            TimeResponse response = TimeResponse.of(time);
             responses.add(response);
         }
         return responses;
