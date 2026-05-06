@@ -1,6 +1,7 @@
 package roomescape.reservationtime.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,6 +13,7 @@ import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.payload.ReservationRequest;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.entity.ReservationTime;
+import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.payload.ReservationTimeRequest;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.payload.ThemeRequest;
@@ -83,4 +85,9 @@ class ReservationTimeServiceTest {
         assertThat(reservationTimes).doesNotContain(reservationTime);
     }
 
+    @Test
+    void 없는_예약시간을_삭제하면_에러를_던진다() {
+        assertThatThrownBy(() -> reservationTimeService.deleteById(999L))
+                .isInstanceOf(ReservationTimeNotFoundException.class);
+    }
 }

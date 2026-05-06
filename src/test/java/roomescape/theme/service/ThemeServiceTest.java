@@ -1,6 +1,7 @@
 package roomescape.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Duration;
 import java.util.List;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.theme.entity.Theme;
+import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.payload.ThemeRequest;
 
 @SpringBootTest
@@ -51,4 +53,9 @@ class ThemeServiceTest {
         assertThat(themes).doesNotContain(theme);
     }
 
+    @Test
+    void 없는_테마를_삭제하면_에러를_던진다() {
+        assertThatThrownBy(() -> themeService.deleteById(999L))
+                .isInstanceOf(ThemeNotFoundException.class);
+    }
 }
