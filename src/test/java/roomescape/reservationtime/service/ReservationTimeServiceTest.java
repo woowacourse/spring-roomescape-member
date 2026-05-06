@@ -1,5 +1,7 @@
 package roomescape.reservationtime.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -10,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.dto.ReservationTimeCreateRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
+import roomescape.reservationtime.exception.ReservationTimeException;
 
 class ReservationTimeServiceTest {
 
@@ -62,5 +66,15 @@ class ReservationTimeServiceTest {
         Assertions.assertThat(timeResponses).containsExactly(
                 new ReservationTimeResponse(2L, "10:00")
         );
+    }
+
+    @DisplayName("중복된 타임 추가 시 예외 발생을 테스트합니다.")
+    @Test
+    void save_duplicated_time_exception() {
+        ReservationTimeCreateRequest createRequestDto = new ReservationTimeCreateRequest(LocalTime.of(9, 0));
+
+        assertThatThrownBy(() -> timeService.save(createRequestDto))
+                .isInstanceOf(ReservationTimeException.class)
+                .hasMessage("[ERROR] 시간 09:00이(가) 이미 존재합니다.");
     }
 }

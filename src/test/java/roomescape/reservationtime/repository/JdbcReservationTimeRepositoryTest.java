@@ -69,11 +69,7 @@ class JdbcReservationTimeRepositoryTest {
     @DisplayName("db에 특정 시간이 존재하는 것을 테스트 합니다.")
     @Test
     void check_exists_successfully() {
-        ReservationTime reservationTime = ReservationTime.builder()
-                .startAt(LocalTime.of(9, 0))
-                .build();
-
-        Boolean alreadyExists = timeRepository.existsByStartAt(reservationTime);
+        Boolean alreadyExists = timeRepository.existsByStartAt(LocalTime.of(9, 0));
         assertThat(alreadyExists).isTrue();
     }
 }

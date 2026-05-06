@@ -1,6 +1,7 @@
 package roomescape.reservationtime.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -81,10 +82,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public Boolean existsByStartAt(ReservationTime time) {
+    public Boolean existsByStartAt(LocalTime startAt) {
         return jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE start_at = ?)",
                 Boolean.class,
-                time.getStartAt());
+                startAt);
     }
 }

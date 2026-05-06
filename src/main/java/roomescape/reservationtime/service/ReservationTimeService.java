@@ -1,6 +1,8 @@
 package roomescape.reservationtime.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,8 @@ import roomescape.reservationtime.dto.ReservationTimeCreateRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.exception.ReservationTimeException;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeException;
 
 @RequiredArgsConstructor
 @Service
@@ -38,6 +42,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse save(ReservationTimeCreateRequest request) {
+        validateDuplicateTime(request.startAt());
         ReservationTime time = request.toEntity();
 
         ReservationTime savedTime = timeRepository.save(time);
@@ -47,5 +52,12 @@ public class ReservationTimeService {
 
     public int delete(Long id) {
         return timeRepository.delete(id);
+    }
+
+    private void validateDuplicateTime(LocalTime startAt) {
+        if (timeRepository.existsByStartAt(startAt)) {
+            throw new ReservationTimeException(String.format("[ERROR] 시간 %s이(가) 이미 존재합니다.",
+                    startAt.format(DateTimeFormatter.ofPattern("HH:mm"))));
+        }
     }
 }
