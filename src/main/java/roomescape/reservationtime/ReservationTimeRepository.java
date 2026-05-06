@@ -1,5 +1,6 @@
 package roomescape.reservationtime;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -28,5 +29,9 @@ public class ReservationTimeRepository {
 
     public Optional<ReservationTime> findById(long id) {
         return reservationTimeDao.findById(id);
+    }
+
+    public List<AvailableTimeDto> findAvailableTimes(LocalDate date, Long themeId) {
+        return reservationTimeDao.findAvailableTimes(date, themeId);
     }
 }

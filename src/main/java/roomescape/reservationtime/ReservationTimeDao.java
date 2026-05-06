@@ -1,6 +1,7 @@
 package roomescape.reservationtime;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
@@ -19,6 +20,11 @@ public class ReservationTimeDao {
     private final RowMapper<ReservationTime> rowMapper = (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
             rs.getObject("start_at", LocalTime.class)
+    );
+    private final RowMapper<AvailableTimeDto> availableTimeRowMapper = (rs, rowNum) -> new AvailableTimeDto(
+            rs.getLong("timeId"),
+            rs.getObject("time", LocalTime.class),
+            rs.getBoolean("isAvailable")
     );
 
     public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
@@ -58,5 +64,14 @@ public class ReservationTimeDao {
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
+    }
+
+    public List<AvailableTimeDto> findAvailableTimes(LocalDate date, Long themeId) {
+        String sql = "SELECT rt.id AS timeId, rt.start_at AS time, r.id CASE WHEN r.id IS NULL THEN true ELSE false END AS isAvailable"
+                + "FROM reservation_time rt"
+                + "LEFT JOIN reservation AS r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ?"
+                + "ORDER BY rt.time_id";
+
+        return jdbcTemplate.query(sql, availableTimeRowMapper, date, themeId);
     }
 }

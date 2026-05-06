@@ -1,5 +1,6 @@
 package roomescape.reservationtime;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -40,5 +41,10 @@ public class ReservationTimeService {
         }
 
         reservationTimeRepository.delete(id);
+    }
+
+    public ScheduleResponse getSchedules(LocalDate date, Long themeId) {
+        List<AvailableTimeDto> schedules = reservationTimeRepository.findAvailableTimes(date, themeId);
+        return new ScheduleResponse(themeId, date, schedules);
     }
 }
