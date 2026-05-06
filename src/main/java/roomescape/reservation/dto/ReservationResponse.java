@@ -38,4 +38,36 @@ public class ReservationResponse {
                 reservation.getSchedule().getEndAt()
         );
     }
+
+    public Long getReservationId() {
+        return reservationId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public Long getThemeId() {
+        return themeId;
+    }
+
+    public String getThemeName() {
+        return themeName;
+    }
+
+    public Long getScheduleId() {
+        return scheduleId;
+    }
+
+    public LocalDateTime getStartAt() {
+        return startAt;
+    }
+
+    public LocalDateTime getEndAt() {
+        return endAt;
+    }
 }
