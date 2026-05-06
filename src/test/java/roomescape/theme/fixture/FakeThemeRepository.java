@@ -1,5 +1,6 @@
 package roomescape.theme.fixture;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -62,5 +63,10 @@ public class FakeThemeRepository implements ThemeRepository {
                 .filter(theme -> theme.isActive() == status)
                 .sorted(Comparator.comparing(Theme::name))
                 .toList();
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+        return List.of();
     }
 }

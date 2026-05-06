@@ -1,5 +1,6 @@
 package roomescape.theme.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,16 @@ public class ThemeService {
     @Transactional(readOnly = true)
     public List<Theme> readActiveThemes() {
         return themeRepository.findByStatus(true);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Theme> readPopularThemes(int top) {
+        LocalDate today = LocalDate.now();
+
+        LocalDate startDate = today.minusDays(7);
+        LocalDate endDate = today;
+
+        return themeRepository.findPopularThemes(startDate, endDate, top);
     }
 
     @Transactional

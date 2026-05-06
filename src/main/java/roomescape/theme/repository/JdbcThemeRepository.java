@@ -1,5 +1,6 @@
 package roomescape.theme.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
@@ -81,5 +82,38 @@ public class JdbcThemeRepository implements ThemeRepository{
         return updateCount > 0;
     }
 
-    //TODO: findPoupular ? 인기 테마 조회 추가
+    @Override
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+        String sql = """
+            SELECT
+                t.id,
+                t.name,
+                t.description,
+                t.thumbnail_url,
+                t.is_active,
+                COUNT(r.id) AS reservation_count
+            FROM reservation r
+            JOIN theme t ON r.theme_id = t.id
+            WHERE t.is_active = true
+              AND r.status = 'RESERVED'
+              AND r.date >= :startDate
+              AND r.date < :endDate
+            GROUP BY t.id, t.name, t.description, t.thumbnail_url, t.is_active
+            ORDER BY reservation_count DESC
+            LIMIT :limit
+            """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("startDate", startDate)
+                .addValue("endDate", endDate)
+                .addValue("limit", limit);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> Theme.load(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("thumbnail_url"),
+                rs.getBoolean("is_active")
+        ));
+    }
 }
