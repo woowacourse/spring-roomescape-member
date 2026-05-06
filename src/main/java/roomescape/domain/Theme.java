@@ -1,7 +1,8 @@
 package roomescape.domain;
 
-import java.util.Objects;
 import roomescape.domain.vo.Name;
+
+import java.util.Objects;
 
 public class Theme {
     private final Long id;

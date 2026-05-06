@@ -3,14 +3,8 @@ package roomescape.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.TimeDao;
-import roomescape.domain.Time;
-import roomescape.dto.TimeRequestDto;
 import roomescape.service.fake.FakeTimeDao;
 
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TimeServiceTest {

@@ -6,11 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
