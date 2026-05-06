@@ -7,6 +7,7 @@ import java.util.Optional;
 import roomescape.reservation.domain.Reservation;
 
 public interface ReservationRepository {
+
     List<Reservation> findAll();
 
     List<Reservation> findAllByNameOrderByDateAndTime(String name);
@@ -21,4 +22,5 @@ public interface ReservationRepository {
     boolean existsByNameAndDateAndTime(String name, LocalDate date, LocalTime time);
 
     boolean updateStatus(Reservation reservation);
+
 }

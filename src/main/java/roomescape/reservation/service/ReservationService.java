@@ -22,15 +22,15 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
+@Transactional
 public class ReservationService {
+
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationDateRepository reservationDateRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository,
-                              ReservationDateRepository reservationDateRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ReservationDateRepository reservationDateRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationDateRepository = reservationDateRepository;
@@ -38,10 +38,8 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> readAll() {
-        return reservationRepository.findAll().stream()
-                .map(ReservationResponse::from)
-                .toList();
+    public List<Reservation> readAll() {
+        return reservationRepository.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -51,22 +49,44 @@ public class ReservationService {
                 .toList();
     }
 
-    @Transactional
     public Reservation create(ReservationSaveDto dto) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
-
-        ReservationDate reservationDate = reservationDateRepository.findById(dto.dateId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 날짜입니다."));
-
-        Theme theme = themeRepository.findById(dto.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+        ReservationTime reservationTime = getReservationTime(dto.timeId());
+        ReservationDate reservationDate = getReservationDate(dto.dateId());
+        Theme theme = getTheme(dto.themeId());
 
         validateNotAlreadyBookedByOthers(reservationDate.date(), reservationTime.startAt(), theme);
         validateUserHasNoReservationAtSameTime(dto.name(), reservationDate, reservationTime);
         return reservationRepository.save(
                 Reservation.create(dto.name(), reservationDate.date(), reservationTime.startAt(), theme)
         );
+    }
+
+    public Reservation cancel(Long id) {
+        Reservation reservation = getReservation(id);
+        reservation.updateStatus(CANCELED);
+        reservationRepository.updateStatus(reservation);
+        return reservation;
+    }
+
+    private ReservationTime getReservationTime(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
+    }
+
+    private ReservationDate getReservationDate(Long dateId) {
+        return reservationDateRepository.findById(dateId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 날짜입니다."));
+    }
+
+    private Theme getTheme(Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+    }
+
+
+    private Reservation getReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
     }
 
     private void validateNotAlreadyBookedByOthers(LocalDate date, LocalTime time, Theme theme) {
@@ -79,19 +99,6 @@ public class ReservationService {
         if (reservationRepository.existsByNameAndDateAndTime(name, date.date(), time.startAt())) {
             throw new ConflictException("동일한 날짜와 시간에 예약이 존재합니다.");
         }
-    }
-
-    @Transactional
-    public ReservationResponse cancel(Long id) {
-        Reservation reservation = getReservation(id);
-        reservation.updateStatus(CANCELED);
-        reservationRepository.updateStatus(reservation);
-        return ReservationResponse.from(reservation);
-    }
-
-    private Reservation getReservation(Long id) {
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
     }
 
 }

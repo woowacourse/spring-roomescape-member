@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -59,7 +58,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN theme t ON r.theme_id = t.id
                 """;
 
-        return jdbcTemplate.query(sql, new MapSqlParameterSource(), reservationRowMapper);
+        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
@@ -80,13 +79,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN theme t ON r.theme_id = t.id
                 WHERE r.id = :id
                 """;
-
         SqlParameterSource params = new MapSqlParameterSource("id", id);
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, reservationRowMapper));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, reservationRowMapper));
     }
 
     @Override
@@ -108,8 +103,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE r.name = :name
                 ORDER BY r.date ASC, r.start_at ASC
                 """;
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", name);
+        MapSqlParameterSource params = new MapSqlParameterSource("name", name);
 
         return jdbcTemplate.query(sql, params, reservationRowMapper);
     }
@@ -158,11 +152,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     public boolean updateStatus(Reservation reservation) {
-        String sql = """
-                UPDATE RESERVATION
-                SET status = :status
-                WHERE id = :id
-                """;
+        String sql = "UPDATE RESERVATION SET status = :status WHERE id = :id ";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", reservation.id())
                 .addValue("status", reservation.status().name());

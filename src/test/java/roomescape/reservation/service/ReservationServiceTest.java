@@ -72,13 +72,15 @@ class ReservationServiceTest {
     @DisplayName("전체 예약 정보를 가져온다.")
     void readAll() {
         //given & when
-        List<Reservation> reservations = List.of(Reservation.create("한다", reservationDate1.date(), reservationTime1.startAt(), theme1),
-                Reservation.create("송송", reservationDate2.date(), reservationTime1.startAt(), theme2));
+        List<Reservation> reservations = List.of(
+                Reservation.create("한다", reservationDate1.date(), reservationTime1.startAt(), theme1),
+                Reservation.create("송송", reservationDate2.date(), reservationTime1.startAt(), theme2)
+        );
         reservationRepository.saveAll(reservations);
-        List<ReservationResponse> reservationsResponse = reservationService.readAll();
+        List<Reservation> actual = reservationService.readAll();
 
         //then
-        assertThat(reservationsResponse)
+        assertThat(actual)
                 .hasSize(reservations.size());
     }
 
@@ -151,7 +153,7 @@ class ReservationServiceTest {
         ReservationStatus canceled = ReservationStatus.CANCELED;
 
         // when
-        ReservationResponse actual = reservationService.cancel(savedReservation.id());
+        Reservation actual = reservationService.cancel(savedReservation.id());
 
         // then
         Assertions.assertThat(actual.status())
