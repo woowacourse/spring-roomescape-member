@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class Theme {
+
     private final Long id;
     private final String name;
     private final String thumbnailUrl;

@@ -1,6 +1,8 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,9 +11,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @Repository
 @RequiredArgsConstructor
@@ -79,6 +78,5 @@ public class ThemeDao {
                 """;
 
         return jdbcTemplate.query(sql, rowMapper, startAt, endAt, limit);
-
     }
 }
