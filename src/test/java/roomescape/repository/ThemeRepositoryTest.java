@@ -30,7 +30,7 @@ public class ThemeRepositoryTest {
         ThemeRequest themeRequest = new ThemeRequest("테스트 테마", "테스트 테마입니다", "url.com");
 
         // when
-        Theme newTheme = themeRepository.create(themeRequest);
+        Theme newTheme = themeRepository.save(themeRequest);
 
         // then
         Assertions.assertEquals(18L, newTheme.getId());
@@ -54,7 +54,7 @@ public class ThemeRepositoryTest {
         Long themeId = 2L;
 
         // when
-        themeRepository.delete(themeId);
+        themeRepository.deleteById(themeId);
 
         // then
         Assertions.assertEquals(themeRepository.findAll().size(), 16);
@@ -66,7 +66,7 @@ public class ThemeRepositoryTest {
         Long themeId = 2L;
 
         // when
-        Theme theme = themeRepository.selectById(themeId);
+        Theme theme = themeRepository.findById(themeId);
 
         // then
         Assertions.assertEquals(themeId, theme.getId());
@@ -84,7 +84,7 @@ public class ThemeRepositoryTest {
         int limit = 10;
 
         // when
-        List<Theme> themes = themeRepository.findByRanks(currentDate, lastWeekDate, limit);
+        List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(currentDate, lastWeekDate, limit);
 
         // then
         Assertions.assertEquals(themes.get(0).getId(), 5);

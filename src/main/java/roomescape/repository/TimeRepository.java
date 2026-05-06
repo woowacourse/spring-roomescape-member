@@ -39,12 +39,12 @@ public class TimeRepository {
         return jdbcTemplate.query(sql, timeRowMapper, date, themeId);
     }
 
-    public void removeById(Long id) {
+    public void deleteById(Long id) {
         String sql = "delete from reservation_time where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public ReservationTime saveTime(LocalTime startAt) {
+    public ReservationTime save(LocalTime startAt) {
         String sql = "insert into reservation_time(start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -58,7 +58,7 @@ public class TimeRepository {
         return new ReservationTime(id, startAt);
     }
 
-    public ReservationTime selectById(Long id) {
+    public ReservationTime findById(Long id) {
         String sql = "select * from reservation_time where id = ?";
         return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
     }

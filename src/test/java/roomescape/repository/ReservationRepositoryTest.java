@@ -38,7 +38,7 @@ public class ReservationRepositoryTest {
     @Test
     void 예약을_삭제할_수_있다() {
         // when
-        reservationRepository.removeById(2L);
+        reservationRepository.deleteById(2L);
         // then
         Assertions.assertEquals(13, reservationRepository.findAll().size());
     }
@@ -46,19 +46,20 @@ public class ReservationRepositoryTest {
     @Test
     void 예약을_생성할_수_있다() {
         // given
-        ReservationRequest reservationRequest = new ReservationRequest("포비", LocalDate.of(2026,5,5),1L,1L);
-        TimeResponse timeResponse = new TimeResponse(1L, LocalTime.of(10,0));
-        ThemeResponse themeResponse = new ThemeResponse(1L, "붉은 요람", "10년 전 의문의 화재로 폐쇄된 안개마을 영아원. 그곳에서 들려오는 울음소리의 정체를 밝혀야 합니다.", "https://escape.com/images/red-cradle.png");
+        ReservationRequest reservationRequest = new ReservationRequest("포비", LocalDate.of(2026, 5, 5), 1L, 1L);
+        TimeResponse timeResponse = new TimeResponse(1L, LocalTime.of(10, 0));
+        ThemeResponse themeResponse = new ThemeResponse(1L, "붉은 요람",
+                "10년 전 의문의 화재로 폐쇄된 안개마을 영아원. 그곳에서 들려오는 울음소리의 정체를 밝혀야 합니다.", "https://escape.com/images/red-cradle.png");
 
         // when
-        Reservation reservation = reservationRepository.register(reservationRequest,timeResponse,themeResponse);
+        Reservation reservation = reservationRepository.save(reservationRequest, timeResponse, themeResponse);
 
         // then
         Assertions.assertEquals(15, reservationRepository.findAll().size());
         Assertions.assertEquals(15L, reservation.getId());
         Assertions.assertEquals(reservationRequest.name(), reservation.getName());
         Assertions.assertEquals(reservationRequest.date(), reservation.getDate());
-        Assertions.assertEquals(timeResponse ,TimeResponse.from(reservation.getTime()));
+        Assertions.assertEquals(timeResponse, TimeResponse.from(reservation.getTime()));
         Assertions.assertEquals(themeResponse, ThemeResponse.from(reservation.getTheme()));
     }
 }

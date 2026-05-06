@@ -34,7 +34,7 @@ public class ReservationTimeRepositoryTest {
     @Test
     void 특정_시간을_삭제할_수_있다() {
         // when
-        timeRepository.removeById(2L);
+        timeRepository.deleteById(2L);
         // then
         Assertions.assertEquals(13, timeRepository.findAll().size());
     }
@@ -42,28 +42,28 @@ public class ReservationTimeRepositoryTest {
     @Test
     void timeId로_시간을_조회할_수_있다() {
         // when
-        ReservationTime time = timeRepository.selectById(2L);
+        ReservationTime time = timeRepository.findById(2L);
         // then
-        Assertions.assertEquals(LocalTime.of(11,0), time.getStartAt());
+        Assertions.assertEquals(LocalTime.of(11, 0), time.getStartAt());
     }
 
     @Test
     void 얘약_가능한_시간을_저장할_수_있다() {
         // given
-        LocalTime localTime = LocalTime.of(9,0);
+        LocalTime localTime = LocalTime.of(9, 0);
         // when
-        timeRepository.saveTime(localTime);
+        timeRepository.save(localTime);
         // then
         Assertions.assertEquals(15, timeRepository.findAll().size());
     }
-    
+
     @Test
     void 테마ID와_날짜로_예약_가능한_시간을_조회할_수_있다() {
         // given
         Long themeId = 2L;
         String date = "2026-05-04";
         // when
-        List<ReservationTime> times = timeRepository.findAllByThemeIdAndDate(themeId,date);
+        List<ReservationTime> times = timeRepository.findAllByThemeIdAndDate(themeId, date);
         // then
         Assertions.assertEquals(12, times.size());
     }

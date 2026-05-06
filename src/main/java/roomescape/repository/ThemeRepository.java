@@ -26,7 +26,7 @@ public class ThemeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Theme create(ThemeRequest themeRequest) {
+    public Theme save(ThemeRequest themeRequest) {
         String sql = "INSERT INTO theme(name, description, url) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -40,12 +40,12 @@ public class ThemeRepository {
         return new Theme(id, themeRequest.name(), themeRequest.description(), themeRequest.url());
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         String sql = "DELETE FROM THEME WHERE ID = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public Theme selectById(Long id) {
+    public Theme findById(Long id) {
         String sql = "SELECT * FROM THEME WHERE ID = ?";
         return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
     }
@@ -55,7 +55,7 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
-    public List<Theme> findByRanks(String currentDate, String lastWeekDate, int limit) {
+    public List<Theme> findByCurrentDateAndLastWeekDateAndLimit(String currentDate, String lastWeekDate, int limit) {
         String sql = """
                 SELECT
                     t.id,

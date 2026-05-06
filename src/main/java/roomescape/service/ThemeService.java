@@ -21,39 +21,40 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public ThemeResponse addTheme(ThemeRequest themeRequest) {
-        Theme theme = themeRepository.create(themeRequest);
+    public ThemeResponse register(ThemeRequest themeRequest) {
+        Theme theme = themeRepository.save(themeRequest);
         return ThemeResponse.from(theme);
     }
 
-    public void removeTheme(Long id) {
+    public void removeById(Long id) {
         try {
-            themeRepository.selectById(id);
-        }catch(EmptyResultDataAccessException e) {
+            themeRepository.findById(id);
+        } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("삭제하려는 ID가 없습니다.");
         }
-        themeRepository.delete(id);
+        themeRepository.deleteById(id);
     }
 
-    public List<ThemeResponse> getThemeAll() {
+    public List<ThemeResponse> readAll() {
         List<Theme> themes = themeRepository.findAll();
         return themes.stream()
                 .map(ThemeResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public List<ThemeResponse> getThemeRanks() {
+    public List<ThemeResponse> readRanks() {
         LocalDate currentDay = LocalDate.now().minusDays(1);
         LocalDate lastWeekDay = currentDay.minusWeeks(1);
-        List<Theme> themes = themeRepository.findByRanks(currentDay.toString(), lastWeekDay.toString(),
+        List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(currentDay.toString(),
+                lastWeekDay.toString(),
                 RANKS_LIMIT_COUNT);
         return themes.stream()
                 .map(ThemeResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public ThemeResponse findById(Long id) {
-        Theme theme = themeRepository.selectById(id);
+    public ThemeResponse readById(Long id) {
+        Theme theme = themeRepository.findById(id);
         return ThemeResponse.from(theme);
     }
 }

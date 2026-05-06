@@ -18,40 +18,40 @@ public class TimeService {
         this.timeRepository = timeRepository;
     }
 
-    public List<TimeResponse> readTimeAll() {
+    public List<TimeResponse> readAll() {
         List<ReservationTime> times = timeRepository.findAll();
         return times.stream()
                 .map(TimeResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public List<TimeResponse> readTimeAllByThemeIdAndDate(Long themeId, String date) {
+    public List<TimeResponse> readAllByThemeIdAndDate(Long themeId, String date) {
         List<ReservationTime> times = timeRepository.findAllByThemeIdAndDate(themeId, date);
         return times.stream()
                 .map(TimeResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public void removeTime(Long id) {
+    public void removeById(Long id) {
         try {
-            timeRepository.selectById(id);
+            timeRepository.findById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("삭제하고자 하는 시간 ID가 없습니다.");
         }
-        timeRepository.removeById(id);
+        timeRepository.deleteById(id);
     }
 
-    public TimeResponse registerTime(TimeRequest timeRequest) {
+    public TimeResponse register(TimeRequest timeRequest) {
         if (timeRepository.existsByStartAt(timeRequest.startAt()) > 0) {
             throw new IllegalArgumentException("이미 존재하는 시간입니다.");
         }
-        
-        ReservationTime reservationTime = timeRepository.saveTime(timeRequest.startAt());
+
+        ReservationTime reservationTime = timeRepository.save(timeRequest.startAt());
         return TimeResponse.from(reservationTime);
     }
 
-    public TimeResponse findById(Long id) {
-        ReservationTime reservationTime = timeRepository.selectById(id);
+    public TimeResponse readById(Long id) {
+        ReservationTime reservationTime = timeRepository.findById(id);
         return TimeResponse.from(reservationTime);
     }
 }

@@ -25,31 +25,33 @@ public class ReservationService {
         this.themeService = themeService;
     }
 
-    public List<ReservationResponse> readReservation() {
+    public List<ReservationResponse> read() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public void removeReservation(Long id) {
+    public void removeById(Long id) {
         try {
-            reservationRepository.selectById(id);
+            reservationRepository.findById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("삭제하고자 하는 예약 ID가 없습니다.");
         }
-        reservationRepository.removeById(id);
+        reservationRepository.deleteById(id);
     }
 
-    public ReservationResponse registerReservation(ReservationRequest reservationRequest) {
-        TimeResponse timeResponse = timeService.findById(reservationRequest.timeId());
-        ThemeResponse themeResponse = themeService.findById(reservationRequest.themeId());
+    public ReservationResponse register(ReservationRequest reservationRequest) {
+        TimeResponse timeResponse = timeService.readById(reservationRequest.timeId());
+        ThemeResponse themeResponse = themeService.readById(reservationRequest.themeId());
 
-        if (reservationRepository.existsByDateAndId(reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId()) > 0) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservationRequest.date(),
+                reservationRequest.timeId(),
+                reservationRequest.themeId()) > 0) {
             throw new IllegalArgumentException("이미 존재하는 예약입니다.");
         }
 
-        Reservation reservation = reservationRepository.register(reservationRequest, timeResponse, themeResponse);
+        Reservation reservation = reservationRepository.save(reservationRequest, timeResponse, themeResponse);
         return ReservationResponse.from(reservation);
     }
 

@@ -28,29 +28,29 @@ public class TimeController {
 
     @GetMapping
     @ResponseBody
-    public ResponseEntity<List<TimeResponse>> getReservationTime() {
-        List<TimeResponse> reservationTimes = timeService.readTimeAll();
+    public ResponseEntity<List<TimeResponse>> readAll() {
+        List<TimeResponse> reservationTimes = timeService.readAll();
         return ResponseEntity.ok().body(reservationTimes);
     }
 
     @GetMapping("/{themeId}")
     @ResponseBody
-    public ResponseEntity<List<TimeResponse>> getReservationTimeByThemeIdAndDate(@PathVariable Long themeId,
-                                                                                 @RequestParam("date") String date) {
-        List<TimeResponse> reservationTimes = timeService.readTimeAllByThemeIdAndDate(themeId, date);
+    public ResponseEntity<List<TimeResponse>> readAllByThemeIdAndDate(@PathVariable Long themeId,
+                                                                      @RequestParam("date") String date) {
+        List<TimeResponse> reservationTimes = timeService.readAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(reservationTimes);
     }
 
     @PostMapping
     @ResponseBody
-    public ResponseEntity<TimeResponse> addReservationTime(@RequestBody TimeRequest timeRequest) {
-        TimeResponse timeResponse = timeService.registerTime(timeRequest);
+    public ResponseEntity<TimeResponse> register(@RequestBody TimeRequest timeRequest) {
+        TimeResponse timeResponse = timeService.register(timeRequest);
         return ResponseEntity.created(URI.create("/times/" + timeResponse.id())).body(timeResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
-        timeService.removeTime(id);
+    public ResponseEntity<Void> removeById(@PathVariable Long id) {
+        timeService.removeById(id);
         return ResponseEntity.noContent().build();
     }
 }
