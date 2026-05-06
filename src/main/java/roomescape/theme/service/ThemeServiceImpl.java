@@ -1,6 +1,7 @@
 package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class ThemeServiceImpl implements ThemeService {
 
     private final ThemeRepository themeRepository;
@@ -21,11 +23,13 @@ public class ThemeServiceImpl implements ThemeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
+    @Transactional
     @Override
     public Theme createTheme(String name, String description, String thumbnail) {
-        return themeRepository.save(new Theme(name, description, thumbnail));
+        return themeRepository.save(new Theme(null, name, description, thumbnail));
     }
 
+    @Transactional
     @Override
     public void removeTheme(Long id) {
         themeRepository.remove(id);
@@ -39,15 +43,15 @@ public class ThemeServiceImpl implements ThemeService {
     @Override
     public List<AvailableTime> getAvailableTimes(Long id, LocalDate date){
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        List<Long> availableTimes = themeRepository.findAvailableTimes(id, date);
+        List<Long> availableTimes = themeRepository.findNotAvailableTimes(id, date);
 
         List<AvailableTime> response = new ArrayList<>();
         for (ReservationTime reservationTime : reservationTimes) {
             if (availableTimes.contains(reservationTime.getId())) {
-                response.add(new AvailableTime(reservationTime.getId(), reservationTime.getStartAt(), true));
+                response.add(new AvailableTime(reservationTime.getId(), reservationTime.getStartAt(), false));
                 continue;
             }
-            response.add(new AvailableTime(reservationTime.getId(), reservationTime.getStartAt(), false));
+            response.add(new AvailableTime(reservationTime.getId(), reservationTime.getStartAt(), true));
         }
 
         return response;

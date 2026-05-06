@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservation.exception.ReservationNotFoundException;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -30,6 +32,7 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationRepository.findAllWithTime();
     }
 
+    @Transactional
     public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new InvalidReservationTimeException(timeId));
@@ -39,6 +42,7 @@ public class ReservationServiceImpl implements ReservationService {
         return new Reservation(id, name, date, time, theme);
     }
 
+    @Transactional
     public void deleteReservation(Long id) {
         if (reservationRepository.deleteById(id) == 0) {
             throw new ReservationNotFoundException(id);
