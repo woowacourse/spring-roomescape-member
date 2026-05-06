@@ -10,7 +10,7 @@ public record PopularThemesResponseDto(
 
     public static PopularThemesResponseDto from(List<Theme> themes) {
         List<PopularThemeResponseDto> popularThemes = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < themes.size(); i++) {
             popularThemes.add(
                 PopularThemeResponseDto.from(themes.get(i), i + 1));
         }
