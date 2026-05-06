@@ -4,8 +4,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
+import roomescape.theme.dto.ThemesResponse;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.ThemeRepository;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -15,6 +18,11 @@ public class ThemeService {
 
     public ThemeService(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
+    }
+
+    public ThemesResponse findAll() {
+        List<Theme> themes = themeRepository.findAll();
+        return ThemesResponse.from(themes);
     }
 
     @Transactional
