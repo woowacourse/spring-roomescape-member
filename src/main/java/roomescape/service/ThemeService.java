@@ -7,6 +7,7 @@ import roomescape.repository.ThemeRepository;
 
 import roomescape.exception.NotFoundException;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -15,9 +16,11 @@ import java.util.Objects;
 public class ThemeService {
     private static final int TOP_NUMBERS = 10;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, Clock clock) {
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
 
@@ -42,15 +45,15 @@ public class ThemeService {
         LocalDate selectedDate = date;
 
         if (Objects.isNull(date)) {
-            selectedDate = LocalDate.now();
+            selectedDate = LocalDate.now(clock);
         }
 
         return themeRepository.findAvailableTimes(themeId, selectedDate);
     }
 
     public List<Theme> findPopularThemes() {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate startInclusive = currentDate.minusDays(8);
+        LocalDate currentDate = LocalDate.now(clock);
+        LocalDate startInclusive = currentDate.minusDays(7);
         LocalDate endInclusive = currentDate.minusDays(1);
 
         return themeRepository.findPopularThemes(startInclusive, endInclusive, TOP_NUMBERS);

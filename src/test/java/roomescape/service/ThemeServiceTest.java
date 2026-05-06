@@ -1,8 +1,8 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationTime;
@@ -10,8 +10,10 @@ import roomescape.domain.Theme;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -23,11 +25,22 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
+
+    private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 5, 8);
+    private static final ZoneId ZONE = ZoneId.of("Asia/Seoul");
+
     @Mock
     private ThemeRepository themeRepository;
 
-    @InjectMocks
     private ThemeService themeService;
+
+    @BeforeEach
+    void setUp() {
+        Clock fixedClock = Clock.fixed(
+                FIXED_TODAY.atStartOfDay(ZONE).toInstant(),
+                ZONE);
+        themeService = new ThemeService(themeRepository, fixedClock);
+    }
 
     @Test
     void 테마가_없으면_빈리스트_반환() {
@@ -105,10 +118,9 @@ class ThemeServiceTest {
 
     @Test
     void 날짜가_없으면_오늘_예약_가능_시간을_조회한다() {
-        LocalDate today = LocalDate.now();
         List<ReservationTime> times = List.of(new ReservationTime(1L, LocalTime.of(10, 0)));
 
-        when(themeRepository.findAvailableTimes(1L, today)).thenReturn(times);
+        when(themeRepository.findAvailableTimes(1L, FIXED_TODAY)).thenReturn(times);
         List<ReservationTime> result = themeService.getAvailableTimes(1L, null);
 
         assertThat(result.size()).isEqualTo(1);
@@ -117,13 +129,12 @@ class ThemeServiceTest {
 
     @Test
     void 인기_테마를_조회한다() {
-        LocalDate today = LocalDate.now();
         List<Theme> themes = List.of(
                 new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg"),
                 new Theme(2L, "escape2", "방탈출2", "http://example.com/img2.jpg")
         );
 
-        when(themeRepository.findPopularThemes(today.minusDays(8), today.minusDays(1), 10)).thenReturn(themes);
+        when(themeRepository.findPopularThemes(FIXED_TODAY.minusDays(7), FIXED_TODAY.minusDays(1), 10)).thenReturn(themes);
         List<Theme> result = themeService.findPopularThemes();
 
         assertThat(result.size()).isEqualTo(2);

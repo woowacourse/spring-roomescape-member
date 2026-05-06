@@ -10,6 +10,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -19,14 +20,17 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository) {
+            ThemeRepository themeRepository,
+            Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     public List<Reservation> findAllReservations() {
@@ -46,7 +50,7 @@ public class ReservationService {
     }
 
     private boolean isPast(ReservationSaveCommand command) {
-        return Objects.nonNull(command.date()) && command.date().isBefore(LocalDate.now());
+        return Objects.nonNull(command.date()) && command.date().isBefore(LocalDate.now(clock));
     }
 
     public Reservation saveReservation(ReservationSaveCommand command) {

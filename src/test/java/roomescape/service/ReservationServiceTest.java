@@ -1,8 +1,8 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.command.ReservationSaveCommand;
@@ -14,8 +14,10 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +35,8 @@ class ReservationServiceTest {
 
     private static final long TIME_ID = 1L;
     private static final long THEME_ID = 1L;
+    private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 5, 8);
+    private static final ZoneId ZONE = ZoneId.of("Asia/Seoul");
 
     @Mock
     private ReservationRepository reservationRepository;
@@ -43,8 +47,19 @@ class ReservationServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
-    @InjectMocks
     private ReservationService reservationService;
+
+    @BeforeEach
+    void setUp() {
+        Clock fixedClock = Clock.fixed(
+                FIXED_TODAY.atStartOfDay(ZONE).toInstant(),
+                ZONE);
+        reservationService = new ReservationService(
+                reservationRepository,
+                reservationTimeRepository,
+                themeRepository,
+                fixedClock);
+    }
 
     @Test
     void 예약을_저장하면_id가_채워진_도메인을_반환한다() {
@@ -68,7 +83,7 @@ class ReservationServiceTest {
 
     @Test
     void 사용자는_지난_날짜로_예약을_저장할_수_없다() {
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.now().minusDays(1), TIME_ID, THEME_ID);
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", FIXED_TODAY.minusDays(1), TIME_ID, THEME_ID);
 
         assertThatThrownBy(() -> reservationService.saveUserReservation(saveCommand))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -78,7 +93,7 @@ class ReservationServiceTest {
     void 관리자는_지난_날짜로도_예약을_저장할_수_있다() {
         ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
         Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
-        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate yesterday = FIXED_TODAY.minusDays(1);
         ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", yesterday, TIME_ID, THEME_ID);
         Reservation persisted = new Reservation(99L, "브라운", yesterday, time, theme);
 
