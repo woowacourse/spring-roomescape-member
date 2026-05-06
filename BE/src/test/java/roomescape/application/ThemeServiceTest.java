@@ -1,10 +1,12 @@
 package roomescape.application;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.entity.Theme;
 import roomescape.entity.ThemeRepository;
+import roomescape.entity.ThemeSortType;
 import roomescape.fake.FakeThemeRepository;
 
 class ThemeServiceTest {
@@ -60,6 +62,15 @@ class ThemeServiceTest {
         //when & then
         Assertions.assertDoesNotThrow(
                 () -> themeService.deleteById(deleteTagetId)
+        );
+    }
+
+    @Test
+    @DisplayName("정렬 기준으로 테마들을 조회 시 오류 발생 안함")
+    void findTopNByPeriod_success() {
+        // when & then
+        Assertions.assertDoesNotThrow(
+                () -> themeService.findTopNByPeriod(LocalDate.now().minusDays(1), LocalDate.now(), ThemeSortType.POPULAR, 10L)
         );
     }
 }
