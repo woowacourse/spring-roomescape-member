@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -36,8 +35,7 @@ class UserReservationControllerTest {
     private UserReservationService userReservationService;
 
     @Test
-    @DisplayName("예약 목록을 조회할 수 있다")
-    void getReservations() throws Exception {
+    void 예약_목록을_조회할_수_있다() throws Exception {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(2L, "Theme A", "desc", "https://example.com/a.png");
         Reservation reservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
@@ -58,8 +56,7 @@ class UserReservationControllerTest {
     }
 
     @Test
-    @DisplayName("예약을 생성할 수 있다")
-    void createReservation() throws Exception {
+    void 예약을_생성할_수_있다() throws Exception {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(2L, "Theme A", "desc", "https://example.com/a.png");
         Reservation reservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
@@ -83,8 +80,7 @@ class UserReservationControllerTest {
     }
 
     @Test
-    @DisplayName("예약을 삭제할 수 있다")
-    void deleteReservation() throws Exception {
+    void 예약을_삭제할_수_있다() throws Exception {
         ReservationDeleteRequest request = new ReservationDeleteRequest("브라운");
 
         mockMvc.perform(delete("/reservations/{id}", 1L)
@@ -93,4 +89,3 @@ class UserReservationControllerTest {
                 .andExpect(status().isNoContent());
     }
 }
-

@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,8 +32,7 @@ class AdminReservationControllerTest {
     private AdminReservationService adminReservationService;
 
     @Test
-    @DisplayName("관리자가 예약을 생성할 수 있다")
-    void createForceReservation() throws Exception {
+    void 관리자가_예약을_생성할_수_있다() throws Exception {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(2L, "Theme A", "desc", "thumb");
         Reservation reservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
@@ -58,8 +56,7 @@ class AdminReservationControllerTest {
     }
 
     @Test
-    @DisplayName("관리자가 예약을 삭제할 수 있다")
-    void deleteForceReservation() throws Exception {
+    void 관리자가_예약을_삭제할_수_있다() throws Exception {
         mockMvc.perform(delete("/admin/reservations/{id}", 1L))
                 .andExpect(status().isNoContent());
     }

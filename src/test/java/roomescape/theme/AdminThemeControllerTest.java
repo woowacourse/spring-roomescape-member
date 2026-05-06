@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -29,12 +28,11 @@ class AdminThemeControllerTest {
     private AdminThemeService adminThemeService;
 
     @Test
-    @DisplayName("테마를 생성할 수 있다")
-    void createTheme() throws Exception {
-        ThemeRequest request = new ThemeRequest("Theme A", "desc", "thumb");
-        Theme saved = new Theme(1L, "Theme A", "desc", "thumb");
+    void 테마를_생성할_수_있다() throws Exception {
+        ThemeRequest request = new ThemeRequest("Theme A", "desc", "https://example.com/thumb.png");
+        Theme saved = new Theme(1L, "Theme A", "desc", "https://example.com/thumb.png");
 
-        when(adminThemeService.save(eq("Theme A"), eq("desc"), eq("thumb"))).thenReturn(saved);
+        when(adminThemeService.save(eq("Theme A"), eq("desc"), eq("https://example.com/thumb.png"))).thenReturn(saved);
 
         mockMvc.perform(post("/admin/themes")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -43,14 +41,12 @@ class AdminThemeControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Theme A"))
                 .andExpect(jsonPath("$.description").value("desc"))
-                .andExpect(jsonPath("$.thumbnail").value("thumb"));
+                .andExpect(jsonPath("$.thumbnail").value("https://example.com/thumb.png"));
     }
 
     @Test
-    @DisplayName("테마를 삭제할 수 있다")
-    void deleteTheme() throws Exception {
+    void 테마를_삭제할_수_있다() throws Exception {
         mockMvc.perform(delete("/admin/themes/{id}", 1L))
                 .andExpect(status().isNoContent());
     }
 }
-

@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,8 +27,7 @@ class UserThemeControllerTest {
     private UserThemeService userThemeService;
 
     @Test
-    @DisplayName("테마 랭킹 목록을 조회할 수 있다")
-    void getRankedThemes() throws Exception {
+    void 테마_랭킹_목록을_조회할_수_있다() throws Exception {
         LocalDate startDate = LocalDate.of(2026, 5, 1);
         LocalDate endDate = LocalDate.of(2026, 5, 31);
 
@@ -61,8 +59,7 @@ class UserThemeControllerTest {
     }
 
     @Test
-    @DisplayName("정렬 기본값이 적용된다")
-    void getRankedThemesWithDefaultSortAndOrder() throws Exception {
+    void 정렬_기본값이_적용된다() throws Exception {
         LocalDate startDate = LocalDate.of(2026, 5, 1);
         LocalDate endDate = LocalDate.of(2026, 5, 31);
 
@@ -79,8 +76,7 @@ class UserThemeControllerTest {
     }
 
     @Test
-    @DisplayName("기본값이 적용된다")
-    void getRankedThemesWithDefaults() throws Exception {
+    void 기본값이_적용된다() throws Exception {
         LocalDate today = LocalDate.now();
         LocalDate weekAgo = today.minusDays(7);
 
@@ -94,8 +90,7 @@ class UserThemeControllerTest {
     }
 
     @Test
-    @DisplayName("전체 테마 목록을 조회할 수 있다")
-    void getAllThemes() throws Exception {
+    void 전체_테마_목록을_조회할_수_있다() throws Exception {
         List<Theme> themes = List.of(
                 new Theme(1L, "Mystery", "Find the clues", "thumb1"),
                 new Theme(2L, "Horror", "Escape the room", "thumb2")

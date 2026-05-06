@@ -3,6 +3,7 @@ package roomescape.theme;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +56,36 @@ class ThemeDaoTest {
     }
 
     @Test
-    @Sql(scripts = "classpath:data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void 예약_수_기준으로_테마를_조회할_수_있다() {
+        Theme themeA = themeDao.save("Theme A", "desc", "https://example.com/a.png");
+        Theme themeB = themeDao.save("Theme B", "desc", "https://example.com/b.png");
+        Theme themeC = themeDao.save("Theme C", "desc", "https://example.com/c.png");
+        Theme themeD = themeDao.save("Theme D", "desc", "https://example.com/d.png");
+
+        long time1 = insertTime(LocalTime.parse("10:00:00"));
+        long time2 = insertTime(LocalTime.parse("11:00:00"));
+        long time3 = insertTime(LocalTime.parse("12:00:00"));
+        long time4 = insertTime(LocalTime.parse("13:00:00"));
+
+        LocalDate date1 = LocalDate.of(2026, 5, 1);
+        LocalDate date2 = LocalDate.of(2026, 5, 2);
+        LocalDate date3 = LocalDate.of(2026, 5, 3);
+        LocalDate date4 = LocalDate.of(2026, 5, 4);
+
+        insertReservation(themeA.id(), time1, date1, "User1");
+        insertReservation(themeA.id(), time2, date2, "User2");
+        insertReservation(themeA.id(), time3, date3, "User3");
+        insertReservation(themeA.id(), time4, date4, "User4");
+
+        insertReservation(themeB.id(), time1, date1, "User5");
+        insertReservation(themeB.id(), time2, date2, "User6");
+        insertReservation(themeB.id(), time3, date3, "User7");
+
+        insertReservation(themeC.id(), time1, date1, "User8");
+        insertReservation(themeC.id(), time2, date2, "User9");
+
+        insertReservation(themeD.id(), time1, date1, "User10");
+
         List<Theme> ranked = themeDao.findRanked("reservationCount", "DESC", LocalDate.of(2026, 5, 1),
                 LocalDate.of(2026, 5, 6), 10L);
 
@@ -65,5 +94,24 @@ class ThemeDaoTest {
         assertThat(ranked.get(1).name()).isEqualTo("Theme B");
         assertThat(ranked.get(2).name()).isEqualTo("Theme C");
         assertThat(ranked.get(3).name()).isEqualTo("Theme D");
+    }
+
+    private long insertTime(LocalTime startAt) {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", startAt);
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM reservation_time WHERE start_at = ?",
+                Long.class,
+                startAt
+        );
+    }
+
+    private void insertReservation(long themeId, long timeId, LocalDate date, String name) {
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                name,
+                date,
+                timeId,
+                themeId
+        );
     }
 }
