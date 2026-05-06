@@ -2,71 +2,52 @@ package roomescape.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Properties;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservationtime.ReservationTime;
+import roomescape.theme.Theme;
 
+@JdbcTest(properties = "spring.sql.init.mode=never")
+@Import(ReservationDao.class)
+@Sql(scripts = "classpath:schema-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = "classpath:reset-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationDaoTest {
-    private static final String TEST_PROPERTIES = "application-test.properties";
-
+    @Autowired
     private ReservationDao reservationDao;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @BeforeEach
-    void setUp() {
-        Properties properties = loadTestProperties();
-
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(properties.getProperty("spring.datasource.driver-class-name"));
-        dataSource.setUrl(properties.getProperty("spring.datasource.url"));
-        dataSource.setUsername(properties.getProperty("spring.datasource.username"));
-        dataSource.setPassword(properties.getProperty("spring.datasource.password"));
-
-        jdbcTemplate = new JdbcTemplate(dataSource);
-        reservationDao = new ReservationDao(jdbcTemplate);
-
-        jdbcTemplate.execute("RUNSCRIPT FROM 'classpath:reset-test.sql'");
-    }
-
-    private Properties loadTestProperties() {
-        Properties properties = new Properties();
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(TEST_PROPERTIES)) {
-            if (inputStream == null) {
-                throw new IllegalStateException("Test properties not found: " + TEST_PROPERTIES);
-            }
-            properties.load(inputStream);
-            return properties;
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to load test properties: " + TEST_PROPERTIES, e);
-        }
-    }
-
     @Test
-    void 예약을_저장할_수_있다() {
-        ReservationTime reservationTime = createReservationTime(LocalTime.of(15, 40));
-        Reservation saved = reservationDao.save("브라운", LocalDate.of(2023, 8, 5), reservationTime);
+    void 예약을_저장하고_ID로_조회할_수_있다() {
+        Theme theme = createTheme("Theme A");
+        ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
 
-        assertThat(saved.getId()).isNotNull();
-        assertThat(saved.getName()).isEqualTo("브라운");
-        assertThat(saved.getDate()).isEqualTo(LocalDate.of(2023, 8, 5));
-        assertThat(saved.getTime().startAt()).isEqualTo(LocalTime.of(15, 40));
+        Reservation saved = reservationDao.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
+        Reservation found = reservationDao.findById(saved.getId());
+
+        assertThat(found.getId()).isEqualTo(saved.getId());
+        assertThat(found.getName()).isEqualTo("브라운");
+        assertThat(found.getDate()).isEqualTo(LocalDate.of(2026, 5, 1));
+        assertThat(found.getTime().startAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(found.getTheme().name()).isEqualTo("Theme A");
     }
 
     @Test
     void 저장된_예약을_전체_조회할_수_있다() {
-        ReservationTime firstTime = createReservationTime(LocalTime.of(15, 40));
-        ReservationTime secondTime = createReservationTime(LocalTime.of(16, 0));
+        Theme theme = createTheme("Theme A");
+        ReservationTime firstTime = createReservationTime(LocalTime.of(10, 0));
+        ReservationTime secondTime = createReservationTime(LocalTime.of(11, 0));
 
-        reservationDao.save("브라운", LocalDate.of(2023, 8, 5), firstTime);
-        reservationDao.save("코니", LocalDate.of(2023, 8, 6), secondTime);
+        reservationDao.save("브라운", LocalDate.of(2026, 5, 1), firstTime, theme);
+        reservationDao.save("코니", LocalDate.of(2026, 5, 2), secondTime, theme);
 
         List<Reservation> reservations = reservationDao.findAll();
 
@@ -78,12 +59,56 @@ class ReservationDaoTest {
 
     @Test
     void ID로_예약을_삭제할_수_있다() {
-        ReservationTime reservationTime = createReservationTime(LocalTime.of(15, 40));
-        Reservation saved = reservationDao.save("브라운", LocalDate.of(2023, 8, 5), reservationTime);
+        Theme theme = createTheme("Theme A");
+        ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
+
+        Reservation saved = reservationDao.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
 
         reservationDao.delete(saved.getId());
 
         assertThat(reservationDao.findAll()).isEmpty();
+    }
+
+    @Test
+    void 예약_시간_ID로_예약_수를_조회할_수_있다() {
+        Theme theme = createTheme("Theme A");
+        ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
+
+        reservationDao.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
+        reservationDao.save("코니", LocalDate.of(2026, 5, 2), reservationTime, theme);
+
+        int count = reservationDao.countByTimeId(reservationTime.id());
+
+        assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    void 날짜와_테마로_예약된_시간을_조회할_수_있다() {
+        Theme theme = createTheme("Theme A");
+        ReservationTime firstTime = createReservationTime(LocalTime.of(10, 0));
+        ReservationTime secondTime = createReservationTime(LocalTime.of(11, 0));
+
+        reservationDao.save("브라운", LocalDate.of(2026, 5, 1), firstTime, theme);
+        reservationDao.save("코니", LocalDate.of(2026, 5, 1), secondTime, theme);
+
+        List<Long> reservedTimes = reservationDao.findByDateAndTheme(LocalDate.of(2026, 5, 1), theme.id());
+
+        assertThat(reservedTimes).containsExactly(firstTime.id(), secondTime.id());
+    }
+
+    private Theme createTheme(String name) {
+        jdbcTemplate.update(
+                "INSERT INTO themes (name, description, thumbnail) VALUES (?, ?, ?)",
+                name,
+                "desc",
+                "https://example.com/a.png"
+        );
+        Long id = jdbcTemplate.queryForObject(
+                "SELECT id FROM themes WHERE name = ?",
+                Long.class,
+                name
+        );
+        return new Theme(id, name, "desc", "https://example.com/a.png");
     }
 
     private ReservationTime createReservationTime(LocalTime startAt) {
