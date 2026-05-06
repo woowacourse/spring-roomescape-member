@@ -1,9 +1,9 @@
 # 방탈출 사용자 예약 미션
 
-## 기능 요구 사항 
+## 기능 요구 사항
 
 - [x] 1단계 - 테마 도메인 추가
-  - [x] 방탈출 게임의 `테마` 정보를 추가한다. 
+  - [x] 방탈출 게임의 `테마` 정보를 추가한다.
     - [x] 모든 테마의 시작 시간과 소요 시간은 동일하다고 가정한다.
     - [x] 테마는 이름, 설명, 썸네일 이미지 URL을 가진다.
   - [x] 예약에 테마 정보를 포함하도록 기존 코드를 변경한다.
@@ -23,13 +23,13 @@
 
 `Resrevation`
 
-| 기능          | Http/url                                                         | 요청본문                   | 응답                              |
-|-------------|------------------------------------------------------------------|------------------------|---------------------------------|
-| 예약 생성       | `POST` `/reservations`                                           | `{name, date, timeId}` | `{id, name, date, time}`        |
-| 예약 삭제       | `DELETE` `/reservations/{reservationId}`                         | -                      | -                               |
-| 예약 조회       | `GET` `/reservations`                                            | -                      | `[{id, name, date, time}, ...]` |
-| 예약 가능 시간 조회 | `GET` `/reservations/theme/{themeId}/times?date={yyyy-MM-dd}`    | -                      | `[{id, startAt, theme}, ...]`   |
-| 인기 테마 조회    | `GET` `/reservation/theme/popular?period={period}&limit={limit}` | -       | `[{id, name, description, thumbnailUrl}, ...]`                                |
+| 기능          | Http/url                                                          | 요청본문                   | 응답                              |
+|-------------|-------------------------------------------------------------------|------------------------|---------------------------------|
+| 예약 생성       | `POST` `/reservations`                                            | `{name, date, timeId}` | `{id, name, date, time}`        |
+| 예약 삭제       | `DELETE` `/reservations/{reservationId}`                          | -                      | -                               |
+| 예약 조회       | `GET` `/reservations`                                             | -                      | `[{id, name, date, time}, ...]` |
+| 인기 테마 조회    | `GET` `/reservations/theme/popular?period={period}&limit={limit}` | -       | `[{id, name, description, thumbnailUrl}, ...]`                                |
+| 예약 가능 시간 조회 | `GET` `/reservations/theme/{themeId}/times?date={yyyy-MM-dd}`     | -                      | `[{id, startAt, theme}, ...]`   |
 
 `Theme`
 
@@ -38,6 +38,8 @@
 | 관리자 테마 추가 | `POST` `/admin/themes` | `{name, description, thumbnailUrl}` | `{id, name, description, thumbnailUrl}` |
 | 관리자 테마 삭제 | `DELETE` `/admin/themes/{themeId}` | - | - |
 | 관리자 테마 조회  | `GET` `/admin/themes` | - | `[{id, name, description, thumbnailUrl}, ...]` |
+| 인기 테마 조회    | `GET` `/theme/popular?period={period}&limit={limit}` | -       | `[{id, name, description, thumbnailUrl}, ...]`                                |
+
 
 `ReservationTime`
 
@@ -47,19 +49,19 @@
 | 관리자 테마 시간 삭제 | `DELETE` `/admin/themes/{themeId}/times/{timeId}` | - | - |
 | 관리자 테마 시간 조회 | `GET` `/admin/themes/{themeId}/times` | - | `[{id, startAt, theme}, ...]` |
 
-## 테이블 설계 
+## 테이블 설계
 
 `Reservation`
 ```sql
 CREATE TABLE reservation
 (
-    id      BIGINT       NOT NULL AUTO_INCREMENT,
-    name    VARCHAR(255) NOT NULL,
-    date    DATE         NOT NULL,
-    time_id BIGINT       NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    UNIQUE (date, time_id)
+  id      BIGINT       NOT NULL AUTO_INCREMENT,
+  name    VARCHAR(255) NOT NULL,
+  date    DATE         NOT NULL,
+  time_id BIGINT       NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+  UNIQUE (date, time_id)
 );
 ```
 
@@ -67,12 +69,12 @@ CREATE TABLE reservation
 ```sql
 CREATE TABLE reservation_time
 (
-    id       BIGINT NOT NULL AUTO_INCREMENT,
-    start_at TIME   NOT NULL,
-    theme_id BIGINT NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id),
-    UNIQUE (start_at, theme_id)
+  id       BIGINT NOT NULL AUTO_INCREMENT,
+  start_at TIME   NOT NULL,
+  theme_id BIGINT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (theme_id) REFERENCES theme (id),
+  UNIQUE (start_at, theme_id)
 );
 ```
 
@@ -80,13 +82,13 @@ CREATE TABLE reservation_time
 ```sql
 CREATE TABLE theme
 (
-    id       BIGINT NOT NULL AUTO_INCREMENT,
-    name    VARCHAR(255) NOT NULL,
-    description     VARCHAR(10000), //설명은 null이여도 된다. h2가 아니라면 TEXT
-    thumbnail_url     VARCHAR(2048), //이미지는 null이여도 된다. 단 디폴트 이미지를 써야한다.
+  id       BIGINT NOT NULL AUTO_INCREMENT,
+  name    VARCHAR(255) NOT NULL,
+  description     VARCHAR(10000), //설명은 null이여도 된다. h2가 아니라면 TEXT
+  thumbnail_url     VARCHAR(2048), //이미지는 null이여도 된다. 단 디폴트 이미지를 써야한다.
     PRIMARY KEY (id),
-    UNIQUE (name)
-);
+  UNIQUE (name)
+  );
 ```
 
 
