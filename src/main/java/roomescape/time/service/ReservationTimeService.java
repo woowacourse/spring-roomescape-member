@@ -9,7 +9,6 @@ import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.request.ReservationTimeSaveDto;
-import roomescape.time.dto.response.ReservationTimeDetailDto;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
@@ -23,22 +22,8 @@ public class ReservationTimeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationTimeDetailDto> findAll() {
-        return reservationTimeRepository.findAll().stream()
-                .map(ReservationTimeDetailDto::from)
-                .toList();
-    }
-
-    public ReservationTime register(ReservationTimeSaveDto dto) {
-        validateDuplicateTimeExist(dto.startAt());
-        return reservationTimeRepository.save(ReservationTime.create(dto.startAt()));
-    }
-
-    public ReservationTimeDetailDto delete(Long id) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
-        reservationTimeRepository.delete(id);
-        return ReservationTimeDetailDto.from(reservationTime);
+    public List<ReservationTime> findAll() {
+        return reservationTimeRepository.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -46,10 +31,26 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId);
     }
 
+    public ReservationTime register(ReservationTimeSaveDto dto) {
+        validateDuplicateTimeExist(dto.startAt());
+        return reservationTimeRepository.save(ReservationTime.create(dto.startAt()));
+    }
+
+    public ReservationTime delete(Long id) {
+        ReservationTime reservationTime = getReservationTime(id);
+        reservationTimeRepository.delete(reservationTime.id());
+        return reservationTime;
+    }
+
     private void validateDuplicateTimeExist(LocalTime startAt) {
         if (reservationTimeRepository.existsByStartAt(startAt)) {
             throw new ConflictException("이미 존재하는 예약 시간입니다.");
         }
+    }
+
+    private ReservationTime getReservationTime(Long id) {
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
     }
 
 }

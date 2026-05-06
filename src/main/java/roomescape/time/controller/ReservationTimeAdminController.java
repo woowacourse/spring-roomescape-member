@@ -24,8 +24,11 @@ public class ReservationTimeAdminController {
     }
 
     @GetMapping("/times")
-    public ResponseEntity<List<ReservationTimeDetailDto>> read() {
-        return ResponseEntity.ok(reservationTimeService.findAll());
+    public ResponseEntity<List<ReservationTimeDetailDto>> getReservationTimes() {
+        List<ReservationTimeDetailDto> responseData = reservationTimeService.findAll().stream()
+                .map(ReservationTimeDetailDto::from)
+                .toList();
+        return ResponseEntity.ok(responseData);
     }
 
     @PostMapping("/times")
@@ -39,6 +42,8 @@ public class ReservationTimeAdminController {
 
     @DeleteMapping("/times/{id}")
     public ResponseEntity<ReservationTimeDetailDto> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(reservationTimeService.delete(id));
+        ReservationTime reservationTime = reservationTimeService.delete(id);
+        ReservationTimeDetailDto responseData = ReservationTimeDetailDto.from(reservationTime);
+        return ResponseEntity.ok(responseData);
     }
 }

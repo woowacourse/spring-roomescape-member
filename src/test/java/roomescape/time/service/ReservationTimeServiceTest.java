@@ -34,7 +34,7 @@ class ReservationTimeServiceTest {
     @DisplayName("모든 예약 시간 정보를 조회한다.")
     void findAll() {
         // when
-        List<ReservationTimeDetailDto> actual = reservationTimeService.findAll();
+        List<ReservationTime> actual = reservationTimeService.findAll();
 
         // then
         assertThat(actual)
