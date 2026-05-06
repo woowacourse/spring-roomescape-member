@@ -1,4 +1,4 @@
-package roomescape.user.service;
+package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -7,14 +7,15 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import roomescape.user.domain.Reservation;
-import roomescape.user.domain.ReservationTime;
-import roomescape.admin.domain.Theme;
-import roomescape.user.dto.ReservationRequest;
-import roomescape.user.dto.ReservationResponse;
-import roomescape.user.repository.ReservationRepository;
-import roomescape.user.repository.ReservationTimeRepository;
-import roomescape.admin.repository.ThemeRepository;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationResponse;
+import roomescape.dto.TimeResponse;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
@@ -53,13 +54,14 @@ public class ReservationService {
         return ReservationResponse.from(saved);
     }
 
-    public List<ReservationResponse> getReservations(LocalDate date, Long themeId) {
-        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
-
-        List<ReservationResponse> responses = new ArrayList<>();
-        for (Reservation reservation : reservations) {
-            ReservationResponse response = ReservationResponse.from(reservation);
-            responses.add(response);
+    public List<TimeResponse> getReservations(LocalDate date, Long themeId) {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        List<Long> reservations = reservationRepository.findTimeByDateAndThemeId(date, themeId);
+        List<TimeResponse>  responses = new ArrayList<>();
+        for (ReservationTime reservationTime : reservationTimes) {
+            Long timeId = reservationTime.getId();
+            if (!reservations.contains((timeId)))
+                responses.add(TimeResponse.of(reservationTime));
         }
         return responses;
     }

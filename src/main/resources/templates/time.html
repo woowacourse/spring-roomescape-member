@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>시간 관리 — ESCAPE ROOM</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/time.css">
+</head>
+<body>
+<div class="container-fluid page">
+  <div class="row no-gutters">
+    <div id="sidebar-container" class="col-md-2">
+      <nav id="sidebar">
+        <div class="sidebar-brand">
+          <i class="fas fa-lock brand-icon"></i>
+          <span class="brand-title">Escape</span>
+          <span class="brand-subtitle">Admin</span>
+        </div>
+        <ul>
+          <li><a href="/reservation"><i class="fas fa-lock"></i>예약 관리</a></li>
+          <li><a href="/time" class="active-menu"><i class="fas fa-hourglass-half"></i>시간 관리</a></li>
+          <li><a href="/theme"><i class="fas fa-theater-masks"></i>테마 관리</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div id="content-container" class="col-md-10">
+      <h1 class="page-title"><i class="fas fa-hourglass-half mr-3" style="color:var(--accent);font-size:1.1rem;"></i>시간 관리</h1>
+      <div class="table-header">
+        <button id="add-time" class="btn btn-primary">
+          <i class="fas fa-plus mr-2"></i>시간 추가
+        </button>
+      </div>
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width:80px;">번호</th>
+              <th>시작 시간</th>
+              <th style="width:120px;"></th>
+            </tr>
+          </thead>
+          <tbody id="time-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/js/time.js"></script>
+</body>
+</html>

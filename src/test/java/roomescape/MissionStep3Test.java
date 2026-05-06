@@ -18,6 +18,7 @@ public class MissionStep3Test {
     void 시간_관리_API() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
+        params.put("finishAt", "11:00");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -40,8 +41,21 @@ public class MissionStep3Test {
 
     @Test
     void 예약과_시간_연결() {
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "테마1");
+        themeParams.put("description", "테마 설명");
+        themeParams.put("imageUrl", "https://example.com/image.jpg");
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(themeParams)
+            .when().post("/admin/theme")
+            .then().log().all()
+            .statusCode(200);
+
         Map<String, String> timeParams = new HashMap<>();
         timeParams.put("startAt", "10:00");
+        timeParams.put("finishAt", "11:00");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -54,6 +68,7 @@ public class MissionStep3Test {
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -63,10 +78,10 @@ public class MissionStep3Test {
             .statusCode(200);
 
         RestAssured.given().log().all()
-            .when().get("/reservations")
+            .when().get("/reservations?date=2023-08-05&themeId=1")
             .then().log().all()
             .statusCode(200)
-            .body("size()", is(1));
+            .body("size()", is(0));
     }
 
 }
