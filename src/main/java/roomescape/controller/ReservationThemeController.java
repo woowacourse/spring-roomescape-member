@@ -51,7 +51,7 @@ public class ReservationThemeController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping(value = "/popular", params = {"start_date", "end_date", "size", "order"})
+    @GetMapping(value = "/popular", params = {"start_date", "end_date", "size"})
     public ResponseEntity<List<ReservationThemeWithCount>> getPopularTheme(@ModelAttribute PopularConditionRequest popularConditionRequest) {
         PopularThemeCondition popularThemeCondition = popularConditionRequest.to();
         List<ReservationThemeWithCount> reservationThemeWithCounts = reservationThemeService.getPopularTheme(popularThemeCondition);
