@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.dto.AvailableReservationTimeResponse;
 
 @Repository
 public class ThemeDao {
@@ -21,6 +22,13 @@ public class ThemeDao {
             rs.getString("description"),
             rs.getString("thumbnail_url")
     );
+
+    private final RowMapper<AvailableReservationTimeResponse> availableReservationTimeRowMapper =
+            (rs, rowNum) -> new AvailableReservationTimeResponse(
+                    rs.getLong("id"),
+                    rs.getString("start_at"),
+                    rs.getBoolean("available")
+            );
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -45,8 +53,28 @@ public class ThemeDao {
             return jdbcTemplate.query(
                     "SELECT id, name, description, thumbnail_url FROM theme",
                     themeRowMapper);
-        } catch (EmptyResultDataAccessException ignored) {}
+        } catch (EmptyResultDataAccessException ignored) {
+        }
 
+        return List.of();
+    }
+
+    public List<AvailableReservationTimeResponse> findAvailableTimeById(long themeId, String date) {
+        try {
+            final String sql = """
+                    SELECT                                                                                                                                                                                                         \s
+                          rt.id,                                                                                                                                                                                                     \s
+                          rt.start_at,                                                                                                                                                                                               \s
+                          CASE WHEN r.id IS NULL THEN TRUE ELSE FALSE END AS available                                                                                                                                               \s
+                      FROM reservation_time rt                                                                                                                                                                                       \s
+                      LEFT JOIN reservation r                                                                                                                                                                                      \s
+                          ON rt.id = r.time_id
+                           AND r.theme_id = ?
+                           AND r.date = ?
+                    """;
+            return jdbcTemplate.query(sql, availableReservationTimeRowMapper, themeId, date);
+        } catch (EmptyResultDataAccessException ignored) {
+        }
         return List.of();
     }
 
