@@ -36,8 +36,15 @@ public class UserThemeController {
                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
                                        @RequestParam(defaultValue = "10") Long limit) {
 
-        LocalDate actualEndDate = (endDate != null) ? endDate : LocalDate.now();
-        LocalDate actualStartDate = (startDate != null) ? startDate : actualEndDate.minusDays(7);
+        LocalDate actualEndDate = endDate;
+        if (actualEndDate == null) {
+            actualEndDate = LocalDate.now();
+        }
+
+        LocalDate actualStartDate = startDate;
+        if (actualStartDate == null) {
+            actualStartDate = actualEndDate.minusDays(7);
+        }
 
         List<ThemeResponse> response = userThemeService.getThemes(sort, order, actualStartDate, actualEndDate, limit).stream()
                 .map(ThemeResponse::from)

@@ -68,7 +68,11 @@ public class ReservationDao {
     int countByTimeId(long timeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
-        return (count == null) ? 0 : count;
+
+        if (count == null) {
+            return 0;
+        }
+        return count;
     }
 
     List<Long> findByDateAndTheme(LocalDate date, long themeId) {
