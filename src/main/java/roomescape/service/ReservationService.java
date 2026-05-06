@@ -41,8 +41,7 @@ public class ReservationService {
     }
 
     private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
-        Optional<Reservation> result = reservationRepository.findWith(date, timeId, themeId);
-        if (result.isPresent()) {
+        if (reservationRepository.existWith(date, timeId, themeId)) {
             throw new IllegalArgumentException("[ERROR] 이미 예약된 시간입니다.");
         }
     }
