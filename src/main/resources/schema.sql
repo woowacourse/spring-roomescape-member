@@ -1,14 +1,14 @@
 CREATE TABLE reservation_time
 (
     id       BIGINT NOT NULL AUTO_INCREMENT,
-    start_at TIME   NOT NULL,
+    start_at TIME   NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE reservation_date
 (
     id   BIGINT NOT NULL AUTO_INCREMENT,
-    date DATE   NOT NULL,
+    date DATE   NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
 
@@ -27,9 +27,11 @@ CREATE TABLE reservation
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     name     VARCHAR(255) NOT NULL,
     date     DATE         NOT NULL,
-    time_id  BIGINT       NOT NULL,
+    time     TIME         NOT NULL,
     theme_id BIGINT       NOT NULL,
+    status   ENUM('RESERVED', 'CANCELED') NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+    FOREIGN KEY (date) REFERENCES reservation_date (date),
+    FOREIGN KEY (time) REFERENCES reservation_time (start_at),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
