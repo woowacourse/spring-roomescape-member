@@ -127,6 +127,24 @@ class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("날짜와 테마를 기반으로 예약을 조회한다")
+    void getReservations_success_with_date_and_theme() {
+        // given
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.createWithNullId(LocalTime.of(10, 0)));
+        Theme savedTheme = themeRepository.save(Theme.createWithNullId("공포", "아니", "https://good.com/thumb-nail/1"));
+        Reservation savedReservation = reservationRepository.save(Reservation.createWithNullId(
+                "인직",
+                LocalDate.now(),
+                savedTime,
+                savedTheme
+        ));
+
+        // when & then
+        assertThatCode(() -> reservationService.getReservationsByDateAndTheme(LocalDate.now(), savedTheme.id()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
     @DisplayName("예약을 삭제한다")
     void deleteReservation_success() {
         // given
