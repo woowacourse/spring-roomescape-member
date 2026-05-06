@@ -1,21 +1,20 @@
 package roomescape;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.time.domain.ReservationTime;
-
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class UserReservationTest {
@@ -39,25 +38,25 @@ public class UserReservationTest {
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body("{\"startAt\": \"10:00\"}")
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().statusCode(201);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body("{\"startAt\": \"11:00\"}")
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().statusCode(201);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body("{\"startAt\": \"12:00\"}")
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().statusCode(201);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body("{\"startAt\": \"13:00\"}")
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().statusCode(201);
 
 
@@ -118,7 +117,7 @@ public class UserReservationTest {
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(theme)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().statusCode(201);
     }
 

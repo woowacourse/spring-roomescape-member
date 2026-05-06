@@ -38,7 +38,7 @@ public class ThirdMissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201);
 
@@ -49,7 +49,7 @@ public class ThirdMissionStepTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/admin/times/1")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -70,13 +70,13 @@ public class ThirdMissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body("{\"startAt\": \"10:00\"}")
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().statusCode(201);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(theme)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().statusCode(201);
 
         RestAssured.given().log().all()
@@ -130,7 +130,7 @@ public class ThirdMissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(400);
     }
@@ -155,7 +155,7 @@ public class ThirdMissionStepTest {
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body("{\"startAt\": \"10:00\"}")
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().statusCode(201);
 
         Map<String, Object> theme = new HashMap<>();
@@ -166,7 +166,7 @@ public class ThirdMissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(theme)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().statusCode(201);
 
         Map<String, Object> reservation = new HashMap<>();

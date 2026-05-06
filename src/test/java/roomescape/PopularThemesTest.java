@@ -1,19 +1,18 @@
 package roomescape;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class PopularThemesTest {
@@ -39,7 +38,7 @@ public class PopularThemesTest {
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body("{\"startAt\": \"10:00\"}")
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().statusCode(201);
 
         createTheme("우아한 테마", "우아한테크코스 전용 테마입니다.", "https://example.com/woowa.png");
@@ -81,7 +80,7 @@ public class PopularThemesTest {
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(theme)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().statusCode(201);
     }
 
