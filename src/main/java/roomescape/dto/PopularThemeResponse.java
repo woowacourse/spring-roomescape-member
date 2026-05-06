@@ -1,7 +1,5 @@
 package roomescape.dto;
 
-import roomescape.domain.Theme;
-
 public record PopularThemeResponse(
         Long id,
         String name,

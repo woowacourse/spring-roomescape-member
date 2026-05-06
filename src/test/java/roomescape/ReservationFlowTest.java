@@ -50,7 +50,8 @@ public class ReservationFlowTest {
     }
 
     private void insertTheme(Long id, String name) {
-        jdbcTemplate.update("INSERT INTO theme(id, name, description, thumbnail_image_url) VALUES (?, ?, '설명', 'https://thumbnail.url')",
+        jdbcTemplate.update(
+                "INSERT INTO theme(id, name, description, thumbnail_image_url) VALUES (?, ?, '설명', 'https://thumbnail.url')",
                 id, name);
     }
 

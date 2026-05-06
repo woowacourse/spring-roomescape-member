@@ -36,7 +36,7 @@ public class AdminThemeController {
                 .map(ThemeResponse::from)
                 .toList());
     }
-    
+
     @PostMapping
     public ResponseEntity<Void> createTheme(@RequestBody CreateThemeRequest createThemeRequest) {
         Theme createdTheme = themeService.createTheme(createThemeRequest);
