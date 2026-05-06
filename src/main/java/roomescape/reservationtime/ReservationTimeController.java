@@ -3,6 +3,8 @@ package roomescape.reservationtime;
 import java.util.List;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,23 +23,26 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public List<ReservationTimeResponse> getReservationTimes() {
+    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeService.findReservationTimes();
-        return reservationTimes.stream()
+        List<ReservationTimeResponse> response = reservationTimes.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
 
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ReservationTimeResponse createReservationTime(
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @Valid @RequestBody ReservationTimeRequest reservationTimeRequest) {
         ReservationTime reservationTime = reservationTimeService.createReservationTime(reservationTimeRequest.startAt());
-        return ReservationTimeResponse.from(reservationTime);
+        ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteReservationTime(@PathVariable long id) {
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable long id) {
         reservationTimeService.deleteReservationTime(id);
+        return ResponseEntity.noContent().build();
     }
 }

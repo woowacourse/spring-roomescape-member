@@ -3,6 +3,8 @@ package roomescape.reservation;
 import java.util.List;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,23 +23,27 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<ReservationResponse> getReservations() {
+    public ResponseEntity<List<ReservationResponse>> getReservations() {
         List<Reservation> reservations = reservationService.getReservations();
-        return reservations.stream()
+        List<ReservationResponse> response = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
 
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ReservationResponse createReservation(@Valid @RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest reservationRequest) {
         Reservation reservation = reservationService.createReservation(reservationRequest.name(),
                 reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId());
-        return ReservationResponse.from(reservation);
+        ReservationResponse response = ReservationResponse.from(reservation);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteReservation(@PathVariable long id, @RequestBody ReservationDeleteRequest reservationDeleteRequest) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable long id,
+                                                  @RequestBody ReservationDeleteRequest reservationDeleteRequest) {
         reservationService.deleteReservation(id, reservationDeleteRequest.name());
+        return ResponseEntity.noContent().build();
     }
 }
