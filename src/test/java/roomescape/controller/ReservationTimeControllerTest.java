@@ -20,20 +20,6 @@ import roomescape.dto.ReservationTimeResponse;
 public class ReservationTimeControllerTest {
 
     @Test
-    void 시간_추가() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", notNullValue());
-    }
-
-    @Test
     void 시간_조회() {
         Map<String, String> timeParams = new HashMap<>();
         timeParams.put("startAt", "10:00");
@@ -41,7 +27,7 @@ public class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParams)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201);
 
@@ -51,7 +37,7 @@ public class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParams2)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201);
 
@@ -95,24 +81,5 @@ public class ReservationTimeControllerTest {
                         tuple(LocalTime.of(10, 0), false),
                         tuple(LocalTime.of(11, 0), true)
                 );
-    }
-
-    @Test
-    void 시간_삭제() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-
-        int timeId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201)
-                .extract().path("id");
-
-        RestAssured.given().log().all()
-                .when().delete("/times/" + timeId)
-                .then().log().all()
-                .statusCode(204);
     }
 }
