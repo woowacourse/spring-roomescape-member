@@ -19,9 +19,9 @@ class AdminThemeControllerTest {
     @Test
     void 테마_관리_API() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "공포");
-        params.put("description", "너무무서워");
-        params.put("url", "/horror");
+        params.put("name", "추리물");
+        params.put("description", "추리");
+        params.put("url", "/reasoning");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -33,7 +33,7 @@ class AdminThemeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().delete("/admin/theme/1")
+                .when().delete("/admin/theme/16")
                 .then().log().all()
                 .statusCode(204);
     }
