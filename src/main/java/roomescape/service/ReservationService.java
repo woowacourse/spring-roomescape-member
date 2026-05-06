@@ -36,7 +36,7 @@ public class ReservationService {
         return reservationDao.save(reservation);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         validateHasReservation(id);
         reservationDao.deleteById(id);
     }

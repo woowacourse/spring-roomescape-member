@@ -46,6 +46,6 @@ public class ReservationController {
     @DeleteMapping("/admin/reservations/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        reservationService.delete(id);
+        reservationService.deleteById(id);
     }
 }

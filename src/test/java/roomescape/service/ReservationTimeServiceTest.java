@@ -1,9 +1,12 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,9 +49,9 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 이미_예약시간이_차있으면_삭제할_수_없다(){
+    void 이미_예약시간이_차있으면_삭제할_수_없다() {
         //given
-        ReservationTime existTime = new ReservationTime( LocalTime.parse("10:00"));
+        ReservationTime existTime = new ReservationTime(LocalTime.parse("10:00"));
         ReservationTime savedTime = reservationTimeDao.save(existTime);
         Theme theme = new Theme("공포", "무서움", "https://roomescape.com");
         Theme savedTheme = themeDao.save(theme);
@@ -57,8 +60,23 @@ class ReservationTimeServiceTest {
         Long savedId = savedTime.getId();
 
         //when & then
-        assertThatThrownBy(()-> reservationTimeService.deleteById(savedId))
+        assertThatThrownBy(() -> reservationTimeService.deleteById(savedId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("삭제할 수 없습니다");
     }
+
+    @Test
+    void 시간을_저장하고_조회한다() {
+        ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
+        List<ReservationTime> times = reservationTimeService.findAll();
+        assertThat(times.getFirst().getId()).isEqualTo(savedTime.getId());
+    }
+
+    @Test
+    void 시간을_저장하고_삭제한다() {
+        ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
+        reservationTimeService.deleteById(savedTime.getId());
+        assertThat(reservationTimeService.findAll()).hasSize(0);
+    }
+
 }
