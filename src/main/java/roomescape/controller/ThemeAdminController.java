@@ -1,6 +1,8 @@
 package roomescape.controller;
 
 import java.net.URI;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +14,8 @@ import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
+
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("/admin/themes")
@@ -26,7 +30,7 @@ public class ThemeAdminController {
     public ResponseEntity<ThemeResponse> create(@RequestBody ThemeCreateRequest request) {
         Theme theme = themeService.create(request.name(), request.description(), request.thumbnail());
 
-        return ResponseEntity.created(URI.create("/admin/themes/" + theme.getId()))
+        return ResponseEntity.status(CREATED)
                 .body(ThemeResponse.from(theme));
     }
 

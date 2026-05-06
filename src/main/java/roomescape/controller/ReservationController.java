@@ -15,6 +15,8 @@ import roomescape.dto.ReservationListResponse;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
@@ -42,7 +44,7 @@ public class ReservationController {
                 reservationCreateRequest.themeId()
         );
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
+        return ResponseEntity.status(CREATED)
                 .body(ReservationResponse.from(reservation));
     }
 
