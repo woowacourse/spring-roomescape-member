@@ -51,17 +51,23 @@ function loadThemes() {
 // 테마 추가 (POST /admin/themes)
 function addTheme() {
     const name = document.getElementById('theme-name-input').value.trim();
-    const requiredTime = document.getElementById('theme-required-time-input').value;
+    const requiredTimeInput = document.getElementById('theme-required-time-input').value;
 
-    if (!name || !requiredTime) {
+    if (!name || !requiredTimeInput) {
         alert('테마명과 소요시간을 모두 입력해주세요.');
         return;
     }
 
+    // 💡 입력받은 분(예: 120)을 백엔드가 인식할 수 있는 "02:00" 형태(HH:mm)로 변환합니다.
+    const totalMinutes = parseInt(requiredTimeInput, 10);
+    const hours = String(Math.floor(totalMinutes / 60)).padStart(2, '0');
+    const minutes = String(totalMinutes % 60).padStart(2, '0');
+    const formattedTime = `${hours}:${minutes}`;
+
     fetch('/admin/themes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, requiredTime: parseInt(requiredTime) })
+        body: JSON.stringify({ name: name, description: "", imageUrl: "", requiredTime: formattedTime })
     })
         .then(response => {
             if (response.status === 201) {
