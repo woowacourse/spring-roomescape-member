@@ -1,7 +1,6 @@
 package roomescape.repository.reservation;
 
 import java.sql.PreparedStatement;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -109,5 +108,21 @@ public class JdbcReservationRepository implements ReservationRepository {
                 + "WHERE r.id = ?",
             RESERVATION_ROW_MAPPER,
             id);
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        int count = template.queryForObject(
+            """
+                SELECT 
+                    COUNT(1) 
+                FROM reservation
+                WHERE time_id = ?
+                """,
+            Integer.class,
+            timeId
+        );
+
+        return count != 0;
     }
 }
