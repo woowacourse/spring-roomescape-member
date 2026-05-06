@@ -39,6 +39,7 @@ public abstract class BaseRepositoryTest {
                 "date VARCHAR(255) NOT NULL, " +
                 "time_id BIGINT NOT NULL," +
                 "theme_id BIGINT NOT NULL, " +
+                "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
                 "FOREIGN KEY (time_id) REFERENCES reservation_time (id)," +
                 "FOREIGN KEY (theme_id) REFERENCES reservation_theme (id))"
         );
