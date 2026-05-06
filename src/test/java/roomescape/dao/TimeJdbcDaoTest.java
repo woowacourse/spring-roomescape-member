@@ -1,5 +1,10 @@
 package roomescape.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,12 +12,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Time;
-
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Import(TimeJdbcDao.class)
@@ -67,5 +66,14 @@ class TimeJdbcDaoTest {
         return Arrays.stream(times)
                 .map(this::insertTimeHandler)
                 .toList();
+    }
+
+    @Test
+    void existsByStartAt() {
+        Time saved = insertTimeHandler(time1);
+        Time notExists = time2;
+
+        assertThat(timeDao.existsByStartAt(saved.getStartAt())).isTrue();
+        assertThat(timeDao.existsByStartAt(notExists.getStartAt())).isFalse();
     }
 }

@@ -68,4 +68,16 @@ public class TimeJdbcDao implements TimeDao {
 
         return jdbcTemplate.update(sql, params);
     }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = """
+                SELECT EXISTS(
+                    SELECT 1 FROM times WHERE start_at = :start_at
+                )
+                """;
+        SqlParameterSource params = new MapSqlParameterSource("start_at", startAt);
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, params, Boolean.class));
+    }
 }
