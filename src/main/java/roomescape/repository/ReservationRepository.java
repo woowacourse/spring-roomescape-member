@@ -35,6 +35,7 @@ public class ReservationRepository {
             INNER JOIN theme             t  ON r.theme_id = t.id
             """;
     private static final String SELECT_BY_ID = SELECT_ALL + "WHERE r.id = ?";
+    private static final String SELECT_BY_TIME_AND_THEME = SELECT_ALL + "WHERE time_id = ? AND theme_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -72,5 +73,15 @@ public class ReservationRepository {
     public void deleteById(Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public Optional<Reservation> findByTimeAndTheme(Long timeId, Long themeId) {
+        List<Reservation> reservations = jdbcTemplate.query(SELECT_BY_TIME_AND_THEME, RESERVATION_ROW_MAPPER, timeId,
+                themeId);
+
+        if (reservations.isEmpty()) {
+            return Optional.empty();
+        }
+        return reservations.stream().findFirst();
     }
 }

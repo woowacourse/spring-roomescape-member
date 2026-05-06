@@ -11,6 +11,7 @@ import roomescape.repository.ReservationRepository;
 @Service
 public class ReservationService {
     public static final String INVALID_RESERVATION_ID = "요청한 예약을 찾을 수 없습니다.";
+    private static final String DUPLICATED_RESERVATION = "이미 예약된 테마의 시간대입니다.";
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
@@ -31,6 +32,13 @@ public class ReservationService {
     public Reservation reserve(ReservationCreateRequest request) {
         ReservationTime reservationTime = reservationTimeService.find(request.getTimeId());
         Theme theme = themeService.find(request.getThemeId());
+
+        boolean isExists = reservationRepository.findByTimeAndTheme(request.getTimeId(),
+                request.getThemeId()).isPresent();
+
+        if (isExists) {
+            throw new IllegalArgumentException(DUPLICATED_RESERVATION);
+        }
 
         Reservation reservation = Reservation.of(request.getName(), request.getDate(), reservationTime, theme);
 
