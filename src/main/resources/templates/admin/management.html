@@ -76,6 +76,12 @@
         </tbody>
       </table>
     </div>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <p id="reservationPageInfo" class="text-muted mb-0"></p>
+      <nav aria-label="예약 목록 페이지">
+        <ul id="reservationPagination" class="pagination pagination-sm mb-0"></ul>
+      </nav>
+    </div>
   </section>
 
   <section class="mb-5">
@@ -138,6 +144,10 @@
 </main>
 
 <script>
+  const RESERVATIONS_PER_PAGE = 20;
+  let reservations = [];
+  let currentReservationPage = 1;
+
   function emptyRow(colspan, message) {
     return `<tr><td colspan="${colspan}" class="text-center text-muted py-4">${message}</td></tr>`;
   }
@@ -166,23 +176,97 @@
       const list = document.getElementById('reservationList');
 
       if (data.length === 0) {
+        reservations = [];
         list.innerHTML = emptyRow(6, '등록된 예약이 없습니다.');
+        renderReservationPagination();
         return;
       }
 
-      list.innerHTML = data.map(res => `
-          <tr>
-              <td>${res.id}</td>
-              <td>${res.name}</td>
-              <td>${res.date}</td>
-              <td>${res.theme.name}</td>
-              <td>${res.time.startAt}</td>
-              <td><button class="btn btn-danger btn-sm" onclick="deleteReservation(${res.id})">삭제</button></td>
-          </tr>
-      `).join('');
+      reservations = [...data].sort((a, b) => {
+        const dateCompare = a.date.localeCompare(b.date);
+        if (dateCompare !== 0) return dateCompare;
+
+        const timeCompare = a.time.startAt.localeCompare(b.time.startAt);
+        if (timeCompare !== 0) return timeCompare;
+
+        return a.id - b.id;
+      });
+
+      const totalPages = Math.ceil(reservations.length / RESERVATIONS_PER_PAGE);
+      currentReservationPage = Math.min(currentReservationPage, totalPages);
+      renderReservations();
     } catch (error) {
       document.getElementById('reservationList').innerHTML = emptyRow(6, '예약 목록을 불러오지 못했습니다.');
+      document.getElementById('reservationPageInfo').innerText = '';
+      document.getElementById('reservationPagination').innerHTML = '';
     }
+  }
+
+  function renderReservations() {
+    const list = document.getElementById('reservationList');
+    const startIndex = (currentReservationPage - 1) * RESERVATIONS_PER_PAGE;
+    const pageReservations = reservations.slice(startIndex, startIndex + RESERVATIONS_PER_PAGE);
+
+    list.innerHTML = pageReservations.map(res => `
+        <tr>
+            <td>${res.id}</td>
+            <td>${res.name}</td>
+            <td>${res.date}</td>
+            <td>${res.theme.name}</td>
+            <td>${res.time.startAt}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteReservation(${res.id})">삭제</button></td>
+        </tr>
+    `).join('');
+
+    renderReservationPagination();
+  }
+
+  function renderReservationPagination() {
+    const pageInfo = document.getElementById('reservationPageInfo');
+    const pagination = document.getElementById('reservationPagination');
+    const totalPages = Math.ceil(reservations.length / RESERVATIONS_PER_PAGE);
+
+    if (reservations.length === 0) {
+      pageInfo.innerText = '';
+      pagination.innerHTML = '';
+      return;
+    }
+
+    const start = (currentReservationPage - 1) * RESERVATIONS_PER_PAGE + 1;
+    const end = Math.min(currentReservationPage * RESERVATIONS_PER_PAGE, reservations.length);
+    pageInfo.innerText = `전체 ${reservations.length}건 중 ${start}-${end}건`;
+
+    let pageItems = `
+        <li class="page-item ${currentReservationPage === 1 ? 'disabled' : ''}">
+            <button class="page-link" type="button" onclick="changeReservationPage(${currentReservationPage - 1})">이전</button>
+        </li>
+    `;
+
+    for (let page = 1; page <= totalPages; page++) {
+      pageItems += `
+          <li class="page-item ${page === currentReservationPage ? 'active' : ''}">
+              <button class="page-link" type="button" onclick="changeReservationPage(${page})">${page}</button>
+          </li>
+      `;
+    }
+
+    pageItems += `
+        <li class="page-item ${currentReservationPage === totalPages ? 'disabled' : ''}">
+            <button class="page-link" type="button" onclick="changeReservationPage(${currentReservationPage + 1})">다음</button>
+        </li>
+    `;
+
+    pagination.innerHTML = pageItems;
+  }
+
+  function changeReservationPage(page) {
+    const totalPages = Math.ceil(reservations.length / RESERVATIONS_PER_PAGE);
+    if (page < 1 || page > totalPages || page === currentReservationPage) {
+      return;
+    }
+
+    currentReservationPage = page;
+    renderReservations();
   }
 
   async function deleteReservation(id) {
@@ -268,6 +352,7 @@
       });
       event.target.reset();
       document.getElementById('reservationTimeId').innerHTML = '<option value="">날짜와 테마를 선택하세요</option>';
+      currentReservationPage = 1;
       await loadReservations();
     } catch (error) {
       alert('예약 추가에 실패했습니다.');
