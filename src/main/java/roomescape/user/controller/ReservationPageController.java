@@ -44,9 +44,10 @@ public class ReservationPageController {
             @RequestParam String name,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam Long timeId,
+            @RequestParam Long themeId,
             RedirectAttributes redirectAttributes
     ) {
-        reservationService.add(name, date, timeId);
+        reservationService.add(name, date, timeId, themeId);
         redirectAttributes.addFlashAttribute("message", "예약이 등록되었습니다.");
         return "redirect:/";
     }

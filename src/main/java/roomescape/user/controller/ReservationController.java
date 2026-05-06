@@ -38,7 +38,8 @@ public class ReservationController {
         Reservation reservation = reservationService.add(
                 request.name(),
                 request.date(),
-                request.timeId()
+                request.timeId(),
+                request.themeId()
         );
         return ResponseEntity.ok(ReservationResponse.from(reservation));
     }

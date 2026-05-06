@@ -1,5 +1,6 @@
 package roomescape.user.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
+import roomescape.user.dto.AvailableTimeResponse;
 import roomescape.user.dto.ReservationTimeRequest;
 import roomescape.user.dto.ReservationTimeResponse;
 import roomescape.user.service.ReservationTimeService;
@@ -31,6 +34,12 @@ public class ReservationTimeController {
                 .map(ReservationTimeResponse::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(reservationTimes);
+    }
+
+    @GetMapping(value = "/times", params = {"themeId", "date"})
+    public ResponseEntity<List<AvailableTimeResponse>> readByThemeIdAndDate(@RequestParam Long themeId, @RequestParam LocalDate date) {
+        List<AvailableTimeResponse> availableTimes = timeService.findByThemeIdAndDate(themeId, date);
+        return ResponseEntity.ok().body(availableTimes);
     }
 
     @PostMapping("/times")

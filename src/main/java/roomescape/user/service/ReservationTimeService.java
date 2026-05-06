@@ -1,10 +1,12 @@
 package roomescape.user.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.user.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.user.dao.ReservationTimeDao;
+import roomescape.user.dto.AvailableTimeResponse;
 
 @Service
 public class ReservationTimeService {
@@ -17,6 +19,10 @@ public class ReservationTimeService {
 
     public List<ReservationTime> findAll() {
         return timeDao.selectAll();
+    }
+
+    public List<AvailableTimeResponse> findByThemeIdAndDate(Long themeId, LocalDate date) {
+        return timeDao.selectByThemeIdAndDate(themeId, date);
     }
 
     public ReservationTime add(LocalTime startAt) {

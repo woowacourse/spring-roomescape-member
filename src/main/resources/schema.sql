@@ -7,17 +7,6 @@ CREATE TABLE theme (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE schedule (
-    id      BIGINT       NOT NULL AUTO_INCREMENT,
-    theme_id BIGINT NOT NULL,
-    date    VARCHAR(255) NOT NULL,
-    start_at VARCHAR(255) NOT NULL,
-    is_available BOOLEAN DEFAULT TRUE NOT NULL,
-
-    PRIMARY KEY (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
-);
-
 CREATE TABLE reservation_time (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     start_at VARCHAR(255) NOT NULL,
@@ -30,8 +19,11 @@ CREATE TABLE reservation (
     name    VARCHAR(255) NOT NULL,
     date    VARCHAR(255) NOT NULL,
     time_id BIGINT NOT NULL,
+    theme_id BIGINT NOT NULL,
+
     PRIMARY KEY (id),
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id)
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id) ON DELETE CASCADE,
+    FOREIGN KEY (theme_id) REFERENCES theme (id) ON DELETE CASCADE
 );
 
 INSERT INTO theme (name, description, image) VALUES ('은하수', '은하수 테마방입니다.', 'http.jpg');
@@ -46,135 +38,18 @@ INSERT INTO theme (name, description, image) VALUES ('아폴로', '아폴로 테
 INSERT INTO theme (name, description, image) VALUES ('허블', '허블 테마방입니다.', 'http.jpg');
 INSERT INTO theme (name, description, image) VALUES ('안드로메다', '안드로메다 테마방입니다.', 'http.jpg');
 
-INSERT INTO schedule (theme_id, date, start_at, is_available) VALUES
-(1, '2026-05-05', '10:00', TRUE),
-(1, '2026-05-05', '11:00', TRUE),
-(1, '2026-05-05', '12:00', TRUE),
-(1, '2026-05-05', '13:00', TRUE),
-(1, '2026-05-05', '14:00', TRUE),
-(1, '2026-05-05', '15:00', TRUE),
-(1, '2026-05-05', '16:00', TRUE),
-(1, '2026-05-05', '17:00', TRUE),
-(1, '2026-05-05', '18:00', TRUE),
-(1, '2026-05-05', '19:00', TRUE),
-(1, '2026-05-05', '20:00', TRUE),
+INSERT INTO reservation_time (start_at) VALUES ('10:00');
+INSERT INTO reservation_time (start_at) VALUES ('11:00');
+INSERT INTO reservation_time (start_at) VALUES ('12:00');
+INSERT INTO reservation_time (start_at) VALUES ('13:00');
+INSERT INTO reservation_time (start_at) VALUES ('14:00');
+INSERT INTO reservation_time (start_at) VALUES ('15:00');
+INSERT INTO reservation_time (start_at) VALUES ('16:00');
+INSERT INTO reservation_time (start_at) VALUES ('17:00');
+INSERT INTO reservation_time (start_at) VALUES ('18:00');
+INSERT INTO reservation_time (start_at) VALUES ('19:00');
+INSERT INTO reservation_time (start_at) VALUES ('20:00');
 
-(2, '2026-05-05', '10:00', TRUE),
-(2, '2026-05-05', '11:00', TRUE),
-(2, '2026-05-05', '12:00', TRUE),
-(2, '2026-05-05', '13:00', TRUE),
-(2, '2026-05-05', '14:00', TRUE),
-(2, '2026-05-05', '15:00', TRUE),
-(2, '2026-05-05', '16:00', TRUE),
-(2, '2026-05-05', '17:00', TRUE),
-(2, '2026-05-05', '18:00', TRUE),
-(2, '2026-05-05', '19:00', TRUE),
-(2, '2026-05-05', '20:00', TRUE),
-
-(3, '2026-05-05', '10:00', TRUE),
-(3, '2026-05-05', '11:00', TRUE),
-(3, '2026-05-05', '12:00', TRUE),
-(3, '2026-05-05', '13:00', TRUE),
-(3, '2026-05-05', '14:00', TRUE),
-(3, '2026-05-05', '15:00', TRUE),
-(3, '2026-05-05', '16:00', TRUE),
-(3, '2026-05-05', '17:00', TRUE),
-(3, '2026-05-05', '18:00', TRUE),
-(3, '2026-05-05', '19:00', TRUE),
-(3, '2026-05-05', '20:00', TRUE),
-
-(4, '2026-05-05', '10:00', TRUE),
-(4, '2026-05-05', '11:00', TRUE),
-(4, '2026-05-05', '12:00', TRUE),
-(4, '2026-05-05', '13:00', TRUE),
-(4, '2026-05-05', '14:00', TRUE),
-(4, '2026-05-05', '15:00', TRUE),
-(4, '2026-05-05', '16:00', TRUE),
-(4, '2026-05-05', '17:00', TRUE),
-(4, '2026-05-05', '18:00', TRUE),
-(4, '2026-05-05', '19:00', TRUE),
-(4, '2026-05-05', '20:00', TRUE),
-
-(5, '2026-05-05', '10:00', TRUE),
-(5, '2026-05-05', '11:00', TRUE),
-(5, '2026-05-05', '12:00', TRUE),
-(5, '2026-05-05', '13:00', TRUE),
-(5, '2026-05-05', '14:00', TRUE),
-(5, '2026-05-05', '15:00', TRUE),
-(5, '2026-05-05', '16:00', TRUE),
-(5, '2026-05-05', '17:00', TRUE),
-(5, '2026-05-05', '18:00', TRUE),
-(5, '2026-05-05', '19:00', TRUE),
-(5, '2026-05-05', '20:00', TRUE),
-
-(6, '2026-05-05', '10:00', TRUE),
-(6, '2026-05-05', '11:00', TRUE),
-(6, '2026-05-05', '12:00', TRUE),
-(6, '2026-05-05', '13:00', TRUE),
-(6, '2026-05-05', '14:00', TRUE),
-(6, '2026-05-05', '15:00', TRUE),
-(6, '2026-05-05', '16:00', TRUE),
-(6, '2026-05-05', '17:00', TRUE),
-(6, '2026-05-05', '18:00', TRUE),
-(6, '2026-05-05', '19:00', TRUE),
-(6, '2026-05-05', '20:00', TRUE),
-
-(7, '2026-05-05', '10:00', TRUE),
-(7, '2026-05-05', '11:00', TRUE),
-(7, '2026-05-05', '12:00', TRUE),
-(7, '2026-05-05', '13:00', TRUE),
-(7, '2026-05-05', '14:00', TRUE),
-(7, '2026-05-05', '15:00', TRUE),
-(7, '2026-05-05', '16:00', TRUE),
-(7, '2026-05-05', '17:00', TRUE),
-(7, '2026-05-05', '18:00', TRUE),
-(7, '2026-05-05', '19:00', TRUE),
-(7, '2026-05-05', '20:00', TRUE),
-
-(8, '2026-05-05', '10:00', TRUE),
-(8, '2026-05-05', '11:00', TRUE),
-(8, '2026-05-05', '12:00', TRUE),
-(8, '2026-05-05', '13:00', TRUE),
-(8, '2026-05-05', '14:00', TRUE),
-(8, '2026-05-05', '15:00', TRUE),
-(8, '2026-05-05', '16:00', TRUE),
-(8, '2026-05-05', '17:00', TRUE),
-(8, '2026-05-05', '18:00', TRUE),
-(8, '2026-05-05', '19:00', TRUE),
-(8, '2026-05-05', '20:00', TRUE),
-
-(9, '2026-05-05', '10:00', TRUE),
-(9, '2026-05-05', '11:00', TRUE),
-(9, '2026-05-05', '12:00', TRUE),
-(9, '2026-05-05', '13:00', TRUE),
-(9, '2026-05-05', '14:00', TRUE),
-(9, '2026-05-05', '15:00', TRUE),
-(9, '2026-05-05', '16:00', TRUE),
-(9, '2026-05-05', '17:00', TRUE),
-(9, '2026-05-05', '18:00', TRUE),
-(9, '2026-05-05', '19:00', TRUE),
-(9, '2026-05-05', '20:00', TRUE),
-
-(10, '2026-05-05', '10:00', TRUE),
-(10, '2026-05-05', '11:00', TRUE),
-(10, '2026-05-05', '12:00', TRUE),
-(10, '2026-05-05', '13:00', TRUE),
-(10, '2026-05-05', '14:00', TRUE),
-(10, '2026-05-05', '15:00', TRUE),
-(10, '2026-05-05', '16:00', TRUE),
-(10, '2026-05-05', '17:00', TRUE),
-(10, '2026-05-05', '18:00', TRUE),
-(10, '2026-05-05', '19:00', TRUE),
-(10, '2026-05-05', '20:00', TRUE),
-
-(11, '2026-05-05', '10:00', TRUE),
-(11, '2026-05-05', '11:00', TRUE),
-(11, '2026-05-05', '12:00', TRUE),
-(11, '2026-05-05', '13:00', TRUE),
-(11, '2026-05-05', '14:00', TRUE),
-(11, '2026-05-05', '15:00', TRUE),
-(11, '2026-05-05', '16:00', TRUE),
-(11, '2026-05-05', '17:00', TRUE),
-(11, '2026-05-05', '18:00', TRUE),
-(11, '2026-05-05', '19:00', TRUE),
-(11, '2026-05-05', '20:00', TRUE);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('워넬', '2026-05-05', 1L, 2L);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('도우너', '2026-05-05', 2L, 2L);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 1L);

@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.user.dao.ReservationDao;
-import roomescape.user.dao.ReservationTimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.user.dao.ReservationDao;
+import roomescape.user.dao.ReservationTimeDao;
 
 @Service
 public class ReservationService {
@@ -25,9 +25,9 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation add(String name, LocalDate date, Long timeId) {
+    public Reservation add(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = timeDao.selectById(timeId);
-        Reservation reservation = new Reservation(name, date, time);
+        Reservation reservation = new Reservation(name, date, time, themeId);
 
         return reservationDao.insert(reservation);
     }

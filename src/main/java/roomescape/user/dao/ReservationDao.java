@@ -20,7 +20,8 @@ public class ReservationDao {
                 rs.getString("name"),
                 LocalDate.parse(rs.getString("date")),
                 new ReservationTime(rs.getLong("time_id"),
-                        LocalTime.parse(rs.getString("start_at"), DateTimeFormatter.ofPattern("HH:mm")))
+                        LocalTime.parse(rs.getString("start_at"), DateTimeFormatter.ofPattern("HH:mm"))),
+                rs.getLong("theme_id")
         );
     };
 
@@ -35,7 +36,10 @@ public class ReservationDao {
     }
 
     public List<Reservation> selectAll() {
-        String sql = "select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at from reservation r inner join reservation_time t on r.time_id = t.id";
+        String sql = "select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id "
+                + "from reservation r "
+                + "inner join reservation_time t "
+                + "on r.time_id = t.id";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
@@ -46,7 +50,7 @@ public class ReservationDao {
                 .addValue("time_id", reservation.getTime().getId());
 
         Long id = (long) simpleJdbcInsert.executeAndReturnKey(parameters);
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getThemeId());
     }
 
     public void delete(Long id) {
