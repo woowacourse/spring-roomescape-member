@@ -25,7 +25,7 @@ class ThemeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201)
                 .body("name", is("테마"))
@@ -44,7 +44,7 @@ class ThemeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
@@ -68,14 +68,14 @@ class ThemeControllerTest {
         Integer id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201)
                 .extract()
                 .path("id");
 
         RestAssured.given().log().all()
-                .when().delete("/themes/" + id)
+                .when().delete("/admin/themes/" + id)
                 .then().log().all()
                 .statusCode(204);
 

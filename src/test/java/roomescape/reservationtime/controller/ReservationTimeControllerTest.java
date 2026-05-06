@@ -25,7 +25,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201)
                 .body("startAt", is("10:00:00"));
@@ -39,7 +39,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201);
 
@@ -58,14 +58,14 @@ class ReservationTimeControllerTest {
         Integer id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201)
                 .extract()
                 .path("id");
 
         RestAssured.given().log().all()
-                .when().delete("/times/" + id)
+                .when().delete("/admin/times/" + id)
                 .then().log().all()
                 .statusCode(204);
 
@@ -78,7 +78,7 @@ class ReservationTimeControllerTest {
     @Test
     void 존재하지_않는_예약_시간을_삭제하면_404를_응답한다() {
         RestAssured.given().log().all()
-                .when().delete("/times/999")
+                .when().delete("/admin/times/999")
                 .then().log().all()
                 .statusCode(404);
     }
@@ -92,7 +92,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(400);
     }
