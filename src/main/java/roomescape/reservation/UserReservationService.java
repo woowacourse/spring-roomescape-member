@@ -14,13 +14,13 @@ import roomescape.theme.ThemeNotFoundException;
 import roomescape.theme.ThemeRepository;
 
 @Service
-public class ReservationService {
+public class UserReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public UserReservationService(ReservationRepository reservationRepository,
+                                  ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
