@@ -33,7 +33,7 @@ public class ThemeController {
         return ResponseEntity.ok(responses);
     }
 
-    @GetMapping("/popular")
+    @GetMapping(params = "popular=true")
     public ResponseEntity<List<ThemeResponse>> readPopular(
             @RequestParam("period") int period,
             @RequestParam("limit") int limit
