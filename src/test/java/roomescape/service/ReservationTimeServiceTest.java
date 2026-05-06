@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeServiceTest {
 
     @Autowired
@@ -39,6 +40,19 @@ class ReservationTimeServiceTest {
     ReservationRepository reservationRepository;
 
     @Test
+    @DisplayName("이미 존재하는 예약 시간을 생성하면 예외가 발생한다.")
+    public void create_fail() {
+        // given
+        LocalTime startAt = LocalTime.of(23, 59);
+        reservationTimeService.create(startAt);
+
+        // when, then
+        assertThatThrownBy(() -> reservationTimeService.create(startAt))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS.message());
+    }
+
+    @Test
     @DisplayName("특정 날짜 및 테마의 예약 가능한 시간들을 반환한다.")
     public void findAvailableTimes_success() {
         // given
@@ -48,12 +62,10 @@ class ReservationTimeServiceTest {
         Theme nonTargetTheme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
 
         LocalDate targetDate = LocalDate.of(2023, 8, 5);
-        Reservation match = reservationRepository.save(new Reservation("브라운", targetDate, time, targetTheme));
-        Reservation nonMatch1 = reservationRepository.save(new Reservation("브라운", LocalDate.of(2024, 9, 10), time, targetTheme));
-        Reservation nonMatch2 = reservationRepository.save(new Reservation("브라운", targetDate, time, nonTargetTheme));
+        Reservation targetReservation = reservationRepository.save(new Reservation("브라운", targetDate, time, targetTheme));
+        Reservation nonTargetReservation1 = reservationRepository.save(new Reservation("브라운", LocalDate.of(2024, 9, 10), time, targetTheme));
+        Reservation nonTargetReservation2 = reservationRepository.save(new Reservation("브라운", targetDate, time, nonTargetTheme));
 
-        List<Reservation> results = reservationRepository.findByDateAndThemeId(targetDate, targetTheme.getId());
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         // when
         List<ReservationTimeAvailability> availableTimes = reservationTimeService.findAvailableTimes(targetDate, targetTheme.getId());

@@ -51,6 +51,26 @@ public class MissionStepTest {
     }
 
     @Test
+    void 중복된_예약_시간을_추가하면_bad_request를_반환한다() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     void 예약과_시간_연결() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");

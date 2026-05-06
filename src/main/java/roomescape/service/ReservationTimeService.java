@@ -33,8 +33,15 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTime create(LocalTime startAt) {
         ReservationTime reservationTime = new ReservationTime(startAt);
+        validateNotDuplicated(reservationTime);
 
         return reservationTimeRepository.save(reservationTime);
+    }
+
+    private void validateNotDuplicated(ReservationTime reservationTime) {
+        if (reservationTimeRepository.existsByStartAt(reservationTime.getStartAt())) {
+            throw new DomainException(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS);
+        }
     }
 
     @Transactional(readOnly = true)

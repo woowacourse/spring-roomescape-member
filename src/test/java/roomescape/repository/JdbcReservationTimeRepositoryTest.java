@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JdbcReservationTimeRepositoryTest {
 
@@ -35,7 +34,8 @@ class JdbcReservationTimeRepositoryTest {
                 CREATE TABLE reservation_time (
                     id       BIGINT NOT NULL AUTO_INCREMENT,
                     start_at TIME   NOT NULL,
-                    PRIMARY KEY (id)
+                    PRIMARY KEY (id),
+                    UNIQUE (start_at)
                 )
                 """);
 
@@ -63,6 +63,15 @@ class JdbcReservationTimeRepositoryTest {
 
         assertThat(reservationTimes).hasSize(1);
         assertThat(reservationTimes.getFirst().getStartAt()).isEqualTo(LocalTime.of(10, 0));
+    }
+
+    @Test
+    void 예약_시간_존재_여부를_조회한다() {
+        reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+
+        boolean exists = reservationTimeRepository.existsByStartAt(LocalTime.of(10, 0));
+
+        assertThat(exists).isTrue();
     }
 
     @Test

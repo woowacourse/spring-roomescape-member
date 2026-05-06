@@ -145,7 +145,7 @@ const API_BASE = "";
         signal: controller.signal
       }).finally(() => window.clearTimeout(timer));
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error(await errorMessageFrom(response));
       }
       return response.json();
     }
@@ -160,7 +160,7 @@ const API_BASE = "";
         body: JSON.stringify(body)
       });
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error(await errorMessageFrom(response));
       }
       return response.json();
     }
@@ -171,8 +171,32 @@ const API_BASE = "";
         headers: { Accept: "application/json" }
       });
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error(await errorMessageFrom(response));
       }
+    }
+
+    async function errorMessageFrom(response) {
+      const fallback = `HTTP ${response.status}`;
+      const contentType = response.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        return fallback;
+      }
+
+      try {
+        const body = await response.json();
+        return typeof body.message === "string" && body.message.trim()
+          ? body.message
+          : fallback;
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function endpointMessageOr(error, fallback) {
+      if (error instanceof Error && error.message && !/^HTTP \d+$/.test(error.message)) {
+        return error.message;
+      }
+      return fallback;
     }
 
     async function getReservationListData() {
@@ -451,7 +475,7 @@ const API_BASE = "";
         elements.formMessage.textContent = "예약이 완료되었습니다.";
         elements.formMessage.className = "message ok";
       } catch (error) {
-        elements.formMessage.textContent = "예약 요청에 실패했습니다.";
+        elements.formMessage.textContent = endpointMessageOr(error, "예약 요청에 실패했습니다.");
         elements.formMessage.className = "message error";
       }
     }
@@ -674,7 +698,7 @@ const API_BASE = "";
         showToast("테마가 추가되었습니다.", theme.name);
         await syncAfterAdminChange();
       } catch (error) {
-        setAdminMessage("테마 추가에 실패했습니다.", "error");
+        setAdminMessage(endpointMessageOr(error, "테마 추가에 실패했습니다."), "error");
       }
     }
 
@@ -695,7 +719,7 @@ const API_BASE = "";
         showToast("예약 시간이 추가되었습니다.", normalizeTime(startAt));
         await syncAfterAdminChange();
       } catch (error) {
-        setAdminMessage("시간 추가에 실패했습니다.", "error");
+        setAdminMessage(endpointMessageOr(error, "시간 추가에 실패했습니다."), "error");
       }
     }
 
@@ -738,7 +762,7 @@ const API_BASE = "";
         showToast("관리자 예약이 추가되었습니다.", `${formatDate(payload.date)} · ${theme.name} · ${normalizeTime(time.startAt)}`);
         await syncAfterAdminChange();
       } catch (error) {
-        setAdminReserveMessage("예약 추가에 실패했습니다.", "error");
+        setAdminReserveMessage(endpointMessageOr(error, "예약 추가에 실패했습니다."), "error");
       }
     }
 
@@ -761,7 +785,7 @@ const API_BASE = "";
         setAdminMessage("테마가 삭제되었습니다.", "ok");
         await syncAfterAdminChange();
       } catch (error) {
-        setAdminMessage("테마 삭제에 실패했습니다.", "error");
+        setAdminMessage(endpointMessageOr(error, "테마 삭제에 실패했습니다."), "error");
       }
     }
 
@@ -782,7 +806,7 @@ const API_BASE = "";
         setAdminMessage("예약 시간이 삭제되었습니다.", "ok");
         await syncAfterAdminChange();
       } catch (error) {
-        setAdminMessage("시간 삭제에 실패했습니다.", "error");
+        setAdminMessage(endpointMessageOr(error, "시간 삭제에 실패했습니다."), "error");
       }
     }
 
@@ -796,7 +820,7 @@ const API_BASE = "";
         setAdminMessage("예약이 삭제되었습니다.", "ok");
         await syncAfterAdminChange();
       } catch (error) {
-        setAdminMessage("예약 삭제에 실패했습니다.", "error");
+        setAdminMessage(endpointMessageOr(error, "예약 삭제에 실패했습니다."), "error");
       }
     }
 

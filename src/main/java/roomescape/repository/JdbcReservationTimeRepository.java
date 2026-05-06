@@ -27,6 +27,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             WHERE id = ?
             """;
 
+    private static final String EXISTS_BY_START_AT_SQL = """
+            SELECT COUNT(*)
+            FROM reservation_time
+            WHERE start_at = ?
+            """;
+
     private static final String INSERT_SQL = """
             INSERT INTO reservation_time (start_at)
             VALUES (?)
@@ -77,6 +83,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .findFirst();
     }
 
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        Integer count = jdbcTemplate.queryForObject(EXISTS_BY_START_AT_SQL, Integer.class, startAt.toString());
+        return count != null && count > 0;
+    }
+
     private int insert(ReservationTime reservationTime, KeyHolder keyHolder) {
         return jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(
@@ -102,4 +114,3 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return key.longValue();
     }
 }
-
