@@ -75,11 +75,8 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("예약 시간이 null이면 예외가 발생한다")
     void saveTimeWithNullStartAt() {
-        // given
-        ReservationTimeRequest request = new ReservationTimeRequest(null);
-
         // when & then
-        assertThatThrownBy(() -> reservationTimeService.saveTime(request))
+        assertThatThrownBy(() -> reservationTimeService.saveTime(new ReservationTimeRequest(null)))
                 .isInstanceOf(ReservationTimeException.class);
     }
 

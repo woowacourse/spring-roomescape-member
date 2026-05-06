@@ -26,6 +26,9 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse saveTime(ReservationTimeRequest request) {
+        if (request == null) {
+            throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_REQUEST_NULL);
+        }
         ReservationTime reservationTime = ReservationTime.createWithNullId(
                 request.startAt()
         );

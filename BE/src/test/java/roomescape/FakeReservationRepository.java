@@ -14,18 +14,18 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        if (reservation.getId() == null) {
-            Reservation saved = Reservation.of(
+        if (reservation.id() == null) {
+            Reservation saved = Reservation.createWithId(
                     sequence++,
-                    reservation.getName(),
-                    reservation.getDate(),
-                    reservation.getTime()
+                    reservation.name(),
+                    reservation.date(),
+                    reservation.time()
             );
-            store.put(saved.getId(), saved);
+            store.put(saved.id(), saved);
             return saved;
         }
 
-        store.put(reservation.getId(), reservation);
+        store.put(reservation.id(), reservation);
         return reservation;
     }
 
@@ -42,8 +42,8 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public boolean existsByReservationTimeId(Long reservationTimeId) {
         return store.values().stream()
-                .anyMatch(reservation -> reservation.getTime()
-                        .getId()
+                .anyMatch(reservation -> reservation.time()
+                        .id()
                         .equals(reservationTimeId)
                 );
     }

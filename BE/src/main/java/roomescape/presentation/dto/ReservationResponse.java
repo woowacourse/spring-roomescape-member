@@ -10,10 +10,10 @@ public record ReservationResponse(
 ) {
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
-                reservation.getId(),
-                reservation.getName(),
-                reservation.getDate().toString(),
-                ReservationTimeResponse.from(reservation.getTime())
+                reservation.id(),
+                reservation.name(),
+                reservation.date().toString(),
+                ReservationTimeResponse.from(reservation.time())
         );
     }
 }

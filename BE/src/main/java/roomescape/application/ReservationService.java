@@ -29,6 +29,9 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse saveReservation(ReservationRequest request) {
+        if (request == null) {
+            throw new ReservationException(ErrorCode.RESERVATION_REQUEST_NULL);
+        }
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new ReservationTimeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         Reservation reservation = Reservation.createWithNullId(

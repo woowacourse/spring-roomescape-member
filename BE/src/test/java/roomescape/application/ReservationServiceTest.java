@@ -36,7 +36,7 @@ class ReservationServiceTest {
 
     private ReservationTime createReservationTime() {
         return reservationTimeRepository.save(
-                ReservationTime.of(null, LocalTime.of(10, 0))
+                ReservationTime.createWithNullId(LocalTime.of(10, 0))
         );
     }
 
@@ -44,12 +44,12 @@ class ReservationServiceTest {
         return new ReservationRequest(
                 "브라운",
                 TODAY,
-                time.getId()
+                time.id()
         );
     }
 
     private ReservationResponse saveReservation(String name, LocalDate date, ReservationTime time) {
-        ReservationRequest request = new ReservationRequest(name, date, time.getId());
+        ReservationRequest request = new ReservationRequest(name, date, time.id());
         return reservationService.saveReservation(request);
     }
 
@@ -64,7 +64,7 @@ class ReservationServiceTest {
         ReservationResponse savedReservation = reservationService.saveReservation(request);
 
         // then
-        assertThat(savedReservation.time().id()).isEqualTo(time.getId());
+        assertThat(savedReservation.time().id()).isEqualTo(time.id());
     }
 
     @Test
@@ -93,63 +93,54 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약자 이름이 null이면 예외가 발생한다")
     void saveReservationWithNullName() {
-        // given
         ReservationTime time = createReservationTime();
-        ReservationRequest request = new ReservationRequest(
-                null,
-                TODAY,
-                time.getId()
-        );
 
         // when & then
-        assertThatThrownBy(() -> reservationService.saveReservation(request))
+        assertThatThrownBy(() -> reservationService.saveReservation(new ReservationRequest(
+                null,
+                TODAY,
+                time.id()
+        )))
                 .isInstanceOf(ReservationException.class);
     }
 
     @Test
     @DisplayName("예약자 이름이 비어 있으면 예외가 발생한다")
     void saveReservationWithBlankName() {
-        // given
         ReservationTime time = createReservationTime();
-        ReservationRequest request = new ReservationRequest(
-                " ",
-                TODAY,
-                time.getId()
-        );
 
         // when & then
-        assertThatThrownBy(() -> reservationService.saveReservation(request))
+        assertThatThrownBy(() -> reservationService.saveReservation(new ReservationRequest(
+                " ",
+                TODAY,
+                time.id()
+        )))
                 .isInstanceOf(ReservationException.class);
     }
 
     @Test
     @DisplayName("예약 날짜가 null이면 예외가 발생한다")
     void saveReservationWithNullDate() {
-        // given
         ReservationTime time = createReservationTime();
-        ReservationRequest request = new ReservationRequest(
-                "브라운",
-                null,
-                time.getId()
-        );
 
         // when & then
-        assertThatThrownBy(() -> reservationService.saveReservation(request))
+        assertThatThrownBy(() -> reservationService.saveReservation(new ReservationRequest(
+                "브라운",
+                null,
+                time.id()
+        )))
                 .isInstanceOf(ReservationException.class);
     }
 
     @Test
     @DisplayName("예약 시간 id가 null이면 예외가 발생한다")
     void saveReservationWithNullTimeId() {
-        // given
-        ReservationRequest request = new ReservationRequest(
+        // when & then
+        assertThatThrownBy(() -> reservationService.saveReservation(new ReservationRequest(
                 "브라운",
                 TODAY,
                 null
-        );
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.saveReservation(request))
+        )))
                 .isInstanceOf(ReservationTimeException.class);
     }
 
