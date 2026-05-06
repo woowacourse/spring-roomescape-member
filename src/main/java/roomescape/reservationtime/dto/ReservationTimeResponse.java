@@ -1,22 +1,22 @@
 package roomescape.reservationtime.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import roomescape.reservationtime.domain.ReservationTime;
 
-public record ReservationTimeResponse(Long id, String startAt) {
+public record ReservationTimeResponse(Long id, @JsonFormat(pattern = "HH:mm") LocalTime startAt) {
 
     public static ReservationTimeResponse from(ReservationTime time) {
         return new ReservationTimeResponse(
                 time.getId(),
-                time.getStartAt().format(DateTimeFormatter.ofPattern("HH:mm"))
+                time.getStartAt()
         );
     }
 
     public static ReservationTimeResponse from(Long id, LocalTime startAt) {
         return new ReservationTimeResponse(
                 id,
-                startAt.format(DateTimeFormatter.ofPattern("HH:mm"))
+                startAt
         );
     }
 }

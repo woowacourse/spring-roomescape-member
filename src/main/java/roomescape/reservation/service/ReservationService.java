@@ -44,11 +44,8 @@ public class ReservationService {
         return ReservationResponse.from(reservationRepository.save(reservation), themeResponse, timeResponse);
     }
 
-    // TODO : timeResponse의 startAt 전부 LocalTime으로 바꾸기
-    private void validateReservationDateTime(LocalDate date, String startAt, LocalDateTime currentDateTime) {
-        LocalTime localTimeStartAt = LocalTime.parse(startAt);
-
-        LocalDateTime triedDateTime = LocalDateTime.of(date, localTimeStartAt);
+    private void validateReservationDateTime(LocalDate date, LocalTime startAt, LocalDateTime currentDateTime) {
+        LocalDateTime triedDateTime = LocalDateTime.of(date, startAt);
 
         if (triedDateTime.isBefore(currentDateTime)) {
             throw new ReservationException("[ERROR] 현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");

@@ -19,7 +19,7 @@ class ReservationTimeControllerTest {
     void find_available_times() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .queryParam("date", "2026-05-04")
+                .queryParam("date", "2028-05-04")
                 .queryParam("themeId", "1")
                 .when().get("/times")
                 .then().log().all()

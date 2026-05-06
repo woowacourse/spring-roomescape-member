@@ -43,7 +43,7 @@ class ReservationServiceTest {
             assertSoftly.assertThat(reservationResponse.id()).isEqualTo(1L);
             assertSoftly.assertThat(reservationResponse.name()).isEqualTo("스타크");
             assertSoftly.assertThat(reservationResponse.date()).isEqualTo("2026-05-06");
-            assertSoftly.assertThat(reservationResponse.time()).isEqualTo(new ReservationTimeResponse(1L, "10:00"));
+            assertSoftly.assertThat(reservationResponse.time()).isEqualTo(new ReservationTimeResponse(1L, LocalTime.of(10,0)));
             assertSoftly.assertThat(reservationResponse.theme())
                     .isEqualTo(new ThemeResponse(1L, "theme name", "theme description", "theme img url"));
         });

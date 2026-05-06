@@ -42,8 +42,8 @@ class ReservationTimeServiceTest {
         List<ReservationTimeResponse> timeResponses = timeService.findAvailableTimes(themeId, date);
 
         Assertions.assertThat(timeResponses).containsExactly(
-                new ReservationTimeResponse(1L, "09:00"),
-                new ReservationTimeResponse(2L, "10:00")
+                new ReservationTimeResponse(1L, LocalTime.of(9,0)),
+                new ReservationTimeResponse(2L, LocalTime.of(10,0))
         );
     }
 
@@ -64,7 +64,7 @@ class ReservationTimeServiceTest {
         List<ReservationTimeResponse> timeResponses = timeService.findAvailableTimes(themeId, date);
 
         Assertions.assertThat(timeResponses).containsExactly(
-                new ReservationTimeResponse(2L, "10:00")
+                new ReservationTimeResponse(2L, LocalTime.of(10,0))
         );
     }
 

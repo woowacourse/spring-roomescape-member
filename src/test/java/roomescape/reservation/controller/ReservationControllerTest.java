@@ -21,7 +21,7 @@ class ReservationControllerTest {
     void save_reservation() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "스타크");
-        params.put("date", "2026-05-06");
+        params.put("date", "2028-05-06");
         params.put("themeId", "1");
         params.put("timeId", "1");
 
@@ -33,7 +33,7 @@ class ReservationControllerTest {
                 .statusCode(201)
                 .body("id", greaterThan(0))
                 .body("name", equalTo("스타크"))
-                .body("date", equalTo("2026-05-06"))
+                .body("date", equalTo("2028-05-06"))
                 .body("time.id", equalTo(1))
                 .body("time.startAt", equalTo("09:00"))
                 .body("theme.id", equalTo(1))

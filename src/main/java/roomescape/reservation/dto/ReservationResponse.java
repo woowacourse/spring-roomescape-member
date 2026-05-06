@@ -1,19 +1,20 @@
 package roomescape.reservation.dto;
 
-import java.time.format.DateTimeFormatter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationDetail;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.theme.dto.ThemeResponse;
 
-public record ReservationResponse(Long id, String name, String date, ThemeResponse theme, ReservationTimeResponse time) {
+public record ReservationResponse(Long id, String name, @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date, ThemeResponse theme, ReservationTimeResponse time) {
 
     public static ReservationResponse from(Reservation reservation, ThemeResponse themeResponse,
                                            ReservationTimeResponse timeResponse) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
-                reservation.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                reservation.getDate(),
                 themeResponse,
                 timeResponse
         );
@@ -23,7 +24,7 @@ public record ReservationResponse(Long id, String name, String date, ThemeRespon
         return new ReservationResponse(
                 reservationDetail.reservationId(),
                 reservationDetail.username(),
-                reservationDetail.date().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                reservationDetail.date(),
                 ThemeResponse.from(
                         reservationDetail.themeId(),
                         reservationDetail.themeName(),
