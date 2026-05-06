@@ -1,5 +1,6 @@
 package roomescape.repository.theme;
 
+import java.time.LocalDate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -55,13 +56,6 @@ public class JdbcThemeRepository implements ThemeRepository {
         return template.query(sql, themeRowMapper());
     }
 
-    /*
-    List<ReservationTime> reservationTimes = jdbcTemplate.query(
-            "SELECT id, start_at FROM reservation_time WHERE id = ?",
-            reservationTimeRowMapper,
-            id);
-        return reservationTimes.stream().findFirst();
-     */
     @Override
     public Optional<Theme> findById(Long id) {
         List<Theme> themes = template.query(
@@ -70,6 +64,24 @@ public class JdbcThemeRepository implements ThemeRepository {
                 id);
 
         return themes.stream().findFirst();
+    }
+
+    @Override
+    public List<Theme> findTop10WeekPopularThemesOrderByRank() {
+        final String sql = """
+            SELECT t.id, t.name, t.description, t.image_url
+            FROM theme t
+            JOIN reservation r ON r.theme_id = t.id
+            WHERE r.date >= ? AND r.date <= ?
+            GROUP BY t.id
+            ORDER BY COUNT(r.id) DESC
+            LIMIT 10
+            """;
+
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
+
+        return template.query(sql, themeRowMapper(), sevenDaysAgo.toString(), yesterday.toString());
     }
 
     private RowMapper<Theme> themeRowMapper() {

@@ -27,6 +27,10 @@ public class ReservationTime {
         this.startAt = translateTime(startAt);
     }
 
+    public ReservationTime(LocalTime startAt) {
+        this(null, startAt);
+    }
+
     public ReservationTime(String startAt) {
         this(null, startAt);
     }

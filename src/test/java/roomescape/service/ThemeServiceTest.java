@@ -50,9 +50,9 @@ class ThemeServiceTest {
 
     @Test
     void 모든_테마를_조회한다() {
+        // given
         List<Theme> themes = List.of(THEME.withId(1L), THEME.withId(2L), THEME.withId(3L));
 
-        // given
         when(themeRepository.findAll())
                 .thenReturn(themes);
 
@@ -66,4 +66,5 @@ class ThemeServiceTest {
                 .anySatisfy(id -> assertThat(id).isEqualTo(2L))
                 .anySatisfy(id -> assertThat(id).isEqualTo(3L));
     }
+    
 }
