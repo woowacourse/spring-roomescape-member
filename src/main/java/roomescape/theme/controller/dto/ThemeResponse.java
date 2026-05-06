@@ -1,10 +1,15 @@
 package roomescape.theme.controller.dto;
 
+import roomescape.reservation.repository.PopularThemeQueryResult;
 import roomescape.theme.domain.Theme;
 
-public record ThemeResponse(Long id, String description, String thumbnailUrl) {
+public record ThemeResponse(String name, String description, String thumbnailUrl) {
+
+    public static ThemeResponse from(PopularThemeQueryResult theme) {
+        return new ThemeResponse(theme.name(), theme.description(), theme.thumbnailUrl());
+    }
 
     public static ThemeResponse from(Theme theme) {
-        return new ThemeResponse(theme.getId(), theme.getDescription(), theme.getThumbnailUrl());
+        return new ThemeResponse(theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
     }
 }

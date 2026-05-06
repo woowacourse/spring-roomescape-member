@@ -1,7 +1,8 @@
 package roomescape.reservation.controller.dto;
 
+import roomescape.reservation.service.dto.ReservationCommand;
+
 import java.time.LocalDate;
-import roomescape.reservation.service.ReservationCommand;
 
 public record ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
 
