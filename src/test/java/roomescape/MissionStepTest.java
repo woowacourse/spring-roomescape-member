@@ -52,8 +52,9 @@ class MissionStepTest {
     @Test
     void DB_조회_API_전환() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
+        jdbcTemplate.update("INSERT INTO reservation_date (date) VALUES (?)", "2099-01-01");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "테마1", "테마1 설명", "테마1 썸네일");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, start_at, theme_id, status) VALUES (?, ?, ?, ?, ?)", "브라운", "2099-01-01", "15:40", 1, "RESERVED");
 
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
