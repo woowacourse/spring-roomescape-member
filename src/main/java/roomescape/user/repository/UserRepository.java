@@ -1,5 +1,6 @@
 package roomescape.user.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -8,6 +9,7 @@ import roomescape.user.model.Role;
 import roomescape.user.model.User;
 
 import java.sql.PreparedStatement;
+import java.util.Optional;
 
 @Repository
 public class UserRepository {
@@ -31,6 +33,20 @@ public class UserRepository {
                     return ps;
                 }, keyHolder);
         return  keyHolder.getKey().longValue();
+    }
+
+    public Optional<User> findByName(String name) {
+        String sql = "SELECT id, name, role FROM \"USER\" WHERE name = ?";
+        try {
+            User user = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new User(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    Role.valueOf(rs.getString("role"))
+            ), name);
+            return Optional.of(user);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public User findById(Long id) {
