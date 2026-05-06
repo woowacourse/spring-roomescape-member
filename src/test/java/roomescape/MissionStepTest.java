@@ -29,21 +29,23 @@ public class MissionStepTest {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
-        RestAssured.given().log().all()
+        int timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract()
+                .path("id");
 
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("times.size()", is(1));
+                .body("times.find { it.id == " + timeId + " }.startAt", is("10:00"));
 
         RestAssured.given().log().all()
-                .when().delete("/admin/times/1")
+                .when().delete("/admin/times/" + timeId)
                 .then().log().all()
                 .statusCode(204);
     }
@@ -61,22 +63,26 @@ public class MissionStepTest {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
-
-        RestAssured.given().log().all()
+        int timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(time)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract()
+                .path("id");
 
-        RestAssured.given().log().all()
+        int themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(theme)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        reservation.put("timeId", timeId);
+        reservation.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -84,16 +90,68 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("time.id", is(1))
-                .body("theme.id", is(1));
+                .body("time.id", is(timeId))
+                .body("theme.id", is(themeId));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("reservations.size()", is(1))
-                .body("reservations[0].time.id", is(1))
-                .body("reservations[0].theme.id", is(1));
+                .body("reservations.find { it.time.id == " + timeId + " }.theme.id", is(themeId));
+    }
+
+    @Test
+    void 예약_가능_시간_조회_후_예약하면_해당_시간이_예약_불가가_된다() {
+        Map<String, String> time = new HashMap<>();
+        time.put("startAt", "23:00");
+
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "예약 가능 시간 테스트");
+        theme.put("description", "예약 가능 시간 테스트용 테마");
+        theme.put("thumbnail", "https://example.com/availability-theme.png");
+
+        int timeId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(time)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        int themeId = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        RestAssured.given().log().all()
+                .when().get("/times/availability?date=2026-06-01&themeId=" + themeId)
+                .then().log().all()
+                .statusCode(200)
+                .body("availableTimes.find { it.id == " + timeId + " }.isAvailable", is(true));
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2026-06-01");
+        reservation.put("timeId", timeId);
+        reservation.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/times/availability?date=2026-06-01&themeId=" + themeId)
+                .then().log().all()
+                .statusCode(200)
+                .body("availableTimes.find { it.id == " + timeId + " }.isAvailable", is(false));
     }
 
     @Test
