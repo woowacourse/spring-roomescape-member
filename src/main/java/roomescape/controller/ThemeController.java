@@ -4,6 +4,7 @@ import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Theme;
+import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.theme.PopularThemeResponseDto;
 import roomescape.dto.theme.PopularThemesResponseDto;
 import roomescape.dto.theme.ThemeRequestDto;
@@ -25,25 +26,25 @@ public class ThemeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ThemeResponseDto addTheme(
+    public ResourceIdResponseDto addTheme(
             @RequestBody ThemeRequestDto request,
-            @RequestParam("role") String role
+            @RequestParam(value = "role", required = false) String role
     ) {
-        if (!role.equals("admin")) {
+        if (!"admin".equals(role)) {
             throw new ForbiddenAccessException("테마 추가는 관리자만 가능합니다.");
         }
 
         Theme saved = themeService.addTheme(request);
-        return ThemeResponseDto.from(saved);
+        return new ResourceIdResponseDto(saved.getId());
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTheme(
             @PathVariable Long id,
-            @RequestParam("role") String role
+            @RequestParam(value = "role", required = false) String role
     ) {
-        if (!role.equals("admin")) {
+        if (!"admin".equals(role)) {
             throw new ForbiddenAccessException("테마 삭제는 관리자만 가능합니다.");
         }
 

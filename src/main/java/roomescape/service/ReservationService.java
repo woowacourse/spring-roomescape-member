@@ -66,6 +66,9 @@ public class ReservationService {
     }
 
     public List<ReservationTime> getAvailableTimes(LocalDate date, Long themeId) {
-        return reservationTimeRepository.findByDateAndThemeId(date, themeId);
+        Theme theme = themeRepository.findById(themeId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+
+        return reservationTimeRepository.findByDateAndThemeId(date, theme.getId());
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.reservationTime.ReservationTimeRequestDto;
 import roomescape.dto.reservationTime.ReservationTimeResponseDto;
 import roomescape.service.ReservationService;
@@ -40,6 +41,7 @@ class ReservationTimeControllerTest {
     void setPort() {
         RestAssured.port = port;
     }
+
     @Test
     void 관리자는_예약_시간을_추가할_수_있다() {
         // given
@@ -61,8 +63,8 @@ class ReservationTimeControllerTest {
                 .then()
                 .statusCode(HttpStatus.CREATED.value());
 
-        ReservationTimeResponseDto responseDto = response.as(ReservationTimeResponseDto.class);
-        assertThat(responseDto.id()).isEqualTo(newTime.getId());
+        ResourceIdResponseDto responseDto = response.as(ResourceIdResponseDto.class);
+        assertThat(responseDto).isEqualTo(new ResourceIdResponseDto(newTime.getId()));
     }
 
     @Test

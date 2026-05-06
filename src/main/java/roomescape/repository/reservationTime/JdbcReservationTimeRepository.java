@@ -1,5 +1,6 @@
 package roomescape.repository.reservationTime;
 
+import java.time.LocalTime;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -32,7 +33,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         template.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, TIME_FORMATTER.format(reservationTime.getStartAt()));
+            ps.setString(1, reservationTime.getStartAt().format(TIME_FORMATTER));
             return ps;
         }, keyHolder);
 
@@ -71,13 +72,17 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         String formattedDate = DATE_FORMATTER.format(date);
 
         return template.query(
-            "SELECT t.id as time_id, t.start_at as time_value " +
-                    "FROM reservation_time as t " +
-                    "LEFT JOIN reservation as r " +
-                    "  ON t.id = r.time_id " +
-                    "  AND r.res_date = ? " +
-                    "  AND r.theme_id = ? " +
-                    "WHERE r.id IS NULL ",
+            """
+                SELECT 
+                    t.id as time_id, 
+                    t.start_at as time_value 
+                FROM reservation_time as t 
+                    LEFT JOIN reservation as r 
+                        ON t.id = r.time_id 
+                               AND r.res_date = ? 
+                               AND r.theme_id = ? 
+                WHERE r.id IS NULL
+                """,
                 reservationTimeRowMapper(),
                 formattedDate,
                 themeId

@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.reservationTime.ReservationTimeRequestDto;
 import roomescape.dto.reservationTime.ReservationTimeResponseDto;
 import roomescape.exception.ForbiddenAccessException;
@@ -38,25 +40,25 @@ public class ReservationTimeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationTimeResponseDto addReservationTime(
-            @RequestBody ReservationTimeRequestDto requestDto,
-            @RequestParam("role") String role
+    public ResourceIdResponseDto addReservationTime(
+            @Valid @RequestBody ReservationTimeRequestDto requestDto,
+            @RequestParam(value = "role", required = false) String role
     ) {
-        if (!role.equals("admin")) {
+        if (!"admin".equals(role)) {
             throw new ForbiddenAccessException("시간 추가는 관리자만 가능합니다.");
         }
 
         ReservationTime time = reservationService.addReservationTime(requestDto);
-        return ReservationTimeResponseDto.from(time);
+        return new ResourceIdResponseDto(time.getId());
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservationTime(
             @PathVariable Long id,
-            @RequestParam("role") String role
+            @RequestParam(value = "role", required = false) String role
     ) {
-        if (!role.equals("admin")) {
+        if (!"admin".equals(role)) {
             throw new ForbiddenAccessException("시간 삭제는 관리자만 가능합니다.");
         }
 
