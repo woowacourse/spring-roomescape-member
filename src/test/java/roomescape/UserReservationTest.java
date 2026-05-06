@@ -50,7 +50,7 @@ public class UserReservationTest {
         createTheme( "페어 테마", "페어 전용 테마입니다.", "https://example.com/pair.png");
 
         List<ReservationTime> beforeReservationResults = RestAssured.given().log().all()
-                .when().get("/times/available?date=2026-05-01&themId=1")
+                .when().get("/times/available?date=2026-05-01&themeId=1")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTime.class);
@@ -61,7 +61,7 @@ public class UserReservationTest {
         createReservation("포비", LocalDate.of(2026, 5, 2), 2L, 2L);
 
         List<ReservationTime> afterReservationResults = RestAssured.given().log().all()
-                .when().get("/times/available?date=2026-05-01&themId=1")
+                .when().get("/times/available?date=2026-05-01&themeId=1")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTime.class);
@@ -69,7 +69,7 @@ public class UserReservationTest {
         assertThat(afterReservationResults.size()).isEqualTo(3);
 
         List<ReservationTime> afterReservationResults_2 = RestAssured.given().log().all()
-                .when().get("/times/available?date=2026-05-02&themId=1")
+                .when().get("/times/available?date=2026-05-02&themeId=1")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTime.class);
@@ -77,7 +77,7 @@ public class UserReservationTest {
         assertThat(afterReservationResults_2.size()).isEqualTo(4);
 
         List<ReservationTime> afterReservationResults_3 = RestAssured.given().log().all()
-                .when().get("/times/available?date=2026-05-01&themId=2")
+                .when().get("/times/available?date=2026-05-01&themeId=2")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTime.class);
@@ -85,7 +85,7 @@ public class UserReservationTest {
         assertThat(afterReservationResults_3.size()).isEqualTo(4);
 
         List<ReservationTime> afterReservationResults_4 = RestAssured.given().log().all()
-                .when().get("/times/available?date=2026-05-02&themId=2")
+                .when().get("/times/available?date=2026-05-02&themeId=2")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTime.class);
