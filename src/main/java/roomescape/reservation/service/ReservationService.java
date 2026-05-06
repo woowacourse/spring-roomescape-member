@@ -6,11 +6,11 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.PopularThemesResult;
 import roomescape.reservation.service.dto.ReservationCommand;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.ThemeRepository;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.reservation.service.dto.ReservationResult;
+import roomescape.theme.service.ThemeService;
+import roomescape.time.service.ReservationTimeService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -18,32 +18,35 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final ReservationTimeService reservationTimeService;
+    private final ThemeService themeService;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeService reservationTimeService,
+            ThemeService themeService
+    ) {
         this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
+        this.reservationTimeService = reservationTimeService;
+        this.themeService = themeService;
     }
 
     @Transactional
-    public Reservation save(ReservationCommand command) {
-        ReservationTime time = reservationTimeRepository.findById(command.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약 시간이 존재하지 않습니다."));
+    public ReservationResult save(ReservationCommand command) {
+        Reservation reservation = Reservation.create(
+                command.name(),
+                command.date(),
+                reservationTimeService.getById(command.timeId()),
+                themeService.getById(command.themeId())
+        );
 
-        Theme theme = themeRepository.findById(command.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마가 존재하지 않습니다."));
+        checkDuplicateReservation(
+                reservation.getDate(),
+                command.timeId(),
+                command.themeId()
+        );
 
-        Reservation reservation = Reservation.create(command.name(), command.date(), time, theme);
-
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservation.getDate(), command.timeId(),
-                command.themeId())) {
-            throw new IllegalStateException("이미 해당 날짜와 시간에 예약이 존재합니다.");
-        }
-
-        return reservationRepository.save(reservation);
+        return ReservationResult.from(reservationRepository.save(reservation));
     }
 
     @Transactional
@@ -51,11 +54,20 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<Reservation> findAll() {
-        return reservationRepository.findAll();
+    public List<ReservationResult> findAll() {
+        return reservationRepository.findAll()
+                .stream()
+                .map(ReservationResult::from)
+                .toList();
     }
 
     public PopularThemesResult findPopularThemes(int period, int limit) {
         return new PopularThemesResult(reservationRepository.findPopularThemes(period, limit));
+    }
+
+    private void checkDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new IllegalStateException("이미 해당 날짜와 시간에 예약이 존재합니다.");
+        }
     }
 }

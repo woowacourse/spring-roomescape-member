@@ -1,22 +1,17 @@
 package roomescape.time.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import roomescape.theme.service.ThemeService;
+import roomescape.time.controller.dto.ReservationTimeRequest;
+import roomescape.time.controller.dto.ReservationTimeResponse;
+import roomescape.time.service.ReservationTimeService;
+import roomescape.time.service.dto.ReservationTimeResult;
+
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.service.ThemeService;
-import roomescape.time.controller.dto.ReservationTimeRequest;
-import roomescape.time.controller.dto.ReservationTimeResponse;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.service.ReservationTimeService;
 
 @RestController
 public class ReservationTimeController {
@@ -52,10 +47,10 @@ public class ReservationTimeController {
 
     @PostMapping("/admin/times")
     public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeRequest requestDto) {
-        ReservationTime reservationTime = reservationTimeService.save(requestDto.toCommand());
+        ReservationTimeResult reservationTime = reservationTimeService.save(requestDto.toCommand());
         ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime);
         return ResponseEntity
-                .created(URI.create("/times/" + reservationTime.getId()))
+                .created(URI.create("/times/" + response.id()))
                 .body(response);
     }
 

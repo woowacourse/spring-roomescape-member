@@ -1,6 +1,6 @@
 package roomescape.time.controller.dto;
 
-import roomescape.time.service.ReservationTimeCommand;
+import roomescape.time.service.dto.ReservationTimeCommand;
 
 import java.time.LocalTime;
 

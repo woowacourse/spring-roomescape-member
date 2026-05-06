@@ -1,11 +1,14 @@
 package roomescape.time.service;
 
-import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.time.service.dto.ReservationTimeCommand;
+import roomescape.time.service.dto.ReservationTimeResult;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,13 +21,13 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTime save(ReservationTimeCommand command) {
+    public ReservationTimeResult save(ReservationTimeCommand command) {
         if (reservationTimeRepository.existsByStartAt(command.startAt())) {
             throw new IllegalArgumentException("해당 시간이 이미 존재합니다.");
         }
 
         ReservationTime reservationTime = ReservationTime.create(command.startAt());
-        return reservationTimeRepository.save(reservationTime);
+        return ReservationTimeResult.from(reservationTimeRepository.save(reservationTime));
     }
 
     @Transactional
@@ -36,7 +39,16 @@ public class ReservationTimeService {
         }
     }
 
-    public List<ReservationTime> findAll() {
-        return reservationTimeRepository.findAll();
+    public List<ReservationTimeResult> findAll() {
+        return reservationTimeRepository.findAll()
+                .stream()
+                .map(ReservationTimeResult::from)
+                .toList();
+
+    }
+
+    public ReservationTime getById(Long id) {
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약 시간이 존재하지 않습니다. ID: " + id));
     }
 }
