@@ -2,37 +2,62 @@ package roomescape.common.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.common.dto.ErrorResponse;
+import roomescape.common.dto.ErrorInformation;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.of(HttpStatus.NOT_FOUND.value(), e.getMessage()));
-    }
 
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorResponse> handleConflict(ConflictException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ErrorResponse.of(HttpStatus.CONFLICT.value(), e.getMessage()));
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorInformation> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        ErrorInformation errorInformation = ErrorInformation.of(httpStatus, e.getMessage());
+        return ResponseEntity.status(httpStatus)
+                .body(errorInformation);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequest(IllegalArgumentException e) {
-        System.out.println(e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    public ResponseEntity<ErrorInformation> handleIllegalArgumentException(IllegalArgumentException e) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        ErrorInformation errorInformation = ErrorInformation.of(httpStatus, e.getMessage());
+        return ResponseEntity.status(httpStatus)
+                .body(errorInformation);
+    }
+
+//    @ExceptionHandler(RequestValidationException.class)
+//    public ResponseEntity<ErrorInformation> handleRequestValidationException(RequestValidationException e) {
+//        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+//        ErrorInformation errorInformation = ErrorInformation.of(httpStatus, e.getMessage());
+//        return ResponseEntity.status(httpStatus)
+//                .body(errorInformation);
+//    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorInformation> handleNotFound(NotFoundException e) {
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        ErrorInformation errorInformation = ErrorInformation.of(httpStatus, e.getMessage());
+        return ResponseEntity.status(httpStatus)
+                .body(errorInformation);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorInformation> handleConflict(ConflictException e) {
+        HttpStatus httpStatus = HttpStatus.CONFLICT;
+        ErrorInformation errorInformation = ErrorInformation.of(httpStatus, e.getMessage());
+        return ResponseEntity.status(httpStatus)
+                .body(errorInformation);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleUnknownException(Exception e) {
-        System.out.println(e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "예상치 못한 오류가 발생했습니다."));
+    public ResponseEntity<ErrorInformation> handleUnknownException(Exception e) {
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        ErrorInformation errorInformation = ErrorInformation.of(httpStatus, e.getMessage());
+        return ResponseEntity.status(httpStatus)
+                .body(errorInformation);
     }
+
 }
