@@ -16,7 +16,7 @@ public class ReservationConsoleController implements CommandLineRunner {
     private final ReservationTimeService reservationTimeService;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         while (true) {
             String menu = ConsoleView.readMenu();
             if (menu.equals("q")) {

@@ -45,8 +45,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResult> getAllThemes() {
-        return themeRepository.findAll()
+    public List<ThemeResult> getAllActiveThemes() {
+        return themeRepository.findAllActiveThemes()
                 .stream().map(ThemeResult::from)
                 .toList();
     }

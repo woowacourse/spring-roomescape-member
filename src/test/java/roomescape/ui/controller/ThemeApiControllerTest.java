@@ -72,7 +72,7 @@ class ThemeApiControllerTest extends BaseControllerUnitTest {
     void 테마_목록_조회_요청에_성공하면_정상_응답이_반환된다() {
         // given
         ThemeResult result = ThemeResult.from(ThemeFixture.createThemeWithId());
-        when(themeService.getAllThemes()).thenReturn(List.of(result));
+        when(themeService.getAllActiveThemes()).thenReturn(List.of(result));
 
         // when & then
         List<ThemeResponse> response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()

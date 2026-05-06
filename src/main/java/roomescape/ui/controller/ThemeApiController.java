@@ -38,7 +38,7 @@ public class ThemeApiController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getAllThemes() {
-        List<ThemeResponse> response = themeService.getAllThemes()
+        List<ThemeResponse> response = themeService.getAllActiveThemes()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();

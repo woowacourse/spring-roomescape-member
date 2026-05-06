@@ -40,13 +40,13 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAll() {
+    public List<Theme> findAllActiveThemes() {
         return new ArrayList<>(themes.values());
     }
 
     @Override
     public List<Theme> findTop10ByReservationCount(LocalDate startDate, LocalDate endDate) {
-        return findAll().subList(0, 10);
+        return findAllActiveThemes().subList(0, 10);
     }
 
     @Override

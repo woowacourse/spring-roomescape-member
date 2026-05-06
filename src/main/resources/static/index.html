@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoomEscape</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/common.css" />
+  <link rel="stylesheet" href="/styles/index.css" />
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">RoomEscape</a>
+      <div class="nav-links">
+        <a href="/" class="active">홈</a>
+        <a href="/reserve">예약하기</a>
+        <a href="/admin">관리자</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="index-page">
+    <section>
+      <div class="section-header">
+        <h2 class="section-title">이번 주 인기 테마</h2>
+        <span class="section-sub">최근 7일 기준</span>
+      </div>
+      <div class="popular-scroll" data-role="popular-list">
+        <div class="state-box">불러오는 중...</div>
+      </div>
+    </section>
+
+    <section class="divider">
+      <div class="section-header">
+        <h2 class="section-title">전체 테마</h2>
+      </div>
+      <div class="theme-grid" data-role="theme-grid">
+        <div class="state-box state-grid">불러오는 중...</div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/js/index/main.js"></script>
+</body>
+</html>

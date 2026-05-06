@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.EntityNotFoundException;
@@ -26,10 +25,6 @@ public class DummyController {
     @PostMapping("/dummy/{data}")
     public ResponseEntity<Long> testMethod(@Positive(message = "양수가 아님") @PathVariable Long data) {
         return ResponseEntity.ok(data);
-    }
-
-    @GetMapping("/dummy/param")
-    public void requestParamCheck(@RequestParam String test) {
     }
 
     @GetMapping("/dummy/business")
@@ -57,7 +52,4 @@ public class DummyController {
         throw new RuntimeException();
     }
 
-    @GetMapping("/api/admin")
-    public void accessCheck() {
-    }
 }

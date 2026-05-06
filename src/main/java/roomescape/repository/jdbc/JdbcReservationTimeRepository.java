@@ -71,11 +71,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<TimeSlotProjection> findTimesByThemeWithReservationStatus(long themeId, LocalDate date) {
         String sql = """
-                        SELECT 
-                            rt.id AS time_id, 
+                        SELECT
+                            rt.id AS time_id,
                             rt.start_at AS time_start_at,
                             (CASE WHEN r.id IS NULL THEN true ELSE false END) AS is_reservable
-                        FROM reservation_time rt                
+                        FROM reservation_time rt
                         LEFT JOIN reservation r
                                 ON rt.id = r.time_id
                                 AND r.theme_id = ?
