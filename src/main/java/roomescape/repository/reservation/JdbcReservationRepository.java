@@ -111,7 +111,13 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, ReservationTheme reservationTheme) {
-        long id = insertReservation(reservationCommand);
+        long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
+                COLUMN_NAME, reservationCommand.name(),
+                COLUMN_DATE, reservationCommand.date(),
+                COLUMN_TIME_ID, reservationCommand.timeId(),
+                COLUMN_THEME_ID, reservationCommand.themeId()
+        )).longValue();
+
         return new Reservation(id, reservationCommand.name(), reservationCommand.date(), reservationTime,
                 reservationTheme);
     }
@@ -135,14 +141,5 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existsByTimeIdAndThemeIdAndDate(ReservationCommand reservationCommand) {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE,
                 Boolean.class, reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date()));
-    }
-
-    public long insertReservation(ReservationCommand reservationCommand) {
-        return simpleJdbcInsert.executeAndReturnKey(Map.of(
-                COLUMN_NAME, reservationCommand.name(),
-                COLUMN_DATE, reservationCommand.date(),
-                COLUMN_TIME_ID, reservationCommand.timeId(),
-                COLUMN_THEME_ID, reservationCommand.themeId()
-        )).longValue();
     }
 }
