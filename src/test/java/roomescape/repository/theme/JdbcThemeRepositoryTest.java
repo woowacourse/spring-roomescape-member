@@ -68,6 +68,8 @@ class JdbcThemeRepositoryTest {
     @Test
     void 저장된_모든_테마를_조회한다() {
         // given
+        final int prevThemeEntityCount = themeRepository.findAll().size();
+
         String first = "테마1";
         String second = "테마2";
         themeRepository.createTheme(new Theme(first, "-", "url"));
@@ -77,7 +79,7 @@ class JdbcThemeRepositoryTest {
         List<Theme> all = themeRepository.findAll();
 
         // then
-        assertThat(all).hasSize(2);
+        assertThat(all).hasSize(prevThemeEntityCount + 2);
         assertThat(all).extracting(Theme::getName)
                 .anySatisfy(name -> assertThat(name).isEqualTo(first))
                 .anySatisfy(name -> assertThat(name).isEqualTo(second));
