@@ -2,10 +2,64 @@ let selectedDate = null;
 let selectedTheme = null;
 let selectedTime = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-    loadDates();
-    loadThemes();
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadThemes();
+    await loadPopularThemes();
+    await loadDates();
 });
+
+async function loadPopularThemes() {
+    const popularThemeList = document.getElementById("popular-theme-list");
+
+    const response = await fetch("/member/themes/popular?top=10");
+
+    if (!response.ok) {
+        popularThemeList.innerHTML = `
+            <div class="popular-empty-message">
+                인기 테마를 불러오지 못했습니다.
+            </div>
+        `;
+        return;
+    }
+
+    const themes = await response.json();
+    popularThemeList.innerHTML = "";
+
+    if (themes.length === 0) {
+        popularThemeList.innerHTML = `
+            <div class="popular-empty-message">
+                아직 인기 테마 데이터가 없습니다.
+            </div>
+        `;
+        return;
+    }
+
+    themes.forEach((theme, index) => {
+        const article = document.createElement("article");
+        article.className = "popular-theme-card";
+
+        article.innerHTML = `
+            <img src="${theme.thumbnailUrl}" alt="${theme.name}">
+            <div class="popular-rank-badge">${index + 1}</div>
+            <div class="popular-theme-content">
+                <h3>${theme.name}</h3>
+                <p>${theme.description}</p>
+            </div>
+        `;
+
+        article.addEventListener("click", () => {
+            selectTheme(theme);
+
+            const themeSection = document.getElementById("theme-select-section");
+            themeSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        });
+
+        popularThemeList.appendChild(article);
+    });
+}
 
 async function loadDates() {
     const response = await fetch("/member/dates");
@@ -61,6 +115,12 @@ async function loadThemes() {
     themes.forEach(theme => {
         const article = document.createElement("article");
         article.className = "theme-card";
+
+        article.dataset.themeId = theme.id;
+        article.dataset.themeName = theme.name;
+        article.dataset.themeDescription = theme.description;
+        article.dataset.themeThumbnailUrl = theme.thumbnailUrl;
+
         article.innerHTML = `
             <img src="${theme.thumbnailUrl}" alt="${theme.name}">
             <div class="theme-card-content">
@@ -70,15 +130,27 @@ async function loadThemes() {
         `;
 
         article.addEventListener("click", () => {
-            document.querySelectorAll(".theme-card")
-                .forEach(item => item.classList.remove("selected"));
-
-            article.classList.add("selected");
-            selectedTheme = theme;
+            selectTheme(theme);
         });
 
         themeList.appendChild(article);
     });
+}
+
+function selectTheme(theme) {
+    selectedTheme = theme;
+
+    document.querySelectorAll(".theme-card")
+        .forEach(card => {
+            const cardThemeId = Number(card.dataset.themeId);
+
+            if (cardThemeId === Number(theme.id)) {
+                card.classList.add("selected");
+                return;
+            }
+
+            card.classList.remove("selected");
+        });
 }
 
 async function goToReservationStep() {
