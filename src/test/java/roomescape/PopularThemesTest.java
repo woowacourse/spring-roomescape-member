@@ -64,7 +64,7 @@ public class PopularThemesTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("/themes/popular?period=7&limit=2")
+                .when().get("/themes?popular=true&period=7&limit=2")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2))

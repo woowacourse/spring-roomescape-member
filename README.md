@@ -56,7 +56,7 @@ Location: /themes/{id}
 
 #### 메서드 / URL
 
-- GET /times/available
+- GET /times?available=true
 
 #### 요청
 
@@ -73,7 +73,6 @@ date=2026-05-08&themeId=1
 ```json
 [
   {
-    id,
     startAt
   }
 ]
@@ -88,7 +87,7 @@ date=2026-05-08&themeId=1
 
 #### 메서드 / URL
 
-- GET /themes/popular
+- GET /themes?popular=true
 
 #### 요청
 
@@ -105,7 +104,6 @@ period=7d&limit=10
 ```json
 [
   {
-    id,
     name,
     description,
     thumbnailUrl
