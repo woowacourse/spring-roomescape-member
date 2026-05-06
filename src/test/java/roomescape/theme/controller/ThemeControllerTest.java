@@ -27,7 +27,7 @@ class ThemeControllerTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("name", is("테마"))
                 .body("description", is("테마 설명"))
                 .body("thumbnailUrl", is("https://example.com/theme.png"))
@@ -46,7 +46,7 @@ class ThemeControllerTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/themes")
@@ -70,14 +70,14 @@ class ThemeControllerTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract()
                 .path("id");
 
         RestAssured.given().log().all()
                 .when().delete("/themes/" + id)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/themes")

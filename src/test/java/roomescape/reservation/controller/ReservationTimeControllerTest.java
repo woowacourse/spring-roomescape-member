@@ -27,7 +27,7 @@ class ReservationTimeControllerTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("startAt", is("10:00:00"));
     }
 
@@ -41,7 +41,7 @@ class ReservationTimeControllerTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/times")
@@ -60,14 +60,14 @@ class ReservationTimeControllerTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract()
                 .path("id");
 
         RestAssured.given().log().all()
                 .when().delete("/times/" + id)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/times")

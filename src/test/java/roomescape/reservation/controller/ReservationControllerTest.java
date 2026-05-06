@@ -33,7 +33,7 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("name", is("밀란"))
                 .body("date", is("2026-05-03"))
                 .body("time.id", is(1))
@@ -56,7 +56,7 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -83,14 +83,14 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract()
                 .path("id");
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + id)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -135,7 +135,7 @@ class ReservationControllerTest {
                 .body(theme)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
     }
 
     private static void createReservationTime() {
@@ -147,6 +147,6 @@ class ReservationControllerTest {
                 .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
     }
 }
