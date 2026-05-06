@@ -86,6 +86,22 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Long> findReservedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                SELECT time_id
+                FROM reservation
+                WHERE date = ? AND theme_id = ?
+                """;
+
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> rs.getLong("time_id"),
+                date,
+                themeId
+        );
+    }
+
+    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
 
