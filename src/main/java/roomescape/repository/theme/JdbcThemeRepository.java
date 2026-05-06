@@ -67,7 +67,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTop10WeekPopularThemesOrderByRank() {
+    public List<Theme> findWeekPopularThemesOrderByRank(final int limit) {
         final String sql = """
             SELECT t.id, t.name, t.description, t.image_url
             FROM theme t
@@ -75,13 +75,13 @@ public class JdbcThemeRepository implements ThemeRepository {
             WHERE r.date >= ? AND r.date <= ?
             GROUP BY t.id
             ORDER BY COUNT(r.id) DESC
-            LIMIT 10
+            LIMIT ?
             """;
 
         LocalDate yesterday = LocalDate.now().minusDays(1);
         LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
 
-        return template.query(sql, themeRowMapper(), sevenDaysAgo.toString(), yesterday.toString());
+        return template.query(sql, themeRowMapper(), sevenDaysAgo.toString(), yesterday.toString(), limit);
     }
 
     private RowMapper<Theme> themeRowMapper() {

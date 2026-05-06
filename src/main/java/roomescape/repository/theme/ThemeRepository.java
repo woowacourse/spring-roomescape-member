@@ -15,5 +15,5 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(Long id);
 
-    List<Theme> findTop10WeekPopularThemesOrderByRank();
+    List<Theme> findWeekPopularThemesOrderByRank(int limit);
 }

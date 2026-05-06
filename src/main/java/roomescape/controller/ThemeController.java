@@ -1,8 +1,11 @@
 package roomescape.controller;
 
+import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Theme;
+import roomescape.dto.theme.PopularThemeResponseDto;
+import roomescape.dto.theme.PopularThemesResponseDto;
 import roomescape.dto.theme.ThemeRequestDto;
 import roomescape.dto.theme.ThemeResponseDto;
 import roomescape.service.ThemeService;
@@ -38,5 +41,14 @@ public class ThemeController {
         return themeService.getThemes().stream()
                 .map(ThemeResponseDto::from)
                 .toList();
+    }
+
+    @GetMapping("/popular/week")
+    @ResponseStatus(HttpStatus.OK)
+    public PopularThemesResponseDto findWeekPopularThemesOrderByRank(
+        @RequestParam("limit") final int limit
+    ) {
+        List<Theme> themes = themeService.findWeekPopularThemesOrderByRank(limit);
+        return PopularThemesResponseDto.from(themes);
     }
 }

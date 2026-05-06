@@ -27,4 +27,8 @@ public class ThemeService {
     public List<Theme> getThemes() {
         return themeRepository.findAll();
     }
+
+    public List<Theme> findWeekPopularThemesOrderByRank(final int limit) {
+        return themeRepository.findWeekPopularThemesOrderByRank(limit);
+    }
 }

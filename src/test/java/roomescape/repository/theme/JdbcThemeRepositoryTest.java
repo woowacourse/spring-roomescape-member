@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -104,7 +103,7 @@ class JdbcThemeRepositoryTest {
         Collections.reverse(tenPopularThemesOrderByRank);
 
         // when
-        List<Theme> themes = themeRepository.findTop10WeekPopularThemesOrderByRank();
+        List<Theme> themes = themeRepository.findWeekPopularThemesOrderByRank(10);
 
         // then
         assertThat(themes).containsExactlyElementsOf(tenPopularThemesOrderByRank);

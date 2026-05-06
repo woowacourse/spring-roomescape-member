@@ -11,6 +11,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.reservationTime.ReservationTimeResponseDto;
 import roomescape.service.ReservationService;
+import roomescape.service.ThemeService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeControllerTest {
@@ -27,6 +29,8 @@ class ReservationTimeControllerTest {
 
     @MockitoBean
     private ReservationService reservationService;
+    @Autowired
+    private ThemeService themeService;
 
     @BeforeEach
     void setPort() {

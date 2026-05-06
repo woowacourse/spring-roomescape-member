@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -66,5 +67,27 @@ class ThemeServiceTest {
                 .anySatisfy(id -> assertThat(id).isEqualTo(2L))
                 .anySatisfy(id -> assertThat(id).isEqualTo(3L));
     }
-    
+
+    @Test
+    void 최근_1주일간_예약이_많은_테마_상위_10개를_조회할_수_있다() {
+        // given
+        List<Theme> tenPopularThemesOrderByRank = createTenThemes();
+
+        when(themeRepository.findWeekPopularThemesOrderByRank(10))
+            .thenReturn(tenPopularThemesOrderByRank);
+
+        // when
+        List<Theme> themes = themeService.findWeekPopularThemesOrderByRank(10);
+
+        // then
+        assertThat(themes).containsExactlyElementsOf(tenPopularThemesOrderByRank);
+    }
+
+    private List<Theme> createTenThemes() {
+        List<Theme> themes = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            themes.add(new Theme((long) i, "테마" + i, "테마" + i, "테마" + i));
+        }
+        return themes;
+    }
 }

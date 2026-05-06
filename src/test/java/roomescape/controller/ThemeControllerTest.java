@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +13,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.Theme;
+import roomescape.dto.theme.PopularThemeResponseDto;
+import roomescape.dto.theme.PopularThemesResponseDto;
 import roomescape.dto.theme.ThemeRequestDto;
 import roomescape.dto.theme.ThemeResponseDto;
 import roomescape.service.ThemeService;
@@ -100,5 +103,37 @@ class ThemeControllerTest {
         List<ThemeResponseDto> responseDtos = response.as(new TypeRef<>() {});
         assertThat(responseDtos).hasSize(3);
         assertThat(responseDtos).containsExactlyElementsOf(dtos);
+    }
+
+    @Test
+    void 최근_1주일간_예약이_많은_테마_상위_10개를_조회할_수_있다() {
+        // given
+        List<Theme> tenPopularThemesOrderByRank = createTenThemes();
+        PopularThemesResponseDto expectedResponse = PopularThemesResponseDto.from(tenPopularThemesOrderByRank);
+
+        when(themeService.findWeekPopularThemesOrderByRank(10))
+            .thenReturn(tenPopularThemesOrderByRank);
+
+        // when
+        Response response = RestAssured
+            .given().log().all()
+            .queryParam("limit", 10)
+            .when().get("/themes/popular/week");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.OK.value());
+
+        PopularThemesResponseDto actualResponse = response.as(new TypeRef<>() {});
+        assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    private List<Theme> createTenThemes() {
+        List<Theme> themes = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            themes.add(new Theme((long) i, "테마" + i, "테마" + i, "테마" + i));
+        }
+        return themes;
     }
 }
