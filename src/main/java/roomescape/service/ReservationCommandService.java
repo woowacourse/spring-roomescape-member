@@ -14,7 +14,14 @@ public class ReservationCommandService {
 
     private final ReservationDao reservationDao;
 
+    private void validateDuplicate(LocalDate date, Long timeId, Long themeId) {
+        if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new IllegalStateException("중복된 예약이 존재합니다.");
+        }
+    }
+
     public ReservationResponse create(String name, LocalDate date, long timeId, long themeId) {
+        validateDuplicate(date, timeId, themeId);
         Reservation savedReservation = reservationDao.save(Reservation.pending(name, date), timeId, themeId);
         return ReservationResponse.from(savedReservation);
     }

@@ -45,10 +45,6 @@ public class ReservationDao {
 
     public Reservation save(Reservation reservation, long timeId, long themeId) {
 
-        if(existsByDateAndTimeIdAndThemeId(reservation.reservationDate(), timeId, themeId)) {
-            throw new IllegalStateException("이미 중복된 예약이 존재합니다.");
-        }
-
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.username())
                 .addValue("date", reservation.reservationDate())
@@ -125,6 +121,4 @@ public class ReservationDao {
                 jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId)
         );
     }
-
 }
-
