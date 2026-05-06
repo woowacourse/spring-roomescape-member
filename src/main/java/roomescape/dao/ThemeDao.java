@@ -45,12 +45,11 @@ public class ThemeDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, "name");
-            ps.setString(2, "description");
-            ps.setString(3, "thumbnail");
+            ps.setString(1, theme.getName());
+            ps.setString(2, theme.getDescription());
+            ps.setString(3, theme.getThumbnail());
             return ps;
         }, keyHolder);
-
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
