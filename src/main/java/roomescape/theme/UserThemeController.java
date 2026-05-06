@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/themes")
@@ -33,19 +34,12 @@ public class UserThemeController {
     @GetMapping("/rank")
     public ResponseEntity<List<ThemeResponse>> getRankedThemes(@RequestParam(defaultValue = "reservationCount") String sort,
                                                                @RequestParam(defaultValue = "DESC") String order,
-                                                               @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-                                                               @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+                                                               @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> startDate,
+                                                               @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> endDate,
                                                                @RequestParam(defaultValue = "10") Long limit) {
 
-        LocalDate actualEndDate = endDate;
-        if (actualEndDate == null) {
-            actualEndDate = LocalDate.now();
-        }
-
-        LocalDate actualStartDate = startDate;
-        if (actualStartDate == null) {
-            actualStartDate = actualEndDate.minusDays(7);
-        }
+        LocalDate actualEndDate = endDate.orElseGet(LocalDate::now);
+        LocalDate actualStartDate = startDate.orElseGet(() -> actualEndDate.minusDays(7));
 
         List<ThemeResponse> response = userThemeService.getThemes(sort, order, actualStartDate, actualEndDate, limit)
                 .stream()
