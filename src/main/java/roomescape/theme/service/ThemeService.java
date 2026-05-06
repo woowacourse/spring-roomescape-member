@@ -15,9 +15,9 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
 
-    public Theme findById(Long id) {
-        return themeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마 입니다."));
+    public ThemeResponse findById(Long id) {
+        return ThemeResponse.from(themeRepository.findById(id)
+                .orElseThrow(() -> new ThemeException("[ERROR] 존재하지 않는 테마 입니다.")));
     }
 
     public List<ThemeResponse> findAll() {

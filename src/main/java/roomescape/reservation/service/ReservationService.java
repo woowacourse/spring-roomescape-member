@@ -30,8 +30,8 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationCreateRequest request) {
-        ThemeResponse themeResponse = ThemeResponse.from(themeService.findById(request.themeId()));
-        ReservationTimeResponse timeResponse = ReservationTimeResponse.from(timeService.findById(request.timeId()));
+        ThemeResponse themeResponse = themeService.findById(request.themeId());
+        ReservationTimeResponse timeResponse = timeService.findById(request.timeId());
         validateDuplicateReservation(request);
         Reservation reservation = request.toEntity(themeResponse.id(), timeResponse.id());
 
