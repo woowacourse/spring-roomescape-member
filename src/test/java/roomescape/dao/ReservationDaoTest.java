@@ -1,33 +1,27 @@
 package roomescape.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationDaoTest {
-    
+
     @Autowired
     private ReservationService reservationService;
-    
+
     @Autowired
     private ReservationTimeService reservationTimeService;
 
@@ -66,5 +60,21 @@ class ReservationDaoTest {
         assertThat(timeIds)
                 .containsExactlyInAnyOrder(targetTime1.getId(), targetTime2.getId())
                 .doesNotContain(otherDateTime.getId(), otherThemeTime.getId());
+    }
+
+    @Test
+    void 이미_존재하는_예약이_있는지_확인() {
+        //given
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        ReservationTime reservationTime = reservationTimeService.save(new ReservationTime(LocalTime.of(12, 0)));
+        Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com/horror"));
+        reservationService.save("맥스", date, reservationTime.getId(), theme.getId());
+
+        //when
+        boolean hasAlreadyReservation = reservationDao.existByDateAndTimeIAndThemeId(date, reservationTime.getId(),
+                theme.getId());
+
+        //then
+        assertThat(hasAlreadyReservation).isTrue();
     }
 }

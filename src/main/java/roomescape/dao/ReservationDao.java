@@ -76,10 +76,11 @@ public class ReservationDao {
         }, keyHolder);
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
-    public List<Long> findReservedTimeIdsByDateAndThemeId(LocalDate date, Long themeId){
+    public List<Long> findReservedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
                 select time_id 
                 from reservation 
@@ -88,10 +89,10 @@ public class ReservationDao {
                 """;
 
         return jdbcTemplate.query(sql,
-                (resultSet,rowNum)->resultSet.getLong("time_id"),
+                (resultSet, rowNum) -> resultSet.getLong("time_id"),
                 date.toString(),
                 themeId
-                );
+        );
     }
 
     public void deleteById(Long id) {
@@ -105,9 +106,14 @@ public class ReservationDao {
         return count != null && count > 0;
     }
 
-    public boolean existByThemeId(Long themeId) {
-        String sql = "SELECT count(*) FROM reservation where theme_id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
+    public boolean existByDateAndTimeIAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+                SELECT count(*) FROM reservation
+                where date = ?
+                and time_id = ?
+                and theme_id = ?
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
         return count != null && count > 0;
     }
 }

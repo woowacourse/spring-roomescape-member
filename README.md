@@ -77,4 +77,5 @@
 - [x] 예약 가능한 시간인 ReservationTimeStatusResponse Dto 구현
 - [x] ReservationDao에서 사용자가 선택한 날짜와 테마에 해당하는 예약시간Id를 가져오는 메서드 구현
 - [x] ThemeService에서 예약 가능한 시간을 계산하는 메서드 구현
-- [x] 예약 가능 시간 조회 Controller 구현           
+- [x] 예약 가능 시간 조회 Controller 구현
+- [x] 같은 시간, 같은 테마, 같은 날짜 중복 예약 불가 검증 구현
