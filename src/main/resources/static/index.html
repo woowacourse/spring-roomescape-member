@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Roomescape</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="app-header">
+    <a class="brand" href="#home">Roomescape</a>
+    <nav class="tabs" aria-label="주요 메뉴">
+        <a href="#home" data-route="home">홈</a>
+        <a href="#reservation" data-route="reservation">예약</a>
+        <a href="#admin" data-route="admin">관리자</a>
+    </nav>
+</header>
+
+<main class="container">
+    <div id="notice" class="notice" role="status" hidden></div>
+
+    <section id="page-home" class="page" data-page="home">
+        <div class="page-title">
+            <h1>방탈출 예약</h1>
+            <p>테마를 둘러보고 원하는 날짜에 예약 가능한 시간을 확인하세요.</p>
+        </div>
+        <div class="metrics">
+            <article class="metric">
+                <span>테마</span>
+                <strong id="theme-count">0</strong>
+                <p>예약 가능한 테마</p>
+            </article>
+            <article class="metric">
+                <span>시간</span>
+                <strong id="time-count">0</strong>
+                <p>등록된 시간 슬롯</p>
+            </article>
+            <article class="metric">
+                <span>예약</span>
+                <strong id="reservation-count">0</strong>
+                <p>현재 등록된 예약</p>
+            </article>
+        </div>
+        <section class="panel">
+            <div class="section-head">
+                <h2>테마</h2>
+                <a class="button" href="#reservation">예약하기</a>
+            </div>
+            <div id="theme-cards" class="theme-grid"></div>
+        </section>
+        <section class="panel">
+            <div class="section-head">
+                <h2>인기 테마</h2>
+            </div>
+            <form id="popular-theme-form" class="toolbar compact popular-toolbar">
+                <p class="fixed-condition">최근 7일 기준 상위 10개 테마</p>
+                <button type="submit">인기 테마 조회</button>
+            </form>
+            <div id="popular-theme-cards" class="theme-grid compact-grid">
+                <p class="empty inline">최근 7일 기준 인기 테마를 조회할 수 있습니다.</p>
+            </div>
+        </section>
+    </section>
+
+    <section id="page-reservation" class="page" data-page="reservation" hidden>
+        <div class="page-title">
+            <h1>예약</h1>
+            <p>날짜와 테마를 선택하면 예약 가능한 시간만 표시됩니다.</p>
+        </div>
+        <section class="panel">
+            <form id="availability-form" class="toolbar">
+                <label>
+                    날짜
+                    <input id="reservation-date" type="date" required>
+                </label>
+                <label>
+                    테마
+                    <select id="reservation-theme" required></select>
+                </label>
+                <button type="submit">가능 시간 조회</button>
+            </form>
+        </section>
+        <section class="panel">
+            <h2>예약 정보</h2>
+            <form id="reservation-form" class="grid-form">
+                <label>
+                    이름
+                    <input id="reservation-name" type="text" maxlength="10" required>
+                </label>
+                <label>
+                    날짜
+                    <input id="selected-date" type="date" required>
+                </label>
+                <label>
+                    테마
+                    <select id="selected-theme" required></select>
+                </label>
+                <input id="selected-time" type="hidden" required>
+                <button type="submit">예약 생성</button>
+            </form>
+            <div id="available-time-list" class="time-picker" aria-label="예약 가능한 시간">
+                <p class="empty inline">날짜와 테마를 선택한 뒤 가능 시간 조회를 눌러주세요.</p>
+            </div>
+        </section>
+    </section>
+
+    <section id="page-admin" class="page" data-page="admin" hidden>
+        <div class="page-title">
+            <h1>관리자</h1>
+            <p>예약, 테마, 시간 슬롯을 한 곳에서 관리합니다.</p>
+        </div>
+        <section class="panel">
+            <div class="section-head">
+                <h2>예약 목록</h2>
+                <button type="button" data-refresh="reservations">새로고침</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>이름</th>
+                        <th>날짜</th>
+                        <th>테마</th>
+                        <th>시간</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="reservation-rows"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>테마 추가</h2>
+            <form id="theme-form" class="grid-form">
+                <label>
+                    이름
+                    <input id="theme-name" type="text" required>
+                </label>
+                <label>
+                    썸네일 URL
+                    <input id="theme-thumbnail" type="text" required>
+                </label>
+                <label class="wide">
+                    설명
+                    <input id="theme-description" type="text" required>
+                </label>
+                <button type="submit">추가</button>
+            </form>
+        </section>
+        <section class="panel">
+            <div class="section-head">
+                <h2>테마 목록</h2>
+                <button type="button" data-refresh="themes">새로고침</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>이름</th>
+                        <th>설명</th>
+                        <th>소요</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="theme-rows"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>시간 추가</h2>
+            <form id="time-form" class="toolbar compact">
+                <label>
+                    시
+                    <select id="time-hour" required></select>
+                </label>
+                <label>
+                    분
+                    <select id="time-minute" required></select>
+                </label>
+                <button type="submit">추가</button>
+            </form>
+        </section>
+        <section class="panel">
+            <div class="section-head">
+                <h2>시간 목록</h2>
+                <button type="button" data-refresh="times">새로고침</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>시작 시간</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="time-rows"></tbody>
+                </table>
+            </div>
+        </section>
+    </section>
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>
