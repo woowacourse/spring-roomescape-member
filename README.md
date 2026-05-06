@@ -49,7 +49,6 @@ content-type: application/json
 
 ```
 HTTP/1.1 201
-Location: /reservations/1
 Content-Type: application/json
 
 {
@@ -75,7 +74,7 @@ Content-Type: application/json
 **Request**
 
 ```
-GET /reservations HTTP/1.1
+GET /admin/reservations HTTP/1.1
 ```
 
 **Response**
@@ -107,7 +106,7 @@ GET /reservations HTTP/1.1
 **Request**
 
 ```
-DELETE /reservations/1 HTTP/1.1
+DELETE /admin/reservations/1 HTTP/1.1
 ```
 
 **Response**
@@ -123,7 +122,7 @@ HTTP/1.1 204
 **Request**
 
 ```
-POST /times HTTP/1.1
+POST /admin/times HTTP/1.1
 content-type: application/json
 
 {
@@ -135,7 +134,6 @@ content-type: application/json
 
 ```
 HTTP/1.1 201
-Location: /times/1
 Content-Type: application/json
 
 {
@@ -173,7 +171,7 @@ Content-Type: application/json
 **Request**
 
 ```
-DELETE /times/1 HTTP/1.1
+DELETE /admin/times/1 HTTP/1.1
 ```
 
 **Response**
@@ -186,7 +184,7 @@ HTTP/1.1 204
 
 **Request**
 ```
-GET /times/availabilty?date="2026-05-04"&themeId=1 HTTP/1.1
+GET /times/availability?date=2026-05-04&themeId=1 HTTP/1.1
 ```
 
 **Response**
@@ -199,7 +197,7 @@ Content-Type: application/json
   "availableTimes": [
     {
       "id": 1,
-      "startAt": "10:00"
+      "startAt": "10:00",
       "isAvailable" : true
     }
   ]
@@ -213,12 +211,12 @@ Content-Type: application/json
 **Request**
 
 ```
-POST /themes HTTP/1.1
+POST /admin/themes HTTP/1.1
 content-type: application/json
 
 {
-    "name": "공포"
-    "description" : "무서움"
+    "name": "공포",
+    "description" : "무서움",
     "thumbnail" : "url"
 }
 ```
@@ -231,8 +229,8 @@ Content-Type: application/json
 
 {
     "id": 1,
-    "name": "공포"
-    "description" : "무서움"
+    "name": "공포",
+    "description" : "무서움",
     "thumbnail" : "url"
 }
 ```
@@ -255,8 +253,8 @@ Content-Type: application/json
   "themes": [
     {
     "id": 1,
-    "name": "공포"
-    "description" : "무서움"
+    "name": "공포",
+    "description" : "무서움",
     "thumbnail" : "url"
 		}
   ]
@@ -268,7 +266,7 @@ Content-Type: application/json
 **Request**
 
 ```
-DELETE /themes/1 HTTP/1.1
+DELETE /admin/themes/1 HTTP/1.1
 ```
 
 **Response**
@@ -292,14 +290,28 @@ HTTP/1.1 200
 Content-Type: application/json
 
 {
-  "popularThemes": [
+  "themes": [
     {
     "id": 1,
-    "name": "공포"
-    "description" : "무서움"
+    "name": "공포",
+    "description" : "무서움",
     "thumbnail" : "url"
 		}
   ]
 }
 ```
 
+## 🖥️ 프론트엔드 페이지
+
+### 사용자 예약 페이지
+
+- 경로: `http://localhost:8080`
+- 사용자는 인기 테마를 확인하고, 날짜와 테마를 선택해 예약 가능한 시간을 조회할 수 있다.
+- 사용자는 예약 가능한 시간을 선택한 뒤 이름을 입력해 예약할 수 있다.
+
+### 관리자 페이지
+
+- 경로: `http://localhost:8080/admin`
+- 관리자는 사용자 예약 화면과 같은 흐름으로 날짜, 테마, 예약 가능한 시간, 이름을 입력해 예약을 등록할 수 있다.
+- 관리자는 예약 목록을 조회하고 예약을 삭제할 수 있다.
+- 관리자는 예약 시간과 테마를 등록하거나 삭제할 수 있다.
