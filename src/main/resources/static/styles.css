@@ -186,7 +186,8 @@ h2 {
     padding-top: 2px;
 }
 
-.reservation-form span {
+.reservation-form span,
+.field-group > span {
     color: var(--muted);
     font-size: 13px;
     font-weight: 800;
@@ -237,6 +238,12 @@ textarea:focus {
     background: var(--accent-strong);
 }
 
+.compact-button {
+    min-height: 44px;
+    margin: 0;
+    padding: 0 16px;
+}
+
 .danger-button {
     min-height: 36px;
     padding: 0 12px;
@@ -262,6 +269,56 @@ textarea:focus {
     color: var(--text);
     font-size: 20px;
     line-height: 1;
+}
+
+.inline-controls,
+.inline-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.inline-controls input,
+.inline-form input {
+    width: 108px;
+}
+
+.field-group {
+    display: grid;
+    gap: 8px;
+    padding: 0 20px;
+}
+
+.time-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 44px;
+}
+
+.time-chip {
+    min-width: 72px;
+    min-height: 38px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.time-chip:hover:not(:disabled),
+.time-chip.selected {
+    border-color: var(--accent);
+    background: #dff3ef;
+    color: var(--accent-strong);
+}
+
+.time-chip:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    text-decoration: line-through;
 }
 
 .theme-grid {
@@ -358,6 +415,13 @@ th:last-child {
     text-align: center;
 }
 
+.empty.compact {
+    width: 100%;
+    margin: 0;
+    padding: 10px 0;
+    text-align: left;
+}
+
 @media (max-width: 840px) {
     .app-header {
         align-items: stretch;
@@ -394,5 +458,21 @@ th:last-child {
     .layout-grid,
     .admin-layout {
         grid-template-columns: 1fr;
+    }
+
+    .panel-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .inline-controls,
+    .inline-form {
+        width: 100%;
+    }
+
+    .inline-controls input,
+    .inline-form input {
+        flex: 1;
+        width: auto;
     }
 }
