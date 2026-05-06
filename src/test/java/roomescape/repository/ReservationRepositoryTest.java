@@ -1,5 +1,11 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -9,13 +15,6 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ReservationRepositoryTest {
 
@@ -63,7 +62,8 @@ class ReservationRepositoryTest {
                 () -> assertThat(reservations).hasSize(1),
                 () -> assertThat(savedReservation.getName()).isEqualTo(reservation.getName()),
                 () -> assertThat(savedReservation.getDate()).isEqualTo(reservation.getDate()),
-                () -> assertThat(savedReservation.getTime().getStartAt()).isEqualTo(reservation.getTime().getStartAt()));
+                () -> assertThat(savedReservation.getTime().getStartAt()).isEqualTo(
+                        reservation.getTime().getStartAt()));
     }
 
     @Test

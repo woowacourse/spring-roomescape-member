@@ -1,5 +1,11 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,18 +15,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import roomescape.domain.Reservation;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.domain.Reservation;
 import roomescape.service.dto.TimeAvailabilityDto;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ReservationServiceTest {
 
@@ -46,11 +45,11 @@ class ReservationServiceTest {
         jdbcTemplate.update("DELETE FROM reservation;");
         jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;");
 
-
         ReservationRepository reservationRepository = new ReservationRepository(jdbcTemplate);
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeRepository(jdbcTemplate);
         ThemeRepository themeRepository = new ThemeRepository(jdbcTemplate);
-        this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
+                themeRepository);
     }
 
     @Test
