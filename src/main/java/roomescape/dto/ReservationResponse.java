@@ -16,7 +16,7 @@ public record ReservationResponse(Long id,
                 theme.getName(),
                 theme.getDescription(),
                 theme.getThumbnailUrl(),
-                reservation.getTime().toString()
+                reservation.getTime().getStartAt().toString()
         );
     }
 }
