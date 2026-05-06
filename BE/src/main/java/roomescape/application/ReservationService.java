@@ -14,7 +14,6 @@ import roomescape.entity.ReservationTime;
 import roomescape.entity.ReservationRepository;
 import roomescape.entity.ReservationTimeRepository;
 import roomescape.global.exception.customException.ThemeException;
-import roomescape.presentation.dto.ReservationResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,11 +48,8 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    public List<ReservationResponse> getReservations() {
-        List<Reservation> reservations = reservationRepository.findAll();
-        return reservations.stream()
-                .map(ReservationResponse::from)
-                .toList();
+    public List<Reservation> getReservations() {
+        return reservationRepository.findAll();
     }
 
     @Transactional

@@ -1,5 +1,6 @@
 package roomescape.application;
 
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,29 +26,20 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTimeResponse saveTime(ReservationTimeRequest request) {
-        if (request == null) {
-            throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_REQUEST_NULL);
-        }
-        ReservationTime reservationTime = ReservationTime.createWithNullId(
-                request.startAt()
-        );
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-        return ReservationTimeResponse.from(savedReservationTime);
+    public ReservationTime saveTime(LocalTime startAt) {
+        ReservationTime reservationTime = ReservationTime.createWithNullId(startAt);
+        return reservationTimeRepository.save(reservationTime);
     }
 
-    public List<ReservationTimeResponse> getTimes() {
-        List<ReservationTime> times = reservationTimeRepository.findAll();
-        return times.stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+    public List<ReservationTime> getTimes() {
+        return reservationTimeRepository.findAll();
+//        return times.stream()
+//                .map(ReservationTimeResponse::from)
+//                .toList();
     }
 
     @Transactional
     public void deleteTime(Long id) {
-        if (id == null) {
-            throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_ID_NULL);
-        }
         if (reservationRepository.existsByReservationTimeId(id)) {
             throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_ALREADY_USED);
         }
