@@ -10,33 +10,26 @@ import roomescape.domain.Theme;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public class ThemeDao {
+public class ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<Theme> actorRowMapper = (resultSet, rowNum) -> {
-        Theme theme = new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail"));
-        return theme;
-    };
-
-    public ThemeDao(JdbcTemplate jdbcTemplate) {
+    public ThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public List<Theme> findAll() {
         String sql = "SELECT id, name, description, thumbnail FROM theme;";
-        return jdbcTemplate.query(sql, actorRowMapper);
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
-    public Theme findBy(Long id) {
+    public Optional<Theme> findBy(Long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?;";
-        return jdbcTemplate.queryForObject(sql, actorRowMapper, id);
+        List<Theme> result = jdbcTemplate.query(sql, themeRowMapper, id);
+        return result.stream().findAny();
     }
 
     public Long insert(Theme theme) {
@@ -76,6 +69,15 @@ public class ThemeDao {
                 + "ORDER BY reservation_count DESC, t.id ASC\n"
                 + "LIMIT ?";
 
-        return jdbcTemplate.query(sql, actorRowMapper, startDate, endDate, limit);
+        return jdbcTemplate.query(sql, themeRowMapper, startDate, endDate, limit);
     }
+
+    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> {
+        Theme theme = new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail"));
+        return theme;
+    };
 }

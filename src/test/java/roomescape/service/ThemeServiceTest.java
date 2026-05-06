@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.dao.ThemeDao;
+import roomescape.dao.ThemeRepository;
 import roomescape.domain.Theme;
 
 import java.util.List;
@@ -26,7 +26,7 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setup() {
-        this.themeService = new ThemeService(new ThemeDao(jdbcTemplate));
+        this.themeService = new ThemeService(new ThemeRepository(jdbcTemplate));
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM theme");
     }

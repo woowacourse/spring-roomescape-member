@@ -13,32 +13,14 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public class ReservationDao {
+public class ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<Reservation> actorRowMapper = (resultSet, rowNum) -> {
-        ReservationTime time = new ReservationTime(
-                resultSet.getLong("time_id"),
-                resultSet.getObject("time_value", LocalTime.class));
-        Theme theme = new Theme(
-                resultSet.getLong("theme_id"),
-                resultSet.getString("theme_name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail"));
-
-        Reservation reservation = new Reservation(
-                resultSet.getLong("reservation_id"),
-                resultSet.getString("username"),
-                resultSet.getObject("date", LocalDate.class),
-                time,
-                theme);
-        return reservation;
-    };
-
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
+    public ReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -58,10 +40,10 @@ public class ReservationDao {
                 "  ON r.time_id = rt.id\n" +
                 "INNER JOIN theme as t\n" +
                 "  ON r.theme_id = t.id\n";
-        return jdbcTemplate.query(sql, actorRowMapper);
+        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
-    public Reservation findBy(Long id) {
+    public Optional<Reservation> findBy(Long id) {
         String sql = "SELECT\n" +
                 "    r.id as reservation_id,\n" +
                 "    r.name as username,\n" +
@@ -78,7 +60,8 @@ public class ReservationDao {
                 "INNER JOIN theme as t\n" +
                 "  ON r.theme_id = t.id\n" +
                 "WHERE r.id = ?";
-        return jdbcTemplate.queryForObject(sql, actorRowMapper, id);
+        List<Reservation> result = jdbcTemplate.query(sql, reservationRowMapper, id);
+        return result.stream().findAny();
     }
 
     public Long insert(Reservation reservation) {
@@ -122,6 +105,25 @@ public class ReservationDao {
                 "WHERE t.id = ? "
                 + "AND r.date = ?";
 
-        return jdbcTemplate.query(sql, actorRowMapper, themeId, date);
+        return jdbcTemplate.query(sql, reservationRowMapper, themeId, date);
     }
+
+    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
+        ReservationTime time = new ReservationTime(
+                resultSet.getLong("time_id"),
+                resultSet.getObject("time_value", LocalTime.class));
+        Theme theme = new Theme(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail"));
+
+        Reservation reservation = new Reservation(
+                resultSet.getLong("reservation_id"),
+                resultSet.getString("username"),
+                resultSet.getObject("date", LocalDate.class),
+                time,
+                theme);
+        return reservation;
+    };
 }

@@ -9,9 +9,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
+import roomescape.dao.ReservationRepository;
+import roomescape.dao.ReservationTimeRepository;
+import roomescape.dao.ThemeRepository;
 import roomescape.domain.Reservation;
 import roomescape.service.dto.TimeAvailabilityDto;
 
@@ -47,10 +47,10 @@ class ReservationServiceTest {
         jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;");
 
 
-        ReservationDao reservationDao = new ReservationDao(jdbcTemplate);
-        ReservationTimeDao reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
-        ThemeDao themeDao = new ThemeDao(jdbcTemplate);
-        this.reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
+        ReservationRepository reservationRepository = new ReservationRepository(jdbcTemplate);
+        ReservationTimeRepository reservationTimeRepository = new ReservationTimeRepository(jdbcTemplate);
+        ThemeRepository themeRepository = new ThemeRepository(jdbcTemplate);
+        this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @Test

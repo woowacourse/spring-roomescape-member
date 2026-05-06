@@ -9,7 +9,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
 
 import java.time.LocalTime;
@@ -39,8 +39,8 @@ class ReservationTimeServiceTest {
 
         jdbcTemplate.update("DELETE FROM reservation_time;");
 
-        ReservationTimeDao reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
-        this.reservationTimeService = new ReservationTimeService(reservationTimeDao);
+        ReservationTimeRepository reservationTimeRepository = new ReservationTimeRepository(jdbcTemplate);
+        this.reservationTimeService = new ReservationTimeService(reservationTimeRepository);
     }
 
     @Test

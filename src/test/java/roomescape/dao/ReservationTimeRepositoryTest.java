@@ -16,9 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-class ReservationTimeDaoTest {
+class ReservationTimeRepositoryTest {
 
-    private ReservationTimeDao dao;
+    private ReservationTimeRepository dao;
 
     @BeforeEach
     void setup() {
@@ -35,7 +35,7 @@ class ReservationTimeDaoTest {
         populator.execute(dataSource);
 
         jdbcTemplate.update("DELETE FROM reservation_time;");
-        this.dao = new ReservationTimeDao(jdbcTemplate);
+        this.dao = new ReservationTimeRepository(jdbcTemplate);
     }
 
     @Test
@@ -48,7 +48,7 @@ class ReservationTimeDaoTest {
 
         // then
         List<ReservationTime> times = dao.findAll();
-        ReservationTime savedTime = dao.findBy(id);
+        ReservationTime savedTime = dao.findBy(id).get();
         assertAll(
                 () -> assertThat(id).isNotNull(),
                 () -> assertThat(times).hasSize(1),
@@ -71,7 +71,6 @@ class ReservationTimeDaoTest {
         assertAll(
                 () -> assertThat(deletedCount).isEqualTo(1),
                 () -> assertThat(times).hasSize(1),
-                () -> assertThatThrownBy(() -> dao.findBy(id1))
-                        .isInstanceOf(EmptyResultDataAccessException.class));
+                () -> assertThat(dao.findBy(id1)).isEmpty());
     }
 }

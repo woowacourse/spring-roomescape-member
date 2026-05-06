@@ -10,31 +10,26 @@ import roomescape.domain.ReservationTime;
 import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public class ReservationTimeDao {
+public class ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<ReservationTime> actorRowMapper = (resultSet, rowNum) -> {
-        ReservationTime reservationTime = new ReservationTime(
-                resultSet.getLong("id"),
-                resultSet.getObject("start_at", LocalTime.class));
-        return reservationTime;
-    };
-
-    public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
+    public ReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public List<ReservationTime> findAll() {
         String sql = "SELECT id, start_at FROM reservation_time;";
-        return jdbcTemplate.query(sql, actorRowMapper);
+        return jdbcTemplate.query(sql, timeRowMapper);
     }
 
-    public ReservationTime findBy(Long id) {
+    public Optional<ReservationTime> findBy(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?;";
-        return jdbcTemplate.queryForObject(sql, actorRowMapper, id);
+        List<ReservationTime> result = jdbcTemplate.query(sql, timeRowMapper, id);
+        return result.stream().findAny();
     }
 
     public Long insert(ReservationTime reservationTime) {
@@ -55,4 +50,11 @@ public class ReservationTimeDao {
         String sql = "DELETE FROM reservation_time WHERE id = ?;";
         return jdbcTemplate.update(sql, id);
     }
+
+    private final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) -> {
+        ReservationTime reservationTime = new ReservationTime(
+                resultSet.getLong("id"),
+                resultSet.getObject("start_at", LocalTime.class));
+        return reservationTime;
+    };
 }

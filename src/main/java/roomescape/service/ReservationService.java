@@ -1,10 +1,9 @@
 package roomescape.service;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
+import roomescape.dao.ReservationRepository;
+import roomescape.dao.ReservationTimeRepository;
+import roomescape.dao.ThemeRepository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -16,36 +15,37 @@ import java.util.List;
 @Service
 public class ReservationService {
 
-    private final ReservationDao reservationDao;
-    private final ReservationTimeDao reservationTimeDao;
-    private final ThemeDao themeDao;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
-        this.reservationDao = reservationDao;
-        this.reservationTimeDao = reservationTimeDao;
-        this.themeDao = themeDao;
+    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<Reservation> findAll() {
-        return reservationDao.findAll();
+        return reservationRepository.findAll();
     }
 
     public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = findReservationTime(timeId);
         Theme theme = findTheme(themeId);
         Reservation reservation = new Reservation(null, name, date, time, theme);
-        Long id = reservationDao.insert(reservation);
-        return reservationDao.findBy(id);
+        Long id = reservationRepository.insert(reservation);
+        return reservationRepository.findBy(id)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 ID입니다."));
     }
 
     public void delete(Long id) {
         validateId(id);
-        reservationDao.delete(id);
+        reservationRepository.delete(id);
     }
 
     public List<TimeAvailabilityDto> findAvailableTime(Long themeId, LocalDate date) {
-        List<ReservationTime> times = reservationTimeDao.findAll();
-        List<Reservation> reservations = reservationDao.findReservationsByThemeAndDate(themeId, date);
+        List<ReservationTime> times = reservationTimeRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findReservationsByThemeAndDate(themeId, date);
 
         return times.stream()
                 .map(time -> new TimeAvailabilityDto(
@@ -61,20 +61,13 @@ public class ReservationService {
     }
 
     private ReservationTime findReservationTime(Long timeId) {
-        try {
-            return reservationTimeDao.findBy(timeId);
-        } catch (EmptyResultDataAccessException e) {
-            System.out.println(e.getMessage());
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다.");
-        }
+        return reservationTimeRepository.findBy(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다."));
     }
 
     private Theme findTheme(Long themeId) {
-        try {
-            return themeDao.findBy(themeId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다.");
-        }
+        return themeRepository.findBy(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다."));
     }
 
     private void validateId(Long id) {

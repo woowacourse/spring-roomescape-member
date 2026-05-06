@@ -14,15 +14,17 @@ import roomescape.domain.Theme;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-class ReservationDaoTest {
+class ReservationRepositoryTest {
 
     private JdbcTemplate jdbcTemplate;
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
 
     private LocalDate date = LocalDate.of(2023, 8, 5);
 
@@ -44,7 +46,7 @@ class ReservationDaoTest {
         jdbcTemplate.update("DELETE FROM reservation;");
         jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;");
 
-        this.reservationDao = new ReservationDao(jdbcTemplate);
+        this.reservationRepository = new ReservationRepository(jdbcTemplate);
     }
 
     @Test
@@ -55,11 +57,11 @@ class ReservationDaoTest {
         Reservation reservation = new Reservation(null, "브라운", date, time, theme);
 
         // when
-        Long id = reservationDao.insert(reservation);
+        Long id = reservationRepository.insert(reservation);
 
         // then
-        List<Reservation> reservations = reservationDao.findAll();
-        Reservation savedReservation = reservationDao.findBy(id);
+        List<Reservation> reservations = reservationRepository.findAll();
+        Reservation savedReservation = reservationRepository.findBy(id).get();
         assertAll(
                 () -> assertThat(id).isNotNull(),
                 () -> assertThat(reservations).hasSize(1),
@@ -77,19 +79,18 @@ class ReservationDaoTest {
         Theme theme2 = new Theme(2L, "테마 이름2", "테마 설명2", "썸네일2");
         Reservation reservation1 = new Reservation(null, "브라운", date, time1, theme1);
         Reservation reservation2 = new Reservation(null, "구구", date, time2, theme2);
-        Long id1 = reservationDao.insert(reservation1);
-        Long id2 = reservationDao.insert(reservation2);
+        Long id1 = reservationRepository.insert(reservation1);
+        Long id2 = reservationRepository.insert(reservation2);
 
         // when
-        int deletedCount = reservationDao.delete(id1);
+        int deletedCount = reservationRepository.delete(id1);
 
         // then
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         assertAll(
                 () -> assertThat(deletedCount).isEqualTo(1),
                 () -> assertThat(reservations).hasSize(1),
-                () -> assertThatThrownBy(() -> reservationDao.findBy(id1))
-                        .isInstanceOf(EmptyResultDataAccessException.class));
+                () -> assertThat(reservationRepository.findBy(id1)).isEmpty());
     }
 
     private ReservationTime findTimeByStartAt(String startAt) {
