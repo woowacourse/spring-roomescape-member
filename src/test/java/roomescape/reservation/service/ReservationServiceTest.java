@@ -83,23 +83,20 @@ class ReservationServiceTest {
     @DisplayName("나의 예약들을 조회하면 날짜/시간 오름차순으로 정렬해 모두 조회한다.")
     void readAllByName() {
         // given
-        List<ReservationResponse> reservationDtoList = reservationRepository.saveAll(
-                        List.of(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme1),
-                                Reservation.create(name, reservationDate1.date(), reservationTime2.startAt(), theme1),
-                                Reservation.create(name, reservationDate2.date(), reservationTime1.startAt(), theme1),
-                                Reservation.create(name, reservationDate2.date(), reservationTime2.startAt(), theme1))
-                ).stream()
-                .map(ReservationResponse::from)
-                .sorted(Comparator.comparing(ReservationResponse::date).thenComparing(ReservationResponse::status))
-                .toList();
+        List<Reservation> reservations = reservationRepository.saveAll(
+                List.of(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme1),
+                        Reservation.create(name, reservationDate1.date(), reservationTime2.startAt(), theme1),
+                        Reservation.create(name, reservationDate2.date(), reservationTime1.startAt(), theme1),
+                        Reservation.create(name, reservationDate2.date(), reservationTime2.startAt(), theme1))
+        );
 
         // when
-        List<ReservationResponse> actual = reservationService.readAllByName(name);
+        List<Reservation> actual = reservationService.readAllByName(name);
 
         // then
         Assertions.assertThat(actual)
                 .usingRecursiveComparison()
-                .isEqualTo(reservationDtoList);
+                .isEqualTo(reservations);
     }
 
     @Test

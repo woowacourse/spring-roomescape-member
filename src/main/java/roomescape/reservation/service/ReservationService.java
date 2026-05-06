@@ -43,10 +43,8 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> readAllByName(String name) {
-        return reservationRepository.findAllByNameOrderByDateAndTime(name).stream()
-                .map(ReservationResponse::from)
-                .toList();
+    public List<Reservation> readAllByName(String name) {
+        return reservationRepository.findAllByNameOrderByDateAndTime(name);
     }
 
     public Reservation create(ReservationSaveDto dto) {
@@ -82,7 +80,6 @@ public class ReservationService {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
     }
-
 
     private Reservation getReservation(Long id) {
         return reservationRepository.findById(id)

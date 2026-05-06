@@ -28,7 +28,9 @@ public class ReservationController {
 
     @GetMapping("/reservations/{name}")
     public ResponseEntity<List<ReservationResponse>> getMyReservations(@PathVariable String name) {
-        List<ReservationResponse> responseData = reservationService.readAllByName(name);
+        List<ReservationResponse> responseData = reservationService.readAllByName(name).stream()
+                .map(ReservationResponse::from)
+                .toList();
         return ResponseEntity.ok(responseData);
     }
 
