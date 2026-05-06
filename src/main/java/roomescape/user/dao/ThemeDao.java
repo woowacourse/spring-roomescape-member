@@ -1,5 +1,6 @@
 package roomescape.user.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -34,5 +35,25 @@ public class ThemeDao {
         String sql = "SELECT * FROM theme WHERE id = ?";
 
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
+
+    public List<Theme> selectByTrend(LocalDate from, LocalDate to, int limit) {
+        String sql = """
+                SELECT
+                             t.id,
+                             t.name,
+                             t.description,
+                             t.image,
+                             COUNT(r.id) AS reservation_count
+                         FROM theme t
+                         JOIN reservation r ON r.theme_id = t.id
+                         WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') >= ?
+                           AND PARSEDATETIME(r.date, 'yyyy-MM-dd') < ?
+                         GROUP BY t.id, t.name, t.description, t.image
+                         ORDER BY reservation_count DESC
+                         LIMIT ?;
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper, from, to, limit);
     }
 }

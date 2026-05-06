@@ -1,5 +1,6 @@
 package roomescape.user.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.user.dao.ThemeDao;
@@ -20,5 +21,9 @@ public class ThemeService {
 
     public Theme findById(Long id) {
         return themeDao.selectById(id);
+    }
+
+    public List<Theme> findByTrend(LocalDate from, LocalDate to, int limit) {
+        return themeDao.selectByTrend(from, to, limit);
     }
 }
