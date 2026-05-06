@@ -30,8 +30,14 @@ public class ThemeController {
         return ResponseEntity.ok().body(availableTimes);
     }
 
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
+        List<ThemeResponse> themes = themeService.findAllThemes();
+        return ResponseEntity.ok().body(themes);
+    }
+
     // /theme?limit=10
-    @GetMapping()
+    @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getTopThemes(
             @RequestParam("limit") long limit
     ) {
