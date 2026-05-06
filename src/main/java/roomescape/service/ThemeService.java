@@ -12,6 +12,7 @@ import roomescape.repository.ThemeRepository;
 public class ThemeService {
     private static final long DEFAULT_DAYS = 7;
     private static final long DEFAULT_LIMIT = 10;
+    private static final String THEME_DOES_NOT_EXISTS = "존재하지 않는 테마입니다";
 
     private final ThemeRepository themeRepository;
 
@@ -20,7 +21,9 @@ public class ThemeService {
     }
 
     public Theme find(long themeId) {
-        return themeRepository.findById(themeId);
+        return themeRepository.findById(themeId).orElseThrow(
+                () -> new IllegalArgumentException(THEME_DOES_NOT_EXISTS)
+        );
     }
 
     public List<Theme> findAll() {
