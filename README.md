@@ -73,9 +73,10 @@ DELETE /themes/{themeID}
 
 ## 추가 단계 - 사용자 클라이언트 화면 제작
 
-[마이찬]()의 실험 기록을 참조해,  
+[마이찬](https://github.com/Uechann)의 실험 기록을 참조해,  
 정리된 API 명세를 기반으로 Claude 를 통해 React.js 클라이언트 제작
 
+[클라이언트 저장소](https://github.com/Uechann/react-roomscape)
 
 ---
 
@@ -83,29 +84,29 @@ DELETE /themes/{themeID}
 
 ### 1. 테마들의 모든 정보 조회 API
 
-```java
-GET /
-themes HTTP/1.1 
+```json
+GET /themes HTTP/1.1 
 ```
 
 ### 2. 사용자가 (날짜, 테마)를 통해 예약 가능 시간 조회 API
 
-```java
+```json
 GET /times?date=2026-05-04&themeId=1HTTP/1.1 
 ```
 
 ### 3. 사용자가 날짜, 테마, 예약 시간을 통해 예약 등록 API
 
-```java
+```json
 POST /
 reservations HTTP/1.1
 
-        {
-        "themeId":1,
-        "date":"2026-05-03",
-        "timeId"=1,
-        "name":"브라운"
-        }
+{
+  "themeId": 1,
+  "date": "2026-05-03",
+  "timeId"
+  =1,
+  "name": "브라운"
+}
 ```
 
 #### 요청과 응답은 1단계의 진행 과정을 통해 구체화
