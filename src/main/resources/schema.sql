@@ -29,3 +29,10 @@ CREATE TABLE theme
     image_url   VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
+
+CREATE TABLE holiday
+(
+    id          BIGINT       NOT NULL AUTO_INCREMENT,
+    date        VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
