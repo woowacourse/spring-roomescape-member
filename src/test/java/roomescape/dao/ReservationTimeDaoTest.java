@@ -1,7 +1,7 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -45,7 +45,7 @@ class ReservationTimeDaoTest {
         timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(14, 0)));
 
         // when
-        List<ReservationTime> reservationTimes = timeDao.select();
+        List<ReservationTime> reservationTimes = timeDao.selectAll();
 
         // then
         assertAll(
@@ -78,7 +78,7 @@ class ReservationTimeDaoTest {
         timeDao.delete(savedReservationTime.getId());
 
         // then
-        List<ReservationTime> reservationTimes = timeDao.select();
+        List<ReservationTime> reservationTimes = timeDao.selectAll();
         assertThat(reservationTimes.size()).isEqualTo(0);
     }
 }

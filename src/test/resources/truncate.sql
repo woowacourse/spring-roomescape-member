@@ -1,6 +1,0 @@
--- DELETE FROM reservation;
--- DELETE FROM theme;
--- DELETE FROM reservation_time;
-TRUNCATE TABLE reservation RESTART IDENTITY;
-TRUNCATE TABLE theme RESTART IDENTITY;
-TRUNCATE TABLE reservation_time RESTART IDENTITY;

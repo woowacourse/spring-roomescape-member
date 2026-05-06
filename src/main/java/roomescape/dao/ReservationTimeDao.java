@@ -39,7 +39,7 @@ public class ReservationTimeDao {
         return new ReservationTime(generatedId.longValue(), reservationTime.getStartAt());
     }
 
-    public List<ReservationTime> select() {
+    public List<ReservationTime> selectAll() {
         String sql = """
                 SELECT id, 
                        start_at
