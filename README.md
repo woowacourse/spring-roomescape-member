@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://github.com/user-attachments/assets/eb5a8839-ed5b-453b-a764-85ffcc9d0219"/>
+    <img alt="프로젝트 썸네일 이미지" src="https://github.com/user-attachments/assets/eb5a8839-ed5b-453b-a764-85ffcc9d0219"/>
 </p>
 
 <h1 align="middle">방탈출 예약 서비스</h1>
@@ -25,7 +25,7 @@
   - [사용자 예약 생성](#사용자-예약-생성)
   - [사용자 인기 테마 조회](#사용자-인기-테마-조회)
 - [클라이언트 기능](#클라이언트-기능)
-  - [공통(사용자)]
+  - [공통(사용자)](#공통\(사용자\))
     - [인기 테마 조회 기능](#인기-테마-조회-기능)
     - [전체 테마 조회 기능](#전체-테마-조회-기능)
     - [예약 생성 기능](#예약-생성-기능)
