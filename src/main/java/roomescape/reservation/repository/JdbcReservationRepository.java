@@ -1,5 +1,6 @@
 package roomescape.reservation.repository;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.sql.ResultSet;
 import java.sql.SQLException;
