@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 
 @Repository
@@ -32,7 +33,7 @@ public class JdbcThemeRepository implements ThemeRepository {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, theme.getNameValue());
             ps.setString(2, theme.getDescription());
-            ps.setString(3, theme.getImageUrl());
+            ps.setString(3, theme.getImageUrlValue());
             return ps;
         }, keyHolder);
 
@@ -89,10 +90,10 @@ public class JdbcThemeRepository implements ThemeRepository {
     // TODO: 여러 곳에서 쓰면 필드로 분리해도 좋겠다? (인자값이 따로 없어서 메서드인 근거가 별로 없다?)
     private RowMapper<Theme> themeRowMapper() {
         return (rs, rowNum) ->
-                new Theme(
-                        rs.getLong("id"),
-                        new ThemeName(rs.getString("name")),
-                        rs.getString("description"),
-                        rs.getString("image_url"));
+            new Theme(
+                rs.getLong("id"),
+                new ThemeName(rs.getString("name")),
+                rs.getString("description"),
+                new ThemeImageUrl(rs.getString("image_url")));
     }
 }

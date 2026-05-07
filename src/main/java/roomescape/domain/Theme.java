@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.util.Objects;
+import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 
 public class Theme {
@@ -8,19 +9,18 @@ public class Theme {
     private final Long id;
     private final ThemeName name;
     private final String description;
-    private final String imageUrl;
+    private final ThemeImageUrl imageUrl;
 
     // TODO: 도메인 전체적으로 인자값 검증
-    public Theme(Long id, ThemeName name, String description, String imageUrl) {
+    public Theme(Long id, ThemeName name, String description, ThemeImageUrl imageUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
     }
 
-    // TODO: 필드 일급컬랙션? (imageUrl 정도는 분리
     public Theme(String name, String description, String imageUrl) {
-        this(null, new ThemeName(name), description, imageUrl);
+        this(null, new ThemeName(name), description, new ThemeImageUrl(imageUrl));
     }
 
     public Long getId() {
@@ -35,8 +35,8 @@ public class Theme {
         return description;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImageUrlValue() {
+        return imageUrl.value();
     }
 
     public Theme withId(Long id) {
