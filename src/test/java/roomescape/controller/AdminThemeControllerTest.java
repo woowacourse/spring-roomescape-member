@@ -99,7 +99,7 @@ class AdminThemeControllerTest {
         // when then
         long id = 1L;
         mockMvc.perform(
-                MockMvcRequestBuilders.delete("/admin/themes/{id}", "a"))
+                MockMvcRequestBuilders.delete("/admin/themes/{id}", id))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
