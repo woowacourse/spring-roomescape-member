@@ -1,19 +1,19 @@
 package roomescape.service.dto;
 
-import roomescape.domain.Theme;
+import roomescape.repository.ThemeEntity;
 
 
 public class PopularTheme {
-    private final Theme theme;
+    private final ThemeEntity themeEntity;
     private final long reservationCount;
 
-    public PopularTheme(Theme theme, long reservationCount) {
-        this.theme = theme;
+    public PopularTheme(ThemeEntity themeEntity, long reservationCount) {
+        this.themeEntity = themeEntity;
         this.reservationCount = reservationCount;
     }
 
-    public Theme getTheme() {
-        return theme;
+    public ThemeEntity getThemeEntity() {
+        return themeEntity;
     }
 
     public long getReservationCount() {

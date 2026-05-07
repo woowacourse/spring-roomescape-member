@@ -6,11 +6,11 @@ import roomescape.domain.Theme;
 import roomescape.service.dto.PopularTheme;
 
 public interface ThemeRepository {
-    List<Theme> findAll();
+    List<ThemeEntity> findAll();
 
-    Optional<Theme> findById(Long id);
-
-    Theme save(Theme theme);
+    Optional<ThemeEntity> findById(Long id);
+    
+    ThemeEntity save(Theme theme);
 
     void deleteById(Long id);
 

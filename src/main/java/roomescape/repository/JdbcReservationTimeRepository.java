@@ -18,9 +18,9 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final RowMapper<ReservationTime> ROW_MAPPER = (rs, rowNum) -> new ReservationTime(
+    private static final RowMapper<ReservationTimeEntity> ROW_MAPPER = (rs, rowNum) -> new ReservationTimeEntity(
             rs.getLong("id"),
-            rs.getTime("start_at").toLocalTime()
+            new ReservationTime(rs.getTime("start_at").toLocalTime())
     );
 
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
@@ -28,7 +28,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAll() {
+    public List<ReservationTimeEntity> findAll() {
         return jdbcTemplate.query(
                 "SELECT id, start_at FROM reservation_time",
                 ROW_MAPPER
@@ -36,8 +36,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public Optional<ReservationTime> findById(Long id) {
-        List<ReservationTime> result = jdbcTemplate.query(
+    public Optional<ReservationTimeEntity> findById(Long id) {
+        List<ReservationTimeEntity> result = jdbcTemplate.query(
                 "SELECT id, start_at FROM reservation_time WHERE id = ?",
                 ROW_MAPPER,
                 id
@@ -46,7 +46,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime save(ReservationTime time) {
+    public ReservationTimeEntity save(ReservationTime time) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -57,7 +57,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new ReservationTime(id, time.getStartAt());
+        return new ReservationTimeEntity(id, time);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAvailable(LocalDate date, Long themeId) {
+    public List<ReservationTimeEntity> findAvailable(LocalDate date, Long themeId) {
         String sql = """
                 SELECT id, start_at
                 FROM reservation_time

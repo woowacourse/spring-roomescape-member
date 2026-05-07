@@ -16,19 +16,23 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final RowMapper<Theme> ROW_MAPPER = (rs, rowNum) -> new Theme(
+    private static final RowMapper<ThemeEntity> ROW_MAPPER = (rs, rowNum) -> new ThemeEntity(
             rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("description"),
-            rs.getString("thumbnail_url")
-    );
-
-    private static final RowMapper<PopularTheme> POPULAR_ROW_MAPPER = (rs, rowNum) -> new PopularTheme(
             new Theme(
-                    rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("description"),
                     rs.getString("thumbnail_url")
+            )
+    );
+
+    private static final RowMapper<PopularTheme> POPULAR_ROW_MAPPER = (rs, rowNum) -> new PopularTheme(
+            new ThemeEntity(
+                    rs.getLong("id"),
+                    new Theme(
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            rs.getString("thumbnail_url")
+                    )
             ),
             rs.getLong("reservation_count")
     );
@@ -39,7 +43,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAll() {
+    public List<ThemeEntity> findAll() {
         return jdbcTemplate.query(
                 "SELECT id, name, description, thumbnail_url FROM theme",
                 ROW_MAPPER
@@ -47,8 +51,8 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Optional<Theme> findById(Long id) {
-        List<Theme> result = jdbcTemplate.query(
+    public Optional<ThemeEntity> findById(Long id) {
+        List<ThemeEntity> result = jdbcTemplate.query(
                 "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?",
                 ROW_MAPPER,
                 id
@@ -57,7 +61,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme save(Theme theme) {
+    public ThemeEntity save(Theme theme) {
         String sql = "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -70,7 +74,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
+        return new ThemeEntity(id, theme);
     }
 
     @Override

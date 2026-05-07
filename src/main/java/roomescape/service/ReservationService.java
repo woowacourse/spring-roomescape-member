@@ -3,10 +3,11 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.repository.ReservationEntity;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeEntity;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeEntity;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.ReservationCreateCommand;
 import roomescape.service.dto.ReservationResult;
@@ -36,14 +37,24 @@ public class ReservationService {
     }
 
     public ReservationResult create(ReservationCreateCommand command) {
-        ReservationTime time = reservationTimeRepository.findById(command.getTimeId())
+        ReservationTimeEntity timeEntity = reservationTimeRepository.findById(command.getTimeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다: " + command.getTimeId()));
 
-        Theme theme = themeRepository.findById(command.getThemeId())
+        ThemeEntity themeEntity = themeRepository.findById(command.getThemeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다: " + command.getThemeId()));
 
-        Reservation reservation = new Reservation(null, command.getName(), command.getDate(), time, theme);
-        Reservation saved = reservationRepository.save(reservation);
+        Reservation reservation = new Reservation(
+                command.getName(),
+                command.getDate(),
+                timeEntity.getTime(),
+                themeEntity.getTheme()
+        );
+
+        ReservationEntity saved = reservationRepository.save(
+                reservation,
+                timeEntity.getId(),
+                themeEntity.getId()
+        );
         return ReservationResult.from(saved);
     }
 

@@ -1,11 +1,12 @@
 package roomescape.repository;
 
+import java.util.List;
 import roomescape.domain.Reservation;
 
-import java.util.List;
-
 public interface ReservationRepository {
-    List<Reservation> findAll();
-    Reservation save(Reservation reservation);
+    List<ReservationEntity> findAll();
+
+    ReservationEntity save(Reservation reservation, Long timeId, Long themeId);
+
     void deleteById(Long id);
 }

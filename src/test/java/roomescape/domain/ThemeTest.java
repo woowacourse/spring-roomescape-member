@@ -16,7 +16,7 @@ class ThemeTest {
     @Test
     @DisplayName("id가 null이어도 테마를 생성할 수 있다")
     void id가_null이어도_테마를_생성할_수_있다() {
-        assertDoesNotThrow(() -> new Theme(null, VALID_NAME, VALID_DESCRIPTION, VALID_THUMBNAIL));
+        assertDoesNotThrow(() -> new Theme(VALID_NAME, VALID_DESCRIPTION, VALID_THUMBNAIL));
     }
 
     @Test
@@ -24,7 +24,7 @@ class ThemeTest {
     void 이름이_null이면_예외가_발생한다() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Theme(1L, null, VALID_DESCRIPTION, VALID_THUMBNAIL)
+                () -> new Theme(null, VALID_DESCRIPTION, VALID_THUMBNAIL)
         );
         assertEquals("테마 이름은 비어 있을 수 없습니다.", exception.getMessage());
     }
@@ -34,7 +34,7 @@ class ThemeTest {
     void 이름이_빈문자열이면_예외가_발생한다() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Theme(1L, "", VALID_DESCRIPTION, VALID_THUMBNAIL)
+                () -> new Theme("", VALID_DESCRIPTION, VALID_THUMBNAIL)
         );
     }
 
@@ -43,7 +43,7 @@ class ThemeTest {
     void 이름이_공백만으로_이루어져_있으면_예외가_발생한다() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Theme(1L, "   ", VALID_DESCRIPTION, VALID_THUMBNAIL)
+                () -> new Theme("   ", VALID_DESCRIPTION, VALID_THUMBNAIL)
         );
     }
 
@@ -53,7 +53,7 @@ class ThemeTest {
         String name = "탈".repeat(31);
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Theme(1L, name, VALID_DESCRIPTION, VALID_THUMBNAIL)
+                () -> new Theme(name, VALID_DESCRIPTION, VALID_THUMBNAIL)
         );
         assertEquals("테마 이름은 30자를 초과할 수 없습니다.", exception.getMessage());
     }
@@ -63,7 +63,7 @@ class ThemeTest {
     void 설명이_null이면_예외가_발생한다() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Theme(1L, VALID_NAME, null, VALID_THUMBNAIL)
+                () -> new Theme(VALID_NAME, null, VALID_THUMBNAIL)
         );
         assertEquals("테마 설명은 비어 있을 수 없습니다.", exception.getMessage());
     }
@@ -73,7 +73,7 @@ class ThemeTest {
     void 설명이_빈문자열이면_예외가_발생한다() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Theme(1L, VALID_NAME, "", VALID_THUMBNAIL)
+                () -> new Theme(VALID_NAME, "", VALID_THUMBNAIL)
         );
     }
 
@@ -82,7 +82,7 @@ class ThemeTest {
     void 썸네일이_null이면_예외가_발생한다() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Theme(1L, VALID_NAME, VALID_DESCRIPTION, null)
+                () -> new Theme(VALID_NAME, VALID_DESCRIPTION, null)
         );
         assertEquals("테마 썸네일은 비어 있을 수 없습니다.", exception.getMessage());
     }
@@ -92,7 +92,7 @@ class ThemeTest {
     void 썸네일이_빈문자열이면_예외가_발생한다() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Theme(1L, VALID_NAME, VALID_DESCRIPTION, "")
+                () -> new Theme(VALID_NAME, VALID_DESCRIPTION, "")
         );
     }
 }

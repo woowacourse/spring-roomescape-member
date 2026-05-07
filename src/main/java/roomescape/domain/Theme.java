@@ -4,15 +4,12 @@ public class Theme {
 
     private static final int MAX_NAME_LENGTH = 30;
 
-    private final Long id;
-
     private final String name;
     private final String description;
     private final String thumbnailUrl;
 
-    public Theme(Long id, String name, String description, String thumbnailUrl) {
+    public Theme(String name, String description, String thumbnailUrl) {
         validate(name, description, thumbnailUrl);
-        this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
@@ -46,11 +43,7 @@ public class Theme {
             throw new IllegalArgumentException("테마 썸네일은 비어 있을 수 없습니다.");
         }
     }
-
-    public Long getId() {
-        return id;
-    }
-
+    
     public String getName() {
         return name;
     }

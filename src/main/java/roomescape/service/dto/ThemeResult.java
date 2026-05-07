@@ -1,6 +1,7 @@
 package roomescape.service.dto;
 
 import roomescape.domain.Theme;
+import roomescape.repository.ThemeEntity;
 
 public class ThemeResult {
 
@@ -16,8 +17,14 @@ public class ThemeResult {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public static ThemeResult from(Theme theme) {
-        return new ThemeResult(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
+    public static ThemeResult from(ThemeEntity entity) {
+        Theme theme = entity.getTheme();
+        return new ThemeResult(
+                entity.getId(),
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnailUrl()
+        );
     }
 
     public Long getId() {

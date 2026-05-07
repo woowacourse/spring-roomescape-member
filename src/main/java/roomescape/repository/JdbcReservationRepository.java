@@ -17,11 +17,34 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private static final RowMapper<ReservationEntity> ROW_MAPPER = (rs, rowNum) -> {
+        ReservationTime time = new ReservationTime(
+                rs.getTime("time_start_at").toLocalTime()
+        );
+        Theme theme = new Theme(
+                rs.getString("theme_name"),
+                rs.getString("theme_description"),
+                rs.getString("theme_thumbnail")
+        );
+        Reservation reservation = new Reservation(
+                rs.getString("reservation_name"),
+                rs.getDate("reservation_date").toLocalDate(),
+                time,
+                theme
+        );
+        return new ReservationEntity(
+                rs.getLong("reservation_id"),
+                rs.getLong("time_id"),
+                rs.getLong("theme_id"),
+                reservation
+        );
+    };
+
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Reservation> findAll() {
+    public List<ReservationEntity> findAll() {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
@@ -38,25 +61,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN theme th ON r.theme_id = th.id
                 """;
 
-        RowMapper<Reservation> rowMapper = (rs, rowNum) -> new Reservation(
-                rs.getLong("reservation_id"),
-                rs.getString("reservation_name"),
-                rs.getDate("reservation_date").toLocalDate(),
-                new ReservationTime(
-                        rs.getLong("time_id"),
-                        rs.getTime("time_start_at").toLocalTime()
-                ),
-                new Theme(
-                        rs.getLong("theme_id"),
-                        rs.getString("theme_name"),
-                        rs.getString("theme_description"),
-                        rs.getString("theme_thumbnail")
-                )
-        );
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Reservation save(Reservation reservation) {
+    public ReservationEntity save(Reservation reservation, Long timeId, Long themeId) {
         String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -64,14 +72,13 @@ public class JdbcReservationRepository implements ReservationRepository {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
-            ps.setLong(3, reservation.getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
+            ps.setLong(3, timeId);
+            ps.setLong(4, themeId);
             return ps;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        return new ReservationEntity(id, timeId, themeId, reservation);
     }
 
     public void deleteById(Long id) {

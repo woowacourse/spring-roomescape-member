@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.ReservationTimeEntity;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.ReservationTimeCreateCommand;
 import roomescape.service.dto.ReservationTimeResult;
@@ -24,7 +25,10 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResult create(ReservationTimeCreateCommand command) {
-        ReservationTime saved = reservationTimeRepository.save(new ReservationTime(null, command.getStartAt()));
+        ReservationTime time = new ReservationTime(command.getStartAt());
+
+        ReservationTimeEntity saved = reservationTimeRepository.save(time);
+
         return ReservationTimeResult.from(saved);
     }
 

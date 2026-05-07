@@ -2,6 +2,7 @@ package roomescape.service.dto;
 
 import java.time.LocalDate;
 import roomescape.domain.Reservation;
+import roomescape.repository.ReservationEntity;
 
 public class ReservationResult {
 
@@ -25,13 +26,19 @@ public class ReservationResult {
         this.theme = theme;
     }
 
-    public static ReservationResult from(Reservation reservation) {
+    public static ReservationResult from(ReservationEntity entity) {
+        Reservation reservation = entity.getReservation();
         return new ReservationResult(
-                reservation.getId(),
+                entity.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                ReservationTimeResult.from(reservation.getTime()),
-                ThemeResult.from(reservation.getTheme())
+                new ReservationTimeResult(entity.getTimeId(), reservation.getTime().getStartAt()),
+                new ThemeResult(
+                        entity.getThemeId(),
+                        reservation.getTheme().getName(),
+                        reservation.getTheme().getDescription(),
+                        reservation.getTheme().getThumbnailUrl()
+                )
         );
     }
 

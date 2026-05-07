@@ -13,13 +13,13 @@ class ReservationTimeTest {
     @Test
     @DisplayName("시작시간이 유효하면 예약시간을 생성한다")
     void 시작시간이_유효하면_예약시간을_생성한다() {
-        assertDoesNotThrow(() -> new ReservationTime(1L, LocalTime.of(10, 0)));
+        assertDoesNotThrow(() -> new ReservationTime(LocalTime.of(10, 0)));
     }
 
     @Test
     @DisplayName("id가 null이어도 예약시간을 생성할 수 있다")
     void id가_null이어도_예약시간을_생성할_수_있다() {
-        assertDoesNotThrow(() -> new ReservationTime(null, LocalTime.of(10, 0)));
+        assertDoesNotThrow(() -> new ReservationTime(LocalTime.of(10, 0)));
     }
 
     @Test
@@ -27,7 +27,7 @@ class ReservationTimeTest {
     void 시작시간이_null이면_예외가_발생한다() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new ReservationTime(1L, null)
+                () -> new ReservationTime(null)
         );
         assertEquals("예약 시간은 비어 있을 수 없습니다.", exception.getMessage());
     }
