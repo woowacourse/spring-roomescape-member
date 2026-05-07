@@ -8,7 +8,6 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,16 +45,9 @@ public class ThemeServiceImpl implements ThemeService {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         List<Long> availableTimes = themeRepository.findNotAvailableTimes(id, date);
 
-        List<AvailableTime> response = new ArrayList<>();
-        for (ReservationTime reservationTime : reservationTimes) {
-            if (availableTimes.contains(reservationTime.getId())) {
-                response.add(new AvailableTime(reservationTime.getId(), reservationTime.getStartAt(), false));
-                continue;
-            }
-            response.add(new AvailableTime(reservationTime.getId(), reservationTime.getStartAt(), true));
-        }
-
-        return response;
+        return reservationTimes.stream()
+                .map(t -> new AvailableTime(t.getId(), t.getStartAt(), !availableTimes.contains(t.getId())))
+                .toList();
     }
 
     @Override
