@@ -3,11 +3,14 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.exception.code.ReservationErrorCode;
 import roomescape.exception.code.ThemeErrorCode;
+import roomescape.exception.domain.ReservationException;
 import roomescape.exception.domain.ThemeException;
 
 @Service
@@ -17,9 +20,11 @@ public class ThemeService {
     private static final int BASE_DATE_EXCLUDED_DAYS = 1;
 
     private final ThemeDao themeDao;
+    private final ReservationDao reservationDao;
 
-    public ThemeService(ThemeDao themeDao) {
+    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao) {
         this.themeDao = themeDao;
+        this.reservationDao = reservationDao;
     }
 
     public ThemeResponse create(ThemeRequest request) {
@@ -51,10 +56,17 @@ public class ThemeService {
     }
 
     public void delete(long themeId) {
+        validateReservationNotExistsBy(themeId);
         int affectedRows = themeDao.delete(themeId);
 
         if (affectedRows == 0) {
             throw new ThemeException(ThemeErrorCode.THEME_NOT_FOUND);
+        }
+    }
+
+    private void validateReservationNotExistsBy(long themeId) {
+        if (reservationDao.existsByTheme(themeId)) {
+            throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_EXISTS);
         }
     }
 }

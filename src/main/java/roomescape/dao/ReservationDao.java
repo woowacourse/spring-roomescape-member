@@ -118,6 +118,17 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, boolean.class, reservationTimeId);
     }
 
+    public boolean existsByTheme(long themeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE theme_id= ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, boolean.class, themeId);
+    }
+
     public int delete(long reservationId) {
         String sql = """
                 DELETE FROM reservation
