@@ -71,7 +71,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/" + id)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     // TODO: 예약이 존재하는 경우 삭제 시 409 반환 테스트 추가
