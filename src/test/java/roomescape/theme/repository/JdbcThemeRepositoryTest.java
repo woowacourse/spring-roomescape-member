@@ -186,6 +186,52 @@ class JdbcThemeRepositoryTest {
                 .containsExactly("예약있음");
     }
 
+    @DisplayName("이미 존재하는 이름으로 테마를 저장하면 DuplicateResourceException이 발생한다.")
+    @Test
+    void saveDuplicateNameTest() {
+        // given
+        String name = "중복테마";
+        repository.save(Theme.create(name, "설명1", "url1"));
+
+        // when & then
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+                repository.save(Theme.create(name, "설명2", "url2"))
+        ).isInstanceOf(roomescape.exception.DuplicateResourceException.class);
+    }
+
+    @DisplayName("예약에 사용 중인 테마를 삭제하려고 하면 ResourceInUseException이 발생한다.")
+    @Test
+    void deleteByIdInUseTest() {
+        // given
+        Theme saved = repository.save(Theme.create("사용중인테마", "설명", "url"));
+        insertReservation("사용자", LocalDate.now().minusDays(1), saved.getId());
+
+        // when & then
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+                repository.deleteById(saved.getId())
+        ).isInstanceOf(roomescape.exception.ResourceInUseException.class);
+    }
+
+    @Test
+    @DisplayName("인기 테마 조회 시 예약 횟수가 같으면 ID 오름차순으로 정렬된다.")
+    void findPopularThemesTieBreakingTest() {
+        // given
+        Theme theme1 = repository.save(Theme.create("테마1", "설명", "url"));
+        Theme theme2 = repository.save(Theme.create("테마2", "설명", "url"));
+
+        LocalDate today = LocalDate.now();
+        insertReservation("유저1", today.minusDays(1), theme1.getId());
+        insertReservation("유저2", today.minusDays(1), theme2.getId());
+
+        // when
+        List<Theme> popularThemes = repository.findPopularThemes(today.minusDays(7), today, 10);
+
+        // then
+        assertThat(popularThemes)
+                .extracting(Theme::getName)
+                .containsExactly("테마1", "테마2");
+    }
+
     private void insertReservation(String name, LocalDate date, Long themeId) {
         jdbcTemplate.update(
                 "INSERT INTO reservation (name, reservation_date, time_id, theme_id) VALUES (?, ?, ?, ?)",

@@ -209,7 +209,6 @@ class JdbcReservationTimeRepositoryTest {
         jdbcTemplate.update("insert into reservation_time(id, start_at) values (1, '10:00:00')");
         jdbcTemplate.update("insert into theme(id, name, description, thumbnail_url) values (1, '테마', '설명', 'url')");
 
-        // 다른 날짜에 예약된 시간은 targetDate 가용 시간 조회에 영향을 주지 않아야 한다.
         jdbcTemplate.update(
                 "insert into reservation(name, reservation_date, time_id, theme_id) values ('user', ?, 1, ?)",
                 otherDate, themeId
@@ -236,7 +235,6 @@ class JdbcReservationTimeRepositoryTest {
         jdbcTemplate.update("insert into theme(id, name, description, thumbnail_url) values (1, '테마1', '설명', 'url1')");
         jdbcTemplate.update("insert into theme(id, name, description, thumbnail_url) values (2, '테마2', '설명', 'url2')");
 
-        // 다른 테마에 예약된 시간이라도 targetTheme 입장에서는 가용해야 한다.
         jdbcTemplate.update(
                 "insert into reservation(name, reservation_date, time_id, theme_id) values ('user', ?, 1, ?)",
                 date, otherThemeId
@@ -249,5 +247,54 @@ class JdbcReservationTimeRepositoryTest {
         assertThat(result)
                 .extracting(ReservationTime::getStartAt)
                 .containsExactly(LocalTime.of(10, 0));
+    }
+
+    @Test
+    @DisplayName("예약에 사용 중인 시간 정보를 삭제하려고 하면 ResourceInUseException이 발생한다.")
+    void deleteByIdInUseTest() {
+        // given
+        ReservationTime saved = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        jdbcTemplate.update("insert into theme(id, name, description, thumbnail_url) values (1, '테마', '설명', 'url')");
+        jdbcTemplate.update(
+                "insert into reservation(name, reservation_date, time_id, theme_id) values ('user', '2025-01-01', ?, 1)",
+                saved.getId()
+        );
+
+        // when & then
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+                reservationTimeRepository.deleteById(saved.getId())
+        ).isInstanceOf(roomescape.exception.ResourceInUseException.class);
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 시작 시간으로 저장하면 DuplicateResourceException이 발생한다.")
+    void saveDuplicateTimeTest() {
+        // given
+        LocalTime sameTime = LocalTime.of(14, 0);
+        reservationTimeRepository.save(new ReservationTime(null, sameTime));
+
+        // when & then
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+                reservationTimeRepository.save(new ReservationTime(null, sameTime))
+        ).isInstanceOf(roomescape.exception.DuplicateResourceException.class);
+    }
+
+    @Test
+    @DisplayName("findAll 조회 시 시간 순서대로 정렬되어 반환되는지 확인한다.")
+    void findAllSortTest() {
+        // given
+        reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(22, 0)));
+        reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(15, 0)));
+
+        // when
+        List<ReservationTime> times = reservationTimeRepository.findAll();
+
+        // then
+        assertThat(times).extracting(ReservationTime::getStartAt).containsExactly(
+                LocalTime.of(10, 0),
+                LocalTime.of(15, 0),
+                LocalTime.of(22, 0)
+        );
     }
 }

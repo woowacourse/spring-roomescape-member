@@ -106,4 +106,67 @@ class JdbcReservationRepositoryTest {
         assertThat(exists).isTrue();
         assertThat(notExists).isFalse();
     }
+
+    @Test
+    @DisplayName("ID를 통해 특정 예약을 상세 조회한다. (Join 데이터 매핑 확인)")
+    void findByIdTest() {
+        // given
+        ReservationTime time = new ReservationTime(setupTimeId, LocalTime.of(10, 0));
+        Theme theme = new Theme(setupThemeId, "우테코", "우테코 전용 테마", "https://example.com");
+        Reservation saved = reservationRepository.save(new Reservation(null, "브라운", LocalDate.of(2024, 5, 1), time, theme));
+
+        // when
+        Reservation found = reservationRepository.findById(saved.getId()).get();
+
+        // then
+        assertThat(found.getName()).isEqualTo("브라운");
+        assertThat(found.getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0)); // Join 결과 확인
+        assertThat(found.getTheme().getName()).isEqualTo("우테코"); // Join 결과 확인
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 ID로 조회 시 빈 Optional을 반환한다.")
+    void findByIdEmptyTest() {
+        // when
+        java.util.Optional<Reservation> found = reservationRepository.findById(999L);
+
+        // then
+        assertThat(found).isEmpty();
+    }
+
+    @Test
+    @DisplayName("모든 예약을 삭제한다.")
+    void deleteAllTest() {
+        // given
+        ReservationTime time = new ReservationTime(setupTimeId, LocalTime.of(10, 0));
+        Theme theme = new Theme(setupThemeId, "우테코", "우테코 전용 테마", "https://example.com");
+        reservationRepository.save(new Reservation(null, "브라운", LocalDate.of(2024, 5, 1), time, theme));
+        reservationRepository.save(new Reservation(null, "제임스", LocalDate.of(2024, 5, 2), time, theme));
+
+        // when
+        reservationRepository.deleteAll();
+
+        // then
+        assertThat(reservationRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("여러 건 저장 시 ID 오름차순으로 조회되는지 확인한다.")
+    void findAllOrderTest() {
+        // given
+        ReservationTime time = new ReservationTime(setupTimeId, LocalTime.of(10, 0));
+        Theme theme = new Theme(setupThemeId, "우테코", "우테코 전용 테마", "https://example.com");
+
+        reservationRepository.save(new Reservation(null, "브라운", LocalDate.of(2024, 5, 1), time, theme));
+        reservationRepository.save(new Reservation(null, "제임스", LocalDate.of(2024, 5, 2), time, theme));
+
+        // when
+        List<Reservation> reservations = reservationRepository.findAll();
+
+        // then
+        assertThat(reservations).hasSize(2);
+        assertThat(reservations.get(0).getId()).isLessThan(reservations.get(1).getId());
+        assertThat(reservations.get(0).getName()).isEqualTo("브라운");
+        assertThat(reservations.get(1).getName()).isEqualTo("제임스");
+    }
 }
