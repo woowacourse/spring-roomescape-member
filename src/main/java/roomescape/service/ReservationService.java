@@ -25,7 +25,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAllByName(String username) {
         return reservationDao.findByUserName(username).stream()
-                .map(r -> ReservationResponse.from(r))
+                .map(ReservationResponse::from)
                 .toList();
     }
 

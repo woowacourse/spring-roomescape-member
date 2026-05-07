@@ -3,7 +3,6 @@ package roomescape.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +23,10 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
-        return ResponseEntity.ok(themeService.getAllThemes());
+    public List<ThemeResponse> getAllThemes() {
+        return themeService.getAllThemes();
     }
 
     @ResponseStatus(HttpStatus.OK)
