@@ -20,7 +20,8 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
 
     @Transactional
     public ReservationTime createTime(LocalTime startAt) {
-        return reservationTimeRepository.save(startAt);
+        ReservationTime reservationTime = new ReservationTime(null, startAt);
+        return reservationTimeRepository.save(reservationTime);
     }
 
     public List<ReservationTime> getTimes() {

@@ -36,18 +36,18 @@ public class ReservationTimeRepository {
         }
     }
 
-    public ReservationTime save(LocalTime startAt) {
+    public ReservationTime save(ReservationTime reservationTime) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setObject(1, startAt);
+            ps.setObject(1, reservationTime.getStartAt());
             return ps;
         }, keyHolder);
 
         long id = keyHolder.getKey().longValue();
-        return new ReservationTime(id, startAt);
+        return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     public List<ReservationTime> findAll() {
@@ -55,15 +55,15 @@ public class ReservationTimeRepository {
         return jdbcTemplate.query(sql, reservationTimeRowsMapper());
     }
 
-    private RowMapper<ReservationTime> reservationTimeRowsMapper() {
-        return (rs, rowNum) -> new ReservationTime(
-                    rs.getLong("id"),
-                    LocalTime.parse(rs.getString("start_at"))
-        );
-    }
-
     public void remove(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    private RowMapper<ReservationTime> reservationTimeRowsMapper() {
+        return (rs, rowNum) -> new ReservationTime(
+                rs.getLong("id"),
+                LocalTime.parse(rs.getString("start_at"))
+        );
     }
 }

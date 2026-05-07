@@ -37,9 +37,9 @@ public class ReservationServiceImpl implements ReservationService {
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new InvalidReservationTimeException(timeId));
         Theme theme = themeRepository.findById(themeId);
-        Long id = reservationRepository.save(name, date, timeId, themeId);
+        Reservation reservation = new Reservation(null, name, date, time, theme);
 
-        return new Reservation(id, name, date, time, theme);
+        return reservationRepository.save(reservation);
     }
 
     @Transactional

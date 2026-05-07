@@ -26,7 +26,8 @@ public class ThemeServiceImpl implements ThemeService {
     @Transactional
     @Override
     public Theme createTheme(String name, String description, String thumbnail) {
-        return themeRepository.save(new Theme(null, name, description, thumbnail));
+        Theme theme = new Theme(null, name, description, thumbnail);
+        return themeRepository.save(theme);
     }
 
     @Transactional

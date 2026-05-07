@@ -41,19 +41,25 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowsMapper());
     }
 
-    public Long save(String name, LocalDate date, Long timeId, Long themeId) {
+    public Reservation save(Reservation reservation) {
         String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, name);
-            ps.setObject(2, date);
-            ps.setObject(3, timeId);
-            ps.setObject(4, themeId);
+            ps.setString(1, reservation.getName());
+            ps.setObject(2, reservation.getDate());
+            ps.setObject(3, reservation.getTime().getId());
+            ps.setObject(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
-        return keyHolder.getKey().longValue();
+        long id = keyHolder.getKey().longValue();
+        return new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme());
     }
 
     public int deleteById(Long id) {
