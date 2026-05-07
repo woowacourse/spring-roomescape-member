@@ -95,7 +95,8 @@ async function loadThemes() {
 
 async function loadTimes() {
     try {
-        state.times = await api("/times");
+        const data = await api("/times");
+        state.times = data.times || [];
         renderAdminLists();
     } catch (error) {
         showToast(error.message);
@@ -104,7 +105,8 @@ async function loadTimes() {
 
 async function loadReservations() {
     try {
-        state.reservations = await api("/admin/reservations");
+        const data = await api("/admin/reservations");
+        state.reservations = data.reservations || [];
         renderReservations();
     } catch (error) {
         showToast(error.message);

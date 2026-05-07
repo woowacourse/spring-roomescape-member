@@ -27,14 +27,13 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> save(@RequestBody ReservationCreateRequest request) {
         ReservationResponse response = reservationService.saveReservation(request);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.LOCATION, "/reservations/" + response.id())
+        return ResponseEntity.created(java.net.URI.create("/reservations/" + response.id()))
                 .body(response);
     }
 
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<Void> deleteById(@PathVariable Long reservationId) {
         reservationService.deleteReservationBy(reservationId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

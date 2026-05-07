@@ -59,7 +59,7 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .header("Location", notNullValue())
                 .body("id", notNullValue())
                 .body("username", is("새로운 사용자"))
@@ -78,6 +78,6 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 }
