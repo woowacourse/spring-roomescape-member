@@ -1,5 +1,7 @@
 package roomescape.theme.domain;
 
+import java.util.Objects;
+
 public class Theme {
 
     private final Long id;
@@ -32,5 +34,19 @@ public class Theme {
 
     public String getThumbnailUrl() {
         return thumbnailUrl;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Theme theme = (Theme) o;
+        return Objects.equals(getId(), theme.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getId());
     }
 }

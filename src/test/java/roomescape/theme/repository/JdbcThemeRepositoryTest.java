@@ -21,7 +21,7 @@ class JdbcThemeRepositoryTest {
         this.repository = new JdbcThemeRepository(jdbcTemplate);
     }
 
-    @DisplayName("해당 시간이 존재하는지 조회한다.")
+    @DisplayName("주어진 이름의 테마가 존재하는지 조회한다.")
     @Test
     void existsByNameTest() {
         // given

@@ -44,7 +44,7 @@ class JdbcReservationTimeRepositoryTest {
     @DisplayName("ID를 통해 시간 정보를 삭제한다.")
     void deleteByIdTest() {
         // given
-        ReservationTime saved = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        ReservationTime saved = createTime(LocalTime.of(10, 0));
 
         // when
         reservationTimeRepository.deleteById(saved.getId());
@@ -58,38 +58,35 @@ class JdbcReservationTimeRepositoryTest {
     @DisplayName("ID를 통해 저장된 시간 정보를 정확히 조회한다.")
     void findByIdTest() {
         // given
-        LocalTime targetTime = LocalTime.of(11, 0);
-        ReservationTime savedTime = reservationTimeRepository.save(new ReservationTime(null, targetTime));
+        ReservationTime savedTime = createTime(LocalTime.of(11, 0));
 
         // when
         ReservationTime foundTime = reservationTimeRepository.findById(savedTime.getId())
                 .orElseThrow(() -> new AssertionError("조회된 결과가 없습니다. id: " + savedTime.getId()));
 
         // then
-        assertThat(foundTime.getId()).isEqualTo(savedTime.getId());
-        assertThat(foundTime.getStartAt()).isEqualTo(targetTime);
+        assertThat(foundTime).isEqualTo(savedTime);
     }
 
     @Test
     @DisplayName("존재하는 모든 시간 목록을 리스트로 조회한다.")
     void findAllTest() {
         // given
-        reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
-        reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(11, 0)));
+        ReservationTime saved1 = createTime(LocalTime.of(10, 0));
+        ReservationTime saved2 = createTime(LocalTime.of(11, 0));
 
         // when
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         // then
-        assertThat(times).hasSize(2);
-        assertThat(times).extracting("startAt").containsExactly(LocalTime.of(10, 0), LocalTime.of(11, 0));
+        assertThat(times).containsExactly(saved1, saved2);
     }
 
     @DisplayName("해당 시간이 존재하는지 조회한다.")
     @Test
     void existStartAtTest() {
         // given
-        reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+        createTime(LocalTime.of(10, 0));
 
         // when
         boolean exists = reservationTimeRepository.existsByStartAt(LocalTime.of(10, 0));
@@ -104,27 +101,46 @@ class JdbcReservationTimeRepositoryTest {
     @DisplayName("예약되지 않은 시간만 조회된다")
     void findAvailableTimes() {
         // given
-        Long themeId = 1L;
+        ReservationTime time1 = createTime(LocalTime.of(10, 0));
+        ReservationTime time2 = createTime(LocalTime.of(11, 0));
+        ReservationTime time3 = createTime(LocalTime.of(12, 0));
+
+        jdbcTemplate.update(
+                "insert into theme(name, description, thumbnail_url) values ('테마', '설명', 'url')"
+        );
+        Long themeId = jdbcTemplate.queryForObject(
+                "SELECT id FROM theme WHERE name = ?",
+                Long.class,
+                "테마"
+        );
+
         LocalDate date = LocalDate.of(2025, 1, 1);
-
-        jdbcTemplate.update("insert into reservation_time(id, start_at) values (1, '10:00:00')");
-        jdbcTemplate.update("insert into reservation_time(id, start_at) values (2, '11:00:00')");
-        jdbcTemplate.update("insert into reservation_time(id, start_at) values (3, '12:00:00')");
-
-        jdbcTemplate.update("insert into theme(id, name, description, thumbnail_url) values (1, '테마', '설명', 'url')");
 
         jdbcTemplate.update("""
             insert into reservation(name, reservation_date, time_id, theme_id)
-            values ('user', ?, 2, ?)
-        """, date, themeId);
+            values ('user', ?, ?, ?)
+        """,
+                date,
+                time1.getId(),
+                themeId
+        );
 
         // when
         List<AvailableTimeQueryResult> result = reservationTimeRepository.findAvailableTimes(themeId, date);
 
         // then
-        assertThat(result).hasSize(2);
-        assertThat(result)
-                .extracting(AvailableTimeQueryResult::startAt)
-                .containsExactlyInAnyOrder(LocalTime.of(10, 0), LocalTime.of(12, 0));
+        List<LocalTime> times = result.stream()
+                .map(AvailableTimeQueryResult::startAt).toList();
+
+        assertThat(times).containsExactly(
+                time2.getStartAt(),
+                time3.getStartAt()
+        );
+    }
+
+    private ReservationTime createTime(LocalTime time) {
+        return reservationTimeRepository.save(
+                new ReservationTime(null, time)
+        );
     }
 }

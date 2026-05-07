@@ -2,7 +2,6 @@ package roomescape.reservation.repository;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -40,11 +39,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     };
 
     private final JdbcTemplate jdbcTemplate;
-    private final Clock clock;
 
-    public JdbcReservationRepository(JdbcTemplate jdbcTemplate, Clock clock) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.clock = clock;
     }
 
     @Override
@@ -95,7 +92,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<PopularThemeQueryResult> findPopularThemes(int period, int limit) {
+    public List<PopularThemeQueryResult> findPopularThemes(LocalDate from, LocalDate to, int limit) {
         String sql = "select " +
                 "t.id, " +
                 "t.name, " +
@@ -104,13 +101,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "from reservation r " +
                 "inner join theme t on r.theme_id = t.id " +
                 "where r.reservation_date >= ? " +
-                "and r.reservation_date < ? " +
+                "and r.reservation_date <= ? " +
                 "group by t.id " +
                 "order by count(r.id) desc, t.id asc " +
                 "limit ?";
-
-        LocalDate endDate = LocalDate.now(clock);
-        LocalDate startDate = endDate.minusDays(period);
 
         return jdbcTemplate.query(
                 sql,
@@ -120,8 +114,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail_url")
                 ),
-                Date.valueOf(startDate),
-                Date.valueOf(endDate),
+                Date.valueOf(from),
+                Date.valueOf(to),
                 limit
         );
     }

@@ -1,5 +1,8 @@
 package roomescape.reservation.service;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
@@ -11,8 +14,6 @@ import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
-import java.util.List;
-
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
@@ -20,12 +21,15 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
+                              Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     @Transactional
@@ -56,6 +60,11 @@ public class ReservationService {
     }
 
     public PopularThemesResult findPopularThemes(int period, int limit) {
-        return new PopularThemesResult(reservationRepository.findPopularThemes(period, limit));
+        LocalDate to = LocalDate.now(clock).minusDays(1);
+        LocalDate from = to.minusDays(period);
+
+        return new PopularThemesResult(
+                reservationRepository.findPopularThemes(from, to, limit)
+        );
     }
 }
