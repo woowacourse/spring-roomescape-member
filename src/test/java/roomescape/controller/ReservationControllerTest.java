@@ -32,14 +32,12 @@ class ReservationControllerTest {
     @MockitoBean
     private RoomReservationService roomReservationService;
 
-    private ReservationTime reservationTime;
-    private ReservationTheme reservationTheme;
     private Reservation reservation;
 
     @BeforeEach
     void setUp() {
-        reservationTime = new ReservationTime(1L, "10:00");
-        reservationTheme = new ReservationTheme(1L, "테마1", "테마 설명", "image url");
+        ReservationTime reservationTime = new ReservationTime(1L, "10:00");
+        ReservationTheme reservationTheme = new ReservationTheme(1L, "테마1", "테마 설명", "image url");
         reservation = new Reservation(1L, "홍길동", "2026-05-06", reservationTime, reservationTheme);
     }
 
