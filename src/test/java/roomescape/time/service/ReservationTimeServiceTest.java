@@ -13,8 +13,7 @@ import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.request.ReservationTimeSaveDto;
-import roomescape.time.dto.response.ReservationTimeDetailDto;
-import roomescape.time.repository.FakeReservationTimeRepository;
+import roomescape.time.fixture.FakeReservationTimeRepository;
 
 class ReservationTimeServiceTest {
 

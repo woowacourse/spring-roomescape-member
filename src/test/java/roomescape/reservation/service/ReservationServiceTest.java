@@ -15,14 +15,17 @@ import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.fixture.FakeReservationDateRepository;
+import roomescape.date.fixture.ReservationDateFixture;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.fixture.FakeReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.fixture.FakeThemeRepository;
+import roomescape.theme.fixture.ThemeFixture;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.FakeReservationTimeRepository;
+import roomescape.time.fixture.FakeReservationTimeRepository;
+import roomescape.time.fixture.ReservationTimeFixture;
 
 class ReservationServiceTest {
 
@@ -51,14 +54,14 @@ class ReservationServiceTest {
         this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
                 reservationDateRepository, themeRepository);
 
-        reservationTime1 = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(15, 0)));
-        reservationTime2 = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(16, 0)));
+        reservationTime1 = reservationTimeRepository.save(ReservationTimeFixture.time15());
+        reservationTime2 = reservationTimeRepository.save(ReservationTimeFixture.time16());
 
-        reservationDate1 = reservationDateRepository.save(ReservationDate.create(LocalDate.now().plusWeeks(1)));
-        reservationDate2 = reservationDateRepository.save(ReservationDate.create(LocalDate.now().plusWeeks(2)));
+        reservationDate1 = reservationDateRepository.save(ReservationDateFixture.oneWeekLater());
+        reservationDate2 = reservationDateRepository.save(ReservationDateFixture.twoWeeksLater());
 
-        theme1 = themeRepository.save(Theme.create("테마1", "설명1", "썸네일1"));
-        theme2 = themeRepository.save(Theme.create("테마2", "설명2", "썸네일2"));
+        theme1 = themeRepository.save(ThemeFixture.theme("테마1"));
+        theme2 = themeRepository.save(ThemeFixture.theme("테마2"));
     }
 
     @Test
@@ -66,8 +69,8 @@ class ReservationServiceTest {
     void readAll() {
         //given & when
         List<Reservation> reservations = List.of(
-                Reservation.create("한다", reservationDate1.date(), reservationTime1.startAt(), theme1),
-                Reservation.create("송송", reservationDate2.date(), reservationTime1.startAt(), theme2)
+                reservation(name, reservationDate1, reservationTime1, theme1),
+                reservation(name, reservationDate2, reservationTime1, theme2)
         );
         reservationRepository.saveAll(reservations);
         List<Reservation> actual = reservationService.readAll();
@@ -82,10 +85,10 @@ class ReservationServiceTest {
     void readAllByName() {
         // given
         List<Reservation> reservations = reservationRepository.saveAll(
-                List.of(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme1),
-                        Reservation.create(name, reservationDate1.date(), reservationTime2.startAt(), theme1),
-                        Reservation.create(name, reservationDate2.date(), reservationTime1.startAt(), theme1),
-                        Reservation.create(name, reservationDate2.date(), reservationTime2.startAt(), theme1))
+                List.of(reservation(name, reservationDate1, reservationTime1, theme1),
+                        reservation(name, reservationDate1, reservationTime2, theme1),
+                        reservation(name, reservationDate2, reservationTime1, theme1),
+                        reservation(name, reservationDate2, reservationTime2, theme1))
         );
 
         // when
@@ -102,7 +105,7 @@ class ReservationServiceTest {
     void reserve() {
         //given & when
         List<Reservation> reservations = List.of();
-        reservationService.reserve(new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id()));
+        reservationService.reserve(saveDto(name, reservationDate1.id(), reservationTime1.id(), theme1.id()));
 
         //then
         assertThat(reservationService.readAll())
@@ -114,7 +117,7 @@ class ReservationServiceTest {
     void reserve_does_not_exist_reservation_time() {
         // given
         Long wrongTimeId = Long.MIN_VALUE;
-        ReservationSaveDto command = new ReservationSaveDto(name, reservationDate1.id(), wrongTimeId, theme1.id());
+        ReservationSaveDto command = saveDto(name, reservationDate1.id(), wrongTimeId, theme1.id());
 
         // when & then
         assertThatThrownBy(() -> reservationService.reserve(command))
@@ -126,12 +129,12 @@ class ReservationServiceTest {
     @DisplayName("예약시 예약 날짜/시간/테마가 중복되면 예외를 발생한다.")
     void reserve_duplicate_reservation() {
         // given
-        ReservationSaveDto command = new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id());
-        ReservationSaveDto duplicateDateTimeCommand = new ReservationSaveDto("한다", reservationDate1.id(), reservationTime1.id(), theme1.id());
+        ReservationSaveDto command = saveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id());
+        ReservationSaveDto duplicated = saveDto("한다", reservationDate1.id(), reservationTime1.id(), theme1.id());
         reservationService.reserve(command);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.reserve(duplicateDateTimeCommand))
+        assertThatThrownBy(() -> reservationService.reserve(duplicated))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("해당 날짜/시간/테마는 이미 예약되었습니다.");
     }
@@ -140,7 +143,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 취소하면 CANCELED 상태가 된다.")
     void updateStatus_canceled() {
         // given
-        Reservation savedReservation = reservationRepository.save(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme1));
+        Reservation savedReservation = save(reservation(name, reservationDate1, reservationTime1, theme1));
         ReservationStatus canceled = ReservationStatus.CANCELED;
 
         // when
@@ -150,4 +153,27 @@ class ReservationServiceTest {
         Assertions.assertThat(actual.status())
                 .isEqualTo(canceled);
     }
+
+    private static Reservation reservation(
+            String name,
+            ReservationDate date,
+            ReservationTime time,
+            Theme theme
+    ) {
+        return Reservation.create(name, date.date(), time.startAt(), theme);
+    }
+
+    private ReservationSaveDto saveDto(
+            String name,
+            Long dateId,
+            Long timeId,
+            Long themeId
+    ) {
+        return new ReservationSaveDto(name, dateId, timeId, themeId);
+    }
+
+    private Reservation save(Reservation reservation) {
+        return reservationRepository.save(reservation);
+    }
+
 }

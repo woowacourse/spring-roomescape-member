@@ -1,4 +1,4 @@
-package roomescape.time.repository;
+package roomescape.time.fixture;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
