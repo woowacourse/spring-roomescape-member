@@ -125,6 +125,12 @@ public class ReservationRepository {
         return count != null && count > 0;
     }
 
+    public boolean existsByThemeId(Long themeId) {
+        String sql = "SELECT count(*) FROM reservation WHERE theme_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
+        return count != null && count > 0;
+    }
+
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime time = new ReservationTime(
                 resultSet.getLong("time_id"),

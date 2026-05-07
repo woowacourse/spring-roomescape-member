@@ -45,6 +45,9 @@ public class ThemeService {
         if (!themeRepository.existsById(id)) {
             throw new NoSuchElementException("[ERROR] 존재하지 않는 ID입니다.");
         }
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new IllegalArgumentException("[ERROR] 해당 테마의 예약이 존재합니다.");
+        }
         themeRepository.delete(id);
     }
 
