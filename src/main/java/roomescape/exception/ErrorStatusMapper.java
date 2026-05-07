@@ -24,7 +24,12 @@ public class ErrorStatusMapper {
         statusByErrorCode.put(ErrorCode.RESERVATION_CREATE_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
         statusByErrorCode.put(ErrorCode.RESERVATION_TIME_NOT_FOUND, HttpStatus.NOT_FOUND);
         statusByErrorCode.put(ErrorCode.RESERVATION_TIME_CREATE_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
+        statusByErrorCode.put(ErrorCode.INVALID_THEME_ID, HttpStatus.BAD_REQUEST);
+        statusByErrorCode.put(ErrorCode.INVALID_THEME_NAME, HttpStatus.BAD_REQUEST);
+        statusByErrorCode.put(ErrorCode.INVALID_THEME_DESCRIPTION, HttpStatus.BAD_REQUEST);
+        statusByErrorCode.put(ErrorCode.INVALID_THEME_THUMBNAIL, HttpStatus.BAD_REQUEST);
         statusByErrorCode.put(ErrorCode.INVALID_THEME, HttpStatus.BAD_REQUEST);
+        statusByErrorCode.put(ErrorCode.THEME_ALREADY_HAS_ID, HttpStatus.BAD_REQUEST);
         statusByErrorCode.put(ErrorCode.THEME_NOT_FOUND, HttpStatus.NOT_FOUND);
         statusByErrorCode.put(ErrorCode.THEME_CREATE_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
     }
