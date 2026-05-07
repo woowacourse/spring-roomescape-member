@@ -74,7 +74,10 @@
 
         function fetchThemes() {
             fetch('/themes')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) return response.json().then(error => { throw new Error(error.message); });
+                    return response.json();
+                })
                 .then(themes => {
                     const themeList = document.getElementById('theme-list');
                     themeList.innerHTML = themes.map(theme => `
@@ -96,7 +99,8 @@
                             fetchTimes();
                         });
                     });
-                });
+                })
+                .catch(error => alert('테마를 불러오는 중 오류가 발생했습니다: ' + error.message));
         }
 
         function fetchTimes() {
@@ -104,7 +108,10 @@
             if (!selectedThemeId || !date) return;
 
             fetch(`/times?themeId=${selectedThemeId}&date=${date}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) return response.json().then(error => { throw new Error(error.message); });
+                    return response.json();
+                })
                 .then(times => {
                     const timeList = document.getElementById('time-list');
                     if (times.length === 0) {
@@ -129,7 +136,8 @@
                             checkValidation();
                         });
                     });
-                });
+                })
+                .catch(error => alert('시간을 불러오는 중 오류가 발생했습니다: ' + error.message));
         }
 
         function checkValidation() {

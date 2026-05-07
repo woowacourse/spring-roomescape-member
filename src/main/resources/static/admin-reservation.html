@@ -106,7 +106,10 @@
 
         function fetchReservations() {
             fetch('/reservations')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) return response.json().then(error => { throw new Error(error.message); });
+                    return response.json();
+                })
                 .then(reservations => {
                     const tbody = document.getElementById('reservation-table-body');
                     tbody.innerHTML = reservations.map(res => `
@@ -121,12 +124,16 @@
                             </td>
                         </tr>
                     `).join('');
-                });
+                })
+                .catch(error => alert('예약 목록을 불러오는 중 오류가 발생했습니다: ' + error.message));
         }
 
         function fetchThemes() {
             fetch('/themes')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) return response.json().then(error => { throw new Error(error.message); });
+                    return response.json();
+                })
                 .then(themes => {
                     const select = document.getElementById('theme');
                     themes.forEach(theme => {
@@ -135,7 +142,8 @@
                         option.textContent = theme.name;
                         select.appendChild(option);
                     });
-                });
+                })
+                .catch(error => alert('테마 목록을 불러오는 중 오류가 발생했습니다: ' + error.message));
         }
 
         function fetchAvailableTimes() {
@@ -145,7 +153,10 @@
 
             if (date && themeId) {
                 fetch(`/times?themeId=${themeId}&date=${date}`)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) return response.json().then(error => { throw new Error(error.message); });
+                        return response.json();
+                    })
                     .then(times => {
                         timeSelect.innerHTML = '<option value="" disabled selected>시간 선택</option>';
                         times.forEach(time => {
@@ -159,7 +170,8 @@
                             timeSelect.appendChild(option);
                         });
                         timeSelect.disabled = false;
-                    });
+                    })
+                    .catch(error => alert('예약 가능한 시간을 불러오는 중 오류가 발생했습니다: ' + error.message));
             } else {
                 timeSelect.disabled = true;
                 timeSelect.innerHTML = '<option value="" disabled selected>시간 선택</option>';
@@ -187,9 +199,12 @@
                     document.getElementById('reservation-form').reset();
                     document.getElementById('time').disabled = true;
                 } else {
-                    alert('예약 추가 실패');
+                    return response.json().then(error => {
+                        alert(error.message || '예약 추가 실패');
+                    });
                 }
-            });
+            })
+            .catch(error => alert('오류가 발생했습니다: ' + error.message));
         }
 
         function deleteReservation(id) {
@@ -200,9 +215,12 @@
                         alert('예약이 취소되었습니다.');
                         fetchReservations();
                     } else {
-                        alert('예약 취소 실패');
+                        return response.json().then(error => {
+                            alert(error.message || '예약 취소 실패');
+                        });
                     }
-                });
+                })
+                .catch(error => alert('오류가 발생했습니다: ' + error.message));
         }
     </script>
 </body>

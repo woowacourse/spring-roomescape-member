@@ -50,7 +50,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
             fetch(`/themes?endDate=${today}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) return response.json().then(error => { throw new Error(error.message); });
+                    return response.json();
+                })
                 .then(themes => {
                     const popularThemesContainer = document.getElementById('popular-themes');
                     themes.forEach(theme => {
@@ -69,7 +72,11 @@
                         popularThemesContainer.innerHTML += themeCard;
                     });
                 })
-                .catch(error => console.error('Error fetching popular themes:', error));
+                .catch(error => {
+                    console.error('Error fetching popular themes:', error);
+                    const popularThemesContainer = document.getElementById('popular-themes');
+                    popularThemesContainer.innerHTML = `<p class="text-danger">테마를 불러오는 데 실패했습니다: ${error.message}</p>`;
+                });
         });
     </script>
 </body>

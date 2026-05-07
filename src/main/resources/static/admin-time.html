@@ -92,7 +92,10 @@
         function fetchAllTimes() {
             // 모든 시간을 가져오기 위해 첫 번째 테마를 먼저 조회함
             fetch('/themes')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) return response.json().then(error => { throw new Error(error.message); });
+                    return response.json();
+                })
                 .then(themes => {
                     if (themes.length === 0) {
                         alert('테마를 먼저 등록해주세요.');
@@ -102,7 +105,11 @@
                     const date = '2099-12-31'; // 예약이 없을 법한 미래 날짜
                     return fetch(`/times?themeId=${themeId}&date=${date}`);
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response) return;
+                    if (!response.ok) return response.json().then(error => { throw new Error(error.message); });
+                    return response.json();
+                })
                 .then(times => {
                     if (!times) return;
                     const tbody = document.getElementById('time-table-body');
@@ -115,7 +122,8 @@
                             </td>
                         </tr>
                     `).join('');
-                });
+                })
+                .catch(error => alert('시간 목록을 불러오는 중 오류가 발생했습니다: ' + error.message));
         }
 
         function addTime(event) {
@@ -143,9 +151,12 @@
                     alert('시간이 추가되었습니다.');
                     fetchAllTimes();
                 } else {
-                    alert('시간 추가 실패');
+                    return response.json().then(error => {
+                        alert(error.message || '시간 추가 실패');
+                    });
                 }
-            });
+            })
+            .catch(error => alert('오류가 발생했습니다: ' + error.message));
         }
 
         function deleteTime(id) {
@@ -156,9 +167,12 @@
                         alert('시간이 삭제되었습니다.');
                         fetchAllTimes();
                     } else {
-                        alert('시간 삭제 실패');
+                        return response.json().then(error => {
+                            alert(error.message || '시간 삭제 실패');
+                        });
                     }
-                });
+                })
+                .catch(error => alert('오류가 발생했습니다: ' + error.message));
         }
     </script>
 </body>

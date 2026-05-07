@@ -89,7 +89,10 @@
 
         function fetchThemes() {
             fetch('/themes')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) return response.json().then(error => { throw new Error(error.message); });
+                    return response.json();
+                })
                 .then(themes => {
                     const tbody = document.getElementById('theme-table-body');
                     tbody.innerHTML = themes.map(theme => `
@@ -103,7 +106,8 @@
                             </td>
                         </tr>
                     `).join('');
-                });
+                })
+                .catch(error => alert('테마 목록을 불러오는 중 오류가 발생했습니다: ' + error.message));
         }
 
         function addTheme(event) {
@@ -125,9 +129,12 @@
                     document.getElementById('theme-form').reset();
                     fetchThemes();
                 } else {
-                    alert('테마 추가 실패');
+                    return response.json().then(error => {
+                        alert(error.message || '테마 추가 실패');
+                    });
                 }
-            });
+            })
+            .catch(error => alert('오류가 발생했습니다: ' + error.message));
         }
 
         function deleteTheme(id) {
@@ -138,9 +145,12 @@
                         alert('테마가 삭제되었습니다.');
                         fetchThemes();
                     } else {
-                        alert('테마 삭제 실패');
+                        return response.json().then(error => {
+                            alert(error.message || '테마 삭제 실패');
+                        });
                     }
-                });
+                })
+                .catch(error => alert('오류가 발생했습니다: ' + error.message));
         }
     </script>
 </body>
