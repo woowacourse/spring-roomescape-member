@@ -1,47 +1,47 @@
 package roomescape.domain;
 
-import lombok.Getter;
 import roomescape.exception.DomainException;
 import roomescape.exception.ErrorCode;
 
 import java.time.LocalTime;
 import java.util.Objects;
 
-@Getter
 public class ReservationTime {
-    private final Long id;
-    private final LocalTime startAt;
+    private final ReservationTimeId id;
+    private final ReservationTimeStartAt startAt;
 
     public ReservationTime(LocalTime startAt) {
         this(null, startAt);
     }
 
     public ReservationTime(Long id, LocalTime startAt) {
-        validateStartAt(startAt);
+        this(id == null ? null : new ReservationTimeId(id), new ReservationTimeStartAt(startAt));
+    }
+
+    private ReservationTime(ReservationTimeId id, ReservationTimeStartAt startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
     public ReservationTime withId(Long id) {
-        validateId(id);
+        ReservationTimeId reservationTimeId = new ReservationTimeId(id);
 
         if (this.id != null) {
             throw new DomainException(ErrorCode.RESERVATION_TIME_ALREADY_HAS_ID);
         }
 
-        return new ReservationTime(id, startAt);
+        return new ReservationTime(reservationTimeId, startAt);
     }
 
-    private void validateStartAt(LocalTime startAt) {
-        if (startAt == null) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_TIME);
-        }
-    }
-
-    private void validateId(Long id) {
+    public Long getId() {
         if (id == null) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_TIME_ID);
+            return null;
         }
+        return id.value();
+    }
+
+    public LocalTime getStartAt() {
+        return startAt.value();
     }
 
     @Override
@@ -53,6 +53,6 @@ public class ReservationTime {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(getId());
     }
 }

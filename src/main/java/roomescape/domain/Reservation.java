@@ -1,17 +1,15 @@
 package roomescape.domain;
 
-import lombok.Getter;
 import roomescape.exception.DomainException;
 import roomescape.exception.ErrorCode;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Getter
 public class Reservation {
-    private final Long id;
-    private final String name;
-    private final LocalDate date;
+    private final ReservationId id;
+    private final ReservationName name;
+    private final ReservationDate date;
     private final ReservationTime time;
     private final Theme theme;
 
@@ -20,7 +18,16 @@ public class Reservation {
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
+        this(
+                id == null ? null : new ReservationId(id),
+                new ReservationName(name),
+                new ReservationDate(date),
+                requireTime(time),
+                requireTheme(theme)
+        );
+    }
+
+    private Reservation(ReservationId id, ReservationName name, ReservationDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -29,50 +36,50 @@ public class Reservation {
     }
 
     public Reservation withId(Long id) {
-        validateId(id);
+        ReservationId reservationId = new ReservationId(id);
 
         if (this.id != null) {
             throw new DomainException(ErrorCode.RESERVATION_ALREADY_HAS_ID);
         }
 
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(reservationId, name, date, time, theme);
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
-        validateDate(date);
-        validateTime(time);
-        validateTheme(theme);
-    }
-
-    private void validateId(Long id) {
-        if (id == null) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_ID);
-        }
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_NAME);
-        }
-    }
-
-    private void validateDate(LocalDate date) {
-        if (date == null) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_DATE);
-        }
-    }
-
-    private void validateTime(ReservationTime time) {
+    private static ReservationTime requireTime(ReservationTime time) {
         if (time == null) {
             throw new DomainException(ErrorCode.INVALID_RESERVATION_TIME);
         }
+        return time;
     }
 
-    private void validateTheme(Theme theme){
-        if(theme == null){
+    private static Theme requireTheme(Theme theme) {
+        if (theme == null) {
             throw new DomainException(ErrorCode.INVALID_THEME);
         }
+        return theme;
+    }
+
+    public Long getId() {
+        if (id == null) {
+            return null;
+        }
+        return id.value();
+    }
+
+    public String getName() {
+        return name.value();
+    }
+
+    public LocalDate getDate() {
+        return date.value();
+    }
+
+    public ReservationTime getTime() {
+        return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     public boolean isSameTime(ReservationTime time) {
@@ -88,7 +95,6 @@ public class Reservation {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(getId());
     }
 }
-

@@ -1,22 +1,28 @@
 package roomescape.domain;
 
-import lombok.Getter;
 import roomescape.exception.DomainException;
 import roomescape.exception.ErrorCode;
 
-@Getter
 public class Theme {
-    private final Long id;
-    private final String name;
-    private final String description;
-    private final String thumbnail;
+    private final ThemeId id;
+    private final ThemeName name;
+    private final ThemeDescription description;
+    private final ThemeThumbnail thumbnail;
 
     public Theme(String name, String description, String thumbnail) {
         this(null, name, description, thumbnail);
     }
 
     public Theme(Long id, String name, String description, String thumbnail) {
-        validate(name, description, thumbnail);
+        this(
+                id == null ? null : new ThemeId(id),
+                new ThemeName(name),
+                new ThemeDescription(description),
+                new ThemeThumbnail(thumbnail)
+        );
+    }
+
+    private Theme(ThemeId id, ThemeName name, ThemeDescription description, ThemeThumbnail thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -24,42 +30,31 @@ public class Theme {
     }
 
     public Theme withId(Long id) {
-        validateId(id);
+        ThemeId themeId = new ThemeId(id);
 
         if (this.id != null) {
             throw new DomainException(ErrorCode.THEME_ALREADY_HAS_ID);
         }
 
-        return new Theme(id, name, description, thumbnail);
+        return new Theme(themeId, name, description, thumbnail);
     }
 
-    private void validate(String name, String description, String thumbnail) {
-        validateName(name);
-        validateDescription(description);
-        validateThumbnail(thumbnail);
-    }
-
-    private void validateId(Long id) {
+    public Long getId() {
         if (id == null) {
-            throw new DomainException(ErrorCode.INVALID_THEME_ID);
+            return null;
         }
+        return id.value();
     }
 
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new DomainException(ErrorCode.INVALID_THEME_NAME);
-        }
+    public String getName() {
+        return name.value();
     }
 
-    private void validateDescription(String description) {
-        if (description == null || description.isBlank()) {
-            throw new DomainException(ErrorCode.INVALID_THEME_DESCRIPTION);
-        }
+    public String getDescription() {
+        return description.value();
     }
 
-    private void validateThumbnail(String thumbnail) {
-        if (thumbnail == null || thumbnail.isBlank()) {
-            throw new DomainException(ErrorCode.INVALID_THEME_THUMBNAIL);
-        }
+    public String getThumbnail() {
+        return thumbnail.value();
     }
 }
