@@ -8,7 +8,9 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.service.ReservationTimeService;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -18,15 +20,18 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
+    private final Clock clock;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeService reservationTimeService,
-            ThemeService themeService
+            ThemeService themeService,
+            Clock clock
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
+        this.clock = clock;
     }
 
     @Transactional
@@ -37,6 +42,8 @@ public class ReservationService {
                 reservationTimeService.getById(request.timeId()),
                 themeService.getById(request.themeId())
         );
+
+        reservation.validateNotPast(LocalDateTime.now(clock));
 
         validateDuplicateReservation(
                 reservation.getDate(),
