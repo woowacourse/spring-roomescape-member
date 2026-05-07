@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -63,7 +64,7 @@ public class ThemeService {
                 .map(reservationTime -> {
                     boolean isPast = date.isBefore(LocalDate.now()) ||
                                      (date.isEqual(LocalDate.now()) && reservationTime.getStartAt()
-                                             .isBefore(java.time.LocalTime.now()));
+                                             .isBefore(LocalTime.now()));
                     boolean available = !timeIds.contains(reservationTime.getId()) && !isPast;
                     return ReservationTimeStatusResponse.of(reservationTime, available);
                 })

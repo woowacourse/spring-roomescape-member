@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -36,7 +37,7 @@ public class ReservationService {
         if (date.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
         }
-        if (date.isEqual(LocalDate.now()) && time.getStartAt().isBefore(java.time.LocalTime.now())) {
+        if (date.isEqual(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now())) {
             throw new IllegalArgumentException("지난 시간은 예약할 수 없습니다.");
         }
 
