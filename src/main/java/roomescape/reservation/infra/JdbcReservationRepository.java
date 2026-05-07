@@ -12,7 +12,6 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -23,10 +22,10 @@ public class JdbcReservationRepository implements ReservationRepository {
             new Reservation(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
-                    LocalDate.parse(resultSet.getString("date")),
+                    resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
-                            LocalTime.parse(resultSet.getString("start_at"))
+                            resultSet.getTime("start_at").toLocalTime()
                     ),
                     new Theme(
                             resultSet.getLong("theme_id"),

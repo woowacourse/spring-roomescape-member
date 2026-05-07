@@ -1,9 +1,5 @@
 package roomescape.reservation.infra;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -13,6 +9,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.ReservationTime;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -20,7 +21,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
             new ReservationTime(
                     resultSet.getLong("id"),
-                    LocalTime.parse(resultSet.getString("start_at")));
+                    resultSet.getTime("start_at").toLocalTime()
+            );
 
     @Override
     public ReservationTime save(LocalTime startAt) {
@@ -56,7 +58,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         template.update(sql, params);
     }
 
-    public Optional<ReservationTime> findById(long timeId){
+    public Optional<ReservationTime> findById(long timeId) {
         String sql = "SELECT * FROM reservation_time WHERE id = :timeId";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
