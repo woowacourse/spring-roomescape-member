@@ -26,7 +26,7 @@ class ReservationServiceTest {
         FakeTimeDao fakeReservationTimeDao = new FakeTimeDao();
         FakeReservationDao fakeReservationDao = new FakeReservationDao();
         FakeThemeDao fakeThemeDao = new FakeThemeDao();
-        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);
+        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao, null);
         savedTime = fakeReservationTimeDao.save(Time.of(LocalTime.of(10, 0)));
         savedTheme = fakeThemeDao.save(new Theme("이름", "설명", "test.com"));
     }

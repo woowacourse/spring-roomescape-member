@@ -19,7 +19,8 @@ class TimeServiceTest {
     void setUp() {
         FakeTimeDao fakeTimeDao = new FakeTimeDao();
         FakeReservationDao fakeReservationDao = new FakeReservationDao();
-        reservationTimeService = new TimeService(fakeTimeDao, fakeReservationDao);
+
+        reservationTimeService = new TimeService(fakeTimeDao, fakeReservationDao, null, null);
     }
 
     @Test
