@@ -58,8 +58,8 @@ Location: /themes/{id}
 
 #### 메서드 / URL
 
-- GET /times?available=true
-  -  전체 시간 목록 중 특정 날짜와 테마에 대해 이용 가능한 시간만 조회하는 기능, 즉 시간에 대한 필터링이므로, 이용 가능 여부를 나타내는 `available=true` 쿼리 파라미터를 적용한다.
+- GET /times/available-times
+  -  예약 가능한 시간 조회는 사용 흐름 상 전체 시간 조회와 완전히 별개로 진행되기 때문에, `/times`의 하위 경로로 둔다.
 
 #### 요청
 
