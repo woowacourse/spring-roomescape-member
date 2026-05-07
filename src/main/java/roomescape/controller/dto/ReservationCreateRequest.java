@@ -1,12 +1,14 @@
 package roomescape.controller.dto;
 
+import java.time.LocalDate;
+
 public class ReservationCreateRequest {
     private final String name;
-    private final String date;
+    private final LocalDate date;
     private final Long timeId;
     private final Long themeId;
 
-    public ReservationCreateRequest(String name, String date, Long timeId, Long themeId) {
+    public ReservationCreateRequest(String name, LocalDate date, Long timeId, Long themeId) {
         this.name = name;
         this.date = date;
         this.timeId = timeId;
@@ -17,7 +19,7 @@ public class ReservationCreateRequest {
         return name;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 

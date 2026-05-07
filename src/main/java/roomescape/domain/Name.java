@@ -17,7 +17,7 @@ public class Name {
 
     public static Name from(String value) {
         validateIsNull(value);
-        String preprocessed = preprocess(value);
+        String preprocessed = value.strip();
         validateLength(preprocessed);
 
         return new Name(preprocessed);
@@ -27,10 +27,6 @@ public class Name {
         if (value == null) {
             throw new IllegalArgumentException(NAME_SHOULD_NOT_BE_NULL);
         }
-    }
-
-    private static String preprocess(String value) {
-        return value.strip();
     }
 
     public static void validateLength(String value) {
