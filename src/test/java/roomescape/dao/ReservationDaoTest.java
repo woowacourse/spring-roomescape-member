@@ -27,6 +27,7 @@ class ReservationDaoTest {
 
     @Autowired
     private ThemeService themeService;
+
     @Autowired
     private ReservationDao reservationDao;
 

@@ -78,5 +78,4 @@ class ReservationTimeServiceTest {
         reservationTimeService.deleteById(savedTime.getId());
         assertThat(reservationTimeService.findAll()).hasSize(0);
     }
-
 }
