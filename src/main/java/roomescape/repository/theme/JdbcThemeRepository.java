@@ -47,8 +47,11 @@ public class JdbcThemeRepository implements ThemeRepository {
             return ps;
         }, keyHolder);
 
-        Long id = keyHolder.getKey().longValue();
-        return theme.withId(id);
+        Number key = keyHolder.getKey();
+        if (key == null) {
+            throw new IllegalStateException("테마 생성에 실패했습니다.");
+        }
+        return theme.withId(key.longValue());
     }
 
     @Override

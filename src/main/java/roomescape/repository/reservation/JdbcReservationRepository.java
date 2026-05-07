@@ -63,9 +63,11 @@ public class JdbcReservationRepository implements ReservationRepository {
             return ps;
         }, keyHolder);
 
-        // TODO: getKey null 방지를 위한 try-catch + 생성되지 않은 경우에 대한 예외 처리
-        long key = keyHolder.getKey().longValue();
-        return reservation.withId(key);
+        Number key = keyHolder.getKey();
+        if (key == null) {
+            throw new IllegalStateException("예약 생성에 실패했습니다.");
+        }
+        return reservation.withId(key.longValue());
     }
 
     @Override
@@ -134,7 +136,6 @@ public class JdbcReservationRepository implements ReservationRepository {
             timeId
         );
 
-        // TODO: count 가 null 인 경우 검증 * 변수명 개선
-        return count != 0;
+        return count != null && count != 0;
     }
 }

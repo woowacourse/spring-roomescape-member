@@ -43,8 +43,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             return ps;
         }, keyHolder);
 
-        long key = keyHolder.getKey().longValue(); // QUESTION: 이럴 때 그냥 객체 새로 만들어서 보내면 되는 건지 아니면 만들어진걸 조회해서 보내야 하는 건지
-        return new ReservationTime(key, TIME_FORMATTER.format(reservationTime.getStartAt()));
+        Number key = keyHolder.getKey();
+        if (key == null) {
+            throw new IllegalStateException("예약 생성에 실패했습니다.");
+        }
+        return reservationTime.withId(key.longValue());
     }
 
     @Override
