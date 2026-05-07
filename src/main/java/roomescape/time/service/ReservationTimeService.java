@@ -3,10 +3,9 @@ package roomescape.time.service;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.time.controller.dto.ReservationTimeRequest;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.time.service.dto.ReservationTimeCommand;
-import roomescape.time.service.dto.ReservationTimeResult;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,13 +21,13 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTimeResult save(ReservationTimeCommand command) {
-        if (reservationTimeRepository.existsByStartAt(command.startAt())) {
+    public ReservationTime save(ReservationTimeRequest request) {
+        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
             throw new IllegalArgumentException("해당 시간이 이미 존재합니다.");
         }
 
-        ReservationTime reservationTime = ReservationTime.create(command.startAt());
-        return ReservationTimeResult.from(reservationTimeRepository.save(reservationTime));
+        ReservationTime reservationTime = ReservationTime.create(request.startAt());
+        return reservationTimeRepository.save(reservationTime);
     }
 
     @Transactional
@@ -40,18 +39,12 @@ public class ReservationTimeService {
         }
     }
 
-    public List<ReservationTimeResult> findAll() {
-        return reservationTimeRepository.findAll()
-                .stream()
-                .map(ReservationTimeResult::from)
-                .toList();
+    public List<ReservationTime> findAll() {
+        return reservationTimeRepository.findAll();
     }
 
-    public List<ReservationTimeResult> findAvailableTimes(Long themeId, LocalDate date) {
-        return reservationTimeRepository.findAvailableTimes(themeId, date)
-                .stream()
-                .map(ReservationTimeResult::from)
-                .toList();
+    public List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date) {
+        return reservationTimeRepository.findAvailableTimes(themeId, date);
     }
 
     public ReservationTime getById(Long id) {

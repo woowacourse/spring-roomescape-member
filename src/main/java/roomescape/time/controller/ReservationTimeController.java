@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.time.controller.dto.ReservationTimeRequest;
 import roomescape.time.controller.dto.ReservationTimeResponse;
+import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
-import roomescape.time.service.dto.ReservationTimeResult;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -44,7 +44,7 @@ public class ReservationTimeController {
 
     @PostMapping("/admin/times")
     public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeRequest requestDto) {
-        ReservationTimeResult reservationTime = reservationTimeService.save(requestDto.toCommand());
+        ReservationTime reservationTime = reservationTimeService.save(requestDto);
         ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime);
         return ResponseEntity
                 .created(URI.create("/times/" + response.id()))

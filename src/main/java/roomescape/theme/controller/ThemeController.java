@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.controller.dto.ThemeResponse;
+import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
-import roomescape.theme.service.dto.ThemeResult;
 
 import java.net.URI;
 import java.util.List;
@@ -44,7 +44,7 @@ public class ThemeController {
 
     @PostMapping("/admin/themes")
     public ResponseEntity<ThemeResponse> create(@RequestBody ThemeRequest requestDto) {
-        ThemeResult theme = themeService.save(requestDto.toCommand());
+        Theme theme = themeService.save(requestDto);
         ThemeResponse response = ThemeResponse.from(theme);
         return ResponseEntity
                 .created(URI.create("/themes/" + response.id()))

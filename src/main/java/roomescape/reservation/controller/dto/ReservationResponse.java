@@ -1,6 +1,6 @@
 package roomescape.reservation.controller.dto;
 
-import roomescape.reservation.service.dto.ReservationResult;
+import roomescape.reservation.domain.Reservation;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.time.controller.dto.ReservationTimeResponse;
 
@@ -14,13 +14,13 @@ public record ReservationResponse(
         ThemeResponse theme
 ) {
 
-    public static ReservationResponse from(ReservationResult reservation) {
+    public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
-                reservation.id(),
-                reservation.name(),
-                reservation.date(),
-                ReservationTimeResponse.from(reservation.time()),
-                ThemeResponse.from(reservation.theme())
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
+                ReservationTimeResponse.from(reservation.getTime()),
+                ThemeResponse.from(reservation.getTheme())
         );
     }
 }

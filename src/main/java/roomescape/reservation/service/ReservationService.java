@@ -2,10 +2,9 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.service.dto.ReservationCommand;
-import roomescape.reservation.service.dto.ReservationResult;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.service.ReservationTimeService;
 
@@ -31,21 +30,21 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResult save(ReservationCommand command) {
+    public Reservation save(ReservationRequest request) {
         Reservation reservation = Reservation.create(
-                command.name(),
-                command.date(),
-                reservationTimeService.getById(command.timeId()),
-                themeService.getById(command.themeId())
+                request.name(),
+                request.date(),
+                reservationTimeService.getById(request.timeId()),
+                themeService.getById(request.themeId())
         );
 
         checkDuplicateReservation(
                 reservation.getDate(),
-                command.timeId(),
-                command.themeId()
+                request.timeId(),
+                request.themeId()
         );
 
-        return ReservationResult.from(reservationRepository.save(reservation));
+        return reservationRepository.save(reservation);
     }
 
     @Transactional
@@ -53,11 +52,8 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<ReservationResult> findAll() {
-        return reservationRepository.findAll()
-                .stream()
-                .map(ReservationResult::from)
-                .toList();
+    public List<Reservation> findAll() {
+        return reservationRepository.findAll();
     }
 
     private void checkDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
