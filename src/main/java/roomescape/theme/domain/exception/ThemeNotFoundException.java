@@ -1,6 +1,8 @@
 package roomescape.theme.domain.exception;
 
-public class ThemeNotFoundException extends RuntimeException {
+import roomescape.common.exception.NotFoundException;
+
+public class ThemeNotFoundException extends NotFoundException {
     public ThemeNotFoundException(String message) {
         super(message);
     }

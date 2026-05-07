@@ -1,6 +1,8 @@
 package roomescape.reservation.domain.exception;
 
-public class ReservationInUseException extends RuntimeException {
+import roomescape.common.exception.AlreadyInUseException;
+
+public class ReservationInUseException extends AlreadyInUseException {
     public ReservationInUseException(String message) {
         super(message);
     }
