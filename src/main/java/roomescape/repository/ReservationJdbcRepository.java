@@ -81,7 +81,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
                 ps.setString(1, reservation.getName());
-                ps.setLong(2, reservation.getTime().getId());
+                ps.setLong(2, reservation.getTheme().getId());
                 ps.setDate(3, Date.valueOf(reservation.getDate()));
                 ps.setLong(4, reservation.getTime().getId());
                 return ps;

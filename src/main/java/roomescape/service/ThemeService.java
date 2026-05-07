@@ -10,7 +10,6 @@ import roomescape.dto.theme.CreateThemeRequest;
 import roomescape.dto.theme.PopularThemeResponse;
 import roomescape.dto.theme.ThemeReservationTimeResponse;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeJdbcRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
@@ -24,7 +23,7 @@ public class ThemeService {
     private final ReservationTimeRepository reservationTimeRepository;
 
     public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository,
-                        ReservationTimeJdbcRepository reservationTimeRepository) {
+                        ReservationTimeRepository reservationTimeRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
@@ -34,6 +33,7 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
+    @Transactional
     public Theme createTheme(CreateThemeRequest request) {
         Theme theme = new Theme(null, request.name(), request.description(), request.thumbnailImageUrl());
         Long newThemeId = themeRepository.save(theme);
