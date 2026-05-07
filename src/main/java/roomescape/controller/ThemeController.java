@@ -31,8 +31,8 @@ public class ThemeController {
     }
 
     @GetMapping("/popularity")
-    public ResponseEntity<ThemeListResponse> popularThemes(@RequestParam("days") int days,
-                                                           @RequestParam("size") int size) {
+    public ResponseEntity<ThemeListResponse> popularThemes(@RequestParam(value = "days", defaultValue = "7") int days,
+                                                           @RequestParam(value = "size", defaultValue = "10") int size) {
         return ResponseEntity.ok(
                 ThemeListResponse.from(themeService.findPopularThemes(days, LocalDate.now() ,size)
                         .stream()

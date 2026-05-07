@@ -20,19 +20,13 @@ import java.util.Objects;
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private final ErrorStatusMapper errorStatusMapper;
-
-    public GlobalExceptionHandler(ErrorStatusMapper errorStatusMapper) {
-        this.errorStatusMapper = errorStatusMapper;
-    }
-
     @ExceptionHandler(DomainException.class)
     public ResponseEntity<ErrorResponse> handleDomainException(DomainException exception, HttpServletRequest request) {
         log.error("Domain exception occurred", exception);
         ErrorCode errorCode = exception.getErrorCode();
 
         return ResponseEntity
-                .status(errorStatusMapper.map(errorCode))
+                .status(ErrorStatusMapper.map(errorCode))
                 .body(ErrorResponse.of(request.getRequestURI(), errorCode.message()));
     }
 
