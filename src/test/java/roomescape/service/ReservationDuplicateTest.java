@@ -21,8 +21,9 @@ class ReservationDuplicateTest {
     @Test
     @DisplayName("이미 존재하는 예약 건과 중복으로 예약하면 예외가 발생한다")
     void throwsException_whenDuplicateReservationExists() {
+        LocalDate date =  LocalDate.now().minusDays(7);
 
-        ReservationRequest request = new ReservationRequest("아나키", LocalDate.of(2026, 5, 1), 1L, 1L);
+        ReservationRequest request = new ReservationRequest("아나키", date, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.save(request))
                 .isInstanceOf(IllegalArgumentException.class)

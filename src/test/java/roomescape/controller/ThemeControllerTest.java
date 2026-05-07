@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import io.restassured.RestAssured;
+import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,12 @@ class ThemeControllerTest {
 
     @Test
     void 예약_가능한_시간_조회_API() {
+        // given
+        String date = LocalDate.now().minusDays(7).toString();
+
         // when & then
         RestAssured.given().log().all()
-                .when().get("/themes/1/available-time?date=2026-05-01")
+                .when().get("/themes/1/available-time?date=" + date)
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(4));
