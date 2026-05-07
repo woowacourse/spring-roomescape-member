@@ -48,6 +48,11 @@ public class JdbcReservationRepository implements ReservationRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(insertReservationSql, params, keyHolder);
 
+        Number id = keyHolder.getKey();
+        if (id == null) {
+            throw new IllegalStateException("reservation 저장 후 생성된 ID를 반환받지 못했습니다.");
+        }
+
         return new Reservation(
                 keyHolder.getKey().longValue(),
                 reservation.getName(),

@@ -32,6 +32,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(sql, params, keyHolder);
 
+        Number id = keyHolder.getKey();
+        if (id == null) {
+            throw new IllegalStateException("reservation_time 저장 후 생성된 ID를 반환받지 못했습니다.");
+        }
+
         return new ReservationTime(keyHolder.getKey().longValue(), startAt);
     }
 
