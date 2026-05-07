@@ -50,58 +50,43 @@ public class ThemeDao {
     }
 
     public List<Theme> findAll() {
-        try {
-            return jdbcTemplate.query("SELECT id, name, description, thumbnail_url FROM theme", themeRowMapper);
-        } catch (EmptyResultDataAccessException ignored) {
-        }
-
-        return List.of();
+        return jdbcTemplate.query("SELECT id, name, description, thumbnail_url FROM theme", themeRowMapper);
     }
 
     public List<Theme> findPopularThemes(int size, LocalDate from, LocalDate to) {
-        try {
-            final String sql = """
-                    SELECT
-                        th.id,
-                        th.name,
-                        th.description,
-                        th.thumbnail_url
-                    FROM reservation AS r
-                    INNER JOIN theme AS th ON r.theme_id = th.id
-                    WHERE r.date BETWEEN ? AND ?
-                    GROUP BY
-                        th.id,
-                        th.name,
-                        th.description,
-                        th.thumbnail_url
-                    ORDER BY COUNT(r.id) DESC
-                    LIMIT ?
-                    """;
-            return jdbcTemplate.query(sql, themeRowMapper, from, to, size);
-        } catch (EmptyResultDataAccessException ignored) {
-        }
-
-        return List.of();
+        final String sql = """
+                SELECT
+                    th.id,
+                    th.name,
+                    th.description,
+                    th.thumbnail_url
+                FROM reservation AS r
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY
+                    th.id,
+                    th.name,
+                    th.description,
+                    th.thumbnail_url
+                ORDER BY COUNT(r.id) DESC
+                LIMIT ?
+                """;
+        return jdbcTemplate.query(sql, themeRowMapper, from, to, size);
     }
 
-
     public List<AvailableReservationTimeResponse> findAvailableTimeById(long themeId, String date) {
-        try {
-            final String sql = """
-                    SELECT
-                          rt.id,
-                          rt.start_at,
-                          CASE WHEN r.id IS NULL THEN TRUE ELSE FALSE END AS available
-                      FROM reservation_time rt
-                      LEFT JOIN reservation r
-                          ON rt.id = r.time_id
-                           AND r.theme_id = ?
-                           AND r.date = ?
-                    """;
-            return jdbcTemplate.query(sql, availableReservationTimeRowMapper, themeId, date);
-        } catch (EmptyResultDataAccessException ignored) {
-        }
-        return List.of();
+        final String sql = """
+                SELECT
+                      rt.id,
+                      rt.start_at,
+                      CASE WHEN r.id IS NULL THEN TRUE ELSE FALSE END AS available
+                  FROM reservation_time rt
+                  LEFT JOIN reservation r
+                      ON rt.id = r.time_id
+                       AND r.theme_id = ?
+                       AND r.date = ?
+                """;
+        return jdbcTemplate.query(sql, availableReservationTimeRowMapper, themeId, date);
     }
 
     public Long save(String name, String description, String thumbnailUrl) {

@@ -49,7 +49,7 @@
 
 ### Repository 코드 품질
 
-- [ ] **10. `ThemeDao` - 불필요한 try-catch 3곳 지우기**
+- [x] **10. `ThemeDao` - 불필요한 try-catch 3곳 지우기**
   - `findAll()`, `findPopularThemes()`, `findAvailableTimeById()` 모두 `EmptyResultDataAccessException`을 catch
   - `JdbcTemplate.query()`는 결과가 없으면 빈 리스트를 반환하므로 해당 예외 발생 안 함
   - try-catch 블록 전부 제거 가능함.
