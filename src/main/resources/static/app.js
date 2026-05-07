@@ -144,27 +144,41 @@ document.getElementById('search-schedule-btn').addEventListener('click', () => {
                 allHours.push(hour);
             }
 
+            // --- 💡 중복 시간 확인 로직 시작 💡 ---
+            // API에서 받아온 스케줄의 시작/종료 시간을 Date 객체로 변환해두면 비교가 편합니다.
+            const reservedSlots = schedules.map(s => ({
+                start: new Date(s.startAt.replace(' ', 'T')),
+                end: new Date(s.endAt.replace(' ', 'T'))
+            }));
+
             // 생성한 모든 시간대(allHours)를 화면에 그립니다.
             allHours.forEach(time => {
-                // API로 받아온 스케줄(=이미 누군가 예약한 스케줄) 중 해당 시간이 있는지 확인
-                // startAt이 "2026-05-10 10:00" 형태이므로 time 문자열 포함 여부로 확인
-                const isReserved = schedules.find(s => s.startAt.includes(time));
+                const [hour, minute] = time.split(':');
+                const currentDate = document.getElementById('date-input').value;
+                // 각 시간 슬롯을 Date 객체로 만듭니다.
+                const slotDateTime = new Date(`${currentDate}T${hour}:${minute}:00`);
+
+                // 이 시간 슬롯이 기존 예약에 의해 막혔는지 확인합니다.
+                // 조건: slotDateTime이 기존 예약의 [start, end) 시간 사이에 포함되는가?
+                const isBlocked = reservedSlots.some(slot =>
+                    slotDateTime >= slot.start && slotDateTime < slot.end
+                );
 
                 const li = document.createElement('li');
 
-                if (isReserved) {
-                    // 스케줄이 존재함 = 이미 예약됨 (클릭 불가)
+                if (isBlocked) {
+                    // 예약이 겹쳐서 막힌 시간 (클릭 불가)
                     li.style.backgroundColor = '#e2e8f0';
                     li.style.color = '#94a3b8';
                     li.innerHTML = `<label style="cursor: not-allowed;"><input type="radio" name="schedule" disabled> <del>${time}</del> - 예약 마감 🔴</label>`;
                 } else {
-                    // 스케줄이 없음 = 빈 방이라 예약 가능! (클릭 가능)
-                    // 🚨 아직 DB에 스케줄이 없으므로 value에 '시간(time)' 자체를 넣습니다.
+                    // 예약 가능한 시간! (클릭 가능)
                     li.innerHTML = `<label><input type="radio" name="schedule" value="${time}"> <strong>${time}</strong> - 예약 가능 🟢</label>`;
                 }
 
                 scheduleList.appendChild(li);
             });
+            // --- 중복 시간 확인 로직 끝 ---
         })
         .catch(error => console.error(error));
 });
