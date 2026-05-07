@@ -51,13 +51,9 @@ public class ThemeService {
     }
 
     public void delete(long themeId) {
-        validateThemeExists(themeId);
-        themeDao.delete(themeId);
-    }
+        int affectedRows = themeDao.delete(themeId);
 
-    private void validateThemeExists(Long themeId) {
-        boolean exists = themeDao.existsById(themeId);
-        if (!exists) {
+        if (affectedRows == 0) {
             throw new ThemeException(ThemeErrorCode.THEME_NOT_FOUND);
         }
     }

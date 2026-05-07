@@ -129,10 +129,10 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, boolean.class, reservationTimeId);
     }
 
-    public void delete(Long reservationId) {
+    public int delete(Long reservationId) {
         String sql = """
                 DELETE FROM reservation
                 WHERE id = ?""";
-        jdbcTemplate.update(sql, reservationId);
+        return jdbcTemplate.update(sql, reservationId);
     }
 }

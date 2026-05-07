@@ -57,13 +57,9 @@ public class ReservationService {
     }
 
     public void delete(Long reservationId) {
-        validateReservationExists(reservationId);
-        reservationDao.delete(reservationId);
-    }
+        int affectedRows = reservationDao.delete(reservationId);
 
-    private void validateReservationExists(Long reservationId) {
-        boolean exists = reservationDao.existsById(reservationId);
-        if (!exists) {
+        if (affectedRows == 0) {
             throw new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND);
         }
     }

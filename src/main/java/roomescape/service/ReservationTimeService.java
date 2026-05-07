@@ -69,15 +69,11 @@ public class ReservationTimeService {
         return !reservedTimeIds.contains(time.getId());
     }
 
-    public void deleteReservationTime(long reservationTimeId) {
-        validateReservationTimeExists(reservationTimeId);
+    public void delete(long reservationTimeId) {
         validateReservationNotExistsBy(reservationTimeId);
-        reservationTimeDao.delete(reservationTimeId);
-    }
+        int affectedRows = reservationTimeDao.delete(reservationTimeId);
 
-    private void validateReservationTimeExists(Long reservationTimeId) {
-        boolean exists = reservationTimeDao.existsById(reservationTimeId);
-        if (!exists) {
+        if (affectedRows == 0) {
             throw new ReservationTimeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND);
         }
     }
