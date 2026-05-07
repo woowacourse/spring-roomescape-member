@@ -40,6 +40,41 @@ class ReservationTimeRepositoryTest {
     }
 
     @Test
+    @DisplayName("모든 예약 시간 정보를 조회한다.")
+    void findAll() {
+        // given
+        List<ReservationTime> reservationTimes = List.of(
+                ReservationTime.create(LocalTime.of(12, 0)),
+                ReservationTime.create(LocalTime.of(13, 0)),
+                ReservationTime.create(LocalTime.of(14, 0))
+        );
+        List<ReservationTime> savedTimes = savedAll(reservationTimes);
+
+        // when & then
+        assertThat(jdbcReservationTimeRepository.findAll().size()).isEqualTo(savedTimes.size());
+    }
+
+    @Test
+    @DisplayName("id로 특정 예약 시간 정보를 조회한다.")
+    void findById() {
+        // given
+        List<ReservationTime> reservationTimes = List.of(
+                ReservationTime.create(LocalTime.of(12, 0)),
+                ReservationTime.create(LocalTime.of(13, 0)),
+                ReservationTime.create(LocalTime.of(14, 0))
+        );
+        List<ReservationTime> savedTimes = savedAll(reservationTimes);
+        LocalTime expected = savedTimes.getFirst().startAt();
+
+        // when
+        LocalTime actual = jdbcReservationTimeRepository.findById(savedTimes.getFirst().id()).get().startAt();
+
+        // then
+        assertThat(actual)
+                .isEqualTo(expected);
+    }
+
+    @Test
     @DisplayName("예약 시간을 추가한다.")
     void save() {
         // given
@@ -54,28 +89,13 @@ class ReservationTimeRepositoryTest {
     }
 
     @Test
-    @DisplayName("모든 예약 시간 정보를 조회한다.")
-    void findAll() {
-        // given
-        List<ReservationTime> reservationTimes = List.of(
-            ReservationTime.create(LocalTime.of(12,0)),
-            ReservationTime.create(LocalTime.of(13,0)),
-            ReservationTime.create(LocalTime.of(14,0))
-        );
-        List<ReservationTime> savedTimes = savedAll(reservationTimes);
-
-        // when & then
-        assertThat(jdbcReservationTimeRepository.findAll().size()).isEqualTo(savedTimes.size());
-    }
-
-    @Test
     @DisplayName("예약 시간을 삭제한다.")
     void delete() {
         // given
         List<ReservationTime> reservationTimes = List.of(
-                ReservationTime.create(LocalTime.of(12,0)),
-                ReservationTime.create(LocalTime.of(13,0)),
-                ReservationTime.create(LocalTime.of(14,0))
+                ReservationTime.create(LocalTime.of(12, 0)),
+                ReservationTime.create(LocalTime.of(13, 0)),
+                ReservationTime.create(LocalTime.of(14, 0))
         );
         List<ReservationTime> savedTimes = savedAll(reservationTimes);
 
@@ -122,15 +142,15 @@ class ReservationTimeRepositoryTest {
                 .hasSize(1);
     }
 
-    private List<ReservationTime> savedAll(List<ReservationTime> reservationTimes){
+    private List<ReservationTime> savedAll(List<ReservationTime> reservationTimes) {
         List<ReservationTime> savedTimes = new ArrayList<>();
-        for(ReservationTime reservationTime : reservationTimes){
+        for (ReservationTime reservationTime : reservationTimes) {
             savedTimes.add(savedTime(reservationTime));
         }
         return savedTimes;
     }
 
-    private ReservationTime savedTime(ReservationTime reservationTime){
+    private ReservationTime savedTime(ReservationTime reservationTime) {
         Long savedId = jdbcReservationTimeRepository.save(reservationTime);
         return ReservationTime.load(savedId, reservationTime.startAt());
     }

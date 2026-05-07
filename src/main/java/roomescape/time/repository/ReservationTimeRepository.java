@@ -7,6 +7,7 @@ import java.util.Optional;
 import roomescape.time.domain.ReservationTime;
 
 public interface ReservationTimeRepository {
+
     List<ReservationTime> findAll();
 
     Optional<ReservationTime> findById(Long id);
@@ -18,4 +19,5 @@ public interface ReservationTimeRepository {
     boolean existsByStartAt(LocalTime startAt);
 
     List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, Long themeId);
+
 }
