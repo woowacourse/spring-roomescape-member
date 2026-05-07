@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
 @Controller
@@ -21,7 +22,9 @@ public class ThemeAdminPageController {
 
     @GetMapping
     public String getThemeAdminPage(final Model model) {
-        model.addAttribute("themes", themeService.getAll());
+        model.addAttribute("themes", themeService.getAll().stream()
+                .map(ThemeResponse::from)
+                .toList());
         return "theme/list";
     }
 

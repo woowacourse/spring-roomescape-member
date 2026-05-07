@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
-import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.controller.dto.ReservationTimeResponse;
+import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
 @Controller
@@ -36,17 +38,25 @@ public class ReservationPageController {
             @RequestParam(defaultValue = "10") final int limit,
             final Model model
     ) {
-        model.addAttribute("reservations", reservationService.getAll());
-        model.addAttribute("themes", themeService.getAll());
-        model.addAttribute("popularThemes", reservationService.getPopularThemes(period, limit));
+        model.addAttribute("reservations", reservationService.getAll().stream()
+                .map(ReservationResponse::from)
+                .toList());
+        model.addAttribute("themes", themeService.getAll().stream()
+                .map(ThemeResponse::from)
+                .toList());
+        model.addAttribute("popularThemes", reservationService.getPopularThemes(period, limit).stream()
+                .map(ThemeResponse::from)
+                .toList());
         model.addAttribute("selectedThemeId", themeId);
         model.addAttribute("selectedDate", date);
         model.addAttribute("period", period);
         model.addAttribute("limit", limit);
 
-        List<ReservationTime> availableTimes = List.of();
+        List<ReservationTimeResponse> availableTimes = List.of();
         if (themeId != null && date != null) {
-            availableTimes = reservationService.findAvailableTimes(date, themeId);
+            availableTimes = reservationService.findAvailableTimes(date, themeId).stream()
+                    .map(ReservationTimeResponse::from)
+                    .toList();
         }
         model.addAttribute("availableTimes", availableTimes);
 

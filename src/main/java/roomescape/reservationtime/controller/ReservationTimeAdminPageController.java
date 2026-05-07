@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import roomescape.reservationtime.controller.dto.ReservationTimeResponse;
 import roomescape.reservationtime.service.ReservationTimeService;
+import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
 @Controller
@@ -28,9 +30,13 @@ public class ReservationTimeAdminPageController {
 
     @GetMapping
     public String getReservationTimeAdminPage(@PathVariable final Long themeId, final Model model) {
-        model.addAttribute("theme", themeService.getById(themeId));
-        model.addAttribute("themes", themeService.getAll());
-        model.addAttribute("reservationTimes", reservationTimeService.findAllByThemeId(themeId));
+        model.addAttribute("theme", ThemeResponse.from(themeService.getById(themeId)));
+        model.addAttribute("themes", themeService.getAll().stream()
+                .map(ThemeResponse::from)
+                .toList());
+        model.addAttribute("reservationTimes", reservationTimeService.findAllByThemeId(themeId).stream()
+                .map(ReservationTimeResponse::from)
+                .toList());
         return "reservationtime/list";
     }
 
