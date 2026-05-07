@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.controller.dto.ThemeFamousFindRequest;
+import roomescape.controller.dto.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.service.ThemeService;
 
@@ -32,25 +33,33 @@ public class ThemeController {
 
     @PostMapping("/admin/themes")
     @ResponseStatus(HttpStatus.CREATED)
-    public Theme create(@RequestBody ThemeCreateRequest request) {
-        return themeService.create(request);
+    public ThemeResponse create(@RequestBody ThemeCreateRequest request) {
+        Theme theme = themeService.create(request);
+        return ThemeResponse.toDto(theme);
     }
 
     @GetMapping("/themes/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Theme find(@PathVariable Long id) {
-        return themeService.find(id);
+    public ThemeResponse find(@PathVariable Long id) {
+        Theme theme = themeService.find(id);
+        return ThemeResponse.toDto(theme);
     }
 
     @GetMapping("/themes")
     @ResponseStatus(HttpStatus.OK)
-    public List<Theme> findAll() {
-        return themeService.findAll();
+    public List<ThemeResponse> findAll() {
+        List<Theme> themes = themeService.findAll();
+        return themes.stream()
+                .map(ThemeResponse::toDto)
+                .toList();
     }
 
     @GetMapping("/themes/famous")
     @ResponseStatus(HttpStatus.OK)
-    public List<Theme> findFamous(@ModelAttribute ThemeFamousFindRequest request) {
-        return themeService.findFamous(request);
+    public List<ThemeResponse> findFamous(@ModelAttribute ThemeFamousFindRequest request) {
+        List<Theme> themes = themeService.findFamous(request);
+        return themes.stream()
+                .map(ThemeResponse::toDto)
+                .toList();
     }
 }
