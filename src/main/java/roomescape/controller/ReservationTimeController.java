@@ -3,9 +3,9 @@ package roomescape.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.ReservationTimeAvailability;
-import roomescape.dto.AvailableTimeListResponse;
+import roomescape.dto.AvailableTimesResponse;
 import roomescape.dto.AvailableTimeResponse;
-import roomescape.dto.ReservationTimeListResponse;
+import roomescape.dto.ReservationTimesResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
@@ -23,8 +23,8 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<ReservationTimeListResponse> list() {
-        return ResponseEntity.ok(ReservationTimeListResponse.from(
+    public ResponseEntity<ReservationTimesResponse> list() {
+        return ResponseEntity.ok(ReservationTimesResponse.from(
                 reservationTimeService.findAll()
                         .stream()
                         .map(ReservationTimeResponse::from)
@@ -32,12 +32,12 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/availability")
-    public ResponseEntity<AvailableTimeListResponse> getAvailableTimes(@RequestParam("date") LocalDate date,
-                                                                       @RequestParam("themeId") Long themeId) {
+    public ResponseEntity<AvailableTimesResponse> getAvailableTimes(@RequestParam("date") LocalDate date,
+                                                                    @RequestParam("themeId") Long themeId) {
         List<ReservationTimeAvailability> timeAvailabilities =
                 reservationTimeService.findAvailableTimes(date, themeId);
 
-        return ResponseEntity.ok(AvailableTimeListResponse.from(timeAvailabilities.stream()
+        return ResponseEntity.ok(AvailableTimesResponse.from(timeAvailabilities.stream()
                 .map(AvailableTimeResponse::from)
                 .toList()));
     }

@@ -2,7 +2,7 @@ package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.dto.ReservationListResponse;
+import roomescape.dto.ReservationsResponse;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
@@ -16,9 +16,9 @@ public class ReservationAdminController {
     }
 
     @GetMapping
-    public ResponseEntity<ReservationListResponse> list() {
+    public ResponseEntity<ReservationsResponse> list() {
         return ResponseEntity.ok(
-                ReservationListResponse.from(reservationService.findAll()
+                ReservationsResponse.from(reservationService.findAll()
                         .stream()
                         .map(ReservationResponse::from)
                         .toList()));
