@@ -1,4 +1,4 @@
-package roomescape.advice;
+package roomescape.exception.advice;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;

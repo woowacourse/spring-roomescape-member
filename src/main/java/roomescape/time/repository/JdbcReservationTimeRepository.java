@@ -1,10 +1,12 @@
 package roomescape.time.repository;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.ResourceInUseException;
 import roomescape.time.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
@@ -46,7 +48,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("delete from reservation_time where id = ?", id);
+        try {
+            jdbcTemplate.update("delete from reservation_time where id = ?", id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceInUseException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
+        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package roomescape.time.service;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.time.controller.dto.ReservationTimeRequest;
@@ -32,11 +31,7 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteById(Long id) {
-        try {
-            reservationTimeRepository.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
-        }
+        reservationTimeRepository.deleteById(id);
     }
 
     public List<ReservationTime> findAll() {
