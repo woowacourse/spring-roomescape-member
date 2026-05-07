@@ -55,7 +55,6 @@ public class ReservationTimeDao {
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id=?";
         jdbcTemplate.update(sql, id);
-        jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM reservation_time)");
     }
 
     public boolean existsByStartAt(LocalTime startAt) {

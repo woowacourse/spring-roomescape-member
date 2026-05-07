@@ -98,7 +98,6 @@ public class ReservationDao {
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
-        jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM reservation)");
     }
 
     public boolean existByTimeId(Long timeId) {

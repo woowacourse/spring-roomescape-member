@@ -87,7 +87,6 @@ public class ThemeDao {
     public void deleteById(Long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
-        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM theme)");
     }
 
     public boolean existsByName(String name) {
