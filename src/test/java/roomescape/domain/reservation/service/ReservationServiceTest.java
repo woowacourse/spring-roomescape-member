@@ -28,6 +28,7 @@ import roomescape.domain.reservation.response.ReservationResponse;
 import roomescape.domain.reservation.response.ReservationTimeResponse;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.domain.theme.response.ThemeResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -79,7 +80,7 @@ class ReservationServiceTest {
         // then
         assertThat(response.id()).isEqualTo(1L);
         assertThat(response.username()).isEqualTo("브라운");
-        // TODO: response에 theme 추가 및 검증 추가
+        assertThat(response.theme().name()).isEqualTo("theme1");
         assertThat(response.date()).isEqualTo(LocalDate.of(2026, 4, 30));
         assertThat(response.time().id()).isEqualTo(1L);
 
@@ -128,10 +129,20 @@ class ReservationServiceTest {
 
         // then
         assertThat(responses).hasSize(2)
-                .extracting("username", "date", "time") // TODO: theme 추가
+                .extracting("username", "theme", "date", "time")
                 .containsExactly(
-                        tuple("브라운", LocalDate.of(2026, 4, 30), ReservationTimeResponse.from(time1)),
-                        tuple("크루", LocalDate.of(2026, 4, 30), ReservationTimeResponse.from(time2))
+                        tuple(
+                                "브라운",
+                                ThemeResponse.from(theme),
+                                LocalDate.of(2026, 4, 30),
+                                ReservationTimeResponse.from(time1)
+                        ),
+                        tuple(
+                                "크루",
+                                ThemeResponse.from(theme),
+                                LocalDate.of(2026, 4, 30),
+                                ReservationTimeResponse.from(time2)
+                        )
                 );
 
         verify(reservationRepository).findAll();
