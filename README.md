@@ -11,38 +11,36 @@
 {
   "name": "브라운",
   "date": "2026-05-04",
-  "time_id": 1,
-  "theme_id": 1
+  "timeId": 1,
+  "themeId": 1
 }
 ```
 
 **응답**
-- Status: `201 Created`
-- Header: Location: admin/reservations/{id}
+- Status: `200 OK`
 - Body:
 ```json
 {
   "id": 1,
   "name": "브라운",
   "date": "2026-05-04",
-  "time": {
-    "id" : 1,
-    "start_at" : "10:00"
+  "themeResponseDto": {
+    "id": 1,
+    "name": "방탈출 이름",
+    "thumbnailUrl": "url",
+    "description": "설명"
   },
-  "theme": {
-    "name" : "방탈출 이름",
-    "description" : "설명",
-    "thumbnail_url" : "url"
+  "timeDto": {
+    "id": 1,
+    "startAt": "10:00"
   }
 }
 ```
 
 **예외**
-- 400: 필수 값 누락 / 잘못된 날짜 형식
-- 404: 존재하지 않는 time_id, theme_id
-- 409: 동일 날짜,시간,테마 중복 예약
-- 403: 관리자가 아니면 [로그인 기능 추가시]
-- 401: 로그인을 하지 않았을 경우 [ 로그인 기능 추가시 ]
+- 400: 필수 값 누락 (`name`, `date`, `timeId`, `themeId`) / 잘못된 날짜·시간 형식
+- 404: 존재하지 않는 `timeId` 또는 `themeId`
+- 409: 동일 날짜·시간·테마 중복 예약
 
 
 ### 예약 삭제 - DELETE /admin/reservations/{id}
@@ -52,14 +50,11 @@
 - URL: `/admin/reservations/{id}`
 
 **응답**
-- Status: `204  No Content`
-- Body:
+- Status: `200 OK`
+- Body: (없음)
 
 **예외**
-- 400: 필수 값 누락
 - 404: 존재하지 않는 id
-- 403: 관리자가 아니면 [로그인 기능 추가시]
-- 401: 로그인을 하지 않았을 경우 [ 로그인 기능 추가시 ]
 
 ### 단일 예약 조회 - GET /admin/reservations/{id}
 
@@ -68,30 +63,28 @@
 - URL: `/admin/reservations/{id}`
 
 **응답**
-- Status: `200  OK`
+- Status: `200 OK`
 - Body:
 ```json
-  {
+{
   "id": 1,
   "name": "브라운",
   "date": "2026-05-04",
-  "time": {
+  "themeResponseDto": {
+    "id": 1,
+    "name": "방탈출 이름",
+    "thumbnailUrl": "url",
+    "description": "설명"
+  },
+  "timeDto": {
     "id": 1,
     "startAt": "10:00"
-  },
-  "theme": {
-    "name": "방탈출 이름",
-    "description": "설명",
-    "thumbnailUrl": "url"
   }
 }
 ```
 
 **예외**
-- 400: id 입력되지 않았을 때
-- 404: id 존재하지 않을 때
-- 403: 관리자가 아니면 [로그인 기능 추가시]
-- 401: 로그인을 하지 않았을 경우 [ 로그인 기능 추가시 ]
+- 404: 존재하지 않는 id
 
 ### 예약 목록 조회 - GET /admin/reservations
 
@@ -100,7 +93,7 @@
 - URL: `/admin/reservations`
 
 **응답**
-- Status: `200  OK`
+- Status: `200 OK`
 - Body:
 ```json
 [
@@ -108,30 +101,21 @@
     "id": 1,
     "name": "브라운",
     "date": "2026-05-04",
-    "time": {
+    "themeResponseDto": {
+      "id": 1,
+      "name": "방탈출 이름",
+      "thumbnailUrl": "url",
+      "description": "설명"
+    },
+    "timeDto": {
       "id": 1,
       "startAt": "10:00"
-    },
-    "theme": {
-      "name": "방탈출 이름",
-      "description": "설명",
-      "thumbnailUrl": "url"
     }
-  },
-  {
-    "id": 2,
-    "name": "...",
-    ...
   }
 ]
 ```
 
-**예외**
-- 403: 관리자가 아니면 [로그인 기능 추가시]
-- 401: 로그인을 하지 않았을 경우 [ 로그인 기능 추가시 ]
-
-
------------------------------------
+---
 
 ### 시간 추가 - POST /admin/times
 
@@ -146,8 +130,7 @@
 ```
 
 **응답**
-- Status: `201 Created`
-- Headers: `Location: /admin/times/{id}`
+- Status: `200 OK`
 - Body:
 ```json
 {
@@ -157,11 +140,8 @@
 ```
 
 **예외**
-- 400: 필수 값(`startAt`) 누락
-- 400: 잘못된 시간 형식 (예: `"25:00"`, `"abc"`)
+- 400: 필수 값(`startAt`) 누락 / 잘못된 시간 형식 (예: `"25:00"`, `"abc"`)
 - 409: 동일한 시간 중복 등록
-- 403: 관리자가 아니면 [로그인 기능 추가시]
-- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
 
 
 ### 시간 삭제 - DELETE /admin/times/{id}
@@ -171,15 +151,12 @@
 - URL: `/admin/times/{id}`
 
 **응답**
-- Status: `204 No Content`
-- Body:
+- Status: `200 OK`
+- Body: (없음)
 
 **예외**
-- 400: 잘못된 형식의 id (숫자가 아닌 값)
 - 404: 존재하지 않는 id
-- 409: 해당 시간을 사용 중인 예약이 존재 (참조 무결성 위반)
-- 403: 관리자가 아니면 [로그인 기능 추가시]
-- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
+- 409: 해당 시간을 사용 중인 예약이 존재
 
 ### 단일 시간 조회 - GET /admin/times/{id}
 
@@ -191,7 +168,6 @@
 - Status: `200 OK`
 - Body:
 ```json
-
 {
   "id": 1,
   "startAt": "10:00"
@@ -199,10 +175,7 @@
 ```
 
 **예외**
-- 400: id 값 누락
-- 404: id값 존재하지 않을 때.
-- 403: 관리자가 아니면 [로그인 기능 추가시]
-- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
+- 404: 존재하지 않는 id
 
 
 ### 시간 목록 조회 - GET /admin/times
@@ -227,12 +200,9 @@
 ]
 ```
 
-**예외**
-- 403: 관리자가 아니면 [로그인 기능 추가시]
-- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
+---
 
---------------------------------------------------
-## Themes
+## 테마 관리
 
 ### 테마 추가 - POST /admin/themes
 
@@ -244,29 +214,25 @@
 {
   "name": "이름",
   "description": "설명",
-  "thumbnail_url": "url"
+  "thumbnailUrl": "url"
 }
 ```
 
 **응답**
-- Status: `201 Created`
-- Headers: `Location: /admin/themes/{id}`
+- Status: `200 OK`
 - Body:
 ```json
 {
   "id": 1,
   "name": "이름",
-  "description": "설명",
-  "thumbnail_url": "url"
+  "thumbnailUrl": "url",
+  "description": "설명"
 }
 ```
 
 **예외**
-- 400: 필수 값 누락
-- 400: 잘못된 URL 형식
+- 400: 이름 40자 초과 / 설명 2자 미만 또는 200자 초과
 - 409: 동일한 이름 테마 중복 등록
-- 403: 관리자가 아니면 [로그인 기능 추가시]
-- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
 
 
 ### 테마 삭제 - DELETE /admin/themes/{id}
@@ -276,15 +242,12 @@
 - URL: `/admin/themes/{id}`
 
 **응답**
-- Status: `204 No Content`
-- Body:
+- Status: `200 OK`
+- Body: (없음)
 
 **예외**
-- 400: 잘못된 형식의 id (숫자가 아닌 값)
 - 404: 존재하지 않는 id
-- 409: 해당 시간을 사용 중인 예약이 존재 (참조 무결성 위반)
-- 403: 관리자가 아니면 [로그인 기능 추가시]
-- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
+- 409: 해당 테마를 사용 중인 예약이 존재
 
 ### 단일 테마 조회 - GET /admin/themes/{id}
 
@@ -299,16 +262,13 @@
 {
   "id": 1,
   "name": "이름",
-  "description": "설명",
-  "thumbnail_url": "url"
+  "thumbnailUrl": "url",
+  "description": "설명"
 }
 ```
 
 **예외**
-- 400: id 누락됐을 때
-- 404: id 없을 때
-- 403: 관리자가 아니면 [로그인 기능 추가시]
-- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시
+- 404: 존재하지 않는 id
 
 ### 테마 목록 조회 - GET /admin/themes
 
@@ -324,28 +284,21 @@
   {
     "id": 1,
     "name": "이름",
-    "description": "설명",
-    "thumbnail_url": "url"
-  },
-  {
-    "id": 2,
-    "name": "이름",
-    "description": "설명",
-    "thumbnail_url": "url"
+    "thumbnailUrl": "url",
+    "description": "설명"
   }
 ]
 ```
 
-**예외**
-- 403: 관리자가 아니면 [로그인 기능 추가시]
-- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
+---
 
 ## USER
-### 모든 테마 조회 - GET /themes
+
+### 테마 목록 조회 - GET /themes
+
 **요청**
 - Method: `GET`
 - URL: `/themes`
-- Body:
 
 **응답**
 - Status: `200 OK`
@@ -355,24 +308,17 @@
   {
     "id": 1,
     "name": "이름",
-    "description": "설명",
-    "thumbnail_url": "url"
-  },
-  {
-    "id": 2,
-    "name": "이름",
-    "description": "설명",
-    "thumbnail_url": "url"
+    "thumbnailUrl": "url",
+    "description": "설명"
   }
 ]
 ```
-- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
 
-## 단일 테마 조회 - GET /admin/themes/{id}
+### 단일 테마 조회 - GET /themes/{id}
 
 **요청**
 - Method: `GET`
-- URL: `/admin/themes/{id}`
+- URL: `/themes/{id}`
 
 **응답**
 - Status: `200 OK`
@@ -381,50 +327,47 @@
 {
   "id": 1,
   "name": "이름",
-  "description": "설명",
-  "thumbnail_url": "url"
+  "thumbnailUrl": "url",
+  "description": "설명"
 }
 ```
 
 **예외**
-- 400: id 누락됐을 때
-- 404: id 없을 때
-- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
+- 404: 존재하지 않는 id
 
-### 특정 Date 선택 - GET /times 후 times
-
-### 예약 추가 - POST /reservations
-**요청**
-- Method: `POST`
-- URL: `/reservations`
-- Body:
-```json
-{
-"user_name": "이름",
-"date": "2026-05-04",
-"time_id": 1,
-"theme_id": 1
-}
-```
-**응답**
-- Status: `201 Created`
-- Headers: `Location: /reservations/{id}`
-- Body:
-```json
-{
-  "id": 1,
-  "user_name": "이름",
-  "date": "2026-05-04",
-  "time_id": 1,
-  "theme_id": 1
-}
-```
-
-## 인기 테마 조회 - GET /themes?sort=reservations&limit=10&days=7
+### 예약 가능 시간 조회 - GET /themes/{themeId}/times
 
 **요청**
 - Method: `GET`
-- URL: `/themes?sort=reservations&limit=10&days=7`
+- URL: `/themes/{themeId}/times?localDate=2026-05-04`
+- Query Parameter: `localDate` (yyyy-MM-dd)
+
+**응답**
+- Status: `200 OK`
+- Body:
+```json
+[
+  {
+    "id": 1,
+    "startAt": "10:00",
+    "alreadyBooked": false
+  },
+  {
+    "id": 2,
+    "startAt": "12:00",
+    "alreadyBooked": true
+  }
+]
+```
+
+### 인기 테마 조회 - GET /themes/populars
+
+**요청**
+- Method: `GET`
+- URL: `/themes/populars?limit=10&days=7`
+- Query Parameter:
+  - `limit`: 조회할 테마 수 (최대 15)
+  - `days`: 집계 기준 일수 (최대 10)
 
 **응답**
 - Status: `200 OK`
@@ -434,21 +377,55 @@
   {
     "id": 1,
     "name": "이름",
-    "description": "설명",
-    "thumbnail_url": "url"
-  },
-  {
-    "id": 2,
-    "name": "이름",
-    "description": "설명",
-    "thumbnail_url": "url"
+    "thumbnailUrl": "url",
+    "description": "설명"
   }
 ]
 ```
+
 **예외**
-- 400: id 누락됐을 때
-- 404: id 없을 때
-- 401: 로그인을 하지 않았을 경우 [로그인 기능 추가시]
+- 400: `limit` 15 초과 / `days` 10 초과
+
+### 예약 추가 - POST /reservations
+
+**요청**
+- Method: `POST`
+- URL: `/reservations`
+- Body:
+```json
+{
+  "name": "이름",
+  "date": "2026-05-04",
+  "timeId": 1,
+  "themeId": 1
+}
+```
+
+**응답**
+- Status: `200 OK`
+- Body:
+```json
+{
+  "id": 1,
+  "name": "이름",
+  "date": "2026-05-04",
+  "themeResponseDto": {
+    "id": 1,
+    "name": "방탈출 이름",
+    "thumbnailUrl": "url",
+    "description": "설명"
+  },
+  "timeDto": {
+    "id": 1,
+    "startAt": "10:00"
+  }
+}
+```
+
+**예외**
+- 400: 필수 값 누락 (`name`, `date`, `timeId`, `themeId`) / 이름 20자 초과 / 잘못된 날짜 형식
+- 404: 존재하지 않는 `timeId` 또는 `themeId`
+- 409: 동일 날짜·시간·테마 중복 예약
 
 ---
 
@@ -572,18 +549,17 @@
 | 규칙 | 위반 시 응답 |
 |------|--------------|
 | 이름, 날짜, 시간, 테마 모두 필수 | 항목별 안내 메시지 |
-| 과거 날짜는 예약 불가 | "지난 날짜는 예약할 수 없습니다" |
-| 같은 (날짜 + 시간 + 테마)에 이미 예약이 있으면 불가 | "이미 예약된 시간입니다" |
+| 같은 (날짜 + 시간 + 테마)에 이미 예약이 있으면 불가 | "이미 존재하는 예약이 있습니다." |
 
 ## R2. 시간 / 테마 삭제 시
 
 | 규칙 | 위반 시 응답 |
 |------|--------------|
-| 사용 중인 예약이 있으면 삭제 불가 | "이 시간/테마를 사용 중인 예약이 N건 있어 삭제할 수 없습니다" |
+| 사용 중인 예약이 있으면 삭제 불가 | "예약이 존재하여 시간/테마를 삭제할 수 없습니다." |
 
 ## R3. 시간 / 테마 등록 시
 
 | 규칙 | 위반 시 응답 |
 |------|--------------|
-| 시간: 같은 시각 중복 불가 | "이미 등록된 시간입니다" |
-| 테마: 같은 이름 중복 불가 | "이미 등록된 테마 이름입니다" |
+| 시간: 같은 시각 중복 불가 | "이미 존재하는 시간 입니다." |
+| 테마: 같은 이름 중복 불가 | "이미 존재하는 테마 이름입니다." |
