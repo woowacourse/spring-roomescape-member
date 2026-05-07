@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -21,12 +22,14 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final Clock clock;
 
     public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository,
-                        ReservationTimeRepository reservationTimeRepository) {
+                        ReservationTimeRepository reservationTimeRepository, Clock clock) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.clock = clock;
     }
 
     public List<Theme> getThemes() {
@@ -59,7 +62,7 @@ public class ThemeService {
     }
 
     public List<PopularThemeResponse> getPopularThemes(Integer limit) {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(clock);
         LocalDate to = today.minusDays(1);
         LocalDate from = today.minusDays(POPULAR_THEME_PERIOD_DAYS);
 
