@@ -9,6 +9,8 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ThemeService {
 
+    private static final int ONE_DAY = 1;
+
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
@@ -19,22 +21,18 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public Theme saveTime(String name, String description, String thumbnailUrl) {
-        Theme time = Theme.transientOf(name, description, thumbnailUrl);
-        return themeRepository.save(time);
+    public Theme saveTheme(String name, String description, String thumbnailUrl) {
+        Theme theme = Theme.transientOf(name, description, thumbnailUrl);
+        return themeRepository.save(theme);
     }
 
-    public void removeTime(long timeId) {
-        themeRepository.deleteById(timeId);
-    }
-
-    public Theme findTime(long timeId) {
-        return themeRepository.findById(timeId);
+    public void removeTheme(long themeId) {
+        themeRepository.deleteById(themeId);
     }
 
     public List<Theme> findPopularThemes(Long topCount, Long during) {
-        LocalDate fromDate = LocalDate.now().minusDays(during);
-        LocalDate toDate = LocalDate.now();
+        LocalDate toDate = LocalDate.now().minusDays(ONE_DAY);
+        LocalDate fromDate = toDate.minusDays(during);
         return themeRepository.findPopularThemes(topCount, fromDate, toDate);
     }
 }

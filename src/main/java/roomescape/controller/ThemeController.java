@@ -26,31 +26,28 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> themes() {
-        return ResponseEntity.ok(convertToTimeResponses(themeService.allTheme()));
+        return ResponseEntity.ok(convertToThemeResponses(themeService.allTheme()));
     }
 
     @GetMapping(params = {"topCount", "during"})
-    public ResponseEntity<List<ThemeResponse>> popularThemes(
-            Long topCount,
-            Long during
-    ) {
-        return ResponseEntity.ok(convertToTimeResponses(themeService.findPopularThemes(topCount, during)));
+    public ResponseEntity<List<ThemeResponse>> popularThemes(Long topCount, Long during) {
+        return ResponseEntity.ok(convertToThemeResponses(themeService.findPopularThemes(topCount, during)));
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTime(@RequestBody ThemeRequest themeRequest) {
-        Theme Theme = themeService.saveTime(themeRequest.name(), themeRequest.description(),
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest themeRequest) {
+        Theme Theme = themeService.saveTheme(themeRequest.name(), themeRequest.description(),
                 themeRequest.thumbnailUrl());
         return ResponseEntity.ok(ThemeResponse.from(Theme));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@PathVariable long id) {
-        themeService.removeTime(id);
+    public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
+        themeService.removeTheme(id);
         return ResponseEntity.ok().build();
     }
 
-    private List<ThemeResponse> convertToTimeResponses(List<Theme> themes) {
+    private List<ThemeResponse> convertToThemeResponses(List<Theme> themes) {
         return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
