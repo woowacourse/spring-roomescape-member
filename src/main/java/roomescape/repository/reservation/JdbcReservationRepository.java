@@ -14,20 +14,19 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.MemberName;
-import roomescape.domain.vo.ReservationDate;
+import roomescape.domain.vo.ReservationLocalDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) ->
         new Reservation(
             rs.getLong("reservation_id"),
             new MemberName(
                     rs.getString("name")),
-            new ReservationDate(
+            new ReservationLocalDate(
                     rs.getDate("res_date").toLocalDate()),
             new ReservationTime(
                 rs.getLong("time_id"),
@@ -49,8 +48,10 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation createReservation(Reservation reservation) {
-        // TODO: sql 문 줄바꿈
-        String sql = "INSERT INTO reservation(name, res_date, time_id, theme_id) VALUES (?, ?, ?, ?);";
+        String sql = """
+            INSERT INTO reservation(name, res_date, time_id, theme_id)
+            VALUES (?, ?, ?, ?);
+            """;
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(conn -> {
@@ -69,7 +70,10 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public void deleteById(Long id) {
-        int update = template.update("DELETE FROM reservation WHERE id = ?;", id);
+        int update = template.update("""
+            DELETE FROM reservation
+            WHERE id = ?;
+            """, id);
 
         if (update == 0) {
             throw new NoSuchElementException("존재하지 않는 reservation 의 id 입니다. id = " + id);
@@ -78,58 +82,54 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        return template.query(
-            "SELECT "
-                + "r.id as reservation_id, "
-                + "r.name, "
-                + "r.res_date, "
-                + "t.id as time_id, "
-                + "t.start_at as time_value, "
-                + "th.id as theme_id, "
-                + "th.name as theme_name, "
-                + "th.description as theme_description, "
-                + "th.image_url as theme_image_url "
-                + "FROM reservation as r "
-                + "INNER JOIN reservation_time as t "
-                + "ON r.time_id = t.id "
-                + "INNER JOIN theme as th "
-                + "ON r.theme_id = th.id",
+        return template.query("""
+            SELECT
+                r.id as reservation_id,
+                r.name,
+                r.res_date,
+                t.id as time_id,
+                t.start_at as time_value,
+                th.id as theme_id,
+                th.name as theme_name,
+                th.description as theme_description,
+                th.image_url as theme_image_url
+            FROM reservation as r
+            INNER JOIN reservation_time as t ON r.time_id = t.id
+            INNER JOIN theme as th ON r.theme_id = th.id
+            """,
             RESERVATION_ROW_MAPPER
         );
     }
 
     @Override
     public Reservation findById(Long id) {
-        return template.queryForObject(
-            "SELECT "
-                + "r.id as reservation_id, "
-                + "r.name, "
-                + "r.res_date, "
-                + "t.id as time_id, "
-                + "t.start_at as time_value, "
-                + "th.id as theme_id, "
-                + "th.name as theme_name, "
-                + "th.description as theme_description, "
-                + "th.image_url as theme_image_url "
-                + "FROM reservation as r "
-                + "INNER JOIN reservation_time as t "
-                + "ON r.time_id = t.id "
-                + "INNER JOIN theme as th "
-                + "ON r.theme_id = th.id "
-                + "WHERE r.id = ?",
+        return template.queryForObject("""
+            SELECT
+                r.id as reservation_id,
+                r.name,
+                r.res_date,
+                t.id as time_id,
+                t.start_at as time_value,
+                th.id as theme_id,
+                th.name as theme_name,
+                th.description as theme_description,
+                th.image_url as theme_image_url
+            FROM reservation as r
+            INNER JOIN reservation_time as t ON r.time_id = t.id
+            INNER JOIN theme as th ON r.theme_id = th.id
+            WHERE r.id = ?
+            """,
             RESERVATION_ROW_MAPPER,
             id);
     }
 
     @Override
     public boolean existsByTimeId(Long timeId) {
-        Integer count = template.queryForObject(
-            """
-                SELECT 
-                    COUNT(1) 
-                FROM reservation
-                WHERE time_id = ?
-                """,
+        Integer count = template.queryForObject("""
+            SELECT COUNT(1)
+            FROM reservation
+            WHERE time_id = ?
+            """,
             Integer.class,
             timeId
         );

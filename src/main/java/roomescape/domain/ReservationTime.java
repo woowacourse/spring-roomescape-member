@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 
 public class ReservationTime {
 
-    // TODO: 입력 책임이 누수된 것 같음, 일급컬랙션 분리?
     private static final Pattern TIME_PATTERN = Pattern.compile("^\\d{2}:\\d{2}$");
 
     private final Long id;

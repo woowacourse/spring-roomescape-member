@@ -22,7 +22,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.MemberName;
-import roomescape.domain.vo.ReservationDate;
+import roomescape.domain.vo.ReservationLocalDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequestDto;
@@ -48,7 +48,7 @@ class ReservationServiceTest {
     private static final Reservation RESERVATION = new Reservation(
             1L,
             new MemberName("name"),
-            new ReservationDate(LocalDate.now().minusDays(1L)),
+            new ReservationLocalDate(LocalDate.now().minusDays(1L)),
             SAVED_TIME, SAVED_THEME);
 
     @Test

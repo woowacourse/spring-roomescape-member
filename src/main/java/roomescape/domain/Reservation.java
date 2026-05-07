@@ -1,22 +1,20 @@
 package roomescape.domain;
 
 import roomescape.domain.vo.MemberName;
-import roomescape.domain.vo.ReservationDate;
+import roomescape.domain.vo.ReservationLocalDate;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 public class Reservation {
 
     private final Long id;
     private final MemberName memberName;
-    private final ReservationDate date;
+    private final ReservationLocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    // TODO: 도메인 전체적으로 인자값 검증
-    public Reservation(Long id, MemberName memberName, ReservationDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, MemberName memberName, ReservationLocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.memberName = memberName;
         this.date = date;
@@ -25,7 +23,7 @@ public class Reservation {
     }
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, new MemberName(name), ReservationDate.createForSave(date), time, theme);
+        this(null, new MemberName(name), ReservationLocalDate.createForSave(date), time, theme);
     }
 
     public Long getId() {

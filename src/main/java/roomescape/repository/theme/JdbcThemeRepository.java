@@ -18,6 +18,13 @@ import roomescape.domain.vo.ThemeName;
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
+        new Theme(
+            rs.getLong("id"),
+            new ThemeName(rs.getString("name")),
+            rs.getString("description"),
+            new ThemeImageUrl(rs.getString("image_url")));
+    
     private final JdbcTemplate template;
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
@@ -26,7 +33,10 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Theme createTheme(Theme theme) {
-        String sql = "INSERT INTO theme(name, description, image_url) VALUES (?, ?, ?);";
+        String sql = """
+            INSERT INTO theme(name, description, image_url)
+            VALUES (?, ?, ?);
+            """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         template.update(conn -> {
@@ -43,8 +53,10 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public void deleteById(Long id) {
-        String sql = "DELETE FROM theme WHERE id = ?;";
-        int update = template.update(sql, id);
+        int update = template.update("""
+            DELETE FROM theme
+            WHERE id = ?;
+            """, id);
 
         // TODO: NoSuchElementException 쓰는게 맞는지?
         if (update == 0) {
@@ -54,17 +66,22 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        String sql = "SELECT id, name, description, image_url FROM theme;";
-
-        return template.query(sql, themeRowMapper());
+        return template.query("""
+            SELECT id, name, description, image_url
+            FROM theme;
+            """,
+            THEME_ROW_MAPPER);
     }
 
     @Override
     public Optional<Theme> findById(Long id) {
-        List<Theme> themes = template.query(
-                "SELECT id, name, description, image_url FROM theme WHERE id = ?;",
-                themeRowMapper(),
-                id);
+        List<Theme> themes = template.query("""
+                SELECT id, name, description, image_url
+                FROM theme
+                WHERE id = ?;
+                """,
+            THEME_ROW_MAPPER,
+            id);
 
         return themes.stream().findFirst();
     }
@@ -84,16 +101,6 @@ public class JdbcThemeRepository implements ThemeRepository {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
 
-        return template.query(sql, themeRowMapper(), sevenDaysAgo.toString(), yesterday.toString(), limit);
-    }
-
-    // TODO: 여러 곳에서 쓰면 필드로 분리해도 좋겠다? (인자값이 따로 없어서 메서드인 근거가 별로 없다?)
-    private RowMapper<Theme> themeRowMapper() {
-        return (rs, rowNum) ->
-            new Theme(
-                rs.getLong("id"),
-                new ThemeName(rs.getString("name")),
-                rs.getString("description"),
-                new ThemeImageUrl(rs.getString("image_url")));
+        return template.query(sql, THEME_ROW_MAPPER, sevenDaysAgo.toString(), yesterday.toString(), limit);
     }
 }

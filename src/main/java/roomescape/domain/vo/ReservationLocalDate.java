@@ -2,14 +2,14 @@ package roomescape.domain.vo;
 
 import java.time.LocalDate;
 
-public record ReservationDate(
+public record ReservationLocalDate(
         LocalDate value
 ) {
 
-    public static ReservationDate createForSave(LocalDate date) {
+    public static ReservationLocalDate createForSave(LocalDate date) {
         validateAfterToday(date);
 
-        return new ReservationDate(date);
+        return new ReservationLocalDate(date);
     }
 
     private static void validateAfterToday(LocalDate date) {
