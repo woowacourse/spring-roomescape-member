@@ -43,9 +43,4 @@ public class ReservationTimeService {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 찾는 시간이 없습니다"));
     }
-
-    public List<ReservationTime> findAll() {
-        return reservationTimeRepository.findAll();
-    }
-
 }

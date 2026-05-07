@@ -37,7 +37,7 @@ public class ReservationTime {
         return new ReservationTime(id, this.startAt, this.theme);
     }
 
-    public static void validateId(final Long id){
+    private static void validateId(final Long id){
         if(id == null) {
             throw new IllegalArgumentException("[ERROR] Id는 비어있을 수 없습니다.");
         }
