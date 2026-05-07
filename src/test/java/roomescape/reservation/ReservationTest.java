@@ -21,24 +21,9 @@ class ReservationTest {
                 "https://picsum.photos/seed/haunted/400/250");
     }
 
-    //    private final Long id;
-    //    private final String name;
-    //    private final LocalDate date;
-    //    private final ReservationTime time;
-    //    private final Theme theme;
-
-    //public class Theme {
-    //    private final Long id;
-    //    private final String name;
-    //    private final String description;
-    //    private final String thumbnailUrl;
-
-    // '공포의 저택', '버려진 저택에서 탈출하라! 어둠 속에 숨겨진 비밀을 밝혀야 살 수 있다.', 'https://picsum.photos/seed/haunted/400/250');
-
     @Test
     void 예약_생성() {
         Reservation reservation = new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), time, theme);
-
         assertThat(reservation.getId()).isEqualTo(1L);
         assertThat(reservation.getName()).isEqualTo("브라운");
         assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2023, 8, 5));

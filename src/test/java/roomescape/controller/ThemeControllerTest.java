@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import static org.hamcrest.core.Is.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
@@ -16,18 +18,23 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 class ThemeControllerTest {
 
     @Test
-    @DisplayName("API - 전체 테마 조회")
-    void API_전체_테마_조회() {
+    @DisplayName("전체 테마 조회 API")
+    void 전체_테마_조회_API() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().get("/themes")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .body("size()",is(4))
+                .body("[0].id",is(1))
+                .body("[0].name",is("공포의 저택"))
+                .body("[0].description",is("버려진 저택에서 탈출하라! 어둠 속에 숨겨진 비밀을 밝혀야 살 수 있다."))
+                .body("[0].thumbnailUrl",is("https://picsum.photos/seed/haunted/400/250"));
     }
 
     @Test
-    @DisplayName("API - Top 10 테마 조회")
-    void API_예약_시간_조회() {
+    @DisplayName("Top 10 테마 조회 API")
+    void Top_10_테마_조회_API() {
         Map<String,Object> params = new HashMap<>();
         params.put("condition", "popular");
         params.put("size", "10");
@@ -37,18 +44,28 @@ class ThemeControllerTest {
                 .params(params)
                 .when().get("/themes")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .body("[0].id",is(1))
+                .body("[0].name",is("공포의 저택"))
+                .body("[0].description",is("버려진 저택에서 탈출하라! 어둠 속에 숨겨진 비밀을 밝혀야 살 수 있다."))
+                .body("[0].thumbnailUrl",is("https://picsum.photos/seed/haunted/400/250"));
     }
 
     @Test
-    @DisplayName("API - 특정 id의 테마 시간 조회")
-    void API_특정_id의_테마_시간_조회() {
+    @DisplayName("특정 id의 테마 시간 조회_API")
+    void 특정_id의_테마_시간_조회_API() {
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .pathParam("id", 0)
+                .pathParam("id", 1)
                 .queryParam("date", "2026-04-29")
-                .when().get("/themes/{id}/times")
+                .when().get("/themes/{id}/available-times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .body("size()", is(13))
+                .body("[0].startAt", is("10:00"))
+                .body("[0].isAvailable", is(true))
+                .body("[2].startAt", is("12:00"))
+                .body("[2].isAvailable", is(false));
     }
 }

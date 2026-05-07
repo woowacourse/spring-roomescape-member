@@ -17,9 +17,9 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeControllerTest {
 
-    @DisplayName("API - 예약 시간 등록")
+    @DisplayName("예약 시간 등록 API")
     @Test
-    void API_예약_시간_등록() {
+    void 예약_시간_등록_API() {
         final String createStartAt = "23:00";
         final Map<String,Object> params = new HashMap<>();
         params.put("startAt", createStartAt);
@@ -33,15 +33,20 @@ class ReservationTimeControllerTest {
                .body("startAt", equalTo(createStartAt));
     }
 
-    @DisplayName("API - 예약 시간 조회")
+    @DisplayName("예약 시간 조회 API")
     @Test
-    void API_예약_시간_조회() {
+    void 예약_시간_조회_API() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", equalTo(13));
+                .body("size()", equalTo(13))
+                .body("size()", equalTo(13))
+                .body("[0].id", equalTo(1))
+                .body("[0].startAt", equalTo("10:00"))
+                .body("[12].id", equalTo(13))
+                .body("[12].startAt", equalTo("22:00"));
     }
 
     @DisplayName("API - 예약 시간 삭제")
