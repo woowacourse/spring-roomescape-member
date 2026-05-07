@@ -99,5 +99,23 @@
 
 - [ ] **20. `ThemeController` - `"popular"` 문자열 하드코딩**
   - `if ("popular".equals(condition))` 형태
-  - `Enum` 타입으로 추출해도 좋을 듯?
-  - 아니면 아예 이 패턴을 쓰지 않던가
+  - 두 가지 방법 중에 고민이 됨:
+
+  1. Enum으로 condition 파싱
+  ```java
+  public enum ThemeCondition { POPULAR }
+  return switch (condition) {
+      case POPULAR -> ResponseEntity.ok(themeService.getPopularThemes(size));
+  };
+  ```
+  오버 엔지니어링인것 같긴 한데, 프론트 변경 안해도 되서 좋은 것 같기도 함.
+
+  2. 별도 엔드포인트로 분리
+  ```java
+  @GetMapping("/popular")
+  public ResponseEntity<List<ThemeResponse>> getPopularThemes(
+          @RequestParam(defaultValue = "10") int size) {
+      return ResponseEntity.ok(themeService.getPopularThemes(size));
+  }
+  ```
+  이게 더 restful 한건가..? 근데 프론트는 여기저기 고치긴 해야함.
