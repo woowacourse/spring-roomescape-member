@@ -52,14 +52,30 @@ function loadThemes() {
             return response.json();
         })
         .then(themes => {
-            const themeSelect = document.getElementById('theme-select');
+            const themeContainer = document.getElementById('theme-list-container');
+            themeContainer.innerHTML = ''; // 기존 내용 초기화
 
-            // 받아온 themes 배열을 순회하면서 <option> 태그를 만들어 themeSelect에 추가합니다.
+            // 받아온 themes 배열을 순회하면서 테마 카드를 만듭니다.
             themes.forEach(theme => {
-                const option = document.createElement('option');
-                option.value = theme.id; // option의 값으로는 theme의 id를
-                option.textContent = theme.name; // 사용자에게 보여줄 텍스트는 theme의 name을 사용
-                themeSelect.appendChild(option);
+                const card = document.createElement('div');
+                card.className = 'theme-card';
+                card.dataset.themeId = theme.id; // 데이터 속성에 ID 저장
+                card.innerHTML = `
+                    <img src="${theme.imageUrl || 'https://i.imgur.com/5nL2kE7.png'}" alt="${theme.name}">
+                    <h4>${theme.name}</h4>
+                    <p class="theme-description">${theme.description}</p>
+                    <p class="theme-time">🕒 ${theme.requiredTime}</p>
+                `;
+
+                // 카드 클릭 시 선택 효과를 주는 이벤트 리스너 추가
+                card.addEventListener('click', () => {
+                    // 모든 카드에서 'selected' 클래스 제거
+                    document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+                    // 클릭된 카드에만 'selected' 클래스 추가
+                    card.classList.add('selected');
+                });
+
+                themeContainer.appendChild(card);
             });
         })
         .catch(error => console.error(error));
@@ -98,7 +114,10 @@ function loadPopularThemes() {
 // API 명세: GET /schedules?date={date}&themeId={themeId} -> [ { id, startAt, ... }, ... ]
 // =================================================================================================
 document.getElementById('search-schedule-btn').addEventListener('click', () => {
-    const themeId = document.getElementById('theme-select').value;
+    // 선택된 테마 카드의 ID를 가져옵니다.
+    const selectedThemeCard = document.querySelector('.theme-card.selected');
+    const themeId = selectedThemeCard ? selectedThemeCard.dataset.themeId : null;
+
     const date = document.getElementById('date-input').value;
 
     if (!themeId || !date) {
@@ -163,7 +182,9 @@ document.getElementById('reserve-btn').addEventListener('click', () => {
     }
 
     const selectedTime = selectedScheduleRadio.value; // 예: "10:00"
-    const themeId = document.getElementById('theme-select').value;
+    const selectedThemeCard = document.querySelector('.theme-card.selected');
+    const themeId = selectedThemeCard ? selectedThemeCard.dataset.themeId : null;
+
     const date = document.getElementById('date-input').value;
 
     // 서버로 보낼 데이터 객체 (백엔드 DTO와 모양을 맞춰야 합니다)
