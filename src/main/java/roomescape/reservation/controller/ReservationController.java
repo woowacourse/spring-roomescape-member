@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.controller.dto.ReservationCreateRequest;
-import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
-import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.theme.domain.Theme;
+import roomescape.reservationtime.controller.dto.ReservationTimeResponse;
+import roomescape.theme.controller.dto.ThemeResponse;
 
 @RestController
 @RequestMapping("/reservations")
@@ -29,20 +29,22 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Reservation>> getReservations() {
-        List<Reservation> reservations = reservationService.getAll();
+    public ResponseEntity<List<ReservationResponse>> getReservations() {
+        List<ReservationResponse> reservations = reservationService.getAll().stream()
+                .map(ReservationResponse::from)
+                .toList();
         return ResponseEntity.ok().body(reservations);
     }
 
     @PostMapping
-    public ResponseEntity<Reservation> createReservation(@RequestBody ReservationCreateRequest reservationRequest) {
-        Reservation reservation = reservationService.save(
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationCreateRequest reservationRequest) {
+        ReservationResponse reservation = ReservationResponse.from(reservationService.save(
                 reservationRequest.name(),
                 reservationRequest.date(),
                 reservationRequest.timeId()
-        );
+        ));
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id()))
                 .body(reservation);
     }
 
@@ -53,21 +55,25 @@ public class ReservationController {
     }
 
     @GetMapping("/theme/{themeId}/times/available-times")
-    public ResponseEntity<List<ReservationTime>> getAvailableTimes(
+    public ResponseEntity<List<ReservationTimeResponse>> getAvailableTimes(
             @PathVariable final Long themeId,
             @RequestParam final LocalDate date
     ) {
         return ResponseEntity.ok()
-                .body(reservationService.findAvailableTimes(date, themeId));
+                .body(reservationService.findAvailableTimes(date, themeId).stream()
+                        .map(ReservationTimeResponse::from)
+                        .toList());
     }
 
     @GetMapping("/theme/popular")
-    public ResponseEntity<List<Theme>> getPopularThemes(
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
             @RequestParam final int period,
             @RequestParam final int limit
     ) {
         return ResponseEntity.ok()
-                .body(reservationService.getPopularThemes(period, limit));
+                .body(reservationService.getPopularThemes(period, limit).stream()
+                        .map(ThemeResponse::from)
+                        .toList());
     }
 
 }

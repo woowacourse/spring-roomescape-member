@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservationtime.controller.dto.ReservationTimeCreateRequest;
-import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.controller.dto.ReservationTimeResponse;
 import roomescape.reservationtime.service.ReservationTimeService;
 
 @RestController
@@ -25,20 +25,24 @@ public class ReservationTimeAdminController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTime>> getReservationTimes(@PathVariable final Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeService.findAllByThemeId(themeId);
+    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes(@PathVariable final Long themeId) {
+        List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAllByThemeId(themeId).stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
         return ResponseEntity.ok()
                 .body(reservationTimes);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTime> createReservationTime(
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @PathVariable final Long themeId,
             @RequestBody final ReservationTimeCreateRequest request
     ) {
-        ReservationTime reservationTime = reservationTimeService.save(request.startAt(), themeId);
+        ReservationTimeResponse reservationTime = ReservationTimeResponse.from(
+                reservationTimeService.save(request.startAt(), themeId)
+        );
 
-        return ResponseEntity.created(URI.create("/admin/themes/" + themeId + "/times/" + reservationTime.getId()))
+        return ResponseEntity.created(URI.create("/admin/themes/" + themeId + "/times/" + reservationTime.id()))
                 .body(reservationTime);
     }
 
