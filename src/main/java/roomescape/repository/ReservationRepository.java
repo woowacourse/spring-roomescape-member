@@ -113,6 +113,18 @@ public class ReservationRepository {
         return count != null && count > 0;
     }
 
+    public boolean existsById(Long id) {
+        String sql = "SELECT count(*) FROM reservation WHERE id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
+
+    public boolean existsByTimeId(Long timeId) {
+        String sql = "SELECT count(*) FROM reservation WHERE time_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
+        return count != null && count > 0;
+    }
+
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime time = new ReservationTime(
                 resultSet.getLong("time_id"),
@@ -131,10 +143,4 @@ public class ReservationRepository {
                 theme);
         return reservation;
     };
-
-    public boolean existsById(Long id) {
-        String sql = "SELECT count(*) FROM reservation WHERE id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        return count != null && count > 0;
-    }
 }
