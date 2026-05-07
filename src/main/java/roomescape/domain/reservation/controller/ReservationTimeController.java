@@ -1,8 +1,8 @@
 package roomescape.domain.reservation.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.reservation.request.ReservationTimeCreateRequest;
 import roomescape.domain.reservation.response.ReservationTimeResponse;
+import roomescape.domain.reservation.response.ReservationTimesResponse;
 import roomescape.domain.reservation.service.ReservationTimeService;
 
 @RestController
@@ -26,19 +27,16 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
-        List<ReservationTimeResponse> response = reservationTimeService.findAllReservationTimes();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ReservationTimesResponse> findAll() {
+        List<ReservationTimeResponse> times = reservationTimeService.findAllReservationTimes();
+        return ResponseEntity.ok(new ReservationTimesResponse(times));
     }
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> save(@RequestBody ReservationTimeCreateRequest request) {
         ReservationTimeResponse response = reservationTimeService.saveReservationTime(request);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.LOCATION, "/times/" + response.id())
+        return ResponseEntity.created(URI.create("/times/" + response.id()))
                 .body(response);
     }
 
