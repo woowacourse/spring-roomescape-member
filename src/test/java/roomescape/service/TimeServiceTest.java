@@ -2,17 +2,26 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.NotFoundException;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.TimeDao;
+import roomescape.domain.Reservation;
+import roomescape.domain.Time;
 import roomescape.dto.request.TimeRequestDto;
+import roomescape.service.fake.FakeReservationDao;
 import roomescape.service.fake.FakeTimeDao;
 
 class TimeServiceTest {
 
     private TimeService timeService;
     private TimeDao timeDao;
+    private ReservationDao reservationDao;
 
     private TimeRequestDto timeRequestDto1;
     private TimeRequestDto timeRequestDto2;
@@ -20,7 +29,8 @@ class TimeServiceTest {
     @BeforeEach
     void setUp() {
         timeDao = new FakeTimeDao();
-        timeService = new TimeService(timeDao);
+        reservationDao = new FakeReservationDao();
+        timeService = new TimeService(timeDao, reservationDao);
 
         timeRequestDto1 = new TimeRequestDto(LocalTime.of(10, 0));
         timeRequestDto2 = new TimeRequestDto(LocalTime.of(12, 0));
@@ -32,15 +42,7 @@ class TimeServiceTest {
     void 조회하려는_id가_존재하지_않으면_예외_처리한다() {
         Long notExistsTimeId = 1L;
         assertThatThrownBy(() -> timeService.findById(notExistsTimeId))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-
-    @Test
-    void 삭제하려는_id가_존재하지_않으면_예외_처리한다() {
-        Long notExistsTimeId = 1L;
-        assertThatThrownBy(() -> timeService.delete(notExistsTimeId))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -48,6 +50,25 @@ class TimeServiceTest {
         timeService.create(timeRequestDto1);
 
         assertThatThrownBy(() -> timeService.create(timeRequestDto1))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ConflictException.class);
+    }
+
+    @Nested
+    class 삭제할_때 {
+        @Test
+        void 삭제하려는_id가_존재하지_않으면_예외_처리한다() {
+            Long notExistsTimeId = 1L;
+            assertThatThrownBy(() -> timeService.delete(notExistsTimeId))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void 예약이_존재하면_삭제할_수_없다() {
+            Time savedTime = timeService.create(timeRequestDto1);
+            reservationDao.insert(new Reservation("달수", LocalDate.now(), savedTime, null));
+
+            assertThatThrownBy(() -> timeService.delete(savedTime.getId()))
+                    .isInstanceOf(ConflictException.class);
+        }
     }
 }

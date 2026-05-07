@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.NotFoundException;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
@@ -51,7 +53,7 @@ class ReservationServiceTest {
         Long notExistsReservationId = 3L;
 
         assertThatThrownBy(() -> reservationService.findById(notExistsReservationId))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -59,7 +61,7 @@ class ReservationServiceTest {
         Long notExistsReservationId = 3L;
 
         assertThatThrownBy(() -> reservationService.delete(notExistsReservationId))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     private Reservation createDtoHandler(ReservationRequestDto requestDto) {
@@ -79,7 +81,7 @@ class ReservationServiceTest {
                     LocalDate.of(2026, 5, 3), notExistsTimeId, existsThemeId);
 
             assertThatThrownBy(() -> reservationService.create(requestDto))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(NotFoundException.class);
         }
 
         @Test
@@ -91,7 +93,7 @@ class ReservationServiceTest {
                     LocalDate.of(2026, 5, 3), existsTimeId, notExistsThemeId);
 
             assertThatThrownBy(() -> reservationService.create(requestDto))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(NotFoundException.class);
         }
 
         @Test
@@ -99,7 +101,7 @@ class ReservationServiceTest {
             Reservation saved = createDtoHandler(requestDto1);
 
             assertThatThrownBy(() -> reservationService.create(requestDto1))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(ConflictException.class);
         }
     }
 }

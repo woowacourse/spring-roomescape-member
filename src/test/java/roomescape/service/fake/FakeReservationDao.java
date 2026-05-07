@@ -64,4 +64,18 @@ public class FakeReservationDao implements ReservationDao {
                                 && reservation.getTime().getId().equals(timeId)
                                 && reservation.getDate().equals(date));
     }
+
+    @Override
+    public boolean existsByThemeId(Long themeId) {
+        return store.values()
+                .stream()
+                .anyMatch(reservation -> reservation.getTheme().getId().equals(themeId));
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        return store.values()
+                .stream()
+                .anyMatch(reservation -> reservation.getTime().getId().equals(timeId));
+    }
 }

@@ -123,4 +123,28 @@ public class ReservationJdbcDao implements ReservationDao {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, params, Boolean.class));
 
     }
+
+    @Override
+    public boolean existsByThemeId(Long themeId) {
+        String sql = """
+                SELECT EXISTS(
+                    SELECT 1 FROM reservations r
+                    WHERE r.theme_id = :themeId
+                )
+                """;
+        SqlParameterSource params = new MapSqlParameterSource("themeId", themeId);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, params, Boolean.class));
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        String sql = """
+                SELECT EXISTS(
+                    SELECT 1 FROM reservations r
+                    WHERE r.time_id = :timeId
+                )
+                """;
+        SqlParameterSource params = new MapSqlParameterSource("timeId", timeId);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, params, Boolean.class));
+    }
 }

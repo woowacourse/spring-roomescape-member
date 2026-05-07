@@ -95,19 +95,19 @@ public class MissionStepTest {
     }
 
     @Test
-    void 존재하지_않는_예약을_삭제하면_400을_반환한다() {
+    void 존재하지_않는_예약을_삭제하면_404을_반환한다() {
         RestAssured.given().log().all()
                 .when().delete("/admin/reservations/999")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(404);
     }
 
     @Test
-    void 존재하지_않는_시간을_삭제하면_400을_반환한다() {
+    void 존재하지_않는_시간을_삭제하면_404을_반환한다() {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/999")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(404);
     }
 
     @Test
