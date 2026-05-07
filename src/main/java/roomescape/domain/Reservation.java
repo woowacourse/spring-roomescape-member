@@ -11,6 +11,7 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
+        validateName(name);
         this.name = name;
         this.date = date;
         this.time = time;
@@ -36,5 +37,13 @@ public class Reservation {
     public Theme getTheme() {
         return theme;
     }
-    
+
+    private void validateName(String name) {
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("이름은 비거나 공백일 수 없습니다");
+        }
+        if (name.length() > 255) {
+            throw new IllegalArgumentException("이름은 255자를 초과할 수 없습니다.");
+        }
+    }
 }

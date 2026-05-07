@@ -821,7 +821,7 @@
     document.getElementById('time-btn-row').style.display = 'none';
 
     try {
-      const res = await fetch(`${API}/themes/${selectedTheme.id}/times?date=${selectedDate}`);
+      const res = await fetch(`${API}/themes/${selectedTheme.id}/available-times?date=${selectedDate}`);
       const times = await res.json();
 
       document.getElementById('times-loading').style.display = 'none';

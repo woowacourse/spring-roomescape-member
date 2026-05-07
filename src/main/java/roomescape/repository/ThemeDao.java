@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -39,28 +37,15 @@ public class ThemeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Optional<Theme> findById(Long id) {
-        try {
-            Theme theme = jdbcTemplate.queryForObject(
-                    "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?",
-                    themeRowMapper, id);
-            return Optional.ofNullable(theme);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    public List<Theme> findAll() {
-        try {
-            return jdbcTemplate.query( "SELECT id, name, description, thumbnail_url FROM theme", themeRowMapper);
-        } catch (EmptyResultDataAccessException ignored) {
-        }
-
-        return List.of();
+    public Long save(String name, String description, String thumbnailUrl) {
+        return jdbcInsert.executeAndReturnKey(Map.of(
+                "name", name,
+                "description", description,
+                "thumbnail_url", thumbnailUrl
+        )).longValue();
     }
 
     public List<Theme> findPopularThemes(int size, LocalDate from, LocalDate to) {
-        try {
             final String sql = """
                             SELECT
                                 th.id,
@@ -79,15 +64,10 @@ public class ThemeDao {
                             LIMIT ?
                             """;
             return jdbcTemplate.query(sql, themeRowMapper, from, to, size);
-        } catch (EmptyResultDataAccessException ignored) {
-        }
-
-        return List.of();
     }
 
 
     public List<AvailableReservationTimeResponse> findAvailableTimeById(long themeId, String date) {
-        try {
             final String sql = """
                     SELECT                                                                                                                                                                                                         \s
                           rt.id,                                                                                                                                                                                                     \s
@@ -100,17 +80,10 @@ public class ThemeDao {
                            AND r.date = ?
                     """;
             return jdbcTemplate.query(sql, availableReservationTimeRowMapper, themeId, date);
-        } catch (EmptyResultDataAccessException ignored) {
-        }
-        return List.of();
     }
 
-    public Long save(String name, String description, String thumbnailUrl) {
-        return jdbcInsert.executeAndReturnKey(Map.of(
-                "name", name,
-                "description", description,
-                "thumbnail_url", thumbnailUrl
-        )).longValue();
+    public List<Theme> findAll() {
+        return jdbcTemplate.query( "SELECT id, name, description, thumbnail_url FROM theme", themeRowMapper);
     }
 
 

@@ -2,12 +2,15 @@
 package roomescape.controller;
 
 import java.net.URI;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ThemeRequest;
 import roomescape.service.AdminThemeService;
@@ -28,9 +31,9 @@ public class AdminThemeController {
         return ResponseEntity.created(location).build();
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
+    public void deleteTheme(@PathVariable long id) {
         adminThemeService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 }

@@ -34,16 +34,17 @@ public class ThemeController {
     public List<ThemeResponse> getThemesByCondition(
             @RequestParam String condition,
             @RequestParam(defaultValue = "10") int size) {
-        // Todo: conditio에 대한 처리 필요
-        return themeService.getPopularThemes(size);
+        if (!condition.equals("popular")){
+            throw new IllegalArgumentException("Invalid condition: " + condition);
+        }
+        return themeService.getPopularThemes( size);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{id}/times")
+    @GetMapping("/{id}/available-times")
     public List<AvailableReservationTimeResponse> getReservationTimes(
             @PathVariable long id,
             @RequestParam String date) {
-        final List<AvailableReservationTimeResponse> reservationTimeResponses = themeService.getAvailableTimeResponses(id, date);
-        return reservationTimeResponses;
+        return themeService.getAvailableTimeResponses(id, date);
     }
 }
