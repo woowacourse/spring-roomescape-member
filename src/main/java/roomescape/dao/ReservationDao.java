@@ -14,6 +14,7 @@ import roomescape.domain.Theme;
 
 @Repository
 public class ReservationDao {
+
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),
@@ -27,14 +28,13 @@ public class ReservationDao {
                 resultSet.getString("thumbnail")
         );
 
-        Reservation reservation = new Reservation(
+        return new Reservation(
                 resultSet.getLong("id"),
                 resultSet.getString("reservation_name"),
                 resultSet.getDate("date").toLocalDate(),
                 reservationTime,
                 theme
         );
-        return reservation;
     };
 
     private final JdbcTemplate jdbcTemplate;
@@ -47,7 +47,7 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Reservation insert(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
@@ -55,6 +55,7 @@ public class ReservationDao {
         parameters.put("theme_id", reservation.getTheme().getId());
 
         Number generatedId = jdbcInsert.executeAndReturnKey(parameters);
+
         return new Reservation(
                 generatedId.longValue(),
                 reservation.getName(),
@@ -64,7 +65,7 @@ public class ReservationDao {
         );
     }
 
-    public List<Reservation> selectAll() {
+    public List<Reservation> findAll() {
         String sql = """
                 SELECT r.id, 
                        r.name as reservation_name, 
@@ -79,11 +80,12 @@ public class ReservationDao {
                 INNER JOIN reservation_time AS rt 
                 ON r.time_id = rt.id
                 INNER JOIN theme AS t 
-                ON r.theme_id = t.id""";
+                ON r.theme_id = t.id
+                """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public List<Reservation> selectByThemeIdAndDate(long themeId, LocalDate date) {
+    public List<Reservation> findByThemeIdAndDate(long themeId, LocalDate date) {
         String sql = """
                 SELECT r.id, 
                        r.name as reservation_name, 
@@ -105,18 +107,6 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, ROW_MAPPER, themeId, date);
     }
 
-    public boolean existsById(Long reservationId) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM reservation
-                    WHERE id = ?
-                )
-                """;
-
-        return jdbcTemplate.queryForObject(sql, boolean.class, reservationId);
-    }
-
     public boolean existsByReservationTime(long reservationTimeId) {
         String sql = """
                 SELECT EXISTS (
@@ -125,14 +115,14 @@ public class ReservationDao {
                     WHERE time_id= ?
                 )
                 """;
-
         return jdbcTemplate.queryForObject(sql, boolean.class, reservationTimeId);
     }
 
-    public int delete(Long reservationId) {
+    public int delete(long reservationId) {
         String sql = """
                 DELETE FROM reservation
-                WHERE id = ?""";
+                WHERE id = ?
+                """;
         return jdbcTemplate.update(sql, reservationId);
     }
 }

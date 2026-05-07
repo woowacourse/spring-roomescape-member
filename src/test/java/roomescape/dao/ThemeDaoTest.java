@@ -29,7 +29,7 @@ class ThemeDaoTest {
         Theme theme = Theme.createWithoutId(name, description, thumbnail);
 
         // when
-        Theme savedTheme = themeDao.insert(theme);
+        Theme savedTheme = themeDao.save(theme);
 
         // then
         assertAll(
@@ -46,10 +46,10 @@ class ThemeDaoTest {
         String description = "로지와 러키의 신나는 방탈출";
         String thumbnail = "https://abc.asdfdsa";
         Theme theme = Theme.createWithoutId(name, description, thumbnail);
-        Theme savedTheme = themeDao.insert(theme);
+        Theme savedTheme = themeDao.save(theme);
 
         // when
-        Optional<Theme> foundTheme = themeDao.selectById(savedTheme.getId());
+        Optional<Theme> foundTheme = themeDao.findById(savedTheme.getId());
 
         // then
         assertAll(
@@ -69,7 +69,7 @@ class ThemeDaoTest {
         LocalDate endDate = LocalDate.of(2026, 5, 5);
 
         // when
-        List<Theme> popularThemes = themeDao.selectPopularThemesByPeriod(startDate, endDate);
+        List<Theme> popularThemes = themeDao.findPopularThemesByPeriod(startDate, endDate);
 
         // then
         assertAll(
@@ -89,7 +89,7 @@ class ThemeDaoTest {
     @Test
     void 아이디에_맞는_테마가_없으면_빈_객체를_반환한다() {
         // when
-        Optional<Theme> foundTheme = themeDao.selectById(900L);
+        Optional<Theme> foundTheme = themeDao.findById(900L);
 
         // then
         assertThat(foundTheme).isEmpty();

@@ -15,6 +15,7 @@ import roomescape.service.ThemeService;
 @RestController
 @RequestMapping("/admin/themes")
 public class AdminThemeController {
+
     private static final String LOCATION_DEFAULT_VALUE = "/admin/themes/";
 
     private final ThemeService themeService;
@@ -24,14 +25,14 @@ public class AdminThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeRequest request) {
-        ThemeResponse response = themeService.addTheme(request);
+    public ResponseEntity<ThemeResponse> create(@RequestBody ThemeRequest request) {
+        ThemeResponse response = themeService.create(request);
         return ResponseEntity.created(URI.create(LOCATION_DEFAULT_VALUE + response.id()))
                 .body(response);
     }
 
     @DeleteMapping("/{themeId}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable("themeId") Long themeId) {
+    public ResponseEntity<Void> delete(@PathVariable("themeId") long themeId) {
         themeService.delete(themeId);
         return ResponseEntity.noContent()
                 .build();

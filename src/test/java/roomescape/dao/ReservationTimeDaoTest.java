@@ -26,7 +26,7 @@ class ReservationTimeDaoTest {
         ReservationTime reservationTime = ReservationTime.createWithoutId(startAt);
 
         // when
-        ReservationTime savedReservationTime = timeDao.insert(reservationTime);
+        ReservationTime savedReservationTime = timeDao.save(reservationTime);
 
         // then
         assertAll(
@@ -38,14 +38,14 @@ class ReservationTimeDaoTest {
     @Test
     void 예약_시간_목록을_조회한다() {
         // given
-        timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
-        timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(11, 0)));
-        timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(12, 0)));
-        timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(13, 0)));
-        timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(14, 0)));
+        timeDao.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        timeDao.save(ReservationTime.createWithoutId(LocalTime.of(11, 0)));
+        timeDao.save(ReservationTime.createWithoutId(LocalTime.of(12, 0)));
+        timeDao.save(ReservationTime.createWithoutId(LocalTime.of(13, 0)));
+        timeDao.save(ReservationTime.createWithoutId(LocalTime.of(14, 0)));
 
         // when
-        List<ReservationTime> reservationTimes = timeDao.selectAll();
+        List<ReservationTime> reservationTimes = timeDao.findAll();
 
         // then
         assertAll(
@@ -57,10 +57,10 @@ class ReservationTimeDaoTest {
     @Test
     void 아이디에_맞는_예약_시간을_조회한다() {
         // given
-        ReservationTime reservationTime = timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        ReservationTime reservationTime = timeDao.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
 
         // when
-        Optional<ReservationTime> selectReservationTime = timeDao.selectById(reservationTime.getId());
+        Optional<ReservationTime> selectReservationTime = timeDao.findById(reservationTime.getId());
 
         // then
         assertAll(
@@ -72,13 +72,13 @@ class ReservationTimeDaoTest {
     @Test
     void 예약_시간을_삭제한다() {
         // given
-        ReservationTime savedReservationTime = timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        ReservationTime savedReservationTime = timeDao.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
 
         // when
         timeDao.delete(savedReservationTime.getId());
 
         // then
-        List<ReservationTime> reservationTimes = timeDao.selectAll();
+        List<ReservationTime> reservationTimes = timeDao.findAll();
         assertThat(reservationTimes).hasSize(0);
     }
 }

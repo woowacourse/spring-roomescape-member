@@ -34,17 +34,17 @@ public class ReservationTimeService {
         this.reservationDao = reservationDao;
     }
 
-    public ReservationTimeResponse addReservationTime(ReservationTimeRequest request) {
+    public ReservationTimeResponse create(ReservationTimeRequest request) {
         ReservationTime reservationTime = request.toReservationTime();
-        ReservationTime newReservationTime = reservationTimeDao.insert(reservationTime);
+        ReservationTime newReservationTime = reservationTimeDao.save(reservationTime);
         return ReservationTimeResponse.from(newReservationTime);
     }
 
-    public List<AvailableReservationTimeResponse> getReservationTimes(Long themeId, LocalDate date) {
+    public List<AvailableReservationTimeResponse> getReservationTimes(long themeId, LocalDate date) {
         validateTheme(themeId);
 
-        List<Reservation> reservations = reservationDao.selectByThemeIdAndDate(themeId, date);
-        List<ReservationTime> reservationTimes = reservationTimeDao.selectAll();
+        List<Reservation> reservations = reservationDao.findByThemeIdAndDate(themeId, date);
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
 
         Set<Long> reservedTimeIds = extractReservedTimeIds(reservations);
         return reservationTimes.stream()
@@ -52,7 +52,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    private void validateTheme(Long themeId) {
+    private void validateTheme(long themeId) {
         boolean exists = themeDao.existsById(themeId);
         if (!exists) {
             throw new ThemeException(ThemeErrorCode.THEME_NOT_FOUND);
@@ -78,7 +78,7 @@ public class ReservationTimeService {
         }
     }
 
-    private void validateReservationNotExistsBy(Long reservationTimeId) {
+    private void validateReservationNotExistsBy(long reservationTimeId) {
         if (reservationDao.existsByReservationTime(reservationTimeId)) {
             throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_EXISTS);
         }

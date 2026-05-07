@@ -22,9 +22,9 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
-    public ThemeResponse addTheme(ThemeRequest request) {
+    public ThemeResponse create(ThemeRequest request) {
         validateUniqueTheme(request.name());
-        Theme savedTheme = themeDao.insert(request.toTheme());
+        Theme savedTheme = themeDao.save(request.toTheme());
         return ThemeResponse.from(savedTheme);
     }
 
@@ -36,7 +36,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getThemes() {
-        return themeDao.selectAll().stream()
+        return themeDao.findAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
@@ -44,7 +44,7 @@ public class ThemeService {
     public List<ThemeResponse> getPopularThemes(LocalDate baseDate) {
         LocalDate startDate = baseDate.minusDays(POPULAR_THEME_PERIOD_DAYS);
         LocalDate endDate = baseDate.minusDays(BASE_DATE_EXCLUDED_DAYS);
-        List<Theme> popularThemes = themeDao.selectPopularThemesByPeriod(startDate, endDate);
+        List<Theme> popularThemes = themeDao.findPopularThemesByPeriod(startDate, endDate);
         return popularThemes.stream()
                 .map(ThemeResponse::from)
                 .toList();

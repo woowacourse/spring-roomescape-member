@@ -30,33 +30,33 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public ReservationResponse addReservation(ReservationRequest request) {
+    public ReservationResponse create(ReservationRequest request) {
         ReservationTime reservationTime = getTime(request.timeId());
         Theme theme = getTheme(request.themeId());
 
         Reservation reservation = request.toReservation(reservationTime, theme);
-        Reservation savedReservation = reservationDao.insert(reservation);
+        Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.from(savedReservation);
     }
 
     private ReservationTime getTime(long timeId) {
-        return reservationTimeDao.selectById(timeId)
+        return reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 
     private Theme getTheme(long themeId) {
-        return themeDao.selectById(themeId)
+        return themeDao.findById(themeId)
                 .orElseThrow(() -> new ThemeException(ThemeErrorCode.THEME_NOT_FOUND));
     }
 
-    public List<ReservationResponse> getAllReservations() {
-        List<Reservation> reservations = reservationDao.selectAll();
+    public List<ReservationResponse> getReservations() {
+        List<Reservation> reservations = reservationDao.findAll();
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
-    public void delete(Long reservationId) {
+    public void delete(long reservationId) {
         int affectedRows = reservationDao.delete(reservationId);
 
         if (affectedRows == 0) {

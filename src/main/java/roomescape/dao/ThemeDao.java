@@ -14,6 +14,7 @@ import roomescape.domain.Theme;
 
 @Repository
 public class ThemeDao {
+
     private static final RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) ->
             new Theme(
                     resultSet.getLong("id"),
@@ -32,13 +33,14 @@ public class ThemeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Theme insert(Theme theme) {
+    public Theme save(Theme theme) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", theme.getName());
         parameters.put("description", theme.getDescription());
         parameters.put("thumbnail", theme.getThumbnail());
 
         Number generatedId = jdbcInsert.executeAndReturnKey(parameters);
+
         return new Theme(
                 generatedId.longValue(),
                 theme.getName(),
@@ -47,14 +49,15 @@ public class ThemeDao {
         );
     }
 
-    public Optional<Theme> selectById(Long themeId) {
+    public Optional<Theme> findById(Long themeId) {
         String sql = """
                 SELECT id, 
                        name, 
                        description,
                        thumbnail
                 FROM theme
-                WHERE id = ?""";
+                WHERE id = ?
+                """;
 
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, themeId));
@@ -63,17 +66,18 @@ public class ThemeDao {
         }
     }
 
-    public List<Theme> selectAll() {
+    public List<Theme> findAll() {
         String sql = """
                 SELECT id, 
                        name, 
                        description,
                        thumbnail
-                FROM theme""";
+                FROM theme
+                """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public List<Theme> selectPopularThemesByPeriod(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findPopularThemesByPeriod(LocalDate startDate, LocalDate endDate) {
         String sql = """
                 SELECT t.id,
                        t.name,
@@ -90,7 +94,7 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, ROW_MAPPER, startDate, endDate);
     }
 
-    public boolean existsById(Long themeId) {
+    public boolean existsById(long themeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1
@@ -98,7 +102,6 @@ public class ThemeDao {
                     WHERE id = ?
                 )
                 """;
-
         return jdbcTemplate.queryForObject(sql, boolean.class, themeId);
     }
 
@@ -110,14 +113,14 @@ public class ThemeDao {
                     WHERE name = ?
                 )
                 """;
-
         return jdbcTemplate.queryForObject(sql, boolean.class, name);
     }
 
     public int delete(long themeId) {
         String sql = """
                 DELETE FROM theme
-                WHERE id = ?""";
+                WHERE id = ?
+                """;
         return jdbcTemplate.update(sql, themeId);
     }
 }

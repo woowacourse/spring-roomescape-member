@@ -17,6 +17,7 @@ import roomescape.service.ReservationService;
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
+
     private static final String LOCATION_DEFAULT_VALUE = "/reservations/";
 
     private final ReservationService reservationService;
@@ -26,20 +27,20 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationRequest request) {
-        ReservationResponse response = reservationService.addReservation(request);
+    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request) {
+        ReservationResponse response = reservationService.create(request);
         return ResponseEntity.created(URI.create(LOCATION_DEFAULT_VALUE + response.id()))
                 .body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<ReservationResponse> responses = reservationService.getAllReservations();
+    public ResponseEntity<List<ReservationResponse>> readReservations() {
+        List<ReservationResponse> responses = reservationService.getReservations();
         return ResponseEntity.ok(responses);
     }
 
     @DeleteMapping("/{reservationId}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("reservationId") Long reservationId) {
+    public ResponseEntity<Void> delete(@PathVariable("reservationId") long reservationId) {
         reservationService.delete(reservationId);
         return ResponseEntity.noContent()
                 .build();

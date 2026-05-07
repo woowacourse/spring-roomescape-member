@@ -13,13 +13,12 @@ import roomescape.domain.ReservationTime;
 
 @Repository
 public class ReservationTimeDao {
-    private static final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) -> {
-        ReservationTime reservationTime = new ReservationTime(
-                resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime()
-        );
-        return reservationTime;
-    };
+
+    private static final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) ->
+            new ReservationTime(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime()
+            );
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -31,7 +30,7 @@ public class ReservationTimeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public ReservationTime insert(ReservationTime reservationTime) {
+    public ReservationTime save(ReservationTime reservationTime) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("start_at", reservationTime.getStartAt());
 
@@ -39,20 +38,22 @@ public class ReservationTimeDao {
         return new ReservationTime(generatedId.longValue(), reservationTime.getStartAt());
     }
 
-    public List<ReservationTime> selectAll() {
-        String sql = """
-                SELECT id, 
-                       start_at
-                FROM reservation_time""";
-        return jdbcTemplate.query(sql, ROW_MAPPER);
-    }
-
-    public Optional<ReservationTime> selectById(Long reservationTimeId) {
+    public List<ReservationTime> findAll() {
         String sql = """
                 SELECT id, 
                        start_at
                 FROM reservation_time
-                WHERE id = ?""";
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER);
+    }
+
+    public Optional<ReservationTime> findById(Long reservationTimeId) {
+        String sql = """
+                SELECT id, 
+                       start_at
+                FROM reservation_time
+                WHERE id = ?
+                """;
 
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, reservationTimeId));
@@ -61,22 +62,11 @@ public class ReservationTimeDao {
         }
     }
 
-    public boolean existsById(Long reservationTimeId) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM reservation_time
-                    WHERE id = ?
-                )
-                """;
-
-        return jdbcTemplate.queryForObject(sql, boolean.class, reservationTimeId);
-    }
-
     public int delete(long id) {
         String sql = """
                 DELETE FROM reservation_time
-                WHERE id = ?""";
+                WHERE id = ?
+                """;
         return jdbcTemplate.update(sql, id);
     }
 }

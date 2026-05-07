@@ -13,6 +13,7 @@ import roomescape.service.ReservationTimeService;
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
+
     private final ReservationTimeService reservationTimeService;
 
     public ReservationTimeController(ReservationTimeService reservationTimeService) {
@@ -20,8 +21,8 @@ public class ReservationTimeController {
     }
 
     @GetMapping(params = {"themeId", "date"})
-    public ResponseEntity<List<AvailableReservationTimeResponse>> getReservationTimes(@RequestParam(value = "themeId") long themeId,
-                                                                                      @RequestParam(value = "date") LocalDate date) {
+    public ResponseEntity<List<AvailableReservationTimeResponse>> readReservationTimes(@RequestParam(value = "themeId") long themeId,
+                                                                                       @RequestParam(value = "date") LocalDate date) {
         List<AvailableReservationTimeResponse> responses = reservationTimeService.getReservationTimes(themeId, date);
         return ResponseEntity.ok(responses);
     }

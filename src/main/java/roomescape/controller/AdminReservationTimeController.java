@@ -15,6 +15,7 @@ import roomescape.service.ReservationTimeService;
 @RestController
 @RequestMapping("/admin/times")
 public class AdminReservationTimeController {
+
     private static final String LOCATION_DEFAULT_VALUE = "/admin/times/";
 
     private final ReservationTimeService reservationTimeService;
@@ -24,14 +25,14 @@ public class AdminReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody ReservationTimeRequest request) {
-        ReservationTimeResponse response = reservationTimeService.addReservationTime(request);
+    public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeRequest request) {
+        ReservationTimeResponse response = reservationTimeService.create(request);
         return ResponseEntity.created(URI.create(LOCATION_DEFAULT_VALUE + response.id()))
                 .body(response);
     }
 
     @DeleteMapping("/{timeId}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable("timeId") long reservationTimeId) {
+    public ResponseEntity<Void> delete(@PathVariable("timeId") long reservationTimeId) {
         reservationTimeService.delete(reservationTimeId);
         return ResponseEntity.noContent()
                 .build();
