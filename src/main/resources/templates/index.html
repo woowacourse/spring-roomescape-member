@@ -6,49 +6,70 @@
   <style>
     body {
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
       font-family: sans-serif;
     }
-    .container {
-      text-align: center;
+    /* 메인 컨테이너: 좌우 배치를 위해 flex 사용 */
+    .main-layout {
+      display: flex;
+      gap: 50px;
       border: 2px solid #000;
-      padding: 20px;
+      padding: 40px;
+      align-items: flex-start;
+    }
+    .selector-section {
+      text-align: center;
+    }
+    .ranking-section {
+      border-left: 1px solid #ccc;
+      padding-left: 30px;
+      min-width: 200px;
     }
     select {
       padding: 10px;
       font-size: 16px;
       width: 300px;
     }
-    h1 {
-      margin-bottom: 20px;
+    h1, h2 {
+      margin-top: 0;
+    }
+    ol {
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 10px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>방탈출 테마 예약</h1>
+<div class="main-layout">
+  <div class="selector-section">
+    <h1>방탈출 예약</h1>
+    <select id="theme-selector">
+      <option value="">-- 테마를 선택하세요 --</option>
+    </select>
+  </div>
 
-  <select id="theme-selector">
-    <option value="">-- 테마를 선택하세요 --</option>
-  </select>
+  <div class="ranking-section">
+    <h2>인기 테마 순위</h2>
+    <ol id="popular-list">
+    </ol>
+  </div>
 </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const selector = document.getElementById('theme-selector');
+    const popularList = document.getElementById('popular-list');
 
+    // 1. 전체 테마 목록 조회
     fetch('/themes')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error();
-      }
-      return response.json();
-    })
+    .then(res => res.json())
     .then(themes => {
       themes.forEach(theme => {
         const option = document.createElement('option');
@@ -56,11 +77,25 @@
         option.textContent = theme.name;
         selector.appendChild(option);
       });
+    });
+
+    // 2. 인기 테마 순위 조회 (새로 추가된 API)
+    fetch('/reservations/popular-themes')
+    .then(res => {
+      if (!res.ok) throw new Error();
+      return res.json();
     })
-    .catch(error => {
-      const errorOption = document.createElement('option');
-      errorOption.textContent = '불러오기 실패';
-      selector.appendChild(errorOption);
+    .then(themes => {
+      themes.forEach(theme => {
+        const li = document.createElement('li');
+        li.textContent = theme.name;
+        popularList.appendChild(li);
+      });
+    })
+    .catch(() => {
+      const errorMsg = document.createElement('p');
+      errorMsg.textContent = '순위를 불러올 수 없습니다.';
+      popularList.appendChild(errorMsg);
     });
   });
 
