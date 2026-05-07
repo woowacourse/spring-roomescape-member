@@ -1,8 +1,8 @@
 package roomescape.domain.theme.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.theme.entity.Theme;
@@ -20,10 +20,11 @@ import roomescape.domain.theme.response.ThemesResponse;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
-    @Autowired
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, Clock clock) {
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     public ThemesResponse findAllThemes() {
@@ -41,11 +42,21 @@ public class ThemeService {
                 themeId,
                 date
         );
+
         return new ThemeReservationTimesResponse(times);
     }
 
     public PopularThemesResponse findPopularThemes(Integer period, Integer limit) {
-        List<PopularThemeResponse> popularThemes = themeRepository.findPopularThemes(period, limit);
+        LocalDate today = LocalDate.now(clock);
+        LocalDate startDate = today.minusDays(period);
+        LocalDate endDate = today.minusDays(1);
+
+        List<PopularThemeResponse> popularThemes = themeRepository.findPopularThemes(
+                startDate,
+                endDate,
+                limit
+        );
+
         return new PopularThemesResponse(popularThemes);
     }
 

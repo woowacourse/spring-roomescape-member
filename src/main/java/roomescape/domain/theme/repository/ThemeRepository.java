@@ -15,7 +15,7 @@ public interface ThemeRepository {
 
     List<ThemeReservationTimeResponse> findAllThemeReservationTimesByThemeIdAndDate(Long themeId, LocalDate date);
 
-    List<PopularThemeResponse> findPopularThemes(Integer period, Integer limit);
+    List<PopularThemeResponse> findPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit);
 
     Theme save(Theme theme);
 

@@ -58,8 +58,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
                 RANK() OVER (ORDER BY COUNT(r.id) DESC) AS rank
             FROM theme t
             LEFT JOIN reservation r ON r.theme_id = t.id
-               AND r.date BETWEEN FORMATDATETIME(DATEADD('DAY', :startOffset, CURRENT_DATE), 'yyyy-MM-dd')
-                              AND FORMATDATETIME(DATEADD('DAY', :endOffset, CURRENT_DATE), 'yyyy-MM-dd')
+               AND r.date BETWEEN :startDate AND :endDate
             GROUP BY t.id, t.name, t.description, t.thumbnail_url
             ORDER BY rank, t.id
             LIMIT :limit;
@@ -70,7 +69,8 @@ public class ThemeJdbcRepository implements ThemeRepository {
 
     public ThemeJdbcRepository(
             NamedParameterJdbcTemplate jdbcTemplate,
-            DataSource dataSource) {
+            DataSource dataSource
+    ) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
@@ -81,7 +81,8 @@ public class ThemeJdbcRepository implements ThemeRepository {
     public List<Theme> findAll() {
         return jdbcTemplate.query(
                 FIND_ALL_THEMES_QUERY,
-                themeRowMapper());
+                themeRowMapper()
+        );
     }
 
     @Override
@@ -93,7 +94,8 @@ public class ThemeJdbcRepository implements ThemeRepository {
             Theme theme = jdbcTemplate.queryForObject(
                     FIND_THEME_BY_ID_QUERY,
                     parameters,
-                    themeRowMapper());
+                    themeRowMapper()
+            );
 
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException exception) {
@@ -104,7 +106,8 @@ public class ThemeJdbcRepository implements ThemeRepository {
     @Override
     public List<ThemeReservationTimeResponse> findAllThemeReservationTimesByThemeIdAndDate(
             Long themeId,
-            LocalDate date) {
+            LocalDate date
+    ) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("themeId", themeId)
                 .addValue("date", date);
@@ -112,20 +115,26 @@ public class ThemeJdbcRepository implements ThemeRepository {
         return jdbcTemplate.query(
                 FIND_ALL_THEME_RESERVATION_TIMES_BY_THEME_ID_AND_DATE_QUERY,
                 parameters,
-                themeReservationTimeResponseRowMapper());
+                themeReservationTimeResponseRowMapper()
+        );
     }
 
     @Override
-    public List<PopularThemeResponse> findPopularThemes(Integer period, Integer limit) {
+    public List<PopularThemeResponse> findPopularThemes(
+            LocalDate startDate,
+            LocalDate endDate,
+            Integer limit
+    ) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("startOffset", -period)
-                .addValue("endOffset", -1)
+                .addValue("startDate", startDate)
+                .addValue("endDate", endDate)
                 .addValue("limit", limit);
 
         return jdbcTemplate.query(
                 FIND_POPULAR_THEMES_QUERY,
                 parameters,
-                popularThemeRowMapper());
+                popularThemeRowMapper()
+        );
     }
 
     @Override
@@ -136,9 +145,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
                 .addValue("thumbnail_url", theme.getThumbnailUrl());
 
         Number key = simpleJdbcInsert.executeAndReturnKey(parameters);
-        long generatedId = key.longValue();
-
-        theme.setId(generatedId);
+        theme.setId(key.longValue());
 
         return theme;
     }
@@ -150,7 +157,8 @@ public class ThemeJdbcRepository implements ThemeRepository {
 
         jdbcTemplate.update(
                 DELETE_THEME_BY_ID_QUERY,
-                parameters);
+                parameters
+        );
     }
 
     private RowMapper<Theme> themeRowMapper() {
@@ -158,14 +166,16 @@ public class ThemeJdbcRepository implements ThemeRepository {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
-                resultSet.getString("thumbnail_url"));
+                resultSet.getString("thumbnail_url")
+        );
     }
 
     private RowMapper<ThemeReservationTimeResponse> themeReservationTimeResponseRowMapper() {
         return (resultSet, rowNumber) -> new ThemeReservationTimeResponse(
                 resultSet.getLong("id"),
                 resultSet.getTime("start_at").toLocalTime(),
-                resultSet.getBoolean("is_available"));
+                resultSet.getBoolean("is_available")
+        );
     }
 
     private RowMapper<PopularThemeResponse> popularThemeRowMapper() {
@@ -174,6 +184,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
                 resultSet.getString("name"),
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail_url"),
-                resultSet.getInt("rank"));
+                resultSet.getInt("rank")
+        );
     }
 }
