@@ -18,4 +18,10 @@ public class ThemeFixture {
         return theme;
     }
 
+    public static Theme activeTheme(String name) {
+        Theme theme = Theme.create(name, "설명1", "썸네일1");
+        theme.updateStatus(true);
+        return theme;
+    }
+
 }

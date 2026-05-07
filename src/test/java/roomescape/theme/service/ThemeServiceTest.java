@@ -80,9 +80,9 @@ class ThemeServiceTest {
     void readActiveThemes() {
         // given
         List<Theme> themes = saveAll(List.of(
-                ThemeFixture.theme("다테마"),
-                ThemeFixture.theme("나테마"),
-                ThemeFixture.theme("가테마"))
+                ThemeFixture.activeTheme("다테마"),
+                ThemeFixture.activeTheme("나테마"),
+                ThemeFixture.activeTheme("가테마"))
         );
         Collections.sort(themes, Comparator.comparing(Theme::name));
 
@@ -150,8 +150,7 @@ class ThemeServiceTest {
     private List<Theme> saveAll(List<Theme> themes) {
         List<Theme> savedThemes = new ArrayList<>();
         for (Theme theme : themes) {
-            Theme savedTheme = themeRepository.save(theme);
-            savedThemes.add(savedTheme);
+            savedThemes.add(themeRepository.save(theme));
         }
         return savedThemes;
     }

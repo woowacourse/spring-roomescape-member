@@ -8,8 +8,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
@@ -67,12 +65,12 @@ public class ReservationService {
 
     private ReservationTime getReservationTime(Long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
     }
 
     private ReservationDate getReservationDate(Long dateId) {
         return reservationDateRepository.findById(dateId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 날짜입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 날짜입니다."));
     }
 
     private Theme getTheme(Long themeId) {
@@ -82,18 +80,18 @@ public class ReservationService {
 
     private Reservation getReservation(Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
     }
 
     private void validateNotAlreadyBookedByOthers(LocalDate date, LocalTime time, Theme theme) {
         if (reservationRepository.existsByDateAndTimeAndThemeId(date, time, theme.id())) {
-            throw new ConflictException("해당 날짜/시간/테마는 이미 예약되었습니다.");
+            throw new IllegalArgumentException("해당 날짜/시간/테마는 이미 예약되었습니다.");
         }
     }
 
     private void validateUserHasNoReservationAtSameTime(String name, ReservationDate date, ReservationTime time) {
         if (reservationRepository.existsByNameAndDateAndTime(name, date.date(), time.startAt())) {
-            throw new ConflictException("동일한 날짜와 시간에 예약이 존재합니다.");
+            throw new IllegalArgumentException("동일한 날짜와 시간에 예약이 존재합니다.");
         }
     }
 

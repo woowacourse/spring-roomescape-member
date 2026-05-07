@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
@@ -44,11 +43,8 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void delete(Long id) {
-        ReservationTime removed = store.remove(id);
-        if (removed == null) {
-            throw new NotFoundException("예약 시간을 삭제할 수 없습니다.");
-        }
+    public boolean delete(Long id) {
+        return store.remove(id) != null;
     }
 
     @Override

@@ -5,8 +5,6 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.request.ReservationTimeSaveDto;
 import roomescape.time.repository.ReservationTimeRepository;
@@ -38,19 +36,21 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTime delete(Long id) {
         ReservationTime reservationTime = getReservationTime(id);
-        reservationTimeRepository.delete(reservationTime.id());
+        if (!reservationTimeRepository.delete(reservationTime.id())) {
+            throw new IllegalArgumentException("예약 시간을 삭제할 수 없습니다.");
+        }
         return reservationTime;
     }
 
     private void validateDuplicateTimeExist(LocalTime startAt) {
         if (reservationTimeRepository.existsByStartAt(startAt)) {
-            throw new ConflictException("이미 존재하는 예약 시간입니다.");
+            throw new IllegalArgumentException("이미 존재하는 예약 시간입니다.");
         }
     }
 
     private ReservationTime getReservationTime(Long id) {
         return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
     }
 
 }

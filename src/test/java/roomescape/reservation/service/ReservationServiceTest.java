@@ -5,16 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.reservation.fixture.ReservationFixture.reservation;
 import static roomescape.reservation.fixture.ReservationFixture.saveDto;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.fixture.FakeReservationDateRepository;
 import roomescape.date.fixture.ReservationDateFixture;
@@ -123,7 +119,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.reserve(command))
-                .isInstanceOf(NotFoundException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
@@ -151,7 +147,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.reserve(duplicated))
-                .isInstanceOf(ConflictException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 날짜/시간/테마는 이미 예약되었습니다.");
     }
 

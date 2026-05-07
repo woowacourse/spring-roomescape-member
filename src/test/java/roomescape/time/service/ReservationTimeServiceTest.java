@@ -11,8 +11,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.ConflictException;
-import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.request.ReservationTimeSaveDto;
 import roomescape.time.fixture.FakeReservationTimeRepository;
@@ -87,7 +85,7 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(wrongId))
-                .isInstanceOf(NotFoundException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
@@ -100,7 +98,7 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.register(duplicatedCommand))
-                .isInstanceOf(ConflictException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 존재하는 예약 시간입니다.");
     }
 
