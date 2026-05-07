@@ -1,6 +1,5 @@
 package roomescape.domain.time.controller;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,27 +9,36 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.time.dto.request.TimeCreateRequestDto;
 import roomescape.domain.time.dto.response.TimeResponseDto;
 import roomescape.domain.time.service.TimeService;
 
 @RestController
-@RequestMapping("/api")
-public class TimeController {
+@RequestMapping("/api/admin/times")
+public class AdminTimeController {
 
     private final TimeService timeService;
 
-    public TimeController(TimeService timeService) {
+    public AdminTimeController(TimeService timeService) {
         this.timeService = timeService;
     }
 
-    @GetMapping("/times")
-    public ResponseEntity<List<TimeResponseDto>> getAvailableTimes(
-        @RequestParam LocalDate date,
-        @RequestParam Long themeId
-    ) {
-        return ResponseEntity.ok(timeService.getAvailableTimes(date, themeId));
+    @GetMapping()
+    public ResponseEntity<List<TimeResponseDto>> getTimes() {
+        return ResponseEntity.ok(timeService.getTimes());
     }
+
+    @PostMapping()
+    public ResponseEntity<TimeResponseDto> saveTime(@RequestBody TimeCreateRequestDto requestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(timeService.saveTime(requestDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
+        timeService.deleteTimeById(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+
 }
