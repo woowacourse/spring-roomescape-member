@@ -18,7 +18,7 @@
   - 지금은 `date`가 오늘 이전이어도 예약 생성 가능
   - `date.isBefore(LocalDate.now())` 검증 추가 필요
 
-- [ ] **4. `Reservation.validate()` 가 `static` 메서드임**
+- [x] **4. `Reservation.validate()` 가 `static` 메서드임**
   - 생성자 내부에서 호출되지만 외부에서도 직접 호출 가능한 구조
   - `static` 제거하고 생성자 내부 전용 `private` 메서드로 변경해야 함.
 

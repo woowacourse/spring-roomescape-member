@@ -38,7 +38,7 @@ public class Reservation {
         return theme;
     }
 
-    private static void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
+    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("예약자 이름은 비어있을 수 없습니다.");
         }
