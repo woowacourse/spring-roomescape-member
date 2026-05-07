@@ -31,9 +31,6 @@ import roomescape.service.ThemeService;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ThemeControllerTest {
 
-    private static final Theme THEME = new Theme(null, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
-    private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
-
     @LocalServerPort
     private int port;
 
@@ -48,8 +45,10 @@ class ThemeControllerTest {
     @Test
     void 모든_테마를_조회한다() {
         // given
-        List<Theme> themes = List.of(THEME.withId(1L), THEME.withId(2L), THEME.withId(3L));
-        List<ThemeResponse> dtos = themes.stream()
+        List<Theme> themes = List.of(
+            theme().withId(1L), theme().withId(2L), theme().withId(3L));
+
+        List<ThemeResponse> expectedResponse = themes.stream()
             .map(ThemeResponse::from)
             .toList();
 
@@ -66,10 +65,9 @@ class ThemeControllerTest {
             .then()
             .statusCode(HttpStatus.OK.value());
 
-        List<ThemeResponse> responseDtos = response.as(new TypeRef<>() {
+        List<ThemeResponse> actualResponse = response.as(new TypeRef<>() {
         });
-        assertThat(responseDtos).hasSize(3);
-        assertThat(responseDtos).containsExactlyElementsOf(dtos);
+        assertThat(actualResponse).containsExactlyElementsOf(expectedResponse);
     }
 
     @Test
@@ -97,52 +95,55 @@ class ThemeControllerTest {
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
+    @Test
+    void 관리자는_테마를_추가할_수_있다() {
+        // given
+        ThemeRequest request = themeRequestDtoFrom(theme());
+
+        Theme savedTheme = theme().withId(1L);
+        when(themeService.addTheme(any()))
+            .thenReturn(savedTheme);
+
+        // when
+        Response response = RestAssured
+            .given().log().all()
+            .queryParam("role", "admin")
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/themes");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.CREATED.value());
+
+        ResourceIdResponse responseDto = response.as(ResourceIdResponse.class);
+        assertThat(responseDto).isEqualTo(new ResourceIdResponse(savedTheme.getId()));
+    }
+
+    @Test
+    void 관리자는_테마를_삭제할_수_있다() {
+        // given & when
+        Response response = RestAssured
+            .given().log().all()
+            .queryParam("role", "admin")
+            .pathParam("id", 1)
+            .when().delete("/themes/{id}");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
     @Nested
-    @DisplayName("인가 권한 테스트")
+    @DisplayName("인가 권한이 없는 경우 예외가 발생한다")
     class RoleForbidden {
-        @Test
-        void 관리자는_테마를_추가할_수_있다() {
-            // given
-            ThemeRequest request = themeRequestDtoFrom(THEME);
-            when(themeService.addTheme(any()))
-                .thenReturn(SAVED_THEME);
-
-            // when
-            Response response = RestAssured
-                .given().log().all()
-                .queryParam("role", "admin")
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/themes");
-
-            // then
-            response
-                .then()
-                .statusCode(HttpStatus.CREATED.value());
-
-            ResourceIdResponse responseDto = response.as(ResourceIdResponse.class);
-            assertThat(responseDto).isEqualTo(new ResourceIdResponse(SAVED_THEME.getId()));
-        }
-
-        @Test
-        void 관리자는_테마를_삭제할_수_있다() {
-            // given & when
-            Response response = RestAssured
-                .given().log().all()
-                .queryParam("role", "admin")
-                .pathParam("id", 1)
-                .when().delete("/themes/{id}");
-
-            // then
-            response
-                .then()
-                .statusCode(HttpStatus.NO_CONTENT.value());
-        }
 
         @Test
         void 관리자가_아닌_사용자가_테마를_추가하는_경우_예외가_발생한다() {
             // given
-            ThemeRequest request = themeRequestDtoFrom(THEME);
+            ThemeRequest request = themeRequestDtoFrom(theme());
 
             // when
             Response response = RestAssured
@@ -174,10 +175,14 @@ class ThemeControllerTest {
         }
     }
 
+    private Theme theme() {
+        return new Theme(null, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
+    }
+
     private List<Theme> createTenThemes() {
         List<Theme> themes = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            themes.add(new Theme((long) i, new ThemeName("테마" + i), "테마" + i, ThemeImageUrl.defaultImageUrl()));
+            themes.add(theme().withId(i));
         }
         return themes;
     }

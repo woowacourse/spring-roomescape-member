@@ -1,9 +1,14 @@
 package roomescape.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,26 +22,14 @@ import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservationTime.ReservationTimeResponse;
 import roomescape.service.ReservationService;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationControllerTest {
 
-    // TODO: 변수 선언이 괜찮은지? 메서드 분리를 할까?
-    // TODO: 부수적인 도메인은 필드, 테스트 대상은 메서드 내에서 호출
     private static final ReservationTime TIME = new ReservationTime(1L, "12:00");
-    private static final Theme THEME = new Theme(1L, new ThemeName("name"), "d", ThemeImageUrl.defaultImageUrl());
-    private static final Reservation RESERVATION = new Reservation(
-            "이름",
-            LocalDate.now().plusDays(1L),
-            TIME,
-            THEME);
+    private static final Theme THEME = new Theme(1L, new ThemeName("n"), "d", ThemeImageUrl.defaultImageUrl());
 
     @LocalServerPort
     private int port;
@@ -52,21 +45,23 @@ class ReservationControllerTest {
     @Test
     void 예약을_추가한다() {
         //given
-        ReservationRequest request = requestDtoFrom(RESERVATION);
+        Reservation reservation = reservation();
+        ReservationRequest request = requestDtoFrom(reservation);
+
         when(reservationService.addReservation(request))
-                .thenReturn(RESERVATION.withId(1L));
+            .thenReturn(reservation.withId(1L));
 
         // when
         Response response = RestAssured
-                .given().log().all()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/reservations");
+            .given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/reservations");
 
         // then
         response
-                .then()
-                .statusCode(HttpStatus.CREATED.value());
+            .then()
+            .statusCode(HttpStatus.CREATED.value());
 
         ReservationResponse responseDto = response.as(ReservationResponse.class);
         assertThat(responseDto.id()).isEqualTo(1L);
@@ -76,44 +71,52 @@ class ReservationControllerTest {
     void 예약을_삭제한다() {
         // given & when
         Response response = RestAssured
-                .given().log().all()
-                .pathParam("id", 1)
-                .when().delete("/reservations/{id}");
+            .given().log().all()
+            .pathParam("id", 1)
+            .when().delete("/reservations/{id}");
 
         // then
         response
-                .then()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+            .then()
+            .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @Test
     void 모든_예약을_조회한다() {
         // given
-        List<Reservation> reservations = List.of(RESERVATION.withId(1L), RESERVATION.withId(2L), RESERVATION.withId(3L));
-        List<ReservationResponse> dtos = reservations.stream()
-                .map(ReservationResponse::from)
-                .toList();
+        Reservation reservation = reservation();
+        List<Reservation> reservations = List.of(
+            reservation.withId(1L), reservation.withId(2L), reservation.withId(3L));
+
+        List<ReservationResponse> expectedResponse = reservations.stream()
+            .map(ReservationResponse::from)
+            .toList();
 
         when(reservationService.getReservations())
-                .thenReturn(reservations);
+            .thenReturn(reservations);
 
         // when
         Response response = RestAssured
-                .given().log().all()
-                .when().get("/reservations");
+            .given().log().all()
+            .when().get("/reservations");
 
         // then
         response
-                .then()
-                .statusCode(HttpStatus.OK.value());
+            .then()
+            .statusCode(HttpStatus.OK.value());
 
-        List<ReservationResponse> responseDtos = response.as(new TypeRef<>() {
+        List<ReservationResponse> actualResponse = response.as(new TypeRef<>() {
         });
-        assertThat(responseDtos).hasSize(3);
-        assertThat(responseDtos).containsExactlyElementsOf(dtos);
+        assertThat(actualResponse).hasSize(3);
+        assertThat(actualResponse).containsExactlyElementsOf(expectedResponse);
+    }
+
+    private Reservation reservation() {
+        return new Reservation("이름", LocalDate.now().plusDays(1L), TIME, THEME);
     }
 
     private ReservationRequest requestDtoFrom(Reservation reservation) {
-        return new ReservationRequest(reservation.getName().value(), reservation.getDateValue(), reservation.getTime().getId(), reservation.getTheme().getId());
+        return new ReservationRequest(reservation.getName().value(), reservation.getDateValue(),
+            reservation.getTime().getId(), reservation.getTheme().getId());
     }
 }

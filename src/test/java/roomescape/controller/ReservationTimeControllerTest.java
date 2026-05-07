@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.List;
@@ -22,6 +23,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ResourceIdResponse;
 import roomescape.dto.reservationTime.AvailableReservationTimesResponse;
 import roomescape.dto.reservationTime.ReservationTimeRequest;
+import roomescape.dto.reservationTime.ReservationTimeResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.ThemeService;
 
@@ -33,8 +35,6 @@ class ReservationTimeControllerTest {
 
     @MockitoBean
     private ReservationService reservationService;
-    @Autowired
-    private ThemeService themeService;
 
     @BeforeEach
     void setPort() {
@@ -42,9 +42,38 @@ class ReservationTimeControllerTest {
     }
 
     @Test
+    void 전체_예약_시간을_조회한다() {
+        // given
+        List<ReservationTime> times = List.of(
+            new ReservationTime(1L, "12:30"),
+            new ReservationTime(2L, "14:30"));
+
+        List<ReservationTimeResponse> expectedResponse = times.stream()
+            .map(ReservationTimeResponse::from)
+            .toList();
+
+        when(reservationService.getReservationTimes())
+            .thenReturn(times);
+
+        // when
+        Response response = RestAssured
+            .given().log().all()
+            .when().get("/times");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.OK.value());
+
+        List<ReservationTimeResponse> actualResponse = response.as(new TypeRef<>() {
+        });
+        assertThat(actualResponse).containsExactlyElementsOf(expectedResponse);
+    }
+
+    @Test
     void 관리자는_예약_시간을_추가할_수_있다() {
         // given
-        ReservationTime newTime = new ReservationTime(1L, "12:30");
+        ReservationTime newTime = reservationTime();
         ReservationTimeRequest request = requestDtoFrom(newTime);
         when(reservationService.addReservationTime(any()))
             .thenReturn(newTime);
@@ -84,7 +113,7 @@ class ReservationTimeControllerTest {
     @Test
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
         // given
-        ReservationTime availableTime = new ReservationTime(1L, "12:30");
+        ReservationTime availableTime = reservationTime();
         ReservationTime impossibleTime = new ReservationTime(2L, "14:30");
         List<ReservationTime> allTimes = List.of(availableTime, impossibleTime);
         List<ReservationTime> availableTimes = List.of(availableTime);
@@ -114,12 +143,12 @@ class ReservationTimeControllerTest {
     }
 
     @Nested
-    @DisplayName("인가 권한 테스트")
+    @DisplayName("인가 권한이 없는 경우 예외가 발생한다")
     class RoleForbidden {
         @Test
-        void 관리자가_아닌_사용자가_테마를_추가하는_경우_예외가_발생한다() {
+        void 관리자가_아닌_사용자가_시간을_추가하는_경우_예외가_발생한다() {
             // given
-            ReservationTime newTime = new ReservationTime(1L, "12:30");
+            ReservationTime newTime = reservationTime();
             ReservationTimeRequest request = requestDtoFrom(newTime);
 
             // when
@@ -150,6 +179,10 @@ class ReservationTimeControllerTest {
                 .then()
                 .statusCode(HttpStatus.FORBIDDEN.value());
         }
+    }
+
+    private ReservationTime reservationTime() {
+        return new ReservationTime(1L, "12:30");
     }
 
     private ReservationTimeRequest requestDtoFrom(ReservationTime time) {
