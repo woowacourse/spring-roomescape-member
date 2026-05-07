@@ -5,11 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.List;
+import java.util.Objects;
 
 @RestControllerAdvice
 @Slf4j
@@ -38,6 +43,31 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException exception,
+            HttpHeaders headers,
+            HttpStatusCode statusCode,
+            WebRequest request
+    ) {
+        log.error("Method Argument exception occurred", exception);
+        String path = pathFrom(request);
+        List<String> messages = exception.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(ObjectError::getDefaultMessage)
+                .filter(Objects::nonNull)
+                .toList();
+        if (messages.isEmpty()) {
+            messages = List.of("잘못된 요청입니다.");
+        }
+
+        return ResponseEntity
+                .status(statusCode)
+                .headers(headers)
+                .body(ErrorResponse.of(path, messages));
+    }
+
+    @Override
     protected ResponseEntity<Object> handleExceptionInternal(
             Exception exception,
             Object body,
@@ -46,7 +76,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             WebRequest request
     ) {
         log.error("Spring Mvc Internal exception occurred", exception);
-        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
+        String path = pathFrom(request);
 
         return ResponseEntity
                 .status(statusCode)
@@ -65,5 +95,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .internalServerError()
                 .body(ErrorResponse.of(path, "서버 내부에서 문제가 발생했습니다."));
+    }
+
+    private String pathFrom(WebRequest request) {
+        return ((ServletWebRequest) request).getRequest().getRequestURI();
     }
 }

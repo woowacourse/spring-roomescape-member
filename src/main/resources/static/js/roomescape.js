@@ -184,9 +184,13 @@ const API_BASE = "";
 
       try {
         const body = await response.json();
-        return typeof body.message === "string" && body.message.trim()
-          ? body.message
-          : fallback;
+        if (Array.isArray(body.messages) && body.messages.length > 0) {
+          return body.messages.filter(Boolean).join("\n");
+        }
+        if (typeof body.message === "string" && body.message.trim()) {
+          return body.message;
+        }
+        return fallback;
       } catch (error) {
         return fallback;
       }
