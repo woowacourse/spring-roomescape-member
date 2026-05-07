@@ -30,7 +30,7 @@ public class ThemeService {
 
     @Transactional(readOnly = true)
     public List<Theme> findPopularThemes(int days, LocalDate now, int size){
-        LocalDate startDate = now.minusDays(days + 1);
+        LocalDate startDate = now.minusDays(days);
         LocalDate endDate = now.minusDays(1);
 
         return themeRepository.findTopThemesByReservationCount(startDate, endDate, size);

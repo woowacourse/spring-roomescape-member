@@ -36,7 +36,7 @@ class ThemeServiceTest {
         // themeRepository.findTopThemesByReservationCount()는 리포지토리 테스트에서 직접 하므로 호출만 검증
         then(themeRepository).should()
                 .findTopThemesByReservationCount(
-                        LocalDate.of(2026, 10, 7),
+                        LocalDate.of(2026, 10, 8),
                         LocalDate.of(2026, 10, 14),
                         size
                 );
