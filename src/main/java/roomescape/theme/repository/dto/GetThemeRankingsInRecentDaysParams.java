@@ -1,4 +1,4 @@
-package roomescape.theme.service;
+package roomescape.theme.repository.dto;
 
 import java.time.LocalDate;
 

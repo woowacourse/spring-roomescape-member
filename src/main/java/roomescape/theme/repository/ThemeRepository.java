@@ -8,7 +8,7 @@ import roomescape.theme.mapper.ThemeMapper;
 import roomescape.theme.repository.dao.ThemeDao;
 import roomescape.theme.repository.dto.CreateThemeParams;
 import roomescape.theme.repository.entity.ThemeEntity;
-import roomescape.theme.service.GetThemeRankingsInRecentDaysParams;
+import roomescape.theme.repository.dto.GetThemeRankingsInRecentDaysParams;
 
 @Repository
 @RequiredArgsConstructor

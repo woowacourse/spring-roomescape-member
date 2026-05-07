@@ -11,6 +11,7 @@ import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.repository.dto.CreateThemeParams;
+import roomescape.theme.repository.dto.GetThemeRankingsInRecentDaysParams;
 
 @Service
 @Transactional(readOnly = true)
