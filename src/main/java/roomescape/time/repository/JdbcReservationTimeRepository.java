@@ -3,9 +3,9 @@ package roomescape.time.repository;
 import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -30,56 +30,88 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        String sql = "insert into reservation_time (start_at) values (?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
-            return ps;
-        }, keyHolder);
+        String sql = """
+               INSERT INTO reservation_time (start_at)
+               VALUES (?)
+               """;
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        Long id = keyHolder.getKey().longValue();
-        return new ReservationTime(id, reservationTime.getStartAt());
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+                ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
+                return ps;
+            }, keyHolder);
+
+            Long id = keyHolder.getKey().longValue();
+
+            return new ReservationTime(id, reservationTime.getStartAt());
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("해당 시간이 이미 DB에 존재합니다.");
+        }
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("delete from reservation_time where id = ?", id);
+        String sql = """
+               DELETE FROM reservation_time
+               WHERE id = ?
+               """;
+
+        try {
+            int affectedRow = jdbcTemplate.update(sql, id);
+
+            if(affectedRow == 0) {
+                throw new IllegalArgumentException("해당 id의 시간이 존재하지 않습니다.");
+            }
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
+        }
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "select id, start_at from reservation_time where id = ?";
-        List<ReservationTime> results = jdbcTemplate.query(sql, reservationTimeRowMapper, id);
-        return results.stream().findFirst();
+        String sql = """
+               SELECT id, start_at
+               FROM reservation_time
+               WHERE id = ?
+               """;
+
+        return jdbcTemplate.query(
+                sql,
+                reservationTimeRowMapper,
+                id
+        ).stream().findFirst();
     }
 
     @Override
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("select id, start_at from reservation_time", reservationTimeRowMapper);
-    }
+        String sql = """
+                SELECT id, start_at
+                FROM reservation_time
+                """;
 
-    @Override
-    public boolean existsByStartAt(LocalTime startAt) {
-        String sql = "select exists (select 1 from reservation_time where start_at = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
+        return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
     @Override
     public List<AvailableTimeQueryResult> findAvailableTimes(Long themeId, LocalDate date) {
-        String sql = "SELECT rt.id, rt.start_at\n" +
-                "FROM reservation_time rt\n" +
-                "LEFT JOIN reservation r\n" +
-                "  ON rt.id = r.time_id\n" +
-                "  AND r.theme_id = ?\n" +
-                "  AND r.reservation_date = ?\n" +
-                "WHERE r.id IS NULL";
+        String sql = """
+               SELECT t.id, t.start_at
+               FROM reservation_time t 
+               LEFT JOIN reservation r
+               ON t.id = r.time_id
+               AND r.theme_id = ?
+               AND r.reservation_date = ?
+               WHERE r.id IS NULL
+               """;
 
         RowMapper<AvailableTimeQueryResult> reservationTimeMapper = (rs, rowNum) ->
                 new AvailableTimeQueryResult(
                         rs.getLong("id"),
                         rs.getTime("start_at").toLocalTime()
                 );
+
         return jdbcTemplate.query(sql, reservationTimeMapper, themeId, date);
     }
 }

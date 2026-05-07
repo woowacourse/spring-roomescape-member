@@ -13,6 +13,4 @@ public interface ThemeRepository {
     Optional<Theme> findById(Long id);
 
     List<Theme> findAll();
-
-    boolean existsByName(String name);
 }

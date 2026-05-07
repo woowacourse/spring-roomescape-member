@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -46,65 +47,93 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        String sql = "insert into reservation (name, reservation_date, time_id, theme_id) values (?, ?, ?, ?)";
+        String sql = """
+                INSERT INTO reservation (name, reservation_date, time_id, theme_id)
+                VALUES (?, ?, ?, ?)
+                """;
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setDate(2, Date.valueOf(reservation.getDate()));
-            ps.setLong(3, reservation.getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
-            return ps;
-        }, keyHolder);
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        long id = keyHolder.getKey().longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+                ps.setString(1, reservation.getName());
+                ps.setDate(2, Date.valueOf(reservation.getDate()));
+                ps.setLong(3, reservation.getTime().getId());
+                ps.setLong(4, reservation.getTheme().getId());
+                return ps;
+            }, keyHolder);
+
+            long id = keyHolder.getKey().longValue();
+
+            return new Reservation(
+                    id,
+                    reservation.getName(),
+                    reservation.getDate(),
+                    reservation.getTime(),
+                    reservation.getTheme()
+            );
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("이미 해당 날짜와 시간에 예약이 존재합니다.");
+        }
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("delete from reservation where id = ?", id);
+        String sql = """
+               DELETE FROM reservation
+               WHERE id = ?
+               """;
+
+        int affectedRow = jdbcTemplate.update(sql, id);
+
+        if(affectedRow == 0) {
+            throw new IllegalArgumentException("해당 id의 예약이 존재하지 않습니다.");
+        }
     }
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "select " +
-                "r.id as reservation_id, " +
-                "r.name as reservation_name, " +
-                "r.reservation_date, " +
-                "r.time_id, " +
-                "t.start_at as time_start_at, " +
-                "h.id as theme_id, " +
-                "h.name as theme_name, " +
-                "h.description as theme_description, " +
-                "h.thumbnail_url as theme_thumbnail_url " +
-                "from reservation r " +
-                "inner join reservation_time t on r.time_id = t.id " +
-                "inner join theme h on r.theme_id = h.id";
+        String sql = """
+        SELECT r.id AS reservation_id,
+               r.name AS reservation_name,
+               r.reservation_date,
+               r.time_id,
+               t.start_at AS time_start_at,
+               h.id AS theme_id,
+               h.name AS theme_name,
+               h.description AS theme_description,
+               h.thumbnail_url AS theme_thumbnail_url
+        FROM reservation r
+        INNER JOIN reservation_time t
+          ON r.time_id = t.id
+        INNER JOIN theme h
+          ON r.theme_id = h.id
+        """;
+
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = "select exists (select 1 from reservation where reservation_date = ? and time_id = ? and theme_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
-    }
-
-    @Override
     public List<PopularThemeQueryResult> findPopularThemes(LocalDate from, LocalDate to, int limit) {
-        String sql = "select " +
-                "t.id, " +
-                "t.name, " +
-                "t.description, " +
-                "t.thumbnail_url " +
-                "from reservation r " +
-                "inner join theme t on r.theme_id = t.id " +
-                "where r.reservation_date >= ? " +
-                "and r.reservation_date <= ? " +
-                "group by t.id " +
-                "order by count(r.id) desc, t.id asc " +
-                "limit ?";
+        String sql = """
+        SELECT t.id,
+               t.name,
+               t.description,
+               t.thumbnail_url
+        FROM reservation r
+        INNER JOIN theme t
+          ON r.theme_id = t.id
+        WHERE r.reservation_date >= ?
+          AND r.reservation_date <= ?
+        GROUP BY t.id,
+                 t.name,
+                 t.description,
+                 t.thumbnail_url
+        ORDER BY COUNT(r.id) DESC,
+                 t.id ASC
+        LIMIT ?
+        """;
 
         return jdbcTemplate.query(
                 sql,

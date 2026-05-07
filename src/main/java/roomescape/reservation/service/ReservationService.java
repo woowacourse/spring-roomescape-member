@@ -40,14 +40,9 @@ public class ReservationService {
         Theme theme = themeRepository.findById(command.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마가 존재하지 않습니다."));
 
-        Reservation reservation = Reservation.create(command.name(), command.date(), time, theme);
-
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservation.getDate(), command.timeId(),
-                command.themeId())) {
-            throw new IllegalStateException("이미 해당 날짜와 시간에 예약이 존재합니다.");
-        }
-
-        return reservationRepository.save(reservation);
+        return reservationRepository.save(
+                Reservation.create(command.name(), command.date(), time, theme)
+        );
     }
 
     @Transactional

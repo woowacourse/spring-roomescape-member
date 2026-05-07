@@ -13,7 +13,7 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    public static ReservationTime create(LocalTime startAt) {
+    public static ReservationTime of(LocalTime startAt) {
         return new ReservationTime(null, startAt);
     }
 
@@ -30,7 +30,9 @@ public class ReservationTime {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         ReservationTime that = (ReservationTime) o;
+
         return Objects.equals(getId(), that.getId());
     }
 

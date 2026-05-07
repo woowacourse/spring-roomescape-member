@@ -1,4 +1,4 @@
-package roomescape.reservation.controller.advice;
+package roomescape.advice;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +13,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> handleDataIntegrity(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().body("제약 조건 위반으로 작업을 완료할 수 없습니다.");
+    @ExceptionHandler({DataIntegrityViolationException.class})
+    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

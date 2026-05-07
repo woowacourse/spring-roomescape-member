@@ -29,7 +29,6 @@ public class ThirdMissionStepTest {
         jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
 
-
     @Test
     void 시간_관리_API() {
         Map<String, String> params = new HashMap<>();

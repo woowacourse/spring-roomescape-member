@@ -3,6 +3,7 @@ package roomescape.theme.repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -29,40 +30,72 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Theme save(Theme theme) {
-        String sql = "insert into theme (name, description, thumbnail_url) values (?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDescription());
-            ps.setString(3, theme.getThumbnailUrl());
-            return ps;
-        }, keyHolder);
+        String sql = """
+               INSERT INTO theme (name, description, thumbnail_url)
+               VALUES (?, ?, ?)
+               """;
 
-        Long id = keyHolder.getKey().longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+                ps.setString(1, theme.getName());
+                ps.setString(2, theme.getDescription());
+                ps.setString(3, theme.getThumbnailUrl());
+                return ps;
+            }, keyHolder);
+
+            Long id = keyHolder.getKey().longValue();
+
+            return new Theme(
+                    id,
+                    theme.getName(),
+                    theme.getDescription(),
+                    theme.getThumbnailUrl()
+            );
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("해당 테마가 이미 존재합니다.");
+        }
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("delete from theme where id = ?", id);
+        String sql = """
+               DELETE FROM theme
+               WHERE id = ?
+               """;
+
+        try {
+            int affectedRow = jdbcTemplate.update(sql, id);
+
+            if(affectedRow == 0) {
+                throw new IllegalArgumentException("해당 id의 테마가 존재하지 않습니다.");
+            }
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("예약에 사용 중인 테마는 삭제할 수 없습니다.");
+        }
     }
 
     @Override
     public Optional<Theme> findById(Long id) {
-        String sql = "select * from theme where id = ?";
-        List<Theme> results = jdbcTemplate.query(sql, ThemeMapper, id);
-        return results.stream().findFirst();
+        String sql = """
+               SELECT *
+               FROM theme
+               WHERE id = ?
+               """;
+
+        return jdbcTemplate.query(sql, ThemeMapper, id)
+                .stream().findFirst();
     }
 
     @Override
     public List<Theme> findAll() {
-        return jdbcTemplate.query("select id, name, description, thumbnail_url from theme", ThemeMapper);
-    }
+        String sql = """
+                SELECT id, name, description, thumbnail_url
+                FROM theme
+                """;
 
-    @Override
-    public boolean existsByName(String name) {
-        String sql = "select exists (select 1 from theme where name = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+        return jdbcTemplate.query(sql, ThemeMapper);
     }
 }
