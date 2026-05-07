@@ -7,9 +7,12 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.exception.code.ThemeErrorCode;
+import roomescape.exception.domain.ThemeException;
 
 @Service
 public class ThemeService {
+
     private static final int POPULAR_THEME_PERIOD_DAYS = 7;
     private static final int BASE_DATE_EXCLUDED_DAYS = 1;
 
@@ -28,7 +31,7 @@ public class ThemeService {
     private void validateUniqueTheme(String name) {
         boolean exists = themeDao.existsByName(name);
         if (exists) {
-            throw new IllegalArgumentException("이미 존재하는 테마입니다.");
+            throw new ThemeException(ThemeErrorCode.THEME_ALREADY_EXISTS);
         }
     }
 
@@ -55,7 +58,7 @@ public class ThemeService {
     private void validateThemeExists(Long themeId) {
         boolean exists = themeDao.existsById(themeId);
         if (!exists) {
-            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+            throw new ThemeException(ThemeErrorCode.THEME_NOT_FOUND);
         }
     }
 }

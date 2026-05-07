@@ -11,11 +11,18 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
-import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.AvailableReservationTimeResponse;
+import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.exception.code.ReservationErrorCode;
+import roomescape.exception.code.ReservationTimeErrorCode;
+import roomescape.exception.code.ThemeErrorCode;
+import roomescape.exception.domain.ReservationException;
+import roomescape.exception.domain.ReservationTimeException;
+import roomescape.exception.domain.ThemeException;
 
 @Service
 public class ReservationTimeService {
+
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
@@ -48,7 +55,7 @@ public class ReservationTimeService {
     private void validateTheme(Long themeId) {
         boolean exists = themeDao.existsById(themeId);
         if (!exists) {
-            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+            throw new ThemeException(ThemeErrorCode.THEME_NOT_FOUND);
         }
     }
 
@@ -64,13 +71,20 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(long reservationTimeId) {
         validateReservationTimeExists(reservationTimeId);
+        validateReservationNotExistsBy(reservationTimeId);
         reservationTimeDao.delete(reservationTimeId);
     }
 
     private void validateReservationTimeExists(Long reservationTimeId) {
         boolean exists = reservationTimeDao.existsById(reservationTimeId);
         if (!exists) {
-            throw new IllegalArgumentException("존재하지 않는 시간입니다.");
+            throw new ReservationTimeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND);
+        }
+    }
+
+    private void validateReservationNotExistsBy(Long reservationTimeId) {
+        if (reservationDao.existsByReservationTime(reservationTimeId)) {
+            throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_EXISTS);
         }
     }
 }

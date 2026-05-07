@@ -6,6 +6,7 @@ import roomescape.exception.ErrorCode;
 public enum ThemeErrorCode implements ErrorCode {
 
     THEME_ALREADY_EXISTS("T-409-001", HttpStatus.CONFLICT, "이미 존재하는 테마입니다."),
+    THEME_NOT_FOUND("T-404-002", HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다."),
     ;
 
     private final String code;

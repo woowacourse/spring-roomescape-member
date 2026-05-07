@@ -10,9 +10,16 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.code.ReservationErrorCode;
+import roomescape.exception.code.ReservationTimeErrorCode;
+import roomescape.exception.code.ThemeErrorCode;
+import roomescape.exception.domain.ReservationException;
+import roomescape.exception.domain.ReservationTimeException;
+import roomescape.exception.domain.ThemeException;
 
 @Service
 public class ReservationService {
+
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
@@ -34,12 +41,12 @@ public class ReservationService {
 
     private ReservationTime getTime(long timeId) {
         return reservationTimeDao.selectById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new ReservationTimeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 
     private Theme getTheme(long themeId) {
         return themeDao.selectById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new ThemeException(ThemeErrorCode.THEME_NOT_FOUND));
     }
 
     public List<ReservationResponse> getAllReservations() {
@@ -57,7 +64,7 @@ public class ReservationService {
     private void validateReservationExists(Long reservationId) {
         boolean exists = reservationDao.existsById(reservationId);
         if (!exists) {
-            throw new IllegalArgumentException("존재하지 않는 예약입니다.");
+            throw new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND);
         }
     }
 }
