@@ -1,5 +1,6 @@
 package roomescape.date.fixture;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,11 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
 
     @Override
     public List<ReservationDate> findAllAfterToday() {
-        return List.of();
+        LocalDate today = LocalDate.now();
+
+        return reservationDates.stream()
+                .filter(reservationDate -> !reservationDate.date().isBefore(today))
+                .toList();
     }
 
     @Override
