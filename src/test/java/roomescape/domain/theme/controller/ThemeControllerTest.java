@@ -6,16 +6,48 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeControllerTest {
+
+    @TestConfiguration
+    static class FixedClockConfig {
+
+        @Bean
+        @Primary
+        Clock fixedClock() {
+            return Clock.fixed(
+                    LocalDate.of(2026, 5, 6)
+                            .atStartOfDay(ZoneId.systemDefault())
+                            .toInstant(),
+                    ZoneId.systemDefault()
+            );
+        }
+    }
+
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @Test
     @DisplayName("테마 목록을 조회한다.")
@@ -63,7 +95,7 @@ class ThemeControllerTest {
     @DisplayName("인기 테마 목록을 조회한다.")
     void getPopularThemes() {
         RestAssured.given().log().all()
-                .queryParam("period", 2)
+                .queryParam("period", 7)
                 .queryParam("limit", 2)
                 .when().get("/themes/popular")
                 .then().log().all()
@@ -71,9 +103,13 @@ class ThemeControllerTest {
                 .body("popularThemes.size()", is(2))
                 .body("popularThemes[0].id", is(1))
                 .body("popularThemes[0].name", is("워너비"))
+                .body("popularThemes[0].description", is("워너비 테마입니다."))
+                .body("popularThemes[0].thumbnailUrl", is("https://example.com/wannabe.png"))
                 .body("popularThemes[0].rank", is(1))
                 .body("popularThemes[1].id", is(2))
                 .body("popularThemes[1].name", is("공포의 지하실"))
+                .body("popularThemes[1].description", is("지하실에서 탈출하세요."))
+                .body("popularThemes[1].thumbnailUrl", is("https://example.com/basement.png"))
                 .body("popularThemes[1].rank", is(2));
     }
 
@@ -121,5 +157,12 @@ class ThemeControllerTest {
                 .statusCode(204);
     }
 
-    // TODO: 예약이 존재하는 테마는 삭제 시 409 반환 테스트 추가
+    @Test
+    @DisplayName("예약이 존재하는 테마는 삭제할 수 없다.")
+    void deleteThemeFailWhenReservationExists() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/1")
+                .then().log().all()
+                .statusCode(409);
+    }
 }

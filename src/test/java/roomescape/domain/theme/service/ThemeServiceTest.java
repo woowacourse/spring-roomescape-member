@@ -6,14 +6,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.request.ThemeCreateRequest;
@@ -21,30 +20,34 @@ import roomescape.domain.theme.response.PopularThemeResponse;
 import roomescape.domain.theme.response.PopularThemesResponse;
 import roomescape.domain.theme.response.ThemeResponse;
 
-@ExtendWith(MockitoExtension.class)
-public class ThemeServiceTest {
+class ThemeServiceTest {
 
-    @Mock
-    ThemeRepository themeRepository;
+    private final ThemeRepository themeRepository = Mockito.mock(ThemeRepository.class);
 
-    @InjectMocks
-    ThemeService themeService;
+    private final Clock fixedClock = Clock.fixed(
+            LocalDate.of(2026, 5, 6)
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .toInstant(),
+            ZoneId.systemDefault()
+    );
+
+    private final ThemeService themeService = new ThemeService(themeRepository, fixedClock);
 
     @Test
     @DisplayName("테마를 성공적으로 생성한다.")
     void saveTheme() {
-        //given
+        // given
         Theme theme = new Theme(1L, "테마", "요약", "www.url.com");
+        ThemeCreateRequest request = new ThemeCreateRequest("테마", "요약", "www.url.com");
+
         when(themeRepository.save(any(Theme.class)))
                 .thenReturn(theme);
 
-        ThemeCreateRequest request = new ThemeCreateRequest("테마", "요약", "www.url.com");
-
-        //when
+        // when
         ThemeResponse response = themeService.saveTheme(request);
 
-        //then
-        assertThat(response.id()).isEqualTo(theme.getId());
+        // then
+        assertThat(response.id()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo("테마");
         assertThat(response.description()).isEqualTo("요약");
         assertThat(response.thumbnailUrl()).isEqualTo("www.url.com");
@@ -55,10 +58,11 @@ public class ThemeServiceTest {
     @Test
     @DisplayName("모든 테마를 조회한다.")
     void findAllThemes() {
-        //given
-        List<Theme> themes = new ArrayList<>();
-        themes.add(new Theme(1L, "테마A", "요약", "www.url.com/A"));
-        themes.add(new Theme(2L, "테마B", "요약", "www.url.com/B"));
+        // given
+        List<Theme> themes = List.of(
+                new Theme(1L, "테마A", "요약", "www.url.com/A"),
+                new Theme(2L, "테마B", "요약", "www.url.com/B")
+        );
 
         when(themeRepository.findAll()).thenReturn(themes);
 
@@ -82,6 +86,10 @@ public class ThemeServiceTest {
         // given
         int period = 7;
         int limit = 10;
+
+        LocalDate expectedStartDate = LocalDate.of(2026, 4, 29);
+        LocalDate expectedEndDate = LocalDate.of(2026, 5, 5);
+
         List<PopularThemeResponse> popularThemes = List.of(
                 new PopularThemeResponse(1L, "테마1", "설명1", "url1", 1),
                 new PopularThemeResponse(2L, "테마2", "설명2", "url2", 2),
@@ -95,7 +103,8 @@ public class ThemeServiceTest {
                 new PopularThemeResponse(10L, "테마10", "설명10", "url10", 10)
         );
 
-        when(themeRepository.findPopularThemes(period, limit)).thenReturn(popularThemes);
+        when(themeRepository.findPopularThemes(expectedStartDate, expectedEndDate, limit))
+                .thenReturn(popularThemes);
 
         // when
         PopularThemesResponse response = themeService.findPopularThemes(period, limit);
@@ -116,12 +125,12 @@ public class ThemeServiceTest {
                         tuple(10L, "테마10", 10)
                 );
 
-        verify(themeRepository).findPopularThemes(period, limit);
+        verify(themeRepository).findPopularThemes(expectedStartDate, expectedEndDate, limit);
     }
 
     @Test
-    @DisplayName("예약을 삭제한다.")
-    void deleteReservationBy() {
+    @DisplayName("테마를 삭제한다.")
+    void deleteThemeById() {
         // given
         Long themeId = 1L;
 

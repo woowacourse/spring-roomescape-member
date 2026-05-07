@@ -55,9 +55,17 @@ class ThemeJdbcRepositoryTest {
         assertThat(themes)
                 .extracting(Theme::getName)
                 .contains(
-                        "워너비", "공포의 지하실", "우주 정거장", "탐정 사무소",
-                        "마법 학교", "박물관이 살아있다", "해적선", "미래 도시",
-                        "공룡 시대", "비밀의 정원");
+                        "워너비",
+                        "공포의 지하실",
+                        "우주 정거장",
+                        "탐정 사무소",
+                        "마법 학교",
+                        "박물관이 살아있다",
+                        "해적선",
+                        "미래 도시",
+                        "공룡 시대",
+                        "비밀의 정원"
+                );
     }
 
     @Test
@@ -94,25 +102,32 @@ class ThemeJdbcRepositoryTest {
                 .extracting(
                         ThemeReservationTimeResponse::id,
                         ThemeReservationTimeResponse::startAt,
-                        ThemeReservationTimeResponse::isAvailable)
-                .contains(
+                        ThemeReservationTimeResponse::isAvailable
+                )
+                .containsExactly(
                         tuple(1L, LocalTime.of(10, 0), false),
                         tuple(2L, LocalTime.of(11, 0), true),
                         tuple(3L, LocalTime.of(12, 0), false),
                         tuple(4L, LocalTime.of(13, 0), true),
                         tuple(5L, LocalTime.of(14, 0), false),
-                        tuple(6L, LocalTime.of(15, 0), true));
+                        tuple(6L, LocalTime.of(15, 0), true)
+                );
     }
 
     @Test
-    @DisplayName("최근 일주일 동안가장 인기가 많은 테마 상위 10개를 조회한다.")
+    @DisplayName("지정한 기간 동안 가장 인기가 많은 테마 상위 10개를 조회한다.")
     void findPopularThemesTest() {
         // given
-        int period = 7;
+        LocalDate startDate = LocalDate.of(2026, 4, 29);
+        LocalDate endDate = LocalDate.of(2026, 5, 5);
         int limit = 10;
 
         // when
-        List<PopularThemeResponse> result = themeRepository.findPopularThemes(period, limit);
+        List<PopularThemeResponse> result = themeRepository.findPopularThemes(
+                startDate,
+                endDate,
+                limit
+        );
 
         // then
         assertThat(result).hasSize(10);
@@ -120,7 +135,8 @@ class ThemeJdbcRepositoryTest {
                 .extracting("name", "rank")
                 .containsSubsequence(
                         tuple("워너비", 1),
-                        tuple("공포의 지하실", 2));
+                        tuple("공포의 지하실", 2)
+                );
     }
 
     @Test
@@ -138,6 +154,8 @@ class ThemeJdbcRepositoryTest {
         Theme found = findThemeById(saved.getId());
         assertThat(found.getId()).isEqualTo(saved.getId());
         assertThat(found.getName()).isEqualTo("new name");
+        assertThat(found.getDescription()).isEqualTo("new description");
+        assertThat(found.getThumbnailUrl()).isEqualTo("new url");
     }
 
     @Test
@@ -170,7 +188,8 @@ class ThemeJdbcRepositoryTest {
         return jdbcTemplate.queryForObject(
                 "SELECT * FROM theme WHERE id = :id",
                 parameters,
-                themeRowMapper());
+                themeRowMapper()
+        );
     }
 
     private List<Theme> findThemesById(Long id) {
@@ -180,7 +199,8 @@ class ThemeJdbcRepositoryTest {
         return jdbcTemplate.query(
                 "SELECT * FROM theme WHERE id = :id",
                 parameters,
-                themeRowMapper());
+                themeRowMapper()
+        );
     }
 
     private RowMapper<Theme> themeRowMapper() {
@@ -188,6 +208,7 @@ class ThemeJdbcRepositoryTest {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
-                resultSet.getString("thumbnail_url"));
+                resultSet.getString("thumbnail_url")
+        );
     }
 }
