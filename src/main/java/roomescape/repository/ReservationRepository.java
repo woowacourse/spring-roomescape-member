@@ -12,8 +12,6 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
-    List<Long> findPopularThemeIds();
-
     void delete(Long id);
 
     boolean existByTimeId(Long timeId);

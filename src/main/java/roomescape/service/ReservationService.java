@@ -35,14 +35,6 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<Theme> getPopularThemes() {
-        List<Long> popularThemeIds = reservationRepository.findPopularThemeIds();
-
-        return popularThemeIds.stream()
-                .map(id -> themeRepository.findById(id).orElseThrow())
-                .toList();
-    }
-
     public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
         ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
                 .orElseThrow();
