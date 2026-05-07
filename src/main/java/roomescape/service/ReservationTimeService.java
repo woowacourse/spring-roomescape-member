@@ -12,7 +12,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ReservationTimeNotFoundException;
-import roomescape.exception.UnauthorizedException;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,16 +28,14 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTime createReservationTime(LocalTime time, String userName) {
-        validateAdmin(userName);
+    public ReservationTime createReservationTime(LocalTime time) {
         Long id = reservationTimeDao.insertWithKeyHolder(time);
         return ReservationTime.withId(id, time);
     }
 
     @Transactional
-    public void deleteReservationTime(Long id, String userName) {
+    public void deleteReservationTime(Long id) {
         try {
-            validateAdmin(userName);
             int deleteCount = reservationTimeDao.delete(id);
             validateDelete(deleteCount);
         } catch (DataIntegrityViolationException e) {
@@ -54,12 +51,6 @@ public class ReservationTimeService {
     private void validateDelete(int deleteCount) {
         if (deleteCount == 0) {
             throw new ReservationTimeNotFoundException();
-        }
-    }
-
-    private void validateAdmin(String userName) {
-        if (!userName.equals("ADMIN")) {
-            throw new UnauthorizedException();
         }
     }
 }

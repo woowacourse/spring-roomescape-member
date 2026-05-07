@@ -10,7 +10,6 @@ import roomescape.domain.Theme;
 import roomescape.dto.response.PopularThemeResponse;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ThemeNotFoundException;
-import roomescape.exception.UnauthorizedException;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,16 +21,14 @@ public class ThemeService {
     }
 
     @Transactional
-    public Theme createTheme(String name, String description, String imgUrl, String userName) {
-        validateAdmin(userName);
+    public Theme createTheme(String name, String description, String imgUrl) {
         Long id = themeDao.insertTheme(name, description, imgUrl);
         return themeDao.findById(id);
     }
 
     @Transactional
-    public void deleteTheme(Long id, String userName) {
+    public void deleteTheme(Long id) {
         try {
-            validateAdmin(userName);
             int deleteCount = themeDao.delete(id);
             validateDelete(deleteCount);
         } catch (DataIntegrityViolationException e) {
@@ -50,12 +47,6 @@ public class ThemeService {
     private void validateDelete(int deleteCount) {
         if (deleteCount == 0) {
             throw new ThemeNotFoundException();
-        }
-    }
-
-    private void validateAdmin(String userName) {
-        if (!userName.equals("ADMIN")) {
-            throw new UnauthorizedException();
         }
     }
 }

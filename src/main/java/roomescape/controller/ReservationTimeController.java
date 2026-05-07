@@ -1,21 +1,14 @@
 package roomescape.controller;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.request.ReservationTimeCreateRequest;
-import roomescape.dto.request.ReservationTimeDeleteRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.service.ReservationTimeService;
 
@@ -33,24 +26,6 @@ public class ReservationTimeController {
     public ResponseEntity<List<ReservationTime>> getReservationTimes() {
         List<ReservationTime> reservationTimeList = reservationTimeService.getReservationTimes();
         return ResponseEntity.ok().body(reservationTimeList);
-    }
-
-    @PostMapping
-    public ResponseEntity<ReservationTime> createReservationTime(
-            @RequestBody ReservationTimeCreateRequest reservationTimeCreateRequest) {
-        ReservationTime savedReservationTime = reservationTimeService.createReservationTime(
-                reservationTimeCreateRequest.startAt(),
-                reservationTimeCreateRequest.userName());
-        return ResponseEntity.created(URI.create("/api/v1/times/" + savedReservationTime.getId()))
-                .body(savedReservationTime);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationTime(
-            @PathVariable Long id,
-            @RequestBody ReservationTimeDeleteRequest reservationTimeDeleteRequest) {
-        reservationTimeService.deleteReservationTime(id, reservationTimeDeleteRequest.userName());
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(params = {"date", "themeId"})

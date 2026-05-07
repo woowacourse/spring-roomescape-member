@@ -28,11 +28,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<Void> handleUnauthorized() {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
     @ExceptionHandler(ThemeNotFoundException.class)
     public ResponseEntity<Void> handleThemeNotFound() {
         return ResponseEntity.notFound().build();

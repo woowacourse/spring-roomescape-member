@@ -5,7 +5,6 @@ import java.time.LocalTime;
 
 public record ReservationTimeCreateRequest(
         @JsonFormat(pattern = "HH:mm")
-        LocalTime startAt,
-        String userName
+        LocalTime startAt
 ) {
 }
