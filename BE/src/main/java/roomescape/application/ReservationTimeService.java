@@ -33,9 +33,6 @@ public class ReservationTimeService {
 
     public List<ReservationTime> getTimes() {
         return reservationTimeRepository.findAll();
-//        return times.stream()
-//                .map(ReservationTimeResponse::from)
-//                .toList();
     }
 
     @Transactional
