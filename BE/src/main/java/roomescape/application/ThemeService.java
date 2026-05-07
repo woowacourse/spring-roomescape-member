@@ -19,6 +19,7 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public Theme save(String name, String description, String thumbnailUrl) {
         return themeRepository.save(Theme.createWithNullId(name, description, thumbnailUrl));
     }
@@ -35,6 +36,7 @@ public class ThemeService {
         return themeRepository.findTopNByPeriod(startAt, endAt, sortType, limit);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         themeRepository.deleteById(id);
     }

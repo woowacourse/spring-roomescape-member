@@ -11,6 +11,7 @@ import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ReservationTimeException;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
