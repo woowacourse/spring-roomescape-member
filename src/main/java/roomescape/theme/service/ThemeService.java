@@ -3,6 +3,7 @@ package roomescape.theme.service;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.controller.dto.CreateThemeRequest;
 import roomescape.theme.controller.dto.ThemeRankResponse;
 import roomescape.theme.controller.dto.ThemeResponse;
@@ -11,6 +12,7 @@ import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.repository.dto.CreateThemeParams;
 
 @Service
+@Transactional(readOnly = true)
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
@@ -19,6 +21,7 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public ThemeResponse addTheme(CreateThemeRequest request) {
         CreateThemeParams params = new CreateThemeParams(
                 request.name(),
@@ -36,6 +39,7 @@ public class ThemeService {
                 .toList();
     }
 
+    @Transactional
     public void removeRegisteredTheme(Long id) {
         themeRepository.deleteById(id);
     }

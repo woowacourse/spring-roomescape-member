@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.controller.dto.AvailableReservationTimeResponse;
@@ -17,6 +18,7 @@ import roomescape.time.repository.dto.CreateReservationTimeParams;
 import roomescape.time.repository.dto.FindReservedTimeParams;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
@@ -28,6 +30,7 @@ public class ReservationTimeService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public ReservationTimeResponse addReservationTime(CreateResrvationTimeRequest request) {
         CreateReservationTimeParams params = new CreateReservationTimeParams(request.getStartAt());
         ReservationTime savedReservationTime = reservationTimeRepository.save(params);
@@ -41,6 +44,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    @Transactional
     public void removeRegisteredReservationTime(Long id) {
         reservationTimeRepository.deleteById(id);
     }

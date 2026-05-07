@@ -1,7 +1,9 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -14,6 +16,7 @@ import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.time.repository.dto.FindReservedTimeParams;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -33,21 +36,27 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public ReservationResponse reserve(CreateReservationRequest request) {
-        ReservationTime time = reservationTimeRepository.findById(request.getTimeId());
-        Theme theme = themeRepository.findById(request.getThemeId());
-
-        List<Long> reservedIds = reservationTimeRepository.findIdByCondition(new FindReservedTimeParams(theme.getId(), request.getDate()));
-        if(reservedIds.contains(request.getTimeId())) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
-        }
+        validateReservationAvailable(request.getDate(), request.getTimeId(), request.getThemeId());
         CreateReservationParams params = new CreateReservationParams(request.getName(), request.getDate(),
-                time.getId(), theme.getId());
+                request.getTimeId(), request.getThemeId());
         Reservation reservation = reservationRepository.save(params);
 
         return ReservationResponse.from(reservation);
     }
 
+    private void validateReservationAvailable(LocalDate date, Long timeId, Long themeId) {
+        ReservationTime time = reservationTimeRepository.findById(timeId);
+        Theme theme = themeRepository.findById(themeId);
+
+        List<Long> reservedIds = reservationTimeRepository.findIdByCondition(new FindReservedTimeParams(theme.getId(), date));
+        if(reservedIds.contains(time.getId())) {
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+        }
+    }
+
+    @Transactional
     public void cancelReservation(Long id) {
         reservationRepository.deleteById(id);
     }
