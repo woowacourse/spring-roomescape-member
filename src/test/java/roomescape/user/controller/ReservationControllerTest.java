@@ -43,4 +43,12 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(500);
     }
+
+    @Test
+    void 예약삭제_성공() {
+        RestAssured.given().log().all()
+                .when().delete("/user/reservations/1")
+                .then().log().all()
+                .statusCode(204);
+    }
 }
