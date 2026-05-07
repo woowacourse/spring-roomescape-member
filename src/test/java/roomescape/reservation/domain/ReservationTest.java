@@ -21,7 +21,7 @@ class ReservationTest {
         Theme theme = new Theme(null, "hello", "world", "/resources/image/...");
 
         //when & then
-        Assertions.assertThatThrownBy(() -> new Reservation(name, now, reservationTime, theme))
+        Assertions.assertThatThrownBy(() -> new Reservation(1L, name, now, reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

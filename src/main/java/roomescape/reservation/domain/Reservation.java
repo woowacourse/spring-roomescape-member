@@ -23,10 +23,6 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
-    }
-
     private void validateName(String name) {
         if (name.length() > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("이름의 길이는 " + MAX_NAME_LENGTH + "를 넘을 수 없습니다.");
