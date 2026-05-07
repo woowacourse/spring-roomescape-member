@@ -23,13 +23,13 @@ public class JdbcTimeRepository implements TimeRepository {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
             .withTableName("reservation_time")
-            .usingColumns("startAt")
+            .usingColumns("start_at")
             .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Time save(Time time) {
-        Map<String, Object> args = Map.of("startAt", time.getStartAt());
+        Map<String, Object> args = Map.of("start_at", time.getStartAt());
         Long generatedKey = simpleJdbcInsert.executeAndReturnKey(args)
             .longValue();
 
@@ -54,7 +54,7 @@ public class JdbcTimeRepository implements TimeRepository {
 
     @Override
     public void deleteTimeById(Long id) {
-        String sql = "DELETE FROM time WHERE id = :id";
+        String sql = "DELETE FROM reservation_time WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
         jdbcTemplate.update(sql, parameters);
     }
