@@ -25,7 +25,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .queryParam("theme_id", 1)
                 .queryParam("date", "2026-05-10")
-                .when().get("/api/times/availablity")
+                .when().get("/api/times/availability")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2));

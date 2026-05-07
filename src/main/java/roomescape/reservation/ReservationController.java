@@ -31,12 +31,14 @@ public class ReservationController {
     }
 
     @GetMapping
+    public ResponseEntity<List<ReservationResponse>> read() {
+        return ResponseEntity.ok().body(reservationService.read());
+    }
+
+    @GetMapping(params = {"user_name"})
     public ResponseEntity<List<ReservationResponse>> read(
-            @RequestParam(value = "user_name", required = false) String userName
+            @RequestParam("user_name") String userName
     ) {
-        if (userName == null) {
-            return ResponseEntity.ok().body(reservationService.read());
-        }
         return ResponseEntity.ok().body(reservationService.readByUserName(userName));
     }
 

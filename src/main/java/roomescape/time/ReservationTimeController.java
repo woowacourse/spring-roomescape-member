@@ -26,7 +26,7 @@ public class ReservationTimeController {
         return ResponseEntity.status(HttpStatus.OK).body(reservationTimeService.read());
     }
 
-    @GetMapping("/availablity")
+    @GetMapping("/availability")
     public ResponseEntity<List<ReservationTimeResponse>> readAvailableTimes(
             @RequestParam("theme_id") @NotNull Long themeId,
             @RequestParam @NotNull LocalDate date) {
