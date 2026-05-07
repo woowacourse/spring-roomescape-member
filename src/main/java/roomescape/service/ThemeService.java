@@ -22,8 +22,7 @@ public class ThemeService {
 
     public Theme find(long themeId) {
         return themeRepository.findById(themeId).orElseThrow(
-                () -> new IllegalArgumentException(THEME_DOES_NOT_EXISTS)
-        );
+                () -> new IllegalArgumentException(THEME_DOES_NOT_EXISTS));
     }
 
     public List<Theme> findAll() {

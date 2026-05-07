@@ -46,8 +46,9 @@ public class ReservationService {
     }
 
     public void cancel(long reservationId) {
-        reservationRepository.findById(reservationId).orElseThrow(() -> new IllegalArgumentException(
-                INVALID_RESERVATION_ID));
+        reservationRepository.findById(reservationId).orElseThrow(
+                () -> new IllegalArgumentException(INVALID_RESERVATION_ID));
+
         reservationRepository.deleteById(reservationId);
     }
 }

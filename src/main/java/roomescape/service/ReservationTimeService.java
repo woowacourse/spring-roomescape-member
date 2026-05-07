@@ -23,22 +23,22 @@ public class ReservationTimeService {
         return reservationTimeRepository.save(reservationTime);
     }
 
+    public ReservationTime find(long reservationTimeId) {
+        return reservationTimeRepository.findById(reservationTimeId)
+                .orElseThrow(() -> new IllegalArgumentException(TIME_SLOT_DOES_NOT_EXIST));
+    }
+
     public List<ReservationTime> findAll() {
         return reservationTimeRepository.findAll();
     }
 
-    public ReservationTime find(long reservationTimeId) {
-        return reservationTimeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new IllegalArgumentException(TIME_SLOT_DOES_NOT_EXIST));
+    public List<ReservationTime> findAvailable(AvailableTimeFindRequest request) {
+        return reservationTimeRepository.findByDateAndTheme(request.getDate(), request.getThemeId());
     }
 
     public void delete(long reservationTimeId) {
         reservationTimeRepository.findById(reservationTimeId)
                 .orElseThrow(() -> new IllegalArgumentException(INVALID_TIME_ID));
         reservationTimeRepository.delete(reservationTimeId);
-    }
-
-    public List<ReservationTime> findAvailable(AvailableTimeFindRequest request) {
-        return reservationTimeRepository.findByDateAndTheme(request.getDate(), request.getThemeId());
     }
 }
