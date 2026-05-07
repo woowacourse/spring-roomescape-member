@@ -17,9 +17,9 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeAdminControllerTest {
 
-    private static String themeName = "테마1";
-    private static String themeDescription = "테마1 설명";
-    private static String thumbnailUrl = "테마1 썸네일";
+    private final String themeName = "테마1";
+    private final String themeDescription = "테마1 설명";
+    private final String thumbnailUrl = "테마1 썸네일";
 
     @LocalServerPort
     private int port;
