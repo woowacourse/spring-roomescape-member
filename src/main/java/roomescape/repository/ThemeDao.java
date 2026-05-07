@@ -9,8 +9,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Theme;
-import roomescape.dto.CreateThemeRequest;
-import roomescape.dto.PopularThemeResponse;
+import roomescape.dto.theme.CreateThemeRequest;
+import roomescape.dto.theme.PopularThemeResponse;
 
 @Component
 public class ThemeDao {

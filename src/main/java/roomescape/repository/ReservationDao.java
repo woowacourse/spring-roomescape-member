@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.CreateReservationRequest;
+import roomescape.dto.reservation.CreateReservationRequest;
 
 @Component
 public class ReservationDao {

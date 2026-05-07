@@ -1,4 +1,4 @@
-package roomescape.dto;
+package roomescape.dto.theme;
 
 public record PopularThemeResponse(
         Long id,

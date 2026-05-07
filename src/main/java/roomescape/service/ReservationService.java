@@ -1,13 +1,11 @@
 package roomescape.service;
 
 import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
-import roomescape.dto.CreateReservationRequest;
+import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.repository.ReservationDao;
-import roomescape.repository.ReservationTimeDao;
 
 @Service
 public class ReservationService {
