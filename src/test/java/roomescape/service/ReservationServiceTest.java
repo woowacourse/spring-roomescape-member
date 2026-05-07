@@ -43,7 +43,7 @@ class ReservationServiceTest {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2026, 5, 6), savedTime.getId(),
+        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.getId(),
                 savedTheme.getId());
 
         //when
@@ -58,7 +58,7 @@ class ReservationServiceTest {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2026, 5, 6), savedTime.getId(),
+        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.getId(),
                 savedTheme.getId());
 
         //when
@@ -73,13 +73,13 @@ class ReservationServiceTest {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme savedTheme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com"));
-        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2026, 5, 6), savedTime.getId(),
+        Reservation savedReservation = reservationService.save("맥스", LocalDate.of(2030, 5, 6), savedTime.getId(),
                 savedTheme.getId());
 
         //when & then
         assertThatThrownBy(() -> reservationService.save(
                 "피노",
-                LocalDate.of(2026, 5, 6),
+                LocalDate.of(2030, 5, 6),
                 savedTime.getId(),
                 savedTheme.getId()))
                 .isInstanceOf(IllegalArgumentException.class)

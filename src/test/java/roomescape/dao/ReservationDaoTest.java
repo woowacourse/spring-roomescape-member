@@ -33,7 +33,7 @@ class ReservationDaoTest {
     @Test
     void 사용자가_선택한_날짜와_테마에_해당하는_예약시간Id를_가져온다() {
         // given
-        LocalDate targetDate = LocalDate.of(2026, 5, 6);
+        LocalDate targetDate = LocalDate.of(2030, 5, 6);
 
         ReservationTime targetTime1 = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
         ReservationTime targetTime2 = reservationTimeService.save(new ReservationTime(LocalTime.of(11, 0)));
@@ -46,7 +46,7 @@ class ReservationDaoTest {
         reservationService.save("맥스", targetDate, targetTime1.getId(), targetTheme.getId());
         reservationService.save("피노", targetDate, targetTime2.getId(), targetTheme.getId());
 
-        reservationService.save("브라운", LocalDate.of(2026, 5, 5), otherDateTime.getId(), targetTheme.getId());
+        reservationService.save("브라운", LocalDate.of(2030, 5, 5), otherDateTime.getId(), targetTheme.getId());
 
         reservationService.save("포비", targetDate, otherThemeTime.getId(), otherTheme.getId());
 
@@ -65,7 +65,7 @@ class ReservationDaoTest {
     @Test
     void 이미_존재하는_예약이_있는지_확인() {
         //given
-        LocalDate date = LocalDate.of(2026, 5, 6);
+        LocalDate date = LocalDate.of(2030, 5, 6);
         ReservationTime reservationTime = reservationTimeService.save(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeService.save(new Theme("공포", "무서움", "https://roomescape.com/horror"));
         reservationService.save("맥스", date, reservationTime.getId(), theme.getId());

@@ -30,7 +30,7 @@ public class ThemeService {
 
     public List<PopularThemeResponse> findPopularThemes() {
         LocalDate startDate = LocalDate.now().minusDays(7);
-        LocalDate endDate = LocalDate.now().minusDays(1);
+        LocalDate endDate = LocalDate.now().plusDays(30);
         return themeDao.findPopularThemes(startDate, endDate)
                 .stream()
                 .map(popularTheme -> PopularThemeResponse.of(
@@ -41,10 +41,16 @@ public class ThemeService {
     }
 
     public Theme save(Theme theme) {
+        if (themeDao.existsByName(theme.getName())) {
+            throw new IllegalArgumentException("이미 존재하는 테마 이름입니다.");
+        }
         return themeDao.save(theme);
     }
 
     public void deleteById(Long id) {
+        if (reservationDao.existByThemeId(id)) {
+            throw new IllegalArgumentException("기존 예약이 존재하는 테마는 삭제할 수 없습니다.");
+        }
         themeDao.deleteById(id);
     }
 
@@ -53,9 +59,12 @@ public class ThemeService {
         List<Long> timeIds = reservationDao.findReservedTimeIdsByDateAndThemeId(date, themeId);
 
         return reservationTimes.stream()
-                .map(reservationTime -> ReservationTimeStatusResponse.of(
-                        reservationTime,
-                        !timeIds.contains(reservationTime.getId())))
+                .map(reservationTime -> {
+                    boolean isPast = date.isBefore(LocalDate.now()) || 
+                                     (date.isEqual(LocalDate.now()) && reservationTime.getStartAt().isBefore(java.time.LocalTime.now()));
+                    boolean available = !timeIds.contains(reservationTime.getId()) && !isPast;
+                    return ReservationTimeStatusResponse.of(reservationTime, available);
+                })
                 .toList();
     }
 

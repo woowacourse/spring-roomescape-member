@@ -55,7 +55,7 @@ class ReservationTimeServiceTest {
         ReservationTime savedTime = reservationTimeDao.save(existTime);
         Theme theme = new Theme("공포", "무서움", "https://roomescape.com");
         Theme savedTheme = themeDao.save(theme);
-        Reservation reservation = new Reservation("pobi", LocalDate.parse("2026-05-02"), savedTime, savedTheme);
+        Reservation reservation = new Reservation("pobi", LocalDate.parse("2030-05-02"), savedTime, savedTheme);
         reservationDao.save(reservation);
         Long savedId = savedTime.getId();
 

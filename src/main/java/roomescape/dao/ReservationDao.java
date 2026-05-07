@@ -40,7 +40,7 @@ public class ReservationDao {
                  ON r.time_id = rt.id 
                  INNER JOIN theme th 
                  ON r.theme_id = th.id 
-                
+                 ORDER BY r.date ASC, rt.start_at ASC, th.name ASC, r.name ASC
                 """;
 
         return jdbcTemplate.query(sql,
@@ -98,11 +98,24 @@ public class ReservationDao {
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
+        jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM reservation)");
     }
 
     public boolean existByTimeId(Long timeId) {
         String sql = "SELECT count(*) FROM reservation where time_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
+        return count != null && count > 0;
+    }
+
+    public boolean existByThemeId(Long themeId) {
+        String sql = "SELECT count(*) FROM reservation where theme_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
+        return count != null && count > 0;
+    }
+
+    public boolean existById(Long id) {
+        String sql = "SELECT count(*) FROM reservation where id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }
 

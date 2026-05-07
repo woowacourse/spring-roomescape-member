@@ -19,7 +19,7 @@ class ReservationTest {
         Theme theme = new Theme("공포", "무서움", "https://roomescape.com");
 
         //when & then
-        assertThatThrownBy(()-> new Reservation(name, java.time.LocalDate.parse("2023-04-10"), reservationTime, theme))
+        assertThatThrownBy(()-> new Reservation(name, java.time.LocalDate.parse("2030-04-10"), reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이름 형식");
     }
