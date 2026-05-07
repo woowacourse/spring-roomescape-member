@@ -43,31 +43,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
-        String sql = """
-                    select r.id as reservation_id,   
-                    r.name, r.date, 
-                    t.id as reservation_time_id,
-                    t.start_at as time_value,
-                    th.id as reservation_theme_id,
-                    th.name as reservation_theme_name,
-                    th.description as reservation_theme_description,
-                    th.image_url as reservation_theme_image_url
-                    from reservation as r 
-                    inner join reservation_time as t
-                    on r.time_id = t.id 
-                    inner join theme as th
-                    on r.theme_id = th.id
-                    where r.id = ?
-                """;
-
-        List<Reservation> results = jdbcTemplate.query(
-                sql,
-                getReservationRowMapper()
-        );
-    }
-
-    @Override
     public List<Reservation> findAll() {
         String sql = """
                     select r.id as reservation_id,   
@@ -87,9 +62,32 @@ public class JdbcReservationRepository implements ReservationRepository {
                     on r.theme_id = th.id
                 """;
 
-
-
         return jdbcTemplate.query(
+                sql,
+                getReservationRowMapper()
+        );
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        String sql = """
+                    select r.id as reservation_id,   
+                    r.name, r.date, 
+                    t.id as reservation_time_id,
+                    t.start_at as time_value,
+                    th.id as reservation_theme_id,
+                    th.name as reservation_theme_name,
+                    th.description as reservation_theme_description,
+                    th.image_url as reservation_theme_image_url
+                    from reservation as r 
+                    inner join reservation_time as t
+                    on r.time_id = t.id 
+                    inner join theme as th
+                    on r.theme_id = th.id
+                    where r.id = ?
+                """;
+
+        List<Reservation> results = jdbcTemplate.query(
                 sql,
                 getReservationRowMapper(), id
         );

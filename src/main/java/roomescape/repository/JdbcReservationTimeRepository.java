@@ -40,25 +40,27 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) ->
-                        new ReservationTime(
-                                resultSet.getLong("id"),
-                                LocalTime.parse(resultSet.getString("start_at"))
-                        )
+                (resultSet, rowNum) -> new ReservationTime(
+                        resultSet.getLong("id"),
+                        LocalTime.parse(resultSet.getString("start_at"))
+                )
         );
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
+
         List<ReservationTime> results = jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) ->
-                        new ReservationTime(
-                                resultSet.getLong("id"),
-                                LocalTime.parse(resultSet.getString("start_at"))
-                        ), id);
-        return results.stream().findFirst();
+                (resultSet, rowNum) -> new ReservationTime(
+                        resultSet.getLong("id"),
+                        LocalTime.parse(resultSet.getString("start_at"))
+                ),
+                id
+        );
+        return results.stream()
+                .findFirst();
     }
 
     @Override

@@ -23,6 +23,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
+
         long generatedKey = insert.executeAndReturnKey(
                 new BeanPropertySqlParameterSource(theme)
         ).longValue();
@@ -46,13 +47,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        jdbcTemplate.update("delete from theme where id=?", id);
-    }
-
-    @Override
     public Optional<Theme> findById(Long id) {
         String sql = "select id, name, description, image_url from theme where id=?";
+
         List<Theme> themes = jdbcTemplate.query(
                 sql,
                 getThemeRowMapper(),
@@ -74,7 +71,6 @@ public class JdbcThemeRepository implements ThemeRepository {
                 resultSet.getString("description"),
                 resultSet.getString("image_url")
         );
-        return themes.stream().findFirst();
     }
 }
 
