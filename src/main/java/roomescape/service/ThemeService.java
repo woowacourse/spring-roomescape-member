@@ -7,35 +7,36 @@ import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequestDTO;
 import roomescape.dto.ThemeResponseDTO;
 import roomescape.repository.JdbcThemeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
 
-    private final JdbcThemeRepository jdbcThemeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ThemeService(JdbcThemeRepository jdbcThemeRepository) {
-        this.jdbcThemeRepository = jdbcThemeRepository;
+    public ThemeService(JdbcThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
     }
 
 
     public ThemeResponseDTO addTheme(ThemeRequestDTO request) {
         Theme theme = new Theme(request.name(), request.description(), request.imageUrl());
-        Theme savedTheme = jdbcThemeRepository.save(theme);
+        Theme savedTheme = themeRepository.save(theme);
         return ThemeResponseDTO.from(savedTheme);
     }
 
     public List<ThemeResponseDTO> findAllThemes() {
-        return jdbcThemeRepository.findAll().stream().map(ThemeResponseDTO::from)
+        return themeRepository.findAll().stream().map(ThemeResponseDTO::from)
                 .collect(Collectors.toList());
     }
 
     public ThemeResponseDTO findById(Long id) {
-        Theme result = jdbcThemeRepository.findById(id)
+        Theme result = themeRepository.findById(id)
                 .orElseThrow();
         return ThemeResponseDTO.from(result);
     }
 
     public void deleteTheme(Long id) {
-        jdbcThemeRepository.delete(id);
+        themeRepository.delete(id);
     }
 }
