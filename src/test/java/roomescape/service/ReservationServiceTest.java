@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Theme;
+import roomescape.dto.ThemeResponseDTO;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -22,9 +22,9 @@ class ReservationServiceTest {
     @DisplayName("인기 테마를 조회한다")
     @Test
     void 최근_1주_동안의_예약_상위_10개의_테마를_조회한다() {
-        List<Theme> popularThemes = reservationService.getPopularThemes();
+        List<ThemeResponseDTO> popularThemes = reservationService.getPopularThemes();
         assertThat(popularThemes)
-                .map(theme -> theme.getId())
+                .map(theme -> theme.id())
                 .containsExactly(
                         1L, 2L, 3L, // 1순위: 테마의 예약 수 내림차순 정렬
                         6L, 5L, 4L, 8L, 7L, // 2순위: 예약 수가 같으면 테마 이름 오름차순 정렬
