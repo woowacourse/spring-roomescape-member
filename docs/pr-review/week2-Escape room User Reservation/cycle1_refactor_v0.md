@@ -36,7 +36,7 @@
   - `ReservationResponse`: `String date`
   - `AdminReservationResponse`: `LocalDate date`
 
-- [ ] **8. `ReservationController` - 응답 방식 혼용**
+- [x] **8. `ReservationController` - 응답 방식 혼용**
   - POST: `@ResponseStatus(HttpStatus.CREATED)` + return POJO
   - DELETE: `ResponseEntity<Void>` 반환
   - 이전 리뷰어 분이 때에 따라 따져 써야 하지만, 하나로 통일하는게 좋다 하셨으니 `ResponseEntity`를 사용하는 방식으로 통일
