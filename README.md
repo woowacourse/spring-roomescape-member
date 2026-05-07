@@ -77,7 +77,7 @@ POST /admin/times
 ```json
 DELETE /admin/times/{id}
 
-// Response: 200 OK
+// Response: 204 No Content
 ```
 
 
@@ -179,7 +179,7 @@ POST /reservations
 ```json
 DELETE /reservations/{id}
 
-// Response: 200 OK
+// Response: 204 No Content
 ```
 
 <br>
