@@ -4,11 +4,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,79 +38,4 @@ class MissionStep3Test {
                 .statusCode(200)
                 .body("size()", is(12));
     }
-
-//    @Test
-//    void 시간_추가_API() {
-//        Map<String, String> params = new HashMap<>();
-//        params.put("startAt", "21:00");
-//
-//        RestAssured.given().log().all()
-//                .contentType(ContentType.JSON)
-//                .body(params)
-//                .when().post("/user/times")
-//                .then().log().all()
-//                .statusCode(200);
-//
-//        RestAssured.given().log().all()
-//                .when().get("/user/times")
-//                .then().log().all()
-//                .statusCode(200)
-//                .body("size()", is(12));
-//    }
-//
-//    @Test
-//    void 시간_관리_API() {
-//        Map<String, String> params = new HashMap<>();
-//        params.put("startAt", "10:00");
-//
-//        RestAssured.given().log().all()
-//                .contentType(ContentType.JSON)
-//                .body(params)
-//                .when().post("/user/times")
-//                .then().log().all()
-//                .statusCode(200);
-//
-//        RestAssured.given().log().all()
-//                .when().get("/user/times")
-//                .then().log().all()
-//                .statusCode(200)
-//                .body("size()", is(1));
-//
-//        RestAssured.given().log().all()
-//                .when().delete("/user/times/1")
-//                .then().log().all()
-//                .statusCode(200);
-//    }
-//
-//    @Test
-//    void 예약과_시간_연결() {
-//        Map<String, String> params = new HashMap<>();
-//        params.put("startAt", "10:00");
-//
-//        RestAssured.given().log().all()
-//                .contentType(ContentType.JSON)
-//                .body(params)
-//                .when().post("/user/times")
-//                .then().log().all()
-//                .statusCode(200);
-//
-//        Map<String, Object> reservation = new HashMap<>();
-//        reservation.put("name", "브라운");
-//        reservation.put("date", "2026-05-05");
-//        reservation.put("timeId", 1);
-//        reservation.put("themeId", 1);
-//
-//        RestAssured.given().log().all()
-//                .contentType(ContentType.JSON)
-//                .body(reservation)
-//                .when().post("/user/reservations")
-//                .then().log().all()
-//                .statusCode(201);
-//
-//        RestAssured.given().log().all()
-//                .when().get("/user/reservations")
-//                .then().log().all()
-//                .statusCode(200)
-//                .body("size()", is(1));
-//    }
 }

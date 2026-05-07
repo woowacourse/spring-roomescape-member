@@ -10,7 +10,6 @@ import roomescape.domain.Theme;
 
 @Repository
 public class AdminThemeDao {
-
     private static final RowMapper<Theme> rowMapper =
             (rs, rowNum) -> {
                 return new Theme(

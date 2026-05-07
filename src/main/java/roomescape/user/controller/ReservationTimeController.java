@@ -37,7 +37,8 @@ public class ReservationTimeController {
     }
 
     @GetMapping(value = "/times", params = {"themeId", "date"})
-    public ResponseEntity<List<AvailableTimeResponse>> readByThemeIdAndDate(@RequestParam Long themeId, @RequestParam LocalDate date) {
+    public ResponseEntity<List<AvailableTimeResponse>> readByThemeIdAndDate(@RequestParam Long themeId,
+                                                                            @RequestParam LocalDate date) {
         List<AvailableTimeResponse> availableTimes = timeService.findByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(availableTimes);
     }
@@ -51,6 +52,6 @@ public class ReservationTimeController {
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         timeService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

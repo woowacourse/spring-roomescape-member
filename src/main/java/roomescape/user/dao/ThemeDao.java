@@ -40,18 +40,18 @@ public class ThemeDao {
     public List<Theme> selectByTrend(LocalDate from, LocalDate to, int limit) {
         String sql = """
                 SELECT
-                             t.id,
-                             t.name,
-                             t.description,
-                             t.image,
-                             COUNT(r.id) AS reservation_count
-                         FROM theme t
-                         JOIN reservation r ON r.theme_id = t.id
-                         WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') >= ?
-                           AND PARSEDATETIME(r.date, 'yyyy-MM-dd') < ?
-                         GROUP BY t.id, t.name, t.description, t.image
-                         ORDER BY reservation_count DESC
-                         LIMIT ?;
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.image,
+                    COUNT(r.id) AS reservation_count
+                FROM theme t
+                JOIN reservation r ON r.theme_id = t.id
+                WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') >= ?
+                    AND PARSEDATETIME(r.date, 'yyyy-MM-dd') < ?
+                GROUP BY t.id, t.name, t.description, t.image
+                ORDER BY reservation_count DESC
+                LIMIT ?;
                 """;
 
         return jdbcTemplate.query(sql, rowMapper, from, to, limit);
