@@ -11,7 +11,6 @@ import roomescape.entity.ReservationTimeRepository;
 import roomescape.entity.Theme;
 import roomescape.entity.ThemeRepository;
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationException;
 import roomescape.global.exception.customException.ReservationTimeException;
 import roomescape.global.exception.customException.ThemeException;
 
@@ -58,9 +57,6 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(Long id) {
-        if (id == null) {
-            throw new ReservationException(ErrorCode.RESERVATION_ID_NULL);
-        }
         reservationRepository.deleteById(id);
     }
 }
