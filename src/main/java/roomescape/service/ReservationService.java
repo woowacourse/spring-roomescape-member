@@ -32,6 +32,14 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 존재하는 예약입니다.");
         }
         ReservationTime time = reservationTimeDao.findById(timeId);
+        
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
+        }
+        if (date.isEqual(LocalDate.now()) && time.getStartAt().isBefore(java.time.LocalTime.now())) {
+            throw new IllegalArgumentException("지난 시간은 예약할 수 없습니다.");
+        }
+
         Theme theme = themeDao.findById(themeId);
         Reservation reservation = new Reservation(name, date, time, theme);
         return reservationDao.save(reservation);
@@ -43,7 +51,7 @@ public class ReservationService {
     }
 
     private void validateHasReservation(Long id) {
-        boolean hasReservation = reservationDao.existByTimeId(id);
+        boolean hasReservation = reservationDao.existById(id);
         if (!hasReservation) {
             throw new IllegalArgumentException("존재하지 않는 예약이라 삭제할 수 없습니다.");
         }
