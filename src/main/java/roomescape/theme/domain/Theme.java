@@ -16,7 +16,7 @@ public class Theme {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public static Theme create(String name, String description, String thumbnailUrl) {
+    public static Theme of(String name, String description, String thumbnailUrl) {
         return new Theme(null, name, description, thumbnailUrl);
     }
 
@@ -41,6 +41,7 @@ public class Theme {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         Theme theme = (Theme) o;
         return Objects.equals(getId(), theme.getId());
     }

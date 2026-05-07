@@ -23,7 +23,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme) {
+    public static Reservation of(String name, LocalDate date, ReservationTime time, Theme theme) {
         validateNameSize(name);
         return new Reservation(null, name, date, time, theme);
     }
@@ -59,6 +59,7 @@ public class Reservation {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         Reservation that = (Reservation) o;
         return Objects.equals(getId(), that.getId());
     }

@@ -20,10 +20,10 @@ class ReservationTest {
         // given
         String name = "브라운";
         LocalDate date = LocalDate.of(2024, 5, 1);
-        Theme theme = Theme.create("우테코", "우테코 전용 테마", "https://example.com");
+        Theme theme = Theme.of("우테코", "우테코 전용 테마", "https://example.com");
 
         // when
-        Reservation reservation = Reservation.create(name, date, reservationTime, theme);
+        Reservation reservation = Reservation.of(name, date, reservationTime, theme);
 
         // then
         assertThat(reservation.getName()).isEqualTo(name);
@@ -36,10 +36,10 @@ class ReservationTest {
     void validateNameSizeTest() {
         // given
         String longName = "열한글자짜리이름입니다아";
-        Theme theme = Theme.create("우테코", "우테코 전용 테마", "https://example.com");
+        Theme theme = Theme.of("우테코", "우테코 전용 테마", "https://example.com");
 
         // when & then
-        assertThatThrownBy(() -> Reservation.create(longName, LocalDate.of(2024, 5, 1), reservationTime, theme))
+        assertThatThrownBy(() -> Reservation.of(longName, LocalDate.of(2024, 5, 1), reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이름은 10글자 이하여야 합니다.");
     }
@@ -49,7 +49,7 @@ class ReservationTest {
     void getterTest() {
         // given
         LocalDate date = LocalDate.of(2024, 5, 1);
-        Theme theme = Theme.create("우테코", "우테코 전용 테마", "https://example.com");
+        Theme theme = Theme.of("우테코", "우테코 전용 테마", "https://example.com");
 
         Reservation reservation = new Reservation(1L, "제임스", date, reservationTime, theme);
 

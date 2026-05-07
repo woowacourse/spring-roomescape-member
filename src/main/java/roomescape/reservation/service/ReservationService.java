@@ -33,7 +33,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation save(ReservationCommand command) {
+    public Reservation makeReservation(ReservationCommand command) {
         ReservationTime time = reservationTimeRepository.findById(command.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약 시간이 존재하지 않습니다."));
 
@@ -41,16 +41,16 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마가 존재하지 않습니다."));
 
         return reservationRepository.save(
-                Reservation.create(command.name(), command.date(), time, theme)
+                Reservation.of(command.name(), command.date(), time, theme)
         );
     }
 
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteReservationById(Long id) {
         reservationRepository.deleteById(id);
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> findAllReservations() {
         return reservationRepository.findAll();
     }
 

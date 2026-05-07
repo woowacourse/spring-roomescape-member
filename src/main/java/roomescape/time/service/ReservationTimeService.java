@@ -19,21 +19,21 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTime save(ReservationTimeCommand command) {
+    public ReservationTime registerReservationTime(ReservationTimeCommand command) {
         ReservationTime reservationTime = ReservationTime.of(command.startAt());
         return reservationTimeRepository.save(reservationTime);
     }
 
     @Transactional
-    public void deleteById(Long id) {
+    public void removeReservationTimeById(Long id) {
         reservationTimeRepository.deleteById(id);
     }
 
-    public List<ReservationTime> findAll() {
+    public List<ReservationTime> findAllReservationTimes() {
         return reservationTimeRepository.findAll();
     }
 
-    public AvailableTimesResult findAvailableTimes(Long themeId, LocalDate date) {
+    public AvailableTimesResult findAvailableReservationTimes(Long themeId, LocalDate date) {
         return new AvailableTimesResult(reservationTimeRepository.findAvailableTimes(themeId, date));
     }
 }

@@ -29,8 +29,8 @@ public class ThemeController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<List<ThemeResponse>> readAll() {
-        List<ThemeResponse> responses = themeService.findAll()
+    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
+        List<ThemeResponse> responses = themeService.findAllThemes()
                 .stream()
                 .map(ThemeResponse::from)
                 .collect(Collectors.toList());
@@ -38,7 +38,7 @@ public class ThemeController {
     }
 
     @GetMapping(value = "/themes", params = "popular=true")
-    public ResponseEntity<List<ThemeResponse>> readPopular(
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
             @RequestParam("period") int period,
             @RequestParam("limit") int limit
     ) {
@@ -51,8 +51,8 @@ public class ThemeController {
     }
 
     @PostMapping("/admin/themes")
-    public ResponseEntity<ThemeResponse> create(@RequestBody ThemeRequest requestDto) {
-        Theme theme = themeService.save(requestDto.toCommand());
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest requestDto) {
+        Theme theme = themeService.registerTheme(requestDto.toCommand());
         ThemeResponse response = ThemeResponse.from(theme);
         return ResponseEntity
                 .created(URI.create("/themes/" + theme.getId()))
@@ -60,8 +60,8 @@ public class ThemeController {
     }
 
     @DeleteMapping("/admin/themes/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        themeService.deleteById(id);
+    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
+        themeService.removeThemeById(id);
         return ResponseEntity.noContent().build();
     }
 }

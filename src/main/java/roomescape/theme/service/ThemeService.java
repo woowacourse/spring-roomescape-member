@@ -18,9 +18,9 @@ public class ThemeService {
     }
 
     @Transactional
-    public Theme save(ThemeCommand command) {
+    public Theme registerTheme(ThemeCommand command) {
         return themeRepository.save(
-                Theme.create(
+                Theme.of(
                         command.name(),
                         command.description(),
                         command.thumbnailUrl()
@@ -29,11 +29,11 @@ public class ThemeService {
     }
 
     @Transactional
-    public void deleteById(Long id) {
+    public void removeThemeById(Long id) {
         themeRepository.deleteById(id);
     }
 
-    public List<Theme> findAll() {
+    public List<Theme> findAllThemes() {
         return themeRepository.findAll();
     }
 }
