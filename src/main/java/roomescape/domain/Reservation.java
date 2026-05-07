@@ -12,12 +12,12 @@ public class Reservation {
     private final ReservationTime time;
     private final Long themeId;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Long time_id) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Long themeID) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
-        this.themeId = time_id;
+        this.themeId = themeID;
     }
 
     public Long getId() {

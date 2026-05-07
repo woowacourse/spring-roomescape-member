@@ -11,7 +11,7 @@ VALUES ('10:00'),
        ('20:00'),
        ('21:00');
 
-INSERT INTO theme (name, description, imgUrl)
+INSERT INTO theme (name, description, img_url)
 VALUES ('이든의 공포 하우스', '이든이 귀신으로 나오는 공포 테마', 'https://images.example.com/themes/horror-house.jpg'),
        ('정콩이의 방탈출', '정콩이가 지키는 미스터리 방탈출', 'https://images.example.com/themes/jungkong-room.jpg'),
        ('우주 정거장 탈출', '고장 난 우주 정거장에서 귀환하는 SF 테마', 'https://images.example.com/themes/space-station.jpg'),
