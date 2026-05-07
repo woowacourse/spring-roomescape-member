@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ThemeTest {
+    private static final String DEFAULT_THUMBNAIL_URL = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80";
     private final String name = "공포";
     private final String description = "테마 설명";
     private final String defaultThumbnailUrl = "dommy-url";
@@ -81,7 +82,7 @@ class ThemeTest {
         Theme theme = Theme.create(name, description, emptyThumbnailUrl);
 
         //then
-        assertThat(defaultThumbnailUrl)
-                .isEqualTo(theme.thumbnailUrl());
+        assertThat(theme.thumbnailUrl())
+                .isEqualTo(DEFAULT_THUMBNAIL_URL);
     }
 }

@@ -1,6 +1,7 @@
 package roomescape.theme.domain;
 
 public class Theme {
+    private static final String DEFAULT_THUMBNAIL_URL = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80";
     private Long id;
     private String name;
     private String description;
@@ -58,7 +59,7 @@ public class Theme {
 
     private static String resolveThumbnailUrl(String thumbnailUrl) {
         if (thumbnailUrl.isBlank()) {
-            return "dommy-url"; //todo: default thumbnail url
+            return DEFAULT_THUMBNAIL_URL;
         }
         return thumbnailUrl;
     }
