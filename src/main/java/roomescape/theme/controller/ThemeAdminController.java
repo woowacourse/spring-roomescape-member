@@ -2,6 +2,7 @@ package roomescape.theme.controller;
 
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +42,7 @@ public class ThemeAdminController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeDetailDto> createTheme(@RequestBody ThemeSaveDto dto) {
+    public ResponseEntity<ThemeDetailDto> createTheme(@Validated @RequestBody ThemeSaveDto dto) {
         Theme theme = themeService.register(dto.name(), dto.description(), dto.thumbnailUrl());
         ThemeDetailDto responseData = ThemeDetailDto.from(theme);
         return ResponseEntity.ok(responseData);

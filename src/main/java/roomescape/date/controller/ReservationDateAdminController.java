@@ -2,6 +2,7 @@ package roomescape.date.controller;
 
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +35,7 @@ public class ReservationDateAdminController {
 
     @PostMapping("/dates")
     public ResponseEntity<ReservationDateDetailDto> create(
-            @RequestBody ReservationDateSaveDto dto
+            @Validated @RequestBody ReservationDateSaveDto dto
     ) {
         ReservationDate reservationDate = reservationDateService.register(dto.date());
         ReservationDateDetailDto responseData = ReservationDateDetailDto.from(reservationDate);
