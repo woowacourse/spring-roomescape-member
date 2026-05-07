@@ -49,7 +49,7 @@ public class ThemeServiceTest {
 
         assertThatThrownBy(() -> themeService.save(createRequestDto))
                 .isInstanceOf(ThemeException.class)
-                .hasMessage("[ERROR] 이름과 설명이 같은 테마가 이미 존재합니다.");
+                .hasMessage("이름과 설명이 같은 테마가 이미 존재합니다.");
     }
 
     @DisplayName("테마의 삭제를 테스트합니다.")
@@ -82,7 +82,7 @@ public class ThemeServiceTest {
     void theme_not_exists() {
         assertThatThrownBy(() -> themeService.findById(100L))
                 .isInstanceOf(ThemeException.class)
-                .hasMessage("[ERROR] 존재하지 않는 테마 입니다.");
+                .hasMessage("존재하지 않는 테마 입니다.");
     }
 
     @DisplayName("테마의 전체 조회를 테스트합니다.")

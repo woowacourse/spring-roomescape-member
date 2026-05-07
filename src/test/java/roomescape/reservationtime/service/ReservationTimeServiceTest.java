@@ -79,6 +79,6 @@ class ReservationTimeServiceTest {
 
         assertThatThrownBy(() -> timeService.save(createRequestDto))
                 .isInstanceOf(ReservationTimeException.class)
-                .hasMessage("[ERROR] 시간 09:00이(가) 이미 존재합니다.");
+                .hasMessage("시간 09:00이(가) 이미 존재합니다.");
     }
 }

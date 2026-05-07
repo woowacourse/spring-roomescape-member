@@ -19,7 +19,7 @@ public class ThemeService {
 
     public ThemeQueryResult findById(Long id) {
         return ThemeQueryResult.from(themeRepository.findById(id)
-                .orElseThrow(() -> new ThemeException("[ERROR] 존재하지 않는 테마 입니다.")));
+                .orElseThrow(() -> new ThemeException("존재하지 않는 테마 입니다.")));
     }
 
     public List<ThemeQueryResult> findAll() {
@@ -49,7 +49,7 @@ public class ThemeService {
 
     private void validateDuplicateTheme(Theme theme) {
         if (themeRepository.existsByNameAndDescription(theme)) {
-            throw new ThemeException("[ERROR] 이름과 설명이 같은 테마가 이미 존재합니다.");
+            throw new ThemeException("이름과 설명이 같은 테마가 이미 존재합니다.");
         }
     }
 

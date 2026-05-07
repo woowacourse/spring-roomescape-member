@@ -69,7 +69,7 @@ class ReservationServiceTest {
 
         Assertions.assertThatThrownBy(() -> reservationService.save(secondRequest, LocalDateTime.of(2000, 1, 1, 0, 0)))
                 .isInstanceOf(ReservationException.class)
-                .hasMessage("[ERROR] 이미 해당 날짜와 시간에 예약이 존재합니다.");
+                .hasMessage("이미 해당 날짜와 시간에 예약이 존재합니다.");
     }
 
     @DisplayName("오늘보다 이전 날짜 혹은 시간 예약 시도 시 예외 발생을 테스트합니다.")
@@ -82,6 +82,6 @@ class ReservationServiceTest {
 
         Assertions.assertThatThrownBy(() -> reservationService.save(request, LocalDateTime.of(2026, 5, 6, 11, 0)))
                 .isInstanceOf(ReservationException.class)
-                .hasMessage("[ERROR] 현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
+                .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
     }
 }

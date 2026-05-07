@@ -22,7 +22,7 @@ public class ReservationTimeService {
 
     public ReservationTimeQueryResult findById(Long timeId) {
         return ReservationTimeQueryResult.from(timeRepository.findById(timeId)
-                .orElseThrow(() -> new ReservationTimeException("[ERROR] 존재하지 않는 시간 입니다.")));
+                .orElseThrow(() -> new ReservationTimeException("존재하지 않는 시간 입니다.")));
     }
 
     public List<ReservationTimeQueryResult> findAll() {
@@ -56,7 +56,7 @@ public class ReservationTimeService {
 
     private void validateDuplicateTime(LocalTime startAt) {
         if (timeRepository.existsByStartAt(startAt)) {
-            throw new ReservationTimeException(String.format("[ERROR] 시간 %s이(가) 이미 존재합니다.",
+            throw new ReservationTimeException(String.format("시간 %s이(가) 이미 존재합니다.",
                     startAt.format(DateTimeFormatter.ofPattern("HH:mm"))));
         }
     }

@@ -47,7 +47,7 @@ public class ReservationService {
         LocalDateTime triedDateTime = LocalDateTime.of(date, startAt);
 
         if (triedDateTime.isBefore(currentDateTime)) {
-            throw new ReservationException("[ERROR] 현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
+            throw new ReservationException("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
         }
     }
 
@@ -61,7 +61,7 @@ public class ReservationService {
                 request.timeId()
         );
         if (existsByDateAndTime) {
-            throw new ReservationException("[ERROR] 이미 해당 날짜와 시간에 예약이 존재합니다.");
+            throw new ReservationException("이미 해당 날짜와 시간에 예약이 존재합니다.");
         }
     }
 }
