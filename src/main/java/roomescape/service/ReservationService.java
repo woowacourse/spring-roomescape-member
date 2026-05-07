@@ -50,7 +50,7 @@ public class ReservationService {
     }
 
     public List<Theme> getPopularThemes() {
-        List<Long> popularThemeIds = reservationRepository.getPopularThemeIds();
+        List<Long> popularThemeIds = reservationRepository.findPopularThemeIds();
 
         return popularThemeIds.stream()
                 .map(id -> themeRepository.findById(id).get())

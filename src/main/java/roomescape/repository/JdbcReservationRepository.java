@@ -179,7 +179,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Long> getPopularThemeIds() {
+    public List<Long> findPopularThemeIds() {
         List<Long> popularThemeIds = new LinkedList<>();
         String sql = "" +
                 "SELECT theme_id, COUNT(*) AS reservation_count " +
@@ -192,14 +192,12 @@ public class JdbcReservationRepository implements ReservationRepository {
         LocalDate today = LocalDate.now();
         LocalDate beforeOneWeeks = today.minusWeeks(1);
 
-
         jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> popularThemeIds.add(resultSet.getLong("theme_id")),
                 beforeOneWeeks,
                 today
         );
-
         return popularThemeIds;
     }
 
