@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>방탈출 관리자</title>
+  <title>ROOM ZERO Console</title>
   <link rel="stylesheet" href="../shared/css/common.css">
   <link rel="stylesheet" href="../shared/css/admin.css">
 </head>
@@ -11,7 +11,7 @@
   <nav class="nav-bar">
     <div class="nav-content">
       <div class="logo">
-        <a href="../user/index.html" style="font-weight: 600; color: white;">방탈출 예약</a>
+        <a href="../user/index.html" style="font-weight: 600; color: white;">ROOM ZERO</a>
       </div>
       <div class="nav-links">
         <a href="../user/index.html">사용자 화면</a>
@@ -21,15 +21,56 @@
   </nav>
 
   <main>
-    <section class="light">
-      <div class="container">
-        <h1 class="display-hero">예약 관리</h1>
-        <p class="subtitle">테마, 예약 시간, 예약 내역을 한 곳에서 관리합니다.</p>
+    <section class="admin-hero">
+      <div class="container admin-hero-grid">
+        <div>
+          <p class="section-kicker">Operations Console</p>
+          <h1 class="display-hero">오늘 열리는 방을 조율합니다.</h1>
+          <p class="subtitle">테마, 시간, 예약 기록을 한 화면에서 빠르게 확인하고 정리합니다.</p>
+        </div>
+        <div id="admin-stats" class="admin-stats" aria-label="관리 요약">
+          <div class="stat-cell">
+            <span>Rooms</span>
+            <strong>--</strong>
+          </div>
+          <div class="stat-cell">
+            <span>Slots</span>
+            <strong>--</strong>
+          </div>
+          <div class="stat-cell">
+            <span>Bookings</span>
+            <strong>--</strong>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="white">
+    <section class="admin-workspace">
       <div class="container">
+        <div class="dashboard-grid" aria-label="예약 대시보드">
+          <section class="dashboard-panel chart-panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">Chart.js</p>
+                <h2 class="card-title">예약 흐름</h2>
+              </div>
+              <span id="chart-range-label" class="panel-meta">최근 데이터</span>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="reservation-chart"></canvas>
+            </div>
+          </section>
+          <section class="dashboard-panel density-panel">
+            <div class="panel-head">
+              <div>
+                <p class="panel-kicker">D3</p>
+                <h2 class="card-title">시간 밀도</h2>
+              </div>
+              <span class="panel-meta">예약 슬롯</span>
+            </div>
+            <div id="time-density-map" class="time-density-map" aria-label="시간별 예약 밀도"></div>
+          </section>
+        </div>
         <div class="admin-grid">
           <div class="admin-card">
             <h2 class="card-title">테마</h2>
@@ -60,6 +101,8 @@
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
   <script type="module" src="../shared/js/admin.js"></script>
 </body>
 </html>
