@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.application.dto.AvailableReservationTimeQueryResult;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
@@ -15,16 +16,19 @@ import roomescape.reservationtime.domain.repository.AvailableReservationTime;
 import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository timeRepository;
 
+    @Transactional(readOnly = true)
     public ReservationTimeQueryResult findById(Long timeId) {
         return ReservationTimeQueryResult.from(timeRepository.findById(timeId)
                 .orElseThrow(() -> new ReservationTimeException("존재하지 않는 시간 입니다.")));
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationTimeQueryResult> findAll() {
         List<ReservationTime> times = timeRepository.findAll();
 
@@ -53,7 +57,7 @@ public class ReservationTimeService {
     public int delete(Long id) {
         return timeRepository.delete(id);
     }
-
+    
     private void validateDuplicateTime(LocalTime startAt) {
         if (timeRepository.existsByStartAt(startAt)) {
             throw new ReservationTimeException(String.format("시간 %s이(가) 이미 존재합니다.",

@@ -6,10 +6,11 @@ import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.domain.Reservation;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationQueryResult;
 import roomescape.reservation.application.exception.ReservationException;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationDetail;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
@@ -18,6 +19,7 @@ import roomescape.theme.application.dto.ThemeQueryResult;
 import roomescape.theme.application.service.ThemeService;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class ReservationService {
 
@@ -25,6 +27,7 @@ public class ReservationService {
     private final ThemeService themeService;
     private final ReservationTimeService timeService;
 
+    @Transactional(readOnly = true)
     public List<ReservationQueryResult> findAll() {
         List<ReservationDetail> result = reservationRepository.findAll();
         return result.stream()
@@ -43,16 +46,16 @@ public class ReservationService {
         return ReservationQueryResult.from(reservationRepository.save(reservation), themeQueryResult, timeResponse);
     }
 
+    public int delete(Long id) {
+        return reservationRepository.delete(id);
+    }
+
     private void validateReservationDateTime(LocalDate date, LocalTime startAt, LocalDateTime currentDateTime) {
         LocalDateTime triedDateTime = LocalDateTime.of(date, startAt);
 
         if (triedDateTime.isBefore(currentDateTime)) {
             throw new ReservationException("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
         }
-    }
-
-    public int delete(Long id) {
-        return reservationRepository.delete(id);
     }
 
     private void validateDuplicateReservation(ReservationCreateCommand request) {
