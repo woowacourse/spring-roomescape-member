@@ -6,15 +6,15 @@
 
 ### 도메인 방어 (Domain Validation)
 
-- [ ] **1. `Theme` 생성자에 검증 로직 추가해야 함.**
+- [x] **1. `Theme` 생성자에 검증 로직 추가해야 함.**
   - `name`, `description`, `thumbnailUrl` 전부 null/blank 허용 상태
   - `Reservation`, `ReservationTime`처럼 생성자에서 검증 추가 필요
 
-- [ ] **2. `Reservation.validate()` - `theme` null 검증 추가해야 함.**
+- [x] **2. `Reservation.validate()` - `theme` null 검증 추가해야 함.**
   - `name`, `date`, `time`은 검증하지만 `theme`은 검증 없음
   - `theme == null` 케이스 추가 필요
 
-- [ ] **3. `Reservation` - 과거 날짜 예약 검증 추가해야 함.**
+- [x] **3. `Reservation` - 과거 날짜 예약 검증 추가해야 함.**
   - 지금은 `date`가 오늘 이전이어도 예약 생성 가능
   - `date.isBefore(LocalDate.now())` 검증 추가 필요
 

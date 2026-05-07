@@ -28,7 +28,6 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
         Theme theme = themeDao.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-        Reservation.validate(request.name(), request.date(), time);
         if (reservationDao.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
             throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
