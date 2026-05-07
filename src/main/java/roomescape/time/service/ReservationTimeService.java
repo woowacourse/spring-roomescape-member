@@ -2,6 +2,7 @@ package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.DuplicateResourceException;
 import roomescape.time.controller.dto.ReservationTimeRequest;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
@@ -21,9 +22,7 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTime save(ReservationTimeRequest request) {
-        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
-            throw new IllegalArgumentException("해당 시간이 이미 존재합니다.");
-        }
+        validateDuplicateTime(request);
 
         ReservationTime reservationTime = ReservationTime.create(request.startAt());
         return reservationTimeRepository.save(reservationTime);
@@ -40,6 +39,12 @@ public class ReservationTimeService {
 
     public List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date) {
         return reservationTimeRepository.findAvailableTimes(themeId, date);
+    }
+
+    private void validateDuplicateTime(ReservationTimeRequest request) {
+        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
+            throw new DuplicateResourceException("해당 시간이 이미 존재합니다.");
+        }
     }
 
     public ReservationTime getById(Long id) {

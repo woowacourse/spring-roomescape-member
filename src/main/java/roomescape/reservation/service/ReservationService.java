@@ -38,7 +38,7 @@ public class ReservationService {
                 themeService.getById(request.themeId())
         );
 
-        checkDuplicateReservation(
+        validateDuplicateReservation(
                 reservation.getDate(),
                 request.timeId(),
                 request.themeId()
@@ -61,7 +61,7 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    private void checkDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
+    private void validateDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new IllegalStateException("이미 해당 날짜와 시간에 예약이 존재합니다.");
         }

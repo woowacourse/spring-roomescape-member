@@ -1,11 +1,13 @@
 package roomescape.time.repository;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.DuplicateResourceException;
 import roomescape.exception.ResourceInUseException;
 import roomescape.time.domain.ReservationTime;
 
@@ -35,11 +37,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public ReservationTime save(ReservationTime reservationTime) {
         String sql = "insert into reservation_time (start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
-            return ps;
-        }, keyHolder);
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+                ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
+                return ps;
+            }, keyHolder);
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateResourceException("해당 시간이 이미 존재합니다.");
+        }
 
         Long generatedId = keyHolder.getKey().longValue();
         return findById(generatedId)

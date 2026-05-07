@@ -1,11 +1,13 @@
 package roomescape.theme.repository;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.DuplicateResourceException;
 import roomescape.exception.ResourceInUseException;
 import roomescape.theme.domain.Theme;
 
@@ -36,13 +38,17 @@ public class JdbcThemeRepository implements ThemeRepository {
     public Theme save(Theme theme) {
         String sql = "insert into theme (name, description, thumbnail_url) values (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDescription());
-            ps.setString(3, theme.getThumbnailUrl());
-            return ps;
-        }, keyHolder);
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+                ps.setString(1, theme.getName());
+                ps.setString(2, theme.getDescription());
+                ps.setString(3, theme.getThumbnailUrl());
+                return ps;
+            }, keyHolder);
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateResourceException("이미 존재하는 테마 이름입니다.");
+        }
 
         Long generatedId = keyHolder.getKey().longValue();
         return findById(generatedId)

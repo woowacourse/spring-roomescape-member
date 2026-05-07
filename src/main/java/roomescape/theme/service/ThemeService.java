@@ -2,6 +2,7 @@ package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.DuplicateResourceException;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -27,9 +28,7 @@ public class ThemeService {
 
     @Transactional
     public Theme save(ThemeRequest request) {
-        if (themeRepository.existsByName(request.name())) {
-            throw new IllegalArgumentException("이미 존재하는 테마 이름입니다.");
-        }
+        validateDuplicateName(request);
 
         Theme theme = Theme.create(request.name(), request.description(), request.thumbnailUrl());
         return themeRepository.save(theme);
@@ -53,6 +52,12 @@ public class ThemeService {
                 endDate,
                 DEFAULT_POPULAR_LIMIT
         );
+    }
+
+    private void validateDuplicateName(ThemeRequest request) {
+        if (themeRepository.existsByName(request.name())) {
+            throw new DuplicateResourceException("이미 존재하는 테마 이름입니다.");
+        }
     }
 
     public Theme getById(Long id) {
