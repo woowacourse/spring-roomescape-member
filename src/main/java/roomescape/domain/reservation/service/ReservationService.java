@@ -2,6 +2,8 @@ package roomescape.domain.reservation.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.global.exception.ErrorCode;
+import roomescape.domain.global.exception.NotFoundException;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
@@ -44,8 +46,10 @@ public class ReservationService {
     }
 
     private Reservation createReservation(ReservationCreateRequestDto requestDto) {
-        Time time = timeRepository.findTimeById(requestDto.timeId());
-        Theme theme = themeRepository.findThemeById(requestDto.themeId()).orElseThrow();
+        Time time = timeRepository.findTimeById(requestDto.timeId())
+            .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND));
+        Theme theme = themeRepository.findThemeById(requestDto.themeId())
+            .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
         return Reservation.create(requestDto.name(), requestDto.date(), time, theme);
     }
 

@@ -1,6 +1,7 @@
 package roomescape.domain.time.repository;
 
 import java.util.List;
+import java.util.Optional;
 import roomescape.domain.time.entity.Time;
 
 public interface TimeRepository {
@@ -9,7 +10,7 @@ public interface TimeRepository {
 
     List<Time> findAllTimes();
 
-    Time findTimeById(Long id);
+    Optional<Time> findTimeById(Long id);
 
     void deleteTimeById(Long id);
 }

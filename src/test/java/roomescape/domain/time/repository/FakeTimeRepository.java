@@ -3,6 +3,7 @@ package roomescape.domain.time.repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import roomescape.domain.time.entity.Time;
 
 public class FakeTimeRepository implements TimeRepository {
@@ -23,11 +24,10 @@ public class FakeTimeRepository implements TimeRepository {
     }
 
     @Override
-    public Time findTimeById(Long id) {
+    public Optional<Time> findTimeById(Long id) {
         return times.stream()
             .filter(time -> Objects.equals(time.getId(), id))
-            .findFirst()
-            .orElse(null);
+            .findFirst();
     }
 
     @Override

@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -45,11 +47,15 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     @Override
-    public Time findTimeById(Long id) {
+    public Optional<Time> findTimeById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
 
-        return jdbcTemplate.queryForObject(sql, parameters, this::mapTime);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, parameters, this::mapTime));
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
