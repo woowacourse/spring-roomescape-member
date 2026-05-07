@@ -13,7 +13,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 import roomescape.repository.FakeReservationDao;
 import roomescape.repository.FakeThemeDao;
-import roomescape.repository.FakeTimeDao;
+import roomescape.repository.FakeTimeSlotDao;
 
 class ReservationServiceTest {
 
@@ -23,7 +23,7 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        FakeTimeDao fakeReservationTimeDao = new FakeTimeDao();
+        FakeTimeSlotDao fakeReservationTimeDao = new FakeTimeSlotDao();
         FakeReservationDao fakeReservationDao = new FakeReservationDao();
         FakeThemeDao fakeThemeDao = new FakeThemeDao();
         reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);

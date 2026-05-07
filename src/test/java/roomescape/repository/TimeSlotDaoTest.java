@@ -18,11 +18,11 @@ class TimeSlotDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private TimeDao timeDao;
+    private TimeSlotDao timeDao;
 
     @BeforeEach
     void setUp() {
-        timeDao = new TimeDao(jdbcTemplate);
+        timeDao = new TimeSlotDao(jdbcTemplate);
         executeSchema();
     }
 

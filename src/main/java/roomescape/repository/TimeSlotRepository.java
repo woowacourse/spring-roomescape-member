@@ -3,7 +3,7 @@ package roomescape.repository;
 import java.util.List;
 import roomescape.domain.TimeSlot;
 
-public interface TimeRepository {
+public interface TimeSlotRepository {
 
     List<TimeSlot> findAll();
 

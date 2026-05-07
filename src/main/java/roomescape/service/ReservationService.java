@@ -8,22 +8,22 @@ import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.repository.TimeRepository;
+import roomescape.repository.TimeSlotRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final TimeRepository timeRepository;
+    private final TimeSlotRepository timeSlotRepository;
     private final ThemeRepository themeRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
-            TimeRepository timeRepository,
+            TimeSlotRepository timeSlotRepository,
             ThemeRepository themeRepository
     ) {
         this.reservationRepository = reservationRepository;
-        this.timeRepository = timeRepository;
+        this.timeSlotRepository = timeSlotRepository;
         this.themeRepository = themeRepository;
     }
 
@@ -37,7 +37,7 @@ public class ReservationService {
             Long reservationTimeId,
             Long themeId
     ) {
-        TimeSlot timeSlot = timeRepository.findById(reservationTimeId);
+        TimeSlot timeSlot = timeSlotRepository.findById(reservationTimeId);
         Theme theme = themeRepository.findById(themeId);
         Reservation transientReservation = Reservation.transientOf(name, date, timeSlot, theme);
         return reservationRepository.save(transientReservation);

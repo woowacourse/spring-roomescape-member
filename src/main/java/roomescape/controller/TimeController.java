@@ -13,40 +13,40 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.TimeRequest;
 import roomescape.controller.dto.TimeResponse;
 import roomescape.domain.TimeSlot;
-import roomescape.service.TimeService;
+import roomescape.service.TimeSlotService;
 
 @RestController
 @RequestMapping("/times")
 public class TimeController {
 
-    private final TimeService reservationTimeService;
+    private final TimeSlotService reservationTimeSlotService;
 
-    public TimeController(TimeService reservationTimeService) {
-        this.reservationTimeService = reservationTimeService;
+    public TimeController(TimeSlotService reservationTimeSlotService) {
+        this.reservationTimeSlotService = reservationTimeSlotService;
     }
 
     @GetMapping
     public ResponseEntity<List<TimeResponse>> times() {
-        return ResponseEntity.ok(convertToTimeResponses(reservationTimeService.allTimes()));
+        return ResponseEntity.ok(convertToTimeResponses(reservationTimeSlotService.allTimes()));
     }
 
     @GetMapping(params = {"themeId", "date"})
     public ResponseEntity<List<TimeResponse>> getAvailableTimes(long themeId, LocalDate date) {
-        List<TimeSlot> allTimeSlots = reservationTimeService.allTimes();
-        List<Long> reservedTimeId = reservationTimeService.findReserved(themeId, date);
+        List<TimeSlot> allTimeSlots = reservationTimeSlotService.allTimes();
+        List<Long> reservedTimeId = reservationTimeSlotService.findReserved(themeId, date);
         return ResponseEntity.ok(TimeResponse.availableOf(allTimeSlots, reservedTimeId));
     }
 
     @PostMapping
     public ResponseEntity<TimeResponse> createTime(
             @RequestBody TimeRequest timeRequest) {
-        TimeSlot timeSlot = reservationTimeService.saveTime(timeRequest.startAt());
+        TimeSlot timeSlot = reservationTimeSlotService.saveTime(timeRequest.startAt());
         return ResponseEntity.ok(TimeResponse.from(timeSlot));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable long id) {
-        reservationTimeService.removeTime(id);
+        reservationTimeSlotService.removeTime(id);
         return ResponseEntity.ok().build();
     }
 

@@ -6,34 +6,34 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.TimeSlot;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.TimeRepository;
+import roomescape.repository.TimeSlotRepository;
 
 @Service
-public class TimeService {
+public class TimeSlotService {
 
-    private final TimeRepository timeRepository;
+    private final TimeSlotRepository timeSlotRepository;
     private final ReservationRepository reservationRepository;
 
-    public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
-        this.timeRepository = timeRepository;
+    public TimeSlotService(TimeSlotRepository timeSlotRepository, ReservationRepository reservationRepository) {
+        this.timeSlotRepository = timeSlotRepository;
         this.reservationRepository = reservationRepository;
     }
 
     public List<TimeSlot> allTimes() {
-        return timeRepository.findAll();
+        return timeSlotRepository.findAll();
     }
 
     public TimeSlot saveTime(LocalTime startAt) {
         TimeSlot timeSlot = TimeSlot.transientOf(startAt);
-        return timeRepository.save(timeSlot);
+        return timeSlotRepository.save(timeSlot);
     }
 
     public void removeTime(long timeId) {
-        timeRepository.deleteById(timeId);
+        timeSlotRepository.deleteById(timeId);
     }
 
     public TimeSlot findTime(long timeId) {
-        return timeRepository.findById(timeId);
+        return timeSlotRepository.findById(timeId);
     }
 
     public List<Long> findReserved(long themeId, LocalDate date) {

@@ -43,7 +43,7 @@ class ReservationDaoTest {
     }
 
     private void insertDependencyData() {
-        TimeDao timeDao = new TimeDao(jdbcTemplate);
+        TimeSlotDao timeDao = new TimeSlotDao(jdbcTemplate);
         savedTimeSlot = timeDao.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
     }
 
