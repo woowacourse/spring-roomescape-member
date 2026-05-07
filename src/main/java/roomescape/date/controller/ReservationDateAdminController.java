@@ -17,7 +17,6 @@ import roomescape.date.service.ReservationDateService;
 @RestController
 @RequestMapping("/admin")
 public class ReservationDateAdminController {
-
     private final ReservationDateService reservationDateService;
 
     public ReservationDateAdminController(ReservationDateService reservationDateService) {
@@ -47,5 +46,4 @@ public class ReservationDateAdminController {
         ReservationDateDetailDto responseData = ReservationDateDetailDto.from(reservationDate);
         return ResponseEntity.ok(responseData);
     }
-
 }

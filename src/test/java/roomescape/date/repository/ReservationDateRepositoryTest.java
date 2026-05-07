@@ -1,5 +1,8 @@
 package roomescape.date.repository;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,15 +12,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.date.domain.ReservationDate;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 @JdbcTest
 class ReservationDateRepositoryTest {
-
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2099, 1, 1);
-
     private JdbcReservationDateRepository reservationDateRepository;
 
     @Autowired
@@ -26,6 +23,21 @@ class ReservationDateRepositoryTest {
     @BeforeEach
     void setup() {
         reservationDateRepository = new JdbcReservationDateRepository(jdbcTemplate);
+    }
+
+    @Test
+    @DisplayName("등록된 예약날짜와 조회된 예약날짜의 모든 필드는 일치한다")
+    void findById() {
+        // given
+        ReservationDate saved = reservationDateRepository.save(ReservationDate.create(DEFAULT_DATE));
+
+        // when
+        ReservationDate actual = reservationDateRepository.findById(saved.id()).get();
+
+        // then
+        Assertions.assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(saved);
     }
 
     @Test
@@ -43,21 +55,6 @@ class ReservationDateRepositoryTest {
         // then
         Assertions.assertThat(actual)
                 .hasSize(reservationDates.size());
-    }
-
-    @Test
-    @DisplayName("등록된 예약날짜와 조회된 예약날짜의 모든 필드는 일치한다")
-    void findById() {
-        // given
-        ReservationDate saved = reservationDateRepository.save(ReservationDate.create(DEFAULT_DATE));
-
-        // when
-        ReservationDate actual = reservationDateRepository.findById(saved.id()).get();
-
-        // then
-        Assertions.assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(saved);
     }
 
     @Test
@@ -99,5 +96,4 @@ class ReservationDateRepositoryTest {
         }
         return savedReservationDates;
     }
-
 }

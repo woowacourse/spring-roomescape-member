@@ -1,13 +1,11 @@
 package roomescape.date.domain;
 
+import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-
 class ReservationDateTest {
-
     @Test
     @DisplayName("등록할 날짜가 null이면 예외가 발생한다.")
     void create_null_date() {
@@ -32,5 +30,4 @@ class ReservationDateTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("과거 날짜는 등록할 수 없습니다.");
     }
-
 }
