@@ -210,30 +210,43 @@
 
 ---
 
-## 6️⃣ 커밋 컨벤션
+안녕하세요 아서.
+정성스러운 피드백 주셔서 감사합니다!
+코드 리뷰 주신 것에 대해 답변도 해보고, 추가 질문 사항에 대해 커멘트 달아두었습니다.
+이번 리뷰도 잘 부탁드립니다:)
 
-Following convention : https://gist.github.com/stephenparish/9941e89d80e2bc58a153
+### 변경사항 (260507)
+- [x] 공통 url을 RequestMapping으로 묶기
+- [x] @ResponseBody + @ResponseStatus로 응답 통일
+- [x] DB 스키마 변경에 따른 수정
+- 날짜 : VARCHAR → DATE, 시간 : VARCHAR → TIME, 썸네일 url : VARCHAR → TEXT
+- [x] DAO 데이터 저장과 조회 책임 분리
+- save() 메서드에서 조회까지 하고 있어서, 책임을 분리함
+- [x] DAO 불필요한 try-catch 삭제
+- [x] 도메인 null 검사 추가
+- [x] 유명 테마 조회 기능 수정
 
-```markdown
-# basic structure
-<type>(<scope>): <subject>
-<BLANK LINE>
-<body>
-<BLANK LINE>
-<footer>
+**[추가 질문 🙋🏻‍♀️]**
 
-# <type>
-feat (feature)
-fix (bug fix)
-docs (documentation)
-style (formatting, missing semi colons, …)
-refactor
-test (when adding missing tests)
-chore (maintain)
+1. 도메인에서 id 필드
+지금 domain 폴더의 Reservation, ReservationTime, Theme이 모두 id 필드를 가지고 있습니다.
+DB로 인해 추가된 속성이기 때문에, id 필드를 가진 순간 이것은 엔티티에 가까워진다고 생각합니다.
+순수한 도메인을 유지하려면 id 필드를 삭제해야하는데, 또 한편으로는 스프링을 사용하는데 순수한 도메인을 유지해야하는지에 대해 고민이 됩니다.
 
-# <scope>
-console - I/O
-domain - 핵심 로직
-validation - 유효성검사
-test - 테스트코드 추가
-```
+지금 reservation, ReservationTime, Theme는 도메인인가요? 엔티티인가요?
+아서는 순수한 도메인과 엔티티를 나누는 기준이 뭐라고 생각하시는지, 그리고 스프링에서 도메인과 엔티티를 어떻게 사용하는 것이 좋을지 궁금합니다.
+   
+2. DAO애서 DTO 반환
+아래의 커밋에 추가 질문 달아두었습니다!
+   https://github.com/woowacourse/spring-roomescape-member/pull/342#discussion_r3201650542
+
+3. 날짜 라이브러리 테스트, 서비스 테스트, dto에서 도메인에 대해 아는 것 등
+   아래의 커밋에 추가 질문 달아두었습니다!
+https://github.com/woowacourse/spring-roomescape-member/pull/342#discussion_r3203715674
+
+4. null 검증
+아래의 커밋에 추가 질문 달아두었습니다!
+   https://github.com/woowacourse/spring-roomescape-member/pull/342#discussion_r3203715441
+5. 관리자/사용자 서비스 분리
+   아래의 커밋에 추가 질문 달아두었습니다!
+https://github.com/woowacourse/spring-roomescape-member/pull/342#discussion_r3203828943
