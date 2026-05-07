@@ -1,13 +1,3 @@
--- 1. 기존 테이블 초기화 (멱등성 보장)
-DROP TABLE IF EXISTS reservation;
-DROP TABLE IF EXISTS reservation_time;
-DROP TABLE IF EXISTS time;
-DROP TABLE IF EXISTS theme;
-
--- 2. 테이블 생성 로직 (schema.sql 역할 병행 시 참고, 분리되어 있다면 생략 가능)
-CREATE TABLE theme (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(250) NOT NULL, description VARCHAR(250) NOT NULL, thumbnail_url VARCHAR(250) NOT NULL);
-CREATE TABLE time (id BIGINT AUTO_INCREMENT PRIMARY KEY, start_at TIME NOT NULL);
-CREATE TABLE reservation (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, date DATE NOT NULL, time_id BIGINT NOT NULL, theme_id BIGINT NOT NULL, FOREIGN KEY (time_id) REFERENCES time (id), FOREIGN KEY (theme_id) REFERENCES theme (id));
 
 -- 3. 테마(Theme) 20개 삽입
 INSERT INTO theme (name, description, thumbnail_url) VALUES

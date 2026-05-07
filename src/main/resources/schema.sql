@@ -25,3 +25,15 @@ CREATE TABLE reservation
     FOREIGN KEY (time_id) REFERENCES time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
+
+CREATE TABLE theme_slot
+(
+    id          BIGINT  NOT NULL AUTO_INCREMENT,
+    theme_id    BIGINT  NOT NULL,
+    date        DATE    NOT NULL,
+    time_id     BIGINT  NOT NULL,
+    is_reserved BOOLEAN NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (time_id) REFERENCES time (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id)
+);
