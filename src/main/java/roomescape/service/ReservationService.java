@@ -39,20 +39,22 @@ public class ReservationService {
         List<Long> popularThemeIds = reservationRepository.findPopularThemeIds();
 
         return popularThemeIds.stream()
-                .map(id -> themeRepository.findById(id).get())
+                .map(id -> themeRepository.findById(id).orElseThrow())
                 .toList();
     }
 
     public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
         ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
-                .orElseThrow(
-                        () -> new RuntimeException("존재하지 않는 시간입니다."));
+                .orElseThrow();
         Theme theme = themeRepository.findById(reservationRequestDTO.themeId())
-                .orElseThrow(
-                        () -> new RuntimeException("존재하지 않는 테마입니다."));
+                .orElseThrow();
 
-        Reservation reservation = new Reservation(reservationRequestDTO.name(),
-                reservationRequestDTO.date(), time, theme);
+        Reservation reservation = new Reservation(
+                reservationRequestDTO.name(),
+                reservationRequestDTO.date(),
+                time,
+                theme
+        );
 
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponseDTO.from(savedReservation);

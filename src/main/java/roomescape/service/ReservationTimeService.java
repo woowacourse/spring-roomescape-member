@@ -26,13 +26,12 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTimeResponseDTO addReservationTime(
-            ReservationTimeRequestDTO reservationTimeRequest) {
+    public ReservationTimeResponseDTO addReservationTime(ReservationTimeRequestDTO reservationTimeRequest) {
         ReservationTime reservationTime = new ReservationTime(
-                LocalTime.parse(reservationTimeRequest.startAt()));
+                LocalTime.parse(reservationTimeRequest.startAt())
+        );
 
         ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
-
         return ReservationTimeResponseDTO.from(savedTime);
     }
 
