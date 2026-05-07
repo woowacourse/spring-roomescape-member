@@ -112,6 +112,6 @@ class RoomescapeApplicationTest {
                 .when().get("/reservations/popular-themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("id", contains(2, 1));
+                .body("id", contains(1, 2, 3, 6, 5, 4, 8, 7, 10, 9));
     }
 }
