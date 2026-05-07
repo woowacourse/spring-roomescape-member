@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -61,6 +62,31 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         );
         return results.stream()
                 .findFirst();
+    }
+
+    @Override
+    public List<ReservationTime> findReservedTimes(LocalDate selectedDate, Long themeId) {
+        String sql = """
+                SELECT id, start_at
+                FROM reservation_time
+                WHERE id IN (
+                  SELECT rt.id
+                  FROM reservation_time AS rt
+                  INNER JOIN reservation AS re
+                  ON rt.id = re.time_id
+                  WHERE re.date = ?
+                  AND re.theme_id = ?
+                )
+                """;
+
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> new ReservationTime(
+                        resultSet.getLong("id"),
+                        resultSet.getObject("start_at", LocalTime.class)
+                ),
+                selectedDate, themeId
+        );
     }
 
     @Override

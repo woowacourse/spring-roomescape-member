@@ -116,7 +116,7 @@
 
     datePicker.addEventListener('change', () => {
       const selectedDate = datePicker.value;
-      fetch(`/reservations/booked-times?themeId=${themeId}&selectedDate=${selectedDate}`)
+      fetch(`/times/reserved?themeId=${themeId}&selectedDate=${selectedDate}`)
       .then(res => res.json())
       .then(bookedTimes => {
         const bookedTimeIds = bookedTimes.map(t => t.id);
