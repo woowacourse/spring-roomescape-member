@@ -1,222 +1,43 @@
-# API 명세서
+# 실행 가이드
 
-## 관리자 - 테마 추가
+이 프로젝트는 Spring Boot를 기반으로 한 방탈출 예약 관리 시스템입니다.
 
-<details>
-<summary>Request</summary>
-<div markdown="1">
+## 문서 목록
 
-```
-POST /themes HTTP/1.1
-Content-Type: application/json
+| 번호 | 문서 |
+|---:|---|
+| 1 | [API 명세서](docs/API명세서.md) |
+| 2 | [ERD (Entity Relationship Diagram)](docs/ERD.md) |
 
-{
-    "name": "블루룸",
-    "description": "깊은 바닷속 미스터리를 풀어라. 60분 안에 탈출하지 못하면 영원히 갇힌다.",
-    "thumbnail": "https://via.placeholder.com/150"
-}
-```
+## 사전 요구 사항
+- Java 17 이상
+- Gradle 8.x 이상 (프로젝트에 포함된 Gradle Wrapper 사용 권장)
 
-</div>
-</details>
+## 실행 방법
 
-<details>
-<summary>Response</summary>
-<div markdown="1">
-
-```
-HTTP/1.1 200
-Content-Type: application/json
-
-{
-    "id": 1,
-    "name": "블루룸",
-    "description": "깊은 바닷속 미스터리를 풀어라. 60분 안에 탈출하지 못하면 영원히 갇힌다.",
-    "thumbnail": "https://via.placeholder.com/150"
-}
+### 1. 프로젝트 빌드
+터미널에서 프로젝트 루트 디렉토리로 이동한 후 아래 명령어를 실행합니다.
+```bash
+./gradlew build
 ```
 
-</div>
-</details>
-
-<details>
-<summary>Exception</summary>
-<div markdown="1">
-
-- [ ] 이미 존재하는 테마면 예외가 발생한다.
-    - 상태 코드: T-409-001
-    - 메시지: "이미 존재하는 테마입니다."
-
-</div>
-</details>
-
----
-
-## 관리자 - 테마 삭제
-
-<details>
-<summary>Request</summary>
-<div markdown="1">
-
-```
-DELETE /themes/{themeId} HTTP/1.1
+### 2. 애플리케이션 실행
+아래 명령어를 통해 애플리케이션을 실행할 수 있습니다.
+```bash
+./gradlew bootRun
 ```
 
-</div>
-</details>
+실행이 완료되면 `http://localhost:8080`에서 접속 가능합니다.
 
-<details>
-<summary>Response</summary>
-<div markdown="1">
+## 주요 접속 정보
+- **애플리케이션 홈**: [http://localhost:8080](http://localhost:8080)
+- **H2 콘솔 (인메모리 DB)**: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
+    - **JDBC URL**: `jdbc:h2:mem:database`
+    - **User Name**: `sa`
+    - **Password**: (공란)
 
+## 기능 테스트
+프로젝트에 포함된 테스트 코드를 실행하여 기능이 정상적으로 동작하는지 확인할 수 있습니다.
+```bash
+./gradlew test
 ```
-HTTP/1.1 204
-```
-
-</div>
-</details>
-
-<details>
-<summary>Exception</summary>
-<div markdown="1">
-
-- [ ] 존재하지 않는 테마면 예외가 발생한다.
-    - 상태 코드: T-404-002
-    - 메시지: "존재하지 않는 테마입니다."
-
-</div>
-</details>
-
----
-
-## 사용자 - 시간 목록 조회
-
-<details>
-<summary>Query Parameter</summary>
-<div markdown="1">
-
-- themeId (필수・long)
-    - 예약하고 싶은 테마의 ID 입니다.
-- date (필수・string)
-    - 예약하고 싶은 날짜 입니다.
-    - `yyyy-MM-dd` 형식입니다.
-
-</div>
-</details>
-
-<details>
-<summary>Request</summary>
-<div markdown="1">
-
-```
-GET /times?themeId=1&date=2026-05-08 HTTP/1.1
-```
-
-</div>
-</details>
-
-<details>
-<summary>Response</summary>
-<div markdown="1">
-
-```
-[
-    {
-        "timeId": 1,
-        "startAt": "14:00",
-        "isNotReserved": true
-    },
-    {
-        "timeId": 2,
-        "startAt": "15:00",
-        "isNotReserved": true
-    }
-]
-```
-
-</div>
-</details>
-
-<details>
-<summary>Exception</summary>
-<div markdown="1">
-
-- [ ] 존재하지 않는 테마면 예외가 발생한다.
-    - 상태 코드: T-404-002
-    - 메시지: "존재하지 않는 테마입니다."
-
-- [ ] 날짜 형식이 `yyyy-MM-dd`가 아니면 예외가 발생한다.
-    - 상태 코드: T-400-003
-    - 메시지: "날짜 형식이 'yyyy-MM-dd'가 아닙니다."
-
-- [ ] 지난 날짜면 예외가 발생한다.
-    - 상태 코드: T-400-004
-    - 메시지: "날짜 형식이 '지난 날짜는 예약할 수 없습니다."
-
-</div>
-</details>
-
----
-
-## 사용자 - 인기 테마 조회
-
-<details>
-<summary>Query Parameter</summary>
-<div markdown="1">
-
-- startDate (필수・string)
-    - 조회를 시작하고 싶은 날짜입니다.
-    - `yyyy-MM-dd` 형식입니다.
-- endDate (필수・string)
-    - 조회를 마치고 싶은 날짜입니다.
-    - `yyyy-MM-dd` 형식입니다.
-
-</div>
-</details>
-
-
-<details>
-<summary>Request</summary>
-<div markdown="1">
-
-```
-GET /themes?startDate=2026-05-01&endDate=2026-05-07 HTTP/1.1
-```
-
-</div>
-</details>
-
-<details>
-<summary>Response</summary>
-<div markdown="1">
-
-```
-[
-    {
-        "id": 1,
-        "name": "방탈출1",
-        "description": 방탈출 설명1,
-        "thumbnail": "https://asdfd.cfsd"
-    },
-    {
-        "id": 2,
-        "name": "방탈출2",
-        "description": 방탈출 설명2,
-        "thumbnail": "https://asdfddfad.cfsdaabe"
-    }
-]
-```
-
-</div>
-</details>
-
-<details>
-<summary>Exception</summary>
-<div markdown="1">
-
-- [ ] 날짜 형식이 `yyyy-MM-dd`가 아니면 예외가 발생한다.
-    - 상태 코드: T-400-003
-    - 메시지: "날짜 형식이 'yyyy-MM-dd'가 아닙니다."
-
-</div>
-</details>
