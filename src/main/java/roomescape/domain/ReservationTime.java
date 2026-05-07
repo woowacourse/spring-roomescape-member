@@ -2,14 +2,14 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 
+import roomescape.exception.Validator;
+
 public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
-        if (startAt == null) {
-            throw new IllegalArgumentException("예약 시간은 필수입니다.");
-        }
+        Validator.validateNotNull(startAt);
         this.id = id;
         this.startAt = startAt;
     }

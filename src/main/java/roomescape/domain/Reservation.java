@@ -2,6 +2,8 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 
+import roomescape.exception.Validator;
+
 public class Reservation {
     private final Long id;
     private final String name;
@@ -10,8 +12,13 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        this.id = id;
+        Validator.validateNotNull(name);
+        Validator.validateNotNull(date);
+        Validator.validateNotNull(time);
+        Validator.validateNotNull(theme);
         validateName(name);
+
+        this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
