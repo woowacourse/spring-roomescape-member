@@ -25,7 +25,7 @@ function setMessage(message) {
 }
 
 function renderThemeOptions() {
-  const select = document.querySelector('select[name="themeId"]');
+  const select = $("#createThemeId");
   select.innerHTML = '<option value="">테마 선택</option>';
 
   state.themes.forEach((theme) => {
@@ -84,7 +84,13 @@ async function loadThemes() {
 }
 
 async function loadReservations() {
-  const reservations = await api("/reservations");
+  const name = $("#lookupName").value.trim();
+  if (!name) {
+    renderReservations([]);
+    return;
+  }
+
+  const reservations = await api(`/reservations?name=${encodeURIComponent(name)}`);
   renderReservations(reservations);
 }
 
@@ -94,8 +100,8 @@ async function loadPopularThemes() {
 }
 
 async function loadAvailableTimes() {
-  const date = document.querySelector('input[name="date"]').value;
-  const themeId = document.querySelector('select[name="themeId"]').value;
+  const date = $("#createDate").value;
+  const themeId = $("#createThemeId").value;
 
   if (!date || !themeId) {
     setMessage("날짜와 테마를 먼저 선택해 주세요.");
@@ -115,13 +121,29 @@ $("#loadTimes").addEventListener("click", async () => {
   }
 });
 
+$("#loadReservations").addEventListener("click", async () => {
+  const name = $("#lookupName").value.trim();
+  if (!name) {
+    setMessage("예약자 이름을 입력해 주세요.");
+    renderReservations([]);
+    return;
+  }
+
+  try {
+    await loadReservations();
+    setMessage("예약 내역을 조회했습니다.");
+  } catch (error) {
+    setMessage(error.message);
+  }
+});
+
 $("#availableTimes").addEventListener("click", async (event) => {
   const button = event.target.closest("button[data-time-id]");
   if (!button) return;
 
-  const name = document.querySelector('input[name="name"]').value;
-  const date = document.querySelector('input[name="date"]').value;
-  const themeId = document.querySelector('select[name="themeId"]').value;
+  const name = $("#createName").value.trim();
+  const date = $("#createDate").value;
+  const themeId = $("#createThemeId").value;
 
   if (!name || !date || !themeId) {
     setMessage("예약자 이름, 날짜, 테마를 모두 입력해 주세요.");
@@ -140,8 +162,9 @@ $("#availableTimes").addEventListener("click", async (event) => {
     });
 
     await loadAvailableTimes();
-    await loadReservations();
     await loadPopularThemes();
+    $("#lookupName").value = name;
+    await loadReservations();
     $("#reservationSuccess").textContent =
       `예약 성공: #${created.id} / [${created.theme?.name ?? "선택 테마"}] ${created.date} ${created.time.startAt} / ${created.name}`;
     setMessage("예약이 정상적으로 완료되었습니다.");
@@ -162,7 +185,6 @@ $("#loadPopular").addEventListener("click", async () => {
 async function init() {
   try {
     await loadThemes();
-    await loadReservations();
     await loadPopularThemes();
     setMessage("초기 데이터 로딩 완료");
   } catch (error) {

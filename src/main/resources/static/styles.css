@@ -92,6 +92,7 @@ button:hover { filter: brightness(1.05); }
 .card h3 { margin: 0 0 6px; font-size: 1rem; }
 .card p { margin: 0 0 10px; color: var(--muted); font-size: 0.92rem; }
 .danger { background: var(--danger); width: 100%; }
+.reservation-delete { width: auto; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .chip { background: #0369a1; }

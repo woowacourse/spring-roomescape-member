@@ -100,7 +100,7 @@ class JdbcReservationRepositoryTest {
         reservationRepository.deleteById(saved.getId());
 
         // then
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAllByName("브라");
         assertThat(reservations).isEmpty();
     }
 
@@ -146,17 +146,16 @@ class JdbcReservationRepositoryTest {
         assertThat(themeCount).isEqualTo(1);
     }
 
-
     @Test
-    @DisplayName("모든 예약 목록을 조회한다. (Join 확인)")
-    void findAllTest() {
+    @DisplayName("모든 예약 목록을 조회한다.")
+    void findAll() {
         // given
         ReservationTime time = createTime(LocalTime.of(10, 0));
         Theme theme = createTheme("우테코", "우테코 전용 테마", "https://example.com");
 
         Reservation saved1 = saveReservation("브라운", LocalDate.of(2024, 5, 1), time, theme);
         Reservation saved2 = saveReservation("브라운", LocalDate.of(2024, 5, 2), time, theme);
-        Reservation saved3 = saveReservation("브라운", LocalDate.of(2024, 5, 3), time, theme);
+        Reservation saved3 = saveReservation("포피", LocalDate.of(2024, 5, 3), time, theme);
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
@@ -165,6 +164,26 @@ class JdbcReservationRepositoryTest {
         assertThat(reservations).hasSize(3);
         assertThat(reservations).containsExactly(saved1, saved2, saved3);
     }
+
+    @Test
+    @DisplayName("이름에 해당하는 모든 예약 목록을 조회한다.")
+    void findAllByName() {
+        // given
+        ReservationTime time = createTime(LocalTime.of(10, 0));
+        Theme theme = createTheme("우테코", "우테코 전용 테마", "https://example.com");
+
+        Reservation saved1 = saveReservation("브라운", LocalDate.of(2024, 5, 1), time, theme);
+        Reservation saved2 = saveReservation("브라운", LocalDate.of(2024, 5, 2), time, theme);
+        Reservation saved3 = saveReservation("포피", LocalDate.of(2024, 5, 3), time, theme);
+
+        // when
+        List<Reservation> reservations = reservationRepository.findAllByName("브라운");
+
+        // then
+        assertThat(reservations).hasSize(2);
+        assertThat(reservations).containsExactly(saved1, saved2);
+    }
+
 
     @Test
     @DisplayName("from과 to 사이 일정의 예약들에 대해, 상위 limit 개의 테마들을 조회한다.")

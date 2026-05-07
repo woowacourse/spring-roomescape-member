@@ -19,22 +19,30 @@
     </header>
 
     <section class="panel">
-      <h2>1) 사용자 예약</h2>
-      <form class="grid-form" id="reservationForm">
-        <input maxlength="10" name="name" placeholder="예약자 이름" required />
-        <input name="date" required type="date" />
-        <select name="themeId" required>
+      <h2>1) 예약 생성</h2>
+      <form class="grid-form" id="reservationCreateForm">
+        <input id="createName" maxlength="10" name="createName" placeholder="예약자 이름" required />
+        <input id="createDate" name="createDate" required type="date" />
+        <select id="createThemeId" name="createThemeId" required>
           <option value="">테마 선택</option>
         </select>
         <button id="loadTimes" type="button">예약 가능 시간 조회</button>
       </form>
       <div class="chips" id="availableTimes"></div>
       <div class="success-box" id="reservationSuccess"></div>
+    </section>
+
+    <section class="panel">
+      <h2>2) 내 예약 조회</h2>
+      <form class="grid-form" id="reservationLookupForm">
+        <input id="lookupName" maxlength="10" name="lookupName" placeholder="예약자 이름" required />
+        <button id="loadReservations" type="button">내 예약 조회</button>
+      </form>
       <div class="list" id="reservations"></div>
     </section>
 
     <section class="panel">
-      <h2>2) 최근 1주 인기 테마 Top 10</h2>
+      <h2>3) 최근 1주 인기 테마 Top 10</h2>
       <button class="ghost" id="loadPopular">인기 테마 새로고침</button>
       <ol class="rank-list" id="popularThemes"></ol>
     </section>

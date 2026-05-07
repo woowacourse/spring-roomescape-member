@@ -10,6 +10,8 @@ public interface ReservationRepository {
 
     void deleteById(Long id);
 
+    List<Reservation> findAllByName(String name);
+
     List<Reservation> findAll();
 
     List<PopularThemeQueryResult> findPopularThemes(LocalDate from, LocalDate to, int limit);

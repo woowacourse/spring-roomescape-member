@@ -50,7 +50,11 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<Reservation> findAllReservations() {
+    public List<Reservation> findReservationsByName(String name) {
+        return reservationRepository.findAllByName(name);
+    }
+
+    public List<Reservation> findReservations() {
         return reservationRepository.findAll();
     }
 
