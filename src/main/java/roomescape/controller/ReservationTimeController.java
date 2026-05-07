@@ -50,7 +50,11 @@ public class ReservationTimeController {
 
     @GetMapping("/times/available")
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationTime> findAvailable(@ModelAttribute AvailableTimeFindRequest request) {
-        return reservationTimeService.findAvailable(request);
+    public List<ReservationTimeResponse> findAvailable(@ModelAttribute AvailableTimeFindRequest request) {
+        List<ReservationTime> reservationTimes = reservationTimeService.findAvailable(request);
+
+        return reservationTimes.stream()
+                .map(ReservationTimeResponse::toDto)
+                .toList();
     }
 }
