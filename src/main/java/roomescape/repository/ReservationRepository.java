@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,7 +36,8 @@ public class ReservationRepository {
             INNER JOIN theme             t  ON r.theme_id = t.id
             """;
     private static final String SELECT_BY_ID = SELECT_ALL + "WHERE r.id = ?";
-    private static final String SELECT_BY_TIME_AND_THEME = SELECT_ALL + "WHERE time_id = ? AND theme_id = ?";
+    private static final String SELECT_BY_DATE_AND_TIME_AND_THEME =
+            SELECT_ALL + "WHERE r.date = ? AND r.time_id = ? AND r.theme_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -75,13 +77,10 @@ public class ReservationRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    public Optional<Reservation> findByTimeAndTheme(Long timeId, Long themeId) {
-        List<Reservation> reservations = jdbcTemplate.query(SELECT_BY_TIME_AND_THEME, RESERVATION_ROW_MAPPER, timeId,
-                themeId);
+    public Optional<Reservation> findByDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
+        List<Reservation> reservations = jdbcTemplate.query(
+                SELECT_BY_DATE_AND_TIME_AND_THEME, RESERVATION_ROW_MAPPER, date, timeId, themeId);
 
-        if (reservations.isEmpty()) {
-            return Optional.empty();
-        }
         return reservations.stream().findFirst();
     }
 }
