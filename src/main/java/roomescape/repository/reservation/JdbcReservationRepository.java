@@ -24,19 +24,19 @@ public class JdbcReservationRepository implements ReservationRepository {
         new Reservation(
             rs.getLong("reservation_id"),
             new MemberName(
-                    rs.getString("name")),
+                rs.getString("name")),
             new ReservationLocalDate(
-                    rs.getDate("res_date").toLocalDate()),
+                rs.getDate("res_date").toLocalDate()),
             new ReservationTime(
                 rs.getLong("time_id"),
                 rs.getString("time_value")),
             new Theme(
                 rs.getLong("theme_id"),
                 new ThemeName(
-                        rs.getString("theme_name")),
+                    rs.getString("theme_name")),
                 rs.getString("theme_description"),
                 new ThemeImageUrl(
-                        rs.getString("theme_image_url"))
+                    rs.getString("theme_image_url"))
             ));
 
     private final JdbcTemplate template;
@@ -84,20 +84,20 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return template.query("""
-            SELECT
-                r.id as reservation_id,
-                r.name,
-                r.res_date,
-                t.id as time_id,
-                t.start_at as time_value,
-                th.id as theme_id,
-                th.name as theme_name,
-                th.description as theme_description,
-                th.image_url as theme_image_url
-            FROM reservation as r
-            INNER JOIN reservation_time as t ON r.time_id = t.id
-            INNER JOIN theme as th ON r.theme_id = th.id
-            """,
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.res_date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.image_url as theme_image_url
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
+                """,
             RESERVATION_ROW_MAPPER
         );
     }
@@ -105,21 +105,21 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation findById(final long id) {
         return template.queryForObject("""
-            SELECT
-                r.id as reservation_id,
-                r.name,
-                r.res_date,
-                t.id as time_id,
-                t.start_at as time_value,
-                th.id as theme_id,
-                th.name as theme_name,
-                th.description as theme_description,
-                th.image_url as theme_image_url
-            FROM reservation as r
-            INNER JOIN reservation_time as t ON r.time_id = t.id
-            INNER JOIN theme as th ON r.theme_id = th.id
-            WHERE r.id = ?
-            """,
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.res_date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.image_url as theme_image_url
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
+                WHERE r.id = ?
+                """,
             RESERVATION_ROW_MAPPER,
             id);
     }
@@ -127,10 +127,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public boolean existsByTimeId(final long timeId) {
         Integer count = template.queryForObject("""
-            SELECT COUNT(1)
-            FROM reservation
-            WHERE time_id = ?
-            """,
+                SELECT COUNT(1)
+                FROM reservation
+                WHERE time_id = ?
+                """,
             Integer.class,
             timeId
         );

@@ -3,7 +3,7 @@ package roomescape.domain.vo;
 import java.time.LocalDate;
 
 public record ReservationLocalDate(
-        LocalDate value
+    LocalDate value
 ) {
 
     public static ReservationLocalDate createForSave(LocalDate date) {

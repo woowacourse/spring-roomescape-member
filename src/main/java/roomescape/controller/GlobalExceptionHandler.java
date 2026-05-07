@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import roomescape.exception.ForbiddenAccessException;
 import roomescape.exception.ErrorMessageResponse;
+import roomescape.exception.ForbiddenAccessException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

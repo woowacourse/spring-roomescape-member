@@ -1,17 +1,16 @@
 package roomescape.repository.time;
 
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-
-import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -53,28 +52,28 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         return template.query("""
-            SELECT id, start_at
-            FROM reservation_time;
-            """,
+                SELECT id, start_at
+                FROM reservation_time;
+                """,
             TIME_ROW_MAPPER);
     }
 
     @Override
     public void deleteById(final long id) {
         template.update("""
-            DELETE FROM reservation_time
-            WHERE id = ?;
-            """,
+                DELETE FROM reservation_time
+                WHERE id = ?;
+                """,
             id);
     }
 
     @Override
     public Optional<ReservationTime> findById(final long id) {
         List<ReservationTime> times = template.query("""
-            SELECT id, start_at
-            FROM reservation_time
-            WHERE id = ?;
-            """,
+                SELECT id, start_at
+                FROM reservation_time
+                WHERE id = ?;
+                """,
             TIME_ROW_MAPPER,
             id);
 
@@ -86,16 +85,16 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         String formattedDate = DATE_FORMATTER.format(date);
 
         return template.query("""
-            SELECT
-                t.id as time_id,
-                t.start_at as time_value
-            FROM reservation_time as t
-                LEFT JOIN reservation as r
-                    ON t.id = r.time_id
-                    AND r.res_date = ?
-                    AND r.theme_id = ?
-            WHERE r.id IS NULL
-            """,
+                SELECT
+                    t.id as time_id,
+                    t.start_at as time_value
+                FROM reservation_time as t
+                    LEFT JOIN reservation as r
+                        ON t.id = r.time_id
+                        AND r.res_date = ?
+                        AND r.theme_id = ?
+                WHERE r.id IS NULL
+                """,
             TIME_ROW_MAPPER,
             formattedDate,
             themeId

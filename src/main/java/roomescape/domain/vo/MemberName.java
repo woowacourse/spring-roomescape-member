@@ -1,7 +1,7 @@
 package roomescape.domain.vo;
 
 public record MemberName(
-        String value
+    String value
 ) {
 
     public MemberName {

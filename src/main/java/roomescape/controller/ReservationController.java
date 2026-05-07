@@ -1,8 +1,7 @@
 package roomescape.controller;
 
-import java.util.List;
-
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,8 +31,8 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.OK)
     public List<ReservationResponse> getReservations() {
         return reservationService.getReservations().stream()
-                .map(ReservationResponse::from)
-                .toList();
+            .map(ReservationResponse::from)
+            .toList();
     }
 
     @PostMapping

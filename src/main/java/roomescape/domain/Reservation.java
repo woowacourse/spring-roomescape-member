@@ -1,10 +1,9 @@
 package roomescape.domain;
 
-import roomescape.domain.vo.MemberName;
-import roomescape.domain.vo.ReservationLocalDate;
-
 import java.time.LocalDate;
 import java.util.Objects;
+import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.ReservationLocalDate;
 
 public class Reservation {
 
@@ -60,8 +59,12 @@ public class Reservation {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Reservation that = (Reservation) o;
         return id != null
             && Objects.equals(id, that.id);

@@ -1,7 +1,7 @@
 package roomescape.domain.vo;
 
 public record ThemeName(
-        String value
+    String value
 ) {
 
     public ThemeName {
