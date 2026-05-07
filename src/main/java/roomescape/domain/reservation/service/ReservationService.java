@@ -2,9 +2,9 @@ package roomescape.domain.reservation.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.reservation.dto.request.ReservationCreateRequestDTO;
-import roomescape.domain.reservation.dto.response.ReservationCreateResponseDTO;
-import roomescape.domain.reservation.dto.response.ReservationResponseDTO;
+import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
+import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
+import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.entity.Theme;
@@ -27,26 +27,26 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResponseDTO> getReservations() {
+    public List<ReservationResponseDto> getReservations() {
         List<Reservation> reservations = reservationRepository.findAllReservations();
-        return convertReservationsToDTO(reservations);
+        return convertReservationsToDto(reservations);
     }
 
-    private List<ReservationResponseDTO> convertReservationsToDTO(List<Reservation> reservations) {
+    private List<ReservationResponseDto> convertReservationsToDto(List<Reservation> reservations) {
         return reservations.stream()
-            .map(Reservation::toResponseDTO)
+            .map(Reservation::toResponseDto)
             .toList();
     }
 
-    public ReservationCreateResponseDTO saveReservation(ReservationCreateRequestDTO requestDTO) {
-        Reservation reservation = createReservation(requestDTO);
-        return reservationRepository.save(reservation).toCreateResponseDTO();
+    public ReservationCreateResponseDto saveReservation(ReservationCreateRequestDto requestDto) {
+        Reservation reservation = createReservation(requestDto);
+        return reservationRepository.save(reservation).toCreateResponseDto();
     }
 
-    private Reservation createReservation(ReservationCreateRequestDTO requestDTO) {
-        Time time = timeRepository.findTimeById(requestDTO.timeId());
-        Theme theme = themeRepository.findThemeById(requestDTO.themeId()).orElseThrow();
-        return Reservation.create(requestDTO.name(), requestDTO.date(), time, theme);
+    private Reservation createReservation(ReservationCreateRequestDto requestDto) {
+        Time time = timeRepository.findTimeById(requestDto.timeId());
+        Theme theme = themeRepository.findThemeById(requestDto.themeId()).orElseThrow();
+        return Reservation.create(requestDto.name(), requestDto.date(), time, theme);
     }
 
     public void deleteReservationById(Long id) {

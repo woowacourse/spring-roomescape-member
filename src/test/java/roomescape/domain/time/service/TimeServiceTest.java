@@ -15,8 +15,8 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.FakeThemeRepository;
 import roomescape.domain.theme.repository.ThemeRepository;
-import roomescape.domain.time.dto.request.TimeCreateRequestDTO;
-import roomescape.domain.time.dto.response.TimeResponseDTO;
+import roomescape.domain.time.dto.request.TimeCreateRequestDto;
+import roomescape.domain.time.dto.response.TimeResponseDto;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.FakeTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
@@ -49,14 +49,14 @@ class TimeServiceTest {
             timeRepository.save(Time.create(startAt.plusHours(2)));
 
             // when
-            List<TimeResponseDTO> actual = timeService.getTimes();
+            List<TimeResponseDto> actual = timeService.getTimes();
 
             // then
             assertAll(
                 () -> assertEquals(3, actual.size()),
-                () -> assertEquals(new TimeResponseDTO(1L, startAt), actual.get(0)),
-                () -> assertEquals(new TimeResponseDTO(2L, startAt.plusHours(1)), actual.get(1)),
-                () -> assertEquals(new TimeResponseDTO(3L, startAt.plusHours(2)), actual.get(2))
+                () -> assertEquals(new TimeResponseDto(1L, startAt), actual.get(0)),
+                () -> assertEquals(new TimeResponseDto(2L, startAt.plusHours(1)), actual.get(1)),
+                () -> assertEquals(new TimeResponseDto(3L, startAt.plusHours(2)), actual.get(2))
             );
         }
     }
@@ -68,10 +68,10 @@ class TimeServiceTest {
         void 성공() {
 
             // given
-            TimeCreateRequestDTO request = new TimeCreateRequestDTO(LocalTime.of(15, 30));
+            TimeCreateRequestDto request = new TimeCreateRequestDto(LocalTime.of(15, 30));
 
             // when
-            TimeResponseDTO actual = timeService.saveTime(request);
+            TimeResponseDto actual = timeService.saveTime(request);
 
             // then
             assertAll(
@@ -96,7 +96,7 @@ class TimeServiceTest {
             timeService.deleteTimeById(savedTime.getId());
 
             // then
-            List<TimeResponseDTO> actual = timeService.getTimes();
+            List<TimeResponseDto> actual = timeService.getTimes();
             assertAll(
                 () -> assertEquals(1, actual.size()),
                 () -> assertEquals(LocalTime.of(13, 0), actual.getFirst().startAt())
@@ -144,11 +144,11 @@ class TimeServiceTest {
 
             LocalDate date = LocalDate.of(2026, 5, 10);
             Long themeId = 1L;
-            List<TimeResponseDTO> expected = List.of(time2.toResponseDTO(), time3.toResponseDTO(),
-                time4.toResponseDTO());
+            List<TimeResponseDto> expected = List.of(time2.toResponseDto(), time3.toResponseDto(),
+                time4.toResponseDto());
 
             // when
-            List<TimeResponseDTO> actual = timeService.getAvailableTimes(date, themeId);
+            List<TimeResponseDto> actual = timeService.getAvailableTimes(date, themeId);
 
             // then
             assertThat(actual).isEqualTo(expected);

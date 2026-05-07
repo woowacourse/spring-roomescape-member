@@ -2,6 +2,6 @@ package roomescape.domain.time.dto.request;
 
 import java.time.LocalTime;
 
-public record TimeCreateRequestDTO(LocalTime startAt) {
+public record TimeCreateRequestDto(LocalTime startAt) {
 
 }

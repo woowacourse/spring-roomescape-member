@@ -14,8 +14,8 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.entity.Reservation;
-import roomescape.domain.theme.dto.request.ThemeCreatedRequestDTO;
-import roomescape.domain.theme.dto.response.ThemeResponseDTO;
+import roomescape.domain.theme.dto.request.ThemeCreatedRequestDto;
+import roomescape.domain.theme.dto.response.ThemeResponseDto;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.FakeThemeRepository;
 import roomescape.domain.time.entity.Time;
@@ -37,7 +37,7 @@ class ThemeServiceTest {
         void 성공() {
 
             // when
-            List<ThemeResponseDTO> actual = themeService.getThemes();
+            List<ThemeResponseDto> actual = themeService.getThemes();
 
             // then
             assertEquals(0, actual.size());
@@ -78,7 +78,7 @@ class ThemeServiceTest {
             themeRepository.saveAllReservations(reservations);
 
             // when
-            List<ThemeResponseDTO> actual = themeService.getPopularThemes(
+            List<ThemeResponseDto> actual = themeService.getPopularThemes(
                 LocalDate.of(2026, 5, 1),
                 LocalDate.of(2026, 5, 31),
                 10
@@ -108,14 +108,14 @@ class ThemeServiceTest {
         void 성공() {
 
             // given
-            ThemeCreatedRequestDTO request = new ThemeCreatedRequestDTO(
+            ThemeCreatedRequestDto request = new ThemeCreatedRequestDto(
                 "피온",
                 "테마 설명",
                 "https://roomescape.com/images/themes/prison-room.png"
             );
 
             // when
-            ThemeResponseDTO actual = themeService.saveTheme(request);
+            ThemeResponseDto actual = themeService.saveTheme(request);
 
             // then
             assertAll(
@@ -137,6 +137,7 @@ class ThemeServiceTest {
             themeRepository.save(Theme.create("브라운", "테마 설명", "https://roomescape.com/images/themes/prison-room.png"));
 
             // when
+            themeService.deleteThemeById(1L);
 
             // then
             List<Theme> actual = themeRepository.findAllThemes();

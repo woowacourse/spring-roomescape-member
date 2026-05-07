@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.theme.dto.request.ThemeCreatedRequestDTO;
-import roomescape.domain.theme.dto.response.ThemeResponseDTO;
+import roomescape.domain.theme.dto.request.ThemeCreatedRequestDto;
+import roomescape.domain.theme.dto.response.ThemeResponseDto;
 import roomescape.domain.theme.service.ThemeService;
 
 @RestController
@@ -27,21 +27,21 @@ public class ThemeController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<List<ThemeResponseDTO>> getThemes() {
+    public ResponseEntity<List<ThemeResponseDto>> getThemes() {
         return ResponseEntity.ok(themeService.getThemes());
     }
 
     @GetMapping("/themes/popular")
-    public ResponseEntity<List<ThemeResponseDTO>> getPopularThemes(
+    public ResponseEntity<List<ThemeResponseDto>> getPopularThemes(
         @RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam Integer limit
     ) {
         return ResponseEntity.ok(themeService.getPopularThemes(startDate, endDate, limit));
     }
 
     @PostMapping("/admin/themes")
-    public ResponseEntity<ThemeResponseDTO> saveTheme(@RequestBody ThemeCreatedRequestDTO requestDTO) {
+    public ResponseEntity<ThemeResponseDto> saveTheme(@RequestBody ThemeCreatedRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(themeService.saveTheme(requestDTO));
+            .body(themeService.saveTheme(requestDto));
     }
 
     @DeleteMapping("/admin/themes/{id}")

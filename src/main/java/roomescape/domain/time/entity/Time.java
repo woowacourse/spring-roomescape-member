@@ -2,7 +2,7 @@ package roomescape.domain.time.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
-import roomescape.domain.time.dto.response.TimeResponseDTO;
+import roomescape.domain.time.dto.response.TimeResponseDto;
 
 public class Time {
 
@@ -23,8 +23,8 @@ public class Time {
         return startAt;
     }
 
-    public TimeResponseDTO toResponseDTO() {
-        return new TimeResponseDTO(id, startAt);
+    public TimeResponseDto toResponseDto() {
+        return new TimeResponseDto(id, startAt);
     }
 
     public static Time create(LocalTime startAt) {

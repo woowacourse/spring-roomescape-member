@@ -8,9 +8,9 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.reservation.dto.request.ReservationCreateRequestDTO;
-import roomescape.domain.reservation.dto.response.ReservationCreateResponseDTO;
-import roomescape.domain.reservation.dto.response.ReservationResponseDTO;
+import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
+import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
+import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.FakeReservationRepository;
 import roomescape.domain.reservation.repository.ReservationRepository;
@@ -54,22 +54,22 @@ class ReservationServiceTest {
                 Reservation.create("티모", date.plusDays(2), Time.reconstruct(3L, LocalTime.of(12, 0)), theme));
 
             // when
-            List<ReservationResponseDTO> actual = reservationService.getReservations();
+            List<ReservationResponseDto> actual = reservationService.getReservations();
 
             // then
             assertAll(
                 () -> assertEquals(3, actual.size()),
                 () -> assertEquals(
-                    new ReservationResponseDTO(1L, "제이콥", date, time.toResponseDTO(), theme.toResponseDTO()),
+                    new ReservationResponseDto(1L, "제이콥", date, time.toResponseDto(), theme.toResponseDto()),
                     actual.get(0)),
                 () -> assertEquals(
-                    new ReservationResponseDTO(2L, "라이", date.plusDays(1),
-                        Time.reconstruct(2L, LocalTime.of(11, 0)).toResponseDTO(), theme.toResponseDTO()),
+                    new ReservationResponseDto(2L, "라이", date.plusDays(1),
+                        Time.reconstruct(2L, LocalTime.of(11, 0)).toResponseDto(), theme.toResponseDto()),
                     actual.get(1)
                 ),
                 () -> assertEquals(
-                    new ReservationResponseDTO(3L, "티모", date.plusDays(2),
-                        Time.reconstruct(3L, LocalTime.of(12, 0)).toResponseDTO(), theme.toResponseDTO()),
+                    new ReservationResponseDto(3L, "티모", date.plusDays(2),
+                        Time.reconstruct(3L, LocalTime.of(12, 0)).toResponseDto(), theme.toResponseDto()),
                     actual.get(2)
                 )
             );
@@ -83,7 +83,7 @@ class ReservationServiceTest {
         void 성공() {
 
             // given
-            ReservationCreateRequestDTO request = new ReservationCreateRequestDTO(
+            ReservationCreateRequestDto request = new ReservationCreateRequestDto(
                 "보예",
                 LocalDate.of(2026, 5, 1),
                 1L,
@@ -94,7 +94,7 @@ class ReservationServiceTest {
             timeRepository.save(Time.create(LocalTime.of(15, 30)));
 
             // when
-            ReservationCreateResponseDTO actual = reservationService.saveReservation(request);
+            ReservationCreateResponseDto actual = reservationService.saveReservation(request);
 
             // then
             assertAll(
@@ -126,7 +126,7 @@ class ReservationServiceTest {
             reservationService.deleteReservationById(savedReservation.getId());
 
             // then
-            List<ReservationResponseDTO> actual = reservationService.getReservations();
+            List<ReservationResponseDto> actual = reservationService.getReservations();
             assertAll(
                 () -> assertEquals(1, actual.size()),
                 () -> assertEquals("시오", actual.getFirst().name())

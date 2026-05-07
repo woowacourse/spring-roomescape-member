@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.time.dto.request.TimeCreateRequestDTO;
-import roomescape.domain.time.dto.response.TimeResponseDTO;
+import roomescape.domain.time.dto.request.TimeCreateRequestDto;
+import roomescape.domain.time.dto.response.TimeResponseDto;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.TimeRepository;
 
@@ -21,26 +21,26 @@ public class TimeService {
         this.timeRepository = timeRepository;
     }
 
-    public List<TimeResponseDTO> getTimes() {
+    public List<TimeResponseDto> getTimes() {
         return timeRepository.findAllTimes()
             .stream()
-            .map(Time::toResponseDTO)
+            .map(Time::toResponseDto)
             .toList();
     }
 
-    public List<TimeResponseDTO> getAvailableTimes(LocalDate date, Long themeId) {
+    public List<TimeResponseDto> getAvailableTimes(LocalDate date, Long themeId) {
         List<Long> reservedTimeIds = reservationRepository.findTimeIdsByDateAndThemeId(date, themeId);
 
         return timeRepository.findAllTimes()
             .stream()
             .filter(time -> !reservedTimeIds.contains(time.getId()))
-            .map(Time::toResponseDTO)
+            .map(Time::toResponseDto)
             .toList();
     }
 
-    public TimeResponseDTO saveTime(TimeCreateRequestDTO requestDTO) {
-        Time time = Time.create(requestDTO.startAt());
-        return timeRepository.save(time).toResponseDTO();
+    public TimeResponseDto saveTime(TimeCreateRequestDto requestDto) {
+        Time time = Time.create(requestDto.startAt());
+        return timeRepository.save(time).toResponseDto();
     }
 
     public void deleteTimeById(Long id) {

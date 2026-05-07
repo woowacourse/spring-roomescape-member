@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.time.dto.request.TimeCreateRequestDTO;
-import roomescape.domain.time.dto.response.TimeResponseDTO;
+import roomescape.domain.time.dto.request.TimeCreateRequestDto;
+import roomescape.domain.time.dto.response.TimeResponseDto;
 import roomescape.domain.time.service.TimeService;
 
 @RestController
@@ -27,12 +27,12 @@ public class TimeController {
     }
 
     @GetMapping("/admin/times")
-    public ResponseEntity<List<TimeResponseDTO>> getTimes() {
+    public ResponseEntity<List<TimeResponseDto>> getTimes() {
         return ResponseEntity.ok(timeService.getTimes());
     }
 
     @GetMapping("/times")
-    public ResponseEntity<List<TimeResponseDTO>> getAvailableTimes(
+    public ResponseEntity<List<TimeResponseDto>> getAvailableTimes(
         @RequestParam LocalDate date,
         @RequestParam Long themeId
     ) {
@@ -40,8 +40,8 @@ public class TimeController {
     }
 
     @PostMapping("/admin/times")
-    public ResponseEntity<TimeResponseDTO> saveTime(@RequestBody TimeCreateRequestDTO requestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(timeService.saveTime(requestDTO));
+    public ResponseEntity<TimeResponseDto> saveTime(@RequestBody TimeCreateRequestDto requestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(timeService.saveTime(requestDto));
     }
 
     @DeleteMapping("/admin/times/{id}")
