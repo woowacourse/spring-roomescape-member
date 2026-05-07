@@ -23,6 +23,7 @@ public class ReservationController {
     @PostMapping()
     public ResponseEntity<ReservationCreateResponseDto> saveReservation(
         @RequestBody ReservationCreateRequestDto requestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.saveReservation(requestDto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(reservationService.saveReservation(requestDto));
     }
 }

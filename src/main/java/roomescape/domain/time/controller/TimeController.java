@@ -2,6 +2,7 @@ package roomescape.domain.time.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ public class TimeController {
         @RequestParam LocalDate date,
         @RequestParam Long themeId
     ) {
-        return ResponseEntity.ok(timeService.getAvailableTimes(date, themeId));
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(timeService.getAvailableTimes(date, themeId));
     }
 }

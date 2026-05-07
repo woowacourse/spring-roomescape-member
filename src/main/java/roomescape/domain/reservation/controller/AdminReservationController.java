@@ -27,19 +27,22 @@ public class AdminReservationController {
 
     @GetMapping()
     public ResponseEntity<List<ReservationResponseDto>> getReservations() {
-        return ResponseEntity.ok(reservationService.getReservations());
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(reservationService.getReservations());
     }
 
     @PostMapping()
     public ResponseEntity<ReservationCreateResponseDto> saveReservation(
         @RequestBody ReservationCreateRequestDto requestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.saveReservation(requestDto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(reservationService.saveReservation(requestDto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservationById(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .build();
     }
 
 }

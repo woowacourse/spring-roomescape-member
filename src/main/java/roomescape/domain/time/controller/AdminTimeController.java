@@ -26,18 +26,21 @@ public class AdminTimeController {
 
     @GetMapping()
     public ResponseEntity<List<TimeResponseDto>> getTimes() {
-        return ResponseEntity.ok(timeService.getTimes());
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(timeService.getTimes());
     }
 
     @PostMapping()
     public ResponseEntity<TimeResponseDto> saveTime(@RequestBody TimeCreateRequestDto requestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(timeService.saveTime(requestDto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(timeService.saveTime(requestDto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
         timeService.deleteTimeById(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .build();
     }
 
 }

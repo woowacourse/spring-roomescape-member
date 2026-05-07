@@ -2,6 +2,7 @@ package roomescape.domain.theme.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,13 +23,15 @@ public class ThemeController {
 
     @GetMapping()
     public ResponseEntity<List<ThemeResponseDto>> getThemes() {
-        return ResponseEntity.ok(themeService.getThemes());
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(themeService.getThemes());
     }
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponseDto>> getPopularThemes(
         @RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam Integer limit
     ) {
-        return ResponseEntity.ok(themeService.getPopularThemes(startDate, endDate, limit));
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(themeService.getPopularThemes(startDate, endDate, limit));
     }
 }
