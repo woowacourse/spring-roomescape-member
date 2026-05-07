@@ -28,7 +28,7 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse addReservationTime(CreateResrvationTimeRequest request) {
-        CreateReservationTimeParams params = new CreateReservationTimeParams(request.getStartAt());
+        CreateReservationTimeParams params = new CreateReservationTimeParams(request.startAt());
         ReservationTime savedReservationTime = reservationTimeRepository.save(params);
 
         return ReservationTimeResponse.from(savedReservationTime);

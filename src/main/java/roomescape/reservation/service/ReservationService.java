@@ -33,9 +33,9 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse reserve(CreateReservationRequest request) {
-        validateReservationAvailable(request.getDate(), request.getTimeId(), request.getThemeId());
-        CreateReservationParams params = new CreateReservationParams(request.getName(), request.getDate(),
-                request.getTimeId(), request.getThemeId());
+        validateReservationAvailable(request.date(), request.timeId(), request.themeId());
+        CreateReservationParams params = new CreateReservationParams(request.name(), request.date(),
+                request.timeId(), request.themeId());
         Reservation reservation = reservationRepository.save(params);
 
         return ReservationResponse.from(reservation);
