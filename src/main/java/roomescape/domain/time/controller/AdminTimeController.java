@@ -40,5 +40,4 @@ public class AdminTimeController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-
 }
