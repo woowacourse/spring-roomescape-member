@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.entity.Theme;
 import roomescape.entity.ThemeSortType;
 
@@ -34,6 +35,7 @@ class ThemeJdbcTemplateRepositoryTest {
 
     @Test
     @DisplayName("테마를 잘 저장한다")
+    @Sql(scripts = "/sql/cleanup.sql")
     void save_success() {
         // given
         Theme theme = Theme.createWithNullId(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
@@ -50,24 +52,26 @@ class ThemeJdbcTemplateRepositoryTest {
 
     @Test
     @DisplayName("아이디를 기반으로 테마를 찾는다")
+    @Sql(scripts = {
+            "/sql/cleanup.sql",
+            "/sql/infrastructure/theme/find-by-id-fixtures.sql"
+    })
     void findById_success() {
-        // given
-        Theme theme = Theme.createWithNullId(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
-        Theme savedTheme = themeRepository.save(theme);
-
         // when
-        Optional<Theme> foundTheme = themeRepository.findById(savedTheme.id());
+        Optional<Theme> foundTheme = themeRepository.findById(1L);
 
         // then
-        Assertions.assertEquals(savedTheme.id(), foundTheme.get().id());
+        Assertions.assertTrue(foundTheme.isPresent());
+        Assertions.assertEquals(1L, foundTheme.get().id());
+        Assertions.assertEquals(TEST_THEMA_NAME, foundTheme.get().name());
     }
 
     @Test
     @DisplayName("아이디를 기반으로 테마를 찾는다 - 없어도 오류가 발생하지 않는다. - Optional<Empty> 반환")
+    @Sql(scripts = "/sql/cleanup.sql")
     void findById_success_even_if_no_theme() {
         // when
-        Long notExistThemeId = 999L;
-        Optional<Theme> foundTheme = themeRepository.findById(notExistThemeId);
+        Optional<Theme> foundTheme = themeRepository.findById(999L);
 
         // then
         assertTrue(foundTheme.isEmpty());
@@ -75,13 +79,11 @@ class ThemeJdbcTemplateRepositoryTest {
 
     @Test
     @DisplayName("모든 테마를 가져온다")
+    @Sql(scripts = {
+            "/sql/cleanup.sql",
+            "/sql/infrastructure/theme/find-all-fixtures.sql"
+    })
     void findAll_success() {
-        // given
-        Theme theme1 = Theme.createWithNullId(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
-        Theme theme2 = Theme.createWithNullId(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
-        themeRepository.save(theme1);
-        themeRepository.save(theme2);
-
         // when
         List<Theme> result = themeRepository.findAll();
 
@@ -91,6 +93,7 @@ class ThemeJdbcTemplateRepositoryTest {
 
     @Test
     @DisplayName("모든 테마를 가져온다 - 없는 경우에는 빈 리스트 반환")
+    @Sql(scripts = "/sql/cleanup.sql")
     void findAll_success_even_if_no_theme() {
         // when
         List<Theme> result = themeRepository.findAll();
@@ -101,62 +104,37 @@ class ThemeJdbcTemplateRepositoryTest {
 
     @Test
     @DisplayName("아이디를 기반으로 테마를 삭제한다")
+    @Sql(scripts = {
+            "/sql/cleanup.sql",
+            "/sql/infrastructure/theme/delete-fixtures.sql"
+    })
     void deleteById_success() {
-        // given
-        Theme theme = Theme.createWithNullId(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
-        Theme savedTheme = themeRepository.save(theme);
-
         // when
-        themeRepository.deleteById(savedTheme.id());
+        themeRepository.deleteById(1L);
 
         // then
-        Optional<Theme> result = themeRepository.findById(savedTheme.id());
-        Assertions.assertFalse(result.isPresent());
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM theme WHERE id = 1", Integer.class);
+        Assertions.assertEquals(0, count);
     }
 
     @Test
     @DisplayName("없는 ID 기반으로 테마를 삭제해도 오류가 발생하지 않는다")
+    @Sql(scripts = "/sql/cleanup.sql")
     void deleteById_success_even_if_no_theme() {
-        // when
-        Long notExistThemeId = 999L;
-        themeRepository.deleteById(notExistThemeId);
-
-        // then
+        // when & then
         Assertions.assertDoesNotThrow(
-                () -> themeRepository.deleteById(notExistThemeId)
+                () -> themeRepository.deleteById(999L)
         );
     }
 
     @Test
     @DisplayName("기간 내 예약 수가 많은 테마를 상위 N개 조회한다")
+    @Sql(scripts = {
+            "/sql/cleanup.sql",
+            "/sql/infrastructure/theme/find-top-n-fixtures.sql"
+    })
     void findTopNByPeriod_success() {
-        // given
-        Theme theme1 = themeRepository.save(
-                Theme.createWithNullId("인기 테마", "설명1", "thumb1")
-        );
-        Theme theme2 = themeRepository.save(
-                Theme.createWithNullId("덜 인기 테마", "설명2", "thumb2")
-        );
-
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 1L, "10:00");
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 2L, "11:00");
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 3L, "12:00");
-
-        jdbcTemplate.update("""
-            INSERT INTO reservation (name, date, time_id, theme_id)
-            VALUES (?, ?, ?, ?)
-            """, "예약자1", LocalDate.of(2026, 5, 1), 1L, theme1.id());
-
-        jdbcTemplate.update("""
-            INSERT INTO reservation (name, date, time_id, theme_id)
-            VALUES (?, ?, ?, ?)
-            """, "예약자2", LocalDate.of(2026, 5, 2), 2L, theme1.id());
-
-        jdbcTemplate.update("""
-            INSERT INTO reservation (name, date, time_id, theme_id)
-            VALUES (?, ?, ?, ?)
-            """, "예약자3", LocalDate.of(2026, 5, 3), 3L, theme2.id());
-
         // when
         List<Theme> result = themeRepository.findTopNByPeriod(
                 LocalDate.of(2026, 5, 1),
@@ -167,7 +145,7 @@ class ThemeJdbcTemplateRepositoryTest {
 
         // then
         Assertions.assertEquals(2, result.size());
-        Assertions.assertEquals(theme1.id(), result.get(0).id());
-        Assertions.assertEquals(theme2.id(), result.get(1).id());
+        Assertions.assertEquals(1L, result.get(0).id());
+        Assertions.assertEquals(2L, result.get(1).id());
     }
 }

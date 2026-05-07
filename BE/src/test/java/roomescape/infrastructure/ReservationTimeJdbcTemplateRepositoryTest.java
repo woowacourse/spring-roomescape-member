@@ -1,6 +1,5 @@
 package roomescape.infrastructure;
 
-
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.entity.ReservationTime;
 
 @JdbcTest
@@ -17,92 +18,82 @@ import roomescape.entity.ReservationTime;
 class ReservationTimeJdbcTemplateRepositoryTest {
 
     private final ReservationTimeJdbcTemplateRepository timeRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    ReservationTimeJdbcTemplateRepositoryTest(ReservationTimeJdbcTemplateRepository timeRepository) {
+    ReservationTimeJdbcTemplateRepositoryTest(ReservationTimeJdbcTemplateRepository timeRepository,
+                                              JdbcTemplate jdbcTemplate) {
         this.timeRepository = timeRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Test
     @DisplayName("시간 저장을 잘 한다")
+    @Sql(scripts = "/sql/cleanup.sql")
     void save_success() {
-        //given
-        ReservationTime testReservationTime = ReservationTime.createWithNullId(
-                LocalTime.now()
-        );
+        // given
+        ReservationTime testReservationTime = ReservationTime.createWithNullId(LocalTime.of(10, 0));
 
-        //when
+        // when
         ReservationTime result = timeRepository.save(testReservationTime);
 
-        //then
+        // then
         Assertions.assertNotNull(result.id());
     }
 
     @Test
     @DisplayName("id에 맞는 시간이 존재하면 id 로 잘 찾아온다.")
+    @Sql(scripts = {
+            "/sql/cleanup.sql",
+            "/sql/infrastructure/time/find-by-id-fixtures.sql"
+    })
     void findById_success() {
-        //given
-        ReservationTime time1 = ReservationTime.createWithNullId(LocalTime.of(12, 0));
-        ReservationTime time2 = ReservationTime.createWithNullId(LocalTime.of(13, 0));
-        timeRepository.save(time1);
-        ReservationTime saved2 = timeRepository.save(time2);
+        // when
+        Optional<ReservationTime> result = timeRepository.findById(2L);
 
-        //when
-        Optional<ReservationTime> result = timeRepository.findById(saved2.id());
-
-        //then
+        // then
         Assertions.assertTrue(result.isPresent());
-
-        LocalTime foundTime = result.get().startAt();
-        Assertions.assertEquals(foundTime, saved2.startAt());
+        Assertions.assertEquals(LocalTime.of(13, 0), result.get().startAt());
     }
 
     @Test
     @DisplayName("id에 맞는 시간이 존재하지 않으면, Optional empty를 반환한다.")
+    @Sql(scripts = "/sql/cleanup.sql")
     void findById_success_but_return_empty_value() {
-        //when
-        long notExistTimeId = 999L;
-        Optional<ReservationTime> result = timeRepository.findById(notExistTimeId);
+        // when
+        Optional<ReservationTime> result = timeRepository.findById(999L);
 
-        //then
+        // then
         Assertions.assertTrue(result.isEmpty());
     }
 
     @Test
     @DisplayName("저장되어 있는 모든 시간을 잘 가져온다")
+    @Sql(scripts = {
+            "/sql/cleanup.sql",
+            "/sql/infrastructure/time/find-all-fixtures.sql"
+    })
     void findAll_success() {
-        //given
-        ReservationTime time1 = ReservationTime.createWithNullId(LocalTime.of(11, 0));
-        ReservationTime time2 = ReservationTime.createWithNullId(LocalTime.of(12, 0));
-        ReservationTime time3 = ReservationTime.createWithNullId(LocalTime.of(13, 0));
-
-        timeRepository.save(time1);
-        timeRepository.save(time2);
-        timeRepository.save(time3);
-
-        //when
+        // when
         List<ReservationTime> result = timeRepository.findAll();
 
-        //then
+        // then
         Assertions.assertEquals(3, result.size());
     }
 
     @Test
     @DisplayName("삭제를 id 기반으로 잘 한다")
+    @Sql(scripts = {
+            "/sql/cleanup.sql",
+            "/sql/infrastructure/time/delete-fixtures.sql"
+    })
     void deleteById_success() {
-        //given
-        ReservationTime time = ReservationTime.createWithNullId(LocalTime.of(11, 0));
-        ReservationTime saved = timeRepository.save(time);
+        // when
+        timeRepository.deleteById(1L);
 
-        //when
-        Long deleteTargetId = saved.id();
-        timeRepository.deleteById(deleteTargetId);
-
-        //then
-        Optional<ReservationTime> deleteTargetFindResult = timeRepository.findAll()
-                .stream()
-                .filter(reservationTime -> reservationTime.id().equals(deleteTargetId))
-                .findAny();
-        Assertions.assertTrue(deleteTargetFindResult.isEmpty());
+        // then
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation_time WHERE id = 1", Integer.class);
+        Assertions.assertEquals(0, count);
     }
 }
