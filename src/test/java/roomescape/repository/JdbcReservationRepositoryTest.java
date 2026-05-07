@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 class JdbcReservationRepositoryTest {
 
     private ReservationRepository reservationRepository;
