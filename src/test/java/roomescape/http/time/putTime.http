@@ -1,4 +1,4 @@
-POST localhost:8080/timeSlots HTTP/1.1
+POST localhost:8080/times HTTP/1.1
 Content-Type: application/json
 
 {

@@ -1,2 +1,0 @@
-DELETE http://localhost:8080/timeSlots/1
-Content-Type: application/json
