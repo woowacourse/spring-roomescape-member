@@ -1,136 +1,127 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Elements
   const themeList = document.getElementById('theme-list');
-  const themeForm = document.getElementById('theme-form');
   const timeList = document.getElementById('time-list');
-  const timeForm = document.getElementById('time-form');
   const reservationList = document.getElementById('reservation-list');
+  const filterThemeSelect = document.getElementById('filter-theme');
+  const filterTimeSelect = document.getElementById('filter-time');
+  
+  let allReservations = []; // To store reservations for filtering
 
-  // Load Initial Data
   loadThemes();
   loadTimes();
   loadReservations();
 
-  // --- THEME MANAGEMENT ---
   function loadThemes() {
-    fetch('/themes')
-      .then(res => res.json())
-      .then(data => {
-        themeList.innerHTML = '';
-        data.forEach(theme => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${theme.id}</td>
-            <td><strong>${theme.name}</strong></td>
-            <td>${theme.description}</td>
-            <td><button class="btn-danger" onclick="deleteTheme(${theme.id})">삭제</button></td>
-          `;
-          themeList.appendChild(tr);
-        });
+    fetch('/themes').then(r => r.json()).then(data => {
+      themeList.innerHTML = '';
+      filterThemeSelect.innerHTML = '<option value="">모든 테마</option>';
+      data.forEach(t => {
+        themeList.innerHTML += `<tr>
+          <td>${t.id}</td><td>${t.name}</td><td>${t.description}</td>
+          <td><button class="btn-danger" onclick="deleteTheme(${t.id})">삭제</button></td>
+        </tr>`;
+        filterThemeSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
       });
+    });
   }
 
-  themeForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const payload = {
-      name: document.getElementById('theme-name').value,
-      description: document.getElementById('theme-desc').value,
-      thumbnail: document.getElementById('theme-thumb').value
-    };
-
-    fetch('/admin/themes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }).then(res => {
-      if(res.ok) {
-        document.getElementById('theme-name').value = '';
-        document.getElementById('theme-desc').value = '';
-        document.getElementById('theme-thumb').value = '';
-        loadThemes();
-      } else {
-        alert('테마 추가 실패');
-      }
-    });
-  });
-
-  window.deleteTheme = function(id) {
-    if(!confirm('정말 삭제하시겠습니까? 관련 예약이 있으면 삭제되지 않을 수 있습니다.')) return;
-    fetch(`/admin/themes/${id}`, { method: 'DELETE' })
-      .then(() => loadThemes())
-      .catch(() => alert('삭제 실패'));
-  };
-
-  // --- TIME MANAGEMENT ---
   function loadTimes() {
-    fetch('/admin/times')
-      .then(res => res.json())
-      .then(data => {
-        timeList.innerHTML = '';
-        data.forEach(time => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${time.id}</td>
-            <td><strong>${time.startAt}</strong></td>
-            <td><button class="btn-danger" onclick="deleteTime(${time.id})">삭제</button></td>
-          `;
-          timeList.appendChild(tr);
-        });
+    fetch('/admin/times').then(r => r.json()).then(data => {
+      timeList.innerHTML = '';
+      filterTimeSelect.innerHTML = '<option value="">모든 시간</option>';
+      data.forEach(t => {
+        timeList.innerHTML += `<tr>
+          <td>${t.id}</td><td>${t.startAt}</td>
+          <td><button class="btn-danger" onclick="deleteTime(${t.id})">삭제</button></td>
+        </tr>`;
+        filterTimeSelect.innerHTML += `<option value="${t.id}">${t.startAt}</option>`;
       });
+    });
   }
 
-  timeForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const payload = {
-      startAt: document.getElementById('time-val').value
-    };
-
-    fetch('/admin/times', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }).then(res => {
-      if(res.ok) {
-        document.getElementById('time-val').value = '';
-        loadTimes();
-      } else {
-        alert('시간 추가 실패');
-      }
+  function loadReservations() {
+    fetch('/reservations').then(r => r.json()).then(data => {
+      allReservations = data;
+      renderReservations();
     });
+  }
+
+  function renderReservations() {
+    const fName = document.getElementById('filter-name').value.toLowerCase();
+    const fDate = document.getElementById('filter-date').value;
+    const fTheme = document.getElementById('filter-theme').value;
+    const fTime = document.getElementById('filter-time').value;
+
+    const filtered = allReservations.filter(r => {
+      if (fName && !r.name.toLowerCase().includes(fName)) return false;
+      if (fDate && r.date !== fDate) return false;
+      if (fTheme && r.theme && r.theme.id.toString() !== fTheme) return false;
+      if (fTime && r.time && r.time.id.toString() !== fTime) return false;
+      return true;
+    });
+
+    reservationList.innerHTML = '';
+    if (filtered.length === 0) {
+      reservationList.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">검색 결과가 없습니다.</td></tr>';
+      return;
+    }
+    
+    filtered.forEach(r => {
+      reservationList.innerHTML += `<tr>
+        <td>${r.id}</td><td>${r.name}</td><td>${r.date}</td>
+        <td>${r.time ? r.time.startAt : ''}</td><td>${r.theme ? r.theme.name : ''}</td>
+        <td><button class="btn-danger" onclick="deleteRes(${r.id})">취소</button></td>
+      </tr>`;
+    });
+  }
+
+  // Bind filter events
+  ['filter-name', 'filter-date', 'filter-theme', 'filter-time'].forEach(id => {
+    document.getElementById(id).addEventListener('input', renderReservations);
   });
 
-  window.deleteTime = function(id) {
-    if(!confirm('정말 삭제하시겠습니까? 관련 예약이 있으면 삭제되지 않을 수 있습니다.')) return;
-    fetch(`/admin/times/${id}`, { method: 'DELETE' })
-      .then(() => loadTimes())
-      .catch(() => alert('삭제 실패'));
+  document.getElementById('theme-form').onsubmit = async (e) => {
+    e.preventDefault();
+    const res = await fetch('/admin/themes', {
+      method: 'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        name: document.getElementById('theme-name').value,
+        description: document.getElementById('theme-desc').value,
+        thumbnail: document.getElementById('theme-thumb').value
+      })
+    });
+    if(!res.ok) alert(await res.text());
+    else { e.target.reset(); loadThemes(); }
   };
 
-  // --- RESERVATION MANAGEMENT ---
-  function loadReservations() {
-    fetch('/reservations')
-      .then(res => res.json())
-      .then(data => {
-        reservationList.innerHTML = '';
-        data.forEach(res => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${res.id}</td>
-            <td><strong>${res.name}</strong></td>
-            <td>${res.date}</td>
-            <td>${res.time ? res.time.startAt : ''}</td>
-            <td>${res.theme ? res.theme.name : ''}</td>
-            <td><button class="btn-danger" onclick="deleteReservation(${res.id})">취소</button></td>
-          `;
-          reservationList.appendChild(tr);
-        });
-      });
-  }
+  document.getElementById('time-form').onsubmit = async (e) => {
+    e.preventDefault();
+    const res = await fetch('/admin/times', {
+      method: 'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({startAt: document.getElementById('time-val').value})
+    });
+    if(!res.ok) alert(await res.text());
+    else { e.target.reset(); loadTimes(); }
+  };
 
-  window.deleteReservation = function(id) {
-    if(!confirm('정말 예약을 취소하시겠습니까?')) return;
-    fetch(`/admin/reservations/${id}`, { method: 'DELETE' })
-      .then(() => loadReservations())
-      .catch(() => alert('취소 실패'));
+  window.deleteTheme = async (id) => {
+    if(!confirm('해당 테마를 삭제하시겠습니까?')) return;
+    const res = await fetch(`/admin/themes/${id}`, {method: 'DELETE'});
+    if(!res.ok) alert(await res.text());
+    else loadThemes();
+  };
+
+  window.deleteTime = async (id) => {
+    if(!confirm('해당 시간을 삭제하시겠습니까?')) return;
+    const res = await fetch(`/admin/times/${id}`, {method: 'DELETE'});
+    if(!res.ok) alert(await res.text());
+    else loadTimes();
+  };
+
+  window.deleteRes = async (id) => {
+    if(!confirm('해당 예약을 취소하시겠습니까?')) return;
+    const res = await fetch(`/admin/reservations/${id}`, {method: 'DELETE'});
+    if(!res.ok) alert(await res.text());
+    else loadReservations();
   };
 });

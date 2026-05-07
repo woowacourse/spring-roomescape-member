@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>방탈출 관리자</title>
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?v=3">
 </head>
 <body>
   <div class="container">
     <header>
       <a href="/" class="logo">⚙️ RoomEscape Admin</a>
       <nav class="nav-links">
-        <a href="/">사용자 화면</a>
+        <a href="/">홈</a>
+        <a href="/reservation.html">예약하기</a>
         <a href="/admin.html" class="active">관리자 모드</a>
       </nav>
     </header>
@@ -19,34 +20,41 @@
     <!-- Theme Management -->
     <section class="glass-card">
       <h2 class="section-title">🎭 테마 관리</h2>
-      <form id="theme-form" class="flex-row" style="margin-bottom: 1.5rem;">
-        <div class="form-group" style="flex:1.5; margin-bottom: 0;">
-          <label class="form-label">테마명</label>
-          <input type="text" id="theme-name" class="form-control" placeholder="예: 공포의 방" required>
-        </div>
-        <div class="form-group" style="flex:2; margin-bottom: 0;">
-          <label class="form-label">설명</label>
-          <input type="text" id="theme-desc" class="form-control" placeholder="테마 설명" required>
-        </div>
-        <div class="form-group" style="flex:2; margin-bottom: 0;">
-          <label class="form-label">썸네일 URL</label>
-          <input type="url" id="theme-thumb" class="form-control" placeholder="https://..." required>
-        </div>
-        <div style="padding-bottom: 2px;">
-          <button type="submit" class="btn-primary" style="padding: 0.8rem 1.5rem; width: auto;">추가</button>
-        </div>
+      <form id="theme-form" class="flex-row" style="margin-bottom: 15px;">
+        <input type="text" id="theme-name" class="form-control" placeholder="테마명" required>
+        <input type="text" id="theme-desc" class="form-control" placeholder="설명" required>
+        <input type="url" id="theme-thumb" class="form-control" placeholder="썸네일 URL" required>
+        <button type="submit" class="btn-primary" style="width: auto; padding: 0.8rem 1.5rem;">추가</button>
       </form>
       <div style="overflow-x: auto;">
         <table class="admin-table">
           <thead>
-            <tr>
-              <th>ID</th>
-              <th>테마명</th>
-              <th>설명</th>
-              <th style="width: 80px;">작업</th>
-            </tr>
+            <tr><th>ID</th><th>이름</th><th>설명</th><th style="width:80px">작업</th></tr>
           </thead>
           <tbody id="theme-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Reservation Management -->
+    <section class="glass-card">
+      <h2 class="section-title">📋 예약 관리</h2>
+      <!-- Reservation form removed to simplify UI as requested -->
+      
+      <!-- Search Filters -->
+      <div class="filter-group flex-row" style="margin-bottom: 15px; padding: 10px; background: rgba(0, 88, 255, 0.05); border-radius: 8px;">
+        <input type="text" id="filter-name" class="form-control" placeholder="🔍 예약자명 검색">
+        <input type="date" id="filter-date" class="form-control">
+        <select id="filter-theme" class="form-control"><option value="">모든 테마</option></select>
+        <select id="filter-time" class="form-control"><option value="">모든 시간</option></select>
+      </div>
+      
+      <div style="overflow-x: auto;">
+        <table class="admin-table">
+          <thead>
+            <tr><th>ID</th><th>예약자</th><th>날짜</th><th>시간</th><th>테마</th><th style="width:80px">작업</th></tr>
+          </thead>
+          <tbody id="reservation-list"></tbody>
         </table>
       </div>
     </section>
@@ -54,50 +62,20 @@
     <!-- Time Management -->
     <section class="glass-card">
       <h2 class="section-title">⏰ 예약 시간 관리</h2>
-      <form id="time-form" class="flex-row" style="margin-bottom: 1.5rem;">
-        <div class="form-group" style="flex:1; max-width: 200px; margin-bottom: 0;">
-          <label class="form-label">예약 시간 (HH:mm)</label>
-          <input type="time" id="time-val" class="form-control" required>
-        </div>
-        <div style="padding-bottom: 2px;">
-          <button type="submit" class="btn-primary" style="padding: 0.8rem 1.5rem; width: auto;">추가</button>
-        </div>
+      <form id="time-form" class="flex-row" style="margin-bottom: 15px;">
+        <input type="time" id="time-val" class="form-control" required>
+        <button type="submit" class="btn-primary" style="width: auto; padding: 0.8rem 1.5rem;">추가</button>
       </form>
       <div style="overflow-x: auto;">
         <table class="admin-table">
           <thead>
-            <tr>
-              <th>ID</th>
-              <th>시간</th>
-              <th style="width: 80px;">작업</th>
-            </tr>
+            <tr><th>ID</th><th>시작 시간</th><th style="width:80px">작업</th></tr>
           </thead>
           <tbody id="time-list"></tbody>
         </table>
       </div>
     </section>
-
-    <!-- Reservation Management -->
-    <section class="glass-card">
-      <h2 class="section-title">📋 전체 예약 내역 관리</h2>
-      <div style="overflow-x: auto;">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>예약자명</th>
-              <th>날짜</th>
-              <th>시간</th>
-              <th>테마</th>
-              <th style="width: 80px;">작업</th>
-            </tr>
-          </thead>
-          <tbody id="reservation-list"></tbody>
-        </table>
-      </div>
-    </section>
-
   </div>
-  <script src="/admin.js"></script>
+  <script src="/admin.js?v=3"></script>
 </body>
 </html>

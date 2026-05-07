@@ -3,58 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>방탈출 예약</title>
-  <link rel="stylesheet" href="/style.css">
+  <title>방탈출 예약 홈</title>
+  <link rel="stylesheet" href="/style.css?v=3">
 </head>
 <body>
   <div class="container">
     <header>
-      <a href="/" class="logo">🚪 RoomEscape</a>
+      <a href="/" class="logo">RoomEscape</a>
       <nav class="nav-links">
-        <a href="/" class="active">예약하기</a>
+        <a href="/" class="active">홈</a>
+        <a href="/reservation.html">예약하기</a>
         <a href="/admin.html">관리자 모드</a>
       </nav>
     </header>
 
+    <!-- Popular Themes -->
     <section class="glass-card">
-      <h2 class="section-title">🏆 이번 주 인기 테마 Top 10</h2>
-      <div id="popular-themes-container" class="popular-themes">
-        <div class="empty-state">인기 테마를 불러오는 중입니다...</div>
-      </div>
+      <h2 class="section-title">🔥 이번 주 인기 테마</h2>
+      <div id="popular-themes-container" class="themes-grid"></div>
     </section>
 
+    <!-- All Themes -->
     <section class="glass-card">
-      <h2 class="section-title">📅 예약하기</h2>
-      <form id="reservation-form">
-        <div class="form-group">
-          <label class="form-label">1. 예약 날짜 선택</label>
-          <input type="date" id="date-input" class="form-control" required>
-        </div>
-
-        <div class="form-group" id="theme-section" style="display:none;">
-          <label class="form-label">2. 테마 선택</label>
-          <div id="theme-select-container" class="theme-select-grid">
-            <!-- Themes will be injected here -->
-          </div>
-        </div>
-
-        <div class="form-group" id="time-section" style="display:none;">
-          <label class="form-label">3. 예약 시간 선택</label>
-          <div id="time-select-container" class="time-grid">
-            <!-- Times will be injected here -->
-          </div>
-          <p id="time-empty-msg" class="empty-state" style="display:none;">선택하신 날짜와 테마에 예약 가능한 시간이 없습니다.</p>
-        </div>
-
-        <div class="form-group" id="name-section" style="display:none;">
-          <label class="form-label">4. 예약자 이름</label>
-          <input type="text" id="name-input" class="form-control" placeholder="이름을 입력하세요 (2~10자)" minlength="2" maxlength="10" required>
-        </div>
-
-        <button type="submit" id="submit-btn" class="btn-primary" disabled>예약 완료하기</button>
-      </form>
+      <h2 class="section-title">🎭 전체 테마</h2>
+      <div id="all-themes-container" class="themes-grid"></div>
     </section>
   </div>
-  <script src="/app.js"></script>
+  <script src="/app.js?v=3"></script>
 </body>
 </html>
