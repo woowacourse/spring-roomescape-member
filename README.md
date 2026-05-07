@@ -42,8 +42,8 @@
 
 - 규칙때문에 바뀐점.
 - 관리자와 사용자의 구분을 하지 않았었다.
-- Get은 사용자와 관리자 같이 사용가능하고 Post와 Delete는 관리자에게만 하도록 URL 에서 admin/을 따로 주었다.
-
+- Get은 사용자와 관리자 같이 사용가능하고 Post와 Delete는 관리자에게만 하도록 URL 에서 /admin을 따로 주었다.
+- 단, 사용자가 예약을 생성해야하므로 post/reservations는 /admin을 포함하지 않는다.
 
 ## 기능 구현 목록
 
@@ -52,7 +52,7 @@
 - [x] API 명세 작성
 
  ```
-    테마 조회	GET /themes	        —	                     [{id, name, description, thumbnail}]
+    테마 조회	GET /themes	        —	                     [{id, name, description, thumbnail}...]
     테마 추가	POST /admin/themes	   {name, description, thumbnail}    {id, name, description, thumbnail}
     테마 삭제	DELETE /admin/themes/{id}	—	                     200 OK
 ```
@@ -72,7 +72,7 @@
 #### 2단계 - 사용자 예약
 - [x] API 명세 작성
  ```
-    예약 가능 시간 조회    GET /themes/1/reservation-times?date=2026-05-08         -        [{id, startAt, available}]
+    예약 가능 시간 조회    GET /themes/1/reservation-times?date=2026-05-08         -        [{id, startAt, available}...]
 ```
 - [x] 예약 가능한 시간인 ReservationTimeStatusResponse Dto 구현
 - [x] ReservationDao에서 사용자가 선택한 날짜와 테마에 해당하는 예약시간Id를 가져오는 메서드 구현
@@ -84,7 +84,7 @@
 #### 3단계 - 인기 테마 조회
 - [x] API 명세 작성
  ```
-    예약 가능 시간 조회    GET /themes/popular             -             [{id, name, description, thumbnail, reservationCount}]
+    예약 가능 시간 조회    GET /themes/popular             -             [{id, name, description, thumbnail, reservationCount}...]
 ```
 - [x] 인기 테마 조회 응답 dto 구현
 - [x] 인기 테마 도메인 구현
