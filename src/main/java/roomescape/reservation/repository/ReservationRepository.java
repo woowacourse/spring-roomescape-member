@@ -25,7 +25,7 @@ public class ReservationRepository {
         return reservationDao.selectAll().stream()
                 .map(reservation ->
                         ReservationMapper.toReservation(reservation,
-                                reservationTimeDao.getByID(reservation.getTimeId()),
+                                reservationTimeDao.getById(reservation.getTimeId()),
                                 themeDao.getById(reservation.getThemeId()))
                 ).toList();
     }
@@ -33,7 +33,7 @@ public class ReservationRepository {
     public Reservation save(CreateReservationParams params) {
         Long id = reservationDao.insert(params.name(), params.date(), params.timeId(), params.themeId());
         ReservationEntity reservationEntity = new ReservationEntity(id, params.name(), params.date(), params.timeId(), params.themeId());
-        ReservationTimeEntity reservationTimeEntity = reservationTimeDao.getByID(params.timeId());
+        ReservationTimeEntity reservationTimeEntity = reservationTimeDao.getById(params.timeId());
         ThemeEntity themeEntity = themeDao.getById(params.themeId());
         return ReservationMapper.toReservation(reservationEntity, reservationTimeEntity, themeEntity);
     }
