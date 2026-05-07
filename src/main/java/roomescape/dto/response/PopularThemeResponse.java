@@ -1,7 +1,7 @@
 package roomescape.dto.response;
 
 import java.util.List;
-import roomescape.dto.PopularTheme;
+import roomescape.dto.PopularThemeProjection;
 
 public record PopularThemeResponse(
         Long id,
@@ -11,16 +11,16 @@ public record PopularThemeResponse(
         Long rank,
         Long reservationCount
 ) {
-    public static List<PopularThemeResponse> toDto(List<PopularTheme> popularThemes) {
-        return popularThemes.stream()
+    public static List<PopularThemeResponse> toDto(List<PopularThemeProjection> popularThemeProjections) {
+        return popularThemeProjections.stream()
                 .map(
-                        popularTheme -> new PopularThemeResponse(
-                                popularTheme.id(),
-                                popularTheme.name(),
-                                popularTheme.description(),
-                                popularTheme.imgUrl(),
-                                popularTheme.rank(),
-                                popularTheme.reservationCount()
+                        popularThemeProjection -> new PopularThemeResponse(
+                                popularThemeProjection.id(),
+                                popularThemeProjection.name(),
+                                popularThemeProjection.description(),
+                                popularThemeProjection.imgUrl(),
+                                popularThemeProjection.rank(),
+                                popularThemeProjection.reservationCount()
                         )
                 ).toList();
     }

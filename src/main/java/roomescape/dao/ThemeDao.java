@@ -9,7 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.dto.PopularTheme;
+import roomescape.dto.PopularThemeProjection;
 
 @Repository
 public class ThemeDao {
@@ -26,8 +26,8 @@ public class ThemeDao {
         return theme;
     };
 
-    private RowMapper<PopularTheme> popularThemeRowMapper = (resultSet, rowNum) -> {
-        PopularTheme popularTheme = new PopularTheme(
+    private RowMapper<PopularThemeProjection> popularThemeRowMapper = (resultSet, rowNum) -> {
+        PopularThemeProjection popularThemeProjection = new PopularThemeProjection(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
@@ -35,7 +35,7 @@ public class ThemeDao {
                 resultSet.getLong("theme_rank"),
                 resultSet.getLong("reservation_count")
         );
-        return popularTheme;
+        return popularThemeProjection;
     };
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
@@ -76,7 +76,7 @@ public class ThemeDao {
         return jdbcTemplate.update("delete from theme where id = ?", id);
     }
 
-    public List<PopularTheme> findPopularThemes(LocalDate from, LocalDate to) {
+    public List<PopularThemeProjection> findPopularThemes(LocalDate from, LocalDate to) {
         String sql = """
                 SELECT
                     ranked.theme_rank,
@@ -101,8 +101,9 @@ public class ThemeDao {
                 WHERE ranked.theme_rank <= 10
                 ORDER BY ranked.theme_rank;
                 """;
-        List<PopularTheme> popularThemes = jdbcTemplate.query(sql, popularThemeRowMapper, from.toString(),
+        List<PopularThemeProjection> popularThemeProjections = jdbcTemplate.query(sql, popularThemeRowMapper,
+                from.toString(),
                 to.toString());
-        return popularThemes;
+        return popularThemeProjections;
     }
 }

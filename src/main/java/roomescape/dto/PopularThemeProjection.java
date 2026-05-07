@@ -1,6 +1,6 @@
 package roomescape.dto;
 
-public record PopularTheme(
+public record PopularThemeProjection(
         Long id,
         String name,
         String description,
