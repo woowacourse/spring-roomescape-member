@@ -16,6 +16,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException exception) {
         ErrorCode errorCode = exception.getErrorCode();
 
+        log.warn("비즈니스 예외가 발생했습니다. errorCode={}, message={}", errorCode, exception.getMessage());
+
         return ResponseEntity.status(errorCode.getStatus())
                 .body(ErrorResponse.of(errorCode, exception.getMessage()));
     }
@@ -24,15 +26,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
             DataIntegrityViolationException exception
     ) {
-        log.warn(exception.getMessage());
-        ErrorCode errorCode = ErrorCode.DATA_INTEGRITY_VIOLATION;
+        ErrorCode errorCode = ErrorCode.DATA_CONFLICT;
+
+        log.warn("데이터 충돌 예외가 발생했습니다. errorCode={}", errorCode, exception);
+
         return ResponseEntity.status(errorCode.getStatus())
                 .body(ErrorResponse.of(errorCode, errorCode.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception exception) {
-        log.warn(exception.getMessage());
+    public ResponseEntity<Void> handleException(Exception exception) {
+        log.error("예상하지 못한 서버 예외가 발생했습니다.", exception);
+
         return ResponseEntity.internalServerError().build();
     }
 }

@@ -44,9 +44,9 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "해당 id의 ReservationTime이 존재하지 않습니다. timeId=" + request.timeId()));
 
-        // TODO: 예외 처리는 사이클 2에서 진행
         Theme theme = themeRepository.findById(request.themeId())
-                .get();
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "해당 id에 해당하는 theme가 존재하지 않습니다. themeId=" + request.themeId()));
 
         Reservation reservation = new Reservation(
                 request.username(),
