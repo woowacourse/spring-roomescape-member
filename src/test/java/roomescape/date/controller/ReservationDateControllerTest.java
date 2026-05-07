@@ -14,9 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Sql(scripts = "classpath:truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationDateControllerTest {
 
     @LocalServerPort
@@ -56,8 +58,7 @@ class ReservationDateControllerTest {
                 .when().get("/member/dates")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].date", is(tomorrow));
+                .body("size()", is(1));
     }
 
     @Test

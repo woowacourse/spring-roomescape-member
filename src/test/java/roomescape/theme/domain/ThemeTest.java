@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class ThemeTest {
     private final String name = "공포";
     private final String description = "테마 설명";
-    private final String defaultThumbnailUrl = "dommy-url";
+    private final String defaultThumbnailUrl = "DEFAULT_THUMBNAIL_URL";
 
     @Test
     @DisplayName("테마 이름이 null이면 예외가 발생한다.")

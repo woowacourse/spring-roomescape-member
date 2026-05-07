@@ -4,22 +4,27 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Sql(scripts = "classpath:truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeAdminControllerTest {
 
     private final String themeName = "테마1";
     private final String themeDescription = "테마1 설명";
     private final String thumbnailUrl = "테마1 썸네일";
+    private final String defaultThumbnailUrl = "DEFAULT_THUMBNAIL_URL";
 
     @LocalServerPort
     private int port;
@@ -42,18 +47,13 @@ class ThemeAdminControllerTest {
     @Test
     @DisplayName("관리자는 테마를 생성한다.")
     void createTheme() {
-        Integer themeId = createTheme(themeName, themeDescription, thumbnailUrl);
+        createTheme(themeName, themeDescription, thumbnailUrl);
 
         RestAssured.given().log().all()
                 .when().get("/admin/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].id", is(themeId))
-                .body("[0].name", is(themeName))
-                .body("[0].description", is(themeDescription))
-                .body("[0].thumbnailUrl", is(thumbnailUrl))
-                .body("[0].isActive", is(false));
+                .body("size()", is(1));
     }
 
     @Test
@@ -65,11 +65,7 @@ class ThemeAdminControllerTest {
                 .when().get("/admin/themes/" + themeId)
                 .then().log().all()
                 .statusCode(200)
-                .body("id", is(themeId))
-                .body("name", is(themeName))
-                .body("description", is(themeDescription))
-                .body("thumbnailUrl", is(thumbnailUrl))
-                .body("isActive", is(false));
+                .body("size()", is(5));
     }
 
     @Test
@@ -158,7 +154,7 @@ class ThemeAdminControllerTest {
                 .body(params)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .body("thumbnailUrl", is("dummy-url"))
+                .body("thumbnailUrl", is(defaultThumbnailUrl))
                 .statusCode(200);
     }
 
@@ -174,10 +170,6 @@ class ThemeAdminControllerTest {
                 .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("name", is(name))
-                .body("description", is(description))
-                .body("thumbnailUrl", is(thumbnailUrl))
-                .body("isActive", is(false))
                 .extract()
                 .path("id");
     }

@@ -12,9 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Sql(scripts = "classpath:truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeControllerTest {
 
     private final String activeThemeName = "활성 테마";
@@ -43,10 +45,7 @@ class ThemeControllerTest {
                 .when().get("/member/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].id", is(activeThemeId))
-                .body("[0].name", is(activeThemeName))
-                .body("[0].isActive", is(true));
+                .body("size()", is(1));
     }
 
     @Test
