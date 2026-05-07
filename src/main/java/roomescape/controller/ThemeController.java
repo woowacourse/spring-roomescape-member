@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -29,15 +30,12 @@ public class ThemeController {
         return themeService.getAllThemes();
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping(params = "condition")
-    public List<ThemeResponse> getThemesByCondition(
-            @RequestParam String condition,
+    @ResponseStatus
+    @GetMapping("/popular")
+    public List<ThemeResponse> getPopularThemes(
             @RequestParam(defaultValue = "10") int size) {
-        if (!condition.equals("popular")){
-            throw new IllegalArgumentException("Invalid condition: " + condition);
-        }
-        return themeService.getPopularThemes( size);
+        LocalDate today = LocalDate.now();
+        return themeService.getPopularThemes(today, size);
     }
 
     @ResponseStatus(HttpStatus.OK)
