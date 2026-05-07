@@ -164,11 +164,10 @@ GET /times?themeId=1&date=2026-05-08 HTTP/1.1
 <summary>Query Parameter</summary>
 <div markdown="1">
 
-- startDate (필수・string)
-    - 조회를 시작하고 싶은 날짜입니다.
-    - `yyyy-MM-dd` 형식입니다.
-- endDate (필수・string)
-    - 조회를 마치고 싶은 날짜입니다.
+- baseDate (필수・string)
+    - 인기 테마 집계의 기준 날짜입니다.
+    - 해당 날짜는 집계에 포함하지 않습니다.
+    - 기준 날짜의 전날부터 최근 7일간의 예약 데이터를 집계합니다.
     - `yyyy-MM-dd` 형식입니다.
 
 </div>
@@ -180,7 +179,7 @@ GET /times?themeId=1&date=2026-05-08 HTTP/1.1
 <div markdown="1">
 
 ```
-GET /themes?startDate=2026-05-01&endDate=2026-05-07 HTTP/1.1
+GET /themes?baseDate=2026-05-01 HTTP/1.1
 ```
 
 </div>

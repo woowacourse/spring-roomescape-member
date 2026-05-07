@@ -10,7 +10,8 @@ import roomescape.dto.response.ThemeResponse;
 
 @Service
 public class ThemeService {
-    private static final int DATE_DIFFERENCE = 7;
+    private static final int POPULAR_THEME_PERIOD_DAYS = 7;
+    private static final int BASE_DATE_EXCLUDED_DAYS = 1;
 
     private final ThemeDao themeDao;
 
@@ -37,8 +38,9 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> getPopularThemes(LocalDate endDate) {
-        LocalDate startDate = endDate.minusDays(DATE_DIFFERENCE);
+    public List<ThemeResponse> getPopularThemes(LocalDate baseDate) {
+        LocalDate startDate = baseDate.minusDays(POPULAR_THEME_PERIOD_DAYS);
+        LocalDate endDate = baseDate.minusDays(BASE_DATE_EXCLUDED_DAYS);
         List<Theme> popularThemes = themeDao.selectPopularThemesByPeriod(startDate, endDate);
         return popularThemes.stream()
                 .map(ThemeResponse::from)
