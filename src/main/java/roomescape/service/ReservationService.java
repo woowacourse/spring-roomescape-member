@@ -7,7 +7,6 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.dto.ReservationRequest;
-import roomescape.dto.AdminReservationResponse;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;

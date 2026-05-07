@@ -16,7 +16,6 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
-
     public List<ThemeResponse> getPopularThemes(int size) {
         LocalDate today = LocalDate.now();
         LocalDate endDate = today.minusDays(1);

@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,7 +12,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.dto.AvailableReservationTimeResponse;
-import roomescape.dto.SearchRequest;
 
 @Repository
 public class ThemeDao {
@@ -28,7 +28,7 @@ public class ThemeDao {
     private final RowMapper<AvailableReservationTimeResponse> availableReservationTimeRowMapper =
             (rs, rowNum) -> new AvailableReservationTimeResponse(
                     rs.getLong("id"),
-                    rs.getString("start_at"),
+                    rs.getObject("start_at", LocalTime.class),
                     rs.getBoolean("available")
             );
 
