@@ -2,14 +2,13 @@ package roomescape.controller;
 
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationTimeResponseDTO;
 import roomescape.service.ReservationTimeService;
 
-@Controller
+@RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
 
@@ -20,7 +19,6 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    @ResponseBody
     public ResponseEntity<List<ReservationTimeResponseDTO>> readReservationTime() {
         return ResponseEntity.ok(reservationTimeService.findAllReservationTime());
     }
