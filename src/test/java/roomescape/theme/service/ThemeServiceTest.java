@@ -92,7 +92,6 @@ class ThemeServiceTest {
                 .isEqualTo(themes);
     }
 
-
     @Test
     @DisplayName("테마를 1개 등록하면 테마 데이터 수가 1 증가한다.")
     void register() {
@@ -126,7 +125,6 @@ class ThemeServiceTest {
                 .isEqualTo(themeService.readTheme(registeredTheme.id()));
     }
 
-
     @Test
     @DisplayName("테마를 활성화한다.")
     void updateStatus_active() {
@@ -140,7 +138,6 @@ class ThemeServiceTest {
         assertThat(themeRepository.findById(savedTheme.id()).get().isActive())
                 .isTrue();
     }
-
 
     @Test
     @DisplayName("테마를 비활성화한다.")

@@ -10,7 +10,7 @@ class ThemeTest {
     private static final String DEFAULT_THUMBNAIL_URL = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80";
     private final String name = "공포";
     private final String description = "테마 설명";
-    private final String defaultThumbnailUrl = "dommy-url";
+    private final String emptyThumbnailUrl = "";
 
     @Test
     @DisplayName("테마 이름이 null이면 예외가 발생한다.")
@@ -19,7 +19,7 @@ class ThemeTest {
         String nullName = null;
 
         // when & then
-        assertThatThrownBy(() -> Theme.create(nullName, description, defaultThumbnailUrl))
+        assertThatThrownBy(() -> Theme.create(nullName, description, emptyThumbnailUrl))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("테마 이름은 필수입니다.");
     }
@@ -31,7 +31,7 @@ class ThemeTest {
         String emptyName = "";
 
         // when & then
-        assertThatThrownBy(() -> Theme.create(emptyName, description, defaultThumbnailUrl))
+        assertThatThrownBy(() -> Theme.create(emptyName, description, emptyThumbnailUrl))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("테마 이름은 필수입니다.");
     }
@@ -43,7 +43,7 @@ class ThemeTest {
         String nullDescription = null;
 
         // when & then
-        assertThatThrownBy(() -> Theme.create(name, nullDescription, defaultThumbnailUrl))
+        assertThatThrownBy(() -> Theme.create(name, nullDescription, emptyThumbnailUrl))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("테마 설명은 필수입니다.");
     }
@@ -55,7 +55,7 @@ class ThemeTest {
         String emptyDescription = "";
 
         // when & then
-        assertThatThrownBy(() -> Theme.create(name, emptyDescription, defaultThumbnailUrl))
+        assertThatThrownBy(() -> Theme.create(name, emptyDescription, emptyThumbnailUrl))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("테마 설명은 필수입니다.");
     }
@@ -75,14 +75,48 @@ class ThemeTest {
     @Test
     @DisplayName("테마 썸네일 URL이 비어있으면 디폴트 썸네일로 변환된다.")
     void create_empty_thumbnailUrl() {
-        // given
-        String emptyThumbnailUrl = "";
-
-        // when
+        // given & when
         Theme theme = Theme.create(name, description, emptyThumbnailUrl);
 
         //then
         assertThat(theme.thumbnailUrl())
                 .isEqualTo(DEFAULT_THUMBNAIL_URL);
+    }
+
+    @Test
+    @DisplayName("테마를 생성하면 디폴트로 비활성화 상태이다.")
+    void create_default_status_false(){
+        // given
+        Theme theme = Theme.create(name, description, emptyThumbnailUrl);
+
+        // when & then
+        assertThat(theme.isActive()).isFalse();
+    }
+
+    @Test
+    @DisplayName("테마를 활성화 상태로 바꾼다.")
+    void updateStatus_false_to_true(){
+        // given
+        Theme theme = Theme.create(name, description, emptyThumbnailUrl);
+
+        // when
+        theme.updateStatus(true);
+
+        // then
+        assertThat(theme.isActive()).isTrue();
+    }
+
+    @Test
+    @DisplayName("테마를 비활성화 상태로 바꾼다.")
+    void updateStatus_true_to_false(){
+        // given
+        Theme theme = Theme.create(name, description, emptyThumbnailUrl);
+        theme.updateStatus(true);
+
+        // when
+        theme.updateStatus(false);
+
+        // then
+        assertThat(theme.isActive()).isFalse();
     }
 }
