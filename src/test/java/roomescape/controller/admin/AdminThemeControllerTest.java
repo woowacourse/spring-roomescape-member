@@ -2,13 +2,10 @@ package roomescape.controller.admin;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.web.multipart.MultipartFile;
 import roomescape.controller.ReservationController;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -28,12 +25,12 @@ class AdminThemeControllerTest {
                 .multiPart("name", name)
                 .multiPart("description", description)
                 .multiPart("file", "test.png", fileContent, "image/png")
-                .when().post("/admin/theme")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().delete("/admin/theme/16")
+                .when().delete("/admin/themes/16")
                 .then().log().all()
                 .statusCode(204);
     }

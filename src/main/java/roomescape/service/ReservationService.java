@@ -23,8 +23,12 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public List<Reservation> findAll() {
-        return reservationDao.findAll();
+    public List<ReservationResponse> findAll() {
+        List<Reservation> reservations = reservationDao.findAll();
+
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     public ReservationResponse save(ReservationRequest request) {
