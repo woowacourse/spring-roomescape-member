@@ -12,7 +12,7 @@ public record ThemeResponseDto(
     public static ThemeResponseDto from(Theme theme) {
         return new ThemeResponseDto(
             theme.getId(),
-            theme.getName(),
+            theme.getNameValue(),
             theme.getDescription(),
             theme.getImageUrl()
         );

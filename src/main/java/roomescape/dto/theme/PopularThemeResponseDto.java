@@ -14,7 +14,7 @@ public record PopularThemeResponseDto(
         return new PopularThemeResponseDto(
             theme.getId(),
             rank,
-            theme.getName(),
+            theme.getNameValue(),
             theme.getDescription(),
             theme.getImageUrl());
     }

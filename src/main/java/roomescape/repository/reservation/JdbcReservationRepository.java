@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.ThemeName;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -27,7 +28,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 rs.getString("time_value")),
             new Theme(
                 rs.getLong("theme_id"),
-                rs.getString("theme_name"),
+                new ThemeName(rs.getString("theme_name")),
                 rs.getString("theme_description"),
                 rs.getString("theme_image_url"))
         );

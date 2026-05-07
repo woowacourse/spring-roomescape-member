@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import roomescape.domain.vo.ThemeName;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -29,7 +30,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         template.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, theme.getName());
+            ps.setString(1, theme.getNameValue());
             ps.setString(2, theme.getDescription());
             ps.setString(3, theme.getImageUrl());
             return ps;
@@ -90,7 +91,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         return (rs, rowNum) ->
                 new Theme(
                         rs.getLong("id"),
-                        rs.getString("name"),
+                        new ThemeName(rs.getString("name")),
                         rs.getString("description"),
                         rs.getString("image_url"));
     }
