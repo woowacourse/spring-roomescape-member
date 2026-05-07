@@ -43,6 +43,32 @@ class ThemeControllerTest {
     }
 
     @Test
+    void 관리자는_테마를_추가할_수_있다() {
+        // given
+        ThemeRequest request = themeRequestDtoFrom(theme());
+
+        Theme savedTheme = theme().withId(1L);
+        when(themeService.addTheme(any()))
+            .thenReturn(savedTheme);
+
+        // when
+        Response response = RestAssured
+            .given().log().all()
+            .queryParam("role", "admin")
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/themes");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.CREATED.value());
+
+        ResourceIdResponse responseDto = response.as(ResourceIdResponse.class);
+        assertThat(responseDto).isEqualTo(new ResourceIdResponse(savedTheme.getId()));
+    }
+
+    @Test
     void 모든_테마를_조회한다() {
         // given
         List<Theme> themes = List.of(
@@ -93,32 +119,6 @@ class ThemeControllerTest {
         PopularThemesResponse actualResponse = response.as(new TypeRef<>() {
         });
         assertThat(actualResponse).isEqualTo(expectedResponse);
-    }
-
-    @Test
-    void 관리자는_테마를_추가할_수_있다() {
-        // given
-        ThemeRequest request = themeRequestDtoFrom(theme());
-
-        Theme savedTheme = theme().withId(1L);
-        when(themeService.addTheme(any()))
-            .thenReturn(savedTheme);
-
-        // when
-        Response response = RestAssured
-            .given().log().all()
-            .queryParam("role", "admin")
-            .contentType(ContentType.JSON)
-            .body(request)
-            .when().post("/themes");
-
-        // then
-        response
-            .then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        ResourceIdResponse responseDto = response.as(ResourceIdResponse.class);
-        assertThat(responseDto).isEqualTo(new ResourceIdResponse(savedTheme.getId()));
     }
 
     @Test

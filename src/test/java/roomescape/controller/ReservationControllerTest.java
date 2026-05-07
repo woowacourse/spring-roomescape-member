@@ -22,7 +22,6 @@ import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.dto.reservationTime.ReservationTimeResponse;
 import roomescape.service.ReservationService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -68,20 +67,6 @@ class ReservationControllerTest {
     }
 
     @Test
-    void 예약을_삭제한다() {
-        // given & when
-        Response response = RestAssured
-            .given().log().all()
-            .pathParam("id", 1)
-            .when().delete("/reservations/{id}");
-
-        // then
-        response
-            .then()
-            .statusCode(HttpStatus.NO_CONTENT.value());
-    }
-
-    @Test
     void 모든_예약을_조회한다() {
         // given
         Reservation reservation = reservation();
@@ -109,6 +94,20 @@ class ReservationControllerTest {
         });
         assertThat(actualResponse).hasSize(3);
         assertThat(actualResponse).containsExactlyElementsOf(expectedResponse);
+    }
+
+    @Test
+    void 예약을_삭제한다() {
+        // given & when
+        Response response = RestAssured
+            .given().log().all()
+            .pathParam("id", 1)
+            .when().delete("/reservations/{id}");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     private Reservation reservation() {

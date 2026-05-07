@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -25,7 +24,6 @@ import roomescape.dto.reservationTime.AvailableReservationTimesResponse;
 import roomescape.dto.reservationTime.ReservationTimeRequest;
 import roomescape.dto.reservationTime.ReservationTimeResponse;
 import roomescape.service.ReservationService;
-import roomescape.service.ThemeService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeControllerTest {
@@ -39,6 +37,31 @@ class ReservationTimeControllerTest {
     @BeforeEach
     void setPort() {
         RestAssured.port = port;
+    }
+
+    @Test
+    void 관리자는_예약_시간을_추가할_수_있다() {
+        // given
+        ReservationTime newTime = reservationTime();
+        ReservationTimeRequest request = requestDtoFrom(newTime);
+        when(reservationService.addReservationTime(any()))
+            .thenReturn(newTime);
+
+        // when
+        Response response = RestAssured
+            .given().log().all()
+            .queryParam("role", "admin")
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/times");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.CREATED.value());
+
+        ResourceIdResponse responseDto = response.as(ResourceIdResponse.class);
+        assertThat(responseDto).isEqualTo(new ResourceIdResponse(newTime.getId()));
     }
 
     @Test
@@ -68,31 +91,6 @@ class ReservationTimeControllerTest {
         List<ReservationTimeResponse> actualResponse = response.as(new TypeRef<>() {
         });
         assertThat(actualResponse).containsExactlyElementsOf(expectedResponse);
-    }
-
-    @Test
-    void 관리자는_예약_시간을_추가할_수_있다() {
-        // given
-        ReservationTime newTime = reservationTime();
-        ReservationTimeRequest request = requestDtoFrom(newTime);
-        when(reservationService.addReservationTime(any()))
-            .thenReturn(newTime);
-
-        // when
-        Response response = RestAssured
-            .given().log().all()
-            .queryParam("role", "admin")
-            .contentType(ContentType.JSON)
-            .body(request)
-            .when().post("/times");
-
-        // then
-        response
-            .then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        ResourceIdResponse responseDto = response.as(ResourceIdResponse.class);
-        assertThat(responseDto).isEqualTo(new ResourceIdResponse(newTime.getId()));
     }
 
     @Test
