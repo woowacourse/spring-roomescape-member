@@ -12,7 +12,7 @@
 ## 목차
 
 - [API 명세서](#api-명세서)
-  - [예약 생성](#예약-생성)
+  - [관리자 예약 생성](#관리자-예약-생성)
   - [관리자 예약 조회](#관리자-예약-조회)
   - [관리자 예약 삭제](#관리자-예약-삭제)
   - [관리자 시간 조회](#관리자-시간-조회)
@@ -20,6 +20,7 @@
   - [관리자 시간 삭제](#관리자-시간-삭제)
   - [관리자 테마 추가](#관리자-테마-추가)
   - [관리자 테마 삭제](#관리자-테마-삭제)
+  - [사용자 예약 생성](#사용자-예약-생성)
   - [사용자 테마 조회](#사용자-테마-조회)
   - [사용자 예약 가능한 시간 조회](#사용자-예약-가능한-시간-조회)
   - [사용자 예약 생성](#사용자-예약-생성)
@@ -37,12 +38,12 @@
 
 ## API 명세서
 
-### 예약 생성
+### 관리자 예약 생성
 
 #### URL
 
 ```http
-POST /api/reservations
+POST /api/admin/reservations
 ```
 
 #### Query Parameters
@@ -312,6 +313,43 @@ DELETE /api/admin/themes/{id}
 
 없음
 
+### 사용자 예약 생성
+
+#### URL
+
+```http
+POST /api/reservations
+```
+
+#### Query Parameters
+
+없음
+
+#### Request Body
+
+```json
+{
+  "name": "브라운",
+  "date": "2026-05-12",
+  "timeId": 1,
+  "themeId": 1
+}
+```
+
+#### Response Body
+
+##### 200 OK
+
+```json
+{
+  "id": 1,
+  "name": "브라운",
+  "date": "2026-05-12",
+  "timeId": 1,
+  "themeId": 1
+}
+```
+
 ### 사용자 테마 조회
 
 #### URL
@@ -385,42 +423,6 @@ GET /api/times?date={date}&themeId={themeId}
 ]
 ```
 
-### 사용자 예약 생성
-
-#### URL
-
-```http
-POST /api/reservations
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-```json
-{
-  "name": "브라운",
-  "date": "2026-05-12",
-  "timeId": 1,
-  "themeId": 1
-}
-```
-
-#### Response Body
-
-##### 200 OK
-
-```json
-{
-  "id": 1,
-  "name": "브라운",
-  "date": "2026-05-12",
-  "timeId": 1,
-  "themeId": 1
-}
-```
 
 ### 사용자 인기 테마 조회
 
