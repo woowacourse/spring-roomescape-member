@@ -2,6 +2,7 @@ package roomescape.domain.time.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class Time {
 
@@ -28,5 +29,19 @@ public class Time {
 
     public static Time reconstruct(Long id, LocalTime startAt) {
         return new Time(id, startAt);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Time time = (Time) o;
+        return Objects.equals(id, time.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

@@ -1,5 +1,7 @@
 package roomescape.domain.theme.entity;
 
+import java.util.Objects;
+
 public class Theme {
 
     private final Long id;
@@ -37,5 +39,19 @@ public class Theme {
 
     public static Theme reconstruct(Long id, String name, String description, String imageUrl) {
         return new Theme(id, name, description, imageUrl);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Theme theme = (Theme) o;
+        return Objects.equals(id, theme.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
