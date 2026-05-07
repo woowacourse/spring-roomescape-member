@@ -1,5 +1,9 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,25 +15,20 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.NoSuchElementException;
-
 @Repository
 @RequiredArgsConstructor
 public class ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Reservation> rowMapper = (rs, rowNum) -> {
-        Theme theme = Theme.create(
+        Theme theme = Theme.of(
                 rs.getLong("theme_id"),
                 rs.getString("theme_name"),
                 rs.getString("thumbnail_url"),
                 rs.getString("theme_description")
         );
 
-        ReservationTime reservationTime = ReservationTime.create(
+        ReservationTime reservationTime = ReservationTime.of(
                 rs.getLong("time_id"),
                 rs.getObject("time_value", LocalTime.class)
         );

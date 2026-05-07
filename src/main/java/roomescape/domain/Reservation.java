@@ -1,8 +1,7 @@
 package roomescape.domain;
 
-import lombok.RequiredArgsConstructor;
-
 import java.time.LocalDate;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class Reservation {
@@ -21,6 +20,10 @@ public class Reservation {
         return new Reservation(id, username, date, time, theme);
     }
 
+    public long id() {
+        return id;
+    }
+
     public String username() {
         return username;
     }
@@ -35,9 +38,5 @@ public class Reservation {
 
     public Theme reservationTheme() {
         return reservationTheme;
-    }
-
-    public long id() {
-        return id;
     }
 }

@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -52,5 +51,3 @@ public class ThemeProvideTest {
                 .body("[9].name", is("폐광"));
     }
 }
-
-

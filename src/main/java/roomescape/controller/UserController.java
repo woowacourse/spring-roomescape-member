@@ -50,7 +50,7 @@ public class UserController {
             @RequestParam("date") LocalDate today,
             @RequestParam("limit") int limit) {
 
-        LocalDate startAt = today.minusWeeks(1L);
+        LocalDate startAt = today.minusWeeks(1);
         LocalDate endAt = today.minusDays(1);
 
         List<ThemeResponse> popularThemesBy = themeQueryService.findPopularThemesBy(startAt, endAt, limit);

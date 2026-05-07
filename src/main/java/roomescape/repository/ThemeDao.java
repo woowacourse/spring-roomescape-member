@@ -1,6 +1,8 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,28 +11,35 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-
-import java.util.List;
-import java.util.NoSuchElementException;
+import roomescape.domain.ThemeStatus;
 
 @Repository
 @RequiredArgsConstructor
 public class ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Theme> rowMapper = (rs, rowNum) -> Theme.create(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("thumbnail_url"),
-            rs.getString("description")
-    );
+    private final RowMapper<Theme> rowMapper = (rs, rowNum) -> {
+
+        Theme theme = Theme.of(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("thumbnail_url"),
+                rs.getString("description")
+        );
+
+        if (rs.getString("status").equals(ThemeStatus.DELETED.toString())) {
+            return theme.deleted();
+        }
+
+        return theme;
+    };
 
     public Theme save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.name())
                 .addValue("thumbnail_url", theme.thumbnailUrl())
-                .addValue("description", theme.description());
-
+                .addValue("description", theme.description())
+                .addValue("status", ThemeStatus.AVAILABLE.toString());
 
         SimpleJdbcInsert themeInsertExecutor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
@@ -38,15 +47,16 @@ public class ThemeDao {
 
         Number themeId = themeInsertExecutor.executeAndReturnKey(params);
 
-        String sql = """
-                SELECT * FROM theme WHERE theme.id = ?
-                """;
-
-        return jdbcTemplate.queryForObject(sql, rowMapper, themeId.longValue());
+        return Theme.of(
+                themeId.longValue(),
+                theme.name(),
+                theme.thumbnailUrl(),
+                theme.description()
+        );
     }
 
     public void delete(long themeId) {
-        String sql = "DELETE FROM theme WHERE id = ?";
+        String sql = "UPDATE theme SET status = 'DELETED' WHERE id = ?";
         int affected = jdbcTemplate.update(sql, themeId);
 
         if(affected == 0) {
@@ -69,16 +79,22 @@ public class ThemeDao {
                     theme.name, 
                     theme.thumbnail_url, 
                     theme.description,
+                    theme.status,
                     COUNT(reservation.id) as count
                 FROM reservation
                 INNER JOIN theme ON reservation.theme_id = theme.id
-                WHERE reservation.date BETWEEN ? AND ?
-                GROUP BY theme.id
+                WHERE (reservation.date BETWEEN ? AND ?)
+                    AND theme.status = ?
+                GROUP BY 
+                    theme.id,
+                    theme.name,
+                    theme.thumbnail_url,
+                    theme.description,
+                    theme.status
                 ORDER BY COUNT(reservation.id) DESC
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper, startAt, endAt, limit);
-
+        return jdbcTemplate.query(sql, rowMapper, startAt, endAt, ThemeStatus.AVAILABLE.toString(), limit);
     }
 }
