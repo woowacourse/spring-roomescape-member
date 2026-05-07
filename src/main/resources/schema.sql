@@ -30,4 +30,5 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
 
-ADD CONSTRAINT unique_reservation UNIQUE (date, time_id, theme_id);
+ALTER TABLE reservation
+    ADD CONSTRAINT unique_reservation UNIQUE (date, time_id, theme_id);
