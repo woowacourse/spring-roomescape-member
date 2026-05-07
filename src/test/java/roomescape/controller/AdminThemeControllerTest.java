@@ -34,11 +34,18 @@ public class AdminThemeControllerTest {
         themeParams.put("description", "다함께 탈출해요 방탈출.");
         themeParams.put("thumbnail", "https://asdfsdf.sdfs");
 
-        RestAssured.given().log().all()
+        int themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParams)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/" + themeId)
+                .then().log().all()
+                .statusCode(204);
     }
 }
