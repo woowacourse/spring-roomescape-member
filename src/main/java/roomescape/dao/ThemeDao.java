@@ -91,7 +91,7 @@ public class ThemeDao {
     }
 
     public void delete(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+        jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 
     public List<ReservationTime> findAvailableTime(Long id, String date) {
