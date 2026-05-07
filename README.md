@@ -95,7 +95,7 @@
 #### 3단계 - 인기 테마 조회
 - [x] API 명세 작성
  ```
-    예약 가능 시간 조회    GET /themes/popular             -             [{id, name, description, thumbnail, reservationCount}...]
+    인기 테마 조회    GET /themes/popular             -             [{id, name, description, thumbnail, reservationCount}...]
 ```
 - [x] 인기 테마 조회 응답 dto 구현
 - [x] 인기 테마 도메인 구현
