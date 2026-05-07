@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -40,12 +41,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("image_url")
-                )
+                getThemeRowMapper()
         );
     }
 
@@ -59,13 +55,24 @@ public class JdbcThemeRepository implements ThemeRepository {
         String sql = "select id, name, description, image_url from theme where id=?";
         List<Theme> themes = jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("image_url")
-                ),
+                getThemeRowMapper(),
                 id
+        );
+        return themes.stream()
+                .findFirst();
+    }
+
+    @Override
+    public void delete(Long id) {
+        jdbcTemplate.update("delete from theme where id=?", id);
+    }
+
+    private static RowMapper<Theme> getThemeRowMapper() {
+        return (resultSet, rowNum) -> new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("image_url")
         );
         return themes.stream().findFirst();
     }
