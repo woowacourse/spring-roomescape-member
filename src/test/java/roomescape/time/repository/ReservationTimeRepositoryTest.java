@@ -31,7 +31,8 @@ class ReservationTimeRepositoryTest {
 
     @Test
     void 시간을_저장하면_생성된_id와_시작_시간을_반환한다() {
-        ReservationTime saved = reservationTimeRepository.save(LocalTime.of(10, 0));
+        ReservationTime saved = reservationTimeRepository.save(
+                new ReservationTime(null, LocalTime.of(10, 0)));
 
         assertThat(saved.getId()).isPositive();
         assertThat(saved.getStartAt()).isEqualTo(LocalTime.of(10, 0));
@@ -39,7 +40,8 @@ class ReservationTimeRepositoryTest {
 
     @Test
     void 존재하는_id로_조회하면_예약_시간을_Optional로_반환한다() {
-        ReservationTime saved = reservationTimeRepository.save(LocalTime.of(11, 30));
+        ReservationTime saved = reservationTimeRepository.save(
+                new ReservationTime(null, LocalTime.of(11, 30)));
 
         Optional<ReservationTime> result = reservationTimeRepository.findById(saved.getId());
 
@@ -56,17 +58,22 @@ class ReservationTimeRepositoryTest {
 
     @Test
     void 여러_시간을_저장한_뒤_전체_조회하면_모든_시간을_반환한다() {
-        reservationTimeRepository.save(LocalTime.of(10, 0));
-        reservationTimeRepository.save(LocalTime.of(11, 0));
+        ReservationTime saved1 = reservationTimeRepository.save(new ReservationTime(
+                null, LocalTime.of(10, 0)));
+        ReservationTime saved2 = reservationTimeRepository.save(new ReservationTime(
+                null, LocalTime.of(11, 0)));
 
         List<ReservationTime> result = reservationTimeRepository.findAll();
 
         assertThat(result).hasSize(2);
+        assertThat(result.get(0).getStartAt()).isEqualTo(saved1.getStartAt());
+        assertThat(result.get(1).getStartAt()).isEqualTo(saved2.getStartAt());
     }
 
     @Test
     void 존재하는_id로_삭제하면_해당_시간이_삭제된다() {
-        ReservationTime saved = reservationTimeRepository.save(LocalTime.of(10, 0));
+        ReservationTime saved = reservationTimeRepository.save(
+                new ReservationTime(null, LocalTime.of(10, 0)));
 
         reservationTimeRepository.remove(saved.getId());
 

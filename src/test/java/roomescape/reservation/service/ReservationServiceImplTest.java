@@ -61,18 +61,19 @@ class ReservationServiceImplTest {
     void 예약을_생성하면_시간과_테마를_조회하고_예약을_저장한_뒤_예약을_반환한다() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(2L, "공포방", "무서운방입니다.", "image-url");
+        Reservation reservation = new Reservation(1L, "어셔", LocalDate.of(2026, 5, 10), time, theme);
 
         when(reservationTimeRepository.findById(any())).thenReturn(Optional.of(time));
         when(themeRepository.findById(any())).thenReturn(theme);
-        when(reservationRepository.save(any(), any(), any(), any())).thenReturn(99L);
+        when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
 
-        Reservation result = reservationService.createReservation("브라운", LocalDate.of(2026, 5, 10), 1L, 2L);
+        Reservation result = reservationService.createReservation("어셔", LocalDate.of(2026, 5, 10), 1L, 2L);
 
         verify(reservationTimeRepository).findById(any());
         verify(themeRepository).findById(any());
-        verify(reservationRepository).save(any(), any(), any(), any());
-        assertThat(result.getId()).isEqualTo(99L);
-        assertThat(result.getName()).isEqualTo("브라운");
+        verify(reservationRepository).save(any(Reservation.class));
+        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getName()).isEqualTo("어셔");
         assertThat(result.getDate()).isEqualTo(LocalDate.of(2026, 5, 10));
         assertThat(result.getTime()).isSameAs(time);
         assertThat(result.getTheme()).isSameAs(theme);
@@ -87,7 +88,7 @@ class ReservationServiceImplTest {
                 .isInstanceOf(InvalidReservationTimeException.class);
 
         verify(themeRepository, never()).findById(2L);
-        verify(reservationRepository, never()).save("브라운", LocalDate.of(2026, 5, 10), 999L, 2L);
+        verify(reservationRepository, never()).save(any(Reservation.class));
     }
 
     @Test

@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,8 +26,8 @@ class ReservationRepositoryTest {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    private Long timeId;
-    private Long themeId;
+    private ReservationTime time;
+    private Theme theme;
 
     @BeforeEach
     void setUp() {
@@ -36,25 +38,32 @@ class ReservationRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "공포방", "무서운방입니다.", "image-url");
-
-        this.timeId = jdbcTemplate.queryForObject("SELECT id FROM reservation_time", Long.class);
-        this.themeId = jdbcTemplate.queryForObject("SELECT id FROM theme", Long.class);
+        this.time = jdbcTemplate.queryForObject("SELECT * FROM reservation_time",
+                (rs, rowNum) -> new ReservationTime(
+                        rs.getLong("id"),
+                        LocalTime.parse(rs.getString("start_at"))));
+        this.theme = jdbcTemplate.queryForObject("SELECT * FROM theme",
+                (rs, rowNum) -> new Theme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("thumbnail"))
+        );
     }
 
     @Test
-    void 예약을_저장하면_생성된_id가_반환되고_DB에_저장된다() {
-        Long id = reservationRepository.save("브라운", LocalDate.of(2026, 5, 10), timeId, themeId);
+    void 예약을_저장한다() {
+        Reservation saved = reservationRepository.save(new Reservation(null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
 
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, id);
-
-        assertThat(id).isPositive();
-        assertThat(count).isEqualTo(1);
+                "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, saved.getId());
+        assertThat(saved.getId()).isPositive();;
     }
 
     @Test
     void 예약_전체_조회시_예약_시간_테마를_함께_반환한다() {
-        reservationRepository.save("브라운", LocalDate.of(2026, 5, 10), timeId, themeId);
+        reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
 
         List<Reservation> result = reservationRepository.findAllWithTime();
 
@@ -62,9 +71,9 @@ class ReservationRepositoryTest {
         Reservation reservation = result.get(0);
         assertThat(reservation.getName()).isEqualTo("브라운");
         assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 10));
-        assertThat(reservation.getTime().getId()).isEqualTo(timeId);
+        assertThat(reservation.getTime().getId()).isEqualTo(time.getId());
         assertThat(reservation.getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0));
-        assertThat(reservation.getTheme().getId()).isEqualTo(themeId);
+        assertThat(reservation.getTheme().getId()).isEqualTo(theme.getId());
         assertThat(reservation.getTheme().getName()).isEqualTo("공포방");
         assertThat(reservation.getTheme().getDescription()).isEqualTo("무서운방입니다.");
         assertThat(reservation.getTheme().getThumbnail()).isEqualTo("image-url");
@@ -72,12 +81,13 @@ class ReservationRepositoryTest {
 
     @Test
     void 예약을_삭제하면_삭제된_행_수가_반환되고_DB에서_삭제된다() {
-        Long id = reservationRepository.save("브라운", LocalDate.of(2026, 5, 10), timeId, themeId);
+        Reservation savedReservation = reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
 
-        int deletedRows = reservationRepository.deleteById(id);
+        int deletedRows = reservationRepository.deleteById(savedReservation.getId());
 
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, id);
+                "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, savedReservation.getId());
         assertThat(deletedRows).isEqualTo(1);
         assertThat(count).isZero();
     }
