@@ -104,7 +104,7 @@ async function loadTimes() {
 
 async function loadReservations() {
     try {
-        state.reservations = await api("/reservations");
+        state.reservations = await api("/admin/reservations");
         renderReservations();
     } catch (error) {
         showToast(error.message);
@@ -351,7 +351,7 @@ async function createTime(event) {
     const form = new FormData(formElement);
 
     try {
-        await api("/times", {
+        await api("/admin/times", {
             method: "POST",
             body: JSON.stringify({startAt: form.get("startAt")}),
         });
@@ -390,7 +390,7 @@ async function deleteTheme(id) {
 
 async function deleteTime(id) {
     try {
-        await api(`/times/${id}`, {method: "DELETE"});
+        await api(`/admin/times/${id}`, {method: "DELETE"});
         if (state.selectedTimeId === Number(id)) {
             state.selectedTimeId = null;
         }

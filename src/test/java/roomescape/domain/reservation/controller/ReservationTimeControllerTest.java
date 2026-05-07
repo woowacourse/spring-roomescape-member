@@ -45,7 +45,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201)
                 .header("Location", notNullValue())
@@ -62,14 +62,14 @@ class ReservationTimeControllerTest {
         Integer id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201)
                 .extract()
                 .path("id");
 
         RestAssured.given().log().all()
-                .when().delete("/times/" + id)
+                .when().delete("/admin/times/" + id)
                 .then().log().all()
                 .statusCode(200);
     }

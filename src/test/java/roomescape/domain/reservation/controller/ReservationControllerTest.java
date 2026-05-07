@@ -30,7 +30,7 @@ class ReservationControllerTest {
     @DisplayName("예약 목록을 조회한다.")
     void findAllReservations() {
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("reservations.size()", is(13))
