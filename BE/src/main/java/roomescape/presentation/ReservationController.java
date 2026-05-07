@@ -16,7 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.application.ReservationService;
 import roomescape.entity.Reservation;
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationException;
+import roomescape.global.exception.customException.InvalidRequestException;
 import roomescape.presentation.dto.AvailableReservationResponse;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
@@ -85,7 +85,7 @@ public class ReservationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         if (id == null) {
-            throw new ReservationException(ErrorCode.RESERVATION_ID_NULL);
+            throw new InvalidRequestException(ErrorCode.RESERVATION_ID_NULL);
         }
         service.deleteById(id);
         return ResponseEntity.noContent().build();

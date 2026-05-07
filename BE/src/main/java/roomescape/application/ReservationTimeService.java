@@ -8,7 +8,7 @@ import roomescape.entity.ReservationRepository;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.ReservationTimeRepository;
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationTimeException;
+import roomescape.global.exception.customException.ConflictException;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,7 +37,7 @@ public class ReservationTimeService {
     @Transactional
     public void deleteById(Long id) {
         if (reservationRepository.existsByReservationTimeId(id)) {
-            throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_ALREADY_USED);
+            throw new ConflictException(ErrorCode.RESERVATION_TIME_ALREADY_USED);
         }
         reservationTimeRepository.deleteById(id);
     }

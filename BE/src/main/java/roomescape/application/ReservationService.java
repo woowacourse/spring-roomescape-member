@@ -11,9 +11,8 @@ import roomescape.entity.ReservationTimeRepository;
 import roomescape.entity.Theme;
 import roomescape.entity.ThemeRepository;
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationException;
-import roomescape.global.exception.customException.ReservationTimeException;
-import roomescape.global.exception.customException.ThemeException;
+import roomescape.global.exception.customException.ConflictException;
+import roomescape.global.exception.customException.NotFoundException;
 
 @Service
 @Transactional(readOnly = true)
@@ -47,18 +46,18 @@ public class ReservationService {
 
     private void validateUniqueByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new ReservationException(ErrorCode.RESERVATION_DUPLICATED);
+            throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED);
         }
     }
 
     private Theme findTargetThemeById(Long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new ThemeException(ErrorCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
     }
 
     private ReservationTime findTargetTimeById(Long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new ReservationTimeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 
     public List<Reservation> findAll() {

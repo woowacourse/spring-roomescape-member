@@ -10,7 +10,7 @@ import roomescape.entity.Theme;
 import roomescape.entity.ThemeRepository;
 import roomescape.entity.ThemeSortType;
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ThemeException;
+import roomescape.global.exception.customException.ConflictException;
 
 @Service
 @Transactional(readOnly = true)
@@ -44,7 +44,7 @@ public class ThemeService {
     @Transactional
     public void deleteById(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
-            throw new ThemeException(ErrorCode.THEME_ALREADY_USED);
+            throw new ConflictException(ErrorCode.THEME_ALREADY_USED);
         }
         themeRepository.deleteById(id);
     }

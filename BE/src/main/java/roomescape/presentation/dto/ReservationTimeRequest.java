@@ -2,7 +2,7 @@ package roomescape.presentation.dto;
 
 import java.time.LocalTime;
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationTimeException;
+import roomescape.global.exception.customException.InvalidRequestException;
 
 public record ReservationTimeRequest(
         LocalTime startAt
@@ -13,7 +13,7 @@ public record ReservationTimeRequest(
 
     private void validateStartAtNotEmpty(LocalTime startAt) {
         if (startAt == null) {
-            throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_START_AT_NULL);
+            throw new InvalidRequestException(ErrorCode.RESERVATION_TIME_NULL);
         }
     }
 }

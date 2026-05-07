@@ -16,7 +16,7 @@ import roomescape.entity.ThemeSortType;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeThemeRepository;
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ThemeException;
+import roomescape.global.exception.customException.ConflictException;
 
 class ThemeServiceTest {
 
@@ -90,7 +90,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteById(saved.id()))
-                .isInstanceOf(ThemeException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage(ErrorCode.THEME_ALREADY_USED.getMessage());
     }
 

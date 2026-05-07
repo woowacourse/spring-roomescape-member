@@ -2,7 +2,7 @@ package roomescape.presentation.dto;
 
 
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationException;
+import roomescape.global.exception.customException.InvalidRequestException;
 
 public record ThemeRequest(
         String name,
@@ -16,21 +16,20 @@ public record ThemeRequest(
     }
 
     private static void validateNameNotEmpty(String name) {
-        validateStringValueNotEmpty(name, new ReservationException(ErrorCode.THEME_REQUEST_NAME_NULL));
+        validateStringValueNotEmpty(name, ErrorCode.THEME_NAME_EMPTY);
     }
 
     private static void validateDescriptionNotEmpty(String description) {
-        ReservationException reservationException = new ReservationException(ErrorCode.THEME_REQUEST_DESCRIPTION_NULL);
-        validateStringValueNotEmpty(description, reservationException);
+        validateStringValueNotEmpty(description, ErrorCode.THEME_DESCRIPTION_EMPTY);
     }
 
     private static void validateThumbnailNotEmpty(String thumbnail) {
-        validateStringValueNotEmpty(thumbnail, new ReservationException(ErrorCode.THEME_REQUEST_THUMBNAIL_NULL));
+        validateStringValueNotEmpty(thumbnail, ErrorCode.THEME_THUMBNAIL_EMPTY);
     }
 
-    private static void validateStringValueNotEmpty(String description, ReservationException reservationException) {
-        if (description == null || description.trim().isBlank()) {
-            throw reservationException;
+    private static void validateStringValueNotEmpty(String value, ErrorCode errorCode) {
+        if (value == null || value.trim().isBlank()) {
+            throw new InvalidRequestException(errorCode);
         }
     }
 }

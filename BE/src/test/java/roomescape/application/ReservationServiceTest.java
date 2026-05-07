@@ -18,8 +18,8 @@ import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.fake.FakeThemeRepository;
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationException;
-import roomescape.global.exception.customException.ReservationTimeException;
+import roomescape.global.exception.customException.ConflictException;
+import roomescape.global.exception.customException.NotFoundException;
 import roomescape.presentation.dto.ReservationRequest;
 
 class ReservationServiceTest {
@@ -80,7 +80,7 @@ class ReservationServiceTest {
                         request.timeId(),
                         request.themeId()
                 )
-        ).isInstanceOf(ReservationTimeException.class)
+        ).isInstanceOf(NotFoundException.class)
                 .hasMessage(ErrorCode.RESERVATION_TIME_NOT_FOUND.getMessage());
     }
 
@@ -107,7 +107,7 @@ class ReservationServiceTest {
                         request.timeId(),
                         request.themeId()
                 )
-        ).isInstanceOf(ReservationTimeException.class)
+        ).isInstanceOf(NotFoundException.class)
                 .hasMessage(ErrorCode.RESERVATION_TIME_NOT_FOUND.getMessage());
     }
 
@@ -124,7 +124,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(
                 () -> reservationService.save("다른사람", date, savedTime.id(), savedTheme.id())
-        ).isInstanceOf(ReservationException.class)
+        ).isInstanceOf(ConflictException.class)
                 .hasMessage(ErrorCode.RESERVATION_DUPLICATED.getMessage());
     }
 

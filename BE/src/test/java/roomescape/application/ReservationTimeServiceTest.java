@@ -14,7 +14,7 @@ import roomescape.entity.ReservationTime;
 import roomescape.entity.ReservationTimeRepository;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
-import roomescape.global.exception.customException.ReservationTimeException;
+import roomescape.global.exception.customException.ConflictException;
 
 class ReservationTimeServiceTest {
 
@@ -93,6 +93,6 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(savedReservationTime.id()))
-                .isInstanceOf(ReservationTimeException.class);
+                .isInstanceOf(ConflictException.class);
     }
 }
