@@ -27,7 +27,7 @@ public class ThemeDao {
     private final RowMapper<AvailableReservationTimeResponse> availableReservationTimeRowMapper =
             (rs, rowNum) -> new AvailableReservationTimeResponse(
                     rs.getLong("id"),
-                    rs.getString("start_at"),
+                    rs.getTime("start_at").toLocalTime().toString(),
                     rs.getBoolean("available")
             );
 
@@ -74,7 +74,7 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, themeRowMapper, from, to, size);
     }
 
-    public List<AvailableReservationTimeResponse> findAvailableTimeById(long themeId, String date) {
+    public List<AvailableReservationTimeResponse> findAvailableTimeById(long themeId, LocalDate date) {
         final String sql = """
                 SELECT
                       rt.id,

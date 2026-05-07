@@ -83,17 +83,17 @@
 
 ### DB 스키마 문제
 
-- [ ] **17. `reservation.date` 컬럼 타입이 `VARCHAR(255)`**
+- [x] **17. `reservation.date` 컬럼 타입이 `VARCHAR(255)`**
   - `DATE` 타입으로 변경
 
-- [ ] **18. `reservation_time.start_at` 컬럼 타입이 `VARCHAR(255)`**
+- [x] **18. `reservation_time.start_at` 컬럼 타입이 `VARCHAR(255)`**
   - `TIME` 타입으로 변경
 
-- [ ] **19. 중복 예약 방지 DB 제약 없음**
+- [x] **19. 중복 예약 방지 DB 제약 없음**
   - `(date, time_id, theme_id)` 조합에 UNIQUE 제약 조건 없음
   - 애플리케이션 레벨 검증과 함께 DB 레벨 제약도 추가해주면 2중으로 막혀서 좋을듯.
 
-- [ ] **20. `thumbnail_url`이 `VARCHAR(255)`로 사이즈가 작아보임**
+- [x] **20. `thumbnail_url`이 `VARCHAR(255)`로 사이즈가 작아보임**
   - 2048이나 TEXT로 바꾸기
 
 ---

@@ -32,7 +32,7 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<AvailableReservationTimeResponse> getAvailableTimeResponses(Long themId, String date) {
-        return themeDao.findAvailableTimeById(themId, date);
+    public List<AvailableReservationTimeResponse> getAvailableTimeResponses(Long themeId, LocalDate date) {
+        return themeDao.findAvailableTimeById(themeId, date);
     }
 }
