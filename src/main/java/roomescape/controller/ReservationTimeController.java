@@ -32,7 +32,7 @@ public class ReservationTimeController {
 
     @GetMapping("/availability")
     public ResponseEntity<AvailableTimeListResponse> getAvailableTimes(
-            @RequestParam("date") @DateTimeFormat(pattern = "HH:mm") LocalDate date,
+            @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             @RequestParam("themeId") Long themeId) {
         List<ReservationTimeAvailability> timeAvailabilities =
                 reservationTimeService.findAvailableTimes(date, themeId);
