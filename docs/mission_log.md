@@ -28,4 +28,44 @@
     - `@Sql("/test-setup.sql")` 로 시간대 더미 데이터 추가 및 격리
 
 
-- [ ] 막힌 순간 1회 이상
+- [x] 막힌 순간 1회 이상 
+  - 인기 테마 조회 로직을 어디에서 구현할 것인가?  
+  - DB 단에서? 서버 단에서? 
+  - 쿼리의 복잡도 증가? 로직의 복잡도 증가? 
+  - 서비스의 단일 책임? 저장소의 단일 책임? 
+
+
+✅ DB 가 조건에 맞춰 인기 테마를 조회해 반환한다.  
+데이터베이스의 `이론적 완성도`보단  
+서버의 `실무적 효용성`이 우선이기 때문
+```java
+public List<Theme> findPopularThemes(Long topCount, LocalDate fromDate, LocalDate toDate) {
+    String sql = """
+            SELECT
+                t.id,
+                t.name,
+                t.description,
+                t.thumbnail_url,
+                count(*) as reservation_count
+            FROM (
+                SELECT *
+                FROM reservation
+                WHERE date BETWEEN ? AND ?
+            ) as r
+            
+            INNER JOIN theme t
+            ON r.theme_id = t.id
+            GROUP BY t.id
+            ORDER BY reservation_count DESC
+            LIMIT ?
+            """;
+
+    return jdbcTemplate.query(
+            sql,
+            rowMapper(),
+            fromDate,
+            toDate,
+            topCount
+    );
+}
+```
