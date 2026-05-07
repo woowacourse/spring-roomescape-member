@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import roomescape.domain.TimeSlot;
 
-public class FakeTimeSlotDao implements TimeSlotRepository {
+public class FakeTimeSlotRepository implements TimeSlotRepository {
 
     private final Map<Long, TimeSlot> storage = new HashMap<>();
     private long sequence = 1L;

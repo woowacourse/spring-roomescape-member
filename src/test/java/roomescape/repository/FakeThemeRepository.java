@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import roomescape.domain.Theme;
 
-public class FakeThemeDao implements ThemeRepository {
+public class FakeThemeRepository implements ThemeRepository {
 
     private final Map<Long, Theme> storage = new HashMap<>();
     private long sequence = 1L;
@@ -22,9 +22,9 @@ public class FakeThemeDao implements ThemeRepository {
     }
 
     @Override
-    public Theme save(Theme time) {
+    public Theme save(Theme theme) {
         long id = sequence++;
-        Theme savedTheme = new Theme(id, null, null, null);
+        Theme savedTheme = new Theme(id, theme.name(), theme.description(), theme.thumbnailUrl());
         storage.put(id, savedTheme);
         return savedTheme;
     }

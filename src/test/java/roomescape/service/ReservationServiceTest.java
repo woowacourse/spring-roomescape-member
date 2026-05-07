@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
-import roomescape.repository.FakeReservationDao;
-import roomescape.repository.FakeThemeDao;
-import roomescape.repository.FakeTimeSlotDao;
+import roomescape.repository.FakeReservationRepository;
+import roomescape.repository.FakeThemeRepository;
+import roomescape.repository.FakeTimeSlotRepository;
 
 class ReservationServiceTest {
 
@@ -23,12 +23,13 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        FakeTimeSlotDao fakeReservationTimeDao = new FakeTimeSlotDao();
-        FakeReservationDao fakeReservationDao = new FakeReservationDao();
-        FakeThemeDao fakeThemeDao = new FakeThemeDao();
-        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);
+        FakeTimeSlotRepository fakeReservationTimeDao = new FakeTimeSlotRepository();
+        FakeReservationRepository fakeReservationRepository = new FakeReservationRepository();
+        FakeThemeRepository fakeThemeRepository = new FakeThemeRepository();
+        reservationService = new ReservationService(fakeReservationRepository, fakeReservationTimeDao,
+                fakeThemeRepository);
         savedTimeSlot = fakeReservationTimeDao.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
-        savedTheme = fakeThemeDao.save(Theme.transientOf("이름", "설명", "test.com"));
+        savedTheme = fakeThemeRepository.save(Theme.transientOf("이름", "설명", "test.com"));
     }
 
     @Test

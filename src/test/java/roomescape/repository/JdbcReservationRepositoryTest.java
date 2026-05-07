@@ -51,7 +51,7 @@ class JdbcReservationRepositoryTest {
     @DisplayName("예약을 저장하고 영속화된 객체를 반환한다.")
     void save() {
         Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot,
-                new Theme(1L, null, null, null));
+                new Theme(1L, "공포", "귀신의 집 탈출", "https://test.com"));
         Reservation savedReservation = jdbcReservationRepository.save(reservation);
         assertThat(savedReservation.id()).isPositive();
     }
@@ -61,7 +61,7 @@ class JdbcReservationRepositoryTest {
     void findById() {
         Reservation savedReservation = jdbcReservationRepository.save(Reservation.transientOf("브라운", LocalDate.now(),
                 savedTimeSlot,
-                new Theme(1L, null, null, null)));
+                new Theme(1L, "공포", "귀신의 집 탈출", "https://test.com")));
         Reservation foundReservation = jdbcReservationRepository.findById(savedReservation.id());
         assertThat(foundReservation.name()).isEqualTo("브라운");
     }
@@ -70,7 +70,7 @@ class JdbcReservationRepositoryTest {
     @DisplayName("모든 예약 객체 목록을 조회한다.")
     void findAll() {
         jdbcReservationRepository.save(Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot,
-                new Theme(1L, null, null, null)));
+                new Theme(1L, "공포", "귀신의 집 탈출", "https://test.com")));
         List<Reservation> reservations = jdbcReservationRepository.findAll();
         assertThat(reservations).hasSize(1);
     }
@@ -80,7 +80,7 @@ class JdbcReservationRepositoryTest {
     void deleteById() {
         Reservation savedReservation = jdbcReservationRepository.save(Reservation.transientOf("브라운", LocalDate.now(),
                 savedTimeSlot,
-                new Theme(1L, null, null, null)));
+                new Theme(1L, "공포", "귀신의 집 탈출", "https://test.com")));
         jdbcReservationRepository.deleteById(savedReservation.id());
         assertThat(jdbcReservationRepository.findAll()).isEmpty();
     }

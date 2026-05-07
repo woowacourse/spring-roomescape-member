@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import roomescape.domain.Reservation;
 
-public class FakeReservationDao implements ReservationRepository {
+public class FakeReservationRepository implements ReservationRepository {
 
     private final Map<Long, Reservation> storage = new HashMap<>();
     private long sequence = 1L;
