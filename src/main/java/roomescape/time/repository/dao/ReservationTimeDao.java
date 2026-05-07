@@ -41,14 +41,16 @@ public class ReservationTimeDao {
 
     public Optional<ReservationTimeEntity> selectById(Long id) {
         String sql = "select * from reservation_time where id = ?;";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id));
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, id)
+                .stream()
+                .findFirst();
     }
 
     public ReservationTimeEntity getByID(Long id) {
         String sql = "select * from reservation_time where id = ?;";
-        return Optional.of(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id))
-                .orElseThrow(() -> new IllegalArgumentException("ReservationTime not found"));
+        return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
     }
+    
     public List<ReservationTimeEntity> selectAll() {
         String sql = "select * from reservation_time;";
         return jdbcTemplate.query(sql, reservationTimeRowMapper);

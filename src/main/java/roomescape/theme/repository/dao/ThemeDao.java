@@ -54,13 +54,14 @@ public class ThemeDao {
 
     public Optional<ThemeEntity> selectById(Long id) {
         String sql = "select * from theme where id = ? AND is_deleted = FALSE;";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, themeEntityRowMapper, id));
+        return jdbcTemplate.query(sql, themeEntityRowMapper, id)
+                .stream()
+                .findFirst();
     }
 
     public ThemeEntity getById(Long id) {
         String sql = "select * from theme where id = ? AND is_deleted = FALSE;";
-        return Optional.of(jdbcTemplate.queryForObject(sql, themeEntityRowMapper, id))
-                .orElseThrow(() -> new IllegalArgumentException("Theme not found"));
+        return jdbcTemplate.queryForObject(sql, themeEntityRowMapper, id);
     }
 
     public List<ThemeEntity> findThemesOrderByReservationCountDesc(String startDate, String endDate, int limit) {
