@@ -20,8 +20,8 @@ import roomescape.dto.response.AvailableTimeResponseDto;
 public class ThemeJdbcDao implements ThemeDao {
     public static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
             new Theme(
-                    rs.getLong("id"),
-                    new Name(rs.getString("name")),
+                    rs.getLong("theme_id"),
+                    new Name(rs.getString("theme_name")),
                     rs.getString("thumbnail_url"),
                     rs.getString("description")
             );
@@ -42,7 +42,12 @@ public class ThemeJdbcDao implements ThemeDao {
     @Override
     public List<Theme> findAll() {
         String sql = """
-                SELECT * FROM themes
+                SELECT
+                    id AS theme_id,
+                    name AS theme_name,
+                    thumbnail_url,
+                    description
+                FROM themes
                 """;
 
         return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
@@ -51,8 +56,13 @@ public class ThemeJdbcDao implements ThemeDao {
     @Override
     public Optional<Theme> findById(Long id) {
         String sql = """
-                SELECT * FROM themes
-                WHERE id = :id
+                SELECT
+                     id AS theme_id,
+                     name AS theme_name,
+                     thumbnail_url,
+                     description
+                 FROM themes
+                 WHERE id = :id
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource()
@@ -129,8 +139,8 @@ public class ThemeJdbcDao implements ThemeDao {
     public List<Theme> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
         String sql = """
                     SELECT
-                        th.id,
-                        th.name,
+                        th.id AS theme_id,
+                        th.name As theme_name,
                         th.thumbnail_url,
                         th.description,
                         COALESCE(r.cnt, 0) AS reservation_count

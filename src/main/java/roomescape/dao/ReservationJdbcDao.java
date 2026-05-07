@@ -15,8 +15,8 @@ import roomescape.domain.Reservation;
 public class ReservationJdbcDao implements ReservationDao {
     public static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) ->
             new Reservation(
-                    rs.getLong("id"),
-                    rs.getString("name"),
+                    rs.getLong("reservation_id"),
+                    rs.getString("reservation_name"),
                     LocalDate.parse(rs.getString("date")),
                     TimeJdbcDao.ROW_MAPPER.mapRow(rs, rowNum),
                     ThemeJdbcDao.THEME_ROW_MAPPER.mapRow(rs, rowNum)
@@ -33,18 +33,18 @@ public class ReservationJdbcDao implements ReservationDao {
     public List<Reservation> findAll() {
         String sql = """
                 SELECT
-                    r.id,
-                    r.name,
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
                     r.date,
                     t.id AS time_id,
                     t.start_at,
                     th.id AS theme_id,
-                    th.name,
+                    th.name AS theme_name,
                     th.thumbnail_url,
                     th.description
                 FROM reservations r
                 INNER JOIN times t ON r.time_id = t.id
-                INNER JOIN themes th ON r.theme_id = th.id;
+                INNER JOIN themes th ON r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
@@ -53,13 +53,13 @@ public class ReservationJdbcDao implements ReservationDao {
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 SELECT
-                    r.id,
-                    r.name,
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
                     r.date,
                     t.id AS time_id,
                     t.start_at,
                     th.id AS theme_id,
-                    th.name,
+                    th.name AS theme_name,
                     th.thumbnail_url,
                     th.description
                 FROM reservations r

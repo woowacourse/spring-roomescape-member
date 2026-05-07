@@ -14,7 +14,7 @@ import roomescape.domain.Time;
 @Repository
 public class TimeJdbcDao implements TimeDao {
     public static final RowMapper<Time> ROW_MAPPER = (resultSet, rowNum) -> new Time(
-            resultSet.getLong("id"),
+            resultSet.getLong("time_id"),
             LocalTime.parse(resultSet.getString("start_at"))
     );
 
@@ -27,7 +27,10 @@ public class TimeJdbcDao implements TimeDao {
     @Override
     public List<Time> findAll() {
         String sql = """
-                SELECT * FROM times
+                SELECT
+                    id AS time_id,
+                    start_at
+                FROM times
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
@@ -35,7 +38,10 @@ public class TimeJdbcDao implements TimeDao {
     @Override
     public Optional<Time> findById(Long id) {
         String sql = """
-                SELECT * FROM times
+                SELECT
+                    id AS time_id,
+                    start_at
+                FROM times
                 WHERE id = :id
                 """;
 
