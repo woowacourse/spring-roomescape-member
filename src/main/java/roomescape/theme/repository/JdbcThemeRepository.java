@@ -67,7 +67,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        return jdbcTemplate.query("select id, name, description, thumbnail_url from theme", ThemeMapper);
+        return jdbcTemplate.query("select id, name, description, thumbnail_url from theme order by id", ThemeMapper);
     }
 
     @Override

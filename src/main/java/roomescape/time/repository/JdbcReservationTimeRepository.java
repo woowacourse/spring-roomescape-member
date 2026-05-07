@@ -70,7 +70,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("select id, start_at from reservation_time", reservationTimeRowMapper);
+        return jdbcTemplate.query("select id, start_at from reservation_time order by start_at", reservationTimeRowMapper);
     }
 
     @Override
@@ -83,6 +83,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 AND r.theme_id = ?
                 AND r.reservation_date = ?
             WHERE r.id IS NULL
+            ORDER BY rt.start_at
             """;
 
         return jdbcTemplate.query(sql, reservationTimeRowMapper, themeId, date);

@@ -21,5 +21,7 @@ CREATE TABLE reservation (
     PRIMARY KEY (id),
     FOREIGN KEY (time_id)  REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
-    UNIQUE (reservation_date, time_id, theme_id)
+    UNIQUE (theme_id, reservation_date, time_id)
 );
+
+CREATE INDEX idx_reservation_date_theme ON reservation (reservation_date, theme_id);

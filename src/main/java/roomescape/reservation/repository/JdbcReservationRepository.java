@@ -116,6 +116,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             from reservation r
             inner join reservation_time t on r.time_id = t.id
             inner join theme h on r.theme_id = h.id
+            order by r.id
             """;
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
