@@ -50,7 +50,6 @@ class ReservationTimeServiceTest {
                 themeResponse.id(), LocalDate.now());
         Assertions.assertThat(reservationTimeService.getAvailableReservationTime(availableReservationTimeRequest.toCommand())
                 .times()
-                .size()
-        ).isEqualTo(2);
+        ).hasSize(2);
     }
 }

@@ -77,8 +77,7 @@ class ThemeRepositoryTest {
         themeRepository.save(themeFirst);
         themeRepository.save(themeSecond);
 
-        Assertions.assertThat(themeRepository.findAll().size())
-                .isEqualTo(2);
+        Assertions.assertThat(themeRepository.findAll()).hasSize(2);
     }
 
     @Test
