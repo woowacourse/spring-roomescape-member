@@ -38,7 +38,7 @@ public class ThemeResponse {
         return description;
     }
 
-    public String getThumbnail() {
+    public String getThumbnailUrl() {
         return thumbnailUrl;
     }
 }

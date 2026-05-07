@@ -28,7 +28,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("description"),
-                    rs.getString("thumbnail")
+                    rs.getString("thumbnail_url")
             ),
             rs.getLong("reservation_count")
     );
@@ -81,13 +81,13 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<PopularTheme> findPopular() {
         String sql = """
-                SELECT t.id, t.name, t.description, t.thumbnail,
+                SELECT t.id, t.name, t.description, t.thumbnail_url,
                        COUNT(r.id) AS reservation_count
                 FROM theme t
                 INNER JOIN reservation r ON t.id = r.theme_id
                 WHERE r.date >= DATEADD('DAY', -7, CURRENT_DATE)
                   AND r.date <  CURRENT_DATE
-                GROUP BY t.id, t.name, t.description, t.thumbnail
+                GROUP BY t.id, t.name, t.description, t.thumbnail_url
                 ORDER BY reservation_count DESC
                 LIMIT 10
                 """;
