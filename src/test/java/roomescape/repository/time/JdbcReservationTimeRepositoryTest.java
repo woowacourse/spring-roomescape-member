@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Import;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.repository.reservation.JdbcReservationRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.JdbcThemeRepository;
@@ -106,7 +107,7 @@ class JdbcReservationTimeRepositoryTest {
         ReservationTime bookedTime = timeRepository.createReservationTime(new ReservationTime("10:00"));
         ReservationTime availableTime = timeRepository.createReservationTime(new ReservationTime("12:00"));
 
-        Theme theme = themeRepository.createTheme(new Theme("테스트", "테스트테마입니다.", "url"));
+        Theme theme = themeRepository.createTheme(new Theme("테스트", "테스트테마입니다.", ThemeImageUrl.defaultImageUrl().value()));
 
         reservationRepository.createReservation(new Reservation("브라운", "2026-05-05", bookedTime, theme));
 

@@ -20,6 +20,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.theme.PopularThemesResponseDto;
@@ -30,8 +31,8 @@ import roomescape.service.ThemeService;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ThemeControllerTest {
 
-    private static final Theme THEME = new Theme(null, new ThemeName("name"), "description", "image-url");
-    private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description", "image-url");
+    private static final Theme THEME = new Theme(null, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
+    private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
 
     @LocalServerPort
     private int port;
@@ -176,7 +177,7 @@ class ThemeControllerTest {
     private List<Theme> createTenThemes() {
         List<Theme> themes = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            themes.add(new Theme((long) i, new ThemeName("테마" + i), "테마" + i, "테마" + i));
+            themes.add(new Theme((long) i, new ThemeName("테마" + i), "테마" + i, ThemeImageUrl.defaultImageUrl()));
         }
         return themes;
     }
@@ -185,7 +186,7 @@ class ThemeControllerTest {
         return new ThemeRequestDto(
             theme.getNameValue(),
             theme.getDescription(),
-            theme.getImageUrl()
+            theme.getImageUrlValue()
         );
     }
 }

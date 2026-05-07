@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.repository.reservation.ReservationRepository;
@@ -41,7 +42,7 @@ class ReservationServiceTest {
     private ReservationService reservationService;
 
     private static final ReservationTime SAVED_TIME = new ReservationTime(1L, "12:30");
-    private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description", "image-url");
+    private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
     private static final Reservation RESERVATION = new Reservation(1L, "name", "2026-05-05", SAVED_TIME, SAVED_THEME);
 
     @Test
@@ -87,7 +88,7 @@ class ReservationServiceTest {
     @Test
     void 날짜와_시간이_같더라도_테마가_다르면_예약할_수_있다() {
         // given
-        Theme otherTheme = new Theme(2L, new ThemeName("테마2"), "테마2입니다.", "url");
+        Theme otherTheme = new Theme(2L, new ThemeName("테마2"), "테마2입니다.", ThemeImageUrl.defaultImageUrl());
         Reservation reservation = new Reservation("이름", "2026-05-05", SAVED_TIME, otherTheme);
 
         when(timeRepository.findById(SAVED_TIME.getId()))

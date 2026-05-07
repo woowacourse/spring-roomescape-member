@@ -14,6 +14,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.util.List;
+import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.repository.reservation.JdbcReservationRepository;
 import roomescape.repository.reservation.ReservationRepository;
@@ -28,7 +29,10 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class JdbcThemeRepositoryTest {
 
     private static final Theme THEME = new Theme(
-        null, new ThemeName("name"), "description", "image-url");
+        null,
+        new ThemeName("name"),
+        "description",
+        ThemeImageUrl.defaultImageUrl());
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -54,7 +58,7 @@ class JdbcThemeRepositoryTest {
         assertThat(saved).isNotNull();
         assertThat(saved.getNameValue()).isEqualTo(THEME.getNameValue());
         assertThat(saved.getDescription()).isEqualTo(THEME.getDescription());
-        assertThat(saved.getImageUrl()).isEqualTo(THEME.getImageUrl());
+        assertThat(saved.getImageUrlValue()).isEqualTo(THEME.getImageUrlValue());
     }
 
     @Test
@@ -74,8 +78,8 @@ class JdbcThemeRepositoryTest {
 
         String first = "테마1";
         String second = "테마2";
-        themeRepository.createTheme(new Theme(first, "-", "url"));
-        themeRepository.createTheme(new Theme(second, "-", "url"));
+        themeRepository.createTheme(new Theme(first, "-", ThemeImageUrl.defaultImageUrl().value()));
+        themeRepository.createTheme(new Theme(second, "-", ThemeImageUrl.defaultImageUrl().value()));
 
         // when
         List<Theme> all = themeRepository.findAll();
@@ -116,7 +120,7 @@ class JdbcThemeRepositoryTest {
     private List<Theme> createAndSaveTenThemes() {
         List<Theme> themes = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            themes.add(new Theme("테마" + i, "테마" + i, "테마" + i));
+            themes.add(new Theme("테마" + i, "테마" + i, ThemeImageUrl.defaultImageUrl().value()));
         }
 
         return themes.stream()

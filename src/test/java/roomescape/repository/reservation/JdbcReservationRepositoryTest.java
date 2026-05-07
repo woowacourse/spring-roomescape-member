@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Import;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.repository.time.JdbcReservationTimeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
 
@@ -22,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class JdbcReservationRepositoryTest {
 
     private static final ReservationTime RESERVATION_TIME = new ReservationTime("12:30");
-    private static final Theme THEME = new Theme("테마명", "설명", "url");
+    private static final Theme THEME = new Theme("테마명", "설명", ThemeImageUrl.defaultImageUrl().value());
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
@@ -60,7 +61,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime("13:43"));
         ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime("10:00"));
 
-        Theme savedTheme = themeRepository.createTheme(new Theme("a", "a", "a_url"));
+        Theme savedTheme = themeRepository.createTheme(new Theme("a", "a", ThemeImageUrl.defaultImageUrl().value()));
 
         reservationRepository.createReservation(new Reservation("브라운", "2026-04-28", savedTime1, savedTheme));
         reservationRepository.createReservation(new Reservation("제임스", "2026-04-29", savedTime2, savedTheme));
@@ -85,7 +86,7 @@ class JdbcReservationRepositoryTest {
     void 저장되어_있는_예약을_아이디로_조회하여_삭제한다() {
         // given
         ReservationTime time = timeRepository.createReservationTime(new ReservationTime("13:43"));
-        Theme theme = themeRepository.createTheme(new Theme("a", "a", "a_url"));
+        Theme theme = themeRepository.createTheme(new Theme("a", "a", ThemeImageUrl.defaultImageUrl().value()));
 
         Reservation saved = reservationRepository.createReservation(new Reservation("브라운", "2026-04-28", time, theme));
 
