@@ -18,12 +18,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.ReservationController;
-import roomescape.domain.Reservation;
 import roomescape.dto.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private ReservationController reservationController;
 
     @BeforeEach
     void 시간_테마_넣어주기() {
@@ -93,10 +98,7 @@ public class MissionStepTest {
                 .body("size()", is(0));
     }
 
-    // 2단계
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
+    //2단계
     @Test
     void 데이터베이스_연동() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
@@ -188,10 +190,7 @@ public class MissionStepTest {
                 .body("size()", is(1));
     }
 
-    // 4단계
-    @Autowired
-    private ReservationController reservationController;
-
+    //4단계
     @Test
     void 계층화_리팩터링() {
         boolean isJdbcTemplateInjected = false;
@@ -204,5 +203,33 @@ public class MissionStepTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
+    }
+
+    @Test
+    void 예약_가능_시간_조회_정상_흐름_검증() {
+        RestAssured.given().log().all()
+                .when().get("/themes/1/reservation-times?date=2030-08-05")
+                .then().log().all()
+                .statusCode(200)
+                .body("[0].available", is(true));
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2030-08-05");
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/themes/1/reservation-times?date=2030-08-05")
+                .then().log().all()
+                .statusCode(200)
+                .body("[0].available", is(false));
     }
 }
