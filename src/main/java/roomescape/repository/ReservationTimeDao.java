@@ -40,7 +40,7 @@ public class ReservationTimeDao {
     public boolean existsByStartAt(LocalTime startAt) {
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?", Integer.class, startAt);
-        return count != null && count > 0;
+        return count > 0;
     }
 
     public ReservationTime save(LocalTime startAt) {

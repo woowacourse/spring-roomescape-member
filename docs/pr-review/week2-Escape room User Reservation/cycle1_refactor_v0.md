@@ -55,11 +55,11 @@
   - try-catch 블록 전부 제거 가능함.
   - 이거 누가 짰냐
 
-- [ ] **11. `ReservationTimeDao.existsByStartAt()` - 불필요한 null 체크**
+- [x] **11. `ReservationTimeDao.existsByStartAt()` - 불필요한 null 체크**
   - `count != null && count > 0` 에서 `count != null` 부분 불필요
   - `queryForObject`는 null을 반환하지 않음
 
-- [ ] **12. `ReservationDao.existsByTimeId()` - 동일한 불필요한 null 체크**
+- [x] **12. `ReservationDao.existsByTimeId()` - 동일한 불필요한 null 체크**
   - 동일하게 `count != null &&` 제거 가능
 
 ---
