@@ -64,7 +64,7 @@ class ReservationTimeDaoTest {
 
         // then
         assertAll(
-                () -> assertThat(selectReservationTime.isPresent()).isTrue(),
+                () -> assertThat(selectReservationTime).isPresent(),
                 () -> assertThat(selectReservationTime.get().getStartAt()).isEqualTo(reservationTime.getStartAt())
         );
     }
