@@ -98,13 +98,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Long> findPopularThemeIds() {
         List<Long> popularThemeIds = new LinkedList<>();
-        String sql = "" +
-                "SELECT theme_id, COUNT(*) AS reservation_count " +
-                "FROM reservation " +
-                "WHERE date >= ? AND date < ?" +
-                "GROUP BY theme_id " +
-                "ORDER BY reservation_count DESC " +
-                "LIMIT 10";
+        String sql = """
+                SELECT t.id AS theme_id, t.name, COUNT(r.id) AS reservation_count
+                FROM theme AS t
+                LEFT JOIN reservation AS r
+                ON r.theme_id = t.id
+                AND r.date >= ?
+                AND r.date < ?
+                GROUP BY t.id
+                ORDER BY reservation_count DESC, t.name ASC
+                LIMIT 10
+            """;
 
         LocalDate today = LocalDate.now();
         LocalDate beforeOneWeeks = today.minusWeeks(1);
