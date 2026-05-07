@@ -16,17 +16,17 @@ import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 
 @JdbcTest
-class ReservationDaoTest {
+class JdbcReservationRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private ReservationDao reservationDao;
+    private JdbcReservationRepository jdbcReservationRepository;
     private TimeSlot savedTimeSlot;
 
     @BeforeEach
     void setUp() {
-        reservationDao = new ReservationDao(jdbcTemplate);
+        jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate);
         executeSchema();
         insertDependencyData();
     }
@@ -43,7 +43,7 @@ class ReservationDaoTest {
     }
 
     private void insertDependencyData() {
-        TimeSlotDao timeDao = new TimeSlotDao(jdbcTemplate);
+        JdbcTimeSlotRepository timeDao = new JdbcTimeSlotRepository(jdbcTemplate);
         savedTimeSlot = timeDao.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
     }
 
@@ -52,36 +52,36 @@ class ReservationDaoTest {
     void save() {
         Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot,
                 new Theme(1L, null, null, null));
-        Reservation savedReservation = reservationDao.save(reservation);
+        Reservation savedReservation = jdbcReservationRepository.save(reservation);
         assertThat(savedReservation.id()).isPositive();
     }
 
     @Test
     @DisplayName("식별자로 예약 객체를 조회한다.")
     void findById() {
-        Reservation savedReservation = reservationDao.save(Reservation.transientOf("브라운", LocalDate.now(),
+        Reservation savedReservation = jdbcReservationRepository.save(Reservation.transientOf("브라운", LocalDate.now(),
                 savedTimeSlot,
                 new Theme(1L, null, null, null)));
-        Reservation foundReservation = reservationDao.findById(savedReservation.id());
+        Reservation foundReservation = jdbcReservationRepository.findById(savedReservation.id());
         assertThat(foundReservation.name()).isEqualTo("브라운");
     }
 
     @Test
     @DisplayName("모든 예약 객체 목록을 조회한다.")
     void findAll() {
-        reservationDao.save(Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot,
+        jdbcReservationRepository.save(Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot,
                 new Theme(1L, null, null, null)));
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = jdbcReservationRepository.findAll();
         assertThat(reservations).hasSize(1);
     }
 
     @Test
     @DisplayName("식별자로 예약을 삭제한다.")
     void deleteById() {
-        Reservation savedReservation = reservationDao.save(Reservation.transientOf("브라운", LocalDate.now(),
+        Reservation savedReservation = jdbcReservationRepository.save(Reservation.transientOf("브라운", LocalDate.now(),
                 savedTimeSlot,
                 new Theme(1L, null, null, null)));
-        reservationDao.deleteById(savedReservation.id());
-        assertThat(reservationDao.findAll()).isEmpty();
+        jdbcReservationRepository.deleteById(savedReservation.id());
+        assertThat(jdbcReservationRepository.findAll()).isEmpty();
     }
 }

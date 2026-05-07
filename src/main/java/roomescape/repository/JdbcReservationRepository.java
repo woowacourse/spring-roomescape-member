@@ -13,11 +13,11 @@ import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 
 @Repository
-public class ReservationDao implements ReservationRepository {
+public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

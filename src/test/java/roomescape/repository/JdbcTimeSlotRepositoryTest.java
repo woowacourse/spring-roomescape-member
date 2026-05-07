@@ -13,16 +13,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.TimeSlot;
 
 @JdbcTest
-class TimeSlotDaoTest {
+class JdbcTimeSlotRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private TimeSlotDao timeDao;
+    private JdbcTimeSlotRepository timeDao;
 
     @BeforeEach
     void setUp() {
-        timeDao = new TimeSlotDao(jdbcTemplate);
+        timeDao = new JdbcTimeSlotRepository(jdbcTemplate);
         executeSchema();
     }
 

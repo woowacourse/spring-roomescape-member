@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.TimeSlot;
 
 @Repository
-public class TimeSlotDao implements TimeSlotRepository {
+public class JdbcTimeSlotRepository implements TimeSlotRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public TimeSlotDao(JdbcTemplate jdbcTemplate) {
+    public JdbcTimeSlotRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
