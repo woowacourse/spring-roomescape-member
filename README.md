@@ -2,67 +2,220 @@
 
 ### 사용자
 
-- [ ] 전체 테마 목록을 조회 가능하다.
+- [x] 전체 테마 목록을 조회 가능하다.
+- [x] 날짜와 시간, 테마를 선택하여 예약할 수 있다.
 
 #### 화면 작성
 
 - [x] 웰컴 페이지에서 전체 테마 목록을 보여준다.
+- [x] 웰컴 페이지에서 최근 일주일 인기 테마 10개 목록을 보여준다.
 - [x] 테마 목록 중 하나를 선택하면 해당 테마를 예약할 수 있는 상세 페이지로 이동한다.
 - [x] 예약 시에는 이름과 날짜, 예약 시간대를 선택해야 한다.
-- [x] 같은 테마에서 이미 예약된 시간대는 선택이 불가능하다.
+- [x] 같은 테마, 같은 날짜에서 이미 예약된 시간대는 선택이 불가능하다.
 
 <br>
 
 ### 관리자
 
-- [ ] 모든 예약 조회 가능하다.
-- [ ] 특정 사용자의 예약을 조회 가능하다.
+- [x] 모든 예약 조회 가능하다.
+- [x] 예약 시간을 추가할 수 있다.
+- [x] 예약 시간을 삭제할 수 있다.
 - [x] 테마를 추가할 수 있다.
 - [x] 테마를 삭제할 수 있다.
 
-## API 명세
+## 주요 API 명세
+# 주요 API 명세
 
-### 테마 추가 요청·응답 예시
+<details>
+<summary>관리자는 테마를 추가할 수 있다.</summary>
 
-```markdown
-POST /admin/themes HTTP/1.1
-Content-Type: application/json
+- 관리자는 테마를 추가할 수 있다.
+  - HTTP method : POST
 
-{
-"name": "귀신찾기",
-"description": "2023-08-05",
-"thumbnailUrl": "https://"
-}
-```
+  **Request**
 
-```markdown
-HTTP/1.1 201
-Location: /themes/1
-Content-Type: application/json
+  - API path : /admin/themes
+  - Headers:
+    - Content-Type: application/json
 
-{
-"id": 1,
-"name": "귀신찾기",
-"description": "2023-08-05",
-"thumbnailUrl": "https://"
-}
-```
+    ```json
+    {
+    	"name": "공포의 병원",
+    	"description": "버려진 정신병원에서 탈출해야 합니다.",
+    	"thumbnailUrl": "https://picsum.photos/200/300"
+    }
+    ```
 
-<br>
+  **Response**
 
-### 테마 삭제 예시
+  - status: 201 Created (성공적으로 테마가 생성됨)
+  - Headers:
+    - Location: /admin/themes/1
+  - Body
 
-```markdown
-DELETE /admin/themes/{id} HTTP/1.1
-Content-Type: application/json
+    ```json
+    (Empty)
+    ```
 
-{}
-```
+  경로 설정 이유
 
-```markdown
-HTTP/1.1 204 No Content
-Date: Wed, 04 Sep 2024 10:16:04 GMT
-Content-Type: application/json
+  - 관리자 계층 (/admin)을 분리하여 관리자만 접근할 수 있다는 것을 명시한다.
+  - POST 메소드로 테마 리소스(/themes)에 새로운 테마를 생성한다는 것을 명시한다.
 
-{}
-```
+</details>
+
+<details>
+<summary>관리자는 테마를 삭제할 수 있다.</summary>
+
+- 관리자는 테마를 삭제할 수 있다.
+  - HTTP method : DELETE
+
+  **Request**
+
+  - API path : /admin/themes/{id}
+  - Path Variable:
+    - id(Long) 삭제할 테마의 고유 id
+  - Headers:
+    - Content-Type: application/json
+
+    ```json
+    {
+    	"id": 1
+    }
+    ```
+
+  **Response**
+
+  - status: 204 No Content (성공적으로 테마가 삭제됨)
+  - Body
+
+    ```json
+    (Empty)
+    ```
+
+  경로 설정 이유
+
+  - 관리자 계층 (/admin)을 분리하여 관리자만 접근할 수 있다는 것을 명시한다.
+  - DELETE 메소드로 요청 id에 해당하는 테마 리소스(/themes)를 삭제하는 것을 명시한다.
+
+</details>
+
+<details>
+<summary>테마, 날짜, 시간을 선택해서 예약할 수 있다.</summary>
+
+- 테마, 날짜, 시간을 선택해서 예약할 수 있다.
+  - HTTP method : Post
+
+  **Request**
+
+  - API path : /reservations
+  - Headers:
+    - Content-Type: application/json
+
+    ```json
+    {
+    	"name": "코코",
+    	"date": "2026-05-01",
+    	"timeId": 1,
+    	"themeId": 2
+    }
+    ```
+
+  **Response**
+
+  - status: 201 Created (성공적으로 테마가 생성됨)
+  - Headers:
+    - Location: /reservations/1
+  - Body
+
+    ```json
+    (Empty)
+    ```
+
+  경로 설정 이유
+
+  - POST 메소드로 예약 리소스(/reservations)에 새로운 예약을 생성한다는 것을 명시한다.
+
+</details>
+
+<details>
+<summary>지난 일주일 기간 동안의 인기 테마 10개를 조회할 수 있다.</summary>
+
+- 지난 일주일 기간 동안의 인기 테마 10개를 조회할 수 있다.
+  - HTTP method : GET
+
+  **Request**
+
+  - API path : /reservations/popular-themes
+  - Headers: (특별한 요청 없음)
+
+  **Response**
+
+  - status: 200 OK (성공적으로 인기 테마 10개가 조회됨)
+  - Headers:
+    - Content-Type: application/json
+  - Body
+
+    ```json
+    [
+      {
+        "id": 1,
+        "name": "공포의 병원",
+        "description": "버려진 정신병원에서 탈출해야 합니다.",
+        "thumbnailUrl": "https://picsum.photos/200/300"
+      },
+      {
+        "id": 2,
+        "name": "우주 정거장",
+        "description": "무중력 상태에서의 사투!",
+        "thumbnailUrl": "https://picsum.photos/200/400"
+      }
+    ]
+    ```
+
+  경로 설정 이유
+
+  - ReservationService는 Reservation 객체를 생성하기 위해 이미 ReservationTimeRepository와 ThemeRepository를 모두 참조하고 있다. 즉, 서비스 계층에서 예약, 시간, 테마 정보에 대한 도메인 지식을 자연스럽게 모두 가지고 있는 상태다.
+  - ThemeService는 테마의 생성과 관리라는 역할만 수행하므로 ThemeRepository 하나만 의존하고 있다. 여기서 인기 테마를 산출하기 위해 예약 관련 의존성을 추가하는 것은, 서비스의 복잡도를 높이고 불필요한 결합을 만드는 것이라 생각했다.
+
+</details>
+
+<details>
+<summary>같은 테마, 같은 날짜, 같은 시간에 예약이 이미 존재하면 예약할 수 없다.</summary>
+
+- 같은 테마, 같은 날짜, 같은 시간에 예약이 이미 존재하면 예약할 수 없다.
+  - HTTP method : GET
+
+  **Request**
+
+  - API path : /reservations/booked-times
+  - Query Parameters:
+  - selectedDate: 2026-05-07
+  - themeId: 1
+
+  **Response**
+
+  - status: 200 OK
+  - Headers:
+    - Content-Type: application/json
+  - Body
+
+    ```json
+    [
+      {
+        "id": 1,
+        "startAt": "10:00"
+      },
+      {
+        "id": 2,
+        "startAt": "14:00"
+      }
+    ]
+    ```
+
+  경로 설정 이유
+
+  - booked-times는 단순히 전체 시간 목록을 조회하는 것이 아니라, 특정 날짜와 테마에 있는 예약 현황을 필터링하여 보여주는 리소스이다. 따라서 이 데이터의 핵심 도메인인 예약 리소스의 하위 경로에 위치시키는 것이 구조적으로 타당하다고 판단했다.
+  - 또한, ReservationService는 예약을 생성하기 위해 이미 ReservationTimeRepository와 ThemeRepository를 모두 참조하고 있다. 즉, 서비스 계층에서 예약 현황과 시간, 테마 정보에 대한 도메인 지식을 자연스럽게 모두 가지고 있는 상태다. 반면 TimeService나 ThemeService에서 이 정보를 산출하려면 예약 도메인에 대한 새로운 의존성을 추가해야 하는데, 이는 서비스 간의 결합도를 높인다. 결과적으로 이미 필요한 정보를 모두 알고 있는 ReservationService에서 해당 데이터를 관리하는 것이 불필요한 결합을 줄인다고 생각했다.
+
+</details>
