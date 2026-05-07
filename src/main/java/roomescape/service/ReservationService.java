@@ -10,7 +10,6 @@ import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.TimeAvailabilityDto;
 
 @Service
 public class ReservationService {
@@ -51,23 +50,6 @@ public class ReservationService {
             throw new NoSuchElementException("[ERROR] 존재하지 않는 ID입니다.");
         }
         reservationRepository.delete(id);
-    }
-
-    public List<TimeAvailabilityDto> findAvailableTime(Long themeId, LocalDate date) {
-        List<ReservationTime> times = reservationTimeRepository.findAll();
-        List<Reservation> reservations = reservationRepository.findReservationsByThemeAndDate(themeId, date);
-
-        return times.stream()
-                .map(time -> new TimeAvailabilityDto(
-                        time,
-                        isAvailable(time, reservations)
-                ))
-                .toList();
-    }
-
-    private boolean isAvailable(ReservationTime time, List<Reservation> reservations) {
-        return reservations.stream()
-                .noneMatch(reservation -> time.equals(reservation.getTime()));
     }
 
     private ReservationTime findReservationTime(Long timeId) {
