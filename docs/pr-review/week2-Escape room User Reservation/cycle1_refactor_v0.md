@@ -32,7 +32,7 @@
 - [x] **6. `AvailableReservationTimeResponse` - `long` vs `Long` 혼용중임 -> long으로 통일**
   - `long id` (primitive) 사용 → 다른 DTO들은 모두 `Long id` (wrapper) 사용
 
-- [ ] **7. `date` 필드 타입 불일치 (Response DTO 간) -> String으로 통일**
+- [x] **7. `date` 필드 타입 불일치 (Response DTO 간) -> String으로 통일**
   - `ReservationResponse`: `String date`
   - `AdminReservationResponse`: `LocalDate date`
 
