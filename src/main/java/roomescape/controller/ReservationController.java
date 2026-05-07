@@ -40,7 +40,7 @@ public class ReservationController {
                 .toList();
     }
 
-    @DeleteMapping("/admin/times/{id}")
+    @DeleteMapping("/admin/reservations/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long id) {
         reservationService.cancel(id);

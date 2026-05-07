@@ -1,5 +1,7 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,7 +19,7 @@ public class ReservationRepository {
             resultSet.getLong("reservation_id"),
             resultSet.getString("name"),
             resultSet.getString("date"),
-            ReservationTime.of(resultSet.getLong("time_id"), resultSet.getString("start_at")),
+            ReservationTime.of(resultSet.getLong("time_id"), LocalTime.parse(resultSet.getString("start_at"))),
             Theme.of(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
                     resultSet.getString("description"), resultSet.getString("thumbnail_url")));
     private static final String SELECT_ALL = """
@@ -35,7 +37,8 @@ public class ReservationRepository {
             INNER JOIN theme             t  ON r.theme_id = t.id
             """;
     private static final String SELECT_BY_ID = SELECT_ALL + "WHERE r.id = ?";
-    private static final String SELECT_BY_TIME_AND_THEME = SELECT_ALL + "WHERE time_id = ? AND theme_id = ?";
+    private static final String SELECT_BY_TIME_AND_THEME_AND_DATE =
+            SELECT_ALL + "WHERE time_id = ? AND theme_id = ? AND date = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -75,9 +78,10 @@ public class ReservationRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    public Optional<Reservation> findByTimeAndTheme(Long timeId, Long themeId) {
-        List<Reservation> reservations = jdbcTemplate.query(SELECT_BY_TIME_AND_THEME, RESERVATION_ROW_MAPPER, timeId,
-                themeId);
+    public Optional<Reservation> findByTimeAndThemeAndDate(Long timeId, Long themeId, LocalDate date) {
+        List<Reservation> reservations = jdbcTemplate.query(SELECT_BY_TIME_AND_THEME_AND_DATE, RESERVATION_ROW_MAPPER,
+                timeId,
+                themeId, date);
 
         if (reservations.isEmpty()) {
             return Optional.empty();

@@ -12,14 +12,14 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    public static ReservationTime of(long id, String startAt) {
-        validateIsNull(startAt);
-        return new ReservationTime(id, LocalTime.parse(startAt));
-    }
-
     public static ReservationTime of(long id, LocalTime startAt) {
         validateIsNull(startAt);
         return new ReservationTime(id, startAt);
+    }
+
+    public static ReservationTime of(LocalTime startAt) {
+        validateIsNull(startAt);
+        return new ReservationTime(0L, startAt);
     }
 
     public static ReservationTime of(String startAt) {

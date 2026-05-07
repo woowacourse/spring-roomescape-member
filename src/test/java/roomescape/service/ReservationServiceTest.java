@@ -3,6 +3,7 @@ package roomescape.service;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,8 @@ class ReservationServiceTest {
     void 존재하지_않는_시간으로_예약시_예외() {
         given(reservationTimeService.find(999L)).willThrow(new IllegalArgumentException());
 
-        ReservationCreateRequest request = new ReservationCreateRequest("zeze", "2026-05-03", 999L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-05-03"), 999L,
+                1L);
 
         Assertions.assertThatThrownBy(() -> reservationService.reserve(request))
                 .isInstanceOf(IllegalArgumentException.class);

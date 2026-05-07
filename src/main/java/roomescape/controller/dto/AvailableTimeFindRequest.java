@@ -3,10 +3,9 @@ package roomescape.controller.dto;
 import java.time.LocalDate;
 
 public class AvailableTimeFindRequest {
-    private static final String DATE_SHOULD_NOT_BE_PAST = "기준 날짜는 과거일 수 없습니다.";
     private static final String DATE_SHOULD_NOT_BE_NULL = "날짜는 필수로 입력해야 합니다.";
     private static final String THEME_ID_SHOULD_NOT_BE_NULL = "테마 아이디는 필수로 입력해야 합니다.";
-    private static final String THEME_ID_SHOULD_BE_POSITIVE = "테마 아이디는 양수로 입력해야 합니다.";
+    private static final String THEME_ID_SHOULD_BE_POSITIVE = "테마 아이디는 양수여야 합니다.";
     private static final int MIN_THEME_ID = 1;
 
     private final LocalDate date;
@@ -27,18 +26,12 @@ public class AvailableTimeFindRequest {
         if (date == null) {
             throw new IllegalArgumentException(DATE_SHOULD_NOT_BE_NULL);
         }
-
-        LocalDate now = LocalDate.now();
-        if (now.isAfter(date)) {
-            throw new IllegalArgumentException(DATE_SHOULD_NOT_BE_PAST);
-        }
     }
 
     private void validateTheme(Long themeId) {
         if (themeId == null) {
             throw new IllegalArgumentException(THEME_ID_SHOULD_NOT_BE_NULL);
         }
-
         if (themeId < MIN_THEME_ID) {
             throw new IllegalArgumentException(THEME_ID_SHOULD_BE_POSITIVE);
         }
