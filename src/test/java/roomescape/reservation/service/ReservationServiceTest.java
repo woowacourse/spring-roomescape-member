@@ -160,14 +160,13 @@ class ReservationServiceTest {
     void updateStatus_canceled() {
         // given
         Reservation savedReservation = save(reservation(name, reservationDate1, reservationTime1, theme1));
-        ReservationStatus canceled = ReservationStatus.CANCELED;
 
         // when
         Reservation actual = reservationService.cancel(savedReservation.id());
 
         // then
         Assertions.assertThat(actual.status())
-                .isEqualTo(canceled);
+                .isEqualTo(ReservationStatus.CANCELED);
     }
 
     private Reservation save(Reservation reservation) {

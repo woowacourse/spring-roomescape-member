@@ -2,6 +2,7 @@ package roomescape.reservation.fixture;
 
 import roomescape.date.domain.ReservationDate;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -15,6 +16,17 @@ public class ReservationFixture {
             Theme theme
     ) {
         return Reservation.create(name, date.date(), time.startAt(), theme);
+    }
+
+    public static Reservation canceledReservation(
+            String name,
+            ReservationDate date,
+            ReservationTime time,
+            Theme theme
+    ) {
+        Reservation reservation = Reservation.create(name, date.date(), time.startAt(), theme);
+        reservation.updateStatus(ReservationStatus.CANCELED);
+        return reservation;
     }
 
     public static ReservationSaveDto saveDto(

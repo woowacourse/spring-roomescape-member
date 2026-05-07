@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.fixture.FakeReservationDateRepository;
+import roomescape.date.fixture.ReservationDateFixture;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,8 +32,9 @@ class ReservationDateServiceTest {
     void readDates() {
         // given
         List<ReservationDate> reservationDates = List.of(
-                ReservationDate.create(DEFAULT_DATE),
-                ReservationDate.create(DEFAULT_DATE.plusDays(1)));
+                ReservationDateFixture.oneWeekLater(),
+                ReservationDateFixture.twoWeeksLater()
+        );
         saveAll(reservationDates);
 
         // when
@@ -47,7 +49,7 @@ class ReservationDateServiceTest {
     @DisplayName("등록된 예약날짜와 조회된 예약날짜의 모든 필드는 일치한다")
     void readDate() {
         // given
-        ReservationDate saved = reservationDateRepository.save(ReservationDate.create(DEFAULT_DATE));
+        ReservationDate saved = reservationDateRepository.save(ReservationDateFixture.oneWeekLater());
 
         // when
         ReservationDate actual = reservationDateService.readDate(saved.id());
@@ -101,9 +103,9 @@ class ReservationDateServiceTest {
     void delete() {
         // given
         List<ReservationDate> reservationDates = saveAll(List.of(
-                ReservationDate.create(DEFAULT_DATE),
-                ReservationDate.create(DEFAULT_DATE.plusDays(1)))
-        );
+                ReservationDateFixture.oneWeekLater(),
+                ReservationDateFixture.twoWeeksLater()
+        ));
 
         // when
         reservationDateService.deregister(reservationDates.get(0).id());

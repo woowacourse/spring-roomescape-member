@@ -13,10 +13,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.fixture.FakeThemeRepository;
+import roomescape.theme.fixture.ThemeFixture;
 
 class ThemeServiceTest {
-    private static final String DEFAULT_DESCRIPTION = "테마 설명";
-    private static final String DEFAULT_THUMBNAIL_URL = "테마 썸네일";
+
+    private final String name = "테마1";
+    private final String description = "테마1 설명";
+    private final String thumbnail = "테마1 썸네일";
 
     private ThemeService themeService;
     private FakeThemeRepository themeRepository;
@@ -32,9 +35,9 @@ class ThemeServiceTest {
     void readThemes() {
         // given
         List<Theme> themes = List.of(
-                Theme.create("테마1", "테마1 설명", "테마1 썸네일"),
-                Theme.create("테마2", "테마2 설명", "테마2 썸네일"),
-                Theme.create("테마3", "테마3 설명", "테마3 썸네일")
+                ThemeFixture.theme("테마1"),
+                ThemeFixture.theme("테마2"),
+                ThemeFixture.theme("테마3")
         );
         themeRepository.saveAll(themes);
 
@@ -49,7 +52,7 @@ class ThemeServiceTest {
     @DisplayName("등록된 테마와 조회되는 테마의 모든 필드가 일치한다.")
     void readTheme() {
         // given
-        Theme savedTheme = themeRepository.save(Theme.create("테마1", "테마1 설명", "테마1 썸네일"));
+        Theme savedTheme = themeRepository.save(ThemeFixture.theme());
 
         // when
         Theme actual = themeService.readTheme(savedTheme.id());
@@ -76,11 +79,11 @@ class ThemeServiceTest {
     @DisplayName("활성화된 테마 목록을 가나다순으로 조회한다.")
     void readActiveThemes() {
         // given
-        String name1 = "다테마";
-        String name2 = "나테마";
-        String name3 = "가테마";
-
-        List<Theme> themes = saveAll(generateActiveThemesByName(List.of(name1, name2, name3)));
+        List<Theme> themes = saveAll(List.of(
+                ThemeFixture.theme("다테마"),
+                ThemeFixture.theme("나테마"),
+                ThemeFixture.theme("가테마"))
+        );
         Collections.sort(themes, Comparator.comparing(Theme::name));
 
         // when
@@ -92,15 +95,9 @@ class ThemeServiceTest {
                 .isEqualTo(themes);
     }
 
-
     @Test
     @DisplayName("테마를 1개 등록하면 테마 데이터 수가 1 증가한다.")
     void register() {
-        // given
-        String name = "테마1";
-        String description = "테마1 설명";
-        String thumbnail = "테마1 썸네일";
-
         // when
         themeService.register(name, description, thumbnail);
 
@@ -112,11 +109,6 @@ class ThemeServiceTest {
     @Test
     @DisplayName("등록한 테마와 다시 조회한 테마의 모든 필드가 일치한다.")
     void register_theme_fields_match() {
-        // given
-        String name = "테마1";
-        String description = "테마1 설명";
-        String thumbnail = "테마1 썸네일";
-
         // when
         Theme registeredTheme = themeService.register(name, description, thumbnail);
 
@@ -126,12 +118,11 @@ class ThemeServiceTest {
                 .isEqualTo(themeService.readTheme(registeredTheme.id()));
     }
 
-
     @Test
     @DisplayName("테마를 활성화한다.")
     void updateStatus_active() {
         // given
-        Theme savedTheme = themeRepository.save(Theme.create("테마1", "테마1 설명", "테마1 썸네일"));
+        Theme savedTheme = themeRepository.save(ThemeFixture.theme());
 
         // when
         themeService.updateStatus(savedTheme.id(), true);
@@ -146,9 +137,7 @@ class ThemeServiceTest {
     @DisplayName("테마를 비활성화한다.")
     void updateStatus_deactivate() {
         // given
-        Theme theme = Theme.create("테마1", "테마1 설명", "테마1 썸네일");
-        theme.updateStatus(true);
-        Theme savedTheme = themeRepository.save(theme);
+        Theme savedTheme = themeRepository.save(ThemeFixture.activeTheme());
 
         // when
         themeService.updateStatus(savedTheme.id(), false);
@@ -167,13 +156,4 @@ class ThemeServiceTest {
         return savedThemes;
     }
 
-    private List<Theme> generateActiveThemesByName(List<String> names) {
-        List<Theme> themes = new ArrayList<>();
-        for (String name : names) {
-            Theme theme = Theme.create(name, DEFAULT_DESCRIPTION, DEFAULT_THUMBNAIL_URL);
-            theme.updateStatus(true);
-            themes.add(theme);
-        }
-        return themes;
-    }
 }

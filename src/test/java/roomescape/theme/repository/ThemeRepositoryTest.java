@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.fixture.ThemeFixture;
 
 @JdbcTest
 class ThemeRepositoryTest {
-    private static final String DEFAULT_DESCRIPTION = "테마 설명";
-    private static final String DEFAULT_THUMBNAIL_URL = "테마 썸네일";
+
     private JdbcThemeRepository jdbcThemeRepository;
 
     @Autowired
@@ -33,9 +33,11 @@ class ThemeRepositoryTest {
     @DisplayName("등록된 테마가 여러개이면 조회 시 등록된 갯수만큼 반환한다.")
     void findAll() {
         // given
-        List<Theme> themes = List.of(Theme.create("테마1", "테마1 설명", "테마1 썸네일"),
-                Theme.create("테마2", "테마2 설명", "테마2 썸네일"),
-                Theme.create("테마3", "테마3 설명", "테마3 썸네일"));
+        List<Theme> themes = List.of(
+                ThemeFixture.theme("테마1"),
+                ThemeFixture.theme("테마2"),
+                ThemeFixture.theme("테마3")
+        );
         saveAll(themes);
 
         // when
@@ -50,7 +52,7 @@ class ThemeRepositoryTest {
     @DisplayName("등록된 테마와 조회되는 테마의 모든 필드가 일치한다.")
     void findById() {
         // given
-        Theme savedTheme = jdbcThemeRepository.save(Theme.create("테마1", "테마1 설명", "테마1 썸네일"));
+        Theme savedTheme = jdbcThemeRepository.save(ThemeFixture.theme());
 
         // when
         Theme actual = jdbcThemeRepository.findById(savedTheme.id()).get();
@@ -65,11 +67,11 @@ class ThemeRepositoryTest {
     @DisplayName("활성화된 테마 목록을 가나다순으로 조회한다.")
     void findByActive() {
         // given
-        String name1 = "다테마";
-        String name2 = "나테마";
-        String name3 = "가테마";
-
-        List<Theme> themes = saveAll(generateActiveThemesByName(List.of(name1, name2, name3)));
+        List<Theme> themes = saveAll(List.of(
+                ThemeFixture.theme("다테마"),
+                ThemeFixture.theme("나테마"),
+                ThemeFixture.theme("가테마"))
+        );
         Collections.sort(themes, Comparator.comparing(Theme::name));
 
         // when
@@ -86,10 +88,9 @@ class ThemeRepositoryTest {
     void save() {
         // given
         List<Theme> themes = List.of();
-        Theme theme = Theme.create("테마1", "테마1 설명", "테마1 썸네일");
 
         // when
-        jdbcThemeRepository.save(theme);
+        jdbcThemeRepository.save(ThemeFixture.theme());
 
         // then
         assertThat(jdbcThemeRepository.findAll())
@@ -100,7 +101,7 @@ class ThemeRepositoryTest {
     @DisplayName("테마를 활성화한다.")
     void updateStatus_active() {
         // given
-        Theme savedTheme = jdbcThemeRepository.save(Theme.create("테마1", "테마1 설명", "테마1 썸네일"));
+        Theme savedTheme = jdbcThemeRepository.save(ThemeFixture.theme());
         savedTheme.updateStatus(true);
 
         // when
@@ -116,9 +117,7 @@ class ThemeRepositoryTest {
     @DisplayName("테마를 비활성화한다.")
     void updateStatus_deactivate() {
         // given
-        Theme theme = Theme.create("테마1", "테마1 설명", "테마1 썸네일");
-        theme.updateStatus(true);
-        Theme savedTheme = jdbcThemeRepository.save(theme);
+        Theme savedTheme = jdbcThemeRepository.save(ThemeFixture.activeTheme());
         savedTheme.updateStatus(false);
 
         // when
@@ -138,13 +137,4 @@ class ThemeRepositoryTest {
         return savedThemes;
     }
 
-    private List<Theme> generateActiveThemesByName(List<String> names) {
-        List<Theme> themes = new ArrayList<>();
-        for (String name : names) {
-            Theme theme = Theme.create(name, DEFAULT_DESCRIPTION, DEFAULT_THUMBNAIL_URL);
-            theme.updateStatus(true);
-            themes.add(theme);
-        }
-        return themes;
-    }
 }

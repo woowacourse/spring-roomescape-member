@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.date.domain.ReservationDate;
+import roomescape.date.fixture.ReservationDateFixture;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ class ReservationDateRepositoryTest {
     @DisplayName("등록된 예약날짜와 조회된 예약날짜의 모든 필드는 일치한다")
     void findById() {
         // given
-        ReservationDate saved = reservationDateRepository.save(ReservationDate.create(DEFAULT_DATE));
+        ReservationDate saved = save(ReservationDate.create(DEFAULT_DATE));
 
         // when
         ReservationDate actual = reservationDateRepository.findById(saved.id()).get();
@@ -64,14 +65,14 @@ class ReservationDateRepositoryTest {
     @DisplayName("예약날짜를 1개 등록하면 예약날짜 데이터 수가 1 증가한다.")
     void save() {
         // given
-        ReservationDate reservationDate = ReservationDate.create(DEFAULT_DATE);
+        List<ReservationDate> reservationDates = List.of();
 
         // when
-        reservationDateRepository.save(reservationDate);
+        reservationDateRepository.save(ReservationDateFixture.oneWeekLater());
 
         // then
         Assertions.assertThat(reservationDateRepository.findAll())
-                .hasSize(1);
+                .hasSize(reservationDates.size() + 1);
     }
 
     @Test
@@ -84,7 +85,7 @@ class ReservationDateRepositoryTest {
         );
 
         // when
-        reservationDateRepository.delete(reservationDates.get(0).id());
+        reservationDateRepository.delete(reservationDates.getFirst().id());
 
         // then
         Assertions.assertThat(reservationDateRepository.findAll())
@@ -94,9 +95,13 @@ class ReservationDateRepositoryTest {
     private List<ReservationDate> saveAll(List<ReservationDate> reservationDates) {
         List<ReservationDate> savedReservationDates = new ArrayList<>();
         for (ReservationDate reservationDate : reservationDates) {
-            savedReservationDates.add(reservationDateRepository.save(reservationDate));
+            savedReservationDates.add(save(reservationDate));
         }
         return savedReservationDates;
+    }
+
+    private ReservationDate save(ReservationDate reservationDate) {
+        return reservationDateRepository.save(reservationDate);
     }
 
 }
