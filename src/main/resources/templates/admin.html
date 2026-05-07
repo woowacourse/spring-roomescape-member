@@ -234,6 +234,7 @@ tr:hover td{background:var(--sur2)}
           <th>#</th>
           <th>예약자</th>
           <th>날짜</th>
+          <th>테마</th>
           <th>시간</th>
           <th></th>
         </tr>
@@ -381,7 +382,7 @@ async function loadStats() {
 /* ── RESERVATIONS ── */
 async function loadReservations() {
   const tbody = document.getElementById('r-tbody');
-  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted);font-size:.75rem">불러오는 중...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);font-size:.75rem">불러오는 중...</td></tr>';
   try {
     const r = await fetch('/admin/reservations');
     if (!r.ok) {
@@ -393,7 +394,7 @@ async function loadReservations() {
     console.log('[예약 목록] 응답 데이터:', data);
     tbody.innerHTML = '';
     if (!data.length) {
-      tbody.innerHTML = '<tr class="empty-row"><td colspan="5">예약이 없습니다</td></tr>';
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="6">예약이 없습니다</td></tr>';
       return;
     }
     data.forEach(rv => {
@@ -402,6 +403,7 @@ async function loadReservations() {
         <td class="td-id">${rv.id}</td>
         <td>${rv.name}</td>
         <td>${rv.date || ''}</td>
+        <td>${rv.themeResponseDto?.name || ''}</td>
         <td>${fmt(rv.timeDto?.startAt)}</td>
         <td><button class="td-del" onclick="delReservation(${rv.id},'${(rv.name||'').replace(/'/g,"\\'")}')">×</button></td>
       `;
@@ -409,7 +411,7 @@ async function loadReservations() {
     });
   } catch (e) {
     console.error('[예약 목록] 렌더링 오류:', e);
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">오류: ${e.message}</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">오류: ${e.message}</td></tr>`;
   }
 }
 
