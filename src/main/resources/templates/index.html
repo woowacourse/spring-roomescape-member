@@ -58,7 +58,7 @@
 
         <section class="panel">
             <div class="panel-heading">
-                <h2>인기 테마</h2>
+                <h2>인기 테마 - 최근 일주일</h2>
                 <div class="inline-controls">
                     <input id="trend-limit" type="number" min="1" max="20" value="10" aria-label="인기 테마 개수">
                     <button id="reload-trending" class="ghost-button" type="button">조회</button>
@@ -124,7 +124,7 @@
             throw new Error(message || `요청 실패: ${response.status}`);
         }
 
-        if (response.status === 204) {
+        if (response.status === 204 || response.headers.get('content-length') === '0') {
             return null;
         }
         return response.json();
@@ -310,11 +310,18 @@
             return;
         }
 
+        const row = button.closest('tr');
+        button.disabled = true;
         try {
             await requestJson(`/user/reservations/${button.dataset.id}`, {method: 'DELETE'});
+            row?.remove();
+            if (reservationRows.children.length === 0) {
+                reservationRows.innerHTML = '<tr><td class="empty" colspan="5">예약 내역이 없습니다.</td></tr>';
+            }
             setStatus('예약을 취소했습니다.');
             await Promise.all([loadAvailableTimes(), loadReservations(), loadTrendingThemes()]);
         } catch (error) {
+            button.disabled = false;
             setStatus(error.message, true);
         }
     });
