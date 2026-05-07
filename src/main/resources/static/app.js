@@ -4,10 +4,17 @@ const state = {
   times: [],
   availableTimes: [],
   popularThemes: [],
+  availability: {
+    date: "",
+    themeId: "",
+  },
 };
+
+const DEFAULT_THEME_IMAGE = "https://avatars.githubusercontent.com/u/177727543?v=4&size=64";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+let reservationToastTimer;
 
 document.addEventListener("DOMContentLoaded", async () => {
   setToday();
@@ -18,11 +25,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 window.addEventListener("hashchange", route);
+window.addEventListener("error", replaceBrokenThemeImage, true);
 
 function setToday() {
   const today = new Date().toISOString().slice(0, 10);
   $("#reservation-date").value = today;
-  $("#selected-date").value = today;
 }
 
 function bindEvents() {
@@ -55,8 +62,8 @@ function bindEvents() {
   $("[data-refresh='themes']").addEventListener("click", loadThemes);
   $("[data-refresh='times']").addEventListener("click", loadTimes);
 
-  $("#selected-date").addEventListener("change", syncAvailabilityInputs);
-  $("#selected-theme").addEventListener("change", syncAvailabilityInputs);
+  $("#reservation-date").addEventListener("change", clearAvailabilitySelection);
+  $("#reservation-theme").addEventListener("change", clearAvailabilitySelection);
 }
 
 async function loadAll() {
@@ -93,19 +100,23 @@ async function loadAvailableTimes() {
   }
 
   state.availableTimes = await request(`/times?date=${date}&themeId=${themeId}`);
-  $("#selected-date").value = date;
-  $("#selected-theme").value = themeId;
+  state.availability = { date, themeId };
   renderAvailableTimes();
-  showNotice("예약 가능한 시간을 조회했습니다.");
+  renderReservationCondition();
 }
 
 async function loadPopularThemes() {
   state.popularThemes = await request("/themes?days=7&limits=10");
   renderPopularThemes();
-  showNotice("인기 테마를 조회했습니다.");
 }
 
 async function createReservation() {
+  const { date, themeId } = state.availability;
+  if (!date || !themeId) {
+    showNotice("가능 시간을 먼저 조회해주세요.", true);
+    return;
+  }
+
   if (!$("#selected-time").value) {
     showNotice("예약할 시간을 선택해주세요.", true);
     return;
@@ -113,9 +124,9 @@ async function createReservation() {
 
   const payload = {
     name: $("#reservation-name").value,
-    date: $("#selected-date").value,
+    date,
     timeId: Number($("#selected-time").value),
-    themeId: Number($("#selected-theme").value),
+    themeId: Number(themeId),
   };
 
   await request("/reservations", {
@@ -125,10 +136,10 @@ async function createReservation() {
 
   $("#reservation-form").reset();
   setToday();
-  state.availableTimes = [];
-  renderAvailableTimes();
+  $("#reservation-theme").value = "";
+  clearAvailabilitySelection();
   await loadReservations();
-  showNotice("예약이 생성되었습니다.");
+  showReservationToast("예약이 생성되었습니다.");
 }
 
 async function createTheme() {
@@ -145,7 +156,6 @@ async function createTheme() {
 
   $("#theme-form").reset();
   await loadThemes();
-  showNotice("테마가 추가되었습니다.");
 }
 
 async function createTime() {
@@ -160,25 +170,21 @@ async function createTime() {
 
   $("#time-form").reset();
   await loadTimes();
-  showNotice("시간이 추가되었습니다.");
 }
 
 async function deleteReservation(id) {
   await request(`/reservations/${id}`, { method: "DELETE" });
   await loadReservations();
-  showNotice("예약이 삭제되었습니다.");
 }
 
 async function deleteTheme(id) {
   await request(`/admin/themes/${id}`, { method: "DELETE" });
   await loadThemes();
-  showNotice("테마가 삭제되었습니다.");
 }
 
 async function deleteTime(id) {
   await request(`/admin/times/${id}`, { method: "DELETE" });
   await loadTimes();
-  showNotice("시간이 삭제되었습니다.");
 }
 
 async function request(path, options = {}) {
@@ -233,14 +239,19 @@ function renderPopularThemes() {
 }
 
 function renderReservationOptions() {
+  const currentThemeId = $("#reservation-theme").value;
   const themeOptions = [
     `<option value="">테마 선택</option>`,
     ...state.themes.map((theme) => `<option value="${theme.id}">${escapeHtml(theme.name)}</option>`),
   ].join("");
 
   $("#reservation-theme").innerHTML = themeOptions;
-  $("#selected-theme").innerHTML = themeOptions;
+  if (state.themes.some((theme) => String(theme.id) === currentThemeId)) {
+    $("#reservation-theme").value = currentThemeId;
+  }
+
   renderAvailableTimes();
+  renderReservationCondition();
 }
 
 function renderAvailableTimes() {
@@ -250,9 +261,13 @@ function renderAvailableTimes() {
     </button>`
   ));
 
+  const emptyMessage = state.availability.date
+    ? "예약 가능한 시간이 없습니다."
+    : "날짜와 테마를 선택한 뒤 가능 시간 조회를 눌러주세요.";
+
   $("#available-time-list").innerHTML = buttons.length
     ? buttons.join("")
-    : `<p class="empty inline">예약 가능한 시간이 없습니다.</p>`;
+    : `<p class="empty inline">${emptyMessage}</p>`;
 
   if (state.availableTimes.length > 0) {
     $("#selected-time").value = String(state.availableTimes[0].id);
@@ -267,6 +282,32 @@ function renderAvailableTimes() {
       button.classList.add("selected");
     });
   });
+}
+
+function renderReservationCondition() {
+  const condition = $("#reservation-condition");
+  const { date, themeId } = state.availability;
+  const theme = state.themes.find((item) => String(item.id) === String(themeId));
+
+  if (!date || !theme) {
+    condition.textContent = "조회 조건 없음";
+    condition.classList.add("empty-condition");
+    return;
+  }
+
+  condition.innerHTML = `
+    <span>${escapeHtml(date)}</span>
+    <span>${escapeHtml(theme.name)}</span>
+  `;
+  condition.classList.remove("empty-condition");
+}
+
+function clearAvailabilitySelection() {
+  state.availableTimes = [];
+  state.availability = { date: "", themeId: "" };
+  $("#selected-time").value = "";
+  renderAvailableTimes();
+  renderReservationCondition();
 }
 
 function renderReservations() {
@@ -315,11 +356,6 @@ function renderTimeSelects() {
   $("#time-minute").innerHTML = rangeOptions(0, 59);
 }
 
-function syncAvailabilityInputs() {
-  $("#reservation-date").value = $("#selected-date").value;
-  $("#reservation-theme").value = $("#selected-theme").value;
-}
-
 function themeCard(theme) {
   return `
     <article class="theme-card">
@@ -331,6 +367,31 @@ function themeCard(theme) {
       </div>
     </article>
   `;
+}
+
+function replaceBrokenThemeImage(event) {
+  const image = event.target;
+  if (!(image instanceof HTMLImageElement) || !image.closest(".theme-card")) {
+    return;
+  }
+
+  if (image.dataset.fallbackApplied === "true") {
+    return;
+  }
+
+  image.dataset.fallbackApplied = "true";
+  image.src = DEFAULT_THEME_IMAGE;
+}
+
+function showReservationToast(message) {
+  const toast = $("#reservation-toast");
+  toast.textContent = message;
+  toast.hidden = false;
+
+  window.clearTimeout(reservationToastTimer);
+  reservationToastTimer = window.setTimeout(() => {
+    toast.hidden = true;
+  }, 750);
 }
 
 function showNotice(message, isError = false) {

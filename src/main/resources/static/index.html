@@ -81,26 +81,21 @@
             </form>
         </section>
         <section class="panel">
-            <h2>예약 정보</h2>
-            <form id="reservation-form" class="grid-form">
+            <div class="section-head">
+                <h2>예약 정보</h2>
+                <div id="reservation-condition" class="selection-summary">조회 조건 없음</div>
+            </div>
+            <div id="available-time-list" class="time-picker" aria-label="예약 가능한 시간">
+                <p class="empty inline">날짜와 테마를 선택한 뒤 가능 시간 조회를 눌러주세요.</p>
+            </div>
+            <form id="reservation-form" class="grid-form reservation-form">
                 <label>
                     이름
                     <input id="reservation-name" type="text" maxlength="10" required>
                 </label>
-                <label>
-                    날짜
-                    <input id="selected-date" type="date" required>
-                </label>
-                <label>
-                    테마
-                    <select id="selected-theme" required></select>
-                </label>
                 <input id="selected-time" type="hidden" required>
                 <button type="submit">예약 생성</button>
             </form>
-            <div id="available-time-list" class="time-picker" aria-label="예약 가능한 시간">
-                <p class="empty inline">날짜와 테마를 선택한 뒤 가능 시간 조회를 눌러주세요.</p>
-            </div>
         </section>
     </section>
 
@@ -131,79 +126,91 @@
             </div>
         </section>
 
-        <section class="panel">
-            <h2>테마 추가</h2>
-            <form id="theme-form" class="grid-form">
-                <label>
-                    이름
-                    <input id="theme-name" type="text" required>
-                </label>
-                <label>
-                    썸네일 URL
-                    <input id="theme-thumbnail" type="text" required>
-                </label>
-                <label class="wide">
-                    설명
-                    <input id="theme-description" type="text" required>
-                </label>
-                <button type="submit">추가</button>
-            </form>
-        </section>
-        <section class="panel">
+        <section class="panel admin-group">
             <div class="section-head">
-                <h2>테마 목록</h2>
+                <h2>테마 관리</h2>
                 <button type="button" data-refresh="themes">새로고침</button>
             </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>이름</th>
-                        <th>설명</th>
-                        <th>소요</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody id="theme-rows"></tbody>
-                </table>
+            <div class="admin-split">
+                <div class="admin-block">
+                    <h3>테마 추가</h3>
+                    <form id="theme-form" class="grid-form admin-form">
+                        <label>
+                            이름
+                            <input id="theme-name" type="text" required>
+                        </label>
+                        <label>
+                            썸네일 URL
+                            <input id="theme-thumbnail" type="text" required>
+                        </label>
+                        <label class="wide">
+                            설명
+                            <input id="theme-description" type="text" required>
+                        </label>
+                        <button type="submit">추가</button>
+                    </form>
+                </div>
+                <div class="admin-block">
+                    <h3>테마 목록</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>이름</th>
+                                <th>설명</th>
+                                <th>소요</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody id="theme-rows"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section class="panel">
-            <h2>시간 추가</h2>
-            <form id="time-form" class="toolbar compact">
-                <label>
-                    시
-                    <select id="time-hour" required></select>
-                </label>
-                <label>
-                    분
-                    <select id="time-minute" required></select>
-                </label>
-                <button type="submit">추가</button>
-            </form>
-        </section>
-        <section class="panel">
+        <section class="panel admin-group">
             <div class="section-head">
-                <h2>시간 목록</h2>
+                <h2>시간 관리</h2>
                 <button type="button" data-refresh="times">새로고침</button>
             </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>시작 시간</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody id="time-rows"></tbody>
-                </table>
+            <div class="admin-split">
+                <div class="admin-block">
+                    <h3>시간 추가</h3>
+                    <form id="time-form" class="toolbar compact">
+                        <label>
+                            시
+                            <select id="time-hour" required></select>
+                        </label>
+                        <label>
+                            분
+                            <select id="time-minute" required></select>
+                        </label>
+                        <button type="submit">추가</button>
+                    </form>
+                </div>
+                <div class="admin-block">
+                    <h3>시간 목록</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>시작 시간</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody id="time-rows"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </section>
     </section>
 </main>
+
+<div id="reservation-toast" class="toast" role="status" aria-live="polite" hidden></div>
 
 <script src="/app.js"></script>
 </body>
