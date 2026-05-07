@@ -48,4 +48,8 @@ public class ReservationResponse {
     public ReservationTimeResponse getTime() {
         return time;
     }
+
+    public ThemeResponse getTheme() {
+        return theme;
+    }
 }
