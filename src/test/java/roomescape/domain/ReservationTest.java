@@ -1,13 +1,11 @@
 package roomescape.domain;
 
 import org.junit.jupiter.api.Test;
-import roomescape.exception.DomainException;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.InvalidRequestException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTest {
@@ -17,33 +15,33 @@ class ReservationTest {
 
     @Test
     void 예약자_이름이_비어있으면_도메인_예외가_발생한다() {
-        assertDomainException(
+        assertInvalidRequestException(
                 () -> new Reservation(" ", LocalDate.of(2023, 8, 5), time, theme),
-                ErrorCode.INVALID_RESERVATION_NAME
+                "예약자 이름은 비어 있을 수 없습니다."
         );
     }
 
     @Test
     void 예약_날짜가_null이면_도메인_예외가_발생한다() {
-        assertDomainException(
+        assertInvalidRequestException(
                 () -> new Reservation("브라운", null, time, theme),
-                ErrorCode.INVALID_RESERVATION_DATE
+                "예약 날짜는 비어 있을 수 없습니다."
         );
     }
 
     @Test
     void 예약_시간이_null이면_도메인_예외가_발생한다() {
-        assertDomainException(
+        assertInvalidRequestException(
                 () -> new Reservation("브라운", LocalDate.of(2023, 8, 5), null, theme),
-                ErrorCode.INVALID_RESERVATION_TIME
+                "예약 시간은 비어 있을 수 없습니다."
         );
     }
 
     @Test
     void 예약_테마가_null이면_도메인_예외가_발생한다() {
-        assertDomainException(
+        assertInvalidRequestException(
                 () -> new Reservation("브라운", LocalDate.of(2023, 8, 5), time, null),
-                ErrorCode.INVALID_THEME
+                "테마 정보는 비어 있을 수 없습니다."
         );
     }
 
@@ -51,9 +49,9 @@ class ReservationTest {
     void 예약_id가_null이면_도메인_예외가_발생한다() {
         Reservation reservation = new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
 
-        assertDomainException(
+        assertInvalidRequestException(
                 () -> reservation.withId(null),
-                ErrorCode.INVALID_RESERVATION_ID
+                "예약 id는 비어 있을 수 없습니다."
         );
     }
 
@@ -61,17 +59,15 @@ class ReservationTest {
     void 이미_id가_있는_예약에_id를_부여하면_도메인_예외가_발생한다() {
         Reservation reservation = new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), time, theme);
 
-        assertDomainException(
+        assertInvalidRequestException(
                 () -> reservation.withId(2L),
-                ErrorCode.RESERVATION_ALREADY_HAS_ID
+                "이미 식별자가 존재하는 예약입니다."
         );
     }
 
-    private void assertDomainException(Runnable runnable, ErrorCode errorCode) {
+    private void assertInvalidRequestException(Runnable runnable, String message) {
         assertThatThrownBy(runnable::run)
-                .isInstanceOfSatisfying(DomainException.class, exception ->
-                        assertThat(exception.getErrorCode()).isEqualTo(errorCode)
-                )
-                .hasMessage(errorCode.message());
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessage(message);
     }
 }

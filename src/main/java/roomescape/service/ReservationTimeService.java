@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeAvailability;
-import roomescape.exception.DomainException;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.InvalidRequestException;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -17,6 +17,9 @@ import java.util.List;
 
 @Service
 public class ReservationTimeService {
+    private static final String RESERVATION_TIME_ALREADY_EXISTS_MESSAGE = "이미 존재하는 예약 시간입니다.";
+    private static final String THEME_NOT_FOUND_MESSAGE = "존재하지 않는 테마입니다.";
+
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -40,7 +43,7 @@ public class ReservationTimeService {
 
     private void validateNotDuplicated(ReservationTime reservationTime) {
         if (reservationTimeRepository.existsByStartAt(reservationTime.getStartAt())) {
-            throw new DomainException(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS);
+            throw new InvalidRequestException(RESERVATION_TIME_ALREADY_EXISTS_MESSAGE);
         }
     }
 
@@ -57,7 +60,7 @@ public class ReservationTimeService {
     @Transactional(readOnly = true)
     public List<ReservationTimeAvailability> findAvailableTimes(LocalDate date, Long themeId) {
         themeRepository.findById(themeId)
-                .orElseThrow(() -> new DomainException(ErrorCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(THEME_NOT_FOUND_MESSAGE));
 
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
 

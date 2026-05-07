@@ -5,8 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.DomainException;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -16,6 +15,9 @@ import java.util.List;
 
 @Service
 public class ReservationService {
+    private static final String RESERVATION_TIME_NOT_FOUND_MESSAGE = "존재하지 않는 예약 시간입니다.";
+    private static final String THEME_NOT_FOUND_MESSAGE = "존재하지 않는 테마입니다.";
+
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
@@ -36,9 +38,9 @@ public class ReservationService {
     @Transactional
     public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new DomainException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(RESERVATION_TIME_NOT_FOUND_MESSAGE));
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new DomainException(ErrorCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(THEME_NOT_FOUND_MESSAGE));
 
         Reservation reservation = new Reservation(name, date, time, theme);
         return reservationRepository.save(reservation);

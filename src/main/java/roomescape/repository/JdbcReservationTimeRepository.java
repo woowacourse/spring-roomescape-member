@@ -6,7 +6,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.ErrorCode;
 import roomescape.exception.InfrastructureException;
 
 import java.sql.PreparedStatement;
@@ -16,6 +15,8 @@ import java.util.Optional;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
+    private static final String RESERVATION_TIME_CREATE_FAILED_MESSAGE = "예약 시간 생성에 실패했습니다.";
+
     private static final String FIND_ALL_SQL = """
             SELECT id, start_at
             FROM reservation_time
@@ -102,14 +103,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     private void validateCreatedRowCount(int rowCount) {
         if (rowCount != 1) {
-            throw new InfrastructureException(ErrorCode.RESERVATION_TIME_CREATE_FAILED);
+            throw new InfrastructureException(RESERVATION_TIME_CREATE_FAILED_MESSAGE);
         }
     }
 
     private Long getGeneratedId(KeyHolder keyHolder) {
         Number key = keyHolder.getKey();
         if (key == null) {
-            throw new InfrastructureException(ErrorCode.RESERVATION_TIME_CREATE_FAILED);
+            throw new InfrastructureException(RESERVATION_TIME_CREATE_FAILED_MESSAGE);
         }
         return key.longValue();
     }

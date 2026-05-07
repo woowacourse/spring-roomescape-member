@@ -10,8 +10,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeAvailability;
 import roomescape.domain.Theme;
-import roomescape.exception.DomainException;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.InvalidRequestException;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -48,8 +48,8 @@ class ReservationTimeServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationTimeService.create(startAt))
-                .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS.message());
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessage("이미 존재하는 예약 시간입니다.");
     }
 
     @Test
@@ -82,7 +82,7 @@ class ReservationTimeServiceTest {
     public void findAvailableTimes_fail() {
         // when, then
         assertThatThrownBy(() -> reservationTimeService.findAvailableTimes(LocalDate.of(26,5,6), 37L))
-                .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.THEME_NOT_FOUND.message());
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 테마입니다.");
     }
 }

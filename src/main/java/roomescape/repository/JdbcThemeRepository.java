@@ -6,7 +6,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.exception.ErrorCode;
 import roomescape.exception.InfrastructureException;
 
 import java.sql.PreparedStatement;
@@ -16,6 +15,8 @@ import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
+    private static final String THEME_CREATE_FAILED_MESSAGE = "테마 생성에 실패했습니다.";
+
     private final String FIND_ALL_SQL = """
             SELECT id, name, description, thumbnail
             FROM THEME
@@ -115,14 +116,14 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     private void validateCreatedRowCount(int rowCount) {
         if (rowCount != 1) {
-            throw new InfrastructureException(ErrorCode.THEME_CREATE_FAILED);
+            throw new InfrastructureException(THEME_CREATE_FAILED_MESSAGE);
         }
     }
 
     private Long getGeneratedId(KeyHolder keyHolder) {
         Number key = keyHolder.getKey();
         if (key == null) {
-            throw new InfrastructureException(ErrorCode.THEME_CREATE_FAILED);
+            throw new InfrastructureException(THEME_CREATE_FAILED_MESSAGE);
         }
         return key.longValue();
     }

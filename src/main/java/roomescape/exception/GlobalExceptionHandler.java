@@ -2,6 +2,7 @@ package roomescape.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -11,25 +12,33 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    private final ErrorStatusMapper errorStatusMapper;
-
-    public GlobalExceptionHandler(ErrorStatusMapper errorStatusMapper) {
-        this.errorStatusMapper = errorStatusMapper;
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRequestException(InvalidRequestException exception) {
+        return ResponseEntity
+                .badRequest()
+                .body(new ErrorResponse(exception.getMessage()));
     }
 
-    @ExceptionHandler(DomainException.class)
-    public ResponseEntity<ErrorResponse> handleDomainException(DomainException exception) {
-        ErrorCode errorCode = exception.getErrorCode();
-
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException exception) {
         return ResponseEntity
-                .status(errorStatusMapper.map(errorCode))
-                .body(new ErrorResponse(errorCode.message()));
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(exception.getMessage()));
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflictException(ConflictException exception) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(exception.getMessage()));
     }
 
     @ExceptionHandler(InfrastructureException.class)
     public ResponseEntity<ErrorResponse> handleInfrastructureException(InfrastructureException exception) {
         log.error("Infrastructure exception occurred", exception);
-        return internalServerError();
+        return ResponseEntity
+                .internalServerError()
+                .body(new ErrorResponse(exception.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

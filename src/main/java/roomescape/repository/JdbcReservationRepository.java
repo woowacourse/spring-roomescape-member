@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.ErrorCode;
 import roomescape.exception.InfrastructureException;
 
 import java.sql.Date;
@@ -18,6 +17,8 @@ import java.util.List;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
+    private static final String RESERVATION_CREATE_FAILED_MESSAGE = "예약 생성에 실패했습니다.";
+
     private static final String FIND_ALL_SQL = """
             SELECT
                 r.id AS reservation_id,
@@ -132,14 +133,14 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private void validateCreatedRowCount(int rowCount) {
         if (rowCount != 1) {
-            throw new InfrastructureException(ErrorCode.RESERVATION_CREATE_FAILED);
+            throw new InfrastructureException(RESERVATION_CREATE_FAILED_MESSAGE);
         }
     }
 
     private Long getGeneratedId(KeyHolder keyHolder) {
         Number key = keyHolder.getKey();
         if (key == null) {
-            throw new InfrastructureException(ErrorCode.RESERVATION_CREATE_FAILED);
+            throw new InfrastructureException(RESERVATION_CREATE_FAILED_MESSAGE);
         }
         return key.longValue();
     }
