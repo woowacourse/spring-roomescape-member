@@ -114,6 +114,57 @@ public class MissionStepTest {
     }
 
     @Test
+    void 예약_가능_시간_흐름() {
+        Map<String, String> timeParams = new HashMap<>();
+        timeParams.put("startAt", "10:00");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(timeParams)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(200);
+
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "섬나라");
+        themeParams.put("description", "섬나라");
+        themeParams.put("thumbnailUrl", "섬나라");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(200);
+
+        String date = "2099-12-31";
+
+        RestAssured.given().log().all()
+                .when().get("/user/themes/1/available-times?date=" + date)
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1))
+                .body("[0].startAt", is("10:00"));
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", date);
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().get("/user/themes/1/available-times?date=" + date)
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
+
+    @Test
     void 계층화_리팩터링() {
         boolean isJdbcTemplateInjected = false;
 
