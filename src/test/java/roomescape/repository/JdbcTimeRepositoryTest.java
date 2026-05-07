@@ -45,7 +45,7 @@ class JdbcTimeRepositoryTest {
     @DisplayName("식별자로 예약 시간 객체를 조회한다.")
     void findById() {
         Time savedTime = jdbcTimeRepository.save(Time.transientOf(LocalTime.of(10, 0)));
-        Time foundTime = jdbcTimeRepository.findById(savedTime.id());
+        Time foundTime = jdbcTimeRepository.findById(savedTime.id()).get();
         assertThat(foundTime.startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 

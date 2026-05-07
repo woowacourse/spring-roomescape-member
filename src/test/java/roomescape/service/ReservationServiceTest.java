@@ -37,7 +37,7 @@ class ReservationServiceTest {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTime.id(),
                 savedTheme.id());
-        assertThat(reservation.time().startAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(reservation.getTime().startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test
@@ -46,7 +46,7 @@ class ReservationServiceTest {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTime.id(),
                 savedTheme.id());
-        reservationService.removeReservation(reservation.id());
+        reservationService.removeReservation(reservation.getId());
         assertThat(reservationService.allReservations()).isEmpty();
     }
 
@@ -65,7 +65,7 @@ class ReservationServiceTest {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation savedReservation = reservationService.saveReservation("브라운", futureDate, savedTime.id(),
                 savedTheme.id());
-        Reservation foundReservation = reservationService.findReservation(savedReservation.id());
-        assertThat(foundReservation.name()).isEqualTo("브라운");
+        Reservation foundReservation = reservationService.findReservation(savedReservation.getId());
+        assertThat(foundReservation.getName()).isEqualTo("브라운");
     }
 }

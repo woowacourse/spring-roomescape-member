@@ -33,7 +33,7 @@ public class ReservationService {
     public Reservation saveReservation(String name, LocalDate date, Long reservationTimeId, Long themeId) {
         Time time = getTimeOrElseThrow(reservationTimeId);
         Theme theme = getThemeOrElseThrow(themeId);
-        Reservation transientReservation = Reservation.transientOf(name, date, time, theme);
+        Reservation transientReservation = new Reservation(name, date, time, theme);
         return reservationRepository.save(transientReservation);
     }
 

@@ -49,25 +49,25 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("예약을 저장하고 영속화된 객체를 반환한다.")
     void save() {
-        Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTime,
+        Reservation reservation = new Reservation("브라운", LocalDate.now(), savedTime,
                 new Theme(1L, null, null, null));
         Reservation savedReservation = jdbcReservationRepository.save(reservation);
-        assertThat(savedReservation.id()).isPositive();
+        assertThat(savedReservation.getId()).isPositive();
     }
 
     @Test
     @DisplayName("식별자로 예약 객체를 조회한다.")
     void findById() {
-        Reservation savedReservation = jdbcReservationRepository.save(Reservation.transientOf("브라운", LocalDate.now(), savedTime,
+        Reservation savedReservation = jdbcReservationRepository.save(new Reservation("브라운", LocalDate.now(), savedTime,
                 new Theme(1L, null, null, null)));
-        Reservation foundReservation = jdbcReservationRepository.findById(savedReservation.id());
-        assertThat(foundReservation.name()).isEqualTo("브라운");
+        Reservation foundReservation = jdbcReservationRepository.findById(savedReservation.getId()).get();
+        assertThat(foundReservation.getName()).isEqualTo("브라운");
     }
 
     @Test
     @DisplayName("모든 예약 객체 목록을 조회한다.")
     void findAll() {
-        jdbcReservationRepository.save(Reservation.transientOf("브라운", LocalDate.now(), savedTime,
+        jdbcReservationRepository.save(new Reservation("브라운", LocalDate.now(), savedTime,
                 new Theme(1L, null, null, null)));
         List<Reservation> reservations = jdbcReservationRepository.findAll();
         assertThat(reservations).hasSize(1);
@@ -76,9 +76,9 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("식별자로 예약을 삭제한다.")
     void deleteById() {
-        Reservation savedReservation = jdbcReservationRepository.save(Reservation.transientOf("브라운", LocalDate.now(), savedTime,
+        Reservation savedReservation = jdbcReservationRepository.save(new Reservation("브라운", LocalDate.now(), savedTime,
                 new Theme(1L, null, null, null)));
-        jdbcReservationRepository.deleteById(savedReservation.id());
+        jdbcReservationRepository.deleteById(savedReservation.getId());
         assertThat(jdbcReservationRepository.findAll()).isEmpty();
     }
 }

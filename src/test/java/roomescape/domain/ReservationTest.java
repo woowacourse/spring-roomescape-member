@@ -16,7 +16,7 @@ class ReservationTest {
         Time time = new Time(1L, LocalTime.of(10, 0));
         Reservation reservation = new Reservation(1L, "브라운", LocalDate.now().plusDays(1), time,
                 new Theme(1L, null, null, null));
-        assertThat(reservation.name()).isEqualTo("브라운");
+        assertThat(reservation.getName()).isEqualTo("브라운");
     }
 
     @Test
@@ -39,9 +39,9 @@ class ReservationTest {
     @Test
     @DisplayName("transientOf를 통해 비영속 상태의 예약 객체를 생성할 수 있다.")
     void transientOf_ValidParameters_CreatesTransientReservation() {
-        Reservation reservation = Reservation.transientOf("브라운", LocalDate.now().plusDays(1),
+        Reservation reservation = new Reservation("브라운", LocalDate.now().plusDays(1),
                 new Time(1L, LocalTime.of(10, 0)),
                 new Theme(1L, null, null, null));
-        assertThat(reservation.id()).isNull();
+        assertThat(reservation.getId()).isNull();
     }
 }

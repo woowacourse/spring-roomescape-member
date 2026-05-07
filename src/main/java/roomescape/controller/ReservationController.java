@@ -53,11 +53,11 @@ public class ReservationController {
 
     private ReservationResponse toResponse(Reservation reservation) {
         return new ReservationResponse(
-                reservation.id(),
-                reservation.name(),
-                reservation.date(),
-                TimeResponse.from(reservation.time()),
-                ThemeResponse.from(reservation.theme())
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
+                TimeResponse.from(reservation.getTime()),
+                ThemeResponse.from(reservation.getTheme())
         );
     }
 }

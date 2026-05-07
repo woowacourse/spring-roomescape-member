@@ -20,7 +20,7 @@ public class FakeThemeDao implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(long id) {
-        return storage.get(id);
+        return Optional.ofNullable(storage.get(id));
     }
 
     @Override

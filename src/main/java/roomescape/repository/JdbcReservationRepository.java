@@ -91,8 +91,13 @@ public class JdbcReservationRepository implements ReservationRepository {
         SimpleJdbcInsert insert = createInsert();
         Map<String, Object> params = createParams(reservation);
         long reservationId = insert.executeAndReturnKey(params).longValue();
-        return new Reservation(reservationId, reservation.name(), reservation.date(), reservation.time(),
-                reservation.theme());
+        return new Reservation(
+                reservationId,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
     }
 
     private SimpleJdbcInsert createInsert() {
@@ -103,10 +108,10 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private Map<String, Object> createParams(Reservation reservation) {
         return Map.of(
-                "name", reservation.name(),
-                "date", reservation.date(),
-                "time_id", reservation.time().id(),
-                "theme_id", reservation.theme().id()
+                "name", reservation.getName(),
+                "date", reservation.getDate(),
+                "time_id", reservation.getTime().id(),
+                "theme_id", reservation.getTheme().id()
         );
     }
 
