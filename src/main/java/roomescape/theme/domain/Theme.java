@@ -2,6 +2,8 @@ package roomescape.theme.domain;
 
 public class Theme {
 
+    public static final String DEFAULT_THUMBNAIL_URL = "dummy-url";
+
     private Long id;
     private String name;
     private String description;
@@ -59,7 +61,7 @@ public class Theme {
 
     private static String resolveThumbnailUrl(String thumbnailUrl) {
         if (thumbnailUrl.isBlank()) {
-            return "dommy-url"; //todo: default thumbnail url
+            return "DEFAULT_THUMBNAIL_URL";
         }
         return thumbnailUrl;
     }
