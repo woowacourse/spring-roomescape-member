@@ -2,6 +2,8 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.reservation.fixture.ReservationFixture.reservation;
+import static roomescape.reservation.fixture.ReservationFixture.saveDto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -105,7 +107,7 @@ class ReservationServiceTest {
     void reserve() {
         //given & when
         List<Reservation> reservations = List.of();
-        reservationService.reserve(saveDto(name, reservationDate1.id(), reservationTime1.id(), theme1.id()));
+        reservationService.reserve(saveDto(name, reservationDate1, reservationTime1, theme1));
 
         //then
         assertThat(reservationService.readAll())
@@ -117,7 +119,7 @@ class ReservationServiceTest {
     void reserve_does_not_exist_reservation_time() {
         // given
         Long wrongTimeId = Long.MIN_VALUE;
-        ReservationSaveDto command = saveDto(name, reservationDate1.id(), wrongTimeId, theme1.id());
+        ReservationSaveDto command = saveDto(name, reservationDate1, wrongTimeId, theme1);
 
         // when & then
         assertThatThrownBy(() -> reservationService.reserve(command))
@@ -125,12 +127,26 @@ class ReservationServiceTest {
                 .hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
+
+    @Test
+    @DisplayName("예약시, 등록되지 않은 테마이면 예외를 발생한다.")
+    void reserve_does_not_exist_theme() {
+        // given
+        Long wrongThemeId = Long.MIN_VALUE;
+        ReservationSaveDto command = saveDto(name, reservationDate1, reservationTime1, wrongThemeId);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.reserve(command))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 테마가 존재하지 않습니다.");
+    }
+
     @Test
     @DisplayName("예약시 예약 날짜/시간/테마가 중복되면 예외를 발생한다.")
     void reserve_duplicate_reservation() {
         // given
-        ReservationSaveDto command = saveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id());
-        ReservationSaveDto duplicated = saveDto("한다", reservationDate1.id(), reservationTime1.id(), theme1.id());
+        ReservationSaveDto command = saveDto("브라운", reservationDate1, reservationTime1, theme1);
+        ReservationSaveDto duplicated = saveDto("한다", reservationDate1, reservationTime1, theme1);
         reservationService.reserve(command);
 
         // when & then
@@ -152,24 +168,6 @@ class ReservationServiceTest {
         // then
         Assertions.assertThat(actual.status())
                 .isEqualTo(canceled);
-    }
-
-    private static Reservation reservation(
-            String name,
-            ReservationDate date,
-            ReservationTime time,
-            Theme theme
-    ) {
-        return Reservation.create(name, date.date(), time.startAt(), theme);
-    }
-
-    private ReservationSaveDto saveDto(
-            String name,
-            Long dateId,
-            Long timeId,
-            Long themeId
-    ) {
-        return new ReservationSaveDto(name, dateId, timeId, themeId);
     }
 
     private Reservation save(Reservation reservation) {

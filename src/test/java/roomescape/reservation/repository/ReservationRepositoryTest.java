@@ -3,7 +3,6 @@ package roomescape.reservation.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +22,7 @@ import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.fixture.ReservationTimeFixture;
 import roomescape.time.repository.JdbcReservationTimeRepository;
 
 @JdbcTest
@@ -52,8 +52,8 @@ class ReservationRepositoryTest {
         jdbcReservationDateRepository = new JdbcReservationDateRepository(jdbcTemplate);
         jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
 
-        ReservationTime time1 = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(12, 00)));
-        ReservationTime time2 = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(20, 00)));
+        ReservationTime time1 = jdbcReservationTimeRepository.save(ReservationTimeFixture.time15());
+        ReservationTime time2 = jdbcReservationTimeRepository.save(ReservationTimeFixture.time16());
         reservationTime1 = jdbcReservationTimeRepository.findById(time1.id()).get();
         reservationTime2 = jdbcReservationTimeRepository.findById(time2.id()).get();
 
