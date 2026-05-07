@@ -8,6 +8,48 @@
 
 ---
 
+## 📸 화면 미리보기
+
+### 🏠 메인 화면
+ESCAPE ROOM 히어로 섹션과 인기 테마 TOP 5 카드를 보여주는 랜딩 페이지.
+
+![메인 화면](docs/screenshots/main.png)
+
+---
+
+### 🎨 테마 목록
+모든 방 탈출 테마를 카드 형태로 조회할 수 있는 페이지.
+
+![테마 목록](docs/screenshots/themes.png)
+
+---
+
+### 🎮 테마 상세 — 우주 탐험
+광활한 우주의 비밀을 풀어보는 SF 컨셉 테마.
+
+![우주 탐험 테마](docs/screenshots/theme-space.png)
+
+### 🎮 테마 상세 — 공포의 저택
+으스스한 저택에서 탈출하는 호러 컨셉 테마.
+
+![공포의 저택 테마](docs/screenshots/theme-horror.png)
+
+---
+
+### 📅 예약 화면
+날짜와 테마를 선택하면 예약 가능한 시간이 자동 필터링되는 예약 흐름.
+
+![예약 화면](docs/screenshots/reservation.png)
+
+---
+
+### ⚙️ 관리자 페이지
+관리자가 테마와 예약 시간을 추가/삭제할 수 있는 화면.
+
+![관리자 페이지](docs/screenshots/admin.png)
+
+---
+
 ## 🖥️ 로컬 실행 방법
 
 ### 사전 준비
@@ -72,7 +114,7 @@ docker compose logs frontend
 ```bash
 mkdir -p ~/tmp/roomescape-test
 cd ~/tmp/roomescape-test
-git clone https://github.com/Woowa-8th-BE-IQ/spring-roomescape-member.git
+git clone -b e9ua1 https://github.com/Woowa-8th-BE-IQ/spring-roomescape-member.git
 cd spring-roomescape-member
 chmod +x setup.sh && ./setup.sh
 ```
