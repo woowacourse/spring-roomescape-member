@@ -56,7 +56,7 @@ Location: /themes/{id}
 
 #### 메서드 / URL
 
-- GET /times?available=true
+- GET /times/available-times
 
 #### 요청
 
@@ -73,6 +73,7 @@ date=2026-05-08&themeId=1
 ```json
 [
   {
+    id,
     startAt
   }
 ]
@@ -87,14 +88,14 @@ date=2026-05-08&themeId=1
 
 #### 메서드 / URL
 
-- GET /themes?popular=true
+- GET /themes/popular
 
 #### 요청
 
 - query parameter
 
 ```text
-period=7d&limit=10
+period=7&limit=10
 ```
 
 #### 응답
@@ -104,6 +105,7 @@ period=7d&limit=10
 ```json
 [
   {
+    id,
     name,
     description,
     thumbnailUrl
@@ -111,3 +113,25 @@ period=7d&limit=10
 ]
 ```
 
+## 추가 - 리팩토링
+
+### 1. admin URL 분리
+
+#### 구현
+- [x] 구현 완료
+
+관리자 전용 API를 `/admin` 하위 경로로 분리.
+
+#### Theme
+
+- 테마 생성: POST /admin/themes
+- 테마 삭제: DELETE /admin/themes/{id}
+
+#### ReservationTime
+
+- 타임 생성: POST /admin/times
+- 타임 삭제: DELETE /admin/times/{id}
+
+#### Reservation
+
+- 예약 전체 삭제: DELETE /admin/reservations
