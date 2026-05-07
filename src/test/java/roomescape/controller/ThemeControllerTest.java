@@ -48,13 +48,12 @@ class ThemeControllerTest {
         );
         given(themeService.findAllThemes()).willReturn(themes);
 
-        // when
+        // when then
         MvcResult result = mockMvc.perform(get("/themes"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // then
         ThemeListResponse response = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 ThemeListResponse.class
@@ -91,7 +90,7 @@ class ThemeControllerTest {
         given(themeService.findPopularThemes(anyInt(), any(), anyInt()))
                 .willReturn(themes);
 
-        // when
+        // when then
         MvcResult result = mockMvc.perform(get("/themes/popularity")
                         .param("days", "7")
                         .param("size", "10"))
@@ -104,7 +103,6 @@ class ThemeControllerTest {
                 ThemeListResponse.class
         );
 
-        // then
         assertThat(response.themes())
                 .extracting(
                         ThemeResponse::id,
