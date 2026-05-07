@@ -71,10 +71,10 @@ public class JdbcThemeRepository implements ThemeRepository {
     public List<Theme> findByReservationCountWithLimit(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = "SELECT t.id, t.name, t.description, t.thumbnail_image_url, t.duration_time "
                 + "FROM theme t "
-                + "INNER JOIN reservation r ON t.id = r.theme_id " // 올바른 FK 조인
-                + "WHERE r.date BETWEEN :startDate AND :endDate "  // 날짜 필터링
-                + "GROUP BY t.id, t.name, t.description, t.thumbnail_image_url, t.duration_time " // 표준 SQL 그룹화
-                + "ORDER BY COUNT(r.id) DESC " // 예약 건수가 많은 순으로 정렬
+                + "INNER JOIN reservation r ON t.id = r.theme_id "
+                + "WHERE r.date BETWEEN :startDate AND :endDate "
+                + "GROUP BY t.id, t.name, t.description, t.thumbnail_image_url, t.duration_time "
+                + "ORDER BY COUNT(r.id) DESC "
                 + "LIMIT :limit";
 
         SqlParameterSource params = new MapSqlParameterSource()
