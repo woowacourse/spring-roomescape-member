@@ -1,8 +1,11 @@
 package roomescape.time.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.ResponseReservationTime;
 import roomescape.time.service.ReservationTimeService;
 
@@ -19,10 +22,11 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public List<ResponseReservationTime> getTimes() {
-        return reservationTimeService.getTimes()
-                .stream()
+    public ResponseEntity<List<ResponseReservationTime>> getTimes() {
+        List<ReservationTime> times = reservationTimeService.getTimes();
+        List<ResponseReservationTime> response = times.stream()
                 .map(ResponseReservationTime::from)
                 .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

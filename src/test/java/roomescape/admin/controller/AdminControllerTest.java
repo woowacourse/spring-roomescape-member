@@ -49,7 +49,7 @@ class AdminControllerTest {
                                   "startAt": "18:00"
                                 }
                                 """))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.startAt").value("18:00"));
     }
@@ -74,7 +74,7 @@ class AdminControllerTest {
                                     "thumbnail": "image-url"
                                   }
                                 """))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("공포방"))
                 .andExpect(jsonPath("$.description").value("무서운방입니다."))

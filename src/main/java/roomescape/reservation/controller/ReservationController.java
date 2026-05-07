@@ -3,6 +3,7 @@ package roomescape.reservation.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.RequestReservation;
 import roomescape.reservation.dto.ResponseReservation;
 import roomescape.reservation.service.ReservationService;
@@ -20,27 +21,28 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<ResponseReservation> getReservations() {
-        return reservationService.getReservations()
-                .stream()
+    public ResponseEntity<List<ResponseReservation>> getReservations() {
+        List<Reservation> reservations = reservationService.getReservations();
+        List<ResponseReservation> response = reservations.stream()
                 .map(ResponseReservation::from)
                 .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping
     public ResponseEntity<ResponseReservation> createReservation(@RequestBody RequestReservation request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                ResponseReservation.from(reservationService.createReservation(
-                        request.name(),
-                        request.date(),
-                        request.timeId(),
-                        request.themeId()
-            )));
+        Reservation reservation = reservationService.createReservation(
+                request.name(),
+                request.date(),
+                request.timeId(),
+                request.themeId());
+        ResponseReservation response = ResponseReservation.from(reservation);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

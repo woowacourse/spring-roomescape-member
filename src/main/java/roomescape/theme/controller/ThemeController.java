@@ -1,5 +1,7 @@
 package roomescape.theme.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ResponsePopularTheme;
@@ -23,26 +25,29 @@ public class ThemeController {
     }
 
     @GetMapping
-    public List<ResponseTheme> getThemes() {
+    public ResponseEntity<List<ResponseTheme>> getThemes() {
         List<Theme> themes = themeService.getThemes();
-        return themes.stream()
+        List<ResponseTheme> response = themes.stream()
                 .map(ResponseTheme::from)
                 .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{id}/available-times")
-    public List<ResponseThemeAvailableTime> getAvailableTimes(@PathVariable Long id, @RequestParam LocalDate date) {
+    public ResponseEntity<List<ResponseThemeAvailableTime>> getAvailableTimes(@PathVariable Long id, @RequestParam LocalDate date) {
         List<AvailableTime> availableTimes = themeService.getAvailableTimes(id, date);
-        return availableTimes.stream()
+        List<ResponseThemeAvailableTime> response = availableTimes.stream()
                 .map(ResponseThemeAvailableTime::from)
                 .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/popular")
-    public List<ResponsePopularTheme> getPopularThemes(@RequestParam int days, @RequestParam int limit) {
+    public ResponseEntity<List<ResponsePopularTheme>> getPopularThemes(@RequestParam int days, @RequestParam int limit) {
         List<PopularTheme> popularThemes = themeService.getPopularThemes(days, limit);
-        return popularThemes.stream()
+        List<ResponsePopularTheme> response = popularThemes.stream()
                 .map(ResponsePopularTheme::from)
                 .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
