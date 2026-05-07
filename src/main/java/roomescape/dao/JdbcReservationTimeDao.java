@@ -56,7 +56,8 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public List<ReservationTime> readAll() {
-        String sql = "SELECT * FROM `reservation_time`";
+        String sql = "SELECT * FROM `reservation_time` "
+                + "ORDER BY start_at ASC";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Long id = rs.getLong("id");
