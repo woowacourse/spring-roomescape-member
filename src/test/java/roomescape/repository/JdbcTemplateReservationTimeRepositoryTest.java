@@ -22,10 +22,6 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private long addTime(LocalTime startAt) {
-        return reservationTimeRepository.addTime(new ReservationTime(null, startAt)).id();
-    }
-
     @Test
     void 시간을_저장하면_id가_채워진_도메인을_반환한다() {
         ReservationTime saved = reservationTimeRepository.addTime(new ReservationTime(null, LocalTime.of(10, 0)));
@@ -42,6 +38,10 @@ class JdbcTemplateReservationTimeRepositoryTest {
         List<ReservationTime> times = reservationTimeRepository.findAllReservationTimes();
 
         assertThat(times).hasSize(2);
+    }
+
+    private long addTime(LocalTime startAt) {
+        return reservationTimeRepository.addTime(new ReservationTime(null, startAt)).id();
     }
 
     @Test

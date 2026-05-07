@@ -13,13 +13,12 @@ import java.util.List;
 @Controller
 public class UserViewController {
 
+    private static final int CAROUSEL_FALLBACK_SIZE = 5;
     private final ThemeService themeService;
 
     public UserViewController(ThemeService themeService) {
         this.themeService = themeService;
     }
-
-    private static final int CAROUSEL_FALLBACK_SIZE = 5;
 
     @GetMapping("/")
     public String home(Model model) {

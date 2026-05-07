@@ -32,7 +32,10 @@
         if (!res.ok) return alert('추가 실패');
         const r = await res.json();
         appendRow(r);
-        nameEl.value = ''; dateEl.value = ''; timeEl.value = ''; themeEl.value = '';
+        nameEl.value = '';
+        dateEl.value = '';
+        timeEl.value = '';
+        themeEl.value = '';
     });
 
     function appendRow(r) {

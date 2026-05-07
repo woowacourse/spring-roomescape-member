@@ -10,28 +10,38 @@
     <div class="form-inline">
         <div class="form-row">
             <label for="th-name">이름</label>
-            <input type="text" id="th-name"/>
+            <input id="th-name" type="text"/>
         </div>
         <div class="form-row">
             <label for="th-desc">설명</label>
-            <input type="text" id="th-desc"/>
+            <input id="th-desc" type="text"/>
         </div>
         <div class="form-row">
             <label for="th-thumb">썸네일 URL</label>
-            <input type="text" id="th-thumb"/>
+            <input id="th-thumb" type="text"/>
         </div>
-        <button id="add-btn" class="btn" type="button">추가</button>
+        <button class="btn" id="add-btn" type="button">추가</button>
     </div>
 
     <table class="data-table">
-        <thead><tr><th>번호</th><th>이름</th><th>설명</th><th>썸네일</th><th></th></tr></thead>
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>이름</th>
+            <th>설명</th>
+            <th>썸네일</th>
+            <th></th>
+        </tr>
+        </thead>
         <tbody id="rows">
-        <tr th:each="th : ${themes}" th:attr="data-id=${th.id()}">
+        <tr th:attr="data-id=${th.id()}" th:each="th : ${themes}">
             <td th:text="${th.id()}"></td>
             <td th:text="${th.name()}"></td>
             <td th:text="${th.description()}"></td>
-            <td><img th:src="${th.thumbnailUrl()}" alt="" style="width:60px;height:45px;object-fit:cover;"/></td>
-            <td><button class="btn btn-danger btn-sm delete-btn" type="button">삭제</button></td>
+            <td><img alt="" style="width:60px;height:45px;object-fit:cover;" th:src="${th.thumbnailUrl()}"/></td>
+            <td>
+                <button class="btn btn-danger btn-sm delete-btn" type="button">삭제</button>
+            </td>
         </tr>
         </tbody>
     </table>

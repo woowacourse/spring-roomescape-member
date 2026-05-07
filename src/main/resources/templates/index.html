@@ -8,7 +8,7 @@
     <section class="carousel" th:if="${!popularThemes.isEmpty()}">
         <div class="carousel-track">
             <div class="carousel-slide" th:each="t : ${popularThemes}">
-                <img th:src="${t.thumbnailUrl()}" th:alt="${t.name()}"/>
+                <img th:alt="${t.name()}" th:src="${t.thumbnailUrl()}"/>
                 <div class="carousel-caption">
                     <h2 th:text="${t.name()}"></h2>
                     <p th:text="${t.description()}"></p>
@@ -16,8 +16,8 @@
                 </div>
             </div>
         </div>
-        <button class="carousel-arrow prev" type="button" aria-label="이전">‹</button>
-        <button class="carousel-arrow next" type="button" aria-label="다음">›</button>
+        <button aria-label="이전" class="carousel-arrow prev" type="button">‹</button>
+        <button aria-label="다음" class="carousel-arrow next" type="button">›</button>
         <div class="carousel-dots"></div>
     </section>
 
@@ -28,7 +28,7 @@
     <h2 class="section-title">예약 가능한 방탈출</h2>
     <div class="theme-grid">
         <div class="theme-card" th:each="t : ${themes}">
-            <img th:src="${t.thumbnailUrl()}" th:alt="${t.name()}"/>
+            <img th:alt="${t.name()}" th:src="${t.thumbnailUrl()}"/>
             <div class="theme-card-body">
                 <p class="theme-card-name" th:text="${t.name()}"></p>
                 <p class="theme-card-desc" th:text="${t.description()}"></p>

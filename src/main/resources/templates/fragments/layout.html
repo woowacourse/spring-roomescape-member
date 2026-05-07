@@ -2,12 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="head(title)">
     <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title th:text="${title}">방탈출</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
-<header th:fragment="header" class="site-header">
+<header class="site-header" th:fragment="header">
     <div class="container">
         <a class="logo" th:href="@{/}">방탈출</a>
         <nav>

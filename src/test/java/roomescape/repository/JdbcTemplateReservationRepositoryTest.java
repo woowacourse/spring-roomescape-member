@@ -33,12 +33,6 @@ class JdbcTemplateReservationRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private Reservation addReservation(String name, LocalDate date) {
-        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
-        Theme theme = themeRepository.findById(THEME_ID).get();
-        return reservationRepository.addReservation(new Reservation(null, name, date, time, theme));
-    }
-
     @Test
     void 예약을_저장하면_id가_채워진_도메인을_반환한다() {
         Reservation saved = addReservation("브라운", LocalDate.of(2026, 5, 3));
@@ -47,6 +41,12 @@ class JdbcTemplateReservationRepositoryTest {
         assertThat(saved.name()).isEqualTo("브라운");
         assertThat(saved.date()).isEqualTo(LocalDate.of(2026, 5, 3));
         assertThat(saved.time().id()).isEqualTo(TIME_ID);
+    }
+
+    private Reservation addReservation(String name, LocalDate date) {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = themeRepository.findById(THEME_ID).get();
+        return reservationRepository.addReservation(new Reservation(null, name, date, time, theme));
     }
 
     @Test

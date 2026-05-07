@@ -8,16 +8,17 @@
     <h1>인기 방탈출</h1>
     <p style="color:#666;">최근 일주일간 예약이 많았던 테마입니다.</p>
 
-    <div th:if="${popularThemes.isEmpty()}" style="color:#888; padding: 32px 0;">
+    <div style="color:#888; padding: 32px 0;" th:if="${popularThemes.isEmpty()}">
         아직 집계된 인기 테마가 없습니다.
     </div>
 
     <div class="theme-grid" th:if="${!popularThemes.isEmpty()}">
         <div class="theme-card" th:each="t, iter : ${popularThemes}">
-            <img th:src="${t.thumbnailUrl()}" th:alt="${t.name()}"/>
+            <img th:alt="${t.name()}" th:src="${t.thumbnailUrl()}"/>
             <div class="theme-card-body">
                 <p class="theme-card-name">
-                    <span th:text="${iter.index + 1} + '위'" style="color:#a44; font-weight:700; margin-right:6px;"></span>
+                    <span style="color:#a44; font-weight:700; margin-right:6px;"
+                          th:text="${iter.index + 1} + '위'"></span>
                     <span th:text="${t.name()}"></span>
                 </p>
                 <p class="theme-card-desc" th:text="${t.description()}"></p>

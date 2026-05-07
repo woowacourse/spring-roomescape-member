@@ -24,7 +24,9 @@
         if (!res.ok) return alert('추가 실패');
         const t = await res.json();
         appendRow(t);
-        nameEl.value = ''; descEl.value = ''; thumbEl.value = '';
+        nameEl.value = '';
+        descEl.value = '';
+        thumbEl.value = '';
     });
 
     function appendRow(t) {

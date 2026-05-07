@@ -5,7 +5,8 @@ import roomescape.domain.Reservation;
 import java.time.LocalDate;
 import java.util.List;
 
-public record ReservationResponse(long id, String name, LocalDate date, ReservationTimeResponse time, ThemeResponse theme) {
+public record ReservationResponse(long id, String name, LocalDate date, ReservationTimeResponse time,
+                                  ThemeResponse theme) {
     public static List<ReservationResponse> from(List<Reservation> reservations) {
         return reservations.stream().map(ReservationResponse::from).toList();
     }

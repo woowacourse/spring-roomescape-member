@@ -42,15 +42,15 @@ public class AdminThemeController {
         return ResponseEntity.created(getLocation(themeResponse.id())).body(themeResponse);
     }
 
+    @NonNull
+    private static URI getLocation(long id) {
+        return URI.create(DEFAULT_PATH + id);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteTheme(id);
 
         return ResponseEntity.noContent().build();
-    }
-
-    @NonNull
-    private static URI getLocation(long id) {
-        return URI.create(DEFAULT_PATH + id);
     }
 }
