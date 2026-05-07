@@ -67,9 +67,4 @@ public class ThemeController {
                 .map(ThemeResponse::from)
                 .toList();
     }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleRequest(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
 }
