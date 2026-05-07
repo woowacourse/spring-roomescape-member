@@ -38,8 +38,8 @@ public class AdminController {
     }
 
     @GetMapping("/reservations")
-    public List<ReservationResponseDTO> readAll() {
-        return reservationService.readAllReservation();
+    public ResponseEntity<List<ReservationResponseDTO>> readAll() {
+        return ResponseEntity.ok(reservationService.readAllReservation());
     }
 
     @PostMapping("/times")
