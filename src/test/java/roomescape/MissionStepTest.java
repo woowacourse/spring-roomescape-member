@@ -33,7 +33,7 @@ public class MissionStepTest {
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(25));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class MissionStepTest {
     @Test
     void 시간_관리_API() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "17:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -63,16 +63,18 @@ public class MissionStepTest {
                 .when().get("/admin/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(7));
 
         RestAssured.given().log().all()
-                .when().delete("/admin/times/1")
+                .when().delete("/admin/times/7")
                 .then().log().all()
                 .statusCode(200);
     }
 
     @Test
     void 예약과_시간_연결() {
+        // 시드에 시간 6개, 테마 13개, 예약 25건 있음.
+        // 미래 날짜에 새 예약 1건 추가 → 26건.
         Map<String, String> timeParams = new HashMap<>();
         timeParams.put("startAt", "10:00");
         RestAssured.given().log().all()
@@ -110,7 +112,7 @@ public class MissionStepTest {
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(26));
     }
 
     @Test
