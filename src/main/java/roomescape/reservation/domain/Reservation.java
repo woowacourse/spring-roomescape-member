@@ -1,9 +1,11 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import lombok.Getter;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
+@Getter
 public class Reservation {
 
     private static final int MAX_NAME_LENGTH = 50;
@@ -27,25 +29,5 @@ public class Reservation {
         if (name.length() > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("이름의 길이는 " + MAX_NAME_LENGTH + "를 넘을 수 없습니다.");
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public ReservationTime getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
     }
 }

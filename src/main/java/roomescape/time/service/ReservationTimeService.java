@@ -3,6 +3,7 @@ package roomescape.time.service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.controller.dto.ThemeResponse;
@@ -19,16 +20,11 @@ import roomescape.time.repository.dto.FindReservedTimeParams;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
-
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
-                                  ThemeRepository themeRepository) {
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
-    }
 
     @Transactional
     public ReservationTimeResponse addReservationTime(CreateResrvationTimeRequest request) {

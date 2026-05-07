@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.mapper.ThemeMapper;
@@ -10,13 +11,10 @@ import roomescape.theme.repository.entity.ThemeEntity;
 import roomescape.theme.service.GetThemeRankingsInRecentDaysParams;
 
 @Repository
+@RequiredArgsConstructor
 public class ThemeRepository {
 
     private final ThemeDao themeDao;
-
-    public ThemeRepository(ThemeDao themeDao) {
-        this.themeDao = themeDao;
-    }
 
     public List<Theme> findAll() {
         return themeDao.selectAll().stream()

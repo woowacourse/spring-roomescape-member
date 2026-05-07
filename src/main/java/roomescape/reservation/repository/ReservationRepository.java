@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.mapper.ReservationMapper;
@@ -13,18 +14,12 @@ import roomescape.time.repository.dao.ReservationTimeDao;
 import roomescape.time.repository.entity.ReservationTimeEntity;
 
 @Repository
+@RequiredArgsConstructor
 public class ReservationRepository {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
-
-    public ReservationRepository(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
-                                 ThemeDao themeDao) {
-        this.reservationDao = reservationDao;
-        this.reservationTimeDao = reservationTimeDao;
-        this.themeDao = themeDao;
-    }
 
     public List<Reservation> findAll() {
         return reservationDao.selectAll().stream()

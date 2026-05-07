@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
@@ -17,18 +18,12 @@ import roomescape.time.repository.dto.FindReservedTimeParams;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
-
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
-        this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
-    }
 
     public List<ReservationResponse> findAllReservations() {
         return reservationRepository.findAll().stream()

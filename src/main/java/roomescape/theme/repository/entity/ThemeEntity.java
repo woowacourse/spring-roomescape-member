@@ -1,5 +1,8 @@
 package roomescape.theme.repository.entity;
 
+import lombok.Getter;
+
+@Getter
 public class ThemeEntity {
 
     private final Long id;
@@ -14,25 +17,5 @@ public class ThemeEntity {
         this.description = description;
         this.imageUrl = imageUrl;
         this.isDeleted = isDeleted;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public boolean isDeleted() {
-        return isDeleted;
     }
 }

@@ -1,6 +1,7 @@
 package roomescape.time.repository;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.mapper.ReservationTimeMapper;
@@ -10,13 +11,10 @@ import roomescape.time.repository.dto.FindReservedTimeParams;
 import roomescape.time.repository.entity.ReservationTimeEntity;
 
 @Repository
+@RequiredArgsConstructor
 public class ReservationTimeRepository {
 
     private final ReservationTimeDao reservationTimeDao;
-
-    public ReservationTimeRepository(ReservationTimeDao reservationTimeDao) {
-        this.reservationTimeDao = reservationTimeDao;
-    }
 
     public ReservationTime save(CreateReservationTimeParams params) {
         Long id = reservationTimeDao.insert(params.startAt());

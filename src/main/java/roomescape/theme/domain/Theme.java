@@ -1,5 +1,8 @@
 package roomescape.theme.domain;
 
+import lombok.Getter;
+
+@Getter
 public class Theme {
 
     private final Long id;
@@ -12,22 +15,6 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
     }
 }
 

@@ -2,6 +2,7 @@ package roomescape.theme.service;
 
 import java.util.List;
 import java.util.stream.IntStream;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.controller.dto.CreateThemeRequest;
@@ -13,13 +14,10 @@ import roomescape.theme.repository.dto.CreateThemeParams;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
-
-    public ThemeService(ThemeRepository themeRepository) {
-        this.themeRepository = themeRepository;
-    }
 
     @Transactional
     public ThemeResponse addTheme(CreateThemeRequest request) {
