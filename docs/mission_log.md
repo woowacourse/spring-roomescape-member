@@ -1,6 +1,6 @@
 # 🧾 미션 중 기록
 
-<img width="475" height="389" alt="image" src="https://github.com/user-attachments/assets/d60f9849-5ae9-4462-a6a1-438e5bafd1ea" />
+<img width="781" height="672" alt="image" src="https://github.com/user-attachments/assets/3cd8cc65-4269-40d4-9816-48922c1c5a9f" />
 
 - [x] 규칙을 적용해서 변경한 코드 1곳 이상
   - `ReservationTime` ➡️ `Time` ➡️ `TimeSlot` 으로 도메인 객체의 이름이 변경되었지만  
