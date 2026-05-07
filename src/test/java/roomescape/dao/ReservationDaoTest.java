@@ -69,7 +69,7 @@ class ReservationDaoTest {
         reservationDao.insert(Reservation.createWithoutId("밤밤", date, savedReservationTime, savedTheme));
 
         // when
-        List<Reservation> reservations = reservationDao.select();
+        List<Reservation> reservations = reservationDao.selectAll();
 
         // then
         assertAll(
@@ -139,7 +139,7 @@ class ReservationDaoTest {
         reservationDao.delete(savedReservation.getId());
 
         // then
-        List<Reservation> reservations = reservationDao.select();
+        List<Reservation> reservations = reservationDao.selectAll();
         assertThat(reservations).hasSize(0);
     }
 }

@@ -64,7 +64,7 @@ public class ReservationDao {
         );
     }
 
-    public List<Reservation> select() {
+    public List<Reservation> selectAll() {
         String sql = """
                 SELECT r.id, 
                        r.name as reservation_name, 

@@ -43,7 +43,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> getAllReservations() {
-        List<Reservation> reservations = reservationDao.select();
+        List<Reservation> reservations = reservationDao.selectAll();
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
