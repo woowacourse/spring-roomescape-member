@@ -17,30 +17,19 @@ import roomescape.exception.ResponseMessageDto;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // TODO: static 인데 대문자를 안 쓰나?
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
-    // TODO: 메서드 순서에 따라 에러 처리 결과가 달라지는지?
-    // TODO: 처리 순서가 어떻게 되는지? (하위 구현체 먼저? 메서드 선언 순서?)
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseMessageDto handleException(Exception e) {
-        // TODO: log 에서 제공해주는 문자열 형식 알아보기
-        log.error("Unexpected error [Exception]", e);
-        return new ResponseMessageDto("서버 내부 오류가 발생했습니다.");
-    }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessageDto handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
-        log.error("[HttpMessageNotReadableException] ", e);
+        printErrorStatus(e);
         return new ResponseMessageDto("요청 형식이 올바르지 않습니다.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessageDto handleValidation(MethodArgumentNotValidException e) {
-        log.error("[HttpMessageNotReadableException] ", e);
+        printErrorStatus(e);
         List<String> messages = e.getBindingResult().getFieldErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .toList();
@@ -51,21 +40,32 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessageDto handleIllegalArgument(IllegalArgumentException e) {
-        log.error("[HttpMessageNotReadableException] ", e);
+        printErrorStatus(e);
         return new ResponseMessageDto(e.getMessage());
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseMessageDto handleNoSuchElement(NoSuchElementException e) {
-        log.error("[HttpMessageNotReadableException] ", e);
+        printErrorStatus(e);
         return new ResponseMessageDto(e.getMessage());
     }
-    
+
     @ExceptionHandler(ForbiddenAccessException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseMessageDto handleIForbiddenAccessException(ForbiddenAccessException e) {
-        log.error("[HttpMessageNotReadableException] ", e);
+        printErrorStatus(e);
         return new ResponseMessageDto(e.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseMessageDto handleException(Exception e) {
+        printErrorStatus(e);
+        return new ResponseMessageDto("서버 내부 오류가 발생했습니다.");
+    }
+
+    private void printErrorStatus(Exception e) {
+        log.error("[{}] {}", e.getClass().getSimpleName(), e.getMessage(), e);
     }
 }
