@@ -71,4 +71,5 @@ public class ReservationPageController {
         reservationService.deleteById(id);
         return "redirect:/pages/user/reservations";
     }
+
 }
