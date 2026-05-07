@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +17,8 @@ import roomescape.date.domain.ReservationDate;
 import roomescape.date.fixture.FakeReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
-import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.request.ReservationSaveDto;
+import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.fixture.FakeThemeRepository;
@@ -55,11 +54,11 @@ class ReservationServiceTest {
 
         LocalTime time1 =  LocalTime.of(15, 40);
         Long savedTimeId1 = reservationTimeRepository.save(ReservationTime.create(time1));
-        reservationTime1 = ReservationTime.of(savedTimeId1, time1);
+        reservationTime1 = ReservationTime.load(savedTimeId1, time1);
 
         LocalTime time2 =  LocalTime.of(16, 0);
         Long savedTimeId2 = reservationTimeRepository.save(ReservationTime.create(time2));
-        reservationTime2 = ReservationTime.of(savedTimeId2, time2);
+        reservationTime2 = ReservationTime.load(savedTimeId2, time2);
 
         reservationDate1 = reservationDateRepository.save(ReservationDate.create(LocalDate.now().plusWeeks(1)));
         reservationDate2 = reservationDateRepository.save(ReservationDate.create(LocalDate.now().plusWeeks(2)));

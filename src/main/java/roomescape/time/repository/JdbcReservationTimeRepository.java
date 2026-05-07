@@ -19,7 +19,7 @@ import roomescape.time.domain.ReservationTime;
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNum) -> ReservationTime.of(
+    RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNum) -> ReservationTime.load(
             resultSet.getLong("id"),
             resultSet.getTime("start_at").toLocalTime()
     );

@@ -29,7 +29,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public Long save(ReservationTime reservationTime) {
         Long id = idGenerator.getAndIncrement();
-        ReservationTime saved = ReservationTime.of(id, reservationTime.startAt());
+        ReservationTime saved = ReservationTime.load(id, reservationTime.startAt());
         store.put(id, saved);
         return id;
     }
@@ -38,7 +38,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
         List<ReservationTime> savedTimes = new ArrayList<>();
         for (ReservationTime time : times) {
             Long savedId = save(time);
-            ReservationTime saved = ReservationTime.of(savedId, time.startAt());
+            ReservationTime saved = ReservationTime.load(savedId, time.startAt());
             savedTimes.add(saved);
         }
         return savedTimes;

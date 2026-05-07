@@ -17,7 +17,7 @@ public class ReservationTime {
         return new ReservationTime(null, startAt);
     }
 
-    public static ReservationTime of(Long timeId, LocalTime startAt) {
+    public static ReservationTime load(Long timeId, LocalTime startAt) {
         validateId(timeId);
         return new ReservationTime(timeId, startAt);
     }
