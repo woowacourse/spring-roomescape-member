@@ -1,46 +1,45 @@
 export const ADMIN_TABS = new Set(["themes", "times", "reservations"]);
-export const ROUTES = new Set(["home", "user", "admin"]);
 
 export const state = {
-  role: null,
+  route: "reserve",
   adminTab: "themes",
   themes: [],
   popularThemes: [],
-  availableTimes: [],
   adminTimes: [],
   reservations: [],
+  availableTimes: [],
   selectedThemeId: null,
   selectedDate: tomorrowString(),
   selectedTimeId: null,
-  reservationName: "",
-  themeDraft: {
-    name: "",
-    description: "",
-    thumbnailImgUrl: ""
-  },
-  timeDraft: {
-    startAt: ""
-  },
+  guestName: "",
+  themeQuery: "",
   loading: {
-    user: false,
+    boot: false,
+    themes: false,
     times: false,
-    adminThemes: false,
-    adminTimes: false,
     reservations: false
   },
   submitting: false,
+  toast: null,
   confirm: null
 };
 
-export const indicatorRects = {
-  role: null,
-  admin: null,
-  theme: null,
-  time: null
-};
+export function selectedTheme() {
+  return state.themes.find((theme) => Number(theme.id) === Number(state.selectedThemeId)) || null;
+}
 
-export function selectedThemeEntity() {
-  return state.themes.find((theme) => Number(theme.id) === Number(state.selectedThemeId));
+export function selectedTime() {
+  return state.availableTimes.find((time) => Number(time.id) === Number(state.selectedTimeId)) || null;
+}
+
+export function canSubmitReservation() {
+  return Boolean(
+    state.selectedThemeId &&
+    state.selectedDate &&
+    state.selectedTimeId &&
+    state.guestName.trim() &&
+    !state.submitting
+  );
 }
 
 export function todayString() {

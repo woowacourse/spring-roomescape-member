@@ -15,7 +15,7 @@ export async function api(path, options = {}) {
   try {
     response = await fetch(path, init);
   } catch (error) {
-    throw new Error("서버와 연결할 수 없습니다. Spring Boot 서버가 실행 중인지 확인해 주세요.");
+    throw new Error("서버에 연결할 수 없습니다.");
   }
 
   if (response.status === 204) {
@@ -23,16 +23,16 @@ export async function api(path, options = {}) {
   }
 
   const text = await response.text();
-  const data = parseJson(text);
+  const data = readJson(text);
 
   if (!response.ok) {
-    throw new Error(resolveErrorMessage(data, text, response.status));
+    throw new Error(resolveError(data, text, response.status));
   }
 
   return data;
 }
 
-function parseJson(text) {
+function readJson(text) {
   if (!text) {
     return null;
   }
@@ -44,7 +44,7 @@ function parseJson(text) {
   }
 }
 
-function resolveErrorMessage(data, text, status) {
+function resolveError(data, text, status) {
   if (data?.errorMessage) {
     return data.errorMessage;
   }
@@ -61,5 +61,5 @@ function resolveErrorMessage(data, text, status) {
     return "요청한 데이터를 찾을 수 없습니다.";
   }
 
-  return "요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+  return "요청을 처리하지 못했습니다.";
 }

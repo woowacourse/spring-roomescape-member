@@ -1,7 +1,13 @@
-import { api } from "./api.js";
-import { appEl, modalRootEl, toastRootEl } from "./dom.js";
-import { ADMIN_TABS, ROUTES, state, tomorrowString } from "./state.js";
-import { render } from "./render.js";
+import {api} from "./api.js";
+import {appEl} from "./dom.js";
+import {
+  ADMIN_TABS,
+  canSubmitReservation,
+  selectedTheme,
+  selectedTime,
+  state
+} from "./state.js";
+import {render, syncThemeFilter} from "./render.js";
 
 window.addEventListener("hashchange", handleRoute);
 document.addEventListener("click", handleClick);
@@ -9,146 +15,162 @@ document.addEventListener("submit", handleSubmit);
 document.addEventListener("change", handleChange);
 document.addEventListener("input", handleInput);
 document.addEventListener("error", handleImageError, true);
-window.addEventListener("resize", () => requestAnimationFrame(render));
 
-handleRoute();
+boot();
 
-function handleRoute() {
-  const route = parseRoute();
-
-  if (route.role === "home") {
-    state.role = null;
-    render();
-    return;
-  }
-
-  state.role = route.role;
-  state.adminTab = route.adminTab;
+async function boot() {
+  applyRoute();
+  state.loading.boot = true;
   render();
 
-  if (state.role === "user") {
-    loadUserData();
+  try {
+    await loadAllData({silent: true});
+    ensureSelectedTheme();
+    if (state.selectedThemeId) {
+      await loadAvailableTimes({silent: true});
+    }
+  } catch (error) {
+    showToast(error.message, "error");
+  } finally {
+    state.loading.boot = false;
+    render({animate: true});
+  }
+}
+
+function handleRoute() {
+  applyRoute();
+  render({animate: true});
+}
+
+function applyRoute() {
+  const normalized = location.hash.replace(/^#\/?/, "");
+  const [route = "reserve", tab = "themes"] = normalized.split("/");
+
+  if (route === "admin") {
+    state.route = "admin";
+    state.adminTab = ADMIN_TABS.has(tab) ? tab : "themes";
     return;
   }
 
-  loadAdminDashboard();
-}
-
-function parseRoute() {
-  const normalized = location.hash.replace(/^#\/?/, "");
-  const [role = "home", tab = "themes"] = normalized.split("/");
-
-  if (!ROUTES.has(role)) {
-    return { role: "home", adminTab: "themes" };
-  }
-
-  if (role !== "admin") {
-    return { role, adminTab: "themes" };
-  }
-
-  return {
-    role,
-    adminTab: ADMIN_TABS.has(tab) ? tab : "themes"
-  };
+  state.route = "reserve";
 }
 
 async function handleClick(event) {
-  const target = event.target.closest("[data-action]");
-  if (!target || target.disabled) {
+  const routeButton = event.target.closest("[data-route]");
+  if (routeButton) {
+    const route = routeButton.dataset.route;
+    location.hash = route === "admin" ? `#/admin/${state.adminTab}` : "#/reserve";
     return;
   }
 
-  const action = target.dataset.action;
-
-  if (action === "choose-role") {
-    location.hash = target.dataset.role === "admin" ? "#/admin/themes" : "#/user";
+  const adminTabButton = event.target.closest("[data-admin-tab]");
+  if (adminTabButton) {
+    location.hash = `#/admin/${adminTabButton.dataset.adminTab}`;
     return;
   }
 
-  if (action === "go-home") {
-    location.hash = "#/";
-    return;
-  }
+  const themeButton = event.target.closest("[data-theme-card], .popular-item");
+  if (themeButton && !themeButton.disabled) {
+    const themeId = Number(themeButton.dataset.themeId);
+    const isSameTheme = Number(state.selectedThemeId) === themeId;
 
-  if (action === "refresh-user") {
-    await loadUserData({ force: true });
-    return;
-  }
+    if (isSameTheme) {
+      closeBookingPanel();
+      render();
+      return;
+    }
 
-  if (action === "select-theme") {
-    state.selectedThemeId = Number(target.dataset.themeId);
+    state.selectedThemeId = themeId;
     state.selectedTimeId = null;
-    render();
     await loadAvailableTimes();
-    scrollReservationSheetIntoView();
     return;
   }
 
-  if (action === "select-time") {
-    state.selectedTimeId = Number(target.dataset.timeId);
-    render();
-    scrollReservationSheetIntoView();
-    return;
-  }
+  const actionTarget = event.target.closest("[data-action]");
+  if (actionTarget && !actionTarget.disabled) {
+    const action = actionTarget.dataset.action;
 
-  if (action === "admin-tab") {
-    location.hash = `#/admin/${target.dataset.tab}`;
-    return;
-  }
+    if (action === "close-booking") {
+      closeBookingPanel();
+      render();
+      return;
+    }
 
-  if (action === "refresh-admin") {
-    await loadAdminData(state.adminTab, { force: true });
-    return;
-  }
+    if (action === "refresh-all") {
+      await refreshEverything();
+      return;
+    }
 
-  if (action === "delete-theme") {
-    openConfirm("테마를 삭제할까요?", "이 테마를 사용하는 예약까지 함께 삭제될 수 있습니다.", () => deleteTheme(Number(target.dataset.themeId)));
-    return;
-  }
+    if (action === "delete-theme") {
+      openConfirm("테마를 삭제할까요?", "연결된 예약도 함께 삭제될 수 있습니다.", () => deleteTheme(Number(actionTarget.dataset.themeId)));
+      return;
+    }
 
-  if (action === "delete-time") {
-    openConfirm("예약 시간을 삭제할까요?", "이 시간을 사용하는 예약까지 함께 삭제될 수 있습니다.", () => deleteTime(Number(target.dataset.timeId)));
-    return;
-  }
+    if (action === "delete-time") {
+      openConfirm("시간을 삭제할까요?", "연결된 예약도 함께 삭제될 수 있습니다.", () => deleteTime(Number(actionTarget.dataset.timeId)));
+      return;
+    }
 
-  if (action === "delete-reservation") {
-    openConfirm("예약을 삭제할까요?", "삭제한 예약은 현재 화면에서 즉시 사라집니다.", () => deleteReservation(Number(target.dataset.reservationId)));
-    return;
-  }
+    if (action === "delete-reservation") {
+      openConfirm("예약을 삭제할까요?", "삭제한 예약은 되돌릴 수 없습니다.", () => deleteReservation(Number(actionTarget.dataset.reservationId)));
+      return;
+    }
 
-  if (action === "confirm-cancel") {
-    if (event.target === target || target.closest(".confirm-actions")) {
+    if (action === "cancel-confirm") {
+      if (event.target !== actionTarget && actionTarget.classList.contains("modal-backdrop")) {
+        return;
+      }
+
       closeConfirm();
+      return;
     }
+
+    if (action === "confirm-ok") {
+      const onConfirm = state.confirm?.onConfirm;
+      closeConfirm();
+      if (onConfirm) {
+        await onConfirm();
+      }
+      return;
+    }
+
+    if (action === "dismiss-toast") {
+      state.toast = null;
+      render();
+    }
+
     return;
   }
 
-  if (action === "confirm-ok") {
-    const onConfirm = state.confirm?.onConfirm;
-    closeConfirm();
-    if (onConfirm) {
-      await onConfirm();
-    }
+  const timeButton = event.target.closest("[data-time-slot-id]");
+  if (timeButton && !timeButton.disabled) {
+    state.selectedTimeId = Number(timeButton.dataset.timeSlotId);
+    render();
+    appEl.querySelector("#guest-name")?.focus();
+    return;
+  }
+
+  if (shouldCloseBookingFromBlankClick(event)) {
+    closeBookingPanel();
+    render();
   }
 }
 
 async function handleSubmit(event) {
   event.preventDefault();
 
-  const form = event.target;
-
-  if (form.id === "reservation-form") {
-    await submitReservation(form);
+  if (event.target.id === "reservation-form") {
+    await submitReservation(event.target);
     return;
   }
 
-  if (form.id === "theme-form") {
-    await submitTheme(form);
+  if (event.target.id === "theme-form") {
+    await submitTheme(event.target);
     return;
   }
 
-  if (form.id === "time-form") {
-    await submitTime(form);
+  if (event.target.id === "time-form") {
+    await submitTime(event.target);
   }
 }
 
@@ -157,100 +179,89 @@ async function handleChange(event) {
     return;
   }
 
-  state.selectedDate = event.target.value || tomorrowString();
+  state.selectedDate = event.target.value;
   state.selectedTimeId = null;
   render();
   await loadAvailableTimes();
 }
 
 function handleInput(event) {
-  if (event.target.id === "reservation-name") {
-    state.reservationName = event.target.value;
+  if (event.target.id === "guest-name") {
+    state.guestName = event.target.value;
+    syncReservationButton();
     return;
   }
 
-  if (event.target.id === "theme-name") {
-    state.themeDraft.name = event.target.value;
-    return;
-  }
-
-  if (event.target.id === "theme-description") {
-    state.themeDraft.description = event.target.value;
-    return;
-  }
-
-  if (event.target.id === "theme-thumbnail") {
-    state.themeDraft.thumbnailImgUrl = event.target.value;
-    return;
-  }
-
-  if (event.target.id === "time-start-at") {
-    state.timeDraft.startAt = event.target.value;
+  if (event.target.id === "theme-search") {
+    state.themeQuery = event.target.value;
+    syncThemeFilter();
   }
 }
 
 function handleImageError(event) {
-  if (!event.target.matches("img[data-fallback-image]")) {
+  if (!event.target.matches("img[data-cover]")) {
     return;
   }
 
-  const wrapper = event.target.closest(".theme-thumb");
-  if (wrapper) {
-    wrapper.classList.add("image-failed");
-    wrapper.classList.remove("has-image");
-  }
+  event.target.closest(".image-frame, .row-thumb")?.classList.add("is-missing");
+  event.target.remove();
 }
 
-async function loadUserData(options = {}) {
-  if (state.loading.user && !options.force) {
-    return;
-  }
-
-  state.loading.user = true;
+async function refreshEverything() {
+  state.loading.boot = true;
   render();
 
   try {
-    const [themes, popularThemes] = await Promise.all([
-      api("/themes"),
-      api("/themes/popular-top-10")
-    ]);
-
-    state.themes = themes;
-    state.popularThemes = popularThemes;
-
-    if (state.selectedThemeId && !state.themes.some((theme) => Number(theme.id) === Number(state.selectedThemeId))) {
-      state.selectedThemeId = null;
-      state.selectedTimeId = null;
-      state.availableTimes = [];
+    await loadAllData({silent: true});
+    ensureSelectedTheme();
+    if (state.selectedThemeId) {
+      await loadAvailableTimes({silent: true});
     }
+    showToast("데이터를 새로 불러왔습니다.", "success");
   } catch (error) {
     showToast(error.message, "error");
   } finally {
-    state.loading.user = false;
+    state.loading.boot = false;
     render();
   }
 }
 
-async function loadAvailableTimes() {
+async function loadAllData() {
+  const [themes, popularThemes, adminTimes, reservations] = await Promise.all([
+    api("/themes"),
+    api("/themes/popular-top-10"),
+    api("/admin/times"),
+    api("/reservations")
+  ]);
+
+  state.themes = themes;
+  state.popularThemes = popularThemes;
+  state.adminTimes = adminTimes;
+  state.reservations = reservations;
+}
+
+async function loadAvailableTimes(options = {}) {
   if (!state.selectedThemeId || !state.selectedDate) {
+    state.availableTimes = [];
+    state.selectedTimeId = null;
+    render();
     return;
   }
 
   state.loading.times = true;
-  render();
+  if (!options.silent) {
+    render();
+  }
 
   try {
-    const params = new URLSearchParams({
-      themeId: state.selectedThemeId,
-      date: state.selectedDate
-    });
-    state.availableTimes = await api(`/times?${params.toString()}`);
+    state.availableTimes = await api(`/times?themeId=${state.selectedThemeId}&date=${state.selectedDate}`);
 
-    if (!state.availableTimes.some((time) => Number(time.id) === Number(state.selectedTimeId) && time.available)) {
+    if (!selectedTime()?.available) {
       state.selectedTimeId = null;
     }
   } catch (error) {
     state.availableTimes = [];
+    state.selectedTimeId = null;
     showToast(error.message, "error");
   } finally {
     state.loading.times = false;
@@ -258,98 +269,16 @@ async function loadAvailableTimes() {
   }
 }
 
-async function loadAdminData(tab, options = {}) {
-  if (tab === "themes") {
-    await loadAdminThemes(options);
-    return;
-  }
-
-  if (tab === "times") {
-    await loadAdminTimes(options);
-    return;
-  }
-
-  await loadReservations(options);
-}
-
-async function loadAdminDashboard(options = {}) {
-  await Promise.all([
-    loadAdminThemes(options),
-    loadAdminTimes(options),
-    loadReservations(options)
-  ]);
-}
-
-async function loadAdminThemes(options = {}) {
-  if (state.loading.adminThemes && !options.force) {
-    return;
-  }
-
-  state.loading.adminThemes = true;
-  render();
-
-  try {
-    state.themes = await api("/themes");
-  } catch (error) {
-    showToast(error.message, "error");
-  } finally {
-    state.loading.adminThemes = false;
-    render();
-  }
-}
-
-async function loadAdminTimes(options = {}) {
-  if (state.loading.adminTimes && !options.force) {
-    return;
-  }
-
-  state.loading.adminTimes = true;
-  render();
-
-  try {
-    state.adminTimes = await api("/admin/times");
-  } catch (error) {
-    showToast(error.message, "error");
-  } finally {
-    state.loading.adminTimes = false;
-    render();
-  }
-}
-
-async function loadReservations(options = {}) {
-  if (state.loading.reservations && !options.force) {
-    return;
-  }
-
-  state.loading.reservations = true;
-  render();
-
-  try {
-    state.reservations = await api("/reservations");
-  } catch (error) {
-    showToast(error.message, "error");
-  } finally {
-    state.loading.reservations = false;
-    render();
-  }
-}
-
 async function submitReservation(form) {
   const formData = new FormData(form);
   const name = String(formData.get("name") || "").trim();
+  let submitted = false;
 
-  if (!state.selectedThemeId) {
-    showToast("테마를 선택해 주세요.", "error");
-    return;
-  }
+  state.guestName = name;
 
-  if (!state.selectedTimeId) {
-    showToast("예약 시간을 선택해 주세요.", "error");
-    return;
-  }
-
-  if (!name) {
-    showToast("예약자 이름을 입력해 주세요.", "error");
+  if (!canSubmitReservation()) {
+    showToast("테마, 날짜, 시간, 예약자를 모두 입력해 주세요.", "error");
+    syncReservationButton();
     return;
   }
 
@@ -367,28 +296,32 @@ async function submitReservation(form) {
       }
     });
 
-    state.reservationName = "";
+    state.guestName = "";
+    state.selectedThemeId = null;
     state.selectedTimeId = null;
+    state.availableTimes = [];
+    await loadAllData({silent: true});
     showToast("예약이 완료되었습니다.", "success");
-    await loadAvailableTimes();
+    submitted = true;
   } catch (error) {
     showToast(error.message, "error");
   } finally {
     state.submitting = false;
     render();
+    if (submitted) {
+      scrollToPageTop();
+    }
   }
 }
 
 async function submitTheme(form) {
   const formData = new FormData(form);
-  const payload = {
-    name: String(formData.get("name") || "").trim(),
-    description: String(formData.get("description") || "").trim(),
-    thumbnailImgUrl: String(formData.get("thumbnailImgUrl") || "").trim()
-  };
+  const name = String(formData.get("name") || "").trim();
+  const description = String(formData.get("description") || "").trim();
+  const thumbnailImgUrl = String(formData.get("thumbnailImgUrl") || "").trim();
 
-  if (!payload.name || !payload.description || !payload.thumbnailImgUrl) {
-    showToast("테마 이름, 설명, 썸네일 URL을 모두 입력해 주세요.", "error");
+  if (!name || !description || !thumbnailImgUrl) {
+    showToast("테마명, 설명, 이미지 URL을 입력해 주세요.", "error");
     return;
   }
 
@@ -396,18 +329,15 @@ async function submitTheme(form) {
   render();
 
   try {
-    await api("/admin/themes", {
+    const createdTheme = await api("/admin/themes", {
       method: "POST",
-      body: payload
+      body: {name, description, thumbnailImgUrl}
     });
 
-    state.themeDraft = {
-      name: "",
-      description: "",
-      thumbnailImgUrl: ""
-    };
-    showToast("테마가 추가되었습니다.", "success");
-    await loadAdminThemes({ force: true });
+    state.selectedThemeId = createdTheme.id;
+    await loadAllData({silent: true});
+    await loadAvailableTimes({silent: true});
+    showToast("테마를 추가했습니다.", "success");
   } catch (error) {
     showToast(error.message, "error");
   } finally {
@@ -421,7 +351,7 @@ async function submitTime(form) {
   const startAt = String(formData.get("startAt") || "").trim();
 
   if (!startAt) {
-    showToast("예약 시간을 입력해 주세요.", "error");
+    showToast("시작 시간을 입력해 주세요.", "error");
     return;
   }
 
@@ -431,14 +361,14 @@ async function submitTime(form) {
   try {
     await api("/admin/times", {
       method: "POST",
-      body: { startAt }
+      body: {startAt}
     });
 
-    state.timeDraft = {
-      startAt: ""
-    };
-    showToast("예약 시간이 추가되었습니다.", "success");
-    await loadAdminTimes({ force: true });
+    await loadAllData({silent: true});
+    if (state.selectedThemeId) {
+      await loadAvailableTimes({silent: true});
+    }
+    showToast("예약 시간을 추가했습니다.", "success");
   } catch (error) {
     showToast(error.message, "error");
   } finally {
@@ -448,39 +378,95 @@ async function submitTime(form) {
 }
 
 async function deleteTheme(themeId) {
-  try {
-    await api(`/admin/themes/${themeId}`, { method: "DELETE" });
-    showToast("테마가 삭제되었습니다.", "success");
-    await loadAdminThemes({ force: true });
-  } catch (error) {
-    showToast(error.message, "error");
-  }
+  await mutateWithReload(() => api(`/admin/themes/${themeId}`, {method: "DELETE"}), "테마를 삭제했습니다.");
 }
 
 async function deleteTime(timeId) {
-  try {
-    await api(`/admin/times/${timeId}`, { method: "DELETE" });
-    showToast("예약 시간이 삭제되었습니다.", "success");
-    await loadAdminTimes({ force: true });
-  } catch (error) {
-    showToast(error.message, "error");
-  }
+  await mutateWithReload(() => api(`/admin/times/${timeId}`, {method: "DELETE"}), "시간을 삭제했습니다.");
 }
 
 async function deleteReservation(reservationId) {
+  await mutateWithReload(() => api(`/reservations/${reservationId}`, {method: "DELETE"}), "예약을 삭제했습니다.");
+}
+
+async function mutateWithReload(request, successMessage) {
+  state.submitting = true;
+  render();
+
   try {
-    await api(`/reservations/${reservationId}`, { method: "DELETE" });
-    showToast("예약이 삭제되었습니다.", "success");
-    await loadReservations({ force: true });
+    await request();
+    await loadAllData({silent: true});
+    ensureSelectedTheme();
+    if (state.selectedThemeId) {
+      await loadAvailableTimes({silent: true});
+    }
+    showToast(successMessage, "success");
   } catch (error) {
     showToast(error.message, "error");
+  } finally {
+    state.submitting = false;
+    render();
   }
 }
 
-function openConfirm(title, message, onConfirm) {
-  state.confirm = { title, message, onConfirm };
+function ensureSelectedTheme() {
+  if (!state.selectedThemeId || selectedTheme()) {
+    return;
+  }
+
+  state.selectedThemeId = null;
+  state.selectedTimeId = null;
+  state.availableTimes = [];
+}
+
+function closeBookingPanel() {
+  state.selectedThemeId = null;
+  state.selectedTimeId = null;
+  state.availableTimes = [];
+  state.loading.times = false;
+}
+
+function shouldCloseBookingFromBlankClick(event) {
+  if (state.route !== "reserve" || !state.selectedThemeId) {
+    return false;
+  }
+
+  if (!event.target.closest(".page-shell")) {
+    return false;
+  }
+
+  return !event.target.closest("button, input, label, .booking-panel, .popular-panel");
+}
+
+function scrollToPageTop() {
+  const scroll = () => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "auto"
+    });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  };
+
+  requestAnimationFrame(() => {
+    scroll();
+    setTimeout(scroll, 120);
+  });
+}
+
+function syncReservationButton() {
+  const button = appEl.querySelector("#reservation-form .submit-button");
+  if (!button) {
+    return;
+  }
+
+  button.disabled = !canSubmitReservation();
+}
+
+function openConfirm(title, body, onConfirm) {
+  state.confirm = {title, body, onConfirm};
   render();
-  requestAnimationFrame(() => modalRootEl.querySelector(".confirm-sheet")?.focus());
 }
 
 function closeConfirm() {
@@ -488,19 +474,15 @@ function closeConfirm() {
   render();
 }
 
-function scrollReservationSheetIntoView() {
-  requestAnimationFrame(() => {
-    appEl.querySelector("#reservation-sheet")?.scrollIntoView({ behavior: "smooth", block: "center" });
-  });
-}
-
-function showToast(message, type = "default") {
-  const toast = document.createElement("div");
-  toast.className = `toast ${type}`;
-  toast.textContent = message;
-  toastRootEl.appendChild(toast);
+function showToast(message, type = "success") {
+  const toast = {message, type, key: Date.now()};
+  state.toast = toast;
+  render();
 
   window.setTimeout(() => {
-    toast.remove();
-  }, 3600);
+    if (state.toast?.key === toast.key) {
+      state.toast = null;
+      render();
+    }
+  }, 3200);
 }
