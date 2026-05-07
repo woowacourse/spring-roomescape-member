@@ -3,7 +3,6 @@ package roomescape.date.domain;
 import java.time.LocalDate;
 
 public class ReservationDate {
-
     private Long id;
     private LocalDate date;
 
@@ -30,13 +29,13 @@ public class ReservationDate {
         return date;
     }
 
-    public static void validateId(Long id) {
+    private static void validateId(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("예약날짜 ID는 필수입니다.");
         }
     }
 
-    public static void validateDate(LocalDate date) {
+    private static void validateDate(LocalDate date) {
         if (date == null) {
             throw new IllegalArgumentException("예약 날짜는 필수입니다.");
         }
@@ -45,5 +44,4 @@ public class ReservationDate {
             throw new IllegalArgumentException("과거 날짜는 등록할 수 없습니다.");
         }
     }
-
 }
