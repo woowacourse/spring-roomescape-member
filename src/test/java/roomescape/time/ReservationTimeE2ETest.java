@@ -60,7 +60,7 @@ class ReservationTimeE2ETest {
                 .body(body)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("id", notNullValue())
                 .body("startAt", is("10:00"));
     }

@@ -68,7 +68,7 @@ class ThemeE2ETest {
                 .body(body)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("id", notNullValue())
                 .body("name", is("공포"))
                 .body("description", is("무서움"))
