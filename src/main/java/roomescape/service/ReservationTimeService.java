@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.CreateReservationTimeRequest;
 import roomescape.repository.ReservationTimeDao;
@@ -19,6 +20,7 @@ public class ReservationTimeService {
         return reservationTimeDao.findAll();
     }
 
+    @Transactional
     public ReservationTime createReservationTime(CreateReservationTimeRequest request) {
         Long newReservationTimeId = reservationTimeDao.save(request);
         return reservationTimeDao.findById(newReservationTimeId);

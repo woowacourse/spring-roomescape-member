@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.CreateThemeRequest;
@@ -40,6 +41,7 @@ public class ThemeService {
         themeDao.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<ThemeReservationTimeResponse> getThemeTimes(Long themeId, LocalDate date) {
         List<Long> reservedTimeIds = reservationDao.findTimeIdsByThemeIdAndDate(themeId, date);
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();

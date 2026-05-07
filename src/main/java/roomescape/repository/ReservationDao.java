@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -74,14 +75,18 @@ public class ReservationDao {
         String sql = "insert into reservation(name, theme_id, date, time_id) values(?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, request.name());
-            ps.setLong(2, request.themeId());
-            ps.setDate(3, Date.valueOf(request.date()));
-            ps.setLong(4, request.timeId());
-            return ps;
-        }, keyHolder);
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+                ps.setString(1, request.name());
+                ps.setLong(2, request.themeId());
+                ps.setDate(3, Date.valueOf(request.date()));
+                ps.setLong(4, request.timeId());
+                return ps;
+            }, keyHolder);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException("해당 날짜·시간·테마에 이미 예약이 존재합니다.");
+        }
 
         return keyHolder.getKey().longValue();
     }
@@ -98,15 +103,5 @@ public class ReservationDao {
                 where theme_id = ? and date = ?
                 """;
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("time_id"), themeId, date);
-    }
-
-    public boolean isExistsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = """
-                SELECT COUNT(1) FROM reservation
-                WHERE date = ? AND time_id = ? AND theme_id = ?
-                """;
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class,
-                Date.valueOf(date), timeId, themeId);
-        return count != null && count > 0;
     }
 }
