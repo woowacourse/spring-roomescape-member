@@ -42,8 +42,9 @@ public class JdbcThemeRepository implements ThemeRepository {
             return ps;
         }, keyHolder);
 
-        Long id = keyHolder.getKey().longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
+        Long generatedId = keyHolder.getKey().longValue();
+        return findById(generatedId)
+                .orElseThrow(() -> new IllegalStateException("서버 오류: 데이터 저장 직후 조회가 실패했습니다. (ID: " + generatedId + ")"));
     }
 
     @Override

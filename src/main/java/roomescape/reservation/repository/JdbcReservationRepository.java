@@ -13,6 +13,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -59,13 +60,38 @@ public class JdbcReservationRepository implements ReservationRepository {
             return ps;
         }, keyHolder);
 
-        long id = keyHolder.getKey().longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        long generatedId = keyHolder.getKey().longValue();
+        return findById(generatedId)
+                .orElseThrow(() -> new IllegalStateException("서버 오류: 데이터 저장 직후 조회가 실패했습니다. (ID: " + generatedId + ")"));
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("delete from reservation where id = ?", id);
+        String sql = "delete from reservation where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        String sql = """
+            select
+                r.id as reservation_id,
+                r.name as reservation_name,
+                r.reservation_date,
+                r.time_id,
+                t.start_at as time_start_at,
+                h.id as theme_id,
+                h.name as theme_name,
+                h.description as theme_description,
+                h.thumbnail_url as theme_thumbnail_url
+            from reservation r
+            inner join reservation_time t on r.time_id = t.id
+            inner join theme h on r.theme_id = h.id
+            where r.id = ?
+            """;
+
+        List<Reservation> results = jdbcTemplate.query(sql, reservationRowMapper, id);
+        return results.stream().findFirst();
     }
 
     @Override
