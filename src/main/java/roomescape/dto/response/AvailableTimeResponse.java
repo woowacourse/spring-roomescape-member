@@ -9,15 +9,17 @@ public record AvailableTimeResponse(
         String time,
         Boolean available
 ) {
-    public static List<AvailableTimeResponse> toDto(Map<ReservationTime, Boolean> reservationBooleanMap) {
-        return reservationBooleanMap.entrySet().stream()
-                .map(reservationBooleanEntry -> {
-                    ReservationTime reservationTime = reservationBooleanEntry.getKey();
-                    return new AvailableTimeResponse(
-                            reservationTime.getId(),
-                            reservationTime.getStartAt().toString(),
-                            reservationBooleanEntry.getValue()
-                    );
-                }).toList();
+    public static AvailableTimeResponse from(ReservationTime reservationTime, Boolean available) {
+        return new AvailableTimeResponse(
+                reservationTime.getId(),
+                reservationTime.getStartAt().toString(),
+                available
+        );
+    }
+
+    public static List<AvailableTimeResponse> fromAll(Map<ReservationTime, Boolean> reservationTimesAvailability) {
+        return reservationTimesAvailability.entrySet().stream()
+                .map(entry -> from(entry.getKey(), entry.getValue()))
+                .toList();
     }
 }

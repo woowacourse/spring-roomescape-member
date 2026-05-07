@@ -11,17 +11,20 @@ public record PopularThemeResponse(
         Long rank,
         Long reservationCount
 ) {
-    public static List<PopularThemeResponse> toDto(List<PopularThemeProjection> popularThemeProjections) {
+    public static PopularThemeResponse from(PopularThemeProjection popularThemeProjection) {
+        return new PopularThemeResponse(
+                popularThemeProjection.id(),
+                popularThemeProjection.name(),
+                popularThemeProjection.description(),
+                popularThemeProjection.imgUrl(),
+                popularThemeProjection.rank(),
+                popularThemeProjection.reservationCount()
+        );
+    }
+
+    public static List<PopularThemeResponse> fromAll(List<PopularThemeProjection> popularThemeProjections) {
         return popularThemeProjections.stream()
-                .map(
-                        popularThemeProjection -> new PopularThemeResponse(
-                                popularThemeProjection.id(),
-                                popularThemeProjection.name(),
-                                popularThemeProjection.description(),
-                                popularThemeProjection.imgUrl(),
-                                popularThemeProjection.rank(),
-                                popularThemeProjection.reservationCount()
-                        )
-                ).toList();
+                .map(PopularThemeResponse::from)
+                .toList();
     }
 }
