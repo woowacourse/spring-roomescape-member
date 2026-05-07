@@ -231,7 +231,7 @@ async function onDate(date) {
   grid.innerHTML = '<p class="msg">불러오는 중...</p>';
   sec.style.display = 'block';
   try {
-    const r = await fetch(`/themes/${themeId}/reservations/times?localDate=${date}`);
+    const r = await fetch(`/themes/${themeId}/times?localDate=${date}`);
     if (!r.ok) throw new Error();
     const times = await r.json();
     grid.innerHTML = '';

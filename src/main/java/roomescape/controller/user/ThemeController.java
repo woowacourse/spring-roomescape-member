@@ -40,7 +40,7 @@ public class ThemeController {
         return ResponseEntity.ok(ThemeResponseDto.from(themeById));
     }
 
-    @GetMapping("/{themeId}/reservations/times")
+    @GetMapping("/{themeId}/times")
     public ResponseEntity<List<AvailableTimeResponseDto>> findAvailableTimesById(@PathVariable Long themeId,
                                                                                  @RequestParam LocalDate localDate) {
         return ResponseEntity.ok(themeService.findAvailableTimesById(themeId, localDate));
