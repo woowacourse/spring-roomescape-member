@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,8 +32,9 @@ public class ThemeController {
     }
 
     @GetMapping("/popularity")
-    public ResponseEntity<ThemeListResponse> popularThemes(@RequestParam("days") int days,
-                                                           @RequestParam("size") int size) {
+    public ResponseEntity<ThemeListResponse> popularThemes(
+            @Positive(message = "조회 기간은 양수여야 합니다.") @RequestParam("days") int days,
+            @Positive(message = "조회 개수는 양수여야 합니다.") @RequestParam("size") int size) {
         return ResponseEntity.ok(
                 ThemeListResponse.from(themeService.findPopularThemes(days, LocalDate.now() ,size)
                         .stream()
