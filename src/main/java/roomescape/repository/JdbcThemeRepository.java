@@ -39,12 +39,12 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .usingGeneratedKeyColumns("id");
 
         Map<String, Object> params = Map.of(
-                "name", theme.name(),
-                "description", theme.description(),
-                "thumbnail_url", theme.thumbnailUrl());
+                "name", theme.getName(),
+                "description", theme.getDescription(),
+                "thumbnail_url", theme.getThumbnailUrl());
 
         long id = insert.executeAndReturnKey(params).longValue();
-        return new Theme(id, theme.name(), theme.description(), theme.thumbnailUrl());
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
     }
 
     @Override

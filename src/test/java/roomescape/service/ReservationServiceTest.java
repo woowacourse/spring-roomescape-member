@@ -28,7 +28,7 @@ class ReservationServiceTest {
         FakeThemeDao fakeThemeDao = new FakeThemeDao();
         reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);
         savedTime = fakeReservationTimeDao.save(Time.transientOf(LocalTime.of(10, 0)));
-        savedTheme = fakeThemeDao.save(Theme.transientOf("이름", "설명", "test.com"));
+        savedTheme = fakeThemeDao.save(new Theme("이름", "설명", "test.com"));
     }
 
     @Test
@@ -36,7 +36,7 @@ class ReservationServiceTest {
     void saveReservation() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTime.id(),
-                savedTheme.id());
+                savedTheme.getId());
         assertThat(reservation.getTime().startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
@@ -45,7 +45,7 @@ class ReservationServiceTest {
     void removeReservation() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTime.id(),
-                savedTheme.id());
+                savedTheme.getId());
         reservationService.removeReservation(reservation.getId());
         assertThat(reservationService.allReservations()).isEmpty();
     }
@@ -54,7 +54,7 @@ class ReservationServiceTest {
     @DisplayName("모든 예약 목록을 조회하여 반환한다.")
     void allReservations() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
-        reservationService.saveReservation("브라운", futureDate, savedTime.id(), savedTheme.id());
+        reservationService.saveReservation("브라운", futureDate, savedTime.id(), savedTheme.getId());
         List<Reservation> reservations = reservationService.allReservations();
         assertThat(reservations).hasSize(1);
     }
@@ -64,7 +64,7 @@ class ReservationServiceTest {
     void findReservation() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation savedReservation = reservationService.saveReservation("브라운", futureDate, savedTime.id(),
-                savedTheme.id());
+                savedTheme.getId());
         Reservation foundReservation = reservationService.findReservation(savedReservation.getId());
         assertThat(foundReservation.getName()).isEqualTo("브라운");
     }

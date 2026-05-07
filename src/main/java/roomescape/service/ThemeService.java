@@ -20,7 +20,7 @@ public class ThemeService {
     }
 
     public Theme saveTime(String name, String description, String thumbnailUrl) {
-        Theme time = Theme.transientOf(name, description, thumbnailUrl);
+        Theme time = new Theme(name, description, thumbnailUrl);
         return themeRepository.save(time);
     }
 

@@ -111,7 +111,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "name", reservation.getName(),
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().id(),
-                "theme_id", reservation.getTheme().id()
+                "theme_id", reservation.getTheme().getId()
         );
     }
 
