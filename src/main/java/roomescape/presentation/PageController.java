@@ -1,4 +1,4 @@
-package roomescape.presentation.controller;
+package roomescape.presentation;
 
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;

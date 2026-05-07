@@ -6,6 +6,8 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.common.exception.AlreadyInUseException;
+import roomescape.common.exception.NotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -18,5 +20,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
     public ResponseEntity<String> handleValidationException(Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("필수 파라미터가 누락되었거나 형식이 잘못되었습니다." + e.getMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleReservationNotFoundException(NotFoundException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyInUseException.class)
+    public ResponseEntity<String> handleReservationTimeInUseException(AlreadyInUseException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }

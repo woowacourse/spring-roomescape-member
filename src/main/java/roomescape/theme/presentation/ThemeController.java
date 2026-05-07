@@ -1,4 +1,4 @@
-package roomescape.theme.presentation.controller;
+package roomescape.theme.presentation;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;

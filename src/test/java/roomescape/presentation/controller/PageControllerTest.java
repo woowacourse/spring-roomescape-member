@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import roomescape.presentation.PageController;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.application.ThemeService;

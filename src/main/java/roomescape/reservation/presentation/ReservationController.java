@@ -1,4 +1,4 @@
-package roomescape.reservation.presentation.controller;
+package roomescape.reservation.presentation;
 
 import jakarta.validation.Valid;
 import java.util.List;
