@@ -101,6 +101,3 @@
   - `if ("popular".equals(condition))` 형태
   - `Enum` 타입으로 추출해도 좋을 듯?
   - 아니면 아예 이 패턴을 쓰지 않던가
-
-- [ ] **21. `ThemeController.getReservationTimes()` - `date` 파라미터가 `String`**
-  - `LocalDate`로 받는게 좋을듯
