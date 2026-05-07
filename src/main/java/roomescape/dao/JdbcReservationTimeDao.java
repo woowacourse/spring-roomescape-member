@@ -26,11 +26,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public ReservationTime create(ReservationTime reservationTimeWithoutId) {
-        String sql = "INSERT INTO `reservation_time`(`start_at`) VALUES ?";
+        String sql = "INSERT INTO `reservation_time`(`start_at`) VALUES (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement preparedStatement = con.prepareStatement(sql, new String[]{"id"});
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setTime(1, Time.valueOf(reservationTimeWithoutId.getStartAt()));
 
             return preparedStatement;
@@ -45,8 +45,8 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         String sql = "SELECT * FROM `reservation_time` WHERE `id` = (?)";
 
         try {
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
-                LocalTime startAt = rs.getTime("start_at").toLocalTime();
+            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
+                LocalTime startAt = resultSet.getTime("start_at").toLocalTime();
                 return new ReservationTime(id, startAt);
             }, id);
         } catch (EmptyResultDataAccessException exception) {
@@ -59,19 +59,19 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         String sql = "SELECT * FROM `reservation_time` "
                 + "ORDER BY start_at ASC";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Long id = rs.getLong("id");
-            LocalTime startAt = rs.getTime("start_at").toLocalTime();
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
+            Long id = resultSet.getLong("id");
+            LocalTime startAt = resultSet.getTime("start_at").toLocalTime();
             return new ReservationTime(id, startAt);
         });
     }
 
     @Override
     public List<Long> bookedTimeIdByDateAndTheme(LocalDate date, Long themeId) {
-        String sql = "SELECT t.id as time_id " +
-                "FROM `reservation_time` t " +
-                "INNER JOIN `reservation` r ON r.time_id = t.id " +
-                "WHERE r.date = (?) AND r.theme_id = (?) ";
+        String sql = "SELECT t.id as time_id "
+                + "FROM `reservation_time` t "
+                + "INNER JOIN `reservation` r ON r.time_id = t.id "
+                + "WHERE r.date = (?) AND r.theme_id = (?) ";
 
         return jdbcTemplate.query(sql,
                 (resultSet, rowNum) ->
@@ -83,7 +83,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public void delete(Long id) {
-        String sql = "DELETE FROM `reservation_time` WHERE `id` = ?";
+        String sql = "DELETE FROM `reservation_time` WHERE `id` = (?)";
         jdbcTemplate.update(sql, id);
     }
 }

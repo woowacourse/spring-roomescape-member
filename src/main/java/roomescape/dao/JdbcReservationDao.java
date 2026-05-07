@@ -28,8 +28,8 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = "INSERT INTO `reservation`(`name`, `date`, `time_id`, `theme_id`) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement preparedStatement = con.prepareStatement(sql, new String[]{"id"});
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, reservationWithoutId.getName());
             preparedStatement.setDate(2, Date.valueOf(reservationWithoutId.getDate()));
             preparedStatement.setLong(3, reservationTime.getId());
@@ -50,16 +50,16 @@ public class JdbcReservationDao implements ReservationDao {
                         + "INNER JOIN `reservation_time` t ON r.time_id = t.id "
                         + "INNER JOIN `theme` th ON r.theme_id = th.id";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Long id = rs.getLong("id");
-            String name = rs.getString("name");
-            LocalDate date = rs.getDate("date").toLocalDate();
-            Long timeId = rs.getLong("time_id");
-            LocalTime timeValue = rs.getTime("time_value").toLocalTime();
-            Long themeId = rs.getLong("theme_id");
-            String themeName = rs.getString("theme_name");
-            String themeDescription = rs.getString("theme_description");
-            String themeThumbnailUrl = rs.getString("theme_thumbnail_url");
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
+            Long id = resultSet.getLong("id");
+            String name = resultSet.getString("name");
+            LocalDate date = resultSet.getDate("date").toLocalDate();
+            Long timeId = resultSet.getLong("time_id");
+            LocalTime timeValue = resultSet.getTime("time_value").toLocalTime();
+            Long themeId = resultSet.getLong("theme_id");
+            String themeName = resultSet.getString("theme_name");
+            String themeDescription = resultSet.getString("theme_description");
+            String themeThumbnailUrl = resultSet.getString("theme_thumbnail_url");
 
             ReservationTime reservationTime = new ReservationTime(timeId, timeValue);
             Theme theme = new Theme(themeId, themeName, themeDescription, themeThumbnailUrl);
@@ -69,7 +69,7 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public void delete(Long id) {
-        String sql = "DELETE FROM `reservation` WHERE `id` = ?";
+        String sql = "DELETE FROM `reservation` WHERE `id` = (?)";
 
         jdbcTemplate.update(sql, id);
     }

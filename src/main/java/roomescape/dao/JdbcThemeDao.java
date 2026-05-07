@@ -27,8 +27,8 @@ public class JdbcThemeDao implements ThemeDao {
         String sql = "INSERT INTO `theme`(`name`, `description`, `thumbnail_url`) VALUES (?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement preparedStatement = con.prepareStatement(sql, new String[]{"id"});
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, themeWithoutId.getName());
             preparedStatement.setString(2, themeWithoutId.getDescription());
             preparedStatement.setString(3, themeWithoutId.getThumbnailUrl());
@@ -105,7 +105,7 @@ public class JdbcThemeDao implements ThemeDao {
 
     @Override
     public void delete(Long id) {
-        String sql = "DELETE FROM theme WHERE id = ?";
+        String sql = "DELETE FROM theme WHERE id = (?)";
 
         jdbcTemplate.update(sql, id);
     }
