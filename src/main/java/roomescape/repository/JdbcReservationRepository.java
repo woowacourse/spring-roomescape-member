@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -17,14 +18,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
 public class JdbcReservationRepository implements ReservationRepository {
 
 
     private final JdbcTemplate jdbcTemplate;
-
-    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<Reservation> findAll() {

@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,12 +14,9 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/themes")
+@RequiredArgsConstructor
 public class ThemeController {
     private final ThemeService themeService;
-
-    public ThemeController(ThemeService themeService) {
-        this.themeService = themeService;
-    }
 
     @GetMapping
     public ResponseEntity<ThemeListResponse> getAllThemes() {

@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class JdbcThemeRepository implements ThemeRepository {
     private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) ->
             new Theme(
@@ -25,10 +27,6 @@ public class JdbcThemeRepository implements ThemeRepository {
             );
 
     private final JdbcTemplate jdbcTemplate;
-
-    public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Theme save(Theme theme) {

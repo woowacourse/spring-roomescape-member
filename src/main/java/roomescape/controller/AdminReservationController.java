@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.dto.ReservationListResponse;
@@ -8,12 +9,9 @@ import roomescape.service.ReservationService;
 
 @RestController
 @RequestMapping("/admin/reservations")
+@RequiredArgsConstructor
 public class AdminReservationController {
     private final ReservationService reservationService;
-
-    public AdminReservationController(ReservationService reservationService) {
-        this.reservationService = reservationService;
-    }
 
     @GetMapping
     public ResponseEntity<ReservationListResponse> getAllReservations() {

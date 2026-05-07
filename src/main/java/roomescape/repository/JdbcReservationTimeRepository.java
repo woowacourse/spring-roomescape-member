@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
             new ReservationTime(
@@ -23,10 +25,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             );
 
     private final JdbcTemplate jdbcTemplate;
-
-    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
