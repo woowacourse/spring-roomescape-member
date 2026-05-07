@@ -7,13 +7,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.dto.theme.CreateThemeRequest;
 import roomescape.dto.theme.PopularThemeResponse;
 
-@Component
-public class ThemeDao {
+@Repository
+public class ThemeJdbcRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -27,40 +26,45 @@ public class ThemeDao {
         return theme;
     };
 
-    public ThemeDao(JdbcTemplate jdbcTemplate) {
+    public ThemeJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public List<Theme> findAll() {
         String sql = "select id, name, description, thumbnail_image_url from theme";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    @Override
     public Theme findById(Long id) {
         String sql = "select id, name, description, thumbnail_image_url from theme where id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
-    public Long save(CreateThemeRequest request) {
+    @Override
+    public Long save(Theme theme) {
         String sql = "insert into theme(name, description, thumbnail_image_url) values(?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, request.name());
-            ps.setString(2, request.description());
-            ps.setString(3, request.thumbnailImageUrl());
+            ps.setString(1, theme.getName());
+            ps.setString(2, theme.getDescription());
+            ps.setString(3, theme.getThumbnailImageUrl());
             return ps;
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
     }
 
+    @Override
     public void deleteById(Long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
     public List<PopularThemeResponse> findPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit) {
         String sql = """
                 select t.id, t.name, t.description, t.thumbnail_image_url, count(r.id) as reservation_count

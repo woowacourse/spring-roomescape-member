@@ -9,42 +9,45 @@ import roomescape.domain.Theme;
 import roomescape.dto.theme.CreateThemeRequest;
 import roomescape.dto.theme.PopularThemeResponse;
 import roomescape.dto.theme.ThemeReservationTimeResponse;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ReservationTimeDao;
-import roomescape.repository.ThemeDao;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeJdbcRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
 
     private static final Integer POPULAR_THEME_PERIOD_DAYS = 7;
 
-    private final ThemeDao themeDao;
-    private final ReservationDao reservationDao;
-    private final ReservationTimeDao reservationTimeDao;
+    private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
 
-    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
-        this.themeDao = themeDao;
-        this.reservationDao = reservationDao;
-        this.reservationTimeDao = reservationTimeDao;
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository,
+                        ReservationTimeJdbcRepository reservationTimeRepository) {
+        this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
     }
 
     public List<Theme> getThemes() {
-        return themeDao.findAll();
+        return themeRepository.findAll();
     }
 
     public Theme createTheme(CreateThemeRequest request) {
-        Long newThemeId = themeDao.save(request);
-        return themeDao.findById(newThemeId);
+        Theme theme = new Theme(null, request.name(), request.description(), request.thumbnailImageUrl());
+        Long newThemeId = themeRepository.save(theme);
+        return themeRepository.findById(newThemeId);
     }
 
     public void deleteTheme(Long id) {
-        themeDao.deleteById(id);
+        themeRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
     public List<ThemeReservationTimeResponse> getThemeTimes(Long themeId, LocalDate date) {
-        List<Long> reservedTimeIds = reservationDao.findTimeIdsByThemeIdAndDate(themeId, date);
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        List<Long> reservedTimeIds = reservationRepository.findTimeIdsByThemeIdAndDate(themeId, date);
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         return reservationTimes.stream()
                 .map(time -> new ThemeReservationTimeResponse(
@@ -60,6 +63,6 @@ public class ThemeService {
         LocalDate to = today.minusDays(1);
         LocalDate from = today.minusDays(POPULAR_THEME_PERIOD_DAYS);
 
-        return themeDao.findPopularThemes(from, to, limit);
+        return themeRepository.findPopularThemes(from, to, limit);
     }
 }

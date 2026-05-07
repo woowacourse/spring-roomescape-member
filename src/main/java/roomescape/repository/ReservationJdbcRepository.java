@@ -9,14 +9,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.reservation.CreateReservationRequest;
 
-@Component
-public class ReservationDao {
+@Repository
+public class ReservationJdbcRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -42,10 +41,24 @@ public class ReservationDao {
         );
     };
 
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
+    public ReservationJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
+    public List<Reservation> findAll() {
+        String sql = """
+                select r.id, r.name, r.date,
+                       t.id as time_id, t.start_at,
+                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail_image_url
+                from reservation r
+                join reservation_time t on r.time_id = t.id
+                join theme th on r.theme_id = th.id
+                """;
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    @Override
     public Reservation findById(Long id) {
         String sql = """
                 select r.id, r.name, r.date,
@@ -59,29 +72,18 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
-    public List<Reservation> findAll() {
-        String sql = """
-                select r.id, r.name, r.date,
-                       t.id as time_id, t.start_at,
-                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail_image_url
-                from reservation r
-                join reservation_time t on r.time_id = t.id
-                join theme th on r.theme_id = th.id
-                """;
-        return jdbcTemplate.query(sql, rowMapper);
-    }
-
-    public Long save(CreateReservationRequest request) {
+    @Override
+    public Long save(Reservation reservation) {
         String sql = "insert into reservation(name, theme_id, date, time_id) values(?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-                ps.setString(1, request.name());
-                ps.setLong(2, request.themeId());
-                ps.setDate(3, Date.valueOf(request.date()));
-                ps.setLong(4, request.timeId());
+                ps.setString(1, reservation.getName());
+                ps.setLong(2, reservation.getTime().getId());
+                ps.setDate(3, Date.valueOf(reservation.getDate()));
+                ps.setLong(4, reservation.getTime().getId());
                 return ps;
             }, keyHolder);
         } catch (DataIntegrityViolationException e) {
@@ -91,11 +93,13 @@ public class ReservationDao {
         return keyHolder.getKey().longValue();
     }
 
+    @Override
     public void deleteById(Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
     public List<Long> findTimeIdsByThemeIdAndDate(Long themeId, LocalDate date) {
         String sql = """
                 select time_id
