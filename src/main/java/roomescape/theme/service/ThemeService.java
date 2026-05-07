@@ -7,16 +7,23 @@ import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
 public class ThemeService {
 
-    private final ThemeRepository themeRepository;
+    private static final int DEFAULT_POPULAR_PERIOD = 7;
+    private static final int DEFAULT_POPULAR_LIMIT = 10;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    private final ThemeRepository themeRepository;
+    private final Clock clock;
+
+    public ThemeService(ThemeRepository themeRepository, Clock clock) {
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     @Transactional
@@ -42,8 +49,15 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public List<Theme> findPopularThemes(int period, int limit) {
-        return themeRepository.findPopularThemes(period, limit);
+    public List<Theme> findPopularThemes() {
+        LocalDate endDate = LocalDate.now(clock);
+        LocalDate startDate = endDate.minusDays(DEFAULT_POPULAR_PERIOD);
+
+        return themeRepository.findPopularThemes(
+                startDate,
+                endDate,
+                DEFAULT_POPULAR_LIMIT
+        );
     }
 
     public Theme getById(Long id) {
