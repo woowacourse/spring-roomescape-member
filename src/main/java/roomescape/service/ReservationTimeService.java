@@ -3,7 +3,7 @@ package roomescape.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.dto.ReservationTimeCreateCommand;
+import roomescape.domain.dto.ReservationTimeCreateData;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.request.ReservationTimeCreateRequest;
 import roomescape.service.dto.response.ReservationTimeResponse;
@@ -25,7 +25,7 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse create(ReservationTimeCreateRequest data) {
         final ReservationTime reservationTime = ReservationTime.create(
-                new ReservationTimeCreateCommand(
+                new ReservationTimeCreateData(
                         data.startAt(),
                         data.endAt()
                 )
