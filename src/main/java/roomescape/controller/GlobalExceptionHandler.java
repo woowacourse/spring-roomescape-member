@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import roomescape.exception.ForbiddenAccessException;
 import roomescape.exception.ErrorMessageResponse;
 
@@ -24,6 +25,13 @@ public class GlobalExceptionHandler {
     public ErrorMessageResponse handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
         printErrorStatus(e);
         return new ErrorMessageResponse("요청 형식이 올바르지 않습니다.");
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessageResponse handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
+        printErrorStatus(e);
+        return new ErrorMessageResponse("잘못된 입력값입니다: " + e.getValue());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
