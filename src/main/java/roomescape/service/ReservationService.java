@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -23,8 +24,11 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public List<Reservation> findAll() {
-        return reservationDao.findAll();
+    public List<ReservationResponse> findAll() {
+        return reservationDao.findAll()
+            .stream()
+            .map(ReservationResponse::from)
+            .collect(Collectors.toList());
     }
 
     public ReservationResponse save(ReservationRequest request) {
