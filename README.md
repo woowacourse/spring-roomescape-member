@@ -14,9 +14,9 @@
 
 ### 사용자 예약
 
-- [ ] 사용자가 날짜와 테마를 선택하면 예약 가능한 시간 목록이 표시된다.
-    - [ ] 예약 가능한 시간이란 이전 예약 리스트에 동일한 날짜 + 테마의 예약이 없는 시간이다.
-    - [ ] 테마 예약이 더 이상 불가능해도 선택할 수 있다.
+- [x] 사용자가 날짜와 테마를 선택하면 예약 가능한 시간 목록이 표시된다.
+    - [x] 예약 가능한 시간이란 이전 예약 리스트에 동일한 날짜 + 테마의 예약이 없는 시간이다.
+    - [x] 테마 예약이 더 이상 불가능해도 선택할 수 있다.
 - [x] 예약할 때 이름을 입력받아야 하고, 예약 기록에 이름을 포함한다.
 - [x] 테마가 다르다면 동일한 시간에 동일한 이름을 가진 예약을 할 수 있다.
 
@@ -37,20 +37,22 @@
 
 | 기능       | 메서드 / URL                   | 요청 본문                           | 쿼리 파라미터 (전체 optional)                              | 응답                                                                          |
 |----------|-----------------------------|---------------------------------|----------------------------------------------------|-----------------------------------------------------------------------------|
-| 예약 조회    | `GET /reservations`         | -                               | -                                                  | `200 OK` <br> `[{reservationId, name, date, theme, time}, ...]`             |
+| 예약 목록 조회 | `GET /reservations`         | -                               | -                                                  | `200 OK` <br> `[{reservationId, name, date, theme, time}, ...]`             |
+| 예약 단건 조회 | `GET /reservations/{id}`    | -                               | -                                                  | `200 OK` <br> `{reservationId, name, date, theme, time}`                    |
 | 예약 추가    | `POST /reservations`        | `{name, themeId, date, timeId}` | -                                                  | `201 Created` <br> `{reservationId, name, theme: {...}, date, time: {...}}` |
-| 예약 삭제    | `DELETE /reservations/{id}` | -                               | -                                                  | `204 No Content`                                                            |
-| 시간 조회    | `GET /times`                | -                               | `date`, `themeId`                                  | `200 OK` <br> `[{timeId, startAt}, ...]`                                    |
+| 예약 삭제    | `DELETE /reservations/{id}` | -                               | -                                                  | `200 OK`                                                                    |
+| 시간 조회    | `GET /times`                | -                               | -                                                  | `200 OK` <br> `[{timeId, startAt}, ...]`                                    |
+| 시간 조회    | `GET /times/available`      | -                               | `date`, `themeId`                                  | `200 OK` <br> `[{timeId, startAt}, ...]`                                    |
 | 테마 목록 조회 | `GET /themes`               | -                               | -                                                  | `200 OK` <br> `[{themeId, name, description, url}, ...]`                    |
 | 테마 단건 조회 | `GET /themes/{id}`          | -                               | -                                                  | `200 OK` <br> `{themeId, name, description, url}`                           |
-| 인기 테마 조회 | GET /themes/famous          | -                               | days - optional, date - optional, limit - optional |                                                                             |
+| 인기 테마 조회 | GET /themes/famous          | -                               | days - optional, date - optional, limit - optional | `200 OK` <br> `[{themeId, name, description, url}, ...]`                    |
 
 ### 어드민 API
 
 | 기능    | 메서드 / URL                   | 요청 본문                      | 쿼리 파라미터 | 응답                                                     |
 |-------|-----------------------------|----------------------------|---------|--------------------------------------------------------|
 | 시간 추가 | `POST /admin/times`         | `{startAt}`                | -       | `201 Created` <br> `{timeId, startAt}`                 |
-| 시간 삭제 | `DELETE /admin/times/{id}`  | -                          | -       | `204 No Content`                                       |
+| 시간 삭제 | `DELETE /admin/times/{id}`  | -                          | -       | `200 OK`                                               |
 | 테마 생성 | `POST /admin/themes`        | `{name, description, url}` | -       | `201 Created` <br> `{themeId, name, description, url}` |
 | 테마 수정 | `PUT /admin/themes/{id}`    | `{name, description, url}` | -       | `200 OK` <br> `{themeId, name, description, url}`      |
-| 테마 삭제 | `DELETE /admin/themes/{id}` | -                          | -       | `204 No Content`                                       |
+| 테마 삭제 | `DELETE /admin/themes/{id}` | -                          | -       | `200 OK`                                               |
