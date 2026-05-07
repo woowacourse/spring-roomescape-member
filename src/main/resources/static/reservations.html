@@ -3,45 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Roomescape — 방탈출 예약</title>
-  <meta name="description" content="Roomescape 방탈출 카페 온라인 예약 시스템. 테마를 선택하고 날짜와 시간을 골라 예약하세요." />
+  <title>Roomescape — 예약</title>
+  <meta name="description" content="Roomescape 방탈출 카페 예약. 날짜, 테마, 시간을 선택해 예약하세요." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 
-<!-- ===== HEADER ===== -->
 <header class="site-header">
   <div class="app-container">
     <div class="header-inner">
-      <div class="logo">Room<span>escape</span></div>
-      <nav class="nav-tabs" role="tablist" aria-label="페이지 탐색">
-        <button class="nav-tab active" role="tab" data-page="user-page" id="tab-user" aria-selected="true">예약</button>
-        <button class="nav-tab" role="tab" data-page="admin-page" id="tab-admin" aria-selected="false">관리자</button>
+      <a class="logo" href="/">Room<span>escape</span></a>
+      <nav class="nav-tabs">
+        <a class="nav-tab" href="/">홈</a>
+        <a class="nav-tab active" href="/reservations">예약</a>
+        <a class="nav-tab" href="/admin">관리자</a>
       </nav>
     </div>
   </div>
 </header>
 
-<!-- ===== USER PAGE ===== -->
-<main id="user-page" class="page active" role="main">
+<main>
   <div class="app-container">
-    <div class="user-layout">
 
-      <!-- LEFT: Sidebar (calendar + themes) -->
-      <aside class="sidebar">
+    <!-- 3-column booking layout -->
+    <div class="booking-layout">
 
-        <!-- Calendar -->
-        <div class="card">
-          <div class="section-title">날짜 선택</div>
-          <div class="calendar-header">
+      <!-- COL 1: 날짜 -->
+      <aside class="booking-col col-date">
+        <div class="col-header">
+          <span class="col-badge">01</span>
+          <h2 class="col-title">날짜 선택</h2>
+        </div>
+        <div class="col-body">
+          <div class="calendar-nav">
             <button class="calendar-nav-btn" id="cal-prev" aria-label="이전 달">&#8249;</button>
             <span class="calendar-month-label" id="cal-month-label"></span>
             <button class="calendar-nav-btn" id="cal-next" aria-label="다음 달">&#8250;</button>
           </div>
           <div class="calendar-grid" id="calendar-grid">
-            <!-- Day headers -->
             <div class="calendar-day-label">일</div>
             <div class="calendar-day-label">월</div>
             <div class="calendar-day-label">화</div>
@@ -51,154 +52,52 @@
             <div class="calendar-day-label">토</div>
           </div>
         </div>
-
-        <!-- Theme selector -->
-        <div class="card">
-          <div class="section-title">테마 선택</div>
-          <div class="theme-list" id="theme-list">
-            <!-- skeleton -->
-            <div class="skeleton" style="height:72px;border-radius:6px"></div>
-            <div class="skeleton" style="height:72px;border-radius:6px;margin-top:8px"></div>
-            <div class="skeleton" style="height:72px;border-radius:6px;margin-top:8px"></div>
-          </div>
-        </div>
-
       </aside>
 
-      <!-- RIGHT: Time slots + CTA -->
-      <section class="main-content" aria-label="시간대 및 예약">
-        <div class="card">
-          <div class="section-title">시간대 선택</div>
+      <!-- COL 2: 테마 (2열) -->
+      <section class="booking-col col-theme">
+        <div class="col-header">
+          <span class="col-badge">02</span>
+          <h2 class="col-title">테마 선택</h2>
+        </div>
+        <div class="col-body col-body-scroll">
+          <div class="theme-grid2" id="theme-list">
+            <div class="skeleton" style="height:140px;border-radius:8px"></div>
+            <div class="skeleton" style="height:140px;border-radius:8px"></div>
+            <div class="skeleton" style="height:140px;border-radius:8px"></div>
+            <div class="skeleton" style="height:140px;border-radius:8px"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COL 3: 시간 (2열) -->
+      <section class="booking-col col-time">
+        <div class="col-header">
+          <span class="col-badge">03</span>
+          <h2 class="col-title">시간 선택</h2>
+        </div>
+        <div class="col-body">
           <div id="time-slots-container">
             <div class="empty-state">
               <p>🗓</p>
-              <p>날짜와 테마를 먼저 선택해주세요.</p>
+              <p>날짜와 테마를<br>먼저 선택해주세요.</p>
             </div>
-          </div>
-        </div>
-
-        <!-- CTA -->
-        <div class="card">
-          <div class="cta-row">
-            <div class="cta-info" id="cta-info">날짜, 테마, 시간을 선택하세요.</div>
-            <button class="btn-primary" id="book-btn" disabled>예약하기</button>
           </div>
         </div>
       </section>
 
     </div>
+
+    <!-- Sticky CTA -->
+    <div class="cta-bar">
+      <div class="cta-info" id="cta-info">날짜, 테마, 시간을 선택하세요.</div>
+      <button class="btn-primary" id="book-btn" disabled>예약하기</button>
+    </div>
+
   </div>
 </main>
 
-<!-- ===== ADMIN PAGE ===== -->
-<section id="admin-page" class="page" role="region" aria-label="관리자 페이지">
-  <div class="app-container">
-    <div class="admin-header">
-      <div>
-        <h1 class="admin-title">관리자</h1>
-        <p class="admin-subtitle">예약, 시간대, 테마를 관리합니다.</p>
-      </div>
-    </div>
-
-    <!-- Admin tabs -->
-    <div class="admin-tabs" role="tablist" aria-label="관리자 메뉴">
-      <button class="admin-tab active" role="tab" data-panel="reservations" id="tab-admin-res" aria-selected="true">예약 목록</button>
-      <button class="admin-tab" role="tab" data-panel="times" id="tab-admin-times" aria-selected="false">시간대</button>
-      <button class="admin-tab" role="tab" data-panel="themes" id="tab-admin-themes" aria-selected="false">테마</button>
-    </div>
-
-    <!-- Panel: Reservations -->
-    <div class="admin-panel active" id="admin-panel-reservations" role="tabpanel">
-      <div class="data-table-wrap">
-        <table class="data-table" aria-label="예약 목록">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>예약자</th>
-              <th>날짜</th>
-              <th>시간</th>
-              <th>테마</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="admin-reservations-tbody">
-            <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">불러오는 중...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Panel: Times -->
-    <div class="admin-panel" id="admin-panel-times" role="tabpanel">
-      <!-- Add form -->
-      <div class="admin-form-card">
-        <div class="admin-form-title">시간대 추가</div>
-        <div class="admin-form-row">
-          <div class="admin-form-group">
-            <label class="form-label" for="new-time-start">시작 시간</label>
-            <input class="form-input" type="time" id="new-time-start" placeholder="10:00" />
-          </div>
-          <button class="btn-add" id="btn-add-time">추가</button>
-        </div>
-      </div>
-      <div class="data-table-wrap">
-        <table class="data-table" aria-label="시간대 목록">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>시작 시간</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="admin-times-tbody">
-            <tr><td colspan="3" style="text-align:center;padding:32px;color:var(--text-muted)">불러오는 중...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Panel: Themes -->
-    <div class="admin-panel" id="admin-panel-themes" role="tabpanel">
-      <!-- Add form -->
-      <div class="admin-form-card">
-        <div class="admin-form-title">테마 추가</div>
-        <div class="admin-form-row">
-          <div class="admin-form-group">
-            <label class="form-label" for="new-theme-name">테마명</label>
-            <input class="form-input" type="text" id="new-theme-name" placeholder="미스터리 저택" />
-          </div>
-          <div class="admin-form-group" style="flex:2">
-            <label class="form-label" for="new-theme-desc">설명</label>
-            <input class="form-input" type="text" id="new-theme-desc" placeholder="어두운 저택에 갇혔다..." />
-          </div>
-          <div class="admin-form-group">
-            <label class="form-label" for="new-theme-thumb">썸네일 URL</label>
-            <input class="form-input" type="text" id="new-theme-thumb" placeholder="/images/theme.png" />
-          </div>
-          <button class="btn-add" id="btn-add-theme">추가</button>
-        </div>
-      </div>
-      <div class="data-table-wrap">
-        <table class="data-table" aria-label="테마 목록">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>이름</th>
-              <th>설명</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="admin-themes-tbody">
-            <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted)">불러오는 중...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ===== BOOKING MODAL ===== -->
+<!-- 예약 모달 -->
 <div class="modal-overlay" id="booking-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title-text">
   <div class="modal">
     <div class="modal-header">
@@ -206,33 +105,14 @@
       <button class="modal-close" id="modal-close-btn" aria-label="닫기">&times;</button>
     </div>
     <div class="modal-body">
-      <!-- Summary -->
       <div class="booking-summary">
-        <div>
-          <div class="summary-item-label">날짜</div>
-          <div class="summary-item-value" id="modal-date">—</div>
-        </div>
-        <div>
-          <div class="summary-item-label">테마</div>
-          <div class="summary-item-value" id="modal-theme">—</div>
-        </div>
-        <div>
-          <div class="summary-item-label">시간</div>
-          <div class="summary-item-value" id="modal-time">—</div>
-        </div>
+        <div><div class="summary-item-label">날짜</div><div class="summary-item-value" id="modal-date">—</div></div>
+        <div><div class="summary-item-label">테마</div><div class="summary-item-value" id="modal-theme">—</div></div>
+        <div><div class="summary-item-label">시간</div><div class="summary-item-value" id="modal-time">—</div></div>
       </div>
-
-      <!-- Form -->
       <div class="form-group">
         <label class="form-label" for="booking-name">예약자 이름</label>
-        <input
-          class="form-input"
-          type="text"
-          id="booking-name"
-          placeholder="홍길동"
-          autocomplete="name"
-          autofocus
-        />
+        <input class="form-input" type="text" id="booking-name" placeholder="홍길동" autocomplete="name" />
       </div>
     </div>
     <div class="modal-footer">
@@ -242,9 +122,7 @@
   </div>
 </div>
 
-<!-- ===== TOAST ===== -->
 <div class="toast-container" id="toast-container" aria-live="polite"></div>
-
-<script src="/app.js"></script>
+<script src="/reservations.js"></script>
 </body>
 </html>

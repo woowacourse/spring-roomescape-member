@@ -27,6 +27,31 @@ INSERT INTO theme (name, description, thumbnail_url) VALUES (
     '1940년대 뒷골목의 사설탐정 사무소. 테이블 위의 붉은 봉투에는 연쇄 살인마의 단서가 담겨 있다. 다음 피해자가 되기 전에 사건을 해결하라.',
     '/images/theme_detective.png'
 );
+INSERT INTO theme (name, description, thumbnail_url) VALUES (
+    '저주받은 저택',
+    '빅토리아 시대의 대저택, 눈을 따라오는 초상화들, 삐걱거리는 계단. 저택의 주인이 남긴 마지막 수수께끼를 풀어야만 이 저주에서 벗어날 수 있다.',
+    '/images/theme_haunted_mansion.png'
+);
+INSERT INTO theme (name, description, thumbnail_url) VALUES (
+    '심해 잠수함',
+    '수심 3,000m에서 엔진이 멈췄다. 산소 잔량 90분. 차가운 심해에서 잠수함 시스템을 복구하고, 수면 위로 부상하기 위한 마지막 사투를 벌여라.',
+    '/images/theme_submarine.png'
+);
+INSERT INTO theme (name, description, thumbnail_url) VALUES (
+    '금서의 도서관',
+    '비밀결사의 지하 도서관. 책장 뒤에 숨겨진 통로, 암호화된 고문서, 촛불 하나만 켜진 채 떠나야 한다. 금서에 담긴 진실을 밝혀라.',
+    '/images/theme_library.png'
+);
+INSERT INTO theme (name, description, thumbnail_url) VALUES (
+    '괴박사의 실험실',
+    '광기에 빠진 과학자의 지하 실험실. 형광색 액체가 끓어오르고 테슬라 코일이 번쩍인다. 다음 실험 재료가 되기 전에 탈출구를 찾아라.',
+    '/images/theme_laboratory.png'
+);
+INSERT INTO theme (name, description, thumbnail_url) VALUES (
+    '해적선의 보물',
+    '카리브해의 해적선 선장 선실. 보물지도, 나침반, 잠긴 보물 상자. 바다 한가운데 떠 있는 이 배에서 진짜 보물을 찾아 항구로 돌아와라.',
+    '/images/theme_pirate.png'
+);
 
 -- 샘플 예약 (오늘 날짜 기준 미래 날짜를 고정값으로 넣기 어려우므로 과거 기준 참고용)
 -- 실제 운영 시 날짜를 조정하거나 삭제하세요.

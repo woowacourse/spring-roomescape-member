@@ -6,23 +6,21 @@ const state = {
   selectedTimeId: null,
   selectedTimeLabel: null,
   themes: [],
-  times: [],
+  availableDates: [],
   currentCalendarYear: new Date().getFullYear(),
   currentCalendarMonth: new Date().getMonth(),
-  availableDates: [],
 };
 
-// ===== DOM Refs =====
+// ===== DOM Helpers =====
 const $ = id => document.getElementById(id);
 const qs = (sel, ctx = document) => ctx.querySelector(sel);
 
 // ===== Toast =====
 function showToast(msg, type = 'default') {
-  const container = $('toast-container');
   const el = document.createElement('div');
   el.className = `toast ${type}`;
   el.textContent = msg;
-  container.appendChild(el);
+  $('toast-container').appendChild(el);
   setTimeout(() => el.remove(), 3100);
 }
 
@@ -55,10 +53,77 @@ const api = {
 // ===== Navigation =====
 function switchPage(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+  });
   $(pageId).classList.add('active');
-  document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+  const tab = document.querySelector(`[data-page="${pageId}"]`);
+  if (tab) { tab.classList.add('active'); tab.setAttribute('aria-selected', 'true'); }
+
+  if (pageId === 'home-page') loadPopularThemes();
   if (pageId === 'admin-page') initAdminPage();
+}
+
+// ===== HOME PAGE: Popular Themes =====
+let _detailTheme = null;
+
+async function loadPopularThemes() {
+  const grid = $('popular-grid');
+  try {
+    const themes = await api.get('/themes/popular');
+    if (!themes || themes.length === 0) {
+      grid.innerHTML = `<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:40px 0">등록된 인기 테마가 없습니다.</p>`;
+      return;
+    }
+    grid.innerHTML = '';
+    themes.slice(0, 10).forEach((theme, idx) => {
+      const card = document.createElement('div');
+      card.className = 'popular-card';
+      card.innerHTML = `
+        <div class="popular-card-img-wrap">
+          <img src="${theme.thumbnailUrl}" alt="${theme.name}" onerror="this.style.display='none'">
+          <div class="popular-card-rank">#${idx + 1}</div>
+        </div>
+        <div class="popular-card-body">
+          <div class="popular-card-name">${theme.name}</div>
+          <div class="popular-card-desc">${theme.description}</div>
+          <span class="popular-card-cta">테마 상세보기 →</span>
+        </div>
+      `;
+      card.addEventListener('click', () => openThemeDetail(theme));
+      grid.appendChild(card);
+    });
+  } catch (e) {
+    grid.innerHTML = `<p style="color:var(--text-muted);grid-column:1/-1;padding:40px 0">테마를 불러오지 못했습니다.</p>`;
+  }
+}
+
+function openThemeDetail(theme) {
+  _detailTheme = theme;
+  $('theme-detail-img').src = theme.thumbnailUrl;
+  $('theme-detail-img').alt = theme.name;
+  $('theme-detail-title').textContent = theme.name;
+  $('theme-detail-desc').textContent = theme.description;
+  $('theme-detail-modal').classList.add('open');
+}
+
+function closeThemeDetail() {
+  $('theme-detail-modal').classList.remove('open');
+}
+
+function bookFromDetail() {
+  closeThemeDetail();
+  switchPage('user-page');
+  if (_detailTheme && state.themes.length > 0) {
+    const match = state.themes.find(t => t.id === _detailTheme.id);
+    if (match) {
+      setTimeout(() => {
+        const cardEl = document.querySelector(`.theme-card[data-id="${_detailTheme.id}"]`);
+        if (cardEl) selectTheme(match, cardEl);
+      }, 80);
+    }
+  }
 }
 
 // ===== CALENDAR =====
@@ -66,33 +131,27 @@ function renderCalendar() {
   const { currentCalendarYear: y, currentCalendarMonth: m, availableDates } = state;
   const monthNames = ['January','February','March','April','May','June',
                       'July','August','September','October','November','December'];
-
   $('cal-month-label').textContent = `${monthNames[m]} ${y}`;
 
   const grid = $('calendar-grid');
-  // clear day cells (keep day-label headers)
   grid.querySelectorAll('.calendar-day').forEach(el => el.remove());
 
-  const firstDay = new Date(y, m, 1).getDay(); // 0=Sun
+  const firstDay = new Date(y, m, 1).getDay();
   const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const availableSet = new Set(availableDates);
 
-  // empty leading cells
   for (let i = 0; i < firstDay; i++) {
     const el = document.createElement('div');
     el.className = 'calendar-day empty';
     grid.appendChild(el);
   }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const availableSet = new Set(availableDates);
-
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(y, m, d);
     const dateStr = toISODate(date);
     const isToday = date.getTime() === today.getTime();
-    const isPast = date < today;
+    const isPast  = date < today;
     const isAvailable = availableSet.has(dateStr);
 
     const el = document.createElement('div');
@@ -106,10 +165,8 @@ function renderCalendar() {
       el.classList.add('available');
       el.addEventListener('click', () => selectDate(dateStr, el));
     }
-
     if (isToday) el.classList.add('today');
     if (state.selectedDate === dateStr) el.classList.add('selected');
-
     grid.appendChild(el);
   }
 }
@@ -143,16 +200,17 @@ function renderThemes() {
   const list = $('theme-list');
   list.innerHTML = '';
   state.themes.forEach(theme => {
+    const isSelected = state.selectedThemeId === theme.id;
     const card = document.createElement('div');
-    card.className = 'theme-card' + (state.selectedThemeId === theme.id ? ' selected' : '');
+    card.className = 'theme-card' + (isSelected ? ' selected' : '');
     card.dataset.id = theme.id;
     card.innerHTML = `
-      <img class="theme-thumb" src="${theme.thumbnailUrl}" alt="${theme.name}" onerror="this.style.display='none'">
-      <div class="theme-info">
-        <div class="theme-name">${theme.name}</div>
-        <div class="theme-desc">${theme.description}</div>
+      <img class="theme-card-img" src="${theme.thumbnailUrl}" alt="${theme.name}" onerror="this.style.background='var(--surface-3)'">
+      <div class="theme-card-check">✓</div>
+      <div class="theme-card-body">
+        <div class="theme-card-name">${theme.name}</div>
+        <div class="theme-card-desc">${theme.description}</div>
       </div>
-      <div class="theme-check">${state.selectedThemeId === theme.id ? '✓' : ''}</div>
     `;
     card.addEventListener('click', () => selectTheme(theme, card));
     list.appendChild(card);
@@ -162,12 +220,10 @@ function renderThemes() {
 function selectTheme(theme, card) {
   state.selectedThemeId = theme.id;
   state.selectedThemeName = theme.name;
-  document.querySelectorAll('.theme-card').forEach(c => {
-    c.classList.remove('selected');
-    qs('.theme-check', c).textContent = '';
-  });
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
-  qs('.theme-check', card).textContent = '✓';
+  // scroll into view inside scrollable column
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   updateCTAInfo();
   loadTimeSlots();
 }
@@ -178,21 +234,19 @@ async function loadTimeSlots() {
   const container = $('time-slots-container');
 
   if (!selectedDate || !selectedThemeId) {
-    container.innerHTML = `<div class="empty-state"><p>🗓</p><p>날짜와 테마를 먼저 선택해주세요.</p></div>`;
+    container.innerHTML = `<div class="empty-state"><p>🗓</p><p>날짜와 테마를<br>먼저 선택해주세요.</p></div>`;
     return;
   }
 
-  container.innerHTML = `<div class="time-grid">
-    ${[1,2,3,4].map(() => `<div class="skeleton" style="height:64px"></div>`).join('')}
-  </div>`;
+  container.innerHTML = `<div class="time-grid">${[1,2,3,4].map(() =>
+    `<div class="skeleton" style="height:60px"></div>`).join('')}</div>`;
 
   const times = await api.get(`/reservations/available-times?date=${selectedDate}&themeId=${selectedThemeId}`);
-  state.times = times;
   state.selectedTimeId = null;
   state.selectedTimeLabel = null;
 
   if (!times || times.length === 0) {
-    container.innerHTML = `<div class="empty-state"><p>⏰</p><p>예약 가능한 시간대가 없습니다.</p></div>`;
+    container.innerHTML = `<div class="empty-state"><p>⏰</p><p>예약 가능한<br>시간대가 없습니다.</p></div>`;
     return;
   }
 
@@ -204,10 +258,7 @@ async function loadTimeSlots() {
     slot.className = 'time-slot' + (t.reserved ? ' reserved' : '');
     slot.dataset.id = t.id;
     const timeLabel = formatTime(t.startAt);
-    slot.innerHTML = `
-      <div>${timeLabel}</div>
-      <div class="time-slot-badge">${t.reserved ? 'RESERVED' : 'AVAILABLE'}</div>
-    `;
+    slot.innerHTML = `<div>${timeLabel}</div><div class="time-slot-badge">${t.reserved ? 'RESERVED' : 'AVAILABLE'}</div>`;
     if (!t.reserved) {
       slot.addEventListener('click', () => selectTime(t.id, timeLabel, slot));
     }
@@ -229,7 +280,6 @@ function selectTime(id, label, el) {
 
 function formatTime(t) {
   if (!t) return '';
-  // t is like "10:00:00" or [10, 0] depending on serialization
   if (Array.isArray(t)) return `${String(t[0]).padStart(2,'0')}:${String(t[1]).padStart(2,'0')}`;
   return t.substring(0, 5);
 }
@@ -237,90 +287,65 @@ function formatTime(t) {
 // ===== CTA =====
 function updateCTAInfo() {
   const info = $('cta-info');
-  const btn = $('book-btn');
+  const btn  = $('book-btn');
   const parts = [];
-  if (state.selectedDate) parts.push(`<strong>${state.selectedDate}</strong>`);
+  if (state.selectedDate)      parts.push(`<strong>${state.selectedDate}</strong>`);
   if (state.selectedThemeName) parts.push(`<strong>${state.selectedThemeName}</strong>`);
   if (state.selectedTimeLabel) parts.push(`<strong>${state.selectedTimeLabel}</strong>`);
 
-  if (parts.length > 0) {
-    info.innerHTML = parts.join(' &mdash; ');
-  } else {
-    info.innerHTML = '날짜, 테마, 시간을 선택하세요.';
-  }
-
+  info.innerHTML = parts.length > 0 ? parts.join(' &mdash; ') : '날짜, 테마, 시간을 선택하세요.';
   btn.disabled = !(state.selectedDate && state.selectedThemeId && state.selectedTimeId);
 }
 
 // ===== MODAL =====
 function openBookingModal() {
-  $('modal-date').textContent = state.selectedDate;
+  $('modal-date').textContent  = state.selectedDate;
   $('modal-theme').textContent = state.selectedThemeName;
-  $('modal-time').textContent = state.selectedTimeLabel;
+  $('modal-time').textContent  = state.selectedTimeLabel;
   $('booking-name').value = '';
   $('booking-modal').classList.add('open');
+  setTimeout(() => $('booking-name').focus(), 50);
 }
-
-function closeBookingModal() {
-  $('booking-modal').classList.remove('open');
-}
+function closeBookingModal() { $('booking-modal').classList.remove('open'); }
 
 async function submitBooking() {
   const name = $('booking-name').value.trim();
-  if (!name) {
-    showToast('이름을 입력해주세요.', 'error');
-    return;
-  }
+  if (!name) { showToast('이름을 입력해주세요.', 'error'); return; }
 
   const btn = $('confirm-booking-btn');
-  btn.disabled = true;
-  btn.textContent = '예약 중...';
-
+  btn.disabled = true; btn.textContent = '예약 중...';
   try {
     await api.post('/reservations', {
-      name,
-      date: state.selectedDate,
-      timeId: state.selectedTimeId,
-      themeId: state.selectedThemeId,
+      name, date: state.selectedDate,
+      timeId: state.selectedTimeId, themeId: state.selectedThemeId,
     });
     closeBookingModal();
     showToast('예약이 완료되었습니다! 🎉', 'success');
-    // reset selection
-    state.selectedTimeId = null;
-    state.selectedTimeLabel = null;
-    loadTimeSlots();
-    updateCTAInfo();
+    state.selectedTimeId = null; state.selectedTimeLabel = null;
+    loadTimeSlots(); updateCTAInfo();
   } catch (e) {
     showToast('예약에 실패했습니다. ' + e.message, 'error');
   } finally {
-    btn.disabled = false;
-    btn.textContent = '예약하기';
+    btn.disabled = false; btn.textContent = '예약하기';
   }
 }
 
 // ===== ADMIN =====
-let adminCurrentPanel = 'reservations';
-
-function initAdminPage() {
-  loadAdminReservations();
-}
+function initAdminPage() { loadAdminReservations(); }
 
 function switchAdminPanel(panel) {
-  adminCurrentPanel = panel;
   document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
   $(`admin-panel-${panel}`).classList.add('active');
   document.querySelector(`[data-panel="${panel}"]`).classList.add('active');
-
   if (panel === 'reservations') loadAdminReservations();
-  if (panel === 'times') loadAdminTimes();
-  if (panel === 'themes') loadAdminThemes();
+  if (panel === 'times')        loadAdminTimes();
+  if (panel === 'themes')       loadAdminThemes();
 }
 
-// Admin: Reservations
 async function loadAdminReservations() {
   const tbody = $('admin-reservations-tbody');
-  tbody.innerHTML = `<tr><td colspan="6" class="empty-state" style="text-align:center;padding:24px;color:var(--text-muted)">불러오는 중...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">불러오는 중...</td></tr>`;
   const data = await api.get('/admin/reservations');
   if (!data.length) {
     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">예약 내역이 없습니다.</td></tr>`;
@@ -328,11 +353,8 @@ async function loadAdminReservations() {
   }
   tbody.innerHTML = data.map(r => `
     <tr>
-      <td>${r.id}</td>
-      <td>${r.name}</td>
-      <td>${r.date}</td>
-      <td>${formatTime(r.time.startAt)}</td>
-      <td>${r.theme.name}</td>
+      <td>${r.id}</td><td>${r.name}</td><td>${r.date}</td>
+      <td>${formatTime(r.time.startAt)}</td><td>${r.theme.name}</td>
       <td><button class="btn-delete" onclick="deleteReservation(${r.id})">삭제</button></td>
     </tr>
   `).join('');
@@ -345,7 +367,6 @@ async function deleteReservation(id) {
   loadAdminReservations();
 }
 
-// Admin: Times
 async function loadAdminTimes() {
   const tbody = $('admin-times-tbody');
   tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text-muted)">불러오는 중...</td></tr>`;
@@ -356,8 +377,7 @@ async function loadAdminTimes() {
   }
   tbody.innerHTML = data.map(t => `
     <tr>
-      <td>${t.id}</td>
-      <td>${formatTime(t.startAt)}</td>
+      <td>${t.id}</td><td>${formatTime(t.startAt)}</td>
       <td><button class="btn-delete" onclick="deleteTime(${t.id})">삭제</button></td>
     </tr>
   `).join('');
@@ -379,7 +399,6 @@ async function deleteTime(id) {
   loadAdminTimes();
 }
 
-// Admin: Themes
 async function loadAdminThemes() {
   const tbody = $('admin-themes-tbody');
   tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted)">불러오는 중...</td></tr>`;
@@ -391,28 +410,21 @@ async function loadAdminThemes() {
   tbody.innerHTML = data.map(t => `
     <tr>
       <td>${t.id}</td>
-      <td>
-        <img class="theme-mini-thumb" src="${t.thumbnailUrl}" alt="${t.name}" onerror="this.style.display='none'">
-        ${t.name}
-      </td>
-      <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.description}</td>
+      <td><img class="theme-mini-thumb" src="${t.thumbnailUrl}" alt="${t.name}" onerror="this.style.display='none'">${t.name}</td>
+      <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.description}</td>
       <td><button class="btn-delete" onclick="deleteTheme(${t.id})">삭제</button></td>
     </tr>
   `).join('');
 }
 
 async function addTheme() {
-  const name = $('new-theme-name').value.trim();
-  const description = $('new-theme-desc').value.trim();
+  const name         = $('new-theme-name').value.trim();
+  const description  = $('new-theme-desc').value.trim();
   const thumbnailUrl = $('new-theme-thumb').value.trim();
-  if (!name || !description || !thumbnailUrl) {
-    showToast('모든 항목을 입력해주세요.', 'error'); return;
-  }
+  if (!name || !description || !thumbnailUrl) { showToast('모든 항목을 입력해주세요.', 'error'); return; }
   await api.post('/themes', { name, description, thumbnailUrl });
   showToast('테마가 추가되었습니다.', 'success');
-  $('new-theme-name').value = '';
-  $('new-theme-desc').value = '';
-  $('new-theme-thumb').value = '';
+  $('new-theme-name').value = ''; $('new-theme-desc').value = ''; $('new-theme-thumb').value = '';
   loadAdminThemes();
 }
 
@@ -425,52 +437,55 @@ async function deleteTheme(id) {
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
-  // Nav tab switching
+  // Logo → home
+  $('logo-btn').addEventListener('click', () => switchPage('home-page'));
+
+  // Nav tabs
   document.querySelectorAll('.nav-tab').forEach(btn => {
     btn.addEventListener('click', () => switchPage(btn.dataset.page));
+  });
+
+  // Home → 예약 CTA
+  $('home-reserve-btn').addEventListener('click', () => switchPage('user-page'));
+
+  // Theme detail modal
+  $('theme-detail-close-btn').addEventListener('click', closeThemeDetail);
+  $('theme-detail-cancel-btn').addEventListener('click', closeThemeDetail);
+  $('theme-detail-book-btn').addEventListener('click', bookFromDetail);
+  $('theme-detail-modal').addEventListener('click', e => {
+    if (e.target === $('theme-detail-modal')) closeThemeDetail();
   });
 
   // Calendar nav
   $('cal-prev').addEventListener('click', () => {
     state.currentCalendarMonth--;
-    if (state.currentCalendarMonth < 0) {
-      state.currentCalendarMonth = 11;
-      state.currentCalendarYear--;
-    }
+    if (state.currentCalendarMonth < 0) { state.currentCalendarMonth = 11; state.currentCalendarYear--; }
     renderCalendar();
   });
   $('cal-next').addEventListener('click', () => {
     state.currentCalendarMonth++;
-    if (state.currentCalendarMonth > 11) {
-      state.currentCalendarMonth = 0;
-      state.currentCalendarYear++;
-    }
+    if (state.currentCalendarMonth > 11) { state.currentCalendarMonth = 0; state.currentCalendarYear++; }
     renderCalendar();
   });
 
   // Book button
   $('book-btn').addEventListener('click', openBookingModal);
 
-  // Modal close
+  // Modal
   $('modal-close-btn').addEventListener('click', closeBookingModal);
   $('modal-cancel-btn').addEventListener('click', closeBookingModal);
-  $('booking-modal').addEventListener('click', e => {
-    if (e.target === $('booking-modal')) closeBookingModal();
-  });
-
-  // Confirm booking
+  $('booking-modal').addEventListener('click', e => { if (e.target === $('booking-modal')) closeBookingModal(); });
   $('confirm-booking-btn').addEventListener('click', submitBooking);
 
   // Admin tabs
   document.querySelectorAll('.admin-tab').forEach(btn => {
     btn.addEventListener('click', () => switchAdminPanel(btn.dataset.panel));
   });
-
-  // Admin forms
   $('btn-add-time').addEventListener('click', addTime);
   $('btn-add-theme').addEventListener('click', addTheme);
 
-  // Load user page data
-  loadThemes();
+  // Load initial data
+  loadPopularThemes();   // home page
+  loadThemes();          // booking page (calendar + themes)
   updateCTAInfo();
 });
