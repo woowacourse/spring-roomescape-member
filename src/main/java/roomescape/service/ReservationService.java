@@ -32,7 +32,7 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 존재하는 예약입니다.");
         }
         ReservationTime time = reservationTimeDao.findById(timeId);
-        
+
         if (date.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
         }

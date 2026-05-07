@@ -1,16 +1,15 @@
 package roomescape.dao;
 
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.PopularTheme;
 import roomescape.domain.Theme;
-
-import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
 
 @Repository
 public class ThemeDao {
@@ -54,7 +53,7 @@ public class ThemeDao {
                 """;
 
         return jdbcTemplate.query(sql,
-                (resultSet,rowNum)-> new PopularTheme(
+                (resultSet, rowNum) -> new PopularTheme(
 
                         new Theme(resultSet.getLong("id"),
                                 resultSet.getString("name"),
@@ -63,9 +62,9 @@ public class ThemeDao {
                         ),
                         resultSet.getInt("reservation_count")
                 )
-                ,startDate.toString()
-                ,endDate.toString()
-                );
+                , startDate.toString()
+                , endDate.toString()
+        );
     }
 
     public Theme save(Theme theme) {

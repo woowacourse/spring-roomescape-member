@@ -1,10 +1,10 @@
 package roomescape.controller;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

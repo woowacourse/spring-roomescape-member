@@ -18,7 +18,8 @@ public class ThemeService {
     private final ReservationTimeService reservationTimeService;
     private final ReservationDao reservationDao;
 
-    public ThemeService(ThemeDao themeDao, ReservationTimeService reservationTimeService, ReservationDao reservationDao) {
+    public ThemeService(ThemeDao themeDao, ReservationTimeService reservationTimeService,
+                        ReservationDao reservationDao) {
         this.themeDao = themeDao;
         this.reservationTimeService = reservationTimeService;
         this.reservationDao = reservationDao;
@@ -60,12 +61,12 @@ public class ThemeService {
 
         return reservationTimes.stream()
                 .map(reservationTime -> {
-                    boolean isPast = date.isBefore(LocalDate.now()) || 
-                                     (date.isEqual(LocalDate.now()) && reservationTime.getStartAt().isBefore(java.time.LocalTime.now()));
+                    boolean isPast = date.isBefore(LocalDate.now()) ||
+                                     (date.isEqual(LocalDate.now()) && reservationTime.getStartAt()
+                                             .isBefore(java.time.LocalTime.now()));
                     boolean available = !timeIds.contains(reservationTime.getId()) && !isPast;
                     return ReservationTimeStatusResponse.of(reservationTime, available);
                 })
                 .toList();
     }
-
 }
