@@ -1,30 +1,42 @@
 ## 기능 명세
 
-### 사용자
+### 기능 명세 체크리스트
 
-- [ ] 전체 테마 목록을 조회 가능하다.
+#### 웹 사용자
 
-#### 화면 작성
+- [x] **메인 화면**: 접속 시 전체 테마 목록을 확인할 수 있다.
+- [x] **예약 페이지 이동**: 예약하기 버튼을 통해 예약 신청 페이지(`/reservations`)로 이동할 수 있다.
+- [x] **예약 신청**: 예약 페이지에서 이름, 날짜, 테마, 예약 시간을 선택하여 예약을 완료할 수 있다.
 
-- [x] 웰컴 페이지에서 전체 테마 목록을 보여준다.
-- [x] 테마 목록 중 하나를 선택하면 해당 테마를 예약할 수 있는 상세 페이지로 이동한다.
-- [x] 예약 시에는 이름과 날짜, 예약 시간대를 선택해야 한다.
-- [x] 같은 테마에서 이미 예약된 시간대는 선택이 불가능하다.
+#### REST API 클라이언트
 
-<br>
+- [x] **테마 (Theme)**
+  - [x] `GET /themes`: 전체 테마 목록을 조회한다.
+  - [x] `GET /themes/popular`: 인기가 많은 테마 목록을 조회한다.
+  - [x] `GET /themes/{id}`: 특정 테마의 상세 정보를 조회한다.
+- [x] **예약 (Reservation)**
+  - [x] `POST /reservations`: 새로운 예약을 생성한다.
+  - [x] `DELETE /reservations/{id}`: 특정 예약을 취소(삭제)한다.
+- [x] **예약 시간 (Time)**
+  - [x] `GET /times`: 등록된 모든 예약 시간 목록을 조회한다.
+  - [x] `GET /times/reserved`: 특정 날짜와 테마에 대해 이미 예약된 시간들을 조회한다.
 
-### 관리자
+#### 관리자
 
-- [ ] 모든 예약 조회 가능하다.
-- [ ] 특정 사용자의 예약을 조회 가능하다.
-- [x] 테마를 추가할 수 있다.
-- [x] 테마를 삭제할 수 있다.
+- [x] **예약 내역 관리**: 서비스의 모든 예약 내역을 한눈에 조회할 수 있다 (`GET /admin/reservations`).
+- [x] **테마 설정**:
+  - [x] 새로운 방탈출 테마를 시스템에 등록할 수 있다 (`POST /admin/themes`).
+  - [x] 더 이상 운영하지 않는 테마를 삭제할 수 있다 (`DELETE /admin/themes/{id}`).
+- [x] **시간 설정**:
+  - [x] 예약 가능한 시간대를 새롭게 추가할 수 있다 (`POST /admin/times`).
+  - [x] 특정 예약 시간대를 시스템에서 제거할 수 있다 (`DELETE /admin/times/{id}`).
 
 ## API 명세
 
 ### 1. 관리자 (Admin)
 
 #### 모든 예약 조회
+
 ```json
 GET /admin/reservations
 
@@ -47,8 +59,8 @@ GET /admin/reservations
 ]
 ```
 
-
 #### 예약 시간 추가
+
 ```json
 POST /admin/times
 
@@ -61,6 +73,7 @@ POST /admin/times
 
 
 #### 예약 시간 삭제
+
 ```json
 DELETE /admin/times/{id}
 
@@ -69,6 +82,7 @@ DELETE /admin/times/{id}
 
 
 #### 테마 추가
+
 ```json
 POST /admin/themes
 
@@ -83,6 +97,7 @@ POST /admin/themes
 
 
 #### 테마 삭제
+
 ```json
 DELETE /admin/themes/{id}
 
@@ -95,6 +110,7 @@ DELETE /admin/themes/{id}
 ### 2. 테마 (Theme)
 
 #### 전체 테마 목록 조회
+
 ```json
 GET /themes
 
@@ -110,6 +126,7 @@ GET /themes
 
 
 #### 인기 테마 목록 조회
+
 ```json
 GET /themes/popular
 
@@ -123,8 +140,8 @@ GET /themes/popular
 ]
 ```
 
-
 #### 특정 테마 상세 조회
+
 ```json
 GET /themes/{id}
 
@@ -142,6 +159,7 @@ GET /themes/{id}
 ### 3. 예약 (Reservation)
 
 #### 예약 생성
+
 ```json
 POST /reservations
 
@@ -157,18 +175,19 @@ POST /reservations
 
 
 #### 예약 취소
+
 ```json
 DELETE /reservations/{id}
 
 // Response: 200 OK
 ```
 
-
 <br>
 
 ### 4. 예약 시간 (Time)
 
 #### 전체 예약 시간 목록 조회
+
 ```json
 GET /times
 
@@ -184,8 +203,8 @@ GET /times
 ]
 ```
 
-
 #### 예약된 시간 목록 조회
+
 ```json
 GET /times/reserved?themeId=1&selectedDate=2024-05-15
 
@@ -203,6 +222,7 @@ GET /times/reserved?themeId=1&selectedDate=2024-05-15
 ### 5. 화면 (View)
 
 #### 예약 페이지
+
 ```json
 GET /reservations
 
