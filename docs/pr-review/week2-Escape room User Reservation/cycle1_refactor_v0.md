@@ -41,7 +41,7 @@
   - DELETE: `ResponseEntity<Void>` 반환
   - 이전 리뷰어 분이 때에 따라 따져 써야 하지만, 하나로 통일하는게 좋다 하셨으니 `ResponseEntity`를 사용하는 방식으로 통일
 
-- [ ] **9. `ReservationTimeController` - `@RequestMapping` 써줄 것.**
+- [x] **9. `ReservationTimeController` - `@RequestMapping` 써줄 것.**
   - 다른 컨트롤러들은 클래스 레벨에 `@RequestMapping`을 사용하지만
   - `ReservationTimeController`는 메서드마다 `/times` 경로를 반복 선언
 
