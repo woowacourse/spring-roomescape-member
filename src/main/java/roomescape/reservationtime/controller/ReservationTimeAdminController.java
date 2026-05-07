@@ -1,5 +1,6 @@
 package roomescape.reservationtime.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,7 +38,7 @@ public class ReservationTimeAdminController {
     ) {
         ReservationTime reservationTime = reservationTimeService.save(request.startAt(), themeId);
 
-        return ResponseEntity.status(201)
+        return ResponseEntity.created(URI.create("/admin/themes/" + themeId + "/times/" + reservationTime.getId()))
                 .body(reservationTime);
     }
 

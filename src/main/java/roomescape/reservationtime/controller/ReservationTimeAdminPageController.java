@@ -1,5 +1,6 @@
 package roomescape.reservationtime.controller;
 
+import java.time.LocalTime;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +39,7 @@ public class ReservationTimeAdminPageController {
             @PathVariable final Long themeId,
             @RequestParam final String startAt
     ) {
-        reservationTimeService.save(java.time.LocalTime.parse(startAt), themeId);
+        reservationTimeService.save(LocalTime.parse(startAt), themeId);
         return "redirect:/pages/admin/themes/" + themeId + "/times";
     }
 
