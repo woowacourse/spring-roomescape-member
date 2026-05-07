@@ -40,9 +40,10 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation createReservation(Reservation reservation) {
+        // TODO: sql 문 줄바꿈
         String sql = "INSERT INTO reservation(name, res_date, time_id, theme_id) VALUES (?, ?, ?, ?);";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
 
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName().value());
@@ -52,6 +53,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             return ps;
         }, keyHolder);
 
+        // TODO: getKey null 방지를 위한 try-catch + 생성되지 않은 경우에 대한 예외 처리
         long key = keyHolder.getKey().longValue();
         return reservation.withId(key);
     }
@@ -112,7 +114,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByTimeId(Long timeId) {
-        int count = template.queryForObject(
+        Integer count = template.queryForObject(
             """
                 SELECT 
                     COUNT(1) 
@@ -123,6 +125,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             timeId
         );
 
+        // TODO: count 가 null 인 경우 검증 * 변수명 개선
         return count != 0;
     }
 }

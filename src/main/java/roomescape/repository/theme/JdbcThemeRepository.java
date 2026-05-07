@@ -44,6 +44,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         String sql = "DELETE FROM theme WHERE id = ?;";
         int update = template.update(sql, id);
 
+        // TODO: NoSuchElementException 쓰는게 맞는지?
         if (update == 0) {
             throw new NoSuchElementException("존재하지 않는 theme 의 id 입니다. id = " + id);
         }
@@ -84,6 +85,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         return template.query(sql, themeRowMapper(), sevenDaysAgo.toString(), yesterday.toString(), limit);
     }
 
+    // TODO: 여러 곳에서 쓰면 필드로 분리해도 좋겠다? (인자값이 따로 없어서 메서드인 근거가 별로 없다?)
     private RowMapper<Theme> themeRowMapper() {
         return (rs, rowNum) ->
                 new Theme(

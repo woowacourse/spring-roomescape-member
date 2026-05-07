@@ -7,16 +7,13 @@ import java.util.regex.Pattern;
 
 public class ReservationTime {
 
+    // TODO: 입력 책임이 누수된 것 같음, 일급컬랙션 분리?
     private static final Pattern TIME_PATTERN = Pattern.compile("^\\d{2}:\\d{2}$");
 
     private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime() {
-        this.id = null;
-        this.startAt = null;
-    }
-
+    // TODO: 도메인 전체적으로 인자값 검증
     public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
@@ -55,6 +52,7 @@ public class ReservationTime {
         }
     }
 
+    // TODO: Long(내부검증필요) vs long(외부검증필요)
     public ReservationTime withId(Long id) {
         return new ReservationTime(id, this.startAt);
     }

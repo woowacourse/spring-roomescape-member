@@ -4,13 +4,14 @@ import java.time.format.DateTimeFormatter;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.dto.reservationTime.ReservationTimeResponseDto;
+import roomescape.dto.theme.ThemeResponseDto;
 
 public record ReservationResponseDto(
         Long id,
         String name,
         String date,
         ReservationTimeResponseDto time,
-        Theme theme
+        ThemeResponseDto theme
 ) {
 
     public static ReservationResponseDto from(Reservation reservation) {
@@ -23,7 +24,7 @@ public record ReservationResponseDto(
             name,
             date,
             time,
-            reservation.getTheme()
+            ThemeResponseDto.from(reservation.getTheme())
         );
     }
 }

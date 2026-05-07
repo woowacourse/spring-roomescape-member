@@ -39,8 +39,8 @@ public class ReservationService {
         Theme theme = themeRepository.findById(requestDto.themeId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        List<ReservationTime> availableTimes = reservationTimeRepository.findByDateAndThemeId(requestDto.date(),
-            requestDto.themeId());
+        List<ReservationTime> availableTimes = reservationTimeRepository
+            .findByDateAndThemeId(requestDto.date(), requestDto.themeId());
         if (!availableTimes.contains(time)) {
             throw new IllegalArgumentException("해당 테마에서 이미 예약된 날짜입니다.");
         }
@@ -49,6 +49,7 @@ public class ReservationService {
         return reservationRepository.createReservation(reservation);
     }
 
+    // TODO: Null 처리
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
     }
@@ -62,6 +63,7 @@ public class ReservationService {
             new ReservationTime(requestDto.startAt()));
     }
 
+    // TODO: Null 처리
     public void deleteReservationTime(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");

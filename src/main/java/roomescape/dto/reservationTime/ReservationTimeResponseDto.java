@@ -4,6 +4,7 @@ import roomescape.domain.ReservationTime;
 
 import java.time.format.DateTimeFormatter;
 
+// TODO: record 인자값 컨벤션?
 public record ReservationTimeResponseDto(Long id, String startAt) {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");

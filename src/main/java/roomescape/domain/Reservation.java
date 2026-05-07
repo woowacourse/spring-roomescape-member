@@ -11,7 +11,9 @@ import java.util.regex.Pattern;
 
 public class Reservation {
 
+    // TODO: 안 쓰는 변수 삭제
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    // TODO: 입력 책임이 누수된 것 같음
     private static final Pattern DATE_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
 
     private final Long id;
@@ -20,14 +22,7 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation() {
-        this.id = null;
-        this.name = null;
-        this.date = null;
-        this.time = null;
-        this.theme = null;
-    }
-
+    // TODO: 도메인 전체적으로 인자값 검증
     public Reservation(Long id, Name name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
@@ -44,6 +39,7 @@ public class Reservation {
         this.theme = theme;
     }
 
+    // TODO: 테스트에만 쓰이는 생성자 정리
     public Reservation(String name, String date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
     }
@@ -52,6 +48,7 @@ public class Reservation {
         this(null, new Name(name), date, time, theme);
     }
 
+    // TODO: 일급컬랙션 분리?
     private LocalDate translateDate(String date) {
         Matcher matcher = DATE_PATTERN.matcher(date);
         if (!matcher.matches()){

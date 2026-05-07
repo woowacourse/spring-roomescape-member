@@ -40,6 +40,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return new ReservationTime(key, TIME_FORMATTER.format(reservationTime.getStartAt())); // QUESTION: 이럴 때 그냥 객체 새로 만들어서 보내면 되는 건지 아니면 만들어진걸 조회해서 보내야 하는 건지
     }
 
+    // TODO: 개행처리
     @Override
     public List<ReservationTime> findAll() {
         String sql = "SELECT id, start_at FROM reservation_time;";

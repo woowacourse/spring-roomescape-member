@@ -17,11 +17,15 @@ import roomescape.exception.ResponseMessageDto;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // TODO: static 인데 대문자를 안 쓰나?
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    // TODO: 메서드 순서에 따라 에러 처리 결과가 달라지는지?
+    // TODO: 처리 순서가 어떻게 되는지? (하위 구현체 먼저? 메서드 선언 순서?)
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseMessageDto handleException(Exception e) {
+        // TODO: log 에서 제공해주는 문자열 형식 알아보기
         log.error("Unexpected error [Exception]", e);
         return new ResponseMessageDto("서버 내부 오류가 발생했습니다.");
     }

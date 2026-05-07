@@ -65,6 +65,7 @@ public class ThemeController {
             .toList();
     }
 
+    // TODO: uri 선언 시 / 로 시작할지? 없이 시작할지?
     @GetMapping("/popular/week")
     @ResponseStatus(HttpStatus.OK)
     public PopularThemesResponseDto findWeekPopularThemesOrderByRank(

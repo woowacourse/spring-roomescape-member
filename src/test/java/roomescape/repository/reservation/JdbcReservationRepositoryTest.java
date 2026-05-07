@@ -23,18 +23,6 @@ class JdbcReservationRepositoryTest {
 
     private static final ReservationTime RESERVATION_TIME = new ReservationTime("12:30");
     private static final Theme THEME = new Theme("테마명", "설명", "url");
-    private static final Reservation RESERVATION = new Reservation(
-        null,
-        "브라운",
-        "2026-04-28",
-        RESERVATION_TIME,
-        THEME);
-    private static final Reservation SAVED_RESERVATION = new Reservation(
-        1L,
-        "브라운",
-        "2026-04-28",
-        RESERVATION_TIME.withId(1L),
-        THEME.withId(1L));
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;

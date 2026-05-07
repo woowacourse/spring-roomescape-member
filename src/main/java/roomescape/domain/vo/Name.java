@@ -2,6 +2,8 @@ package roomescape.domain.vo;
 
 import java.util.Objects;
 
+// TODO: record 만들기?
+// TODO: name을 갖는 도메인이 많은데 상속? 그냥 여러 클래스(UserName, ThemeName 등등)
 public class Name {
 
     private final String value;

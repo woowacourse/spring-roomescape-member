@@ -11,6 +11,7 @@ public record AvailableReservationTimesResponseDto(
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
+    // TODO: 사이즈 검증?
     public static AvailableReservationTimesResponseDto of(List<ReservationTime> availableTimes, List<ReservationTime> allTimes) {
         return new AvailableReservationTimesResponseDto(
                 allTimes.stream()
