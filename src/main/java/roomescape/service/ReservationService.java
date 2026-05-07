@@ -49,8 +49,7 @@ public class ReservationService {
         return reservationRepository.createReservation(reservation);
     }
 
-    // TODO: Null 처리
-    public void deleteReservation(Long id) {
+    public void deleteReservation(final long id) {
         reservationRepository.deleteById(id);
     }
 
@@ -63,8 +62,7 @@ public class ReservationService {
             new ReservationTime(requestDto.startAt()));
     }
 
-    // TODO: Null 처리
-    public void deleteReservationTime(Long id) {
+    public void deleteReservationTime(final long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
@@ -72,7 +70,7 @@ public class ReservationService {
         reservationTimeRepository.deleteById(id);
     }
 
-    public List<ReservationTime> getAvailableTimes(LocalDate date, Long themeId) {
+    public List<ReservationTime> getAvailableTimes(LocalDate date, final long themeId) {
         Theme theme = themeRepository.findById(themeId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 

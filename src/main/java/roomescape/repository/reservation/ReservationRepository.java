@@ -7,11 +7,11 @@ public interface ReservationRepository {
 
     Reservation createReservation(Reservation reservation);
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
     List<Reservation> findAll();
 
-    Reservation findById(Long id);
+    Reservation findById(long id);
 
-    boolean existsByTimeId(Long timeId);
+    boolean existsByTimeId(long timeId);
 }

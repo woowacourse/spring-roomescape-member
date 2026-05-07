@@ -60,7 +60,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(final long id) {
         template.update("""
             DELETE FROM reservation_time
             WHERE id = ?;
@@ -69,7 +69,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public Optional<ReservationTime> findById(Long id) {
+    public Optional<ReservationTime> findById(final long id) {
         List<ReservationTime> times = template.query("""
             SELECT id, start_at
             FROM reservation_time
@@ -82,7 +82,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findByDateAndThemeId(LocalDate date, Long themeId) {
+    public List<ReservationTime> findByDateAndThemeId(LocalDate date, final long themeId) {
         String formattedDate = DATE_FORMATTER.format(date);
 
         return template.query("""

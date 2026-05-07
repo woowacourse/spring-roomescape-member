@@ -2,7 +2,6 @@ package roomescape.repository.reservation;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -71,7 +70,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(final long id) {
         int update = template.update("""
             DELETE FROM reservation
             WHERE id = ?;
@@ -104,7 +103,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(Long id) {
+    public Reservation findById(final long id) {
         return template.queryForObject("""
             SELECT
                 r.id as reservation_id,
@@ -126,7 +125,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByTimeId(Long timeId) {
+    public boolean existsByTimeId(final long timeId) {
         Integer count = template.queryForObject("""
             SELECT COUNT(1)
             FROM reservation

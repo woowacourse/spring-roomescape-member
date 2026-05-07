@@ -38,7 +38,7 @@ public class Theme {
         return imageUrl.value();
     }
 
-    public Theme withId(Long id) {
+    public Theme withId(long id) {
         return new Theme(id, this.name, this.description, this.imageUrl);
     }
 

@@ -9,11 +9,11 @@ public interface ThemeRepository {
 
     Theme createTheme(Theme theme);
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
     List<Theme> findAll();
 
-    Optional<Theme> findById(Long id);
+    Optional<Theme> findById(long id);
 
     List<Theme> findWeekPopularThemesOrderByRank(int limit);
 }

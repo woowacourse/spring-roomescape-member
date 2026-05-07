@@ -50,7 +50,7 @@ public class ReservationTime {
         }
     }
 
-    public ReservationTime withId(Long id) {
+    public ReservationTime withId(long id) {
         return new ReservationTime(id, this.startAt);
     }
 

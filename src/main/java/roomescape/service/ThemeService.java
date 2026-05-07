@@ -20,7 +20,7 @@ public class ThemeService {
         return themeRepository.createTheme(theme);
     }
 
-    public void deleteThemeById(Long id) {
+    public void deleteThemeById(final long id) {
         themeRepository.deleteById(id);
     }
 
@@ -28,7 +28,6 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    // TODO: limit 은 너무 쿼리? (count? size?) 근데 count 면 딱 그 개수 만큼 반환이 되어야 할 것 같아서 별로임
     public List<Theme> findWeekPopularThemesOrderByRank(final int limit) {
         return themeRepository.findWeekPopularThemesOrderByRank(limit);
     }
