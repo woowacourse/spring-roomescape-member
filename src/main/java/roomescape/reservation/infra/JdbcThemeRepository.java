@@ -79,7 +79,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                 "FROM theme t " +
                 "LEFT JOIN reservation r " +
                     "ON t.id = r.theme_id " +
-                    "AND PARSEDATETIME(r.date, 'yyyy-MM-dd') >= DATEADD('DAY', -:day, CURRENT_DATE) " +
+                    "AND r.date >= DATEADD('DAY', -:day, CURRENT_DATE) " +
+                    "AND r.date < CURRENT_DATE " +
                 "GROUP BY t.id " +
                 "ORDER BY COUNT(r.theme_id) DESC " +
                 "LIMIT :limit";
