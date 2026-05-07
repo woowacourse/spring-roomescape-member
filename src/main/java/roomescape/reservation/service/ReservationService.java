@@ -60,7 +60,7 @@ public class ReservationService {
 
     public PopularThemesResult findPopularThemes(int period, int limit) {
         LocalDate to = LocalDate.now(clock).minusDays(1);
-        LocalDate from = to.minusDays(period);
+        LocalDate from = to.minusDays(period - 1);
 
         return new PopularThemesResult(
                 reservationRepository.findPopularThemes(from, to, limit)

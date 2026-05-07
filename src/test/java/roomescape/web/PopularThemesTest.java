@@ -1,10 +1,16 @@
 package roomescape.web;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,13 +18,21 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@Import(PopularThemesTest.TestConfig.class)
 public class PopularThemesTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    Clock clock;
 
     @BeforeEach
     void setup() {
@@ -46,20 +60,14 @@ public class PopularThemesTest {
         createTheme("페어 테마", "페어 전용 테마입니다.", "https://example.com/pair.png");
         createTheme("당근 테마", "당근 전용 테마입니다.", "https://example.com/carrot.png");
 
-        LocalDate twoDaysAgo = LocalDate.now().minusDays(2);
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        LocalDate today = LocalDate.now();
-        LocalDate outsidePeriod = LocalDate.now().minusDays(8);
+        // Test Clock 기준 today: 2026-05-06 (Asia/Seoul)
+        createReservation("브라운", LocalDate.of(2026, 5, 4), 1L, 1L);
+        createReservation("포비", LocalDate.of(2026, 5, 5), 1L, 1L);
+        createReservation("이든", LocalDate.of(2026, 5, 5), 1L, 2L);
 
-        createReservation("브라운", twoDaysAgo, 1L, 1L);
-        createReservation("포비", yesterday, 1L, 1L);
-        createReservation("이든", yesterday, 1L, 2L);
-
-        // 오늘 예약은 집계 제외
-        createReservation("오늘예약", today, 1L, 3L);
-
-        // period 밖 예약은 집계 제외
-        createReservation("범위밖예약", outsidePeriod, 1L, 3L);
+        createReservation("경계포함예약", LocalDate.of(2026, 4, 29), 1L, 2L);
+        createReservation("오늘예약", LocalDate.of(2026, 5, 6), 1L, 3L);
+        createReservation("범위밖예약", LocalDate.of(2026, 4, 28), 1L, 3L);
 
         // when & then
         RestAssured.given().log().all()
@@ -68,8 +76,11 @@ public class PopularThemesTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2))
-                .body("[0].description", is("우아한테크코스 전용 테마입니다."))
-                .body("[1].description", is("페어 전용 테마입니다."));
+                .body("[0].name", is("우아한 테마"))
+                .body("[1].name", is("페어 테마"))
+                .body("name", not(hasItem("당근 테마")));
+
+        assertThat(LocalDate.of(2026, 5, 6)).isEqualTo(LocalDate.now(clock));
     }
 
     private void createTheme(String name, String description, String thumbnailUrl) {
@@ -97,5 +108,18 @@ public class PopularThemesTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().statusCode(201);
+    }
+
+    @TestConfiguration
+    static class TestConfig {
+
+        @Primary
+        @Bean("fixedClock")
+        public Clock clock() {
+            return Clock.fixed(
+                    Instant.parse("2026-05-06T00:00:00Z"),
+                    ZoneId.of("Asia/Seoul")
+            );
+        }
     }
 }
