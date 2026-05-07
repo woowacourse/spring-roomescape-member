@@ -60,7 +60,7 @@ public class UserReservationStepTest {
                 .body(reservationBody)
                 .when().post("/user/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("name", is("브라운"))
                 .body("date", is(FUTURE_DATE))
                 .body("time.id", is((int) SEED_TIME_10))
@@ -90,7 +90,7 @@ public class UserReservationStepTest {
         first.put("themeId", SEED_THEME_ISLAND);
         RestAssured.given().contentType(ContentType.JSON).body(first)
                 .when().post("/user/reservations")
-                .then().statusCode(200);
+                .then().statusCode(201);
 
         // 도시 테마의 같은 날짜 가능 시간 조회 → 10:00 여전히 보여야 함
         RestAssured.given().log().all()
@@ -107,6 +107,6 @@ public class UserReservationStepTest {
         second.put("themeId", SEED_THEME_CITY);
         RestAssured.given().contentType(ContentType.JSON).body(second)
                 .when().post("/user/reservations")
-                .then().statusCode(200);
+                .then().statusCode(201);
     }
 }
