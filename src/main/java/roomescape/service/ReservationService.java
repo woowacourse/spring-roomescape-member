@@ -49,7 +49,6 @@ public class ReservationService {
         return reservationRepository.createReservation(reservation);
     }
 
-    // TODO: Null 처리
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
     }
@@ -63,7 +62,6 @@ public class ReservationService {
             new ReservationTime(requestDto.startAt()));
     }
 
-    // TODO: Null 처리
     public void deleteReservationTime(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");

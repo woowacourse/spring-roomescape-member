@@ -6,7 +6,6 @@ public record ThemeRequestDto(
     @NotBlank(message = "이름은 필수 입력값입니다.")
     String name,
 
-    // TODO: null 체크?
     String description,
 
     @NotBlank(message = "url은 필수 입력값입니다.")

@@ -1,10 +1,5 @@
 package roomescape.repository.reservation;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,28 +13,32 @@ import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) ->
-        new Reservation(
-            rs.getLong("reservation_id"),
-            new MemberName(
-                    rs.getString("name")),
-            new ReservationDate(
-                    rs.getDate("res_date").toLocalDate()),
-            new ReservationTime(
-                rs.getLong("time_id"),
-                rs.getString("time_value")),
-            new Theme(
-                rs.getLong("theme_id"),
-                new ThemeName(
-                        rs.getString("theme_name")),
-                rs.getString("theme_description"),
-                new ThemeImageUrl(
-                        rs.getString("theme_image_url"))
-            ));
+            new Reservation(
+                    rs.getLong("reservation_id"),
+                    new MemberName(
+                            rs.getString("name")),
+                    new ReservationDate(
+                            rs.getDate("res_date").toLocalDate()),
+                    new ReservationTime(
+                            rs.getLong("time_id"),
+                            rs.getString("time_value")),
+                    new Theme(
+                            rs.getLong("theme_id"),
+                            new ThemeName(
+                                    rs.getString("theme_name")),
+                            rs.getString("theme_description"),
+                            new ThemeImageUrl(
+                                    rs.getString("theme_image_url"))
+                    ));
 
     private final JdbcTemplate template;
 
@@ -49,7 +48,6 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation createReservation(Reservation reservation) {
-        // TODO: sql 문 줄바꿈
         String sql = "INSERT INTO reservation(name, res_date, time_id, theme_id) VALUES (?, ?, ?, ?);";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -79,59 +77,62 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return template.query(
-            "SELECT "
-                + "r.id as reservation_id, "
-                + "r.name, "
-                + "r.res_date, "
-                + "t.id as time_id, "
-                + "t.start_at as time_value, "
-                + "th.id as theme_id, "
-                + "th.name as theme_name, "
-                + "th.description as theme_description, "
-                + "th.image_url as theme_image_url "
-                + "FROM reservation as r "
-                + "INNER JOIN reservation_time as t "
-                + "ON r.time_id = t.id "
-                + "INNER JOIN theme as th "
-                + "ON r.theme_id = th.id",
-            RESERVATION_ROW_MAPPER
+                """
+                           SELECT 
+                           r.id as reservation_id, 
+                           r.name, 
+                           r.res_date, 
+                           t.id as time_id, 
+                           t.start_at as time_value, 
+                           th.id as theme_id, 
+                           th.name as theme_name, 
+                           th.description as theme_description, 
+                           th.image_url as theme_image_url 
+                           FROM reservation as r 
+                           INNER JOIN reservation_time as t 
+                           ON r.time_id = t.id 
+                           INNER JOIN theme as th 
+                           ON r.theme_id = th.id
+                        """,
+                RESERVATION_ROW_MAPPER
         );
     }
 
     @Override
     public Reservation findById(Long id) {
         return template.queryForObject(
-            "SELECT "
-                + "r.id as reservation_id, "
-                + "r.name, "
-                + "r.res_date, "
-                + "t.id as time_id, "
-                + "t.start_at as time_value, "
-                + "th.id as theme_id, "
-                + "th.name as theme_name, "
-                + "th.description as theme_description, "
-                + "th.image_url as theme_image_url "
-                + "FROM reservation as r "
-                + "INNER JOIN reservation_time as t "
-                + "ON r.time_id = t.id "
-                + "INNER JOIN theme as th "
-                + "ON r.theme_id = th.id "
-                + "WHERE r.id = ?",
-            RESERVATION_ROW_MAPPER,
-            id);
+                """
+                        SELECT
+                        r.id as reservation_id, 
+                        r.name, 
+                        r.res_date, 
+                        t.id as time_id, 
+                        t.start_at as time_value, 
+                        th.id as theme_id, 
+                        th.name as theme_name, 
+                        th.description as theme_description, 
+                        th.image_url as theme_image_url 
+                        FROM reservation as r 
+                        INNER JOIN reservation_time as t 
+                        ON r.time_id = t.id 
+                        INNER JOIN theme as th 
+                        ON r.theme_id = th.id 
+                        WHERE r.id = ?
+                        """,
+                RESERVATION_ROW_MAPPER,
+                id);
     }
 
     @Override
     public boolean existsByTimeId(Long timeId) {
         Integer count = template.queryForObject(
-            """
-                SELECT 
-                    COUNT(1) 
-                FROM reservation
-                WHERE time_id = ?
-                """,
-            Integer.class,
-            timeId
+                """
+                        SELECT 
+                            COUNT(1) 
+                        FROM reservation
+                        WHERE time_id = ?""",
+                Integer.class,
+                timeId
         );
 
         // TODO: count 가 null 인 경우 검증 * 변수명 개선

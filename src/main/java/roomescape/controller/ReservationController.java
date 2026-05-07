@@ -28,9 +28,6 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    // TODO: ResponseEntity 쓸지? ResponseStatus 그대로 유지?
-    // TODO: 리스트 반환할 때 변수 선언 후 stream 도는게 디버깅 시 유리한지?
-    // TODO: 리스트 반환 시 한번 더 감싸는게 어떤 이득이 있는지?
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ReservationResponseDto> getReservations() {
