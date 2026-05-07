@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS reservation_time (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     start_at TIME NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE(start_at)
     );
 
 CREATE TABLE IF NOT EXISTS theme (
