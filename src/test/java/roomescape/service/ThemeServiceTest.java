@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.ThemeName;
 import roomescape.dto.theme.ThemeRequestDto;
 import roomescape.repository.theme.ThemeRepository;
 
@@ -20,8 +21,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
 
-    private static final Theme THEME = new Theme(null, "name", "description", "image-url");
-    private static final Theme SAVED_THEME = new Theme(1L, "name", "description", "image-url");
+    private static final Theme THEME = new Theme(null, new ThemeName("name"), "description", "image-url");
+    private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description", "image-url");
 
     @Mock
     private ThemeRepository themeRepository;
@@ -54,7 +55,7 @@ class ThemeServiceTest {
         List<Theme> themes = List.of(THEME.withId(1L), THEME.withId(2L), THEME.withId(3L));
 
         when(themeRepository.findAll())
-                .thenReturn(themes);
+            .thenReturn(themes);
 
         // when
         List<Theme> all = themeService.getThemes();
@@ -62,9 +63,9 @@ class ThemeServiceTest {
         // then
         assertThat(all).hasSize(3);
         assertThat(all).extracting(Theme::getId)
-                .anySatisfy(id -> assertThat(id).isEqualTo(1L))
-                .anySatisfy(id -> assertThat(id).isEqualTo(2L))
-                .anySatisfy(id -> assertThat(id).isEqualTo(3L));
+            .anySatisfy(id -> assertThat(id).isEqualTo(1L))
+            .anySatisfy(id -> assertThat(id).isEqualTo(2L))
+            .anySatisfy(id -> assertThat(id).isEqualTo(3L));
     }
 
     @Test
@@ -85,16 +86,16 @@ class ThemeServiceTest {
     private List<Theme> createTenThemes() {
         List<Theme> themes = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            themes.add(new Theme((long) i, "테마" + i, "테마" + i, "테마" + i));
+            themes.add(new Theme((long) i, new ThemeName("테마" + i), "테마" + i, "테마" + i));
         }
         return themes;
     }
 
     ThemeRequestDto themeRequestDtoFrom(Theme theme) {
         return new ThemeRequestDto(
-                theme.getName(),
-                theme.getDescription(),
-                theme.getImageUrl()
+            theme.getNameValue(),
+            theme.getDescription(),
+            theme.getImageUrl()
         );
     }
 }

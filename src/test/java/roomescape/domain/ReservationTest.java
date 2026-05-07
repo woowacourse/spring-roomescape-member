@@ -3,6 +3,7 @@ package roomescape.domain;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.domain.vo.ThemeName;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class ReservationTest {
     private static final ReservationTime TIME = new ReservationTime(1L, "13:24");
-    private static final Theme THEME = new Theme(1L, "theme", "d", "url");
+    private static final Theme THEME = new Theme(1L, new ThemeName("name"), "d", "url");
 
     @Test
     void 정상형식_날짜_예약_생성_테스트() {

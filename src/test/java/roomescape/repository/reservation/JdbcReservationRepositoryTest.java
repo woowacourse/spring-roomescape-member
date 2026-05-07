@@ -78,7 +78,7 @@ class JdbcReservationRepositoryTest {
 
         assertThat(reservations)
             .extracting(Reservation::getTheme)
-            .allSatisfy(theme -> assertThat(theme.getName()).isEqualTo("a"));
+            .allSatisfy(theme -> assertThat(theme.getNameValue()).isEqualTo("a"));
     }
 
     @Test

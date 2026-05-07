@@ -13,6 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.service.ReservationService;
@@ -28,7 +29,7 @@ class ReservationControllerTest {
     // TODO: 변수 선언이 괜찮은지? 메서드 분리를 할까?
     // TODO: 부수적인 도메인은 필드, 테스트 대상은 메서드 내에서 호출
     private static final ReservationTime TIME = new ReservationTime(1L, "12:00");
-    private static final Theme THEME = new Theme(1L, "name", "d", "url");
+    private static final Theme THEME = new Theme(1L, new ThemeName("name"), "d", "url");
     private static final Reservation RESERVATION = new Reservation("이름", "2026-05-01", TIME, THEME);
 
     @LocalServerPort

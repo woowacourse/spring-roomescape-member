@@ -14,6 +14,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.util.List;
+import roomescape.domain.vo.ThemeName;
 import roomescape.repository.reservation.JdbcReservationRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.time.JdbcReservationTimeRepository;
@@ -26,7 +27,8 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 @JdbcTest
 class JdbcThemeRepositoryTest {
 
-    private static final Theme THEME = new Theme(null, "name", "description", "image-url");
+    private static final Theme THEME = new Theme(
+        null, new ThemeName("name"), "description", "image-url");
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -50,7 +52,7 @@ class JdbcThemeRepositoryTest {
 
         // then
         assertThat(saved).isNotNull();
-        assertThat(saved.getName()).isEqualTo(THEME.getName());
+        assertThat(saved.getNameValue()).isEqualTo(THEME.getNameValue());
         assertThat(saved.getDescription()).isEqualTo(THEME.getDescription());
         assertThat(saved.getImageUrl()).isEqualTo(THEME.getImageUrl());
     }
@@ -80,7 +82,7 @@ class JdbcThemeRepositoryTest {
 
         // then
         assertThat(all).hasSize(prevThemeEntityCount + 2);
-        assertThat(all).extracting(Theme::getName)
+        assertThat(all).extracting(Theme::getNameValue)
                 .anySatisfy(name -> assertThat(name).isEqualTo(first))
                 .anySatisfy(name -> assertThat(name).isEqualTo(second));
     }
