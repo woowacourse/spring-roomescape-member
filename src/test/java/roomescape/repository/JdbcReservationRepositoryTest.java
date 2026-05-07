@@ -43,7 +43,7 @@ class JdbcReservationRepositoryTest {
 
     private void insertDependencyData() {
         JdbcTimeRepository jdbcTimeRepository = new JdbcTimeRepository(jdbcTemplate);
-        savedTime = jdbcTimeRepository.save(Time.transientOf(LocalTime.of(10, 0)));
+        savedTime = jdbcTimeRepository.save(Time.of(LocalTime.of(10, 0)));
     }
 
     @Test

@@ -25,7 +25,7 @@ public class FakeTimeDao implements TimeRepository {
     @Override
     public Time save(Time time) {
         long id = sequence++;
-        Time savedTime = new Time(id, time.startAt());
+        Time savedTime = new Time(id, time.getStartAt());
         storage.put(id, savedTime);
         return savedTime;
     }

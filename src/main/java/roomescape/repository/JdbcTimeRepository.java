@@ -37,7 +37,7 @@ public class JdbcTimeRepository implements TimeRepository {
         SimpleJdbcInsert insert = createInsert();
         Map<String, Object> params = createParams(time);
         long reservationId = insert.executeAndReturnKey(params).longValue();
-        return new Time(reservationId, time.startAt());
+        return new Time(reservationId, time.getStartAt());
     }
 
     @Override
@@ -60,6 +60,6 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     private Map<String, Object> createParams(Time time) {
-        return Map.of("start_at", time.startAt());
+        return Map.of("start_at", time.getStartAt());
     }
 }

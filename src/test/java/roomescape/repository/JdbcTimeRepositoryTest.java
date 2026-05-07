@@ -36,23 +36,23 @@ class JdbcTimeRepositoryTest {
     @Test
     @DisplayName("예약 시간을 저장하고 영속화된 객체를 반환한다.")
     void save() {
-        Time time = Time.transientOf(LocalTime.of(10, 0));
+        Time time = Time.of(LocalTime.of(10, 0));
         Time savedTime = jdbcTimeRepository.save(time);
-        assertThat(savedTime.id()).isPositive();
+        assertThat(savedTime.getId()).isPositive();
     }
 
     @Test
     @DisplayName("식별자로 예약 시간 객체를 조회한다.")
     void findById() {
-        Time savedTime = jdbcTimeRepository.save(Time.transientOf(LocalTime.of(10, 0)));
-        Time foundTime = jdbcTimeRepository.findById(savedTime.id()).get();
-        assertThat(foundTime.startAt()).isEqualTo(LocalTime.of(10, 0));
+        Time savedTime = jdbcTimeRepository.save(Time.of(LocalTime.of(10, 0)));
+        Time foundTime = jdbcTimeRepository.findById(savedTime.getId()).get();
+        assertThat(foundTime.getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test
     @DisplayName("모든 예약 시간 객체 목록을 조회한다.")
     void findAll() {
-        jdbcTimeRepository.save(Time.transientOf(LocalTime.of(10, 0)));
+        jdbcTimeRepository.save(Time.of(LocalTime.of(10, 0)));
         List<Time> times = jdbcTimeRepository.findAll();
         assertThat(times).hasSize(1);
     }
@@ -60,8 +60,8 @@ class JdbcTimeRepositoryTest {
     @Test
     @DisplayName("식별자로 예약 시간을 삭제한다.")
     void deleteById() {
-        Time savedTime = jdbcTimeRepository.save(Time.transientOf(LocalTime.of(10, 0)));
-        jdbcTimeRepository.deleteById(savedTime.id());
+        Time savedTime = jdbcTimeRepository.save(Time.of(LocalTime.of(10, 0)));
+        jdbcTimeRepository.deleteById(savedTime.getId());
         assertThat(jdbcTimeRepository.findAll()).isEmpty();
     }
 }

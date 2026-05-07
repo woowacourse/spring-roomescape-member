@@ -110,7 +110,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return Map.of(
                 "name", reservation.getName(),
                 "date", reservation.getDate(),
-                "time_id", reservation.getTime().id(),
+                "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId()
         );
     }

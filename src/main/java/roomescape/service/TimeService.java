@@ -26,7 +26,7 @@ public class TimeService {
     }
 
     public Time saveTime(LocalTime startAt) {
-        Time time = Time.transientOf(startAt);
+        Time time = new Time(startAt);
         return timeRepository.save(time);
     }
 
