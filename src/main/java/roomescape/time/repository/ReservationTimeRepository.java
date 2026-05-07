@@ -2,7 +2,6 @@ package roomescape.time.repository;
 
 import java.util.List;
 import org.springframework.stereotype.Repository;
-import roomescape.theme.repository.dao.ThemeDao;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.mapper.ReservationTimeMapper;
 import roomescape.time.repository.dao.ReservationTimeDao;
@@ -15,7 +14,7 @@ public class ReservationTimeRepository {
 
     private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationTimeRepository(ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationTimeRepository(ReservationTimeDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
     }
 
