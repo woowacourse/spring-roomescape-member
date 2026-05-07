@@ -25,14 +25,14 @@ public class ReservationTimeAdminController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTime>> read(@PathVariable final Long themeId) {
+    public ResponseEntity<List<ReservationTime>> getReservationTimes(@PathVariable final Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeService.findAllByThemeId(themeId);
         return ResponseEntity.ok()
                 .body(reservationTimes);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTime> create(
+    public ResponseEntity<ReservationTime> createReservationTime(
             @PathVariable final Long themeId,
             @RequestBody final ReservationTimeCreateRequest request
     ) {
@@ -43,8 +43,8 @@ public class ReservationTimeAdminController {
     }
 
     @DeleteMapping("/{timeId}")
-    public ResponseEntity<Void> delete(@PathVariable final Long themeId,
-                                       @PathVariable final Long timeId) {
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable final Long themeId,
+                                                      @PathVariable final Long timeId) {
         reservationTimeService.deleteById(timeId);
         return ResponseEntity.noContent()
                 .build();

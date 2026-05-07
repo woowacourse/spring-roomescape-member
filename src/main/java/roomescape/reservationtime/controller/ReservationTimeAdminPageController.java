@@ -27,7 +27,7 @@ public class ReservationTimeAdminPageController {
     }
 
     @GetMapping
-    public String read(@PathVariable final Long themeId, final Model model) {
+    public String getReservationTimeAdminPage(@PathVariable final Long themeId, final Model model) {
         model.addAttribute("theme", themeService.getById(themeId));
         model.addAttribute("themes", themeService.getAll());
         model.addAttribute("reservationTimes", reservationTimeService.findAllByThemeId(themeId));
@@ -35,7 +35,7 @@ public class ReservationTimeAdminPageController {
     }
 
     @PostMapping
-    public String create(
+    public String createReservationTime(
             @PathVariable final Long themeId,
             @RequestParam final String startAt
     ) {
@@ -44,7 +44,7 @@ public class ReservationTimeAdminPageController {
     }
 
     @PostMapping("/{timeId}/delete")
-    public String delete(
+    public String deleteReservationTime(
             @PathVariable final Long themeId,
             @PathVariable final Long timeId
     ) {

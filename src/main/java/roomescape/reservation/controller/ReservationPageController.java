@@ -29,7 +29,7 @@ public class ReservationPageController {
     }
 
     @GetMapping
-    public String read(
+    public String getReservationPage(
             @RequestParam(required = false) final Long themeId,
             @RequestParam(required = false) final LocalDate date,
             @RequestParam(defaultValue = "7") final int period,
@@ -54,7 +54,7 @@ public class ReservationPageController {
     }
 
     @PostMapping
-    public String create(
+    public String createReservation(
             @RequestParam final String name,
             @RequestParam final LocalDate date,
             @RequestParam final Long timeId
@@ -64,7 +64,7 @@ public class ReservationPageController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable final Long id) {
+    public String deleteReservation(@PathVariable final Long id) {
         reservationService.deleteById(id);
         return "redirect:/pages/user/reservations";
     }

@@ -20,13 +20,13 @@ public class ThemeAdminPageController {
     }
 
     @GetMapping
-    public String read(final Model model) {
+    public String getThemeAdminPage(final Model model) {
         model.addAttribute("themes", themeService.getAll());
         return "theme/list";
     }
 
     @PostMapping
-    public String create(
+    public String createTheme(
             @RequestParam final String name,
             @RequestParam final String description,
             @RequestParam final String thumbnailUrl
@@ -36,7 +36,7 @@ public class ThemeAdminPageController {
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable final Long id) {
+    public String deleteTheme(@PathVariable final Long id) {
         themeService.deleteById(id);
         return "redirect:/pages/admin/themes";
     }

@@ -25,14 +25,14 @@ public class ThemeAdminController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Theme>> read() {
+    public ResponseEntity<List<Theme>> getThemes() {
         List<Theme> themes = themeService.getAll();
         return ResponseEntity.ok()
                 .body(themes);
     }
 
     @PostMapping
-    public ResponseEntity<Theme> create(@RequestBody final ThemeCreateRequest themeCreateRequest) {
+    public ResponseEntity<Theme> createTheme(@RequestBody final ThemeCreateRequest themeCreateRequest) {
         Theme theme = themeService.save(
                 themeCreateRequest.name(),
                 themeCreateRequest.description(),
@@ -42,7 +42,7 @@ public class ThemeAdminController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable final Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable final Long id) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

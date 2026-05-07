@@ -29,13 +29,13 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Reservation>> read() {
+    public ResponseEntity<List<Reservation>> getReservations() {
         List<Reservation> reservations = reservationService.getAll();
         return ResponseEntity.ok().body(reservations);
     }
 
     @PostMapping
-    public ResponseEntity<Reservation> create(@RequestBody ReservationCreateRequest reservationRequest) {
+    public ResponseEntity<Reservation> createReservation(@RequestBody ReservationCreateRequest reservationRequest) {
         Reservation reservation = reservationService.save(
                 reservationRequest.name(),
                 reservationRequest.date(),
@@ -47,13 +47,13 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/theme/{themeId}/times/available-times")
-    public ResponseEntity<List<ReservationTime>> read(
+    public ResponseEntity<List<ReservationTime>> getAvailableTimes(
             @PathVariable final Long themeId,
             @RequestParam final LocalDate date
     ) {
@@ -62,7 +62,7 @@ public class ReservationController {
     }
 
     @GetMapping("/theme/popular")
-    public ResponseEntity<List<Theme>> read(
+    public ResponseEntity<List<Theme>> getPopularThemes(
             @RequestParam final int period,
             @RequestParam final int limit
     ) {

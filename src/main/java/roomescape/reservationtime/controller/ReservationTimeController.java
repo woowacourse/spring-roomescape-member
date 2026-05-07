@@ -22,7 +22,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTime>> read(
+    public ResponseEntity<List<ReservationTime>> getAvailableTimes(
             @PathVariable final Long themeId,
             @ModelAttribute final ReservationTimeRequest themeReservationTimeRequest
     ) {
