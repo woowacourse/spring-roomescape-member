@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.global;
 
 public class RoomEscapeException extends RuntimeException {
     public RoomEscapeException(String message) {

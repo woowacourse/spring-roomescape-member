@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.global;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.time.LocalDate;
