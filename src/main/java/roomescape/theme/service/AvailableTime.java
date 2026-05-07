@@ -7,4 +7,7 @@ public record AvailableTime(
         LocalTime time,
         Boolean isAvailable
 ) {
+    public static AvailableTime of(Long id, LocalTime time, Boolean isAvailable) {
+        return new AvailableTime(id, time, isAvailable);
+    }
 }

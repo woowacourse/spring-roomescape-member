@@ -1,5 +1,7 @@
 package roomescape.theme.service;
 
+import roomescape.theme.domain.Theme;
+
 public record PopularTheme(
         Long id,
         String name,
@@ -7,4 +9,12 @@ public record PopularTheme(
         String thumbnail,
         int rank
 ) {
+    public static PopularTheme of(Theme theme, int rank) {
+        return new PopularTheme(
+                theme.getId(),
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail(),
+                rank);
+    }
 }
