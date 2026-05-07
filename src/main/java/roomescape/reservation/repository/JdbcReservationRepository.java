@@ -72,6 +72,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public void deleteAll() {
+        String sql = "delete from reservation";
+        jdbcTemplate.update(sql);
+    }
+
+    @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
             select

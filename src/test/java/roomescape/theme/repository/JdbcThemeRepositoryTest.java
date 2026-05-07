@@ -135,7 +135,7 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    @DisplayName("직전 period일 동안의 예약 수를 기준으로 상위 limit 개의 테마들을 조회한다.")
+    @DisplayName("주어진 기간 [startDate, endDate) 내 예약 수를 기준으로 상위 limit 개의 테마들을 조회한다.")
     void findPopularThemesTest() {
         // given
         Theme woowaTheme = repository.save(Theme.create("우테코", "우테코 전용 테마", "https://example.com"));
@@ -143,6 +143,8 @@ class JdbcThemeRepositoryTest {
         Theme carrotTheme = repository.save(Theme.create("당근", "당근 전용 테마", "https://carrot.com"));
 
         LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusDays(7);
+        LocalDate endDate = today;
 
         insertReservation("브라운", today.minusDays(1), woowaTheme.getId());
         insertReservation("포비", today.minusDays(2), woowaTheme.getId());
@@ -157,7 +159,7 @@ class JdbcThemeRepositoryTest {
         insertReservation("범위밖예약", today.minusDays(8), carrotTheme.getId());
 
         // when
-        List<Theme> popularThemes = repository.findPopularThemes(7, 2);
+        List<Theme> popularThemes = repository.findPopularThemes(startDate, endDate, 2);
 
         // then
         assertThat(popularThemes)
@@ -172,10 +174,11 @@ class JdbcThemeRepositoryTest {
         Theme themeWithReservation = repository.save(Theme.create("예약있음", "설명", "https://example.com"));
         repository.save(Theme.create("예약없음", "설명", "https://example.com"));
 
-        insertReservation("브라운", LocalDate.now().minusDays(1), themeWithReservation.getId());
+        LocalDate today = LocalDate.now();
+        insertReservation("브라운", today.minusDays(1), themeWithReservation.getId());
 
         // when
-        List<Theme> popularThemes = repository.findPopularThemes(7, 10);
+        List<Theme> popularThemes = repository.findPopularThemes(today.minusDays(7), today, 10);
 
         // then
         assertThat(popularThemes)

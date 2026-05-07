@@ -52,6 +52,11 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    @Transactional
+    public void deleteAll() {
+        reservationRepository.deleteAll();
+    }
+
     public List<Reservation> findAll() {
         return reservationRepository.findAll();
     }

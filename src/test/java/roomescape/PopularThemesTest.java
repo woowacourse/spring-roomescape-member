@@ -1,18 +1,19 @@
 package roomescape;
 
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class PopularThemesTest {
@@ -63,7 +64,7 @@ public class PopularThemesTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("/themes?popular=true&period=7&limit=2")
+                .when().get("/themes/popular?period=7&limit=2")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2))
