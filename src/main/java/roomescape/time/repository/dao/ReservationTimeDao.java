@@ -1,15 +1,16 @@
 package roomescape.time.repository.dao;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.time.repository.entity.ReservationTimeEntity;
 
@@ -23,25 +24,19 @@ public class ReservationTimeDao {
             );
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
+    public ReservationTimeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Long insert(LocalTime startAt) {
-        String sql = "insert into reservation_time (start_at) values (?);";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement pstm = connection.prepareStatement(sql, new String[]{"id"});
-            pstm.setString(1, String.valueOf(startAt));
-            return pstm;
-        }, keyHolder);
-
-        Number key = keyHolder.getKey();
-        if (key == null) {
-            throw new IllegalStateException("ID 값이 생성되지 않았습니다.");
-        }
-        return key.longValue();
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("startAt", startAt);
+        return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     public Optional<ReservationTimeEntity> selectById(Long id) {
