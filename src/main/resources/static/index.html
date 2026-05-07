@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>방탈출 예약</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div>
+        <p class="eyebrow">Room Escape</p>
+        <h1>방탈출 예약</h1>
+    </div>
+    <nav class="tabs" aria-label="주요 화면">
+        <button class="tab active" data-view="booking">예약</button>
+        <button class="tab" data-view="reservations">예약 현황</button>
+        <button class="tab" data-view="admin">관리</button>
+    </nav>
+</header>
+
+<main>
+    <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+            <p class="eyebrow">우테코 방탈출</p>
+            <h2 id="hero-title">원하는 테마와 시간을 골라 바로 예약하세요.</h2>
+            <p>최근 예약이 많은 테마를 확인하고, 날짜별 가능한 시간만 선택할 수 있습니다.</p>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+            <img src="https://avatars.githubusercontent.com/u/45747236?s=200&v=4" alt="">
+            <div>
+                <strong>woowacourse</strong>
+                <span>mission room escape</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="bookingView" class="view active-view">
+        <div class="section-head">
+            <div>
+                <p class="eyebrow">Reservation</p>
+                <h2>예약하기</h2>
+            </div>
+        </div>
+
+        <form id="reservationForm" class="booking-layout">
+            <aside class="control-panel">
+                <label>
+                    예약자 이름
+                    <input id="usernameInput" name="username" type="text" autocomplete="name" placeholder="이름" required>
+                </label>
+                <label>
+                    예약 날짜
+                    <input id="dateInput" name="date" type="date" required>
+                </label>
+                <div>
+                    <span class="label-text">예약 시간</span>
+                    <div id="timeSlots" class="time-grid"></div>
+                </div>
+                <button class="primary-button" type="submit">예약 확정</button>
+
+                <section class="popular-section">
+                    <div class="section-head compact">
+                        <div>
+                            <p class="eyebrow">Ranking</p>
+                            <h3>인기 테마</h3>
+                        </div>
+                        <span id="popularPeriodLabel"></span>
+                    </div>
+                    <div id="popularThemes" class="popular-list"></div>
+                </section>
+            </aside>
+
+            <div>
+                <div class="section-head compact">
+                    <h3>테마 선택</h3>
+                    <span id="themeCount">0개</span>
+                </div>
+                <div id="themeGrid" class="theme-grid"></div>
+            </div>
+        </form>
+
+    </section>
+
+    <section id="reservationsView" class="view">
+        <div class="section-head">
+            <div>
+                <p class="eyebrow">Reservations</p>
+                <h2>예약 현황</h2>
+            </div>
+            <div class="toolbar">
+                <label class="select-label">
+                    정렬
+                    <select id="reservationSortSelect">
+                        <option value="date">날짜 기준</option>
+                        <option value="theme">테마 기준</option>
+                    </select>
+                </label>
+                <button id="refreshReservationsButton" class="secondary-button" type="button">새로고침</button>
+            </div>
+        </div>
+        <div id="reservationList" class="reservation-list"></div>
+    </section>
+
+    <section id="adminView" class="view">
+        <div class="section-head">
+            <div>
+                <p class="eyebrow">Admin</p>
+                <h2>테마와 시간 관리</h2>
+            </div>
+        </div>
+        <div class="admin-grid">
+            <form id="themeForm" class="admin-panel">
+                <h3>테마 등록</h3>
+                <label>
+                    테마 이름
+                    <input name="name" type="text" placeholder="비밀 연구소" required>
+                </label>
+                <label>
+                    설명
+                    <textarea name="description" rows="3" placeholder="실험실에 숨겨진 단서를 찾아 탈출하세요." required></textarea>
+                </label>
+                <label>
+                    썸네일 URL
+                    <input name="thumbnailUrl" type="url" placeholder="https://...">
+                </label>
+                <button class="primary-button" type="submit">테마 추가</button>
+                <div id="adminThemeList" class="admin-list"></div>
+            </form>
+
+            <form id="timeForm" class="admin-panel">
+                <h3>시간 등록</h3>
+                <label>
+                    시작 시간
+                    <input name="startAt" type="time" required>
+                </label>
+                <button class="primary-button" type="submit">시간 추가</button>
+                <div id="adminTimeList" class="admin-list"></div>
+            </form>
+        </div>
+    </section>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="/app.js" defer></script>
+</body>
+</html>
