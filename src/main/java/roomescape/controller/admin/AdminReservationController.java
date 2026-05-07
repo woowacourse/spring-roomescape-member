@@ -3,6 +3,7 @@ package roomescape.controller.admin;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,14 +36,10 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest request) {
-        try {
-            Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand());
-            ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
+        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand());
+        ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
 
-            return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);
     }
 
     @NonNull
@@ -55,5 +52,10 @@ public class AdminReservationController {
         reservationService.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Void> handleNotFoundException(NotFoundException e) {
+        return ResponseEntity.notFound().build();
     }
 }

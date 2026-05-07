@@ -18,13 +18,13 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/times")
-public class ReservationTimeController {
+@RequestMapping("/admin/times")
+public class AdminReservationTimeController {
 
     private static final String DEFAULT_PATH = "/times/";
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public AdminReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
