@@ -49,7 +49,7 @@ public class ThemeDao {
                 on th.id = r.theme_id
                 where r.date between ? and ? 
                 group by th.id, th.name, th.description, th.thumbnail 
-현                order by reservation_count desc , th.id asc
+                order by reservation_count desc, th.id asc
                 limit 10
                 """;
 
@@ -87,5 +87,12 @@ public class ThemeDao {
     public void deleteById(Long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
+        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH (SELECT COALESCE(MAX(id), 0) + 1 FROM theme)");
+    }
+
+    public boolean existsByName(String name) {
+        String sql = "SELECT count(*) FROM theme WHERE name = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return count != null && count > 0;
     }
 }
