@@ -29,7 +29,7 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Reservation> findAll() {
+    public List<Reservation> findAllReservations() {
         return reservationRepository.findAll();
     }
 

@@ -24,7 +24,7 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> list(){
+    public List<Theme> findAllThemes(){
         return themeRepository.findAll();
     }
 
