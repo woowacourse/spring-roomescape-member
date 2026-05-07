@@ -88,12 +88,12 @@ public class ThemeDao {
     public List<AvailableReservationTimeResponse> findAvailableTimeById(long themeId, String date) {
         try {
             final String sql = """
-                    SELECT                                                                                                                                                                                                         \s
-                          rt.id,                                                                                                                                                                                                     \s
-                          rt.start_at,                                                                                                                                                                                               \s
-                          CASE WHEN r.id IS NULL THEN TRUE ELSE FALSE END AS available                                                                                                                                               \s
-                      FROM reservation_time rt                                                                                                                                                                                       \s
-                      LEFT JOIN reservation r                                                                                                                                                                                      \s
+                    SELECT
+                          rt.id,
+                          rt.start_at,
+                          CASE WHEN r.id IS NULL THEN TRUE ELSE FALSE END AS available
+                      FROM reservation_time rt
+                      LEFT JOIN reservation r
                           ON rt.id = r.time_id
                            AND r.theme_id = ?
                            AND r.date = ?
