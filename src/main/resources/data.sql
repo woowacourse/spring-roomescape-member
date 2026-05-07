@@ -43,29 +43,30 @@ VALUES ('오모테나시', 'https://www.seoul-escape.com/storage/episode/2024_11
 
 -- 테마 1 (많이 예약되도록)
 INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('A', '2026-05-10', 1, 2);
+VALUES ('A', CURRENT_DATE, 10, 2);
 INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('B', '2026-05-10', 1, 3);
+VALUES ('B', CURRENT_DATE, 10, 3);
 INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('C', '2026-05-11', 1, 1);
+VALUES ('C', CURRENT_DATE, 10, 1);
 INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('D', '2026-05-12', 1, 4);
+VALUES ('D', CURRENT_DATE, 10, 4);
 
 -- 테마 2 (중간 정도)
 INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('E', '2026-05-10', 2, 3);
+VALUES ('E', CURRENT_DATE, 9, 3);
 INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('F', '2026-05-11', 2, 1);
+VALUES ('F', CURRENT_DATE, 9, 1);
 
 -- 테마 3 (적게)
 INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('G', '2026-05-10', 3, 2);
+
+VALUES ('G', CURRENT_DATE, 8, 2);
 
 -- 테마 4 (없음 → 테스트용)
 -- intentionally no reservations
 
 -- 다양한 날짜 테스트용
 INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('H', '2026-06-01', 1, 5);
+VALUES ('H', '2026-10-01', 10, 5);
 INSERT INTO reservations(name, date, theme_id, time_id)
-VALUES ('I', '2026-06-02', 2, 6);
+VALUES ('I', '2026-06-02', 9, 6);
