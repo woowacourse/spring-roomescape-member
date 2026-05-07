@@ -15,7 +15,6 @@ public interface ReservationRepository {
 
     Long save(Reservation reservation);
 
-    // think: theme를 도메인으로 넘길지, themeId로 넘길지
     boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId);
 
     boolean existsByNameAndDateAndTime(String name, LocalDate date, LocalTime time);

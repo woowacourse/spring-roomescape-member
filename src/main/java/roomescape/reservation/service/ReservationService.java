@@ -13,8 +13,8 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.request.ReservationSaveDto;
+import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.response.ThemeDetailDto;
@@ -74,7 +74,7 @@ public class ReservationService {
                 reservationDate.date(),
                 reservationTime.startAt(),
                 ThemeDetailDto.from(theme),
-                RESERVED // TODO: save 반환값 Reservation으로 수정
+                RESERVED
         );
     }
 
