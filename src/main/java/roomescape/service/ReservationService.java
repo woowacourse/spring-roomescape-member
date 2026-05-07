@@ -1,9 +1,11 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
@@ -18,8 +20,8 @@ public class ReservationService {
     private final ThemeService themeService;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeService reservationTimeService,
-                              ThemeService themeService) {
+            ReservationTimeService reservationTimeService,
+            ThemeService themeService) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
@@ -30,11 +32,12 @@ public class ReservationService {
     }
 
     public Reservation reserve(ReservationCreateRequest request) {
+        LocalDate date = ReservationDate.from(request.getDate()).getDate();
         ReservationTime reservationTime = reservationTimeService.find(request.getTimeId());
         Theme theme = themeService.find(request.getThemeId());
 
-        boolean isExists = reservationRepository.findByTimeAndTheme(request.getTimeId(),
-                request.getThemeId()).isPresent();
+        boolean isExists = reservationRepository.findByDateAndTimeAndTheme(
+                date, request.getTimeId(), request.getThemeId()).isPresent();
 
         if (isExists) {
             throw new IllegalArgumentException(DUPLICATED_RESERVATION);
