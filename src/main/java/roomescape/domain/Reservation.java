@@ -20,11 +20,7 @@ public class Reservation {
     }
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this.id = null;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+        this(null, name, date, time, theme);
     }
 
     public Long getId() {
