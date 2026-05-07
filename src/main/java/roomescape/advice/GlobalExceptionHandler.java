@@ -41,6 +41,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleNotReadable(HttpMessageNotReadableException e) {
         return ResponseEntity
                 .badRequest()
-                .body(ErrorResponse.of(400, "MALFORMED_JSON_REQUEST", e.getMessage()));
+                .body(ErrorResponse.of(400, "MALFORMED_JSON_REQUEST", extractRootCauseMessage(e)));
+    }
+
+    private String extractRootCauseMessage(Throwable throwable) {
+        Throwable current = throwable;
+
+        while (current.getCause() != null) {
+            current = current.getCause();
+        }
+
+        if (current.getMessage() == null) {
+            return throwable.getMessage();
+        }
+
+        return current.getMessage();
     }
 }
