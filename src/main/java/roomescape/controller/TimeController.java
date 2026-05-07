@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.TimeRequest;
 import roomescape.controller.dto.TimeResponse;
+import roomescape.domain.ThemeSlot;
 import roomescape.domain.Time;
 import roomescape.service.TimeService;
 
@@ -32,9 +33,7 @@ public class TimeController {
 
     @GetMapping(params = {"themeId", "date"})
     public ResponseEntity<List<TimeResponse>> getAvailableTimes(long themeId, LocalDate date) {
-        List<Time> allTimes = timeService.allTimes();
-        List<Long> reservedTimeId = timeService.findReserved(themeId, date);
-        return ResponseEntity.ok(TimeResponse.availableOf(allTimes, reservedTimeId));
+        return ResponseEntity.ok(convertToTimeResponsesFromThemeSlots(timeService.findThemeSlotBy(themeId, date)));
     }
 
     @PostMapping
@@ -54,4 +53,11 @@ public class TimeController {
                 .map(TimeResponse::from)
                 .toList();
     }
+
+    private List<TimeResponse> convertToTimeResponsesFromThemeSlots(List<ThemeSlot> themeSlots) {
+        return themeSlots.stream()
+                .map(TimeResponse::from)
+                .toList();
+    }
+
 }
