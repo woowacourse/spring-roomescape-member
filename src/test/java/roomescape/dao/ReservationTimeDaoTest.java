@@ -49,7 +49,7 @@ class ReservationTimeDaoTest {
 
         // then
         assertAll(
-                () -> assertThat(reservationTimes.size()).isEqualTo(5),
+                () -> assertThat(reservationTimes).hasSize(5),
                 () -> assertThat(reservationTimes.get(0).getStartAt()).isEqualTo(LocalTime.of(10, 0))
         );
     }
@@ -79,6 +79,6 @@ class ReservationTimeDaoTest {
 
         // then
         List<ReservationTime> reservationTimes = timeDao.selectAll();
-        assertThat(reservationTimes.size()).isEqualTo(0);
+        assertThat(reservationTimes).hasSize(0);
     }
 }

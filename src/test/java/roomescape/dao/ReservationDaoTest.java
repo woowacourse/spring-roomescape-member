@@ -73,7 +73,7 @@ class ReservationDaoTest {
 
         // then
         assertAll(
-                () -> assertThat(reservations.size()).isEqualTo(5),
+                () -> assertThat(reservations).hasSize(5),
                 () -> assertThat(reservations.getFirst().getName()).isEqualTo("브라운"),
                 () -> assertThat(reservations.getFirst().getDate()).isEqualTo(date),
 
@@ -140,6 +140,6 @@ class ReservationDaoTest {
 
         // then
         List<Reservation> reservations = reservationDao.select();
-        assertThat(reservations.size()).isEqualTo(0);
+        assertThat(reservations).hasSize(0);
     }
 }
