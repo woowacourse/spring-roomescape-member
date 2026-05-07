@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ReservationDateService {
 
     private final ReservationDateRepository reservationDateRepository;
@@ -18,25 +18,24 @@ public class ReservationDateService {
         this.reservationDateRepository = reservationDateRepository;
     }
 
-    @Transactional(readOnly = true)
     public ReservationDate readDate(Long id) {
         return getReservationDate(id);
     }
 
-    @Transactional(readOnly = true)
     public List<ReservationDate> readDates() {
         return reservationDateRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
     public List<ReservationDate> readDatesAfterToday() {
         return reservationDateRepository.findAllAfterToday();
     }
 
+    @Transactional
     public ReservationDate register(LocalDate date) {
         return reservationDateRepository.save(ReservationDate.create(date));
     }
 
+    @Transactional
     public ReservationDate deregister(Long id) {
         ReservationDate reservationDate = getReservationDate(id);
         reservationDateRepository.delete(reservationDate.id());

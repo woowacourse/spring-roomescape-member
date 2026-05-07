@@ -12,7 +12,7 @@ import roomescape.time.dto.request.ReservationTimeSaveDto;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
@@ -21,21 +21,21 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    @Transactional(readOnly = true)
     public List<ReservationTime> findAll() {
         return reservationTimeRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
     public List<ReservationTime> readAvailableTimes(LocalDate date, Long themeId) {
         return reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId);
     }
 
+    @Transactional
     public ReservationTime register(ReservationTimeSaveDto dto) {
         validateDuplicateTimeExist(dto.startAt());
         return reservationTimeRepository.save(ReservationTime.create(dto.startAt()));
     }
 
+    @Transactional
     public ReservationTime delete(Long id) {
         ReservationTime reservationTime = getReservationTime(id);
         reservationTimeRepository.delete(reservationTime.id());

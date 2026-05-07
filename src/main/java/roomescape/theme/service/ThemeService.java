@@ -9,7 +9,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ThemeService {
 
     private static final int POPULAR_STATISTICS_DAYS = 7;
@@ -20,35 +20,34 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    @Transactional(readOnly = true)
     public Theme readTheme(Long id) {
         return getTheme(id);
     }
 
-    @Transactional(readOnly = true)
     public List<Theme> readThemes() {
         return themeRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
     public List<Theme> readActiveThemes() {
         return themeRepository.findByIsActive(true);
     }
 
-    @Transactional(readOnly = true)
     public List<Theme> readPopularThemes(int top) {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(POPULAR_STATISTICS_DAYS);
         return themeRepository.findPopularThemes(startDate, endDate, top);
     }
 
+    @Transactional
     public Theme register(String name, String description, String thumbnailUrl) {
         return themeRepository.save(Theme.create(name, description, thumbnailUrl));
     }
 
+    @Transactional
     public Theme updateStatus(Long id, boolean isActive) {
         Theme theme = getTheme(id);
         theme.updateStatus(isActive);
+        themeRepository.updateStatus(theme);
         if (!themeRepository.updateStatus(theme)) {
             throw new IllegalArgumentException("해당 테마가 존재하지 않습니다.");
         }

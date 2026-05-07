@@ -21,7 +21,7 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -36,16 +36,15 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    @Transactional(readOnly = true)
     public List<Reservation> readAll() {
         return reservationRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
     public List<Reservation> readAllByName(String name) {
         return reservationRepository.findAllByNameOrderByDateAndTime(name);
     }
 
+    @Transactional
     public Reservation reserve(ReservationSaveDto dto) {
         ReservationTime reservationTime = getReservationTime(dto.timeId());
         ReservationDate reservationDate = getReservationDate(dto.dateId());
@@ -58,6 +57,7 @@ public class ReservationService {
         );
     }
 
+    @Transactional
     public Reservation cancel(Long id) {
         Reservation reservation = getReservation(id);
         reservation.updateStatus(CANCELED);
