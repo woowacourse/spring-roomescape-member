@@ -73,6 +73,15 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
                     WHERE time_id = ?
                 );
             """;
+    private static final String EXISTS_BY_DATE_AND_TIME_ID_AND_THEME_ID_QUERY = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE date = ?
+                      AND time_id = ?
+                      AND theme_id = ?
+                );
+            """;
 
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM reservation WHERE id = ?";
 
@@ -141,6 +150,16 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
     @Override
     public boolean existsByReservationTimeId(Long id) {
         Integer result = jdbcTemplate.queryForObject(EXISTS_BY_TIME_ID_QUERY, Integer.class, id);
+        return result != null && result == 1;
+    }
+
+    @Override
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        Integer result = jdbcTemplate.queryForObject(
+                EXISTS_BY_DATE_AND_TIME_ID_AND_THEME_ID_QUERY,
+                Integer.class,
+                date, timeId, themeId
+        );
         return result != null && result == 1;
     }
 

@@ -10,6 +10,7 @@ public enum ErrorCode {
     RESERVATION_NAME_EMPTY(HttpStatus.BAD_REQUEST, "예약자의 이름이 비어있습니다."),
     RESERVATION_DATE_NULL(HttpStatus.BAD_REQUEST, "예약 날짜가 비어있습니다."),
     RESERVATION_ID_NULL(HttpStatus.BAD_REQUEST, "예약 목록 ID가 비어있습니다."),
+    RESERVATION_DUPLICATED(HttpStatus.CONFLICT, "동일한 날짜, 시간, 테마의 예약이 이미 존재합니다."),
 
     // ReservationTime
     RESERVATION_TIME_ID_NULL(HttpStatus.BAD_REQUEST, "예약 시간이 비어있습니다."),

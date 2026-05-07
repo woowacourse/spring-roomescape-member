@@ -18,6 +18,7 @@ import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.fake.FakeThemeRepository;
 import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.customException.ReservationException;
 import roomescape.global.exception.customException.ReservationTimeException;
 import roomescape.presentation.dto.ReservationRequest;
 
@@ -108,6 +109,23 @@ class ReservationServiceTest {
                 )
         ).isInstanceOf(ReservationTimeException.class)
                 .hasMessage(ErrorCode.RESERVATION_TIME_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("같은 날짜, 시간, 테마로 두 번 예약하면 예외가 발생한다")
+    void save_fail_when_duplicated() {
+        // given
+        ReservationTime savedTime = reservationTimeRepository.save(
+                ReservationTime.createWithNullId(LocalTime.of(10, 0)));
+        Theme savedTheme = themeRepository.save(Theme.createWithNullId("공포", "공포 테마", "https://good.com/thumb-nail/1"));
+        LocalDate date = LocalDate.of(2026, 5, 5);
+        reservationService.save("라티", date, savedTime.id(), savedTheme.id());
+
+        // when & then
+        assertThatThrownBy(
+                () -> reservationService.save("다른사람", date, savedTime.id(), savedTheme.id())
+        ).isInstanceOf(ReservationException.class)
+                .hasMessage(ErrorCode.RESERVATION_DUPLICATED.getMessage());
     }
 
     @Test

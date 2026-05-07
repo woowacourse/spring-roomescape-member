@@ -79,8 +79,9 @@ public class ThemeJdbcTemplateRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findTopNByPeriod(LocalDate startAt, LocalDate endAt, ThemeSortType sortType, Long limit) {
+        String sortingSQL = ThemeSortTypeToSqlConverter.convert(sortType);
         return jdbcTemplate.query(
-                FIND_TOP_N_BY_PERIOD_QUERY.formatted(sortType.getSql()),
+                FIND_TOP_N_BY_PERIOD_QUERY.formatted(sortingSQL),
                 THEME_ROW_MAPPER,
                 startAt,
                 endAt,

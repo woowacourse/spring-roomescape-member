@@ -11,7 +11,6 @@ import roomescape.entity.ThemeSortType;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ThemeException;
 
-
 public class FakeThemeRepository implements ThemeRepository {
 
     private final Map<Long, Theme> store = new HashMap<>();

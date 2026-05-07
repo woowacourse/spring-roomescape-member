@@ -11,6 +11,7 @@ import roomescape.entity.ReservationTimeRepository;
 import roomescape.entity.Theme;
 import roomescape.entity.ThemeRepository;
 import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.customException.ReservationException;
 import roomescape.global.exception.customException.ReservationTimeException;
 import roomescape.global.exception.customException.ThemeException;
 
@@ -34,17 +35,30 @@ public class ReservationService {
 
     @Transactional
     public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {
-        ReservationTime time = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new ReservationTimeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new ThemeException(ErrorCode.THEME_NOT_FOUND));
+        validateUniqueByDateAndTimeIdAndThemeId(date, timeId, themeId);
         Reservation reservation = Reservation.createWithNullId(
                 name,
                 date,
-                time,
-                theme
+                findTargetTimeById(timeId),
+                findTargetThemeById(themeId)
         );
         return reservationRepository.save(reservation);
+    }
+
+    private void validateUniqueByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new ReservationException(ErrorCode.RESERVATION_DUPLICATED);
+        }
+    }
+
+    private Theme findTargetThemeById(Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeException(ErrorCode.THEME_NOT_FOUND));
+    }
+
+    private ReservationTime findTargetTimeById(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new ReservationTimeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 
     public List<Reservation> findAll() {

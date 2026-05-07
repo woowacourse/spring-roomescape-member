@@ -23,7 +23,6 @@ class ReservationTimeServiceTest {
 
     private ReservationTimeService reservationTimeService;
 
-
     @BeforeEach
     void setUp() {
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
