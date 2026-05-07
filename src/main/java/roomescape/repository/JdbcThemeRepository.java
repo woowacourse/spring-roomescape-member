@@ -17,42 +17,6 @@ import java.util.Optional;
 public class JdbcThemeRepository implements ThemeRepository {
     private static final String THEME_CREATE_FAILED_MESSAGE = "테마 생성에 실패했습니다.";
 
-    private final String FIND_ALL_SQL = """
-            SELECT id, name, description, thumbnail
-            FROM THEME
-            """;
-
-    private static final String FIND_BY_ID_SQL = """
-            SELECT id, name, description, thumbnail
-            FROM theme
-            WHERE id = ?
-            """;
-
-    private static final String FIND_TOP_THEMES_BY_RESERVATION_COUNT_SQL = """
-            SELECT
-                t.id,
-                t.name,
-                t.description,
-                t.thumbnail
-            FROM theme t
-            INNER JOIN reservation r
-                ON r.theme_id = t.id
-            WHERE r.date BETWEEN ? AND ?
-            GROUP BY t.id, t.name, t.description, t.thumbnail
-            ORDER BY COUNT(r.id) DESC
-            LIMIT ?
-            """;
-
-    private static final String INSERT_SQL = """
-            INSERT INTO theme (name, description, thumbnail)
-            VALUES (?, ?, ?)
-            """;
-
-    private static final String DELETE_SQL = """
-            DELETE FROM theme
-            WHERE id = ?
-            """;
-
     private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) ->
             new Theme(
                     resultSet.getLong("id"),
@@ -80,31 +44,66 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        return jdbcTemplate.query(FIND_ALL_SQL, themeRowMapper);
+        String sql = """
+                SELECT id, name, description, thumbnail
+                FROM theme
+                """;
+
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     @Override
     public List<Theme> findTopThemesByReservationCount(LocalDate startDate, LocalDate endDate, int limit) {
-        return jdbcTemplate.query(FIND_TOP_THEMES_BY_RESERVATION_COUNT_SQL, themeRowMapper,
-                startDate, endDate, limit);
+        String sql = """
+                SELECT
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.thumbnail
+                FROM theme t
+                INNER JOIN reservation r
+                    ON r.theme_id = t.id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY COUNT(r.id) DESC
+                LIMIT ?
+                """;
+
+        return jdbcTemplate.query(sql, themeRowMapper, startDate, endDate, limit);
     }
 
     @Override
     public Optional<Theme> findById(Long id) {
-        return jdbcTemplate.query(FIND_BY_ID_SQL, themeRowMapper, id)
+        String sql = """
+                SELECT id, name, description, thumbnail
+                FROM theme
+                WHERE id = ?
+                """;
+
+        return jdbcTemplate.query(sql, themeRowMapper, id)
                 .stream()
                 .findFirst();
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE_SQL, id);
+        String sql = """
+                DELETE FROM theme
+                WHERE id = ?
+                """;
+
+        jdbcTemplate.update(sql, id);
     }
 
     private int insert(Theme theme, KeyHolder keyHolder) {
+        String sql = """
+                INSERT INTO theme (name, description, thumbnail)
+                VALUES (?, ?, ?)
+                """;
+
         return jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    INSERT_SQL,
+                    sql,
                     new String[]{"id"}
             );
             preparedStatement.setString(1, theme.getName());

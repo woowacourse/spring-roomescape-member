@@ -19,50 +19,6 @@ import java.util.List;
 public class JdbcReservationRepository implements ReservationRepository {
     private static final String RESERVATION_CREATE_FAILED_MESSAGE = "예약 생성에 실패했습니다.";
 
-    private static final String FIND_ALL_SQL = """
-            SELECT
-                r.id AS reservation_id,
-                r.name,
-                r.date,
-                t.id AS time_id,
-                t.start_at,
-                th.id AS theme_id,
-                th.name AS theme_name,
-                th.description AS theme_description,
-                th.thumbnail AS theme_thumbnail
-            FROM reservation r
-            INNER JOIN reservation_time t
-                ON r.time_id = t.id
-            INNER JOIN theme th
-                ON r.theme_id = th.id
-            """;
-    private static final String FIND_BY_DATE_AND_THEME_ID_QUERY = """
-            SELECT 
-                r.id AS reservation_id,
-                r.name,
-                r.date,
-                t.id AS time_id,
-                t.start_at,
-                th.id AS theme_id,
-                th.name AS theme_name,
-                th.description AS theme_description,
-                th.thumbnail AS theme_thumbnail 
-            FROM reservation r
-            INNER JOIN reservation_time t
-                ON r.time_id = t.id
-            INNER JOIN theme th
-                ON r.theme_id = th.id
-            WHERE date = ? AND theme_Id = ?
-            """;
-    private static final String INSERT_SQL = """
-            INSERT INTO reservation (name, date, time_id, theme_id)
-            VALUES (?, ?, ?, ?)
-            """;
-    private static final String DELETE_SQL = """
-            DELETE FROM reservation
-            WHERE id = ?
-            """;
-
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),
@@ -93,12 +49,49 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        return jdbcTemplate.query(FIND_ALL_SQL, reservationRowMapper);
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme th
+                    ON r.theme_id = th.id
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
-        return jdbcTemplate.query(FIND_BY_DATE_AND_THEME_ID_QUERY, reservationRowMapper, date, themeId);
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme th
+                    ON r.theme_id = th.id
+                WHERE date = ? AND theme_Id = ?
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
 
     @Override
@@ -114,13 +107,23 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE_SQL, id);
+        String sql = """
+                DELETE FROM reservation
+                WHERE id = ?
+                """;
+
+        jdbcTemplate.update(sql, id);
     }
 
     private int insert(Reservation reservation, KeyHolder keyHolder) {
+        String sql = """
+                INSERT INTO reservation (name, date, time_id, theme_id)
+                VALUES (?, ?, ?, ?)
+                """;
+
         return jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    INSERT_SQL,
+                    sql,
                     new String[]{"id"}
             );
             preparedStatement.setString(1, reservation.getName());
