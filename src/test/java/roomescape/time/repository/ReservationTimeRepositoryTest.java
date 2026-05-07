@@ -1,12 +1,13 @@
 package roomescape.time.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.reservation.fixture.ReservationFixture.reservation;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,12 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.date.domain.ReservationDate;
+import roomescape.date.fixture.ReservationDateFixture;
 import roomescape.date.repository.JdbcReservationDateRepository;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.fixture.ThemeFixture;
 import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.fixture.ReservationTimeFixture;
 
 @JdbcTest
 class ReservationTimeRepositoryTest {
@@ -41,13 +44,12 @@ class ReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("예약 시간을 추가한다.")
-    void save() {
+    void saveTime() {
         // given
         List<ReservationTime> emptyTimes = List.of();
-        LocalTime newTime = LocalTime.of(12, 0);
 
         // when
-        jdbcReservationTimeRepository.save(ReservationTime.create(newTime));
+        jdbcReservationTimeRepository.save(ReservationTimeFixture.time15());
 
         // then
         assertThat(jdbcReservationTimeRepository.findAll())
@@ -59,14 +61,17 @@ class ReservationTimeRepositoryTest {
     void findAll() {
         // given
         List<ReservationTime> reservationTimes = List.of(
-            ReservationTime.create(LocalTime.of(12,0)),
-            ReservationTime.create(LocalTime.of(13,0)),
-            ReservationTime.create(LocalTime.of(14,0))
+                ReservationTimeFixture.time15(),
+                ReservationTimeFixture.time16(),
+                ReservationTimeFixture.time17()
         );
-        List<ReservationTime> savedTimes = savedAll(reservationTimes);
+        List<ReservationTime> savedTimes = saveAll(reservationTimes);
 
-        // when & then
-        assertThat(jdbcReservationTimeRepository.findAll())
+        // when
+        List<ReservationTime> actual = jdbcReservationTimeRepository.findAll();
+
+        // then
+        assertThat(actual)
                 .hasSize(savedTimes.size());
     }
 
@@ -75,11 +80,11 @@ class ReservationTimeRepositoryTest {
     void delete() {
         // given
         List<ReservationTime> reservationTimes = List.of(
-                ReservationTime.create(LocalTime.of(12,0)),
-                ReservationTime.create(LocalTime.of(13,0)),
-                ReservationTime.create(LocalTime.of(14,0))
+                ReservationTimeFixture.time15(),
+                ReservationTimeFixture.time16(),
+                ReservationTimeFixture.time17()
         );
-        List<ReservationTime> savedTimes = savedAll(reservationTimes);
+        List<ReservationTime> savedTimes = saveAll(reservationTimes);
 
         // when
         jdbcReservationTimeRepository.delete(savedTimes.getFirst().id());
@@ -95,7 +100,7 @@ class ReservationTimeRepositoryTest {
         // given
         LocalTime duplicatedTime = LocalTime.of(15, 0);
         LocalTime nonSavedTime = LocalTime.of(12, 0);
-        savedTime(ReservationTime.create(duplicatedTime));
+        saveTime(ReservationTime.create(duplicatedTime));
 
         // when & then
         assertThat(jdbcReservationTimeRepository.existsByStartAt(duplicatedTime)).isTrue();
@@ -106,34 +111,50 @@ class ReservationTimeRepositoryTest {
     @DisplayName("예약 가능한 시간을 조회한다. ")
     void findAvailableTimes() {
         // given
-        ReservationTime time1 = savedTime(ReservationTime.create(LocalTime.of(12, 0)));
-        ReservationTime time2 = savedTime(ReservationTime.create(LocalTime.of(13, 0)));
-        ReservationTime time3 = savedTime(ReservationTime.create(LocalTime.of(14, 0)));
-        ReservationDate date1 = jdbcReservationDateRepository.save(ReservationDate.create(LocalDate.of(2099, 10, 10)));
-        Theme theme1 = Theme.create("테마1", "테마 설명", "테마 썸네일");
-        theme1.updateStatus(true);
-        Theme theme2 = jdbcThemeRepository.save(theme1);
-        jdbcReservationRepository.save(Reservation.create("한다", date1.date(), time1.startAt(), theme2));
-        jdbcReservationRepository.save(Reservation.create("한다", date1.date(), time2.startAt(), theme2));
+        ReservationTime reservedTime15 = saveTime(ReservationTimeFixture.time15());
+        ReservationTime reservedTime16 = saveTime(ReservationTimeFixture.time16());
+        ReservationTime nonReservedTime = saveTime(ReservationTimeFixture.time17());
+
+        ReservationDate date = saveDate(ReservationDateFixture.oneWeekLater());
+        Theme theme = saveTheme(ThemeFixture.activeTheme());
+
+        saveReservation(date, reservedTime15, theme);
+        saveReservation(date, reservedTime16, theme);
 
         // when
         List<ReservationTime> availableTimes = jdbcReservationTimeRepository.findAvailableByDateAndThemeId(
-                date1.date(), theme2.id());
+                date.date(),
+                theme.id()
+        );
 
         // then
         assertThat(availableTimes)
-                .hasSize(1);
+                .usingRecursiveFieldByFieldElementComparatorIgnoringFields("id")
+                .containsExactly(nonReservedTime);
     }
 
-    private List<ReservationTime> savedAll(List<ReservationTime> reservationTimes){
+    private List<ReservationTime> saveAll(List<ReservationTime> reservationTimes) {
         List<ReservationTime> savedTimes = new ArrayList<>();
-        for(ReservationTime reservationTime : reservationTimes){
-            savedTimes.add(savedTime(reservationTime));
+        for (ReservationTime reservationTime : reservationTimes) {
+            savedTimes.add(saveTime(reservationTime));
         }
         return savedTimes;
     }
 
-    private ReservationTime savedTime(ReservationTime reservationTime){
+    private ReservationTime saveTime(ReservationTime reservationTime) {
         return jdbcReservationTimeRepository.save(reservationTime);
     }
+
+    private ReservationDate saveDate(ReservationDate reservationDate) {
+        return jdbcReservationDateRepository.save(reservationDate);
+    }
+
+    private Theme saveTheme(Theme theme) {
+        return jdbcThemeRepository.save(theme);
+    }
+
+    private void saveReservation(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
+        jdbcReservationRepository.save(reservation("송송", reservationDate, reservationTime, theme));
+    }
+
 }

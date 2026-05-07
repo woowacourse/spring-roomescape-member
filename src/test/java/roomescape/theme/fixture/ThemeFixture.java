@@ -12,4 +12,10 @@ public class ThemeFixture {
         return Theme.create(name, "설명", "썸네일");
     }
 
+    public static Theme activeTheme() {
+        Theme theme = Theme.create("테마1", "설명1", "썸네일1");
+        theme.updateStatus(true);
+        return theme;
+    }
+
 }

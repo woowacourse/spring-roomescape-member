@@ -2,8 +2,10 @@ package roomescape.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.time.fixture.ReservationTimeFixture.saveDto;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -14,56 +16,67 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.request.ReservationTimeSaveDto;
 import roomescape.time.fixture.FakeReservationTimeRepository;
+import roomescape.time.fixture.ReservationTimeFixture;
 
 class ReservationTimeServiceTest {
 
+    private FakeReservationTimeRepository reservationTimeRepository;
     private ReservationTimeService reservationTimeService;
 
-    // TODO @BeforeEach 삭제 후 필요한 곳에서 Insert
     @BeforeEach
     void setup() {
-        FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-        this.reservationTimeService = new ReservationTimeService(reservationTimeRepository);
-
-        reservationTimeService.register(new ReservationTimeSaveDto(LocalTime.of(15, 40)));
-        reservationTimeService.register(new ReservationTimeSaveDto(LocalTime.of(16, 0)));
+        reservationTimeRepository = new FakeReservationTimeRepository();
+        reservationTimeService = new ReservationTimeService(reservationTimeRepository);
     }
 
     @Test
     @DisplayName("모든 예약 시간 정보를 조회한다.")
     void findAll() {
+        // given
+        List<ReservationTime> times = List.of(
+                ReservationTimeFixture.time15(),
+                ReservationTimeFixture.time16()
+        );
+        saveAll(times);
+
         // when
         List<ReservationTime> actual = reservationTimeService.findAll();
 
         // then
         assertThat(actual)
-                .hasSize(2);
+                .hasSize(times.size());
     }
 
     @Test
     @DisplayName("예약 시간을 추가한다.")
     void register() {
         // given
-        reservationTimeService.register(new ReservationTimeSaveDto(LocalTime.of(12, 0)));
+        List<ReservationTime> times = List.of();
 
-        // when & then
+        // when
+        reservationTimeService.register(saveDto(LocalTime.of(12, 0)));
+
+        // then
         assertThat(reservationTimeService.findAll())
-                .hasSize(3);
+                .hasSize(times.size() + 1);
     }
 
     @Test
     @DisplayName("예약 시간을 삭제한다.")
     void delete() {
         // given
-        ReservationTime reservationTime = reservationTimeService.register(
-                new ReservationTimeSaveDto(LocalTime.of(12, 0)));
+        List<ReservationTime> times = List.of(
+                ReservationTimeFixture.time15(),
+                ReservationTimeFixture.time16()
+        );
+        List<ReservationTime> savedTimes = saveAll(times);
 
         // when
-        reservationTimeService.delete(reservationTime.id());
+        reservationTimeService.delete(savedTimes.getFirst().id());
 
         // then
         assertThat(reservationTimeService.findAll())
-                .hasSize(2);
+                .hasSize(times.size() - 1);
     }
 
     @Test
@@ -82,11 +95,25 @@ class ReservationTimeServiceTest {
     @DisplayName("이미 존재하는 예약 시간 생성 시 예외가 발생한다.")
     void register_already_exist() {
         // given
-        ReservationTimeSaveDto command = new ReservationTimeSaveDto(LocalTime.of(15, 40));
+        ReservationTime saved = save(ReservationTimeFixture.time15());
+        ReservationTimeSaveDto duplicatedCommand = saveDto(saved.startAt());
 
         // when & then
-        assertThatThrownBy(() -> reservationTimeService.register(command))
+        assertThatThrownBy(() -> reservationTimeService.register(duplicatedCommand))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("이미 존재하는 예약 시간입니다.");
     }
+
+    private List<ReservationTime> saveAll(List<ReservationTime> reservationTimes) {
+        List<ReservationTime> savedReservationTimes = new ArrayList<>();
+        for (ReservationTime reservationTime : reservationTimes) {
+            savedReservationTimes.add(save(reservationTime));
+        }
+        return savedReservationTimes;
+    }
+
+    private ReservationTime save(ReservationTime reservationTime) {
+        return reservationTimeRepository.save(reservationTime);
+    }
+
 }

@@ -6,7 +6,7 @@ TRUNCATE TABLE reservation_date RESTART IDENTITY;
 TRUNCATE TABLE theme RESTART IDENTITY;
 
 SET REFERENTIAL_INTEGRITY TRUE;
-    
+
 -- 예약 시간 등록
 INSERT INTO reservation_time (start_at) VALUES ('10:00');
 INSERT INTO reservation_time (start_at) VALUES ('12:00');

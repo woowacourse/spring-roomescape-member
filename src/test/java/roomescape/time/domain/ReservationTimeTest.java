@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ReservationTimeTest {
+
     private ReservationTime reservationTime;
 
     @BeforeEach
@@ -73,4 +74,5 @@ class ReservationTimeTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 시작 시간은 필수입니다.");
     }
+
 }

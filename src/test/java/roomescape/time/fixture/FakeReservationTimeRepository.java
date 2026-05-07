@@ -61,4 +61,5 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     public List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, Long themeId) {
         return List.of();
     }
+
 }
