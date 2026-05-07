@@ -8,5 +8,4 @@ public record ReservationRequestDTO(
         Long timeId,
         Long themeId
 ) {
-
 }

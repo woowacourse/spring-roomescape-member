@@ -5,7 +5,6 @@ import roomescape.domain.ReservationTime;
 public record ReservationTimeResponseDTO(
         Long id,
         String startAt
-
 ) {
 
     public static ReservationTimeResponseDTO from(ReservationTime reservationTime) {

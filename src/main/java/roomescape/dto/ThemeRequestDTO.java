@@ -5,5 +5,4 @@ public record ThemeRequestDTO(
         String description,
         String imageUrl
 ) {
-
 }
