@@ -23,19 +23,19 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-    void 예약이_있는_시간을_삭제할_수_없다() {
+    void 존재하지않는_시간은_삭제할_수_없다() {
+        when(reservationTimeDao.delete(1L)).thenReturn(0);
+
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
+                .isInstanceOf(ReservationTimeNotFoundException.class);
+    }
+
+    @Test
+    void 예약이_있는_시간은_삭제할_수_없다() {
         when(reservationTimeDao.delete(1L))
                 .thenThrow(new DataIntegrityViolationException("foreign key violation"));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
                 .isInstanceOf(ReservationTimeInUseException.class);
-    }
-
-    @Test
-    void 존재하지않는_시간을_삭제할_수_없다() {
-        when(reservationTimeDao.delete(1L)).thenReturn(0);
-
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
-                .isInstanceOf(ReservationTimeNotFoundException.class);
     }
 }
