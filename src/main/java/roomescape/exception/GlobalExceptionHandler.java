@@ -82,10 +82,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InfrastructureException.class)
     public ResponseEntity<ErrorResponse> handleInfrastructureException(InfrastructureException exception) {
-        log.error("Infrastructure exception occurred", exception);
-        return ResponseEntity
-                .internalServerError()
-                .body(new ErrorResponse(exception.getMessage()));
+        return internalServerError();
     }
 
     @ExceptionHandler(Exception.class)
