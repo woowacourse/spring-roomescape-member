@@ -36,14 +36,14 @@ public class ReservationService {
     }
 
     public ReservationQueryResult save(ReservationCreateCommand request, LocalDateTime currentDateTime) {
-        ReservationTimeQueryResult timeResponse = timeService.findById(request.timeId());
-        validateReservationDateTime(request.date(), timeResponse.startAt(), currentDateTime);
+        ReservationTimeQueryResult timeQueryResult = timeService.findById(request.timeId());
+        validateReservationDateTime(request.date(), timeQueryResult.startAt(), currentDateTime);
 
         ThemeQueryResult themeQueryResult = themeService.findById(request.themeId());
         validateDuplicateReservation(request);
 
-        Reservation reservation = request.toEntity(themeQueryResult.id(), timeResponse.id());
-        return ReservationQueryResult.from(reservationRepository.save(reservation), themeQueryResult, timeResponse);
+        Reservation reservation = request.toEntity(themeQueryResult.id(), timeQueryResult.id());
+        return ReservationQueryResult.from(reservationRepository.save(reservation), themeQueryResult, timeQueryResult);
     }
 
     public int delete(Long id) {

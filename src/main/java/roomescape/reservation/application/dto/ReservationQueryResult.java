@@ -10,13 +10,13 @@ import roomescape.theme.application.dto.ThemeQueryResult;
 public record ReservationQueryResult(Long id, String name, @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date, ThemeQueryResult theme, ReservationTimeQueryResult time) {
 
     public static ReservationQueryResult from(Reservation reservation, ThemeQueryResult themeQueryResult,
-                                              ReservationTimeQueryResult timeResponse) {
+                                              ReservationTimeQueryResult timeQueryResult) {
         return new ReservationQueryResult(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
                 themeQueryResult,
-                timeResponse
+                timeQueryResult
         );
     }
 
