@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-import roomescape.domain.vo.Name;
+import roomescape.domain.vo.MemberName;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,15 +17,15 @@ public class Reservation {
     private static final Pattern DATE_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
 
     private final Long id;
-    private final Name name;
+    private final MemberName memberName;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
     // TODO: 도메인 전체적으로 인자값 검증
-    public Reservation(Long id, Name name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, MemberName memberName, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
-        this.name = name;
+        this.memberName = memberName;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -33,7 +33,7 @@ public class Reservation {
 
     public Reservation(Long id, String name, String date, ReservationTime time, Theme theme) {
         this.id = id;
-        this.name = new Name(name);
+        this.memberName = new MemberName(name);
         this.date = translateDate(date);
         this.time = time;
         this.theme = theme;
@@ -45,7 +45,7 @@ public class Reservation {
     }
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, new Name(name), date, time, theme);
+        this(null, new MemberName(name), date, time, theme);
     }
 
     // TODO: 일급컬랙션 분리?
@@ -66,8 +66,8 @@ public class Reservation {
         return id;
     }
 
-    public Name getName() {
-        return name;
+    public MemberName getName() {
+        return memberName;
     }
 
     public LocalDate getDate() {
@@ -91,7 +91,7 @@ public class Reservation {
     }
 
     public Reservation withId(Long key) {
-        return new Reservation(key, this.name, this.date, this.time, this.theme);
+        return new Reservation(key, this.memberName, this.date, this.time, this.theme);
     }
 
     @Override
