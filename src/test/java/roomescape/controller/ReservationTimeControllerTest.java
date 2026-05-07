@@ -19,7 +19,7 @@ public class ReservationTimeControllerTest {
     @Test
     void 시간_조회() {
         RestAssured.given().log().all()
-                .when().get("/api/v1/times")
+                .when().get("/api/v1/reservation/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -39,7 +39,7 @@ public class ReservationTimeControllerTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/api/v1/times?date=2026-05-05&themeId=1")
+                .when().get("/api/v1/reservation/times?date=2026-05-05&themeId=1")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(3))
