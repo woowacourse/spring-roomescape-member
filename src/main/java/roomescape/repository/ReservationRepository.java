@@ -131,4 +131,10 @@ public class ReservationRepository {
                 theme);
         return reservation;
     };
+
+    public boolean existsById(Long id) {
+        String sql = "SELECT count(*) FROM reservation WHERE id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
 }

@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
@@ -31,7 +32,9 @@ public class ThemeService {
 
     @Transactional
     public void delete(Long id) {
-        validateId(id);
+        if (!themeRepository.existsById(id)) {
+            throw new NoSuchElementException("[ERROR] 존재하지 않는 ID입니다.");
+        }
         themeRepository.delete(id);
     }
 
@@ -39,11 +42,5 @@ public class ThemeService {
         LocalDate startDate = LocalDate.now().minusWeeks(1);
         LocalDate endDate = startDate.plusDays(6);
         return themeRepository.findPopular(startDate, endDate, 10);
-    }
-
-    private void validateId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("[ERROR] id는 양수이어야 합니다.");
-        }
     }
 }

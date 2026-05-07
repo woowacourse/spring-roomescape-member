@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -46,7 +47,9 @@ public class ReservationService {
     }
 
     public void delete(Long id) {
-        validateId(id);
+        if (!reservationRepository.existsById(id)) {
+            throw new NoSuchElementException("[ERROR] 존재하지 않는 ID입니다.");
+        }
         reservationRepository.delete(id);
     }
 
@@ -75,11 +78,5 @@ public class ReservationService {
     private Theme findTheme(Long themeId) {
         return themeRepository.findBy(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다."));
-    }
-
-    private void validateId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("[ERROR] id는 양수이어야 합니다.");
-        }
     }
 }

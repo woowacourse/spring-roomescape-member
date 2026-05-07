@@ -50,6 +50,12 @@ public class ReservationTimeRepository {
         return jdbcTemplate.update(sql, id);
     }
 
+    public boolean existsById(Long id) {
+        String sql = "select count(*) from reservation_time where id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
+
     private final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("id"),

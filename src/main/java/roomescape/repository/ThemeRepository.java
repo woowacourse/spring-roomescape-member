@@ -52,6 +52,12 @@ public class ThemeRepository {
         return jdbcTemplate.update(sql, id);
     }
 
+    public boolean existsById(Long id) {
+        String sql = "select count(*) from theme where id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
+
     public List<Theme> findPopular(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = "SELECT\n"
                 + "    t.id,\n"
