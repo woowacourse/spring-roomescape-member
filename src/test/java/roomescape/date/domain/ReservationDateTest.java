@@ -15,9 +15,8 @@ class ReservationDateTest {
         LocalDate nullDate = null;
 
         // when & then
-        Assertions.assertThatThrownBy(() -> {
-                    ReservationDate.create(nullDate);
-                }).isInstanceOf(IllegalArgumentException.class)
+        Assertions.assertThatThrownBy(() -> ReservationDate.create(nullDate))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 날짜는 필수입니다.");
     }
 

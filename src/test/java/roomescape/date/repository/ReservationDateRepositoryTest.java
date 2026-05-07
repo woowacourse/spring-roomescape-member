@@ -94,8 +94,7 @@ class ReservationDateRepositoryTest {
     private List<ReservationDate> saveAll(List<ReservationDate> reservationDates) {
         List<ReservationDate> savedReservationDates = new ArrayList<>();
         for (ReservationDate reservationDate : reservationDates) {
-            ReservationDate saved = reservationDateRepository.save(reservationDate);
-            savedReservationDates.add(saved);
+            savedReservationDates.add(reservationDateRepository.save(reservationDate));
         }
         return savedReservationDates;
     }

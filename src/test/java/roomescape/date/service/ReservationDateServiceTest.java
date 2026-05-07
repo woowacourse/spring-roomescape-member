@@ -64,9 +64,9 @@ class ReservationDateServiceTest {
         // given
         Long deregisteredId = Long.MIN_VALUE;
 
-        Assertions.assertThatThrownBy(() -> {
-                    reservationDateService.readDate(deregisteredId);
-                }).isInstanceOf(IllegalArgumentException.class)
+        // when & then
+        Assertions.assertThatThrownBy(() -> reservationDateService.readDate(deregisteredId))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("등록되지 않은 예약날짜입니다.");
     }
 
@@ -119,14 +119,13 @@ class ReservationDateServiceTest {
         // given
         Long deregisteredId = Long.MIN_VALUE;
 
-        Assertions.assertThatThrownBy(() -> {
-                    reservationDateService.deregister(deregisteredId);
-                }).isInstanceOf(IllegalArgumentException.class)
+        // when  & then
+        Assertions.assertThatThrownBy(() -> reservationDateService.deregister(deregisteredId))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("등록되지 않은 예약날짜입니다.");
     }
 
     private List<ReservationDate> saveAll(List<ReservationDate> dates) {
-
         List<ReservationDate> saved = new ArrayList<>();
         for (ReservationDate reservationDate : dates) {
             saved.add(reservationDateRepository.save(reservationDate));

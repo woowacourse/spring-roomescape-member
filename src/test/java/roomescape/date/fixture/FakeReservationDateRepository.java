@@ -7,6 +7,7 @@ import roomescape.date.domain.ReservationDate;
 import roomescape.date.repository.ReservationDateRepository;
 
 public class FakeReservationDateRepository implements ReservationDateRepository {
+
     private final List<ReservationDate> reservationDates = new ArrayList<>();
     private Long autoIncrement = 0L;
 
@@ -38,14 +39,9 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
     public List<ReservationDate> saveAll(List<ReservationDate> reservationDates) {
         List<ReservationDate> savedReservationDates = new ArrayList<>();
         for (ReservationDate reservationDate : reservationDates) {
-            ReservationDate savedReservationDate = save(reservationDate);
-            savedReservationDates.add(savedReservationDate);
+            savedReservationDates.add(save(reservationDate));
         }
         return savedReservationDates;
-    }
-
-    private void autoIncrement() {
-        autoIncrement = autoIncrement + 1;
     }
 
     @Override
@@ -57,4 +53,9 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
 
         return reservationDates.remove(findDate.get());
     }
+
+    private void autoIncrement() {
+        autoIncrement = autoIncrement + 1;
+    }
+
 }
