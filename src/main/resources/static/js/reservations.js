@@ -27,7 +27,7 @@
             const reservations = await api.listReservations(user);
             renderLedger(reservations);
         } catch (e) {
-            modal.alert({ title: '조회 실패', message: e.message });
+            modal.alert({title: '조회 실패', message: e.message});
         }
 
         function renderLedger(items) {
@@ -74,7 +74,7 @@
                     ledgerEmpty.style.display = 'block';
                 }
             } catch (e) {
-                modal.alert({ title: '삭제 실패', message: e.message });
+                modal.alert({title: '삭제 실패', message: e.message});
             }
         }
     });

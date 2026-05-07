@@ -5,14 +5,14 @@
         const params = new URLSearchParams(location.search);
         const themeId = params.get('themeId');
         if (!themeId) {
-            modal.alert({ title: '오류', message: 'themeId가 필요합니다.' });
+            modal.alert({title: '오류', message: 'themeId가 필요합니다.'});
             location.href = '/';
             return;
         }
 
         const today = new Date().toISOString().slice(0, 10);
         const dateInput = document.getElementById('date');
-        const dateForm  = document.getElementById('date-form');
+        const dateForm = document.getElementById('date-form');
         const slotsArea = document.getElementById('slots-area');
         const slotsList = document.getElementById('slots-list');
         const slotsCount = document.getElementById('slots-count');
@@ -31,13 +31,13 @@
             const themes = await api.listThemes();
             const theme = themes.find(t => String(t.id) === String(themeId));
             if (!theme) {
-                modal.alert({ title: '없는 사건', message: '해당 사건을 찾을 수 없습니다.' });
+                modal.alert({title: '없는 사건', message: '해당 사건을 찾을 수 없습니다.'});
                 location.href = '/';
                 return;
             }
             renderBanner(theme);
         } catch (e) {
-            modal.alert({ title: '로드 실패', message: e.message });
+            modal.alert({title: '로드 실패', message: e.message});
             return;
         }
 
@@ -46,7 +46,7 @@
             const date = dateInput.value;
             if (!date) return;
             if (date < today) {
-                await modal.alert({ title: '잘못된 일자', message: '오늘 이후의 날짜만 선택할 수 있습니다.' });
+                await modal.alert({title: '잘못된 일자', message: '오늘 이후의 날짜만 선택할 수 있습니다.'});
                 return;
             }
             await loadSlots(themeId, date);
@@ -56,7 +56,7 @@
             e.preventDefault();
             const date = dateInput.value;
             if (date < today) {
-                await modal.alert({ title: '잘못된 일자', message: '오늘 이후의 날짜만 선택할 수 있습니다.' });
+                await modal.alert({title: '잘못된 일자', message: '오늘 이후의 날짜만 선택할 수 있습니다.'});
                 return;
             }
             const fd = new FormData(reserveForm);
@@ -67,18 +67,18 @@
                 timeId: Number(fd.get('timeId'))
             };
             if (!payload.userName) {
-                await modal.alert({ message: '탐정 이름을 입력하세요.' });
+                await modal.alert({message: '탐정 이름을 입력하세요.'});
                 return;
             }
             if (!payload.timeId) {
-                await modal.alert({ message: '시간을 선택하세요.' });
+                await modal.alert({message: '시간을 선택하세요.'});
                 return;
             }
             try {
                 await api.createReservation(payload);
                 location.href = '/reservations?user=' + encodeURIComponent(payload.userName);
             } catch (err) {
-                await modal.alert({ title: '예약 실패', message: err.message || '서버 오류가 발생했습니다.' });
+                await modal.alert({title: '예약 실패', message: err.message || '서버 오류가 발생했습니다.'});
             }
         });
 
@@ -102,7 +102,7 @@
                     </div>
                 `).join('');
             } catch (e) {
-                modal.alert({ title: '시간 조회 실패', message: e.message });
+                modal.alert({title: '시간 조회 실패', message: e.message});
             }
         }
     });
@@ -129,5 +129,8 @@
             '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
         }[c]));
     }
-    function escapeAttr(s) { return escapeHtml(s); }
+
+    function escapeAttr(s) {
+        return escapeHtml(s);
+    }
 })();

@@ -19,15 +19,15 @@
             renderThemes(themes);
             renderTimes(times);
         } catch (e) {
-            modal.alert({ title: '데이터 로드 실패', message: e.message });
+            modal.alert({title: '데이터 로드 실패', message: e.message});
         }
     }
 
     function renderReservations(items) {
-        const body  = document.getElementById('res-body');
+        const body = document.getElementById('res-body');
         const count = document.getElementById('res-count');
         const empty = document.getElementById('res-empty');
-        const wrap  = document.getElementById('res-wrap');
+        const wrap = document.getElementById('res-wrap');
         count.textContent = items.length;
         if (items.length === 0) {
             wrap.style.display = 'none';
@@ -52,10 +52,10 @@
     }
 
     function renderThemes(items) {
-        const body  = document.getElementById('theme-body');
+        const body = document.getElementById('theme-body');
         const count = document.getElementById('theme-count');
         const empty = document.getElementById('theme-empty');
-        const wrap  = document.getElementById('theme-wrap');
+        const wrap = document.getElementById('theme-wrap');
         count.textContent = items.length;
         document.getElementById('theme-count-section').textContent = items.length;
         if (items.length === 0) {
@@ -78,10 +78,10 @@
     }
 
     function renderTimes(items) {
-        const body  = document.getElementById('time-body');
+        const body = document.getElementById('time-body');
         const count = document.getElementById('time-count');
         const empty = document.getElementById('time-empty');
-        const wrap  = document.getElementById('time-wrap');
+        const wrap = document.getElementById('time-wrap');
         count.textContent = items.length;
         document.getElementById('time-count-section').textContent = items.length;
         if (items.length === 0) {
@@ -111,18 +111,18 @@
 
     async function onDelete(kind, id) {
         const map = {
-            reservation: { title: '예약 폐기',  msg: '이 예약을 폐기하면 복구할 수 없습니다.',                       call: api.deleteReservation },
-            theme:       { title: '사건 폐기',  msg: '이 사건(테마)을 폐기하면 복구할 수 없습니다.',                  call: api.deleteTheme },
-            time:        { title: '시간 슬롯 폐기', msg: '이 시간 슬롯을 폐기합니다. 진행 중인 예약이 있으면 차단됩니다.', call: api.deleteTime }
+            reservation: {title: '예약 폐기', msg: '이 예약을 폐기하면 복구할 수 없습니다.', call: api.deleteReservation},
+            theme: {title: '사건 폐기', msg: '이 사건(테마)을 폐기하면 복구할 수 없습니다.', call: api.deleteTheme},
+            time: {title: '시간 슬롯 폐기', msg: '이 시간 슬롯을 폐기합니다. 진행 중인 예약이 있으면 차단됩니다.', call: api.deleteTime}
         };
         const m = map[kind];
-        const ok = await modal.confirm({ title: m.title, message: m.msg, okText: '폐기 확정', danger: true });
+        const ok = await modal.confirm({title: m.title, message: m.msg, okText: '폐기 확정', danger: true});
         if (!ok) return;
         try {
             await m.call(id);
             await reloadAll();
         } catch (e) {
-            modal.alert({ title: '삭제 실패', message: e.message });
+            modal.alert({title: '삭제 실패', message: e.message});
         }
     }
 
@@ -135,7 +135,7 @@
             thumbnail: (fd.get('thumbnail') || '').trim()
         };
         if (!payload.name || !payload.description || !payload.thumbnail) {
-            await modal.alert({ message: '모든 항목을 입력하세요.' });
+            await modal.alert({message: '모든 항목을 입력하세요.'});
             return;
         }
         try {
@@ -143,7 +143,7 @@
             e.target.reset();
             await reloadAll();
         } catch (err) {
-            modal.alert({ title: '등록 실패', message: err.message });
+            modal.alert({title: '등록 실패', message: err.message});
         }
     }
 
@@ -152,15 +152,15 @@
         const fd = new FormData(e.target);
         const startAt = (fd.get('startAt') || '').trim();
         if (!startAt) {
-            await modal.alert({ message: '시각을 입력하세요.' });
+            await modal.alert({message: '시각을 입력하세요.'});
             return;
         }
         try {
-            await api.createTime({ startAt: startAt });
+            await api.createTime({startAt: startAt});
             e.target.reset();
             await reloadAll();
         } catch (err) {
-            modal.alert({ title: '등록 실패', message: err.message });
+            modal.alert({title: '등록 실패', message: err.message});
         }
     }
 

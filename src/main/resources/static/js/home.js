@@ -4,11 +4,11 @@
     document.addEventListener('DOMContentLoaded', async function () {
         const popularStrip = document.getElementById('popular-strip');
         const popularEmpty = document.getElementById('popular-empty');
-        const themesGrid   = document.getElementById('themes-grid');
-        const themesEmpty  = document.getElementById('themes-empty');
-        const themesCount  = document.getElementById('themes-count');
+        const themesGrid = document.getElementById('themes-grid');
+        const themesEmpty = document.getElementById('themes-empty');
+        const themesCount = document.getElementById('themes-count');
         const popularCount = document.getElementById('popular-count');
-        const statThemes   = document.getElementById('stat-themes');
+        const statThemes = document.getElementById('stat-themes');
 
         try {
             const [themes, popular] = await Promise.all([
@@ -18,7 +18,7 @@
             renderStrip(popular, popularStrip, popularEmpty, popularCount);
             renderGrid(themes, themesGrid, themesEmpty, themesCount, statThemes);
         } catch (e) {
-            modal.alert({ title: '데이터 로드 실패', message: e.message || '서버에 연결할 수 없습니다.' });
+            modal.alert({title: '데이터 로드 실패', message: e.message || '서버에 연결할 수 없습니다.'});
         }
     });
 
@@ -72,5 +72,8 @@
             '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
         }[c]));
     }
-    function escapeAttr(s) { return escapeHtml(s); }
+
+    function escapeAttr(s) {
+        return escapeHtml(s);
+    }
 })();
