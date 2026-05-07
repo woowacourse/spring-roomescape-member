@@ -18,7 +18,6 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-
     public ThemeResponseDTO addTheme(ThemeRequestDTO request) {
         Theme theme = new Theme(request.name(), request.description(), request.imageUrl());
         Theme savedTheme = themeRepository.save(theme);
@@ -34,6 +33,10 @@ public class ThemeService {
         Theme result = themeRepository.findById(id)
                 .orElseThrow();
         return ThemeResponseDTO.from(result);
+    }
+
+    public List<Theme> findPopularThemes() {
+        return themeRepository.findPopularThemes();
     }
 
     public void deleteTheme(Long id) {

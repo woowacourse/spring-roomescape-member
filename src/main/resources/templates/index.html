@@ -80,7 +80,7 @@
     });
 
     // 2. 인기 테마 순위 조회 (새로 추가된 API)
-    fetch('/reservations/popular-themes')
+    fetch('/themes/popular')
     .then(res => {
       if (!res.ok) throw new Error();
       return res.json();
