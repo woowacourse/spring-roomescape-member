@@ -9,6 +9,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
+import roomescape.dto.ReservationTimeResponseDTO;
 import roomescape.dto.ThemeResponseDTO;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -35,7 +36,7 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    public List<ReservationTime> findReservedTimes(LocalDate targetDate, Long targetThemeId) {
+    public List<ReservationTimeResponseDTO> findReservedTimes(LocalDate targetDate, Long targetThemeId) {
         List<Long> reservedTimesOfTargetThemeOnTargetDate = reservationRepository.findAll()
                 .stream()
                 .filter(reservation -> reservation.getDate().equals(targetDate))
@@ -47,12 +48,12 @@ public class ReservationService {
 
         return reservationTimes.stream()
                 .filter(reservationTime -> reservedTimesOfTargetThemeOnTargetDate.contains(reservationTime.getId()))
+                .map(ReservationTimeResponseDTO::from)
                 .toList();
     }
 
     public List<ThemeResponseDTO> getPopularThemes() {
         List<Long> popularThemeIds = reservationRepository.findPopularThemeIds();
-        System.out.println("popularThemeIds = " + popularThemeIds);
 
         return popularThemeIds.stream()
                 .map(id -> themeRepository.findById(id).get())
