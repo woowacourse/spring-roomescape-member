@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 
-public record AdminReservationResponse(Long id,
+public record AdminReservationResponse(long id,
                                        String name,
                                        LocalDate date,
                                        String themeName,
