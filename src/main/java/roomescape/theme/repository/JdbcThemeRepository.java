@@ -89,12 +89,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail_url")
-                ),
+                ThemeMapper,
                 Date.valueOf(startDate),
                 Date.valueOf(endDate),
                 limit
