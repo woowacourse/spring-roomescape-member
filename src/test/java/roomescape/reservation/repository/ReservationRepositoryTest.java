@@ -27,7 +27,6 @@ import roomescape.time.repository.JdbcReservationTimeRepository;
 
 @JdbcTest
 class ReservationRepositoryTest {
-
     private final String name = "한다";
     private final LocalDate date1 = LocalDate.of(2099, 1, 1);
     private final LocalDate date2 = LocalDate.of(2099, 9, 1);
@@ -61,6 +60,24 @@ class ReservationRepositoryTest {
         reservationDate2 = jdbcReservationDateRepository.save(ReservationDate.create(date2));
         theme = jdbcThemeRepository.save(Theme.create("테마", "설명", "썸네일"));
     }
+
+    @Test
+    @DisplayName("id로 특정 예약 정보를 조횧한다.")
+    void findById() {
+        // given
+        Reservation savedReservation = save(
+                Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme));
+        Long savedId = savedReservation.id();
+
+        // when
+        Reservation actual = jdbcReservationRepository.findById(savedId).get();
+
+        // then
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(savedReservation);
+    }
+
 
     @Test
     @DisplayName("모든 예약 정보를 조회한다.")
@@ -107,7 +124,8 @@ class ReservationRepositoryTest {
         List<Reservation> emptyReservations = List.of();
 
         // when
-        jdbcReservationRepository.save(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme));
+        jdbcReservationRepository.save(
+                Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme));
 
         //then
         assertThat(jdbcReservationRepository.findAll())
@@ -122,9 +140,11 @@ class ReservationRepositoryTest {
         LocalDate wrongDate = LocalDate.now().plusWeeks(3);
 
         // when & then
-        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(reservationDate1.date(), reservationTime1.startAt(), theme.id()))
+        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(reservationDate1.date(),
+                reservationTime1.startAt(), theme.id()))
                 .isTrue();
-        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(wrongDate, reservationTime1.startAt(), theme.id()))
+        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(wrongDate, reservationTime1.startAt(),
+                theme.id()))
                 .isFalse();
     }
 
@@ -132,7 +152,8 @@ class ReservationRepositoryTest {
     @DisplayName("예약을 취소하면 상태가 CANCELED가 된다.")
     void updateState_canceled() {
         // given
-        Reservation beforeReservation = save(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme));
+        Reservation beforeReservation = save(
+                Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme));
         ReservationStatus cancelled = ReservationStatus.CANCELED;
         updateStatus(beforeReservation);
 
@@ -155,9 +176,9 @@ class ReservationRepositoryTest {
 
     private Reservation save(Reservation reservation) {
         Long savedId = jdbcReservationRepository.save(reservation);
-        return Reservation.of(savedId, reservation.name(), reservation.date(), reservation.time(), reservation.theme(), reservation.status());
+        return Reservation.of(savedId, reservation.name(), reservation.date(), reservation.time(), reservation.theme(),
+                reservation.status());
     }
-
 
     private void updateStatus(Reservation beforeReservation) {
         beforeReservation.updateStatus(ReservationStatus.CANCELED);
