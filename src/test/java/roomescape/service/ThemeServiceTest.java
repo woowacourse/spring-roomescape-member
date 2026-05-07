@@ -1,6 +1,12 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,13 +17,6 @@ import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.repository.theme.ThemeRepository;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
@@ -46,6 +45,7 @@ class ThemeServiceTest {
 
     @Test
     void 테마를_삭제한다() {
+        // when & then
         assertThatCode(() -> themeService.deleteThemeById(SAVED_THEME.getId()))
             .doesNotThrowAnyException();
     }
@@ -62,11 +62,7 @@ class ThemeServiceTest {
         List<Theme> all = themeService.getThemes();
 
         // then
-        assertThat(all).hasSize(3);
-        assertThat(all).extracting(Theme::getId)
-            .anySatisfy(id -> assertThat(id).isEqualTo(1L))
-            .anySatisfy(id -> assertThat(id).isEqualTo(2L))
-            .anySatisfy(id -> assertThat(id).isEqualTo(3L));
+        assertThat(all).containsExactlyElementsOf(themes);
     }
 
     @Test
@@ -92,7 +88,7 @@ class ThemeServiceTest {
         return themes;
     }
 
-    ThemeRequest themeRequestDtoFrom(Theme theme) {
+    private ThemeRequest themeRequestDtoFrom(Theme theme) {
         return new ThemeRequest(
             theme.getNameValue(),
             theme.getDescription(),

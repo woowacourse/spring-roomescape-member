@@ -1,5 +1,9 @@
 package roomescape.repository.reservation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -8,16 +12,10 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.ThemeImageUrl;
-import roomescape.repository.time.JdbcReservationTimeRepository;
-import roomescape.repository.time.ReservationTimeRepository;
-
-import java.time.LocalDate;
-import java.util.List;
 import roomescape.repository.theme.JdbcThemeRepository;
 import roomescape.repository.theme.ThemeRepository;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import roomescape.repository.time.JdbcReservationTimeRepository;
+import roomescape.repository.time.ReservationTimeRepository;
 
 @Import({JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
 @JdbcTest
@@ -50,9 +48,11 @@ class JdbcReservationRepositoryTest {
 
         // when
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation saved = reservationRepository.createReservation(new Reservation("name", tomorrow, savedTime, savedTheme));
+        Reservation saved = reservationRepository.createReservation(
+            new Reservation("name", tomorrow, savedTime, savedTheme));
 
         // then
+        assertThat(saved.getId()).isNotNull();
         assertThat(saved.getTime()).isEqualTo(savedTime);
         assertThat(saved.getTheme()).isEqualTo(savedTheme);
     }
@@ -63,40 +63,39 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime("13:43"));
         ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime("10:00"));
 
-        Theme savedTheme = themeRepository.createTheme(new Theme("a", "a", ThemeImageUrl.defaultImageUrl().value()));
+        Theme savedTheme = themeRepository.createTheme(THEME);
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        reservationRepository.createReservation(new Reservation("브라운",  tomorrow, savedTime1, savedTheme));
-        reservationRepository.createReservation(new Reservation("제임스",  tomorrow, savedTime2, savedTheme));
+        reservationRepository.createReservation(new Reservation("브라운", tomorrow, savedTime1, savedTheme));
+        reservationRepository.createReservation(new Reservation("제임스", tomorrow, savedTime2, savedTheme));
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
 
         // then
-        assertThat(reservations).hasSize(2);
-
         assertThat(reservations)
             .extracting(Reservation::getTime)
-            .anySatisfy(time -> assertThat(time).isEqualTo(savedTime1))
-            .anySatisfy(time -> assertThat(time).isEqualTo(savedTime2));
+            .containsExactlyInAnyOrder(savedTime1, savedTime2);
 
         assertThat(reservations)
             .extracting(Reservation::getTheme)
-            .allSatisfy(theme -> assertThat(theme.getNameValue()).isEqualTo("a"));
+            .containsOnly(savedTheme);
     }
 
     @Test
-    void 저장되어_있는_예약을_아이디로_조회하여_삭제한다() {
+    void 예약을_아이디로_삭제한다() {
         // given
-        ReservationTime time = timeRepository.createReservationTime(new ReservationTime("13:43"));
-        Theme theme = themeRepository.createTheme(new Theme("a", "a", ThemeImageUrl.defaultImageUrl().value()));
+        ReservationTime time = timeRepository.createReservationTime(RESERVATION_TIME);
+        Theme theme = themeRepository.createTheme(THEME);
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation saved = reservationRepository.createReservation(new Reservation("브라운",  tomorrow, time, theme));
+        Reservation saved = reservationRepository.createReservation(new Reservation("브라운", tomorrow, time, theme));
 
-        // when & then
-        assertThatCode(() -> reservationRepository.deleteById(saved.getId()))
-            .doesNotThrowAnyException();
+        // when
+        reservationRepository.deleteById(saved.getId());
+
+        // then
+        assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @Test
@@ -106,7 +105,8 @@ class JdbcReservationRepositoryTest {
         Theme savedTheme = themeRepository.createTheme(THEME);
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation saved = reservationRepository.createReservation(new Reservation("브라운",  tomorrow, savedTime, savedTheme));
+        Reservation saved = reservationRepository.createReservation(
+            new Reservation("브라운", tomorrow, savedTime, savedTheme));
 
         // when
         Reservation target = reservationRepository.findById(saved.getId());
@@ -126,7 +126,8 @@ class JdbcReservationRepositoryTest {
         Theme savedTheme = themeRepository.createTheme(THEME);
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation saved = reservationRepository.createReservation(new Reservation("브라운",  tomorrow, savedTime, savedTheme));
+        Reservation saved = reservationRepository.createReservation(
+            new Reservation("브라운", tomorrow, savedTime, savedTheme));
 
         // when
         boolean exists = reservationRepository.existsByTimeId(saved.getTimeId());
@@ -139,8 +140,8 @@ class JdbcReservationRepositoryTest {
     void 특정_시간_ID를_가지는_예약이_없으면_FALSE를_반환한다() {
         // given
         ReservationTime savedTime = timeRepository.createReservationTime(RESERVATION_TIME);
-        ReservationTime otherTime = timeRepository.createReservationTime(
-            new ReservationTime(2L, "17:00"));
+        ReservationTime otherTime = timeRepository.createReservationTime(new ReservationTime("17:00"));
+
         Theme savedTheme = themeRepository.createTheme(THEME);
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);

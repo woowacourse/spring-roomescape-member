@@ -1,5 +1,10 @@
 package roomescape.repository.time;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -13,13 +18,6 @@ import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.JdbcThemeRepository;
 import roomescape.repository.theme.ThemeRepository;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNoException;
-
 @Import({JdbcReservationTimeRepository.class, JdbcReservationRepository.class, JdbcThemeRepository.class})
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
@@ -29,76 +27,63 @@ class JdbcReservationTimeRepositoryTest {
     private final ThemeRepository themeRepository;
 
     @Autowired
-    public JdbcReservationTimeRepositoryTest(ReservationTimeRepository repository, ReservationRepository reservationRepository, ThemeRepository themeRepository) {
+    public JdbcReservationTimeRepositoryTest(
+        ReservationTimeRepository repository,
+        ReservationRepository reservationRepository,
+        ThemeRepository themeRepository
+    ) {
         this.timeRepository = repository;
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
     }
 
     @Test
-    void 시간_데이터_생성_테스트() {
-        // given
-        ReservationTime reservationTime = timeRepository.createReservationTime(new ReservationTime(null, "16:20"));
-        assertThat(reservationTime).isNotNull();
-
+    void 예약_시간을_저장한다() {
         // when
-        List<ReservationTime> all = timeRepository.findAll();
+        ReservationTime saved = timeRepository.createReservationTime(new ReservationTime(null, "16:20"));
 
         // then
-        assertThat(all).hasSize(1);
-        assertThat(all.get(0).getId()).isEqualTo(reservationTime.getId());
-        assertThat(all.get(0).getStartAt()).isEqualTo(reservationTime.getStartAt());
+        assertThat(saved.getId()).isNotNull();
+        assertThat(saved.getStartAt()).isEqualTo("16:20");
     }
 
     @Test
-    void 시간_데이터_전체_조회_테스트() {
+    void 저장된_모든_예약_시간을_조회한다() {
         // given
-        ReservationTime time1 = new ReservationTime(null, "20:43");
-        ReservationTime time2 = new ReservationTime(null, "10:00");
-
-        timeRepository.createReservationTime(time1);
-        timeRepository.createReservationTime(time2);
+        ReservationTime saved1 = timeRepository.createReservationTime(new ReservationTime(null, "20:43"));
+        ReservationTime saved2 = timeRepository.createReservationTime(new ReservationTime(null, "10:00"));
 
         // when
         List<ReservationTime> times = timeRepository.findAll();
 
-        //then
-        assertThat(times).hasSize(2);
-        assertThat(times)
-                .extracting(ReservationTime::getStartAt)
-                .anySatisfy(getStartAt -> assertThat(getStartAt).isEqualTo(time1.getStartAt()))
-                .anySatisfy(getStartAt -> assertThat(getStartAt).isEqualTo(time2.getStartAt()));
+        // then
+        assertThat(times).containsExactlyInAnyOrder(saved1, saved2);
     }
 
     @Test
-    void 시간_데이터_삭제_테스트() {
+    void 예약_시간을_아이디로_삭제한다() {
         // given
-        ReservationTime reservationTime = timeRepository.createReservationTime(new ReservationTime(null, "20:43"));
-        List<ReservationTime> all = timeRepository.findAll();
-        assertThat(all).hasSize(1);
-        assertThat(all.getFirst().getId()).isEqualTo(reservationTime.getId());
-
-        // when, then
-        assertThatNoException().isThrownBy(() -> timeRepository.deleteById(reservationTime.getId()));
-        assertThat(timeRepository.findAll()).hasSize(0);
-    }
-
-    @Test
-    void 아이디로_특정_데이터_조회_테스트() {
-        // given
-        ReservationTime test = timeRepository.createReservationTime(new ReservationTime(null, "16:20"));
-        Long id = test.getId();
+        ReservationTime saved = timeRepository.createReservationTime(new ReservationTime(null, "20:43"));
 
         // when
-        Optional<ReservationTime> target = timeRepository.findById(id);
+        timeRepository.deleteById(saved.getId());
 
         // then
-        assertThat(target)
-                .isPresent()
-                .hasValueSatisfying(reservation -> {
-                    assertThat(reservation.getId()).isEqualTo(id);
-                    assertThat(reservation.getStartAt()).isEqualTo(test.getStartAt());
-                });
+        assertThat(timeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void 예약_시간을_아이디로_조회한다() {
+        // given
+        ReservationTime saved = timeRepository.createReservationTime(new ReservationTime(null, "16:20"));
+
+        // when
+        Optional<ReservationTime> target = timeRepository.findById(saved.getId());
+
+        // then
+        assertThat(target).isPresent();
+        assertThat(target.get().getId()).isEqualTo(saved.getId());
+        assertThat(target.get().getStartAt()).isEqualTo(saved.getStartAt());
     }
 
     @Test
@@ -106,7 +91,6 @@ class JdbcReservationTimeRepositoryTest {
         // given
         ReservationTime bookedTime = timeRepository.createReservationTime(new ReservationTime("10:00"));
         ReservationTime availableTime = timeRepository.createReservationTime(new ReservationTime("12:00"));
-
         Theme theme = themeRepository.createTheme(new Theme("테스트", "테스트테마입니다.", ThemeImageUrl.defaultImageUrl().value()));
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -116,8 +100,6 @@ class JdbcReservationTimeRepositoryTest {
         List<ReservationTime> availableTimes = timeRepository.findByDateAndThemeId(tomorrow, theme.getId());
 
         // then
-        assertThat(availableTimes).hasSize(1);
-        assertThat(availableTimes).extracting(ReservationTime::getStartAt)
-                .anySatisfy(startAt -> assertThat(startAt).isEqualTo(availableTime.getStartAt()));
+        assertThat(availableTimes).containsExactly(availableTime);
     }
 }
