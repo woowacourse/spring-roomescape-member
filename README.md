@@ -18,7 +18,7 @@
 
 [`React.js 클라이언트`](https://github.com/Uechann/react-roomscape)
 
-<details><summary><h4>📜 그룹 규칙 상세</h4></summary>
+<details><summary><h4>📜 그룹 규칙 초안</h4></summary>
 
 1. 리소스 식별 기준
 
