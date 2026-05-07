@@ -67,7 +67,7 @@ class RoomescapeApplicationTest {
 
         RestAssured.given()
                 .when().get("/times/available?date=" + past + "&themeId=1")
-                .then().statusCode(500);
+                .then().statusCode(400);
     }
 
     @Test
