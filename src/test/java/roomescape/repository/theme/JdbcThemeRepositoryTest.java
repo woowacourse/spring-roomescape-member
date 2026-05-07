@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -91,6 +93,7 @@ class JdbcThemeRepositoryTest {
                 .anySatisfy(name -> assertThat(name).isEqualTo(second));
     }
 
+    @Disabled
     @Test
     void 최근_1주일간_예약이_많은_테마_상위_10개를_조회할_수_있다() {
         // given

@@ -13,12 +13,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.service.ReservationService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +33,11 @@ class ReservationControllerTest {
     // TODO: 부수적인 도메인은 필드, 테스트 대상은 메서드 내에서 호출
     private static final ReservationTime TIME = new ReservationTime(1L, "12:00");
     private static final Theme THEME = new Theme(1L, new ThemeName("name"), "d", ThemeImageUrl.defaultImageUrl());
-    private static final Reservation RESERVATION = new Reservation("이름", "2026-05-01", TIME, THEME);
+    private static final Reservation RESERVATION = new Reservation(
+            "이름",
+            LocalDate.now().plusDays(1L),
+            TIME,
+            THEME);
 
     @LocalServerPort
     private int port;
@@ -109,6 +115,6 @@ class ReservationControllerTest {
     }
 
     private ReservationRequestDto requestDtoFrom(Reservation reservation) {
-        return new ReservationRequestDto(reservation.getName().value(), reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
+        return new ReservationRequestDto(reservation.getName().value(), reservation.getDateValue(), reservation.getTime().getId(), reservation.getTheme().getId());
     }
 }

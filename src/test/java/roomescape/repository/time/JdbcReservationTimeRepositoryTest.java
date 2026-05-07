@@ -109,10 +109,11 @@ class JdbcReservationTimeRepositoryTest {
 
         Theme theme = themeRepository.createTheme(new Theme("테스트", "테스트테마입니다.", ThemeImageUrl.defaultImageUrl().value()));
 
-        reservationRepository.createReservation(new Reservation("브라운", "2026-05-05", bookedTime, theme));
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        reservationRepository.createReservation(new Reservation("브라운", tomorrow, bookedTime, theme));
 
         // when
-        List<ReservationTime> availableTimes = timeRepository.findByDateAndThemeId(LocalDate.parse("2026-05-05"), theme.getId());
+        List<ReservationTime> availableTimes = timeRepository.findByDateAndThemeId(tomorrow, theme.getId());
 
         // then
         assertThat(availableTimes).hasSize(1);

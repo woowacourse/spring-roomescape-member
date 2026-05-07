@@ -21,6 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequestDto;
@@ -43,7 +45,11 @@ class ReservationServiceTest {
 
     private static final ReservationTime SAVED_TIME = new ReservationTime(1L, "12:30");
     private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
-    private static final Reservation RESERVATION = new Reservation(1L, "name", "2026-05-05", SAVED_TIME, SAVED_THEME);
+    private static final Reservation RESERVATION = new Reservation(
+            1L,
+            new MemberName("name"),
+            new ReservationDate(LocalDate.now().minusDays(1L)),
+            SAVED_TIME, SAVED_THEME);
 
     @Test
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
@@ -58,7 +64,7 @@ class ReservationServiceTest {
 
         // when
         List<ReservationTime> availableTimes = reservationService
-            .getAvailableTimes(RESERVATION.getDate(), RESERVATION.getThemeId());
+            .getAvailableTimes(RESERVATION.getDateValue(), RESERVATION.getThemeId());
 
         // then
         assertThat(availableTimes).hasSize(2);
@@ -89,7 +95,8 @@ class ReservationServiceTest {
     void 날짜와_시간이_같더라도_테마가_다르면_예약할_수_있다() {
         // given
         Theme otherTheme = new Theme(2L, new ThemeName("테마2"), "테마2입니다.", ThemeImageUrl.defaultImageUrl());
-        Reservation reservation = new Reservation("이름", "2026-05-05", SAVED_TIME, otherTheme);
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        Reservation reservation = new Reservation("이름", tomorrow, SAVED_TIME, otherTheme);
 
         when(timeRepository.findById(SAVED_TIME.getId()))
             .thenReturn(Optional.of(SAVED_TIME));
@@ -118,7 +125,7 @@ class ReservationServiceTest {
     }
 
     private ReservationRequestDto requestDtoFrom(Reservation reservation) {
-        return new ReservationRequestDto(reservation.getName().value(), reservation.getDate(),
+        return new ReservationRequestDto(reservation.getName().value(), reservation.getDateValue(),
             reservation.getTime().getId(), reservation.getThemeId());
     }
 }
