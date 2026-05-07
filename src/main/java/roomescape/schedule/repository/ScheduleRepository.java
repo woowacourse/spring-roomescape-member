@@ -75,28 +75,5 @@ public class ScheduleRepository {
         }, themeId, startOfDay, endOfDay);
     }
 
-    public Schedule findById(Long id) {
-        String sql = "SELECT s.id AS schedule_id, \n" +
-                "       s.start_at, \n" +
-                "       t.id AS theme_id, \n" +
-                "       t.name AS theme_name,\n" +
-                "       t.description,\n" +
-                "       t.image_url,\n" +
-                "       t.required_time\n" +
-                "FROM schedule s\n" +
-                "INNER JOIN theme t ON s.theme_id = t.id\n" +
-                "WHERE s.id = ?";
 
-        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
-            Theme theme = new Theme(resultSet.getLong("theme_id"),
-                    resultSet.getString("theme_name"),
-                    resultSet.getString("description"),
-                    resultSet.getString("image_url"),
-                    resultSet.getObject("required_time", LocalTime.class)
-            );
-            return new Schedule(resultSet.getLong("schedule_id"),
-                    resultSet.getObject("start_at", LocalDateTime.class),
-                    theme);
-        }, id);
-    }
 }

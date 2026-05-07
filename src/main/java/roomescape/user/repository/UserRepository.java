@@ -48,15 +48,4 @@ public class UserRepository {
             return Optional.empty();
         }
     }
-
-    public User findById(Long id) {
-        String sql = "SELECT * from `user` where id = ?";
-        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
-            return new User(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    Role.valueOf(resultSet.getString("role"))
-            );
-        }, id);
-    }
 }
