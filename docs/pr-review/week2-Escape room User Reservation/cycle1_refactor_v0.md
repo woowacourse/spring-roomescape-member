@@ -26,7 +26,7 @@
 
 ### 코드 일관성 (Code Consistency)
 
-- [ ] **5. `ThemeRequest` 필드명이 snake_case임. camel로 통일해야 함.**
+- [x] **5. `ThemeRequest` 필드명이 snake_case임. camel로 통일해야 함.**
   - `thumbnail_url` (snake_case) vs 나머지 DTO 필드들은 camelCase 사용
 
 - [ ] **6. `AvailableReservationTimeResponse` - `long` vs `Long` 혼용중임 -> long으로 통일**

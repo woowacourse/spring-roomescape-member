@@ -617,7 +617,7 @@
       const res = await fetch(`${API}/admin/themes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description: desc, thumbnail_url: thumb })
+        body: JSON.stringify({ name, description: desc, thumbnailUrl: thumb })
       });
 
       if (!res.ok) throw new Error();
