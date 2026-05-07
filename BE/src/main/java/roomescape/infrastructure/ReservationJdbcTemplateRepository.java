@@ -73,6 +73,13 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
                     WHERE time_id = ?
                 );
             """;
+    private static final String EXISTS_BY_THEME_ID_QUERY = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE theme_id = ?
+                );
+            """;
     private static final String EXISTS_BY_DATE_AND_TIME_ID_AND_THEME_ID_QUERY = """
                 SELECT EXISTS (
                     SELECT 1
@@ -150,6 +157,12 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
     @Override
     public boolean existsByReservationTimeId(Long id) {
         Integer result = jdbcTemplate.queryForObject(EXISTS_BY_TIME_ID_QUERY, Integer.class, id);
+        return result != null && result == 1;
+    }
+
+    @Override
+    public boolean existsByThemeId(Long themeId) {
+        Integer result = jdbcTemplate.queryForObject(EXISTS_BY_THEME_ID_QUERY, Integer.class, themeId);
         return result != null && result == 1;
     }
 

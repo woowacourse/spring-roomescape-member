@@ -24,7 +24,8 @@ public enum ErrorCode {
     THEME_ID_NULL(HttpStatus.BAD_REQUEST, "테마 ID가 비어있습니다."),
     THEME_REQUEST_DESCRIPTION_NULL(HttpStatus.BAD_REQUEST, "테마 설명은 null 혹은 빈 값일 수 없습니다"),
     THEME_REQUEST_NAME_NULL(HttpStatus.BAD_REQUEST, "테마 이름은 null 혹은 빈 값일 수 없습니다"),
-    THEME_REQUEST_THUMBNAIL_NULL(HttpStatus.BAD_REQUEST, "테마 썸네일은 null 혹은 빈 값일 수 없습니다");
+    THEME_REQUEST_THUMBNAIL_NULL(HttpStatus.BAD_REQUEST, "테마 썸네일은 null 혹은 빈 값일 수 없습니다"),
+    THEME_ALREADY_USED(HttpStatus.BAD_REQUEST, "참조하고 있는 테마이어서 삭제할 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

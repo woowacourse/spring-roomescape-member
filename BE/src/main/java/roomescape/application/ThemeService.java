@@ -5,18 +5,23 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.entity.ReservationRepository;
 import roomescape.entity.Theme;
 import roomescape.entity.ThemeRepository;
 import roomescape.entity.ThemeSortType;
+import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.customException.ThemeException;
 
 @Service
 @Transactional(readOnly = true)
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
@@ -38,6 +43,9 @@ public class ThemeService {
 
     @Transactional
     public void deleteById(Long id) {
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new ThemeException(ErrorCode.THEME_ALREADY_USED);
+        }
         themeRepository.deleteById(id);
     }
 }

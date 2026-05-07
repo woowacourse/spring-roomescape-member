@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
@@ -26,13 +25,10 @@ class ReservationJdbcTemplateRepositoryTest {
     private static final LocalDate DATE_5_6 = LocalDate.of(2026, 5, 6);
 
     private final ReservationJdbcTemplateRepository reservationRepository;
-    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    ReservationJdbcTemplateRepositoryTest(ReservationJdbcTemplateRepository reservationRepository,
-                                          JdbcTemplate jdbcTemplate) {
+    ReservationJdbcTemplateRepositoryTest(ReservationJdbcTemplateRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Test
@@ -159,6 +155,34 @@ class ReservationJdbcTemplateRepositoryTest {
     }
 
     @Test
+    @DisplayName("특정 테마 ID를 참조하는 예약이 존재하면 true를 반환한다.")
+    @Sql(scripts = {
+            "/sql/cleanup.sql",
+            "/sql/infrastructure/reservation/exists-by-theme-fixtures.sql"
+    })
+    void existsByThemeId_returns_true_when_exists() {
+        // when
+        boolean exists = reservationRepository.existsByThemeId(1L);
+
+        // then
+        Assertions.assertTrue(exists);
+    }
+
+    @Test
+    @DisplayName("특정 테마 ID를 참조하는 예약이 존재하지 않으면 false를 반환한다.")
+    @Sql(scripts = {
+            "/sql/cleanup.sql",
+            "/sql/infrastructure/reservation/exists-by-theme-fixtures.sql"
+    })
+    void existsByThemeId_returns_false_when_not_exists() {
+        // when
+        boolean exists = reservationRepository.existsByThemeId(999L);
+
+        // then
+        Assertions.assertFalse(exists);
+    }
+
+    @Test
     @DisplayName("동일 date/time/theme 조합의 예약이 존재하면 true를 반환한다.")
     @Sql(scripts = {
             "/sql/cleanup.sql",
@@ -214,8 +238,6 @@ class ReservationJdbcTemplateRepositoryTest {
         reservationRepository.deleteById(1L);
 
         // then
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM reservation WHERE id = 1", Integer.class);
-        Assertions.assertEquals(0, count);
+        Assertions.assertTrue(reservationRepository.findById(1L).isEmpty());
     }
 }
