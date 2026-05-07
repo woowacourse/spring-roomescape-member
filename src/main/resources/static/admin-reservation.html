@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>예약 관리 - 관리자</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; padding: 2rem; background: #f8fafc; margin: 0; color: #1e293b; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h1 { color: #1e293b; text-align: center; margin-bottom: 2rem; font-weight: 800; }
+        .nav { margin-bottom: 2rem; display: flex; justify-content: space-between; }
+        .nav a { color: #4f46e5; text-decoration: none; font-weight: bold; font-size: 0.95rem; }
+        .nav a:hover { text-decoration: underline; }
+        
+        .form-section { background: #f1f5f9; padding: 1.5rem; border-radius: 8px; margin-bottom: 2.5rem; }
+        form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        label { font-weight: bold; color: #475569; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        input, select { padding: 0.7rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; background: white; outline: none; }
+        input:focus, select:focus { border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79,70,229,0.1); }
+        
+        button { padding: 0.8rem 1.5rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; border: none; font-size: 0.95rem; }
+        .btn-primary { background: #4f46e5; color: white; grid-column: 1 / -1; margin-top: 0.5rem; }
+        .btn-primary:hover { background: #4338ca; }
+        .btn-danger { background: #fee2e2; color: #b91c1c; padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+        .btn-danger:hover { background: #fecaca; }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 1rem; }
+        th, td { padding: 1rem; border-bottom: 1px solid #e2e8f0; text-align: left; }
+        th { background: #f8fafc; color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; }
+        .user-name { font-weight: bold; color: #1e293b; }
+        .badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; background: #e2e8f0; color: #475569; }
+        .theme-badge { background: #dcfce7; color: #166534; }
+        .empty-state { text-align: center; padding: 3rem; color: #94a3b8; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="/">&larr; 홈으로</a>
+            <a href="/admin-time.html">시간 관리 &rarr;</a>
+        </div>
+        <h1>전화/현장 예약 관리</h1>
+        
+        <div class="form-section">
+            <form id="resForm">
+                <div class="form-group">
+                    <label for="nameInput">예약자 성함</label>
+                    <input type="text" id="nameInput" placeholder="이름 입력" required>
+                </div>
+                <div class="form-group">
+                    <label for="dateInput">날짜</label>
+                    <input type="date" id="dateInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="themeSelect">테마</label>
+                    <select id="themeSelect" required><option value="">테마를 선택하세요</option></select>
+                </div>
+                <div class="form-group">
+                    <label for="timeSelect">시간</label>
+                    <select id="timeSelect" required><option value="">시간을 선택하세요</option></select>
+                </div>
+                <button type="submit" class="btn-primary">수동 예약 추가</button>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 60px;">ID</th>
+                    <th>예약자</th>
+                    <th>날짜</th>
+                    <th>테마</th>
+                    <th>시간</th>
+                    <th style="width: 80px; text-align: center;">관리</th>
+                </tr>
+            </thead>
+            <tbody id="resList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const resForm = document.getElementById('resForm');
+        const themeSelect = document.getElementById('themeSelect');
+        const timeSelect = document.getElementById('timeSelect');
+        const resList = document.getElementById('resList');
+
+        async function init() {
+            await Promise.all([loadThemes(), loadTimes(), loadReservations()]);
+        }
+
+        async function loadThemes() {
+            try {
+                const res = await fetch('/themes');
+                const themes = await res.json();
+                themes.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = t.name;
+                    themeSelect.appendChild(opt);
+                });
+            } catch (e) { console.error('테마 로드 실패', e); }
+        }
+
+        async function loadTimes() {
+            try {
+                const res = await fetch('/times');
+                const times = await res.json();
+                times.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = t.startAt;
+                    timeSelect.appendChild(opt);
+                });
+            } catch (e) { console.error('시간 로드 실패', e); }
+        }
+
+        async function loadReservations() {
+            try {
+                const res = await fetch('/reservations');
+                const reservations = await res.json();
+                resList.innerHTML = '';
+                
+                if (reservations.length === 0) {
+                    resList.innerHTML = '<tr><td colspan="6" class="empty-state">현재 등록된 예약이 없습니다.</td></tr>';
+                    return;
+                }
+
+                reservations.forEach(r => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${r.id}</td>
+                        <td class="user-name">${r.name}</td>
+                        <td>${r.date}</td>
+                        <td><span class="badge theme-badge">${r.theme ? r.theme.name : '알수없음'}</span></td>
+                        <td><span class="badge">${r.time ? r.time.startAt : '알수없음'}</span></td>
+                        <td style="text-align: center;"><button class="btn-danger" onclick="deleteRes(${r.id})">삭제</button></td>
+                    `;
+                    resList.appendChild(tr);
+                });
+            } catch (e) { console.error('예약 로드 실패', e); }
+        }
+
+        resForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('nameInput').value,
+                date: document.getElementById('dateInput').value,
+                themeId: parseInt(themeSelect.value),
+                timeId: parseInt(timeSelect.value)
+            };
+            try {
+                const res = await fetch('/reservations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    resForm.reset();
+                    loadReservations();
+                } else {
+                    const error = await res.json();
+                    alert(error.message || '예약 추가에 실패했습니다. 이미 예약된 시간인지 확인해주세요.');
+                }
+            } catch (e) { alert('서버 오류가 발생했습니다.'); }
+        });
+
+        async function deleteRes(id) {
+            if (!confirm('정말로 해당 예약을 삭제(취소)하시겠습니까?')) return;
+            try {
+                const res = await fetch(`/reservations/${id}`, { method: 'DELETE' });
+                if (res.ok) loadReservations();
+                else alert('삭제에 실패했습니다.');
+            } catch (e) { alert('서버 오류가 발생했습니다.'); }
+        }
+
+        init();
+    </script>
+</body>
+</html>

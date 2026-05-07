@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방탈출 카페 시스템</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f8fafc; margin: 0; color: #1e293b; }
+        .container { text-align: center; background: white; padding: 3rem; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        h1 { margin-bottom: 2.5rem; font-size: 2rem; font-weight: 800; color: #4f46e5; }
+        .btn-group { display: flex; flex-direction: column; gap: 1.25rem; }
+        a { text-decoration: none; padding: 1.25rem; border-radius: 12px; color: white; font-weight: bold; font-size: 1.1rem; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        a:active { transform: scale(0.98); }
+        .user-btn { background-color: #4f46e5; }
+        .user-btn:hover { background-color: #4338ca; }
+        .admin-btn { background-color: #475569; }
+        .admin-btn:hover { background-color: #334155; }
+        .footer { margin-top: 2rem; font-size: 0.9rem; color: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Roomescape</h1>
+        <div class="btn-group">
+            <a href="/user-reservation.html" class="user-btn">방탈출 예약하기 (사용자)</a>
+            <a href="/popular-themes.html" class="user-btn" style="background-color: #10b981;">실시간 인기 테마 (사용자)</a>
+            <a href="/admin-reservation.html" class="admin-btn">예약 현황 관리 (관리자)</a>
+            <a href="/admin-time.html" class="admin-btn">예약 시간 관리 (관리자)</a>
+            <a href="/admin-theme.html" class="admin-btn">테마 정보 관리 (관리자)</a>
+        </div>
+        <p class="footer">Woowacourse Level 2 - Roomescape System</p>
+    </div>
+</body>
+</html>

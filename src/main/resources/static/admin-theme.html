@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>테마 관리 - 관리자</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; padding: 2rem; background: #f8fafc; margin: 0; color: #1e293b; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h1 { color: #1e293b; text-align: center; margin-bottom: 2rem; font-weight: 800; }
+        .nav { margin-bottom: 2rem; display: flex; justify-content: space-between; }
+        .nav a { color: #4f46e5; text-decoration: none; font-weight: bold; font-size: 0.95rem; }
+        .nav a:hover { text-decoration: underline; }
+        
+        .form-section { background: #f1f5f9; padding: 1.5rem; border-radius: 8px; margin-bottom: 2.5rem; }
+        form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .full-width { grid-column: 1 / -1; }
+        label { font-weight: bold; color: #475569; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        input, textarea { padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; background: white; outline: none; }
+        textarea { height: 80px; resize: none; }
+        input:focus, textarea:focus { border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79,70,229,0.1); }
+        
+        button { padding: 0.8rem 1.5rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; border: none; font-size: 0.95rem; }
+        .btn-primary { background: #4f46e5; color: white; grid-column: 1 / -1; margin-top: 0.5rem; }
+        .btn-primary:hover { background: #4338ca; }
+        .btn-danger { background: #fee2e2; color: #b91c1c; padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+        .btn-danger:hover { background: #fecaca; }
+
+        .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+        .theme-card { border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; background: white; transition: transform 0.2s; }
+        .theme-card:hover { transform: translateY(-4px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .theme-img { width: 100%; height: 140px; background-color: #e2e8f0; object-fit: cover; }
+        .theme-info { padding: 1rem; flex: 1; }
+        .theme-name { font-size: 1.1rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .theme-desc { font-size: 0.85rem; color: #64748b; line-height: 1.4; margin-bottom: 1rem; }
+        .theme-actions { padding: 0.75rem 1rem; background: #f8fafc; border-top: 1px solid #e2e8f0; text-align: right; }
+        .empty-state { text-align: center; padding: 3rem; color: #94a3b8; font-style: italic; grid-column: 1 / -1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="/">&larr; 홈으로</a>
+            <div style="display:flex; gap: 1rem;">
+                <a href="/admin-reservation.html">예약 관리</a>
+                <a href="/admin-time.html">시간 관리</a>
+            </div>
+        </div>
+        <h1>방탈출 테마 관리</h1>
+        
+        <div class="form-section">
+            <form id="themeForm">
+                <div class="form-group">
+                    <label for="nameInput">테마 이름</label>
+                    <input type="text" id="nameInput" placeholder="테마 명칭" required>
+                </div>
+                <div class="form-group">
+                    <label for="imageInput">이미지 URL</label>
+                    <input type="text" id="imageInput" placeholder="http://..." required>
+                </div>
+                <div class="form-group full-width">
+                    <label for="descInput">테마 설명</label>
+                    <textarea id="descInput" placeholder="테마에 대한 상세 설명을 입력하세요" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">새로운 테마 등록</button>
+            </form>
+        </div>
+
+        <div class="theme-grid" id="themeList"></div>
+    </div>
+
+    <script>
+        const themeForm = document.getElementById('themeForm');
+        const themeList = document.getElementById('themeList');
+
+        async function loadThemes() {
+            try {
+                const res = await fetch('/themes');
+                const themes = await res.json();
+                themeList.innerHTML = '';
+                
+                if (themes.length === 0) {
+                    themeList.innerHTML = '<div class="empty-state">등록된 테마가 없습니다.</div>';
+                    return;
+                }
+
+                themes.forEach(t => {
+                    const card = document.createElement('div');
+                    card.className = 'theme-card';
+                    card.innerHTML = `
+                        <img src="${t.imageUrl}" alt="${t.name}" class="theme-img" onerror="this.src='https://placehold.co/400x200?text=No+Image'">
+                        <div class="theme-info">
+                            <div class="theme-name">${t.name}</div>
+                            <div class="theme-desc">${t.description}</div>
+                        </div>
+                        <div class="theme-actions">
+                            <button class="btn-danger" onclick="deleteTheme(${t.id})">삭제</button>
+                        </div>
+                    `;
+                    themeList.appendChild(card);
+                });
+            } catch (e) {
+                console.error('테마 목록 로드 실패', e);
+            }
+        }
+
+        themeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('nameInput').value,
+                description: document.getElementById('descInput').value,
+                imageUrl: document.getElementById('imageInput').value
+            };
+            try {
+                const res = await fetch('/themes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    themeForm.reset();
+                    loadThemes();
+                } else {
+                    alert('테마 추가에 실패했습니다.');
+                }
+            } catch (e) {
+                alert('서버 오류가 발생했습니다.');
+            }
+        });
+
+        async function deleteTheme(id) {
+            if (!confirm('정말로 이 테마를 삭제하시겠습니까?\n해당 테마와 연관된 예약이 있을 경우 삭제되지 않을 수 있습니다.')) return;
+            try {
+                const res = await fetch(`/themes/${id}`, { method: 'DELETE' });
+                if (res.ok) loadThemes();
+                else alert('삭제에 실패했습니다. 사용 중인 테마일 수 있습니다.');
+            } catch (e) {
+                alert('서버 오류가 발생했습니다.');
+            }
+        }
+
+        loadThemes();
+    </script>
+</body>
+</html>
