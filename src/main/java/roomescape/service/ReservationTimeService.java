@@ -11,11 +11,15 @@ import roomescape.dto.ReservationTimeResponse;
 @Service
 public class ReservationTimeService {
     private final ReservationTimeDao reservationTimeDao;
-    private final ReservationDao reservationDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao) {
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
-        this.reservationDao = reservationDao;
+    }
+
+    public ReservationTimeResponse save(ReservationTimeRequest request) {
+         Long id = reservationTimeDao.save(request.startAt());
+        ReservationTime saved = reservationTimeDao.findById(id);
+        return ReservationTimeResponse.from(saved);
     }
 
     public List<ReservationTimeResponse> findAll() {
@@ -24,18 +28,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTimeResponse save(ReservationTimeRequest request) {
-        if (reservationTimeDao.existsByStartAt(request.startAt())) {
-            throw new IllegalArgumentException("이미 존재하는 예약 시간입니다.");
-        }
-        ReservationTime saved = reservationTimeDao.save(request.startAt());
-        return ReservationTimeResponse.from(saved);
-    }
-
     public void delete(Long id) {
-        if (reservationDao.existsByTimeId(id)) {
-            throw new IllegalArgumentException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
-        }
         reservationTimeDao.delete(id);
     }
 }
