@@ -39,14 +39,14 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTime(@RequestBody ThemeRequest themeRequest) {
-        Theme Theme = themeService.saveTime(themeRequest.name(), themeRequest.description(),
+        Theme Theme = themeService.saveTheme(themeRequest.name(), themeRequest.description(),
                 themeRequest.thumbnailUrl());
         return ResponseEntity.ok(ThemeResponse.from(Theme));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable long id) {
-        themeService.removeTime(id);
+        themeService.removeTheme(id);
         return ResponseEntity.ok().build();
     }
 

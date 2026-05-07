@@ -19,16 +19,16 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public Theme saveTime(String name, String description, String thumbnailUrl) {
+    public Theme saveTheme(String name, String description, String thumbnailUrl) {
         Theme time = new Theme(name, description, thumbnailUrl);
         return themeRepository.save(time);
     }
 
-    public void removeTime(long timeId) {
+    public void removeTheme(long timeId) {
         themeRepository.deleteById(timeId);
     }
 
-    public Theme findTime(long timeId) {
+    public Theme findTheme(long timeId) {
         return themeRepository.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("타임 ID가 존재하지 않습니다."));
     }
