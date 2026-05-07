@@ -17,13 +17,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ReservationTimeServiceImplTest {
+class ReservationTimeServiceTest {
 
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
 
     @InjectMocks
-    private ReservationTimeServiceImpl reservationTimeService;
+    private ReservationTimeService reservationTimeService;
 
     @Test
     void 시간_목록을_조회하면_Repository_findAll_결과를_반환한다() {

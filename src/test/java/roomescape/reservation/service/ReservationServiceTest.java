@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ReservationServiceImplTest {
+class ReservationServiceTest {
 
     @Mock
     private ReservationRepository reservationRepository;
@@ -36,7 +36,7 @@ class ReservationServiceImplTest {
     private ThemeRepository themeRepository;
 
     @InjectMocks
-    private ReservationServiceImpl reservationService;
+    private ReservationService reservationService;
 
     @Test
     void 예약_목록을_조회하면_Repository_findAllWithTime_결과를_반환한다() {

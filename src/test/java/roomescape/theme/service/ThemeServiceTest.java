@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ThemeServiceImplTest {
+class ThemeServiceTest {
 
     @Mock
     private ThemeRepository themeRepository;
@@ -27,7 +27,7 @@ class ThemeServiceImplTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     @InjectMocks
-    private ThemeServiceImpl themeService;
+    private ThemeService themeService;
 
     @Test
     void 테마_목록을_조회하면_Repository_findAll_결과를_반환한다() {

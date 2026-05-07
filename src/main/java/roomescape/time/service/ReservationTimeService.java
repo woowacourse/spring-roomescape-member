@@ -1,15 +1,35 @@
 package roomescape.time.service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalTime;
 import java.util.List;
 
-public interface ReservationTimeService {
+@Service
+@Transactional(readOnly = true)
+public class ReservationTimeService {
 
-    List<ReservationTime> getTimes();
+    private final ReservationTimeRepository reservationTimeRepository;
 
-    ReservationTime createTime(LocalTime localTime);
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+        this.reservationTimeRepository = reservationTimeRepository;
+    }
 
-    void removeTime(Long id);
+    @Transactional
+    public ReservationTime createTime(LocalTime startAt) {
+        ReservationTime reservationTime = new ReservationTime(null, startAt);
+        return reservationTimeRepository.save(reservationTime);
+    }
+
+    public List<ReservationTime> getTimes() {
+        return reservationTimeRepository.findAll();
+    }
+
+    @Transactional
+    public void removeTime(Long id) {
+        reservationTimeRepository.remove(id);
+    }
 }
