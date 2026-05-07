@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.theme.domain.Theme;
 
 class ReservationTest {
+
     private final String name = "한다";
     private final LocalDate date = LocalDate.now().plusMonths(1);
     private final LocalTime startAt = LocalTime.of(15, 40);
@@ -73,10 +74,10 @@ class ReservationTest {
     @Test
     @DisplayName("두 예약 객체의 동등성을 비교한다.")
     void equals() {
-        //given & when
+        //given
         Reservation otherReservation = Reservation.load(1L, name, date, startAt, theme, RESERVED);
 
-        //then
+        // when & then
         assertThat(reservation)
                 .usingRecursiveComparison()
                 .isEqualTo(otherReservation);
@@ -85,10 +86,10 @@ class ReservationTest {
     @Test
     @DisplayName("아직 DB에 추가되지 않은 예약은 id가 없다.")
     void unpersist_reservation_null_id() {
-        //given & when
+        // given & when
         Reservation unpersistReservation = Reservation.create("한다", date, startAt, theme);
 
-        //then
+        // then
         assertThat(unpersistReservation.id())
                 .isNull();
     }
@@ -96,10 +97,10 @@ class ReservationTest {
     @Test
     @DisplayName("과거 날짜로 예약 생성 시 예외 발생한다.")
     void create_before_now() {
-        //given & then
+        // given
         LocalDate pastDate = LocalDate.now().minusDays(1);
 
-        //then
+        // when & then
         assertThatThrownBy(() -> Reservation.create(name, pastDate, startAt, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("과거 날짜/시간으로는 예약할 수 없습니다.");
@@ -108,9 +109,11 @@ class ReservationTest {
     @Test
     @DisplayName("예약자명이 유효하지 않은 경우 생성 시 예외가 발생한다.")
     void validateName() {
+        // given
         String nullName = null;
         String emptyName = "";
 
+        // when & then
         assertThatThrownBy(() -> Reservation.create(nullName, date, startAt, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약자 이름은 필수입니다.");
@@ -123,8 +126,10 @@ class ReservationTest {
     @Test
     @DisplayName("예약 시간이 유효하지 않은 경우 생성 시 예외가 발생한다.")
     void validateTime() {
+        // given
         LocalTime nullTime = null;
 
+        // when & then
         assertThatThrownBy(() -> Reservation.create(name, date, nullTime, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 시간은 필수입니다.");
@@ -133,8 +138,10 @@ class ReservationTest {
     @Test
     @DisplayName("예약 날짜가 유효하지 않은 경우 생성 시 예외가 발생한다.")
     void validateDate() {
+        // given
         LocalDate nullDate = null;
 
+        // when & then
         assertThatThrownBy(() -> Reservation.create(name, nullDate, startAt, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 날짜는 필수입니다.");
@@ -143,8 +150,10 @@ class ReservationTest {
     @Test
     @DisplayName("예약 ID가 유효하지 않은 경우 생성 시 예외가 발생한다.")
     void validateId() {
+        // given
         Long nullId = null;
 
+        // when & then
         assertThatThrownBy(() -> Reservation.load(nullId, name, date, startAt, theme, RESERVED))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 ID는 필수입니다.");

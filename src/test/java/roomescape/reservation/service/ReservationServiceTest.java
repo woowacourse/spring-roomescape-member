@@ -18,7 +18,7 @@ import roomescape.date.fixture.FakeReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.dto.request.ReservationSaveDto;
-import roomescape.reservation.repository.FakeReservationRepository;
+import roomescape.reservation.fixture.FakeReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.fixture.FakeThemeRepository;
 import roomescape.time.domain.ReservationTime;
@@ -110,7 +110,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약 시간이면 예외를 발생한다.")
+    @DisplayName("예약시, 등록되지 않은 예약 시간이면 예외를 발생한다.")
     void reserve_does_not_exist_reservation_time() {
         // given
         Long wrongTimeId = Long.MIN_VALUE;
@@ -123,11 +123,12 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약 생성 시 예약 날짜/시간/테마가 중복되면 예외를 발생한다.")
+    @DisplayName("예약시 예약 날짜/시간/테마가 중복되면 예외를 발생한다.")
     void reserve_duplicate_reservation() {
         // given
-        reservationService.reserve(new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id()));
+        ReservationSaveDto command = new ReservationSaveDto("브라운", reservationDate1.id(), reservationTime1.id(), theme1.id());
         ReservationSaveDto duplicateDateTimeCommand = new ReservationSaveDto("한다", reservationDate1.id(), reservationTime1.id(), theme1.id());
+        reservationService.reserve(command);
 
         // when & then
         assertThatThrownBy(() -> reservationService.reserve(duplicateDateTimeCommand))

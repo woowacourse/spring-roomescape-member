@@ -66,17 +66,18 @@ class ReservationRepositoryTest {
     @DisplayName("모든 예약 정보를 조회한다.")
     void findAll() {
         // given
-        saveAll(List.of(
+        List<Reservation> reservations = List.of(
                 Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme),
-                Reservation.create(name, reservationDate1.date(), reservationTime2.startAt(), theme))
+                Reservation.create(name, reservationDate1.date(), reservationTime2.startAt(), theme)
         );
+        saveAll(reservations);
 
         // when
         List<Reservation> actual = jdbcReservationRepository.findAll();
 
         // then
         assertThat(actual)
-                .hasSize(2);
+                .hasSize(reservations.size());
     }
 
     @Test
@@ -119,7 +120,7 @@ class ReservationRepositoryTest {
     void exitsByDateAndTimeId() {
         // given
         save(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme));
-        LocalDate wrongDate = LocalDate.now().plusWeeks(3);
+        LocalDate wrongDate = LocalDate.of(2000, 11, 4);
 
         // when & then
         assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(reservationDate1.date(), reservationTime1.startAt(), theme.id()))
@@ -147,8 +148,7 @@ class ReservationRepositoryTest {
     private List<Reservation> saveAll(List<Reservation> reservations) {
         List<Reservation> savedReservations = new ArrayList<>();
         for (Reservation reservation : reservations) {
-            Reservation saved = save(reservation);
-            savedReservations.add(saved);
+            savedReservations.add(save(reservation));
         }
         return savedReservations;
     }
@@ -156,7 +156,6 @@ class ReservationRepositoryTest {
     private Reservation save(Reservation reservation) {
         return jdbcReservationRepository.save(reservation);
     }
-
 
     private void updateStatus(Reservation beforeReservation) {
         beforeReservation.updateStatus(ReservationStatus.CANCELED);
