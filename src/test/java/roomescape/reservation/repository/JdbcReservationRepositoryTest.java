@@ -22,20 +22,35 @@ class JdbcReservationRepositoryTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
-    void findTimeIdsByDate() {
+    void findTimeIdsByThemeIdAndDate() {
         Long timeId1 = insertTime("10:00", "12:00");
         Long timeId2 = insertTime("13:00", "15:00");
 
         LocalDate date = LocalDate.of(2026, 5, 6);
-        Long themeId = insertTheme();
+        Long themeId = insertTheme("테마");
         insertReservation("윤호준", date, timeId1, themeId);
         insertReservation("박다혜", date, timeId2, themeId);
 
-        assertThat(reservationRepository.findTimeIdsByDate(date))
+        assertThat(reservationRepository.findTimeIdsByThemeIdAndDate(themeId, date))
                 .containsExactly(timeId1, timeId2);
 
-        assertThat(reservationRepository.findTimeIdsByDate(date.plusDays(1)))
+        assertThat(reservationRepository.findTimeIdsByThemeIdAndDate(themeId, date.plusDays(1)))
                 .isEmpty();
+    }
+
+    @Test
+    void findTimeIdsByThemeIdAndDate_다른테마의_예약시간은_조회하지_않는다() {
+        Long timeId1 = insertTime("10:00", "12:00");
+        Long timeId2 = insertTime("13:00", "15:00");
+
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        Long themeId = insertTheme("테마1");
+        Long otherThemeId = insertTheme("테마2");
+        insertReservation("윤호준", date, timeId1, themeId);
+        insertReservation("박다혜", date, timeId2, otherThemeId);
+
+        assertThat(reservationRepository.findTimeIdsByThemeIdAndDate(themeId, date))
+                .containsExactly(timeId1);
     }
 
     private Long insertTime(String startAt, String endAt) {
@@ -51,17 +66,17 @@ class JdbcReservationRepositoryTest {
         );
     }
 
-    private Long insertTheme() {
+    private Long insertTheme(String name) {
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, image_url) VALUES (?, ?, ?)",
-                "테마",
+                name,
                 "설명",
                 "https://example.com/theme.png"
         );
         return jdbcTemplate.queryForObject(
                 "SELECT id FROM theme WHERE name = ?",
                 Long.class,
-                "테마"
+                name
         );
     }
 

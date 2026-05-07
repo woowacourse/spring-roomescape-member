@@ -78,7 +78,7 @@ public class ThemeServiceImpl implements ThemeService {
             return List.of();
         }
 
-        Set<Long> reservedTimeIds = new HashSet<>(reservationRepository.findTimeIdsByDate(date));
+        Set<Long> reservedTimeIds = new HashSet<>(reservationRepository.findTimeIdsByThemeIdAndDate(themeId, date));
         return timeService.findAll()
                 .stream()
                 .filter(time -> !reservedTimeIds.contains(time.getId()))

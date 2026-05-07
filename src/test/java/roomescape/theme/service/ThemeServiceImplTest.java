@@ -123,7 +123,7 @@ class ThemeServiceImplTest {
         LocalDate date = LocalDate.of(2026, 5, 6);
         when(themeRepository.existsById(1L)).thenReturn(true);
         when(holidayRepository.existsByDate(date)).thenReturn(false);
-        when(reservationRepository.findTimeIdsByDate(date)).thenReturn(List.of(2L));
+        when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(List.of(2L));
 
         List<ReservationTime> allTimes = List.of(
                 new ReservationTime(1L, "10:00", "12:00"),
@@ -143,7 +143,7 @@ class ThemeServiceImplTest {
         LocalDate date = LocalDate.of(2026, 5, 6);
         when(themeRepository.existsById(1L)).thenReturn(true);
         when(holidayRepository.existsByDate(date)).thenReturn(false);
-        when(reservationRepository.findTimeIdsByDate(date)).thenReturn(Collections.emptyList());
+        when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(Collections.emptyList());
 
         List<ReservationTime> allTimes = List.of(
                 new ReservationTime(1L, "10:00", "12:00"),
