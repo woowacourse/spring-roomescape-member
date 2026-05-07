@@ -1,5 +1,6 @@
 package roomescape.repository.reservation;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 
@@ -22,16 +25,20 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) ->
         new Reservation(
             rs.getLong("reservation_id"),
-            rs.getString("name"),
-            rs.getString("res_date"),
+            new MemberName(
+                    rs.getString("name")),
+            new ReservationDate(
+                    rs.getDate("res_date").toLocalDate()),
             new ReservationTime(
                 rs.getLong("time_id"),
                 rs.getString("time_value")),
             new Theme(
                 rs.getLong("theme_id"),
-                new ThemeName(rs.getString("theme_name")),
+                new ThemeName(
+                        rs.getString("theme_name")),
                 rs.getString("theme_description"),
-                new ThemeImageUrl(rs.getString("theme_image_url"))
+                new ThemeImageUrl(
+                        rs.getString("theme_image_url"))
             ));
 
     private final JdbcTemplate template;
@@ -49,7 +56,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         template.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName().value());
-            ps.setString(2, DATE_TIME_FORMATTER.format(reservation.getDate()));
+            ps.setDate(2, Date.valueOf(reservation.getDateValue()));
             ps.setLong(3, reservation.getTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
             return ps;

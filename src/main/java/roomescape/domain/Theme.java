@@ -11,7 +11,6 @@ public class Theme {
     private final String description;
     private final ThemeImageUrl imageUrl;
 
-    // TODO: 도메인 전체적으로 인자값 검증
     public Theme(Long id, ThemeName name, String description, ThemeImageUrl imageUrl) {
         this.id = id;
         this.name = name;

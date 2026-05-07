@@ -1,29 +1,22 @@
 package roomescape.domain;
 
 import roomescape.domain.vo.MemberName;
+import roomescape.domain.vo.ReservationDate;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Reservation {
 
-    // TODO: 안 쓰는 변수 삭제
-    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    // TODO: 입력 책임이 누수된 것 같음
-    private static final Pattern DATE_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
-
     private final Long id;
     private final MemberName memberName;
-    private final LocalDate date;
+    private final ReservationDate date;
     private final ReservationTime time;
     private final Theme theme;
 
     // TODO: 도메인 전체적으로 인자값 검증
-    public Reservation(Long id, MemberName memberName, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, MemberName memberName, ReservationDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.memberName = memberName;
         this.date = date;
@@ -31,35 +24,8 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(Long id, String name, String date, ReservationTime time, Theme theme) {
-        this.id = id;
-        this.memberName = new MemberName(name);
-        this.date = translateDate(date);
-        this.time = time;
-        this.theme = theme;
-    }
-
-    // TODO: 테스트에만 쓰이는 생성자 정리
-    public Reservation(String name, String date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
-    }
-
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, new MemberName(name), date, time, theme);
-    }
-
-    // TODO: 일급컬랙션 분리?
-    private LocalDate translateDate(String date) {
-        Matcher matcher = DATE_PATTERN.matcher(date);
-        if (!matcher.matches()){
-            throw new IllegalArgumentException("날짜는 yyyy-MM-dd 형태여야 하는데, 현재 다음과 같이 잘못 입력되었습니다: " + date);
-        }
-
-        try {
-            return LocalDate.parse(date);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("실제 존재하지 않는 날짜입니다: " + date);
-        }
+        this(null, new MemberName(name), ReservationDate.createForSave(date), time, theme);
     }
 
     public Long getId() {
@@ -70,8 +36,8 @@ public class Reservation {
         return memberName;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getDateValue() {
+        return date.value();
     }
 
     public ReservationTime getTime() {
