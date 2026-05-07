@@ -22,10 +22,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
-import roomescape.dto.ResourceIdResponseDto;
-import roomescape.dto.theme.PopularThemesResponseDto;
-import roomescape.dto.theme.ThemeRequestDto;
-import roomescape.dto.theme.ThemeResponseDto;
+import roomescape.dto.ResourceIdResponse;
+import roomescape.dto.theme.PopularThemesResponse;
+import roomescape.dto.theme.ThemeRequest;
+import roomescape.dto.theme.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -49,8 +49,8 @@ class ThemeControllerTest {
     void 모든_테마를_조회한다() {
         // given
         List<Theme> themes = List.of(THEME.withId(1L), THEME.withId(2L), THEME.withId(3L));
-        List<ThemeResponseDto> dtos = themes.stream()
-            .map(ThemeResponseDto::from)
+        List<ThemeResponse> dtos = themes.stream()
+            .map(ThemeResponse::from)
             .toList();
 
         when(themeService.getThemes())
@@ -66,7 +66,7 @@ class ThemeControllerTest {
             .then()
             .statusCode(HttpStatus.OK.value());
 
-        List<ThemeResponseDto> responseDtos = response.as(new TypeRef<>() {
+        List<ThemeResponse> responseDtos = response.as(new TypeRef<>() {
         });
         assertThat(responseDtos).hasSize(3);
         assertThat(responseDtos).containsExactlyElementsOf(dtos);
@@ -76,7 +76,7 @@ class ThemeControllerTest {
     void 최근_1주일간_예약이_많은_테마_상위_10개를_조회할_수_있다() {
         // given
         List<Theme> tenPopularThemesOrderByRank = createTenThemes();
-        PopularThemesResponseDto expectedResponse = PopularThemesResponseDto.from(tenPopularThemesOrderByRank);
+        PopularThemesResponse expectedResponse = PopularThemesResponse.from(tenPopularThemesOrderByRank);
 
         when(themeService.findWeekPopularThemesOrderByRank(10))
             .thenReturn(tenPopularThemesOrderByRank);
@@ -92,7 +92,7 @@ class ThemeControllerTest {
             .then()
             .statusCode(HttpStatus.OK.value());
 
-        PopularThemesResponseDto actualResponse = response.as(new TypeRef<>() {
+        PopularThemesResponse actualResponse = response.as(new TypeRef<>() {
         });
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
@@ -103,7 +103,7 @@ class ThemeControllerTest {
         @Test
         void 관리자는_테마를_추가할_수_있다() {
             // given
-            ThemeRequestDto request = themeRequestDtoFrom(THEME);
+            ThemeRequest request = themeRequestDtoFrom(THEME);
             when(themeService.addTheme(any()))
                 .thenReturn(SAVED_THEME);
 
@@ -120,8 +120,8 @@ class ThemeControllerTest {
                 .then()
                 .statusCode(HttpStatus.CREATED.value());
 
-            ResourceIdResponseDto responseDto = response.as(ResourceIdResponseDto.class);
-            assertThat(responseDto).isEqualTo(new ResourceIdResponseDto(SAVED_THEME.getId()));
+            ResourceIdResponse responseDto = response.as(ResourceIdResponse.class);
+            assertThat(responseDto).isEqualTo(new ResourceIdResponse(SAVED_THEME.getId()));
         }
 
         @Test
@@ -142,7 +142,7 @@ class ThemeControllerTest {
         @Test
         void 관리자가_아닌_사용자가_테마를_추가하는_경우_예외가_발생한다() {
             // given
-            ThemeRequestDto request = themeRequestDtoFrom(THEME);
+            ThemeRequest request = themeRequestDtoFrom(THEME);
 
             // when
             Response response = RestAssured
@@ -182,8 +182,8 @@ class ThemeControllerTest {
         return themes;
     }
 
-    private ThemeRequestDto themeRequestDtoFrom(Theme theme) {
-        return new ThemeRequestDto(
+    private ThemeRequest themeRequestDtoFrom(Theme theme) {
+        return new ThemeRequest(
             theme.getNameValue(),
             theme.getDescription(),
             theme.getImageUrlValue()

@@ -3,7 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.dto.theme.ThemeRequestDto;
+import roomescape.dto.theme.ThemeRequest;
 import roomescape.repository.theme.ThemeRepository;
 
 @Service
@@ -15,7 +15,7 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public Theme addTheme(ThemeRequestDto request) {
+    public Theme addTheme(ThemeRequest request) {
         Theme theme = new Theme(request.name(), request.description(), request.imageUrl());
         return themeRepository.createTheme(theme);
     }

@@ -15,8 +15,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
-import roomescape.dto.reservation.ReservationRequestDto;
-import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.ReservationResponse;
 import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
@@ -52,7 +52,7 @@ class ReservationControllerTest {
     @Test
     void 예약을_추가한다() {
         //given
-        ReservationRequestDto request = requestDtoFrom(RESERVATION);
+        ReservationRequest request = requestDtoFrom(RESERVATION);
         when(reservationService.addReservation(request))
                 .thenReturn(RESERVATION.withId(1L));
 
@@ -68,7 +68,7 @@ class ReservationControllerTest {
                 .then()
                 .statusCode(HttpStatus.CREATED.value());
 
-        ReservationResponseDto responseDto = response.as(ReservationResponseDto.class);
+        ReservationResponse responseDto = response.as(ReservationResponse.class);
         assertThat(responseDto.id()).isEqualTo(1L);
     }
 
@@ -90,8 +90,8 @@ class ReservationControllerTest {
     void 모든_예약을_조회한다() {
         // given
         List<Reservation> reservations = List.of(RESERVATION.withId(1L), RESERVATION.withId(2L), RESERVATION.withId(3L));
-        List<ReservationResponseDto> dtos = reservations.stream()
-                .map(ReservationResponseDto::from)
+        List<ReservationResponse> dtos = reservations.stream()
+                .map(ReservationResponse::from)
                 .toList();
 
         when(reservationService.getReservations())
@@ -107,13 +107,13 @@ class ReservationControllerTest {
                 .then()
                 .statusCode(HttpStatus.OK.value());
 
-        List<ReservationResponseDto> responseDtos = response.as(new TypeRef<>() {
+        List<ReservationResponse> responseDtos = response.as(new TypeRef<>() {
         });
         assertThat(responseDtos).hasSize(3);
         assertThat(responseDtos).containsExactlyElementsOf(dtos);
     }
 
-    private ReservationRequestDto requestDtoFrom(Reservation reservation) {
-        return new ReservationRequestDto(reservation.getName().value(), reservation.getDateValue(), reservation.getTime().getId(), reservation.getTheme().getId());
+    private ReservationRequest requestDtoFrom(Reservation reservation) {
+        return new ReservationRequest(reservation.getName().value(), reservation.getDateValue(), reservation.getTime().getId(), reservation.getTheme().getId());
     }
 }

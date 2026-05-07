@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
-import roomescape.dto.ResourceIdResponseDto;
-import roomescape.dto.reservation.ReservationRequestDto;
-import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.dto.ResourceIdResponse;
+import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.ReservationResponse;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -33,17 +33,17 @@ public class ReservationController {
     // TODO: 리스트 반환 시 한번 더 감싸는게 어떤 이득이 있는지?
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationResponseDto> getReservations() {
+    public List<ReservationResponse> getReservations() {
         return reservationService.getReservations().stream()
-                .map(ReservationResponseDto::from)
+                .map(ReservationResponse::from)
                 .toList();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResourceIdResponseDto addReservation(@Valid @RequestBody ReservationRequestDto requestDto) {
+    public ResourceIdResponse addReservation(@Valid @RequestBody ReservationRequest requestDto) {
         Reservation reservation = reservationService.addReservation(requestDto);
-        return new ResourceIdResponseDto(reservation.getId());
+        return new ResourceIdResponse(reservation.getId());
     }
 
     @DeleteMapping("{id}")

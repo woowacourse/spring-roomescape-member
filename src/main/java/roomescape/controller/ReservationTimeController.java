@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ResourceIdResponseDto;
-import roomescape.dto.reservationTime.AvailableReservationTimesResponseDto;
-import roomescape.dto.reservationTime.ReservationTimeRequestDto;
-import roomescape.dto.reservationTime.ReservationTimeResponseDto;
+import roomescape.dto.ResourceIdResponse;
+import roomescape.dto.reservationTime.AvailableReservationTimesResponse;
+import roomescape.dto.reservationTime.ReservationTimeRequest;
+import roomescape.dto.reservationTime.ReservationTimeResponse;
 import roomescape.exception.ForbiddenAccessException;
 import roomescape.service.ReservationService;
 
@@ -33,9 +33,9 @@ public class ReservationTimeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationTimeResponseDto> getReservationTimes() {
+    public List<ReservationTimeResponse> getReservationTimes() {
         return reservationService.getReservationTimes().stream()
-            .map(ReservationTimeResponseDto::from)
+            .map(ReservationTimeResponse::from)
             .toList();
     }
 
@@ -43,8 +43,8 @@ public class ReservationTimeController {
     // TODO: 컨트롤러 인자값에 final?
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResourceIdResponseDto addReservationTime(
-            @Valid @RequestBody ReservationTimeRequestDto requestDto,
+    public ResourceIdResponse addReservationTime(
+            @Valid @RequestBody ReservationTimeRequest requestDto,
             @RequestParam(value = "role", required = false) String role
     ) {
         if (!"admin".equals(role)) {
@@ -52,7 +52,7 @@ public class ReservationTimeController {
         }
 
         ReservationTime time = reservationService.addReservationTime(requestDto);
-        return new ResourceIdResponseDto(time.getId());
+        return new ResourceIdResponse(time.getId());
     }
 
     // TODO: pathVariable 의 입력 검증은?
@@ -72,14 +72,14 @@ public class ReservationTimeController {
     // TODO: RequestParam 에도 LocalDate로 받을 수 있는지?
     @GetMapping("available")
     @ResponseStatus(HttpStatus.OK)
-    public AvailableReservationTimesResponseDto getAvailableTimes(
+    public AvailableReservationTimesResponse getAvailableTimes(
         @RequestParam("date") String date,
         @RequestParam("themeId") Long themeId
     ) {
-        List<ReservationTime> availableTimes = reservationService.getAvailableTimes(LocalDate.parse(date), themeId);
         List<ReservationTime> allTimes = reservationService.getReservationTimes();
+        List<ReservationTime> availableTimes = reservationService.getAvailableTimes(LocalDate.parse(date), themeId);
 
         // TODO: 같은 타입 인자를 두개 받는 경우 잘못 사용될 수 있음 (builder 패턴을 쓰는건가? 사이즈로 검증?)
-        return AvailableReservationTimesResponseDto.of(availableTimes, allTimes);
+        return AvailableReservationTimesResponse.of(allTimes, availableTimes);
     }
 }

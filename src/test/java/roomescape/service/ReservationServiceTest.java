@@ -25,7 +25,7 @@ import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationLocalDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
-import roomescape.dto.reservation.ReservationRequestDto;
+import roomescape.dto.reservation.ReservationRequest;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
@@ -124,8 +124,8 @@ class ReservationServiceTest {
             .hasMessageContaining("예약이 존재하는");
     }
 
-    private ReservationRequestDto requestDtoFrom(Reservation reservation) {
-        return new ReservationRequestDto(reservation.getName().value(), reservation.getDateValue(),
+    private ReservationRequest requestDtoFrom(Reservation reservation) {
+        return new ReservationRequest(reservation.getName().value(), reservation.getDateValue(),
             reservation.getTime().getId(), reservation.getThemeId());
     }
 }

@@ -1,6 +1,6 @@
 package roomescape.dto;
 
-public record ResourceIdResponseDto(
+public record ResourceIdResponse(
     Long id
 ) {
 }

@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
-import roomescape.dto.theme.ThemeRequestDto;
+import roomescape.dto.theme.ThemeRequest;
 import roomescape.repository.theme.ThemeRepository;
 
 import java.util.List;
@@ -92,8 +92,8 @@ class ThemeServiceTest {
         return themes;
     }
 
-    ThemeRequestDto themeRequestDtoFrom(Theme theme) {
-        return new ThemeRequestDto(
+    ThemeRequest themeRequestDtoFrom(Theme theme) {
+        return new ThemeRequest(
             theme.getNameValue(),
             theme.getDescription(),
             theme.getImageUrlValue()

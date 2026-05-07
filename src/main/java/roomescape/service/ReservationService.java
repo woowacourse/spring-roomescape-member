@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.reservation.ReservationRequestDto;
-import roomescape.dto.reservationTime.ReservationTimeRequestDto;
+import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservationTime.ReservationTimeRequest;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
@@ -33,7 +33,7 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public Reservation addReservation(ReservationRequestDto requestDto) {
+    public Reservation addReservation(ReservationRequest requestDto) {
         ReservationTime time = reservationTimeRepository.findById(requestDto.timeId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
         Theme theme = themeRepository.findById(requestDto.themeId())
@@ -58,7 +58,7 @@ public class ReservationService {
         return reservationTimeRepository.findAll();
     }
 
-    public ReservationTime addReservationTime(ReservationTimeRequestDto requestDto) {
+    public ReservationTime addReservationTime(ReservationTimeRequest requestDto) {
         return reservationTimeRepository.createReservationTime(
             new ReservationTime(requestDto.startAt()));
     }

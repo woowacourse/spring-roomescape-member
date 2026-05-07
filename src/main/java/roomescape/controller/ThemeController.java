@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
-import roomescape.dto.ResourceIdResponseDto;
-import roomescape.dto.theme.PopularThemesResponseDto;
-import roomescape.dto.theme.ThemeRequestDto;
-import roomescape.dto.theme.ThemeResponseDto;
+import roomescape.dto.ResourceIdResponse;
+import roomescape.dto.theme.PopularThemesResponse;
+import roomescape.dto.theme.ThemeRequest;
+import roomescape.dto.theme.ThemeResponse;
 import roomescape.exception.ForbiddenAccessException;
 import roomescape.service.ThemeService;
 
@@ -32,8 +32,8 @@ public class ThemeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResourceIdResponseDto addTheme(
-        @Valid @RequestBody ThemeRequestDto request,
+    public ResourceIdResponse addTheme(
+        @Valid @RequestBody ThemeRequest request,
         @RequestParam(value = "role", required = false) String role
     ) {
         if (!"admin".equals(role)) {
@@ -41,7 +41,7 @@ public class ThemeController {
         }
 
         Theme saved = themeService.addTheme(request);
-        return new ResourceIdResponseDto(saved.getId());
+        return new ResourceIdResponse(saved.getId());
     }
 
     @DeleteMapping("{id}")
@@ -59,19 +59,19 @@ public class ThemeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ThemeResponseDto> findAll() {
+    public List<ThemeResponse> findAll() {
         return themeService.getThemes().stream()
-            .map(ThemeResponseDto::from)
+            .map(ThemeResponse::from)
             .toList();
     }
 
     // TODO: uri 선언 시 / 로 시작할지? 없이 시작할지?
     @GetMapping("/popular/week")
     @ResponseStatus(HttpStatus.OK)
-    public PopularThemesResponseDto findWeekPopularThemesOrderByRank(
+    public PopularThemesResponse findWeekPopularThemesOrderByRank(
         @RequestParam("limit") final int limit
     ) {
         List<Theme> themes = themeService.findWeekPopularThemesOrderByRank(limit);
-        return PopularThemesResponseDto.from(themes);
+        return PopularThemesResponse.from(themes);
     }
 }

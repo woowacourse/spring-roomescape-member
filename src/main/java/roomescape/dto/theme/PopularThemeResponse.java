@@ -2,7 +2,7 @@ package roomescape.dto.theme;
 
 import roomescape.domain.Theme;
 
-public record PopularThemeResponseDto(
+public record PopularThemeResponse(
     Long id,
     int rank,
     String name,
@@ -10,8 +10,8 @@ public record PopularThemeResponseDto(
     String imageUrl
 ) {
 
-    public static PopularThemeResponseDto from(Theme theme, final int rank) {
-        return new PopularThemeResponseDto(
+    public static PopularThemeResponse from(Theme theme, final int rank) {
+        return new PopularThemeResponse(
             theme.getId(),
             rank,
             theme.getNameValue(),

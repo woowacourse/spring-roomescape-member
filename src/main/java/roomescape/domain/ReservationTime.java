@@ -12,7 +12,6 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
-    // TODO: 도메인 전체적으로 인자값 검증
     public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
@@ -51,7 +50,6 @@ public class ReservationTime {
         }
     }
 
-    // TODO: Long(내부검증필요) vs long(외부검증필요)
     public ReservationTime withId(Long id) {
         return new ReservationTime(id, this.startAt);
     }
