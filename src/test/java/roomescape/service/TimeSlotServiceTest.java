@@ -7,11 +7,11 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Time;
+import roomescape.domain.TimeSlot;
 import roomescape.repository.FakeReservationDao;
 import roomescape.repository.FakeTimeDao;
 
-class TimeServiceTest {
+class TimeSlotServiceTest {
 
     private TimeService reservationTimeService;
 
@@ -25,15 +25,15 @@ class TimeServiceTest {
     @Test
     @DisplayName("시간 정보를 입력하여 새로운 예약 시간을 생성하고 반환한다.")
     void saveTime() {
-        Time time = reservationTimeService.saveTime(LocalTime.of(10, 0));
-        assertThat(time.startAt()).isEqualTo(LocalTime.of(10, 0));
+        TimeSlot timeSlot = reservationTimeService.saveTime(LocalTime.of(10, 0));
+        assertThat(timeSlot.startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test
     @DisplayName("존재하는 예약 시간을 삭제하면 전체 목록에서 사라진다.")
     void removeTime() {
-        Time time = reservationTimeService.saveTime(LocalTime.of(10, 0));
-        reservationTimeService.removeTime(time.id());
+        TimeSlot timeSlot = reservationTimeService.saveTime(LocalTime.of(10, 0));
+        reservationTimeService.removeTime(timeSlot.id());
         assertThat(reservationTimeService.allTimes()).isEmpty();
     }
 
@@ -41,15 +41,15 @@ class TimeServiceTest {
     @DisplayName("모든 예약 시간 목록을 조회하여 반환한다.")
     void allTimes() {
         reservationTimeService.saveTime(LocalTime.of(10, 0));
-        List<Time> times = reservationTimeService.allTimes();
-        assertThat(times).hasSize(1);
+        List<TimeSlot> timeSlots = reservationTimeService.allTimes();
+        assertThat(timeSlots).hasSize(1);
     }
 
     @Test
     @DisplayName("식별자를 통해 특정 예약 시간 객체를 조회한다.")
     void findTime() {
-        Time savedTime = reservationTimeService.saveTime(LocalTime.of(10, 0));
-        Time foundTime = reservationTimeService.findTime(savedTime.id());
-        assertThat(foundTime.startAt()).isEqualTo(LocalTime.of(10, 0));
+        TimeSlot savedTimeSlot = reservationTimeService.saveTime(LocalTime.of(10, 0));
+        TimeSlot foundTimeSlot = reservationTimeService.findTime(savedTimeSlot.id());
+        assertThat(foundTimeSlot.startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 }

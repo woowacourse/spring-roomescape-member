@@ -3,29 +3,29 @@ package roomescape.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import roomescape.domain.Time;
+import roomescape.domain.TimeSlot;
 
 public class FakeTimeDao implements TimeRepository {
 
-    private final Map<Long, Time> storage = new HashMap<>();
+    private final Map<Long, TimeSlot> storage = new HashMap<>();
     private long sequence = 1L;
 
     @Override
-    public List<Time> findAll() {
+    public List<TimeSlot> findAll() {
         return List.copyOf(storage.values());
     }
 
     @Override
-    public Time findById(long id) {
+    public TimeSlot findById(long id) {
         return storage.get(id);
     }
 
     @Override
-    public Time save(Time time) {
+    public TimeSlot save(TimeSlot timeSlot) {
         long id = sequence++;
-        Time savedTime = new Time(id, time.startAt());
-        storage.put(id, savedTime);
-        return savedTime;
+        TimeSlot savedTimeSlot = new TimeSlot(id, timeSlot.startAt());
+        storage.put(id, savedTimeSlot);
+        return savedTimeSlot;
     }
 
     @Override

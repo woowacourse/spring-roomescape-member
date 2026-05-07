@@ -11,10 +11,10 @@
 | **Theme**       | `GET`    | `/themes`            | -             | `topCount` (Long)<br>`during` (Long)   | -                                                       | `List<ThemeResponse>`       | 기간(`during`) 내 상위(`topCount`) 인기 테마 조회 |
 | **Theme**       | `POST`   | `/themes`            | -             | -                                      | `ThemeRequest`<br>*(name, description, thumbnailUrl)*   | `ThemeResponse`             | 새로운 테마 생성                              |
 | **Theme**       | `DELETE` | `/themes/{id}`       | `id` (Long)   | -                                      | -                                                       | `200 OK` (Void)             | 식별자를 통한 테마 삭제                          |
-| **Time**        | `GET`    | `/times`             | -             | -                                      | -                                                       | `List<TimeResponse>`        | 모든 예약 시간 목록 조회                         |
-| **Time**        | `GET`    | `/times`             | -             | `themeId` (long)<br>`date` (LocalDate) | -                                                       | `List<TimeResponse>`        | 특정 날짜, 테마의 예약 가능 시간 조회                 |
-| **Time**        | `POST`   | `/times`             | -             | -                                      | `TimeRequest`<br>*(startAt)*                            | `TimeResponse`              | 새로운 예약 시간 생성                           |
-| **Time**        | `DELETE` | `/times/{id}`        | `id` (Long)   | -                                      | -                                                       | `200 OK` (Void)             | 식별자를 통한 예약 시간 삭제                       |
+| **Time**        | `GET`    | `/timeSlots`         | -             | -                                      | -                                                       | `List<TimeResponse>`        | 모든 예약 시간 목록 조회                         |
+| **Time**        | `GET`    | `/timeSlots`         | -             | `themeId` (long)<br>`date` (LocalDate) | -                                                       | `List<TimeResponse>`        | 특정 날짜, 테마의 예약 가능 시간 조회                 |
+| **Time**        | `POST`   | `/timeSlots`         | -             | -                                      | `TimeRequest`<br>*(startAt)*                            | `TimeResponse`              | 새로운 예약 시간 생성                           |
+| **Time**        | `DELETE` | `/timeSlots/{id}`    | `id` (Long)   | -                                      | -                                                       | `200 OK` (Void)             | 식별자를 통한 예약 시간 삭제                       |
 
 <details><summary><h4>📜 그룹 규칙 상세</h4></summary>
 
@@ -188,7 +188,7 @@ DELETE /themes/{themeID}
 
 | 도메인             | Method | Endpoint        | Path Variable | Query Parameter                        | Request Body                                            | Response              | Description            |
 |:----------------|:-------|:----------------|:--------------|:---------------------------------------|:--------------------------------------------------------|:----------------------|:-----------------------|
-| **Time**        | `GET`  | `/times`        | -             | `themeId` (long)<br>`date` (LocalDate) | -                                                       | `List<TimeResponse>`  | 특정 날짜, 테마의 예약 가능 시간 조회 |
+| **Time**        | `GET`  | `/timeSlots`    | -             | `themeId` (long)<br>`date` (LocalDate) | -                                                       | `List<TimeResponse>`  | 특정 날짜, 테마의 예약 가능 시간 조회 |
 | **Reservation** | `POST` | `/reservations` | -             | -                                      | `ReservationRequest`<br>*(name, date, timeId, themeId)* | `ReservationResponse` | 새로운 예약 생성              |
 
 ### API 설계의 근거
@@ -199,13 +199,13 @@ DELETE /themes/{themeID}
     - 요청 - 날짜, 테마
     - Request Parameter - date, theme(id)
     - 응답 - 시간(예약 가능한)
-    - Response Body - list<time>
+    - Response Body - list<timeSlot>
 
 > 사용자가 예약 가능한 시간을 선택하여 본인의 이름으로 예약한다 -> POST /reservation
 
 - 사용자가 `선택`한 `날짜`, `테마`, `시간`을 기반으로 예약을 진행한다
     - 요청 - 날짜, 테마, 시간
-    - Request Parameter - date, theme(id), time(id)
+    - Request Parameter - date, theme(id), timeSlot(id)
     - 응답 - 예약 결과
     - Response Body - reservation
 
@@ -225,7 +225,7 @@ GET /themes HTTP/1.1
 ### 2. 사용자가 (날짜, 테마)를 통해 예약 가능 시간 조회 API
 
 ```json
-GET /times?date=2026-05-04&themeId=1HTTP/1.1 
+GET /timeSlots?date=2026-05-04&themeId=1HTTP/1.1 
 ```
 
 ### 3. 사용자가 날짜, 테마, 예약 시간을 통해 예약 등록 API

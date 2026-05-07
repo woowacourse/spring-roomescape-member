@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.TimeRequest;
 import roomescape.controller.dto.TimeResponse;
-import roomescape.domain.Time;
+import roomescape.domain.TimeSlot;
 import roomescape.service.TimeService;
 
 @RestController
@@ -32,16 +32,16 @@ public class TimeController {
 
     @GetMapping(params = {"themeId", "date"})
     public ResponseEntity<List<TimeResponse>> getAvailableTimes(long themeId, LocalDate date) {
-        List<Time> allTimes = reservationTimeService.allTimes();
+        List<TimeSlot> allTimeSlots = reservationTimeService.allTimes();
         List<Long> reservedTimeId = reservationTimeService.findReserved(themeId, date);
-        return ResponseEntity.ok(TimeResponse.availableOf(allTimes, reservedTimeId));
+        return ResponseEntity.ok(TimeResponse.availableOf(allTimeSlots, reservedTimeId));
     }
 
     @PostMapping
     public ResponseEntity<TimeResponse> createTime(
             @RequestBody TimeRequest timeRequest) {
-        Time time = reservationTimeService.saveTime(timeRequest.startAt());
-        return ResponseEntity.ok(TimeResponse.from(time));
+        TimeSlot timeSlot = reservationTimeService.saveTime(timeRequest.startAt());
+        return ResponseEntity.ok(TimeResponse.from(timeSlot));
     }
 
     @DeleteMapping("/{id}")
@@ -50,8 +50,8 @@ public class TimeController {
         return ResponseEntity.ok().build();
     }
 
-    private List<TimeResponse> convertToTimeResponses(List<Time> reservationTimes) {
-        return reservationTimes.stream()
+    private List<TimeResponse> convertToTimeResponses(List<TimeSlot> reservationTimeSlots) {
+        return reservationTimeSlots.stream()
                 .map(TimeResponse::from)
                 .toList();
     }

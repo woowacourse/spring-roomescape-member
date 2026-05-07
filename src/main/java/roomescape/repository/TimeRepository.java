@@ -1,15 +1,15 @@
 package roomescape.repository;
 
 import java.util.List;
-import roomescape.domain.Time;
+import roomescape.domain.TimeSlot;
 
 public interface TimeRepository {
 
-    List<Time> findAll();
+    List<TimeSlot> findAll();
 
-    Time findById(long id);
+    TimeSlot findById(long id);
 
-    Time save(Time time);
+    TimeSlot save(TimeSlot timeSlot);
 
     void deleteById(long id);
 }

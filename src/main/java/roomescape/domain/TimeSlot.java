@@ -2,14 +2,14 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 
-public record Time(Long id, LocalTime startAt) {
+public record TimeSlot(Long id, LocalTime startAt) {
 
-    public Time {
+    public TimeSlot {
         validate(startAt);
     }
 
-    public static Time transientOf(LocalTime startAt) {
-        return new Time(null, startAt);
+    public static TimeSlot transientOf(LocalTime startAt) {
+        return new TimeSlot(null, startAt);
     }
 
     private void validate(LocalTime startAt) {

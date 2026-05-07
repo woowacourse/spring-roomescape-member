@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Time;
+import roomescape.domain.TimeSlot;
 
 @Repository
 public class TimeDao implements TimeRepository {
@@ -19,43 +19,43 @@ public class TimeDao implements TimeRepository {
     }
 
     @Override
-    public List<Time> findAll() {
-        String sql = "SELECT id, start_at FROM time";
+    public List<TimeSlot> findAll() {
+        String sql = "SELECT id, start_at FROM time_slot";
         return jdbcTemplate.query(sql, rowMapper());
     }
 
     @Override
-    public Time findById(long timeId) {
-        String sql = "SELECT id, start_at FROM time where id = ?";
+    public TimeSlot findById(long timeId) {
+        String sql = "SELECT id, start_at FROM time_slot where id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper(), timeId);
     }
 
     @Override
-    public Time save(Time time) {
+    public TimeSlot save(TimeSlot timeSlot) {
         SimpleJdbcInsert insert = createInsert();
-        Map<String, Object> params = createParams(time);
+        Map<String, Object> params = createParams(timeSlot);
         long reservationId = insert.executeAndReturnKey(params).longValue();
-        return new Time(reservationId, time.startAt());
+        return new TimeSlot(reservationId, timeSlot.startAt());
     }
 
     @Override
     public void deleteById(long timeId) {
-        String sql = "DELETE FROM time where id = ?";
+        String sql = "DELETE FROM time_slot where id = ?";
         jdbcTemplate.update(sql, timeId);
     }
 
     private SimpleJdbcInsert createInsert() {
         return new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("time")
+                .withTableName("time_slot")
                 .usingGeneratedKeyColumns("id");
     }
 
-    private Map<String, Object> createParams(Time time) {
-        return Map.of("start_at", time.startAt());
+    private Map<String, Object> createParams(TimeSlot timeSlot) {
+        return Map.of("start_at", timeSlot.startAt());
     }
 
-    private RowMapper<Time> rowMapper() {
-        return (rs, rowNum) -> new Time(
+    private RowMapper<TimeSlot> rowMapper() {
+        return (rs, rowNum) -> new TimeSlot(
                 rs.getLong("id"),
                 rs.getObject("start_at", LocalTime.class)
         );

@@ -7,7 +7,7 @@ CREATE TABLE theme
     PRIMARY KEY (id)
 );
 
-CREATE TABLE time
+CREATE TABLE time_slot
 (
     id       BIGINT NOT NULL AUTO_INCREMENT,
     start_at TIME   NOT NULL,
@@ -22,6 +22,6 @@ CREATE TABLE reservation
     time_id  BIGINT       NOT NULL,
     theme_id BIGINT       NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (time_id) REFERENCES time (id),
+    FOREIGN KEY (time_id) REFERENCES time_slot (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );

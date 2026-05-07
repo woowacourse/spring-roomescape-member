@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
-import roomescape.domain.Time;
+import roomescape.domain.TimeSlot;
 
 @Repository
 public class ReservationDao implements ReservationRepository {
@@ -37,7 +37,7 @@ public class ReservationDao implements ReservationRepository {
                 FROM 
                     reservation r 
                         INNER JOIN 
-                        time t 
+                        time_slot t 
                             INNER JOIN 
                         theme theme
                             ON r.time_id = t.id 
@@ -62,7 +62,7 @@ public class ReservationDao implements ReservationRepository {
                 FROM 
                     reservation r 
                         INNER JOIN 
-                        time t 
+                        time_slot t 
                         INNER JOIN 
                         theme theme
                             ON 
@@ -93,7 +93,7 @@ public class ReservationDao implements ReservationRepository {
                 reservationId,
                 reservation.name(),
                 reservation.date(),
-                reservation.time(),
+                reservation.timeSlot(),
                 reservation.theme()
         );
     }
@@ -114,7 +114,7 @@ public class ReservationDao implements ReservationRepository {
         return Map.of(
                 "name", reservation.name(),
                 "date", reservation.date(),
-                "time_id", reservation.time().id(),
+                "time_id", reservation.timeSlot().id(),
                 "theme_id", reservation.theme().id()
         );
     }
@@ -124,7 +124,7 @@ public class ReservationDao implements ReservationRepository {
                 rs.getLong("r_id"),
                 rs.getString("name"),
                 rs.getObject("date", LocalDate.class),
-                new Time(
+                new TimeSlot(
                         rs.getLong("t_id"),
                         rs.getObject("start_at", LocalTime.class)),
                 new Theme(

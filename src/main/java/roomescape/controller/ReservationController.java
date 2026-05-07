@@ -60,7 +60,7 @@ public class ReservationController {
                 reservation.id(),
                 reservation.name(),
                 reservation.date(),
-                TimeResponse.from(reservation.time()),
+                TimeResponse.from(reservation.timeSlot()),
                 ThemeResponse.from(reservation.theme())
         );
     }

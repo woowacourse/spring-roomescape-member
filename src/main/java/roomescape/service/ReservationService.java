@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
-import roomescape.domain.Time;
+import roomescape.domain.TimeSlot;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
@@ -37,9 +37,9 @@ public class ReservationService {
             Long reservationTimeId,
             Long themeId
     ) {
-        Time time = timeRepository.findById(reservationTimeId);
+        TimeSlot timeSlot = timeRepository.findById(reservationTimeId);
         Theme theme = themeRepository.findById(themeId);
-        Reservation transientReservation = Reservation.transientOf(name, date, time, theme);
+        Reservation transientReservation = Reservation.transientOf(name, date, timeSlot, theme);
         return reservationRepository.save(transientReservation);
     }
 
