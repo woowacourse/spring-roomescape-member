@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,9 +27,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme findById(long id) {
+    public Optional<Theme> findById(long id) {
         String sql = "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper(), id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), id));
     }
 
     @Override

@@ -3,6 +3,8 @@ package roomescape.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import roomescape.domain.Time;
 
 public class FakeTimeDao implements TimeRepository {
@@ -16,8 +18,8 @@ public class FakeTimeDao implements TimeRepository {
     }
 
     @Override
-    public Time findById(long id) {
-        return storage.get(id);
+    public Optional<Time> findById(long id) {
+        return Optional.ofNullable(storage.get(id));
     }
 
     @Override

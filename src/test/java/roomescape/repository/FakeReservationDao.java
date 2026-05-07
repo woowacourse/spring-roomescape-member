@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import roomescape.domain.Reservation;
 
 public class FakeReservationDao implements ReservationRepository {
@@ -17,8 +19,8 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(long id) {
-        return storage.get(id);
+    public Optional<Reservation> findById(long id) {
+        return Optional.ofNullable(storage.get(id));
     }
 
     @Override

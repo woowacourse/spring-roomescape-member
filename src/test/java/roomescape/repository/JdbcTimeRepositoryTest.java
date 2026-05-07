@@ -13,16 +13,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Time;
 
 @JdbcTest
-class TimeDaoTest {
+class JdbcTimeRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private TimeDao timeDao;
+    private JdbcTimeRepository jdbcTimeRepository;
 
     @BeforeEach
     void setUp() {
-        timeDao = new TimeDao(jdbcTemplate);
+        jdbcTimeRepository = new JdbcTimeRepository(jdbcTemplate);
         executeSchema();
     }
 
@@ -37,31 +37,31 @@ class TimeDaoTest {
     @DisplayName("예약 시간을 저장하고 영속화된 객체를 반환한다.")
     void save() {
         Time time = Time.transientOf(LocalTime.of(10, 0));
-        Time savedTime = timeDao.save(time);
+        Time savedTime = jdbcTimeRepository.save(time);
         assertThat(savedTime.id()).isPositive();
     }
 
     @Test
     @DisplayName("식별자로 예약 시간 객체를 조회한다.")
     void findById() {
-        Time savedTime = timeDao.save(Time.transientOf(LocalTime.of(10, 0)));
-        Time foundTime = timeDao.findById(savedTime.id());
+        Time savedTime = jdbcTimeRepository.save(Time.transientOf(LocalTime.of(10, 0)));
+        Time foundTime = jdbcTimeRepository.findById(savedTime.id());
         assertThat(foundTime.startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test
     @DisplayName("모든 예약 시간 객체 목록을 조회한다.")
     void findAll() {
-        timeDao.save(Time.transientOf(LocalTime.of(10, 0)));
-        List<Time> times = timeDao.findAll();
+        jdbcTimeRepository.save(Time.transientOf(LocalTime.of(10, 0)));
+        List<Time> times = jdbcTimeRepository.findAll();
         assertThat(times).hasSize(1);
     }
 
     @Test
     @DisplayName("식별자로 예약 시간을 삭제한다.")
     void deleteById() {
-        Time savedTime = timeDao.save(Time.transientOf(LocalTime.of(10, 0)));
-        timeDao.deleteById(savedTime.id());
-        assertThat(timeDao.findAll()).isEmpty();
+        Time savedTime = jdbcTimeRepository.save(Time.transientOf(LocalTime.of(10, 0)));
+        jdbcTimeRepository.deleteById(savedTime.id());
+        assertThat(jdbcTimeRepository.findAll()).isEmpty();
     }
 }

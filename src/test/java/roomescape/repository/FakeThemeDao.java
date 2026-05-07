@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import roomescape.domain.Theme;
 
 public class FakeThemeDao implements ThemeRepository {
@@ -17,7 +19,7 @@ public class FakeThemeDao implements ThemeRepository {
     }
 
     @Override
-    public Theme findById(long id) {
+    public Optional<Theme> findById(long id) {
         return storage.get(id);
     }
 

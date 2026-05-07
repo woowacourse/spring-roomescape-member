@@ -3,6 +3,8 @@ package roomescape.repository;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -10,11 +12,11 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Time;
 
 @Repository
-public class TimeDao implements TimeRepository {
+public class JdbcTimeRepository implements TimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public TimeDao(JdbcTemplate jdbcTemplate) {
+    public JdbcTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -25,9 +27,9 @@ public class TimeDao implements TimeRepository {
     }
 
     @Override
-    public Time findById(long timeId) {
+    public Optional<Time> findById(long timeId) {
         String sql = "SELECT id, start_at FROM time where id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper(), timeId);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), timeId));
     }
 
     @Override

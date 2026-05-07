@@ -19,34 +19,33 @@ import roomescape.service.TimeService;
 @RequestMapping("/times")
 public class TimeController {
 
-    private final TimeService reservationTimeService;
+    private final TimeService timeService;
 
-    public TimeController(TimeService reservationTimeService) {
-        this.reservationTimeService = reservationTimeService;
+    public TimeController(TimeService timeService) {
+        this.timeService = timeService;
     }
 
     @GetMapping
     public ResponseEntity<List<TimeResponse>> times() {
-        return ResponseEntity.ok(convertToTimeResponses(reservationTimeService.allTimes()));
+        return ResponseEntity.ok(convertToTimeResponses(timeService.allTimes()));
     }
 
     @GetMapping(params = {"themeId", "date"})
     public ResponseEntity<List<TimeResponse>> getAvailableTimes(long themeId, LocalDate date) {
-        List<Time> allTimes = reservationTimeService.allTimes();
-        List<Long> reservedTimeId = reservationTimeService.findReserved(themeId, date);
+        List<Time> allTimes = timeService.allTimes();
+        List<Long> reservedTimeId = timeService.findReserved(themeId, date);
         return ResponseEntity.ok(TimeResponse.availableOf(allTimes, reservedTimeId));
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> createTime(
-            @RequestBody TimeRequest timeRequest) {
-        Time time = reservationTimeService.saveTime(timeRequest.startAt());
+    public ResponseEntity<TimeResponse> createTime(@RequestBody TimeRequest timeRequest) {
+        Time time = timeService.saveTime(timeRequest.startAt());
         return ResponseEntity.ok(TimeResponse.from(time));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable long id) {
-        reservationTimeService.removeTime(id);
+        timeService.removeTime(id);
         return ResponseEntity.ok().build();
     }
 
