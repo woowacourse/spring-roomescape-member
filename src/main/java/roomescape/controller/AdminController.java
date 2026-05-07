@@ -43,8 +43,7 @@ public class AdminController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ReservationTimeResponseDTO> add(
-            @RequestBody ReservationTimeRequestDTO request) {
+    public ResponseEntity<ReservationTimeResponseDTO> add(@RequestBody ReservationTimeRequestDTO request) {
         ReservationTimeResponseDTO saved = reservationTimeService.addReservationTime(request);
         return ResponseEntity.created(URI.create("/times/" + saved.id())).build();
     }
@@ -56,8 +55,7 @@ public class AdminController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeResponseDTO> add(
-            @RequestBody ThemeRequestDTO request) {
+    public ResponseEntity<ThemeResponseDTO> add(@RequestBody ThemeRequestDTO request) {
         ThemeResponseDTO saved = themeService.addTheme(request);
         return ResponseEntity.created(URI.create("/theme/" + saved.id())).build();
     }

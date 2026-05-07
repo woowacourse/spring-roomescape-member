@@ -16,9 +16,7 @@ public record ReservationResponseDTO(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                ReservationTimeResponseDTO.from(
-                        reservation.getTime()
-                ),
+                ReservationTimeResponseDTO.from(reservation.getTime()),
                 ThemeResponseDTO.from(reservation.getTheme())
         );
     }
