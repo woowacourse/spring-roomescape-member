@@ -47,7 +47,7 @@ class JdbcReservationRepositoryTest {
         Theme savedTheme = themeRepository.createTheme(THEME);
 
         // when
-        Reservation saved = reservationRepository.createReservation(new Reservation("", "2026-04-30", savedTime, savedTheme));
+        Reservation saved = reservationRepository.createReservation(new Reservation("name", "2026-04-30", savedTime, savedTheme));
 
         // then
         assertThat(saved.getTime()).isEqualTo(savedTime);
