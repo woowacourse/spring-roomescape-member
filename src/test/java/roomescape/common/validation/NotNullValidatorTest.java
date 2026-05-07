@@ -13,12 +13,15 @@ class NotNullValidatorTest {
 
     @Test
     void NotNull이_붙은_필드가_Null이면_예외가_발생한다() {
+        // given
         Long nullId = null;
         UseNotNullDto useNotNullDto = new UseNotNullDto(nullId);
 
-        List<String> errors = notNullValidator.validate(useNotNullDto);
+        // when
+        List<String> actual = notNullValidator.validate(useNotNullDto);
 
-        Assertions.assertThat(errors.getFirst())
+        // then
+        Assertions.assertThat(actual.getFirst())
                 .isEqualTo("id는 Null일 수 없습니다.");
     }
 

@@ -13,33 +13,42 @@ class FieldBlankValidatorTest {
 
     @Test
     void NotBlank가_붙은_빌드가_비어있으면_예외가_발생한다() {
+        // given
         String emptyName = " ";
         UseNotBlankDto emtpyNameDto = new UseNotBlankDto(emptyName);
 
-        List<String> errors = validator.validate(emtpyNameDto);
+        // when
+        List<String> actual = validator.validate(emtpyNameDto);
 
-        Assertions.assertThat(errors.getFirst())
+        // then
+        Assertions.assertThat(actual.getFirst())
                 .isEqualTo("name은 비어있을 수 없습니다.");
     }
 
     @Test
     void NotBlank가_붙은_빌드가_Null이면_예외가_발생한다() {
+        // given
         String nullName = null;
         UseNotBlankDto nullNameDto = new UseNotBlankDto(nullName);
 
-        List<String> errors = validator.validate(nullNameDto);
+        // when
+        List<String> actual = validator.validate(nullNameDto);
 
-        Assertions.assertThat(errors.getFirst())
+        // then
+        Assertions.assertThat(actual.getFirst())
                 .isEqualTo("name은 Null일 수 없습니다.");
     }
 
     @Test
     void NotBlank가_붙은_빌드가_Strig타입이_아니면_예외가_발생한다() {
+        // given
         WrongUseNotBlankDto wrongUseNotBlankDto = new WrongUseNotBlankDto(1L);
 
-        List<String> errors = validator.validate(wrongUseNotBlankDto);
+        // when
+        List<String> actual = validator.validate(wrongUseNotBlankDto);
 
-        Assertions.assertThat(errors.getFirst())
+        // then
+        Assertions.assertThat(actual.getFirst())
                 .isEqualTo("@NotBlank는 오직 String 타입에만 사용할 수 있습니다.");
     }
 
