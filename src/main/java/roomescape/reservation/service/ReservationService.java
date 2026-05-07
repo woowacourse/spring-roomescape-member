@@ -42,7 +42,7 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
         CreateReservationParams params = new CreateReservationParams(request.getName(), request.getDate(),
-                time.getId(), request.getTimeId());
+                time.getId(), theme.getId());
         Reservation reservation = reservationRepository.save(params);
 
         return ReservationResponse.from(reservation);
