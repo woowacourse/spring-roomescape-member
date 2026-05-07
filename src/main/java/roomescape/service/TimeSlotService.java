@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.TimeSlot;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeSlotRepository;
+import roomescape.service.dto.AvailableTimeSlot;
 
 @Service
 public class TimeSlotService {
@@ -36,7 +37,16 @@ public class TimeSlotService {
         return timeSlotRepository.findById(timeId);
     }
 
-    public List<Long> findReserved(long themeId, LocalDate date) {
-        return reservationRepository.findByThemeIdAndDate(themeId, date);
+    public List<AvailableTimeSlot> findAvailableTimes(long themeId, LocalDate date) {
+        List<TimeSlot> allTimeSlots = timeSlotRepository.findAll();
+        List<Long> reservedIds = reservationRepository.findByThemeIdAndDate(themeId, date);
+        return allTimeSlots.stream()
+                .map(timeSlot -> mapToAvailable(timeSlot, reservedIds))
+                .toList();
+    }
+
+    private AvailableTimeSlot mapToAvailable(TimeSlot timeSlot, List<Long> reservedIds) {
+        boolean isAvailable = !reservedIds.contains(timeSlot.id());
+        return new AvailableTimeSlot(timeSlot, isAvailable);
     }
 }

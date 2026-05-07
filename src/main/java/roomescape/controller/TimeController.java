@@ -14,6 +14,7 @@ import roomescape.controller.dto.TimeRequest;
 import roomescape.controller.dto.TimeResponse;
 import roomescape.domain.TimeSlot;
 import roomescape.service.TimeSlotService;
+import roomescape.service.dto.AvailableTimeSlot;
 
 @RestController
 @RequestMapping("/times")
@@ -32,9 +33,8 @@ public class TimeController {
 
     @GetMapping(params = {"themeId", "date"})
     public ResponseEntity<List<TimeResponse>> getAvailableTimes(long themeId, LocalDate date) {
-        List<TimeSlot> allTimeSlots = reservationTimeSlotService.allTimes();
-        List<Long> reservedTimeId = reservationTimeSlotService.findReserved(themeId, date);
-        return ResponseEntity.ok(TimeResponse.availableOf(allTimeSlots, reservedTimeId));
+        List<AvailableTimeSlot> availableSlots = reservationTimeSlotService.findAvailableTimes(themeId, date);
+        return ResponseEntity.ok(convertToAvailableResponses(availableSlots));
     }
 
     @PostMapping
@@ -52,6 +52,12 @@ public class TimeController {
 
     private List<TimeResponse> convertToTimeResponses(List<TimeSlot> reservationTimeSlots) {
         return reservationTimeSlots.stream()
+                .map(TimeResponse::from)
+                .toList();
+    }
+
+    private List<TimeResponse> convertToAvailableResponses(List<AvailableTimeSlot> availableSlots) {
+        return availableSlots.stream()
                 .map(TimeResponse::from)
                 .toList();
     }
