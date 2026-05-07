@@ -69,7 +69,7 @@ class AvailableTimeIntegrationTest {
                 .body(reservation)
                 .when().post("/member/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         List<?> afterTimes = RestAssured.given().log().all()
                 .when().get("/member/times?date=" + LocalDate.now().plusDays(1) + "&themeId=1")

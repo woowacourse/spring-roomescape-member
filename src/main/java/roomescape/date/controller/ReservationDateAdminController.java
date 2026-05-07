@@ -1,5 +1,7 @@
 package roomescape.date.controller;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,7 +39,7 @@ public class ReservationDateAdminController {
     ) {
         ReservationDate reservationDate = reservationDateService.register(dto.date());
         ReservationDateDetailDto responseData = ReservationDateDetailDto.from(reservationDate);
-        return ResponseEntity.ok(responseData);
+        return ResponseEntity.status(CREATED).body(responseData);
     }
 
     @DeleteMapping("/dates/{id}")

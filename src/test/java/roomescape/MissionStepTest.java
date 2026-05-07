@@ -87,7 +87,7 @@ class MissionStepTest {
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/admin/times")
@@ -110,7 +110,7 @@ class MissionStepTest {
                 .body(time)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         Map<String, Object> theme = new HashMap<>();
         theme.put("name", "테마1");
@@ -121,7 +121,7 @@ class MissionStepTest {
                 .body(theme)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         Map<String, Object> date = new HashMap<>();
         date.put("date", "2099-01-01");
@@ -130,7 +130,7 @@ class MissionStepTest {
                 .body(date)
                 .when().post("/admin/dates")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         Map<String, Object> reservation = new HashMap<>();
         String reservationName = "브라운";
@@ -144,7 +144,7 @@ class MissionStepTest {
                 .body(reservation)
                 .when().post("/member/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/member/reservations/" + reservationName)

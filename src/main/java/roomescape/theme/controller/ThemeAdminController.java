@@ -1,5 +1,7 @@
 package roomescape.theme.controller;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +44,7 @@ public class ThemeAdminController {
     public ResponseEntity<ThemeDetailDto> createTheme(@RequestBody ThemeSaveDto dto) {
         Theme theme = themeService.register(dto.name(), dto.description(), dto.thumbnailUrl());
         ThemeDetailDto responseData = ThemeDetailDto.from(theme);
-        return ResponseEntity.ok(responseData);
+        return ResponseEntity.status(CREATED).body(responseData);
     }
 
     @PatchMapping("/themes/{id}")
