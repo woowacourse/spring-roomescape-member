@@ -11,8 +11,8 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
-import roomescape.dto.response.CreateReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.AvailableReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {
@@ -27,13 +27,13 @@ public class ReservationTimeService {
         this.reservationDao = reservationDao;
     }
 
-    public CreateReservationTimeResponse addReservationTime(ReservationTimeRequest request) {
+    public ReservationTimeResponse addReservationTime(ReservationTimeRequest request) {
         ReservationTime reservationTime = request.toReservationTime();
         ReservationTime newReservationTime = reservationTimeDao.insert(reservationTime);
-        return CreateReservationTimeResponse.from(newReservationTime);
+        return ReservationTimeResponse.from(newReservationTime);
     }
 
-    public List<ReservationTimeResponse> getReservationTimes(Long themeId, LocalDate date) {
+    public List<AvailableReservationTimeResponse> getReservationTimes(Long themeId, LocalDate date) {
         validateTheme(themeId);
 
         List<Reservation> reservations = reservationDao.selectByThemeIdAndDate(themeId, date);
@@ -41,7 +41,7 @@ public class ReservationTimeService {
 
         Set<Long> reservedTimeIds = extractReservedTimeIds(reservations);
         return reservationTimes.stream()
-                .map(time -> ReservationTimeResponse.from(time, isNotReserved(time, reservedTimeIds)))
+                .map(time -> AvailableReservationTimeResponse.from(time, isNotReserved(time, reservedTimeIds)))
                 .toList();
     }
 

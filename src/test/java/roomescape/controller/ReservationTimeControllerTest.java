@@ -14,7 +14,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.AvailableReservationTimeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -65,13 +65,13 @@ public class ReservationTimeControllerTest {
                 .statusCode(201)
                 .body("id", notNullValue());
 
-        List<ReservationTimeResponse> responses = RestAssured.given().log().all()
+        List<AvailableReservationTimeResponse> responses = RestAssured.given().log().all()
                 .when().get("/times?themeId=" + themeId + "&date=" + date)
                 .then().log().all()
                 .statusCode(200)
                 .extract()
                 .jsonPath()
-                .getList(".", ReservationTimeResponse.class);
+                .getList(".", AvailableReservationTimeResponse.class);
 
         assertThat(responses)
                 .extracting("startAt", "isNotReserved")
