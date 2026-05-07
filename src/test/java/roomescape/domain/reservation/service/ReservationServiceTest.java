@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
@@ -36,9 +37,11 @@ class ReservationServiceTest {
     }
 
     @Nested
-    class GetReservationTest {
+    @DisplayName("getReservation 테스트")
+    class GetReservationsTest {
 
         @Test
+        @DisplayName("모든 예약을 조회한다.")
         void 성공() {
 
             // given
@@ -77,9 +80,11 @@ class ReservationServiceTest {
     }
 
     @Nested
+    @DisplayName("saveReservation 테스트")
     class SaveReservationTest {
 
         @Test
+        @DisplayName("예약을 생성하고, 생성된 예약을 반환한다.")
         void 성공() {
 
             // given
@@ -109,9 +114,11 @@ class ReservationServiceTest {
     }
 
     @Nested
+    @DisplayName("deleteReservationById 테스트")
     class DeleteReservationByIdTest {
 
         @Test
+        @DisplayName("주어진 아이디를 가진 예약을 삭제한다.")
         void 성공() {
 
             // given

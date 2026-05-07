@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.entity.Reservation;
@@ -36,8 +37,10 @@ class TimeServiceTest {
     }
 
     @Nested
+    @DisplayName("getTimes 테스트")
     class GetTimesTest {
 
+        @DisplayName("모든 시간을 조회한다.")
         @Test
         void 성공() {
 
@@ -62,52 +65,11 @@ class TimeServiceTest {
     }
 
     @Nested
-    class SaveTimeTest {
+    @DisplayName("이용 가능한 시간 조회")
+    class GetAvailableTimes {
 
         @Test
-        void 성공() {
-
-            // given
-            TimeCreateRequestDto request = new TimeCreateRequestDto(LocalTime.of(15, 30));
-
-            // when
-            TimeResponseDto actual = timeService.saveTime(request);
-
-            // then
-            assertAll(
-                () -> assertEquals(1L, actual.id()),
-                () -> assertEquals(LocalTime.of(15, 30), actual.startAt()),
-                () -> assertEquals(List.of(actual), timeService.getTimes())
-            );
-        }
-    }
-
-    @Nested
-    class DeleteTimeByIdTest {
-
-        @Test
-        void 성공() {
-
-            // given
-            Time savedTime = timeRepository.save(Time.create(LocalTime.of(12, 0)));
-            timeRepository.save(Time.create(LocalTime.of(13, 0)));
-
-            // when
-            timeService.deleteTimeById(savedTime.getId());
-
-            // then
-            List<TimeResponseDto> actual = timeService.getTimes();
-            assertAll(
-                () -> assertEquals(1, actual.size()),
-                () -> assertEquals(LocalTime.of(13, 0), actual.getFirst().startAt())
-            );
-        }
-    }
-
-    @Nested
-    class FindTimeIdsByDateAndThemeIdTest {
-
-        @Test
+        @DisplayName("주어진 날짜와 테마 아이디를 가진 예약 리스트에 없는 시간을 조회한다.")
         void 성공() {
 
             // given
@@ -152,6 +114,53 @@ class TimeServiceTest {
 
             // then
             assertThat(actual).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    @DisplayName("saveTime 테스트")
+    class SaveTimeTest {
+
+        @Test
+        @DisplayName("시간을 저장하고, 저장된 시간을 반환한다.")
+        void 성공() {
+
+            // given
+            TimeCreateRequestDto request = new TimeCreateRequestDto(LocalTime.of(15, 30));
+
+            // when
+            TimeResponseDto actual = timeService.saveTime(request);
+
+            // then
+            assertAll(
+                () -> assertEquals(1L, actual.id()),
+                () -> assertEquals(LocalTime.of(15, 30), actual.startAt()),
+                () -> assertEquals(List.of(actual), timeService.getTimes())
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("deleteTimeById 테스트")
+    class DeleteTimeByIdTest {
+
+        @Test
+        @DisplayName("주어진 아이디를 가지는 시간을 삭제한다.")
+        void 성공() {
+
+            // given
+            Time savedTime = timeRepository.save(Time.create(LocalTime.of(12, 0)));
+            timeRepository.save(Time.create(LocalTime.of(13, 0)));
+
+            // when
+            timeService.deleteTimeById(savedTime.getId());
+
+            // then
+            List<TimeResponseDto> actual = timeService.getTimes();
+            assertAll(
+                () -> assertEquals(1, actual.size()),
+                () -> assertEquals(LocalTime.of(13, 0), actual.getFirst().startAt())
+            );
         }
     }
 }

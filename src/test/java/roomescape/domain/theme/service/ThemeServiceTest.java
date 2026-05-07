@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.entity.Reservation;
@@ -31,9 +32,11 @@ class ThemeServiceTest {
     }
 
     @Nested
+    @DisplayName("getThemes 테스트")
     class GetThemesTest {
 
         @Test
+        @DisplayName("모든 테마를 조회한다.")
         void 성공() {
 
             // when
@@ -45,9 +48,11 @@ class ThemeServiceTest {
     }
 
     @Nested
-    class test {
+    @DisplayName("getPopularThemes 테스트")
+    class GetPopularThemesTest {
 
         @Test
+        @DisplayName("특정 기간에서 예약이 많은 테마 N개를 조회한다.")
         void 성공() {
             // 1. 테마 15개 생성 및 저장
             List<Theme> themes = IntStream.rangeClosed(1, 15)
@@ -102,9 +107,11 @@ class ThemeServiceTest {
     }
 
     @Nested
+    @DisplayName("saveTheme 테스트")
     class saveThemeTest {
 
         @Test
+        @DisplayName("테마를 생성하고, 생성된 테마를 반환한다.")
         void 성공() {
 
             // given
@@ -128,9 +135,11 @@ class ThemeServiceTest {
     }
 
     @Nested
-    class deleteThemeTest {
+    @DisplayName("deleteThemeById 테스트")
+    class deleteThemeByIdTest {
 
         @Test
+        @DisplayName("주어진 아이디를 가진 테마를 삭제한다.")
         void 성공() {
 
             // given
