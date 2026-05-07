@@ -8,8 +8,8 @@
 
 #### API 명세
 
-`GET /theme` 사용자 테마 리스트 조회
-`GET /admin/theme` 관리자 테마 리스트 조회
+`GET /themes` 사용자 테마 리스트 조회
+`GET /admin/themes` 관리자 테마 리스트 조회
 
 `POST /admin/themes` 관리자 테마 생성
 
