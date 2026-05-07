@@ -70,40 +70,37 @@
   - 같은 날짜 + 시간 + 테마 조합으로 중복 예약이 가능
   - `reservationDao`에 `existsByDateAndTimeIdAndThemeId()` 추가 후 서비스에서 검증 필요
 
-- [ ] **14. `ThemeService.getAvailableTimeResponses()` - 파라미터 오타 수정하기**
-  - `Long themId` → `Long themeId`로 수정
-
-- [ ] **15. `ThemeService.getPopularThemes()` - 날짜 범위 계산 오류**
+- [ ] **14. `ThemeService.getPopularThemes()` - 날짜 범위 계산 오류**
   - `startDate = today.minusDays(8)`, `endDate = today.minusDays(1)` → 몰랐는데, 찾아보니 마지막 날짜 포함해서 이건 8일치 범위임.
 
-- [ ] **16. `AdminThemeService.delete()` - 예약에 사용 중인 테마 삭제 가능**
+- [ ] **15. `AdminThemeService.delete()` - 예약에 사용 중인 테마 삭제 가능**
   - `ReservationTimeService.delete()`에는 사용 중 여부 체크가 있는데 테마에는 없음
 
 ---
 
 ### DB 스키마 문제
 
-- [x] **17. `reservation.date` 컬럼 타입이 `VARCHAR(255)`**
+- [x] **16. `reservation.date` 컬럼 타입이 `VARCHAR(255)`**
   - `DATE` 타입으로 변경
 
-- [x] **18. `reservation_time.start_at` 컬럼 타입이 `VARCHAR(255)`**
+- [x] **17. `reservation_time.start_at` 컬럼 타입이 `VARCHAR(255)`**
   - `TIME` 타입으로 변경
 
-- [x] **19. 중복 예약 방지 DB 제약 없음**
+- [x] **18. 중복 예약 방지 DB 제약 없음**
   - `(date, time_id, theme_id)` 조합에 UNIQUE 제약 조건 없음
   - 애플리케이션 레벨 검증과 함께 DB 레벨 제약도 추가해주면 2중으로 막혀서 좋을듯.
 
-- [x] **20. `thumbnail_url`이 `VARCHAR(255)`로 사이즈가 작아보임**
+- [x] **19. `thumbnail_url`이 `VARCHAR(255)`로 사이즈가 작아보임**
   - 2048이나 TEXT로 바꾸기
 
 ---
 
 ### 컨트롤러 문제
 
-- [ ] **21. `ThemeController` - `"popular"` 문자열 하드코딩**
+- [ ] **20. `ThemeController` - `"popular"` 문자열 하드코딩**
   - `if ("popular".equals(condition))` 형태
   - `Enum` 타입으로 추출해도 좋을 듯?
   - 아니면 아예 이 패턴을 쓰지 않던가
 
-- [ ] **22. `ThemeController.getReservationTimes()` - `date` 파라미터가 `String`**
+- [ ] **21. `ThemeController.getReservationTimes()` - `date` 파라미터가 `String`**
   - `LocalDate`로 받는게 좋을듯
