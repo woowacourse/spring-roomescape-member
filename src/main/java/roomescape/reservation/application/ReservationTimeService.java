@@ -35,7 +35,12 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public void delete(Long id) {
+    public void delete(long id) {
+        boolean reservationCheck = reservationRepository.existReservationByTimeId(id);
+        boolean scheduleCheck = reservationTimeRepository.existScheduleById(id);
+        if (reservationCheck || scheduleCheck) {
+            throw new IllegalStateException("해당 예약 시간은 예약 또는 스케줄에서 사용 중이므로 삭제할 수 없습니다.");
+        }
         reservationTimeRepository.deleteById(id);
     }
 

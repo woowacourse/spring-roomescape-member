@@ -80,4 +80,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         return template.query(sql, params, reservationTimeRowMapper);
     }
+
+    @Override
+    public boolean existScheduleById(long timeId) {
+        String sql = "SELECT COUNT(*) FROM schedule WHERE time_id = :timeId";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("timeId", timeId);
+
+        return !template.query(sql, params, (resultSet, rowNum) -> resultSet.getInt("COUNT(*)") > 0)
+                .isEmpty();
+    }
 }

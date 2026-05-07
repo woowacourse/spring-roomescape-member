@@ -41,16 +41,17 @@ public class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
+    @DisplayName("더미데이터의 총 시간슬롯데이터 갯수가 4이므로 데이터를 추가한다음 삭제하면 결과가 4가 나와야 한다.")
     void 시간_삭제_레포지토리_테스트() {
-        // CASCADE 해결용
-        jdbcTemplate.update("DELETE FROM schedule");
-        jdbcTemplate.update("DELETE FROM reservation");
+        // given
+        ReservationTime savedTime = repository.save(LocalTime.of(15, 40));
 
-        repository.deleteById(1L);
+        // when
+        repository.deleteById(savedTime.getId());
 
+        // then
         int rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time", Integer.class);
-
-        assertThat(rowCount).isEqualTo(3);
+        assertThat(rowCount).isEqualTo(4);
     }
 
     @Test

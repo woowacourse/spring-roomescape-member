@@ -1,10 +1,11 @@
 package roomescape.reservation.infra;
 
+import roomescape.reservation.domain.ReservationTime;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import roomescape.reservation.domain.ReservationTime;
 
 public interface ReservationTimeRepository {
     ReservationTime save(LocalTime startAt);
@@ -16,4 +17,6 @@ public interface ReservationTimeRepository {
     Optional<ReservationTime> findById(long id);
 
     List<ReservationTime> findTimesByDateAndThemeId(LocalDate date, long themeId);
+
+    boolean existScheduleById(long timeId);
 }
