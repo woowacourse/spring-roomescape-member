@@ -25,12 +25,6 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @DeleteMapping({"/admin/themes/{id}"})
-    @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable long id) {
-        themeService.delete(id);
-    }
-
     @PostMapping("/admin/themes")
     @ResponseStatus(HttpStatus.CREATED)
     public ThemeResponse create(@RequestBody ThemeCreateRequest request) {
@@ -45,6 +39,15 @@ public class ThemeController {
         return ThemeResponse.toDto(theme);
     }
 
+    @GetMapping("/themes/famous")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ThemeResponse> findFamous(@ModelAttribute ThemeFamousFindRequest request) {
+        List<Theme> themes = themeService.findFamous(request);
+        return themes.stream()
+                .map(ThemeResponse::toDto)
+                .toList();
+    }
+
     @GetMapping("/themes")
     @ResponseStatus(HttpStatus.OK)
     public List<ThemeResponse> findAll() {
@@ -54,12 +57,9 @@ public class ThemeController {
                 .toList();
     }
 
-    @GetMapping("/themes/famous")
+    @DeleteMapping({"/admin/themes/{id}"})
     @ResponseStatus(HttpStatus.OK)
-    public List<ThemeResponse> findFamous(@ModelAttribute ThemeFamousFindRequest request) {
-        List<Theme> themes = themeService.findFamous(request);
-        return themes.stream()
-                .map(ThemeResponse::toDto)
-                .toList();
+    public void delete(@PathVariable long id) {
+        themeService.delete(id);
     }
 }

@@ -26,8 +26,8 @@ public class ReservationTimeController {
 
     @PostMapping("/admin/times")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationTimeResponse create(@RequestBody ReservationTimeCreateRequest dto) {
-        ReservationTime found = reservationTimeService.create(dto);
+    public ReservationTimeResponse create(@RequestBody ReservationTimeCreateRequest request) {
+        ReservationTime found = reservationTimeService.create(request);
 
         return ReservationTimeResponse.toDto(found);
     }
@@ -42,12 +42,6 @@ public class ReservationTimeController {
                 .toList();
     }
 
-    @DeleteMapping("/admin/times/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable long id) {
-        reservationTimeService.delete(id);
-    }
-
     @GetMapping("/times/available")
     @ResponseStatus(HttpStatus.OK)
     public List<ReservationTimeResponse> findAvailable(@ModelAttribute AvailableTimeFindRequest request) {
@@ -56,5 +50,11 @@ public class ReservationTimeController {
         return reservationTimes.stream()
                 .map(ReservationTimeResponse::toDto)
                 .toList();
+    }
+
+    @DeleteMapping("/admin/times/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable long id) {
+        reservationTimeService.delete(id);
     }
 }

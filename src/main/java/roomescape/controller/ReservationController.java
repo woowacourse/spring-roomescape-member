@@ -22,6 +22,14 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    @PostMapping("/reservations")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ReservationResponse create(@RequestBody ReservationCreateRequest request) {
+        Reservation reservation = reservationService.reserve(request);
+
+        return ReservationResponse.toDto(reservation);
+    }
+
     @GetMapping("/reservations")
     @ResponseStatus(HttpStatus.OK)
     public List<ReservationResponse> findAll() {
@@ -30,14 +38,6 @@ public class ReservationController {
         return reservations.stream()
                 .map(ReservationResponse::toDto)
                 .toList();
-    }
-
-    @PostMapping("/reservations")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse create(@RequestBody ReservationCreateRequest dto) {
-        Reservation reservation = reservationService.reserve(dto);
-
-        return ReservationResponse.toDto(reservation);
     }
 
     @DeleteMapping("/admin/times/{id}")
