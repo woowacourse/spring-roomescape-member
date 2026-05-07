@@ -60,6 +60,4 @@ public class ThemeService {
     private Theme getTheme(Long id) {
         return themeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
     }
-
-    //TODO: 인기 테마 조회 추가
 }
