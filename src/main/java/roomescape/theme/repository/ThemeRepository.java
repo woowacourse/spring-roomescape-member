@@ -16,4 +16,6 @@ public interface ThemeRepository {
 
     boolean existsByName(String name);
 
+    List<Theme> findPopularThemes(int period, int limit);
+
 }

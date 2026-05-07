@@ -12,19 +12,19 @@ CREATE TABLE reservation_time
 (
     id       BIGINT NOT NULL AUTO_INCREMENT,
     start_at TIME   NOT NULL,
-    theme_id BIGINT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id),
-    UNIQUE (theme_id, start_at)
+    UNIQUE (start_at)
 );
 
 CREATE TABLE reservation
 (
-    id      BIGINT       NOT NULL AUTO_INCREMENT,
-    name    VARCHAR(255) NOT NULL,
-    date    DATE         NOT NULL,
-    time_id BIGINT       NOT NULL,
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255) NOT NULL,
+    date     DATE         NOT NULL,
+    theme_id BIGINT       NOT NULL,
+    time_id  BIGINT       NOT NULL,
     PRIMARY KEY (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    UNIQUE (date, time_id)
+    UNIQUE (date, theme_id, time_id)
 );

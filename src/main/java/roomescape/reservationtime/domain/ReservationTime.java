@@ -2,19 +2,16 @@ package roomescape.reservationtime.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.theme.domain.Theme;
 
 public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
-    private final Theme theme;
 
-    private ReservationTime(final Long id, final LocalTime startAt, final Theme theme) {
+    private ReservationTime(final Long id, final LocalTime startAt) {
         validateStartAt(startAt);
 
         this.id = id;
         this.startAt = startAt;
-        this.theme = theme;
     }
 
     private void validateStartAt(LocalTime startAt) {
@@ -23,18 +20,18 @@ public class ReservationTime {
         }
     }
 
-    public static ReservationTime createNew(final LocalTime startAt, final Theme theme) {
-        return new ReservationTime(null, startAt, theme);
+    public static ReservationTime createNew(final LocalTime startAt) {
+        return new ReservationTime(null, startAt);
     }
 
-    public static ReservationTime of(final Long id, final LocalTime startAt, final Theme theme) {
+    public static ReservationTime of(final Long id, final LocalTime startAt) {
         validateId(id);
-        return new ReservationTime(id, startAt, theme);
+        return new ReservationTime(id, startAt);
     }
 
     public ReservationTime withId(final Long id) {
         validateId(id);
-        return new ReservationTime(id, this.startAt, this.theme);
+        return new ReservationTime(id, this.startAt);
     }
 
     private static void validateId(final Long id){
@@ -49,10 +46,6 @@ public class ReservationTime {
 
     public LocalTime getStartAt() {
         return this.startAt;
-    }
-
-    public Theme getTheme() {
-        return this.theme;
     }
 
     @Override

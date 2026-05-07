@@ -25,43 +25,31 @@ class ReservationTimeAdminApiTest {
     }
 
     @Test
-    void 테마_시간_관리_API() {
-        Map<String, String> theme = new HashMap<>();
-        theme.put("name", "미술관의 밤");
-        theme.put("description", "추리 테마");
-        theme.put("thumbnailUrl", "https://example.com/theme.png");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201);
-
+    void 예약_시간_관리_API() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(time)
-                .when().post("/admin/themes/1/times")
+                .when().post("/admin/reservation-times")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/admin/themes/1/times")
+                .when().get("/admin/reservation-times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/admin/themes/1/times/1")
+                .when().delete("/admin/reservation-times/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().get("/admin/themes/1/times")
+                .when().get("/admin/reservation-times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -70,8 +58,6 @@ class ReservationTimeAdminApiTest {
     private void clearTables() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
-        jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
     }
 }

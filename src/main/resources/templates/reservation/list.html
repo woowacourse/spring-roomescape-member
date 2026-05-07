@@ -302,11 +302,11 @@
                         <div class="item" th:each="time : ${availableTimes}">
                             <button type="button"
                                     class="time-option"
-                                    th:attr="data-time-id=${time.id},data-date=${selectedDate},data-theme-name=${time.theme.name},data-start-at=${time.startAt}"
+                                    th:attr="data-time-id=${time.id},data-date=${selectedDate},data-theme-name=${selectedTheme != null ? selectedTheme.name : ''},data-start-at=${time.startAt}"
                                     onclick="selectTimeSlot(this)">
                                 <div>
                                     <strong th:text="${time.startAt}">10:00</strong>
-                                    <span th:text="${time.theme.name}">테마명</span>
+                                    <span th:text="${selectedTheme != null ? selectedTheme.name : ''}">테마명</span>
                                 </div>
                                 <small>이 시간 선택</small>
                             </button>
@@ -334,10 +334,11 @@
                         <option value="">예약 가능한 시간을 먼저 조회하세요</option>
                         <option th:each="time : ${availableTimes}"
                                 th:value="${time.id}"
-                                th:text="${time.theme.name + ' / ' + time.startAt}">
+                                th:text="${time.startAt}">
                         </option>
                     </select>
                 </label>
+                <input type="hidden" name="themeId" th:value="${selectedThemeId}">
                 <div id="selection-card" class="selection-card hidden">
                     <strong id="selection-title">선택한 시간</strong>
                     <div id="selection-body" class="helper">조회 결과에서 시간을 고르면 자동으로 채워집니다.</div>
@@ -355,7 +356,7 @@
                 <div class="item" th:each="reservation : ${reservations}">
                     <div>
                         <strong th:text="${reservation.name}">브라운</strong>
-                        <span th:text="${reservation.date + ' / ' + reservation.time.theme.name + ' / ' + reservation.time.startAt}">내용</span>
+                        <span th:text="${reservation.date + ' / ' + reservation.theme.name + ' / ' + reservation.time.startAt}">내용</span>
                     </div>
                     <form class="inline-form" method="post" th:action="@{/pages/user/reservations/{id}/delete(id=${reservation.id})}">
                         <button type="submit" class="delete">삭제</button>

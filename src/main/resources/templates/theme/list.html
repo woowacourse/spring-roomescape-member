@@ -159,7 +159,7 @@
                         <small th:text="${theme.thumbnailUrl}">썸네일</small>
                     </div>
                     <div class="actions">
-                        <a th:href="@{/pages/admin/themes/{id}/times(id=${theme.id})}">시간 관리</a>
+                        <a th:href="@{/pages/admin/reservation-times}">시간 관리</a>
                         <form method="post" th:action="@{/pages/admin/themes/{id}/delete(id=${theme.id})}">
                             <button type="submit" class="delete">삭제</button>
                         </form>

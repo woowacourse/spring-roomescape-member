@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.controller.dto.ReservationTimeResponse;
+import roomescape.reservationtime.service.ReservationTimeService;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
@@ -20,13 +21,16 @@ import roomescape.theme.service.ThemeService;
 public class ReservationPageController {
 
     private final ReservationService reservationService;
+    private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
 
     public ReservationPageController(
             final ReservationService reservationService,
+            final ReservationTimeService reservationTimeService,
             final ThemeService themeService
     ) {
         this.reservationService = reservationService;
+        this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
     }
 
@@ -44,17 +48,18 @@ public class ReservationPageController {
         model.addAttribute("themes", themeService.getAll().stream()
                 .map(ThemeResponse::from)
                 .toList());
-        model.addAttribute("popularThemes", reservationService.getPopularThemes(period, limit).stream()
+        model.addAttribute("popularThemes", themeService.getPopularThemes(period, limit).stream()
                 .map(ThemeResponse::from)
                 .toList());
         model.addAttribute("selectedThemeId", themeId);
+        model.addAttribute("selectedTheme", themeId == null ? null : ThemeResponse.from(themeService.getById(themeId)));
         model.addAttribute("selectedDate", date);
         model.addAttribute("period", period);
         model.addAttribute("limit", limit);
 
         List<ReservationTimeResponse> availableTimes = List.of();
         if (themeId != null && date != null) {
-            availableTimes = reservationService.findAvailableTimes(date, themeId).stream()
+            availableTimes = reservationTimeService.findAvailableTimes(date, themeId).stream()
                     .map(ReservationTimeResponse::from)
                     .toList();
         }
@@ -67,9 +72,10 @@ public class ReservationPageController {
     public String createReservation(
             @RequestParam final String name,
             @RequestParam final LocalDate date,
+            @RequestParam final Long themeId,
             @RequestParam final Long timeId
     ) {
-        reservationService.save(name, date, timeId);
+        reservationService.save(name, date, themeId, timeId);
         return "redirect:/pages/user/reservations";
     }
 

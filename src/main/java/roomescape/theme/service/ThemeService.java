@@ -36,4 +36,8 @@ public class ThemeService {
     public void deleteById(final long themeId) {
         themeRepository.deleteById(themeId);
     }
+
+    public List<Theme> getPopularThemes(final int period, final int limit) {
+        return themeRepository.findPopularThemes(period, limit);
+    }
 }

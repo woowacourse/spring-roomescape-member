@@ -22,10 +22,10 @@ class ReservationTest {
         String name = "쿠다";
         LocalDate date = LocalDate.parse("2026-03-08");
         Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
-        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"), theme);
+        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"));
 
         // when & then
-        assertThatCode(() -> Reservation.createNew(name, date, time))
+        assertThatCode(() -> Reservation.createNew(name, date, theme, time))
                 .doesNotThrowAnyException();
     }
 
@@ -37,10 +37,10 @@ class ReservationTest {
         // given
         LocalDate date = LocalDate.parse("2026-03-08");
         Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
-        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"), theme);
+        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"));
 
         // when & then
-        assertThatThrownBy(() -> Reservation.createNew(name, date, time))
+        assertThatThrownBy(() -> Reservation.createNew(name, date, theme, time))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -50,10 +50,10 @@ class ReservationTest {
         // given
         String name = "쿠다";
         Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
-        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"), theme);
+        ReservationTime time = ReservationTime.createNew(LocalTime.parse("10:00"));
 
         // when & then
-        assertThatThrownBy(() -> Reservation.createNew(name, null, time))
+        assertThatThrownBy(() -> Reservation.createNew(name, null, theme, time))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -63,9 +63,10 @@ class ReservationTest {
         // given
         String name = "쿠다";
         LocalDate date = LocalDate.parse("2026-03-08");
+        Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
 
         // when & then
-        assertThatThrownBy(() -> Reservation.createNew(name, date, null))
+        assertThatThrownBy(() -> Reservation.createNew(name, date, theme, null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

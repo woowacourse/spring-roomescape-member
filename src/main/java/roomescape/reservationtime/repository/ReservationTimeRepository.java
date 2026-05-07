@@ -1,6 +1,7 @@
 package roomescape.reservationtime.repository;
 
 import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -9,7 +10,7 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
-    List<ReservationTime> findAllByThemeId(long themeId);
+    List<ReservationTime> findAvailableTimes(LocalDate date, long themeId);
 
     Optional<ReservationTime> findById(long timeId);
 
@@ -17,6 +18,6 @@ public interface ReservationTimeRepository {
 
     ReservationTime save(ReservationTime reservationTime);
 
-    boolean existsByStartAtAndThemeId(final LocalTime startAt, final long themeId);
+    boolean existsByStartAt(LocalTime startAt);
 
 }

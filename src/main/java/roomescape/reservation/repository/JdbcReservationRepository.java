@@ -27,14 +27,14 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         ReservationTime reservationTime = ReservationTime.of(
                 resultSet.getLong("time_id"),
-                resultSet.getTime("start_at").toLocalTime(),
-                theme
+                resultSet.getTime("start_at").toLocalTime()
         );
 
         return Reservation.of(
                 resultSet.getLong("id"),
                 resultSet.getString("reservation_name"),
                 resultSet.getDate("date").toLocalDate(),
+                theme,
                 reservationTime
         );
     };
@@ -68,7 +68,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                        t.thumbnail_url
                 FROM reservation AS r
                 INNER JOIN reservation_time AS rt ON r.time_id = rt.id
-                INNER JOIN theme AS t ON rt.theme_id = t.id
+                INNER JOIN theme AS t ON r.theme_id = t.id
                 """;
 
         return jdbcTemplate.query(sql, reservationRowMapper);
@@ -88,7 +88,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                        t.thumbnail_url
                 FROM reservation AS r
                 INNER JOIN reservation_time AS rt ON r.time_id = rt.id
-                INNER JOIN theme AS t ON rt.theme_id = t.id
+                INNER JOIN theme AS t ON r.theme_id = t.id
                 WHERE r.id = ?
                 """;
 
@@ -105,14 +105,15 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, reservation.getName());
             preparedStatement.setDate(2, Date.valueOf(reservation.getDate()));
-            preparedStatement.setLong(3, reservation.getTime().getId());
+            preparedStatement.setLong(3, reservation.getTheme().getId());
+            preparedStatement.setLong(4, reservation.getTime().getId());
             return preparedStatement;
         }, keyHolder);
 
@@ -125,53 +126,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(final LocalDate date, final long timeId) {
-        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
+    public boolean existsByDateAndThemeIdAndTimeId(final LocalDate date, final long themeId, final long timeId) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND theme_id = ? AND time_id = ?)";
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 sql,
                 Boolean.class,
                 Date.valueOf(date),
+                themeId,
                 timeId
         ));
     }
-
-    @Override
-    public List<Long> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
-        final String sql = """
-                SELECT rt.id AS time_id
-                FROM reservation AS r
-                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
-                WHERE rt.theme_id = ? AND r.date = ?
-                """;
-
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> resultSet.getLong("time_id"),
-                themeId,
-                Date.valueOf(date)
-        );
-    }
-
-    @Override
-    public List<Theme> findPopularThemes(final int period, final int limit) {
-        final String sql = """
-                SELECT t.id AS theme_id,
-                       t.name AS theme_name,
-                       t.description,
-                       t.thumbnail_url
-                FROM reservation r
-                INNER JOIN reservation_time rt ON r.time_id = rt.id
-                INNER JOIN theme t ON rt.theme_id = t.id
-                WHERE r.date >= ? AND r.date <= ?
-                GROUP BY t.id, t.name, t.description, t.thumbnail_url
-                ORDER BY COUNT(*) DESC, t.id ASC
-                LIMIT ?
-                """;
-        LocalDate end = LocalDate.now();
-        LocalDate start = end.minusDays(period);
-
-        return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(end), limit);
-    }
-
 }

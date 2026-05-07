@@ -1,42 +1,42 @@
 package roomescape.reservationtime.service;
 
 import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.service.ThemeService;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeService themeService;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ThemeService themeService) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
-        this.themeService = themeService;
     }
 
 
-    public ReservationTime save(final LocalTime startAt, final Long themeId) {
-        Theme theme = themeService.getById(themeId);
-        ReservationTime reservationTime = ReservationTime.createNew(startAt, theme);
+    public ReservationTime save(final LocalTime startAt) {
+        ReservationTime reservationTime = ReservationTime.createNew(startAt);
 
-        if (reservationTimeRepository.existsByStartAtAndThemeId(startAt, themeId)) {
+        if (reservationTimeRepository.existsByStartAt(startAt)) {
             throw new IllegalArgumentException("[ERROR] 같은 시간을 추가할 수 없습니다.");
         }
 
         return reservationTimeRepository.save(reservationTime);
     }
 
-    public List<ReservationTime> findAllByThemeId(final long themeId) {
-        return reservationTimeRepository.findAllByThemeId(themeId);
+    public List<ReservationTime> findAvailableTimes(final LocalDate date, final long themeId) {
+        return reservationTimeRepository.findAvailableTimes(date, themeId);
     }
 
     public void deleteById(final long timeId) {
         reservationTimeRepository.deleteById(timeId);
+    }
+
+    public List<ReservationTime> getAll() {
+        return reservationTimeRepository.findAll();
     }
 
     public ReservationTime getById(final long timeId) {

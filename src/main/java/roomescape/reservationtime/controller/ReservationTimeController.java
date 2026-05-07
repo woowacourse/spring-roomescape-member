@@ -7,27 +7,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.service.ReservationService;
 import roomescape.reservationtime.controller.dto.ReservationTimeRequest;
 import roomescape.reservationtime.controller.dto.ReservationTimeResponse;
+import roomescape.reservationtime.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/themes/{themeId}/times")
 public class ReservationTimeController {
 
-    private final ReservationService reservationService;
+    private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationService reservationService) {
-        this.reservationService = reservationService;
+    public ReservationTimeController(final ReservationTimeService reservationTimeService) {
+        this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping
+    @GetMapping("/available")
     public ResponseEntity<List<ReservationTimeResponse>> getAvailableTimes(
             @PathVariable final Long themeId,
             @ModelAttribute final ReservationTimeRequest themeReservationTimeRequest
     ) {
         return ResponseEntity.ok()
-                .body(reservationService.findAvailableTimes(themeReservationTimeRequest.date(), themeId).stream()
+                .body(reservationTimeService.findAvailableTimes(themeReservationTimeRequest.date(), themeId).stream()
                         .map(ReservationTimeResponse::from)
                         .toList());
     }

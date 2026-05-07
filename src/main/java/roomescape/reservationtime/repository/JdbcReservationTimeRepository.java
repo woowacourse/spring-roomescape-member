@@ -2,6 +2,8 @@ package roomescape.reservationtime.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -11,36 +13,21 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.theme.domain.Theme;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private static final String RESERVATION_TIME_BASE_SELECT = """
             SELECT rt.id,
-                   rt.start_at,
-                   t.id AS theme_id,
-                   t.name AS theme_name,
-                   t.description,
-                   t.thumbnail_url
+                   rt.start_at
             FROM reservation_time AS rt
-            JOIN theme AS t ON rt.theme_id = t.id
             """;
 
-    private static final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) -> {
-        Theme theme = Theme.of(
-                resultSet.getLong("theme_id"),
-                resultSet.getString("theme_name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail_url")
-        );
-
-        return ReservationTime.of(
-                resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime(),
-                theme
-        );
-    };
+    private static final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
+            ReservationTime.of(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime()
+            );
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -50,13 +37,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime save(final ReservationTime reservationTime) {
-        String sql = "INSERT INTO reservation_time (start_at, theme_id) VALUES (?, ?)";
+        String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setTime(1, Time.valueOf(reservationTime.getStartAt()));
-            preparedStatement.setLong(2, reservationTime.getTheme().getId());
             return preparedStatement;
         }, keyHolder);
 
@@ -70,16 +56,26 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = RESERVATION_TIME_BASE_SELECT + " ORDER BY t.id, rt.start_at";
+        String sql = RESERVATION_TIME_BASE_SELECT + " ORDER BY rt.start_at";
 
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
     @Override
-    public List<ReservationTime> findAllByThemeId(final long themeId) {
-        String sql = RESERVATION_TIME_BASE_SELECT + " WHERE rt.theme_id = ? ORDER BY rt.start_at";
+    public List<ReservationTime> findAvailableTimes(final LocalDate date, final long themeId) {
+        String sql = """
+                SELECT rt.id,
+                       rt.start_at
+                FROM reservation_time rt
+                WHERE rt.id NOT IN (
+                    SELECT r.time_id
+                    FROM reservation r
+                    WHERE r.date = ? AND r.theme_id = ?
+                )
+                ORDER BY rt.start_at
+                """;
 
-        return jdbcTemplate.query(sql, reservationTimeRowMapper, themeId);
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, Date.valueOf(date), themeId);
     }
 
     @Override
@@ -98,13 +94,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean existsByStartAtAndThemeId(final LocalTime startAt, final long themeId) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE theme_id = ? AND start_at = ?)";
+    public boolean existsByStartAt(final LocalTime startAt) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 sql,
                 Boolean.class,
-                themeId,
                 Time.valueOf(startAt)
         ));
     }

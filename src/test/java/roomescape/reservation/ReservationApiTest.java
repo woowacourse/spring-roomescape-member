@@ -40,11 +40,12 @@ class ReservationApiTest {
     @Test
     void 예약_추가_및_삭제() {
         createTheme();
-        createReservationTime("15:40", 1L);
+        createReservationTime("15:40");
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
+        reservation.put("themeId", 1);
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -77,8 +78,8 @@ class ReservationApiTest {
     void DB_조회_API_전환() {
         jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail_url) VALUES (?, ?, ?, ?)",
                 1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at, theme_id) VALUES (?, ?, ?)", 1L, "15:40:00", 1L);
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", 1L);
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 1L, "15:40:00");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05", 1L, 1L);
 
         List<Map<String, Object>> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -95,11 +96,12 @@ class ReservationApiTest {
     @Test
     void DB_추가_삭제_API_전환() {
         createTheme();
-        createReservationTime("10:00", 1L);
+        createReservationTime("10:00");
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
+        reservation.put("themeId", 1);
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -124,11 +126,12 @@ class ReservationApiTest {
     @Test
     void 예약과_시간_연결() {
         createTheme();
-        createReservationTime("10:00", 1L);
+        createReservationTime("10:00");
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
+        reservation.put("themeId", 1);
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -148,14 +151,14 @@ class ReservationApiTest {
     @Test
     void 예약_가능_시간_조회() {
         createTheme();
-        createReservationTime("10:00", 1L);
-        createReservationTime("11:00", 1L);
+        createReservationTime("10:00");
+        createReservationTime("11:00");
 
-        createReservation("브라운", "2026-05-10", 1L);
+        createReservation("브라운", "2026-05-10", 1L, 1L);
 
         RestAssured.given().log().all()
                 .queryParam("date", "2026-05-10")
-                .when().get("/reservations/theme/1/times/available-times")
+                .when().get("/themes/1/times/available")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1))
@@ -170,24 +173,24 @@ class ReservationApiTest {
         createTheme("심해 연구소");
         createTheme("폐병원 탈출");
 
-        createReservationTime("10:00", 1L);
-        createReservationTime("11:00", 2L);
-        createReservationTime("12:00", 3L);
+        createReservationTime("10:00");
+        createReservationTime("11:00");
+        createReservationTime("12:00");
 
-        createReservation("쿠다", today.minusDays(1).toString(), 1L);
-        createReservation("아루", today.minusDays(2).toString(), 1L);
-        createReservation("도기", today.minusDays(3).toString(), 1L);
+        createReservation("쿠다", today.minusDays(1).toString(), 1L, 1L);
+        createReservation("아루", today.minusDays(2).toString(), 1L, 1L);
+        createReservation("도기", today.minusDays(3).toString(), 1L, 1L);
 
-        createReservation("포비", today.minusDays(1).toString(), 2L);
-        createReservation("솔라", today.minusDays(2).toString(), 2L);
+        createReservation("포비", today.minusDays(1).toString(), 2L, 2L);
+        createReservation("솔라", today.minusDays(2).toString(), 2L, 2L);
 
-        createReservation("레오", today.minusDays(1).toString(), 3L);
-        createReservation("오래된예약", today.minusDays(10).toString(), 3L);
+        createReservation("레오", today.minusDays(1).toString(), 3L, 3L);
+        createReservation("오래된예약", today.minusDays(10).toString(), 3L, 3L);
 
         RestAssured.given().log().all()
                 .queryParam("period", 7)
                 .queryParam("limit", 2)
-                .when().get("/reservations/theme/popular")
+                .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2))
@@ -213,22 +216,23 @@ class ReservationApiTest {
                 .statusCode(201);
     }
 
-    private void createReservationTime(final String startAt, final Long themeId) {
+    private void createReservationTime(final String startAt) {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", startAt);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(time)
-                .when().post("/admin/themes/" + themeId + "/times")
+                .when().post("/admin/reservation-times")
                 .then().log().all()
                 .statusCode(201);
     }
 
-    private void createReservation(final String name, final String date, final Long timeId) {
+    private void createReservation(final String name, final String date, final Long themeId, final Long timeId) {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", name);
         reservation.put("date", date);
+        reservation.put("themeId", themeId);
         reservation.put("timeId", timeId);
 
         RestAssured.given().log().all()

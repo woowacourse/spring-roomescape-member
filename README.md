@@ -31,8 +31,8 @@
 | 예약 생성       | `POST` `/reservations`                                           | `{name, date, timeId}` | `{id, name, date, time}`        |
 | 예약 삭제       | `DELETE` `/reservations/{reservationId}`                         | -                      | -                               |
 | 예약 조회       | `GET` `/reservations`                                            | -                      | `[{id, name, date, time}, ...]` |
-| 예약 가능 시간 조회 | `GET` `/reservations/theme/{themeId}/times?date={yyyy-MM-dd}`    | -                      | `[{id, startAt, theme}, ...]`   |
-| 인기 테마 조회    | `GET` `/reservation/theme/popular?period={period}&limit={limit}` | -       | `[{id, name, description, thumbnailUrl}, ...]`                                |
+| 예약 가능 시간 조회 | `GET` `/themes/{themeId}/times/available?date={yyyy-MM-dd}`      | -                      | `[{id, startAt}, ...]`          |
+| 인기 테마 조회    | `GET` `/themes/popular?period={period}&limit={limit}`            | -                      | `[{id, name, description, thumbnailUrl}, ...]` |
 
 `Theme`
 
@@ -41,14 +41,16 @@
 | 관리자 테마 추가 | `POST` `/admin/themes` | `{name, description, thumbnailUrl}` | `{id, name, description, thumbnailUrl}` |
 | 관리자 테마 삭제 | `DELETE` `/admin/themes/{themeId}` | - | - |
 | 관리자 테마 조회  | `GET` `/admin/themes` | - | `[{id, name, description, thumbnailUrl}, ...]` |
+| 인기 테마 조회 | `GET` `/themes/popular?period={period}&limit={limit}` | - | `[{id, name, description, thumbnailUrl}, ...]` |
 
 `ReservationTime`
 
 | 기능 | Http/url | 요청본문 | 응답 |
 |--------------|------------------------------------------|-------------|-----------------------------------------------------|
-| 관리자 테마 시간 생성 | `POST` `/admin/themes/{themeId}/times` | `{startAt}` | `{id, startAt, theme}` |
-| 관리자 테마 시간 삭제 | `DELETE` `/admin/themes/{themeId}/times/{timeId}` | - | - |
-| 관리자 테마 시간 조회 | `GET` `/admin/themes/{themeId}/times` | - | `[{id, startAt, theme}, ...]` |
+| 관리자 시간 생성 | `POST` `/admin/reservation-times` | `{startAt}` | `{id, startAt}` |
+| 관리자 시간 삭제 | `DELETE` `/admin/reservation-times/{timeId}` | - | - |
+| 관리자 시간 조회 | `GET` `/admin/reservation-times` | - | `[{id, startAt}, ...]` |
+| 예약 가능 시간 조회 | `GET` `/themes/{themeId}/times/available?date={yyyy-MM-dd}` | - | `[{id, startAt}, ...]` |
 
 ## 테이블 설계 
 
@@ -56,13 +58,15 @@
 ```sql
 CREATE TABLE reservation
 (
-    id      BIGINT       NOT NULL AUTO_INCREMENT,
-    name    VARCHAR(255) NOT NULL,
-    date    DATE         NOT NULL,
-    time_id BIGINT       NOT NULL,
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255) NOT NULL,
+    date     DATE         NOT NULL,
+    theme_id BIGINT       NOT NULL,
+    time_id  BIGINT       NOT NULL,
     PRIMARY KEY (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    UNIQUE (date, time_id)
+    UNIQUE (date, theme_id, time_id)
 );
 ```
 
@@ -72,10 +76,8 @@ CREATE TABLE reservation_time
 (
     id       BIGINT NOT NULL AUTO_INCREMENT,
     start_at TIME   NOT NULL,
-    theme_id BIGINT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id),
-    UNIQUE (start_at, theme_id)
+    UNIQUE (start_at)
 );
 ```
 
