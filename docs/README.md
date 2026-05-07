@@ -12,7 +12,7 @@
 
 **예약을 한다.**
 - 날짜와 테마를 선택하고 예약 가능한 시간을 선택하면 예약할 수 있다.
-- `dateId`, `timeId`, `themeId`, `status`를 검증한다. (이때, status가 `RESERVED`인지 검증)
+- `dateId`, `timeId`, `themeId`, `name`을 입력받는다.
 - 예약의 기본 상태는 `RESERVED`이다.
 
 **예약을 취소한다.**
@@ -20,26 +20,21 @@
 - 예약 상태를 `CANCELED`로 변경한다.
 
 **예약을 조회한다.**
-- 검색어(`username`)를 입력받을 수 있다. 검색어가 없다면 전체 조회한다.
-- 필터링 조건은 `RESERVED`와 `CANCELED`가 존재한다.
-- 예약 날짜와 예약 시간을 기준으로 내림차순 정렬한다.
+- 전체 예약을 조회한다.
 
 ### 사용자
 
 **예약을 한다.**
 - 날짜와 테마를 선택하고 예약 가능한 시간을 선택하면 예약할 수 있다.
-- `dateId`, `timeId`, `themeId`, `status`를 검증한다. (이때, status가 `RESERVED`인지 검증)
+- `dateId`, `timeId`, `themeId`, `name`을 입력받는다.
 - 예약의 기본 상태는 `RESERVED`이다.
 
 **예약을 취소한다.**
-- 예약자의 성함과 일치하는지 확인한다.
 - 예약 상태를 `CANCELED`로 변경한다.
 
 **예약을 조회한다.**
-- `username`로 예약을 조회한다.
-- Query Parameter로 `status`를 받는다. (nullable)
-    - `status`가 null이면 `RESERVED`, `CANCELED` 모두 시간순으로 조회한다.
-    - `status`가 하나 선택되면 해당 status로 필터링하고 시간순으로 조회한다.
+- `name`(예약자 성함)을 Path Variable로 받아 해당 예약자의 예약 목록을 조회한다.
+- 예약 날짜 및 시간 기준 오름차순으로 정렬한다.
 
 ---
 
@@ -49,18 +44,18 @@
 
 **예약 가능한 날짜를 생성한다.**
 - `date`를 보내 생성한다.
-  - 이미 존재하는 `date`라면 예외가 발생한다.
+- 이미 존재하는 `date`라면 예외가 발생한다.
 
 **예약 가능한 날짜를 조회한다.**
-- `id`, `date`를 포함한 `List<ReservationDateDto>`를 반환한다.
+- `id`, `date`를 포함한 `List<ReservationDateDetailDto>`를 반환한다.
 
 **예약 가능 날짜를 삭제한다.**
-- hard-delete 방식으로 삭제한다. 
+- hard-delete 방식으로 삭제한다.
 
 ### 사용자
 
 **예약 가능한 날짜를 조회한다.**
-- 활성화 + 오늘 이후 날짜를 조회한다.
+- 오늘 이후 날짜만 조회한다.
 
 ---
 
@@ -69,12 +64,11 @@
 ### 관리자
 
 **예약 가능한 시간을 생성한다.**
-- 예약 가능 시간은 1시간 단위이다.
 - `startAt`을 보내 생성한다.
 - 이미 존재하는 `startAt`이라면 예외가 발생한다.
 
 **예약 가능한 시간을 조회한다.**
-- `id`, `time`을 포함한 `List<ReservationTimeDto>`를 반환한다.
+- `id`, `startAt`을 포함한 `List<ReservationTimeDetailDto>`를 반환한다.
 
 **예약 가능한 시간을 삭제한다.**
 - hard-delete 방식으로 삭제한다.
@@ -82,7 +76,7 @@
 ### 사용자
 
 **예약 가능한 시간을 조회한다.**
-- 활성화 + 오늘 + 지금 시간 이후를 조회한다.
+- `date`와 `themeId`를 받아 해당 날짜+테마에 `RESERVED` 예약이 없는 시간만 반환한다.
 
 ---
 
@@ -96,21 +90,21 @@
 - `name`, `description`, `thumbnailUrl`을 받아 생성한다.
 - 기본 상태는 비활성화(`isActive: false`)이다.
 
-**인기 테마 Top10을 조회한다. (수요 파악용)**
-- 취소를 포함한(`RESERVED` + `CANCELED`) 예약 수 Top 10 테마를 반환한다.
-- 테마당 예약된 수를 함께 반환한다.
+**모든 테마를 조회한다.**
+- 활성화/비활성화 여부 포함 전체 목록을 반환한다.
 
 **테마의 상태를 변경한다.**
 - 활성화/비활성화를 전환한다.
 
-
 ### 사용자
 
 **인기 테마 Top10을 조회한다. (추천용)**
-- 취소를 포함하지 않은(`RESERVED`) 예약 수 Top 10 테마를 조회한다.
+- 최근 7일 기준, 취소를 포함하지 않은(`RESERVED`) 예약 수 Top 10 테마를 조회한다.
+- 활성화된 테마만 포함한다.
 - 순위만 반환한다. (예약 수 X)
 
 **활성화된 테마 목록을 조회한다.**
+- 가나다순 정렬하여 반환한다.
 
 ---
 
@@ -130,7 +124,7 @@
 
 ```json
 {
-    "username": "송송",
+    "name": "송송",
     "dateId": 1,
     "timeId": 1,
     "themeId": 1
@@ -142,14 +136,15 @@
 ```json
 {
     "id": 1,
-    "username": "송송",
+    "name": "송송",
     "date": "2026-05-04",
     "time": "12:00:00",
     "theme": {
         "id": 1,
         "name": "공포",
         "description": "테스트용 더미 설명1",
-        "thumbnailUrl": "https://~"
+        "thumbnailUrl": "https://~",
+        "isActive": true
     },
     "status": "RESERVED"
 }
@@ -157,31 +152,25 @@
 
 ---
 
-#### (관리자) 예약 상태를 변경한다. (방탈출 예약 취소)
+#### (관리자) 방탈출 예약을 취소한다.
 
 - URL: `/admin/reservations/{id}`
 - Method: `PATCH`
-- 요청 본문
-
-```json
-{
-    "status": "CANCELED"
-}
-```
-
+- 요청 본문 없음 (취소로 고정)
 - 응답 본문 `200 OK`
 
 ```json
 {
     "id": 1,
-    "username": "송송",
+    "name": "송송",
     "date": "2026-05-04",
     "time": "12:00:00",
     "theme": {
         "id": 1,
         "name": "공포",
         "description": "테스트용 더미 설명1",
-        "thumbnailUrl": "https://~"
+        "thumbnailUrl": "https://~",
+        "isActive": true
     },
     "status": "CANCELED"
 }
@@ -191,32 +180,27 @@
 
 #### (관리자) 방탈출 예약을 조회한다.
 
-- URL: `/admin/reservations?username={username}&status={status}`
+- URL: `/admin/reservations`
 - Method: `GET`
-- Query Parameters
-    - `username` (optional): 검색어, 없으면 전체 조회
-    - `status` (optional): `RESERVED` | `CANCELED`, 없으면 전체 조회
-- 정렬: 예약 날짜 및 예약 시간 기준 내림차순
 - 응답 본문 `200 OK`
 
 ```json
-{
+[
     {
         "id": 1,
-        "username": "송송",
+        "name": "송송",
         "date": "2026-05-04",
         "time": "12:00:00",
         "theme": {
             "id": 1,
             "name": "공포",
             "description": "테스트용 더미 설명1",
-            "thumbnailUrl": "https://~"
+            "thumbnailUrl": "https://~",
+            "isActive": true
         },
         "status": "RESERVED"
     }
-},
-...
-}
+]
 ```
 
 ---
@@ -231,7 +215,7 @@
 
 ```json
 {
-    "username": "송송",
+    "name": "송송",
     "dateId": 1,
     "timeId": 1,
     "themeId": 1
@@ -243,14 +227,15 @@
 ```json
 {
     "id": 1,
-    "username": "송송",
+    "name": "송송",
     "date": "2026-05-04",
     "time": "12:00:00",
     "theme": {
         "id": 1,
         "name": "공포",
         "description": "테스트용 더미 설명1",
-        "thumbnailUrl": "https://~"
+        "thumbnailUrl": "https://~",
+        "isActive": true
     },
     "status": "RESERVED"
 }
@@ -258,33 +243,25 @@
 
 ---
 
-#### (사용자) 예약 상태를 변경한다. (방탈출 예약 취소)
-
-> 생각해볼 요소: 프론트가 status 종류를 알기 위해 ReservationStatus(Enum)을 반환하는 API가 필요할까?
+#### (사용자) 방탈출 예약을 취소한다.
 
 - URL: `/member/reservations/{id}`
 - Method: `PATCH`
-- 요청 본문
-
-```json
-{
-    "status": "CANCELED"
-}
-```
-
+- 요청 본문 없음 (취소로 고정)
 - 응답 본문 `200 OK`
 
 ```json
 {
     "id": 1,
-    "username": "송송",
+    "name": "송송",
     "date": "2026-05-04",
     "time": "12:00:00",
     "theme": {
         "id": 1,
         "name": "공포",
         "description": "테스트용 더미 설명1",
-        "thumbnailUrl": "https://~"
+        "thumbnailUrl": "https://~",
+        "isActive": true
     },
     "status": "CANCELED"
 }
@@ -294,28 +271,29 @@
 
 #### (사용자) 방탈출 예약을 조회한다.
 
-- URL: `/member/reservations`
+- URL: `/member/reservations/{name}`
 - Method: `GET`
+- Path Variable: `name` — 예약자 성함
+- 정렬: 예약 날짜 및 시간 기준 오름차순
 - 응답 본문 `200 OK`
 
 ```json
-{
+[
     {
         "id": 1,
-        "username": "송송",
+        "name": "송송",
         "date": "2026-05-04",
         "time": "12:00:00",
         "theme": {
             "id": 1,
             "name": "공포",
             "description": "테스트용 더미 설명1",
-            "thumbnailUrl": "https://~"
+            "thumbnailUrl": "https://~",
+            "isActive": true
         },
         "status": "RESERVED"
     }
-},
-...
-}
+]
 ```
 
 ---
@@ -354,14 +332,12 @@
 - 응답 본문 `200 OK`
 
 ```json
-{
+[
     {
         "id": 1,
         "startAt": "12:00:00"
     }
-},
-...
-}
+]
 ```
 
 ---
@@ -390,18 +366,15 @@
 - 응답 본문 `200 OK`
 
 ```json
-{
+[
     {
         "id": 1,
         "startAt": "10:00:00"
     }
-},
-...
-}
+]
 ```
 
 ---
-
 ## 3. ReservationDate
 
 ### 3-1. 관리자
@@ -429,9 +402,24 @@
 
 ---
 
-#### (관리자) 예약 날짜를 삭제한다.
+#### (관리자) 예약 날짜 목록을 조회한다.
 
-> Reservation에서 dateId가 아닌 date를 가지므로 FK에 포함되지 않음
+- URL: `/admin/dates`
+- Method: `GET`
+- 응답 본문 `200 OK`
+
+```json
+[
+    {
+        "id": 1,
+        "date": "2026-05-04"
+    }
+]
+```
+
+---
+
+#### (관리자) 예약 날짜를 삭제한다.
 
 - URL: `/admin/dates/{id}`
 - Method: `DELETE`
@@ -455,14 +443,12 @@
 - 응답 본문 `200 OK`
 
 ```json
-{
+[
     {
         "id": 1,
         "date": "2026-05-04"
     }
-},
-...
-}
+]
 ```
 
 ---
@@ -506,7 +492,7 @@
 - 응답 본문 `200 OK`
 
 ```json
-{
+[
     {
         "id": 1,
         "name": "공포",
@@ -514,37 +500,8 @@
         "thumbnailUrl": "https://~~",
         "isActive": false
     }
-},
-...
-}
+]
 ```
-
----
-
-#### (관리자) 인기 테마 목록을 조회한다.
-
-> 취소를 포함한 예약 수 기준 TopN + 활성화된 테마 목록 조회
-
-- URL: `/admin/themes/popular?top={top}`
-- Method: `GET`
-- Query Parameters: `top` (optional, default: 10)
-- 응답 본문 `200 OK`
-
-```json
-{
-    {
-        "id": 1,
-        "name": "공포",
-        "description": "테스트 더미 설명1",
-        "thumbnailUrl": "https://~",
-        "count": 7
-    }
-},
-...
-}
-```
-
-> 선택사항: `isActive` 필드 포함 여부 검토 필요
 
 ---
 
@@ -578,47 +535,43 @@
 
 #### (사용자) 인기 테마 목록을 조회한다.
 
-> 활성화된 테마 목록만 조회
-
 - URL: `/member/themes/popular?top={top}`
 - Method: `GET`
-- Query Parameters: `top` (optional, default: 10)
+- Query Parameters: `top` (required)
+- 기준: 오늘 기준 최근 7일 이내 게임 날짜, `RESERVED` 예약 수 기준 내림차순, 활성화된 테마만
 - 응답 본문 `200 OK`
 
 ```json
-{
+[
     {
         "id": 1,
         "name": "공포",
         "description": "테스트 더미 설명1",
-        "thumbnailUrl": "https://~"
+        "thumbnailUrl": "https://~",
+        "isActive": true
     }
-},
-...
-}
+]
 ```
 
 ---
 
 #### (사용자) 테마 목록을 조회한다.
 
-> 가나다순 정렬
-
 - URL: `/member/themes`
 - Method: `GET`
+- 활성화된 테마만, 가나다순 정렬
 - 응답 본문 `200 OK`
 
 ```json
-{
+[
     {
         "id": 1,
         "name": "공포",
         "description": "테스트 더미 설명1",
-        "thumbnailUrl": "https://~"
+        "thumbnailUrl": "https://~",
+        "isActive": true
     }
-},
-...
-}
+]
 ```
 
 ---
@@ -633,28 +586,28 @@ erDiagram
 
     RESERVATION {
         Long id PK
-        String username
-        Long date
-        Long time
-        Long themeId FK "Theme 참조"
-        Enum status "예약 상태"
+        String name
+        Date date FK "reservation_date(date) 참조"
+        Time start_at FK "reservation_time(start_at) 참조"
+        Long theme_id FK "theme(id) 참조"
+        Enum status "RESERVED | CANCELED"
     }
 
     THEME {
         Long id PK
         String name
         String description
-        String thumbnailUrl
-        Boolean isActive
+        String thumbnail_url
+        Boolean is_active
     }
 
     RESERVATION_DATE {
         Long id PK
-        Date date
+        Date date UNIQUE
     }
 
     RESERVATION_TIME {
         Long id PK
-        Time startAt
+        Time start_at UNIQUE
     }
 ```
