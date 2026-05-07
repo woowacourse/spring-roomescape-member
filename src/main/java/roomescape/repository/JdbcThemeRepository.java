@@ -3,7 +3,6 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -17,6 +16,14 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private static Map<String, Object> createParams(Theme theme) {
+        return Map.of(
+                "name", theme.name(),
+                "description", theme.description(),
+                "thumbnail_url", theme.thumbnailUrl()
+        );
     }
 
     @Override
@@ -33,17 +40,15 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Theme save(Theme theme) {
-        SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
-
-        Map<String, Object> params = Map.of(
-                "name", theme.name(),
-                "description", theme.description(),
-                "thumbnail_url", theme.thumbnailUrl());
-
+        SimpleJdbcInsert insert = createInsert();
+        Map<String, Object> params = createParams(theme);
         long id = insert.executeAndReturnKey(params).longValue();
-        return new Theme(id, theme.name(), theme.description(), theme.thumbnailUrl());
+        return new Theme(
+                id,
+                theme.name(),
+                theme.description(),
+                theme.thumbnailUrl()
+        );
     }
 
     @Override
@@ -74,7 +79,19 @@ public class JdbcThemeRepository implements ThemeRepository {
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper(), fromDate, toDate, topCount);
+        return jdbcTemplate.query(
+                sql,
+                rowMapper(),
+                fromDate,
+                toDate,
+                topCount
+        );
+    }
+
+    private SimpleJdbcInsert createInsert() {
+        return new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     private RowMapper<Theme> rowMapper() {

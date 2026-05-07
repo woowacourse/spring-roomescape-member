@@ -89,8 +89,19 @@ public class ReservationDao implements ReservationRepository {
         SimpleJdbcInsert insert = createInsert();
         Map<String, Object> params = createParams(reservation);
         long reservationId = insert.executeAndReturnKey(params).longValue();
-        return new Reservation(reservationId, reservation.name(), reservation.date(), reservation.time(),
-                reservation.theme());
+        return new Reservation(
+                reservationId,
+                reservation.name(),
+                reservation.date(),
+                reservation.time(),
+                reservation.theme()
+        );
+    }
+
+    @Override
+    public void deleteById(long reservationId) {
+        String sql = "DELETE FROM reservation WHERE id = ?";
+        jdbcTemplate.update(sql, reservationId);
     }
 
     private SimpleJdbcInsert createInsert() {
@@ -106,12 +117,6 @@ public class ReservationDao implements ReservationRepository {
                 "time_id", reservation.time().id(),
                 "theme_id", reservation.theme().id()
         );
-    }
-
-    @Override
-    public void deleteById(long reservationId) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(sql, reservationId);
     }
 
     private RowMapper<Reservation> rowMapper() {

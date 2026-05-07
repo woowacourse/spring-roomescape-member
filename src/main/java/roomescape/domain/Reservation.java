@@ -20,6 +20,12 @@ public record Reservation(Long id, String name, LocalDate date, Time time, Theme
     }
 
     public static Reservation transientOf(String name, LocalDate date, Time time, Theme theme) {
-        return new Reservation(null, name, date, time, theme);
+        return new Reservation(
+                null,
+                name,
+                date,
+                time,
+                theme
+        );
     }
 }

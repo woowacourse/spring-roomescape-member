@@ -44,13 +44,6 @@ public class TimeDao implements TimeRepository {
         jdbcTemplate.update(sql, timeId);
     }
 
-    private RowMapper<Time> rowMapper() {
-        return (rs, rowNum) -> new Time(
-                rs.getLong("id"),
-                rs.getObject("start_at", LocalTime.class)
-        );
-    }
-
     private SimpleJdbcInsert createInsert() {
         return new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("time")
@@ -59,5 +52,12 @@ public class TimeDao implements TimeRepository {
 
     private Map<String, Object> createParams(Time time) {
         return Map.of("start_at", time.startAt());
+    }
+
+    private RowMapper<Time> rowMapper() {
+        return (rs, rowNum) -> new Time(
+                rs.getLong("id"),
+                rs.getObject("start_at", LocalTime.class)
+        );
     }
 }
