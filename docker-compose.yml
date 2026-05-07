@@ -1,0 +1,12 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: alstj2384/roomescape-frontend:latest
+    ports:
+      - "4173:4173"
+    depends_on:
+      - backend

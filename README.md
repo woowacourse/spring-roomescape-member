@@ -1,5 +1,23 @@
 # 방 탈출 예약 시스템
 
+## 실행 가이드
+
+> Docker가 설치되어 있어야 합니다.
+
+```bash
+docker-compose up
+```
+
+| 서비스 | URL |
+|------|-----|
+| 백엔드 | http://localhost:8080 |
+| 프론트엔드 | http://localhost:4173 |
+
+- 백엔드는 레포지터리 소스를 기반으로 직접 빌드됩니다.
+- 프론트엔드는 Docker Hub(`alstj2384/roomescape-frontend:latest`)에서 이미지를 pull합니다.
+
+---
+
 ## 기능 목록
 
 ### 테마
