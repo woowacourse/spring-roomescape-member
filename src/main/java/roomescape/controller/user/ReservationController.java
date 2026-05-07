@@ -3,6 +3,7 @@ package roomescape.controller.user;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,26 +32,16 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParam("name") String name) {
-        try {
-            List<ReservationResponse> responses = ReservationResponse.from(reservationService.findReservationsByName(name));
-            return ResponseEntity.ok(responses);
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        List<ReservationResponse> responses = ReservationResponse.from(reservationService.findReservationsByName(name));
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest request) {
-        try {
-            Reservation reservationReturned = reservationService.saveUserReservation(request.toSaveCommand());
-            ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
+        Reservation reservationReturned = reservationService.saveUserReservation(request.toSaveCommand());
+        ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
 
-            return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);
     }
 
     @NonNull
@@ -63,5 +54,15 @@ public class ReservationController {
         reservationService.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Void> handleNotFoundException(NotFoundException e) {
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().build();
     }
 }
