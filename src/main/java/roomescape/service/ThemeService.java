@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
@@ -19,6 +20,10 @@ public class ThemeService {
 
     public List<Theme> allTheme() {
         return themeRepository.findAll();
+    }
+
+    public Theme findThemeById(long id) {
+        return themeRepository.findById(id);
     }
 
     public Theme saveTheme(String name, String description, String thumbnailUrl) {

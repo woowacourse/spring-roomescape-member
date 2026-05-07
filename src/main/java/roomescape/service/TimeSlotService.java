@@ -24,6 +24,10 @@ public class TimeSlotService {
         return timeSlotRepository.findAll();
     }
 
+    public TimeSlot findTimeSlotById(long id) {
+        return timeSlotRepository.findById(id);
+    }
+
     public TimeSlot saveTime(LocalTime startAt) {
         TimeSlot timeSlot = TimeSlot.transientOf(startAt);
         return timeSlotRepository.save(timeSlot);

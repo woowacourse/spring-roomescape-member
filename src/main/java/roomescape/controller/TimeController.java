@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,12 @@ public class TimeController {
         return ResponseEntity.ok(convertToTimeResponses(reservationTimeSlotService.allTimes()));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TimeResponse> getTime(@PathVariable long id) {
+        TimeSlot timeSlot = reservationTimeSlotService.findTimeSlotById(id);
+        return ResponseEntity.ok(TimeResponse.from(timeSlot));
+    }
+
     @GetMapping(params = {"themeId", "date"})
     public ResponseEntity<List<TimeResponse>> getAvailableTimes(long themeId, LocalDate date) {
         List<AvailableTimeSlot> availableSlots = reservationTimeSlotService.findAvailableTimes(themeId, date);
@@ -38,16 +45,16 @@ public class TimeController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> createTime(
-            @RequestBody TimeRequest timeRequest) {
-        TimeSlot timeSlot = reservationTimeSlotService.saveTime(timeRequest.startAt());
-        return ResponseEntity.ok(TimeResponse.from(timeSlot));
+    public ResponseEntity<TimeResponse> createTime(@RequestBody TimeRequest request) {
+        TimeSlot timeSlot = reservationTimeSlotService.saveTime(request.startAt());
+        return ResponseEntity.created(URI.create("/times/" + timeSlot.id()))
+                .body(TimeResponse.from(timeSlot));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable long id) {
         reservationTimeSlotService.removeTime(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     private List<TimeResponse> convertToTimeResponses(List<TimeSlot> reservationTimeSlots) {

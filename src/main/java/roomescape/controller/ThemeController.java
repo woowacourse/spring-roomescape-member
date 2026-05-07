@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,22 +30,28 @@ public class ThemeController {
         return ResponseEntity.ok(convertToThemeResponses(themeService.allTheme()));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ThemeResponse> getTheme(@PathVariable long id) {
+        Theme theme = themeService.findThemeById(id);
+        return ResponseEntity.ok(ThemeResponse.from(theme));
+    }
+
     @GetMapping(params = {"topCount", "during"})
     public ResponseEntity<List<ThemeResponse>> popularThemes(Long topCount, Long during) {
         return ResponseEntity.ok(convertToThemeResponses(themeService.findPopularThemes(topCount, during)));
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest themeRequest) {
-        Theme Theme = themeService.saveTheme(themeRequest.name(), themeRequest.description(),
-                themeRequest.thumbnailUrl());
-        return ResponseEntity.ok(ThemeResponse.from(Theme));
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
+        Theme theme = themeService.saveTheme(request.name(), request.description(), request.thumbnailUrl());
+        return ResponseEntity.created(URI.create("/themes/" + theme.id()))
+                .body(ThemeResponse.from(theme));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
         themeService.removeTheme(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     private List<ThemeResponse> convertToThemeResponses(List<Theme> themes) {

@@ -31,6 +31,10 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public Reservation findReservationById(long id) {
+        return reservationRepository.findById(id);
+    }
+
     public Reservation saveReservation(
             String name,
             LocalDate date,
