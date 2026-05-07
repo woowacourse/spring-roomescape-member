@@ -243,6 +243,37 @@ Content-Type: application/json
 
 - 사용자가 예약한 정보를 확인할 수 있게 테마 이름, 예약자 이름, 날짜, 시간, 예약시점, 예약메시지를 반환한다.
 
+### 인기 테마 조회
+
+```json
+GET /themes/trending?from=2026-05-01&to=2026-05-07&limit=10
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+[
+    {
+        "id" : 1,
+        "name" : "은하수",
+        "description" : "은하수가 휘몰아치는 밤...",
+        "image" : "https://example.com/images/photo1.jpg"
+    },
+    {
+        "id" : 2,
+        "name" : "지구",
+        "description" : "지구멸망 3분전",
+        "image" : "https://example.com/images/photo2.jpg"
+    },
+    {
+      ...
+    }
+]
+```
+
+**근거:**
+
+- 백엔드에서는 실제 필요한 기간과 상위 개수만 받기 위해서 클라이언트에서 기간에 대한 처리를 완료한다.
+
+
 ### 응답 상태 코드 규칙
 
 | 상태 코드 | 의미 |
