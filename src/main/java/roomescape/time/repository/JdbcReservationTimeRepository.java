@@ -68,13 +68,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date) {
-        String sql = "SELECT rt.id, rt.start_at\n" +
-                "FROM reservation_time rt\n" +
-                "LEFT JOIN reservation r\n" +
-                "  ON rt.id = r.time_id\n" +
-                "  AND r.theme_id = ?\n" +
-                "  AND r.reservation_date = ?\n" +
-                "WHERE r.id IS NULL";
+        String sql = """
+            SELECT rt.id, rt.start_at
+            FROM reservation_time rt
+            LEFT JOIN reservation r
+                ON rt.id = r.time_id
+                AND r.theme_id = ?
+                AND r.reservation_date = ?
+            WHERE r.id IS NULL
+            """;
 
         return jdbcTemplate.query(sql, reservationTimeRowMapper, themeId, date);
     }

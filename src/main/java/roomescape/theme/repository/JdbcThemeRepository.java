@@ -71,18 +71,20 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findPopularThemes(int period, int limit) {
-        String sql = "select " +
-                "t.id, " +
-                "t.name, " +
-                "t.description, " +
-                "t.thumbnail_url " +
-                "from reservation r " +
-                "inner join theme t on r.theme_id = t.id " +
-                "where r.reservation_date >= ? " +
-                "and r.reservation_date < ? " +
-                "group by t.id " +
-                "order by count(r.id) desc, t.id asc " +
-                "limit ?";
+        String sql = """
+            select
+                t.id,
+                t.name,
+                t.description,
+                t.thumbnail_url
+            from reservation r
+            inner join theme t on r.theme_id = t.id
+            where r.reservation_date >= ?
+            and r.reservation_date < ?
+            group by t.id
+            order by count(r.id) desc, t.id asc
+            limit ?
+            """;
 
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(period);
