@@ -1,6 +1,8 @@
 package roomescape.dao;
 
-import java.time.LocalDate;
+import static roomescape.dao.rowMapper.ReservationTimeMapper.RESERVATION_TIME_ROW_MAPPER;
+import static roomescape.dao.rowMapper.ThemeMapper.THEME_ROW_MAPPER;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +27,7 @@ public class ThemeDao {
     public Theme findThemeById(Long id) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, description, url FROM theme WHERE id = ?",
-                (rs, rowNum) -> new Theme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("url")
-                ),
+                THEME_ROW_MAPPER,
                 id
         );
     }
@@ -38,12 +35,7 @@ public class ThemeDao {
     public List<Theme> findAllThemes() {
         return jdbcTemplate.query(
                 "SELECT id, name, description, url FROM theme",
-                (rs, rowNum) -> new Theme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("url")
-                )
+                THEME_ROW_MAPPER
         );
     }
 
@@ -63,12 +55,8 @@ public class ThemeDao {
                            GROUP BY t.id, t.name
                            ORDER BY reservation_count DESC
                            LIMIT ?;
-                        """, (rs, rowNum) -> new Theme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("url")
-                ),
+                        """,
+                THEME_ROW_MAPPER,
                 count
         );
     }
@@ -104,10 +92,7 @@ public class ThemeDao {
                                 AND r.date = ?
                              WHERE r.id is NULL
                         """,
-                (rs, rowNum) -> new ReservationTime(
-                        rs.getLong("time_id"),
-                        rs.getTime("start_at").toLocalTime()
-                ),
+                RESERVATION_TIME_ROW_MAPPER,
                 id, date
         );
     }

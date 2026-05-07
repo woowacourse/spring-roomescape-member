@@ -1,5 +1,7 @@
 package roomescape.dao;
 
+import static roomescape.dao.rowMapper.ReservationMapper.RESERVATION_ROW_MAPPER;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -32,25 +34,7 @@ public class ReservationDao {
                         INNER JOIN reservation_time rt ON r.time_id = rt.id
                         INNER JOIN theme t ON r.theme_id = t.id;
                     """,
-                (rs, rowNum) -> {
-                    ReservationTime time = new ReservationTime(
-                            rs.getLong("time_id"),
-                            rs.getTime("start_at").toLocalTime()
-                    );
-                    Theme theme = new Theme(
-                            rs.getLong("theme_id"),
-                            rs.getString("theme_name"),
-                            rs.getString("description"),
-                            rs.getString("url")
-                    );
-                    return new Reservation(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getDate("date").toLocalDate(),
-                            time,
-                            theme
-                    );
-                }
+                RESERVATION_ROW_MAPPER
         );
     }
 
@@ -62,7 +46,7 @@ public class ReservationDao {
             WHERE date = ?
                 AND time_id = ?
                 AND theme_id = ?
-        )
+        ) 
         """,
                 Boolean.class,
                 date,

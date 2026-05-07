@@ -1,5 +1,7 @@
 package roomescape.dao;
 
+import static roomescape.dao.rowMapper.ReservationTimeMapper.RESERVATION_TIME_ROW_MAPPER;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +26,7 @@ public class ReservationTimeDao {
     public List<ReservationTime> findAll() {
         return jdbcTemplate.query(
                 "SELECT id, start_at FROM reservation_time",
-                (rs, rowNum) -> new ReservationTime(
-                        rs.getLong("id"),
-                        rs.getTime("start_at").toLocalTime()
-                )
+                RESERVATION_TIME_ROW_MAPPER
         );
     }
 
@@ -47,10 +46,7 @@ public class ReservationTimeDao {
     public ReservationTime findTimeById(Long timeId) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, start_at FROM reservation_time WHERE id = ?",
-                (rs, rowNum) -> new ReservationTime(
-                        rs.getLong("id"),
-                        rs.getTime("start_at").toLocalTime()
-                ),
+                RESERVATION_TIME_ROW_MAPPER,
                 timeId
         );
     }
