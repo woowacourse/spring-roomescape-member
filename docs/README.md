@@ -1,162 +1,101 @@
-# 방탈출 사용자 예약
+# 방탈출 예약 시스템 (Member)
+
+방탈출 예약 및 테마 관리를 위한 백엔드 서비스입니다.
+
+## 목차
+1. [기능 목록](#기능-목록)
+2. [API 명세](#api-명세)
+    - [테마 (Theme)](#1-테마-theme)
+    - [예약 시간 (Time)](#2-예약-시간-time)
+    - [예약 (Reservation)](#3-예약-reservation)
+
+---
 
 ## 기능 목록
 
 ### **테마 (Theme)**
-
-- [x] 테마는 이름, 설명, 썸네일 URL를 가진다.
-- [x] 관리자는 테마를 추가할 수 있다.
-- [x] 관리자는 테마를 삭제할 수 있다.
-- [x] 테마 삭제 시 해당 테마의 기존 예약이 존재하면 삭제 요청을 거부하거나 처리 정책에 따라 제한한다.
+- [x] 테마 관리: 추가, 조회, 삭제 기능 제공
+- [x] 인기 테마 조회: 최근 7일간 예약 건수 기준 상위 10개 테마 집계
 
 ### **예약 시간 (Time)**
-
-- [x] 날짜와 테마 정보를 입력받아, 관리자가 등록한 시간 중 예약이 점유되지 않은 예약 가능 시간 목록을 반환한다.
-    - [x] 예약된 내역이 없다면 10시부터 18시까지의 전체 운영 시간을 반환한다.
-    - [x] 해당 날짜와 테마의 모든 시간이 예약되었다면 빈 목록을 반환한다.
+- [x] 예약 시간 관리: 추가, 조회, 삭제 기능 제공
+- [x] 예약 가능 시간 조회: 특정 날짜와 테마에 대해 예약 가능한 시간 목록 반환
 
 ### **예약 (Reservation)**
-
-- [x] 사용자는 `날짜`, `테마`, `시간`을 선택하고 `예약자 이름` 을 입력하여 예약한다.
-- [x] 동일한 `날짜 + 시간`이더라도 `테마`가 다르면 중복 예약이 가능하다.
-- [x] 동일한 `날짜 + 시간 + 테마`에 대해서는 단 하나의 예약만 존재해야 한다.
-- [x] 사용자 이름 입력 시 중복은 허용한다. (동명이인은 존재하지 않는다고 가정한다.)
-
-### **인기 테마 통계**
-
-- [x] 현재 날짜 기준, 지난 7일간의 이용일(게임 날짜)을 기준으로 예약 건수가 많은 상위 10개 테마를 집계하여 반환한다.
-    - [x] 예약 횟수가 동일한 경우의 테마 이름순으로 정렬하여 제공한다.
-
-## API 명세
+- [x] 예약 생성: 사용자 이름, 날짜, 테마, 시간을 선택하여 예약
+- [x] 예약 조회 및 취소: 전체 예약 목록 조회 및 특정 예약 취소 기능 제공
+- [x] 중복 예약 방지: 동일한 날짜/시간/테마에 대해 중복 예약 불가
 
 ---
 
-## 1. 테마 (Theme)
+## API 명세
 
-### 1.1 테마 목록 조회
-- **Method / Path:** `GET /themes`
-- **Response (200 OK):**
-```json
-[
-  {
-    " id": 1,
-    "name": "귀신의 집",
-    "description": "무서워요",
-    "imageUrl": "/resources/image/..." 
-  },
-  {
-    "id": 2,
-    "name": "물고기",
-    "description": "어푸",
-    "imageUrl": "/resources/image/..." 
-  }
-]
-```
+### 1. 테마 (Theme)
 
-### 1.2 인기 테마 조회
-- **Method / Path:** `GET /themes/rank`
-- **Query Parameter:** `days=7&limit=10`
-- **Description:** 당일을 제외하고 계산된 통계를 제공.
-- **Response (200 OK):**
+| 기능 | Method | Path | 설명 |
+| --- | --- | --- | --- |
+| 테마 목록 조회 | `GET` | `/themes` | 등록된 모든 테마 목록 반환 |
+| 인기 테마 조회 | `GET` | `/themes/rank` | 최근 N일간 예약 순위 조회 (`days`, `limit` 필요) |
+| 테마 추가 | `POST` | `/themes` | 새로운 테마 등록 |
+| 테마 삭제 | `DELETE` | `/themes/{id}` | 특정 테마 삭제 |
+
+#### 인기 테마 조회 응답 (Example)
 ```json
 [
   {
     "rank": 1,
-    "id": 1,
-    "name": "Hello",
-    
-  },
-  {
-    "rank": 2,
-    "id": 2,
-    "name": "World"
+    "theme": { "id": 1, "name": "우테코 탈출", "description": "재미있어요", "imageUrl": "..." }
   }
 ]
 ```
 
-### 1.3 테마 추가
-- **Method / Path:** `POST /themes`
-- **Request:**
+### 2. 예약 시간 (Time)
+
+| 기능 | Method | Path | 설명 |
+| --- | --- | --- | --- |
+| 시간 목록 조회 | `GET` | `/times` | 등록된 모든 예약 시간 목록 반환 |
+| 예약 가능 시간 조회 | `GET` | `/times?themeId=1&date=2024-05-07` | 특정 테마/날짜의 예약 가능 여부 확인 |
+| 시간 추가 | `POST` | `/times` | 새로운 예약 시간 등록 (`startAt`: "HH:mm") |
+| 시간 삭제 | `DELETE` | `/times/{id}` | 특정 예약 시간 삭제 |
+
+#### 예약 가능 시간 조회 응답 (Example)
 ```json
 {
-  "name": "귀신의 집",
-  "description": "무서워요",
-  "imageUrl": "/resources/image/..." 
-}
-```
-- **Response (201 Created):**
-```json
-{
-  "id": 1,
-  "name": "귀신의 집",
-  "description": "무서워요",
-  "imageUrl": "/resources/image/..."
-}
-```
-
-### 1.4 테마 삭제
-- **Method / Path:** `DELETE /themes/{themeId}`
-- **Response (204 No Content):** `Body 없음`
-
-
----
-
-
-## 2. 예약 (Reservation)
-
-### 2.1 예약 가능 시간 조회
-- **Method / Path:** `GET /times`
-- **Query Parameter:** `date=2026-05-01&themeId=1`
-- **Response (200 OK):**
-```json
-{
-  "id": 1,
-  "name": "Hello",
-  "times": [
-    {
-      "id": 1,
-      "startAt": "15:00",
-      "available": true
-    },
-    {
-      "id": 2,
-      "startAt": "16:00",
-      "available": false
-    }
+  "theme": { "id": 1, "name": "우테코 탈출", ... },
+  "availableTimes": [
+    { "id": 1, "startAt": "13:00", "available": true },
+    { "id": 2, "startAt": "14:00", "available": false }
   ]
 }
 ```
-- **Error Response (400 Bad Request):** 예약 가능한 날짜가 아니거나(과거/초과 범위), 존재하지 않는 테마인 경우.
+
+### 3. 예약 (Reservation)
+
+| 기능 | Method | Path | 설명 |
+| --- | --- | --- | --- |
+| 예약 목록 조회 | `GET` | `/reservations` | 전체 예약 내역 조회 |
+| 예약 생성 | `POST` | `/reservations` | 새로운 예약 등록 |
+| 예약 취소 | `DELETE` | `/reservations/{id}` | 특정 예약 취소 |
+
+#### 예약 생성 요청 (Example)
 ```json
 {
-  "errorMessage": "error"
+  "name": "브라운",
+  "date": "2024-05-07",
+  "timeId": 1,
+  "themeId": 1
 }
 ```
 
-### 2.2 예약 생성
-- **Method / Path:** `POST /reservations`
-- **Request:**
+#### 예약 목록 조회 응답 (Example)
 ```json
-{
-  "userName": "고래",
-  "date": "2026-05-01",
-  "timeId": 1,
-  "themeId": 1
-}
-```
-- **Response (201 Created):**
-```json
-{
-  "id": 1,
-  "userName": "고래",
-  "date": "2026-05-01",
-  "timeId": 1,
-  "themeId": 1
-}
-```
-- **Error Response (400 Bad Request):** 동시성 문제 등으로 예약이 불가능한 경우.
-```json
-{
-  "errorMessage": "error"
-}
+[
+  {
+    "id": 1,
+    "name": "브라운",
+    "date": "2024-05-07",
+    "time": { "id": 1, "startAt": "13:00" },
+    "theme": { "id": 1, "name": "우테코 탈출", ... }
+  }
+]
 ```
