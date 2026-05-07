@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -30,9 +29,10 @@ public class ReservationService {
     }
 
     public List<ReservationResponseDTO> readAllReservation() {
-        return reservationRepository.findAll().stream()
+        return reservationRepository.findAll()
+                .stream()
                 .map(ReservationResponseDTO::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Theme> getPopularThemes() {
@@ -55,8 +55,7 @@ public class ReservationService {
                 reservationRequestDTO.date(), time, theme);
 
         Reservation savedReservation = reservationRepository.save(reservation);
-        ReservationResponseDTO response = ReservationResponseDTO.from(savedReservation);
-        return response;
+        return ReservationResponseDTO.from(savedReservation);
     }
 
     public void deleteReservation(Long id) {
