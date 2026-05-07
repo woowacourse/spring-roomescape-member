@@ -73,10 +73,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Long> findTimeIdsByDate(LocalDate date) {
+    public List<Long> findTimeIdsByThemeIdAndDate(Long themeId, LocalDate date) {
         return jdbcTemplate.query(
-                "SELECT time_id FROM reservation WHERE date = ?",
+                "SELECT time_id FROM reservation WHERE theme_id = ? AND date = ?",
                 (rs, rowNum) -> rs.getLong("time_id"),
+                themeId,
                 Date.valueOf(date)
         );
     }
