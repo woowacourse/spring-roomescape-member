@@ -59,6 +59,19 @@ public class ReservationDao {
         return count > 0;
     }
 
+    public boolean existsByThemeId(Long themeId) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation WHERE theme_id = ?", Integer.class, themeId);
+        return count > 0;
+    }
+
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?",
+                Integer.class, date, timeId, themeId);
+        return count > 0;
+    }
+
     public void delete(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }

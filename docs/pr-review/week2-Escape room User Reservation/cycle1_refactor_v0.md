@@ -66,14 +66,14 @@
 
 ### 서비스 로직 문제
 
-- [ ] **13. `ReservationService` - 중복 예약 검증 추가할 것.**
+- [x] **13. `ReservationService` - 중복 예약 검증 추가할 것.**
   - 같은 날짜 + 시간 + 테마 조합으로 중복 예약이 가능
   - `reservationDao`에 `existsByDateAndTimeIdAndThemeId()` 추가 후 서비스에서 검증 필요
 
-- [ ] **14. `ThemeService.getPopularThemes()` - 날짜 범위 계산 오류**
+- [x] **14. `ThemeService.getPopularThemes()` - 날짜 범위 계산 오류**
   - `startDate = today.minusDays(8)`, `endDate = today.minusDays(1)` → 몰랐는데, 찾아보니 마지막 날짜 포함해서 이건 8일치 범위임.
 
-- [ ] **15. `AdminThemeService.delete()` - 예약에 사용 중인 테마 삭제 가능**
+- [x] **15. `AdminThemeService.delete()` - 예약에 사용 중인 테마 삭제 가능**
   - `ReservationTimeService.delete()`에는 사용 중 여부 체크가 있는데 테마에는 없음
 
 ---
