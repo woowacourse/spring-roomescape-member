@@ -36,13 +36,14 @@ public class ReservationService {
 
     private List<ReservationResponseDto> convertReservationsToDto(List<Reservation> reservations) {
         return reservations.stream()
-            .map(Reservation::toResponseDto)
+            .map(ReservationResponseDto::from)
             .toList();
     }
 
     public ReservationCreateResponseDto saveReservation(ReservationCreateRequestDto requestDto) {
         Reservation reservation = createReservation(requestDto);
-        return reservationRepository.save(reservation).toCreateResponseDto();
+
+        return ReservationCreateResponseDto.from(reservationRepository.save(reservation));
     }
 
     private Reservation createReservation(ReservationCreateRequestDto requestDto) {

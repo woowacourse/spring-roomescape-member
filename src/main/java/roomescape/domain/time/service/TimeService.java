@@ -3,7 +3,6 @@ package roomescape.domain.time.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.time.dto.request.TimeCreateRequestDto;
 import roomescape.domain.time.dto.response.TimeResponseDto;
@@ -24,7 +23,7 @@ public class TimeService {
     public List<TimeResponseDto> getTimes() {
         return timeRepository.findAllTimes()
             .stream()
-            .map(Time::toResponseDto)
+            .map(TimeResponseDto::from)
             .toList();
     }
 
@@ -34,13 +33,14 @@ public class TimeService {
         return timeRepository.findAllTimes()
             .stream()
             .filter(time -> !reservedTimeIds.contains(time.getId()))
-            .map(Time::toResponseDto)
+            .map(TimeResponseDto::from)
             .toList();
     }
 
     public TimeResponseDto saveTime(TimeCreateRequestDto requestDto) {
         Time time = Time.create(requestDto.startAt());
-        return timeRepository.save(time).toResponseDto();
+
+        return TimeResponseDto.from(timeRepository.save(time));
     }
 
     public void deleteTimeById(Long id) {

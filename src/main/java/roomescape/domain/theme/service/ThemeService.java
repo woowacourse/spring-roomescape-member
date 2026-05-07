@@ -27,13 +27,14 @@ public class ThemeService {
 
     private List<ThemeResponseDto> convertThemesToDto(List<Theme> themes) {
         return themes.stream()
-            .map(Theme::toResponseDto)
+            .map(ThemeResponseDto::from)
             .toList();
     }
 
     public ThemeResponseDto saveTheme(ThemeCreatedRequestDto requestDto) {
         Theme theme = Theme.create(requestDto.name(), requestDto.description(), requestDto.imageUrl());
-        return themeRepository.save(theme).toResponseDto();
+
+        return ThemeResponseDto.from(themeRepository.save(theme));
     }
 
     public void deleteThemeById(Long id) {

@@ -99,15 +99,19 @@ class TimeServiceTest {
                 "https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&q=80&w=800"
             ));
 
-            reservationRepository.save(Reservation.create("브라이언", LocalDate.of(2026, 5, 10), time1, theme1));
-            reservationRepository.save(Reservation.create("제이슨", LocalDate.of(2026, 5, 10), time2, theme2));
-            reservationRepository.save(Reservation.create("앨리스", LocalDate.of(2026, 5, 11), time3, theme3));
-            reservationRepository.save(Reservation.create("데이브", LocalDate.of(2026, 5, 11), time4, theme1));
+            reservationRepository.save(
+                Reservation.create("브라이언", LocalDate.of(2026, 5, 10), time1, theme1));
+            reservationRepository.save(
+                Reservation.create("제이슨", LocalDate.of(2026, 5, 10), time2, theme2));
+            reservationRepository.save(
+                Reservation.create("앨리스", LocalDate.of(2026, 5, 11), time3, theme3));
+            reservationRepository.save(
+                Reservation.create("데이브", LocalDate.of(2026, 5, 11), time4, theme1));
 
             LocalDate date = LocalDate.of(2026, 5, 10);
             Long themeId = 1L;
-            List<TimeResponseDto> expected = List.of(time2.toResponseDto(), time3.toResponseDto(),
-                time4.toResponseDto());
+            List<TimeResponseDto> expected = List.of(TimeResponseDto.from(time2),
+                TimeResponseDto.from(time3), TimeResponseDto.from(time4));
 
             // when
             List<TimeResponseDto> actual = timeService.getAvailableTimes(date, themeId);
