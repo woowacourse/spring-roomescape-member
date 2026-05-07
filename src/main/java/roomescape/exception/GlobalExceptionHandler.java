@@ -33,6 +33,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.notFound().build();
     }
 
+    @ExceptionHandler(ThemeInUseException.class)
+    public ResponseEntity<Void> handleThemeInUse() {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Void> handleUnexpectedException(Exception e) {
         return ResponseEntity.internalServerError().build();

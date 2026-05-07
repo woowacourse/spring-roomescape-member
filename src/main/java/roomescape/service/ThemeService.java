@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.response.PopularThemeResponse;
-import roomescape.exception.ReservationTimeInUseException;
+import roomescape.exception.ThemeInUseException;
 import roomescape.exception.ThemeNotFoundException;
 
 @Service
@@ -32,7 +32,7 @@ public class ThemeService {
             int deleteCount = themeDao.delete(id);
             validateDelete(deleteCount);
         } catch (DataIntegrityViolationException e) {
-            throw new ReservationTimeInUseException();
+            throw new ThemeInUseException();
         }
     }
 
