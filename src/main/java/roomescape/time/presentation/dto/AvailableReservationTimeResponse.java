@@ -7,13 +7,16 @@ import roomescape.time.domain.ReservationTime;
 
 @Builder
 public record AvailableReservationTimeResponse(
-        Theme theme,
-        List<ReservationTime> times
+        AvailableThemeResponse theme,
+        List<AvailableReservationTimeDto> times
 ) {
     public static AvailableReservationTimeResponse from(Theme theme, List<ReservationTime> times) {
         return AvailableReservationTimeResponse.builder()
-                .times(times)
-                .theme(theme)
+                .theme(AvailableThemeResponse.from(theme))
+                .times(times.stream()
+                        .map(AvailableReservationTimeDto::from)
+                        .toList())
                 .build();
     }
+
 }
