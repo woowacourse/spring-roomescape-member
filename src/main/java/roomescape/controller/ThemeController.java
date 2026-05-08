@@ -22,6 +22,15 @@ public class ThemeController {
     private final ThemeQueryService themeQueryService;
     private final Clock clock;
 
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
+        List<Theme> allThemes = themeQueryService.findAllThemes();
+        List<ThemeResponse> themeResponses = allThemes.stream()
+                .map(ThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok(themeResponses);
+    }
+
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getSortedPopularThemesAtPeriod(
             @RequestParam("limit") int limit) {

@@ -45,6 +45,7 @@
 
 | 구분 | Method | URL                         | Request Body | Response |
 |------|--------|-----------------------------|--------------|----------|
+| 사용자 | `GET` | `/themes/`                  | - | `200` |
 | 사용자 | `GET` | `/themes/popular?limit={n}` | - | `200` |
 | 관리자 | `GET` | `/admin/themes`             | - | `200` |
 | 관리자 | `POST` | `/admin/themes`             | `{"name", "thumbnailUrl", "description"}` | `201` |
