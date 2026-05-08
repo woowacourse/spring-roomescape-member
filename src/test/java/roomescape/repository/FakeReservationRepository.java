@@ -43,6 +43,13 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        return false;
+        return storage.values().stream()
+                .anyMatch(reservation -> isDuplicate(reservation, date, timeId, themeId));
+    }
+
+    private boolean isDuplicate(Reservation reservation, LocalDate date, Long timeId, Long themeId) {
+        return reservation.date().equals(date)
+                && reservation.timeSlot().id().equals(timeId)
+                && reservation.theme().id().equals(themeId);
     }
 }

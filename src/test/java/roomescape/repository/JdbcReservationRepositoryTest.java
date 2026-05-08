@@ -36,7 +36,7 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.execute(
                 "CREATE TABLE IF NOT EXISTS time_slot (id BIGINT AUTO_INCREMENT PRIMARY KEY, start_at TIME)");
         jdbcTemplate.execute(
-                "CREATE TABLE IF NOT EXISTS reservation (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), date DATE, time_id BIGINT)");
+                "CREATE TABLE IF NOT EXISTS reservation (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), date DATE, time_id BIGINT, theme_id BIGINT)");
         jdbcTemplate.execute("TRUNCATE TABLE reservation");
         jdbcTemplate.execute("TRUNCATE TABLE time_slot");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
@@ -83,5 +83,17 @@ class JdbcReservationRepositoryTest {
                 new Theme(1L, "공포", "귀신의 집 탈출", "https://test.com")));
         jdbcReservationRepository.deleteById(savedReservation.id());
         assertThat(jdbcReservationRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("특정 날짜, 테마, 시간에 해당하는 예약이 이미 존재하면 true를 반환한다.")
+    void existsByDateAndTimeIdAndThemeId() {
+        Theme theme = new Theme(1L, "공포", "귀신의 집 탈출", "https://test.com");
+        Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, theme);
+        jdbcReservationRepository.save(reservation);
+
+        boolean exists = jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(LocalDate.now(), savedTimeSlot.id(),
+                1L);
+        assertThat(exists).isTrue();
     }
 }

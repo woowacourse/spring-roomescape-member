@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -39,6 +40,18 @@ class ReservationServiceTest {
         Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(),
                 savedTheme.id());
         assertThat(reservation.timeSlot().startAt()).isEqualTo(LocalTime.of(10, 0));
+    }
+
+    @Test
+    @DisplayName("중복된 예약을 생성하려 하면 예외가 발생한다.")
+    void saveReservationDuplicate() {
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+        reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(), savedTheme.id());
+
+        assertThatThrownBy(
+                () -> reservationService.saveReservation("토미", futureDate, savedTimeSlot.id(), savedTheme.id()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("선택하신 시간과 테마는 이미 예약되었습니다.");
     }
 
     @Test
