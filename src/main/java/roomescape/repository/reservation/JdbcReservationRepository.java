@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.domain.Theme.Theme;
 
 @Repository
 @Profile("web")
@@ -82,7 +82,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     rs.getLong(ALIAS_TIME_ID),
                     rs.getString(ALIAS_START_AT)
             ),
-            new ReservationTheme(
+            new Theme(
                     rs.getLong(ALIAS_THEME_ID),
                     rs.getString(ALIAS_THEME_NAME),
                     rs.getString(ALIAS_THEME_DESCRIPTION),
@@ -112,7 +112,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, ReservationTheme reservationTheme) {
+    public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
                 COLUMN_NAME, reservationCommand.name(),
                 COLUMN_DATE, reservationCommand.date(),
@@ -121,7 +121,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         )).longValue();
 
         return new Reservation(id, reservationCommand.name(), reservationCommand.date(), reservationTime,
-                reservationTheme);
+                theme);
     }
 
     @Override

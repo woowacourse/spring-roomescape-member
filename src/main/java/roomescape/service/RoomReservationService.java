@@ -6,11 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
 import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.domain.Theme.Theme;
 import roomescape.exception.DuplicatedReservationRequestException;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundResourceException;
-import roomescape.repository.ReservationTheme.ReservationThemeRepository;
+import roomescape.repository.Theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
@@ -18,12 +18,12 @@ import roomescape.repository.reservationTime.ReservationTimeRepository;
 public class RoomReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationThemeRepository reservationThemeRepository;
+    private final ThemeRepository themeRepository;
 
-    public RoomReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ReservationThemeRepository reservationThemeRepository) {
+    public RoomReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
-        this.reservationThemeRepository = reservationThemeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<Reservation> getAllReservation() {
@@ -39,7 +39,7 @@ public class RoomReservationService {
         ReservationTime reservationTime = reservationTimeRepository.getReservationTime(reservationCommand.timeId())
                 .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_RESERVATION_TIME_ID));
 
-        ReservationTheme theme = reservationThemeRepository.getTheme(reservationCommand.themeId())
+        Theme theme = themeRepository.getTheme(reservationCommand.themeId())
                 .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_THEME_ID));
 
         if (reservationRepository.existsByTimeIdAndThemeIdAndDate(reservationCommand.timeId(), reservationCommand.themeId(), reservationCommand.date())) {

@@ -45,7 +45,7 @@ public abstract class BaseRepositoryTest {
         );
     }
 
-    protected void createReservationThemeTable() {
+    protected void createThemeTable() {
         jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS reservation_theme (" +
                 "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
                 "name VARCHAR(255) NOT NULL, " +
@@ -58,7 +58,7 @@ public abstract class BaseRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", time);
     }
 
-    protected void insertReservationTheme(String name, String description, String imageUrl) {
+    protected void insertTheme(String name, String description, String imageUrl) {
         jdbcTemplate.update("INSERT INTO reservation_theme (name, description, image_url) VALUES (?, ?, ?)", name, description, imageUrl);
     }
 
@@ -71,7 +71,7 @@ public abstract class BaseRepositoryTest {
         jdbcTemplate.execute("DROP TABLE reservation");
     }
 
-    protected void deleteReservationThemeTable() {
+    protected void deleteThemeTable() {
         jdbcTemplate.execute("DROP TABLE reservation_theme");
     }
 

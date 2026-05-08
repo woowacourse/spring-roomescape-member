@@ -19,11 +19,11 @@
 src/main/java/roomescape/
 ├── controller/
 │   ├── ReservationController.java               
-│   ├── ReservationThemeController.java          
+│   ├── ThemeController.java          
 │   └── ReservationTimeController.java           
 ├── service/
 │   ├── RoomReservationService.java              
-│   ├── ReservationThemeService.java             
+│   ├── ThemeService.java             
 │   └── ReservationTimeService.java              
 ├── dao/
 │   ├── ReservationDao.java
@@ -35,9 +35,9 @@ src/main/java/roomescape/
 │   ├── reservationTime/
 │   │   ├── ReservationTimeRepository.java
 │   │   └── JdbcReservationTimeRepository.java
-│   └── ReservationTheme/                     
-│       ├── ReservationThemeRepository.java
-│       └── JdbcReservationThemeRepository.java
+│   └── Theme/                     
+│       ├── ThemeRepository.java
+│       └── JdbcThemeRepository.java
 ├── domain/
 │   ├── Reservation/
 │   │   ├── Reservation.java
@@ -47,10 +47,10 @@ src/main/java/roomescape/
 │   │   ├── ReservationTimeCommand.java
 │   │   ├── ReservationTimeCondition.java        
 │   │   └── ReservationTimeWithAvailable.java    
-│   └── ReservationTheme/                        
-│       ├── ReservationTheme.java                
-│       ├── ReservationThemeCommand.java         
-│       ├── ReservationThemeWithCount.java       
+│   └── Theme/                        
+│       ├── Theme.java                
+│       ├── ThemeCommand.java         
+│       ├── ThemeWithCount.java       
 │       └── PopularThemeCondition.java           
 ├── dto/
 │   ├── Reservation/
@@ -63,9 +63,9 @@ src/main/java/roomescape/
 │   │   └── AvailableReservationTimeResponse.java 
 │   └── theme/                                   
 │       ├── AddThemeRequest.java                 
-│       ├── ReservationThemeResponse.java        
+│       ├── ThemeResponse.java        
 │       ├── PopularConditionRequest.java         
-│       └── PopularReservationThemeResponse.java 
+│       └── PopularThemeResponse.java 
 ├── exception/
 │   ├── CustomException.java
 │   ├── BaseCustomException.java
@@ -110,7 +110,7 @@ src/main/java/roomescape/
 | name | String | 예약자 이름 |
 | date | String | 예약 날짜 |
 | time | ReservationTime | 예약 시간 객체 |
-| reservationTheme | ReservationTheme | 예약 테마 객체 |
+| theme | Theme | 테마 객체 |
 
 ### ReservationTime (예약 시간)
 | 필드 | 타입 | 설명 |
@@ -118,7 +118,7 @@ src/main/java/roomescape/
 | id | long | 예약 시간 고유 ID |
 | startAt | String | 시작 시간 |
 
-### ReservationTheme (예약 테마)
+### Theme (테마)
 | 필드 | 타입 | 설명 |
 |------|------|------|
 | id | long | 테마 고유 ID |
@@ -152,7 +152,7 @@ src/main/java/roomescape/
 | name | String | 예약자 이름 |
 | date | String | 예약 날짜 |
 | time | ReservationTimeResponse | 예약 시간 객체 |
-| reservationTheme | ReservationThemeResponse | 예약 테마 객체 |
+| theme | ThemeResponse | 예약 테마 객체 |
 
 ---
 

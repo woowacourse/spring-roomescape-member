@@ -10,22 +10,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
-import roomescape.domain.ReservationTheme.PopularThemeCondition;
-import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
+import roomescape.domain.Theme.PopularThemeCondition;
+import roomescape.domain.Theme.ThemeWithCount;
+import roomescape.domain.Theme.Theme;
 import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.ReservationTheme.ReservationTheme;
-import roomescape.domain.ReservationTheme.ReservationThemeCommand;
+import roomescape.domain.Theme.ThemeCommand;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
-import roomescape.repository.ReservationTheme.ReservationThemeRepository;
+import roomescape.repository.Theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
-public class ReservationThemeServiceTest {
+public class ThemeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTheme) {
         return new ReservationRepository() {
 
             @Override
-            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, ReservationTheme theme) {
+            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
                 return null;
             }
 
@@ -61,20 +61,20 @@ public class ReservationThemeServiceTest {
         };
     }
 
-    private ReservationThemeRepository createReservationThemeRepository(Runnable runnable) {
-        return new ReservationThemeRepository() {
+    private ThemeRepository createThemeRepository(Runnable runnable) {
+        return new ThemeRepository() {
             @Override
-            public ReservationTheme addTheme(ReservationThemeCommand reservationThemeCommand) {
-                return new ReservationTheme(1, reservationThemeCommand.name(), reservationThemeCommand.description(), reservationThemeCommand.imageUrl());
+            public Theme addTheme(ThemeCommand themeCommand) {
+                return new Theme(1, themeCommand.name(), themeCommand.description(), themeCommand.imageUrl());
             }
 
             @Override
-            public List<ReservationTheme> getAllTheme() {
+            public List<Theme> getAllTheme() {
                 return List.of();
             }
 
             @Override
-            public Optional<ReservationTheme> getTheme(long id) {
+            public Optional<Theme> getTheme(long id) {
                 return Optional.empty();
             }
 
@@ -84,7 +84,7 @@ public class ReservationThemeServiceTest {
             }
 
             @Override
-            public List<ReservationThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
+            public List<ThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
                 return List.of();
             }
         };
@@ -92,18 +92,18 @@ public class ReservationThemeServiceTest {
 
     @Test
     @DisplayName("정상 삭제 테스트")
-    void deleteReservationThemeTest() {
-        ReservationThemeService reservationThemeService = new ReservationThemeService(createReservationThemeRepository(() -> {}), createReservationRepository(false));
+    void deleteThemeTest() {
+        ThemeService themeService = new ThemeService(createThemeRepository(() -> {}), createReservationRepository(false));
 
-        assertThatCode(() -> reservationThemeService.deleteTheme(1)).doesNotThrowAnyException();
+        assertThatCode(() -> themeService.deleteTheme(1)).doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("외부 사용이 되었을 때 삭제 시 예외 테스트")
     void deleteFailedWhenInUseTest() {
-        ReservationThemeService reservationThemeService = new ReservationThemeService(createReservationThemeRepository(() -> {}), createReservationRepository(true));
+        ThemeService themeService = new ThemeService(createThemeRepository(() -> {}), createReservationRepository(true));
 
-        assertThatThrownBy(() -> reservationThemeService.deleteTheme(1))
+        assertThatThrownBy(() -> themeService.deleteTheme(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
                 .hasMessage(ErrorMessage.CANNOT_DELETE_RESERVATION_THEME_IN_USE.getMessage());
     }
@@ -111,14 +111,14 @@ public class ReservationThemeServiceTest {
     @Test
     @DisplayName("조회 시점엔 없었으나 삭제 시점에 제약조건 위반이 발생한 경우 예외 테스트")
     void deleteFailedByIntegrityTest() {
-        ReservationThemeService reservationThemeService = new ReservationThemeService(
-                createReservationThemeRepository(() -> {
+        ThemeService themeService = new ThemeService(
+                createThemeRepository(() -> {
                     throw new DataIntegrityViolationException("정합성 오류");
                 }),
                 createReservationRepository(false)
         );
 
-        assertThatThrownBy(() -> reservationThemeService.deleteTheme(1))
+        assertThatThrownBy(() -> themeService.deleteTheme(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
                 .hasMessage(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE.getMessage());
     }

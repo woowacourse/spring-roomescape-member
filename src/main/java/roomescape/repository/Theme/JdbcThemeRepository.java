@@ -1,4 +1,4 @@
-package roomescape.repository.ReservationTheme;
+package roomescape.repository.Theme;
 
 import java.util.List;
 import java.util.Map;
@@ -6,13 +6,13 @@ import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.ReservationTheme.PopularThemeCondition;
-import roomescape.domain.ReservationTheme.ReservationTheme;
-import roomescape.domain.ReservationTheme.ReservationThemeCommand;
-import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
+import roomescape.domain.Theme.PopularThemeCondition;
+import roomescape.domain.Theme.Theme;
+import roomescape.domain.Theme.ThemeCommand;
+import roomescape.domain.Theme.ThemeWithCount;
 
 @Repository
-public class JdbcReservationThemeRepository implements ReservationThemeRepository {
+public class JdbcThemeRepository implements ThemeRepository {
     private static final String TABLE_NAME = "reservation_theme";
 
     private static final String COLUMN_ID = "id";
@@ -40,28 +40,28 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcReservationThemeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TABLE_NAME)
                 .usingGeneratedKeyColumns(COLUMN_ID);    }
 
-    public ReservationTheme addTheme(ReservationThemeCommand reservationThemeCommand) {
+    public Theme addTheme(ThemeCommand themeCommand) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
-                COLUMN_NAME, reservationThemeCommand.name(),
-                COLUMN_DESCRIPTION, reservationThemeCommand.description(),
-                COLUMN_IMAGE_URL, reservationThemeCommand.imageUrl()
+                COLUMN_NAME, themeCommand.name(),
+                COLUMN_DESCRIPTION, themeCommand.description(),
+                COLUMN_IMAGE_URL, themeCommand.imageUrl()
         )).longValue();
 
-        return ReservationTheme.from(id, reservationThemeCommand);
+        return Theme.from(id, themeCommand);
     }
 
-    public List<ReservationTheme> getAllTheme() {
-        return jdbcTemplate.query(SELECT_ALL_SQL, (rs, i) -> ReservationTheme.from(rs));
+    public List<Theme> getAllTheme() {
+        return jdbcTemplate.query(SELECT_ALL_SQL, (rs, i) -> Theme.from(rs));
     }
 
-    public Optional<ReservationTheme> getTheme(long id) {
-        return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, ((rs, rowNum) -> ReservationTheme.from(rs)), id)
+    public Optional<Theme> getTheme(long id) {
+        return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, ((rs, rowNum) -> Theme.from(rs)), id)
                 .stream()
                 .findFirst();
     }
@@ -71,8 +71,8 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public List<ReservationThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
-        return jdbcTemplate.query(SELECT_POPULAR_THEMES_BY_DATE_RANGE, (rs, i) -> ReservationThemeWithCount.from(rs),
+    public List<ThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
+        return jdbcTemplate.query(SELECT_POPULAR_THEMES_BY_DATE_RANGE, (rs, i) -> ThemeWithCount.from(rs),
                 popularThemeCondition.startDate(),
                 popularThemeCondition.endDate(),
                 popularThemeCondition.size()

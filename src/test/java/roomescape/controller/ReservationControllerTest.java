@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.Reservation.Reservation;
-import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.domain.Theme.Theme;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.service.RoomReservationService;
 
@@ -37,8 +37,8 @@ class ReservationControllerTest {
     @BeforeEach
     void setUp() {
         ReservationTime reservationTime = new ReservationTime(1L, "10:00");
-        ReservationTheme reservationTheme = new ReservationTheme(1L, "테마1", "테마 설명", "image url");
-        reservation = new Reservation(1L, "홍길동", "2026-05-06", reservationTime, reservationTheme);
+        Theme theme = new Theme(1L, "테마1", "테마 설명", "image url");
+        reservation = new Reservation(1L, "홍길동", "2026-05-06", reservationTime, theme);
     }
 
     @Test
@@ -54,8 +54,8 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$[0].date").value("2026-05-06"))
                 .andExpect(jsonPath("$[0].time.id").value(1))
                 .andExpect(jsonPath("$[0].time.startAt").value("10:00"))
-                .andExpect(jsonPath("$[0].reservationTheme.id").value(1))
-                .andExpect(jsonPath("$[0].reservationTheme.name").value("테마1"));
+                .andExpect(jsonPath("$[0].theme.id").value(1))
+                .andExpect(jsonPath("$[0].theme.name").value("테마1"));
     }
 
     @Test
@@ -81,7 +81,7 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.name").value("홍길동"))
                 .andExpect(jsonPath("$.date").value("2026-05-06"))
                 .andExpect(jsonPath("$.time.startAt").value("10:00"))
-                .andExpect(jsonPath("$.reservationTheme.name").value("테마1"));
+                .andExpect(jsonPath("$.theme.name").value("테마1"));
     }
 
     @Test

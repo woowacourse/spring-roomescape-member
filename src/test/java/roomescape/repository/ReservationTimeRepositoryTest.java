@@ -20,7 +20,7 @@ public class ReservationTimeRepositoryTest extends BaseRepositoryTest {
     @Override
     protected void initTable() {
         createReservationTimeTable();
-        createReservationThemeTable();
+        createThemeTable();
         createReservationTable();
 
         insertReservationTime("10:00");
@@ -32,7 +32,7 @@ public class ReservationTimeRepositoryTest extends BaseRepositoryTest {
     protected void deleteTable() {
         deleteReservationTable();
         deleteReservationTimeTable();
-        deleteReservationThemeTable();
+        deleteThemeTable();
     }
 
     @Test
@@ -86,8 +86,8 @@ public class ReservationTimeRepositoryTest extends BaseRepositoryTest {
     void getReservationTimeByDateAndThemeTest() {
         insertReservationTime("11:00");
 
-        insertReservationTheme("테마1", "테마 설명", "image url");
-        insertReservationTheme("테마2", "테마 설명", "image url");
+        insertTheme("테마1", "테마 설명", "image url");
+        insertTheme("테마2", "테마 설명", "image url");
 
         insertReservation("브라운", "2023-08-03", 1, 1);
 

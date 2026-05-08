@@ -9,8 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.Reservation.ReservationCommand;
+import roomescape.domain.Theme.Theme;
 import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.ReservationTheme.ReservationTheme;
 import roomescape.repository.reservation.JdbcReservationRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
@@ -22,17 +22,17 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
             "브라운",
             "2023-08-05",
             new ReservationTime(1, "10:00"),
-            new ReservationTheme(1, "테마1", "테마 설명", "image url")
+            new Theme(1, "테마1", "테마 설명", "image url")
     );
 
     @Override
     protected void initTable() {
         createReservationTimeTable();
-        createReservationThemeTable();
+        createThemeTable();
         createReservationTable();
 
         insertReservationTime("10:00");
-        insertReservationTheme("테마1", "테마 설명", "image url");
+        insertTheme("테마1", "테마 설명", "image url");
         insertReservation("브라운", "2023-08-05", 1, 1);
         this.reservationRepository = new JdbcReservationRepository(jdbcTemplate);
     }
@@ -63,11 +63,11 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
     @Test
     @DisplayName("예약 추가 정상적으로 작동하는 지 테스트")
     void insertReservationTest() {
-        reservationRepository.addReservation(new ReservationCommand("테스트", "2023-08-15", 1, 1), new ReservationTime(1, "15:14"), new ReservationTheme(1, "theme", "description", "imageUrl"));
+        reservationRepository.addReservation(new ReservationCommand("테스트", "2023-08-15", 1, 1), new ReservationTime(1, "15:14"), new Theme(1, "theme", "description", "imageUrl"));
 
         List<Reservation> reservations = reservationRepository.getAllReservation();
 
-        Reservation expectedReservation = new Reservation(2, "테스트", "2023-08-15", new ReservationTime(1, "10:00"), new ReservationTheme(1, "테마1", "테마 설명", "image url"));
+        Reservation expectedReservation = new Reservation(2, "테스트", "2023-08-15", new ReservationTime(1, "10:00"), new Theme(1, "테마1", "테마 설명", "image url"));
 
         assertThat(reservations.size()).isEqualTo(2);
         assertThat(reservations).contains(expectedReservation);
@@ -85,8 +85,8 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
         List<Reservation> reservations = reservationRepository.getAllReservationByName("테스트");
 
         List<Reservation> expectedReservation = List.of(
-                new Reservation(2, "테스트", "2023-09-15", new ReservationTime(1, "10:00"), new ReservationTheme(1, "테마1", "테마 설명", "image url")),
-                new Reservation(4, "테스트", "2023-11-15", new ReservationTime(1, "10:00"), new ReservationTheme(1, "테마1", "테마 설명", "image url"))
+                new Reservation(2, "테스트", "2023-09-15", new ReservationTime(1, "10:00"), new Theme(1, "테마1", "테마 설명", "image url")),
+                new Reservation(4, "테스트", "2023-11-15", new ReservationTime(1, "10:00"), new Theme(1, "테마1", "테마 설명", "image url"))
         );
 
         assertThat(reservations.size()).isEqualTo(2);
@@ -96,7 +96,7 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
     @Test
     @DisplayName("정상적으로 해당 예약 themeId 존재하는 지 테스트")
     void existsByTimeIdTest() {
-        insertReservationTheme("테마2", "테마 설명", "image url");
+        insertTheme("테마2", "테마 설명", "image url");
 
         assertThat(reservationRepository.existsByThemeId(1)).isTrue();
         assertThat(reservationRepository.existsByThemeId(2)).isFalse();

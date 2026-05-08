@@ -8,9 +8,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.domain.ReservationTheme.ReservationTheme;
-import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
-import roomescape.service.ReservationThemeService;
+import roomescape.domain.Theme.Theme;
+import roomescape.domain.Theme.ThemeWithCount;
+import roomescape.service.ThemeService;
 
 import java.util.List;
 
@@ -20,27 +20,27 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ReservationThemeController.class)
-class ReservationThemeControllerTest {
+@WebMvcTest(ThemeController.class)
+class ThemeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    private ReservationThemeService reservationThemeService;
+    private ThemeService themeService;
 
-    private ReservationTheme reservationTheme;
+    private Theme theme;
 
     @BeforeEach
     void setUp() {
-        reservationTheme = new ReservationTheme(1L, "테마1", "테마 설명", "image url");
+        theme = new Theme(1L, "테마1", "테마 설명", "image url");
     }
 
     @Test
     @DisplayName("테마 목록 조회 시 200과 바디를 반환한다")
     void getThemes() throws Exception {
-        given(reservationThemeService.getAllTheme())
-                .willReturn(List.of(reservationTheme));
+        given(themeService.getAllTheme())
+                .willReturn(List.of(theme));
 
         mockMvc.perform(get("/themes"))
                 .andExpect(status().isOk())
@@ -53,8 +53,8 @@ class ReservationThemeControllerTest {
     @Test
     @DisplayName("테마 추가 시 201과 바디를 반환한다")
     void addTheme() throws Exception {
-        given(reservationThemeService.addTheme(any()))
-                .willReturn(reservationTheme);
+        given(themeService.addTheme(any()))
+                .willReturn(theme);
 
         String requestBody = """
             {
@@ -93,8 +93,8 @@ class ReservationThemeControllerTest {
     @Test
     @DisplayName("인기 테마 조회 시 200과 바디를 반환한다")
     void getPopularTheme() throws Exception {
-        ReservationThemeWithCount themeWithCount = new ReservationThemeWithCount(1L, "테마1", "테마 설명", "image url", 5L);
-        given(reservationThemeService.getPopularTheme(any()))
+        ThemeWithCount themeWithCount = new ThemeWithCount(1L, "테마1", "테마 설명", "image url", 5L);
+        given(themeService.getPopularTheme(any()))
                 .willReturn(List.of(themeWithCount));
 
         mockMvc.perform(get("/themes/popular")

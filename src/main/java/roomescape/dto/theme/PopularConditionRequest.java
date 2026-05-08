@@ -2,7 +2,7 @@ package roomescape.dto.theme;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import roomescape.domain.ReservationTheme.PopularThemeCondition;
+import roomescape.domain.Theme.PopularThemeCondition;
 
 public record PopularConditionRequest(
         @NotNull
