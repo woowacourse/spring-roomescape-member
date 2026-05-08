@@ -38,13 +38,11 @@ class ReservationDaoTest {
         Reservation saved = reservationDao.insert(reservation);
 
         // then
-        assertAll(
-                () -> assertThat(saved.getId()).isNotNull(),
-                () -> assertThat(saved.getName()).isEqualTo(reservation.getName()),
-                () -> assertThat(saved.getDate()).isEqualTo(reservation.getDate()),
-                () -> assertThat(saved.getTime()).isEqualTo(reservation.getTime()),
-                () -> assertThat(saved.getTheme()).isEqualTo(reservation.getTheme())
-        );
+        assertThat(saved)
+                .extracting(Reservation::getId, Reservation::getName, Reservation::getDate, Reservation::getTime,
+                        Reservation::getTheme)
+                .containsExactly(saved.getId(), reservation.getName(), reservation.getDate(), reservation.getTime(),
+                        reservation.getTheme());
     }
 
     @Test
