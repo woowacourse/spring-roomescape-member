@@ -15,7 +15,7 @@ import roomescape.service.ThemeService;
 @RestController
 @RequestMapping("/admin/themes")
 public class AdminThemeController {
-    private static final String LOCATION_DEFAULT_VALUE = "admin/themes/";
+    private static final String LOCATION_DEFAULT_VALUE = "/admin/themes/";
 
     private final ThemeService themeService;
 
