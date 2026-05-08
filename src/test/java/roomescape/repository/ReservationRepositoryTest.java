@@ -28,7 +28,7 @@ import roomescape.test.util.TestDatabaseUtils;
 class ReservationRepositoryTest {
 
     private static boolean persistTestSuccessful = false;
-    private static boolean findTestSuccessful = false;
+    private static boolean findAllTestSuccessful = false;
 
     private static final long NOT_EXIST_ID = 999;
     private static final String DEFAULT_NAME = "name";
@@ -107,16 +107,16 @@ class ReservationRepositoryTest {
         // then
         assertThat(foundReservations).containsExactly(persistedReservation);
 
-        findTestSuccessful = true;
+        findAllTestSuccessful = true;
     }
 
     @Nested
     class 예약_정보를_제거한다 {
 
         @BeforeEach
-        void skipIfPreviousTestFailed() {
+        void skipIfDependentTestFailed() {
             skipIfPersistTestFailed();
-            skipIfFindTestFailed();
+            skipIfFindAllTestFailed();
         }
 
         @Test
@@ -222,7 +222,7 @@ class ReservationRepositoryTest {
         Assumptions.assumeTrue(persistTestSuccessful, "저장 기능 테스트에 실패하여 다른 테스트를 수행하지 않습니다.");
     }
 
-    private static void skipIfFindTestFailed() {
-        Assumptions.assumeTrue(findTestSuccessful, "조회 기능 테스트에 실패하여 다른 테스트를 수행하지 않습니다.");
+    private static void skipIfFindAllTestFailed() {
+        Assumptions.assumeTrue(findAllTestSuccessful, "조회 기능 테스트에 실패하여 다른 테스트를 수행하지 않습니다.");
     }
 }

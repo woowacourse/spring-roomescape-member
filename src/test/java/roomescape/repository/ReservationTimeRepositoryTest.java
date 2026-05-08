@@ -5,9 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,9 +20,12 @@ import roomescape.domain.ReservationTime;
 import roomescape.test.util.TestDatabaseUtils;
 
 @JdbcTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ReservationTimeRepositoryTest {
 
-    private static final long DEFAULT_ID = 1;
+    private static boolean persistTestSuccessful = false;
+    private static boolean findAllTestSuccessful = false;
+
     private static final long NOT_EXIST_ID = 999;
     private static final LocalTime DEFAULT_START_AT = LocalTime.of(1, 1);
 
@@ -33,146 +40,116 @@ class ReservationTimeRepositoryTest {
         this.timeRepository = new ReservationTimeRepository(jdbcTemplate);
     }
 
-    @Nested
-    class 예약_시간을_저장한다 {
-        @Test
-        void 새로운_시간_정보를_저장한다() {
-            // given
-            ReservationTime time = ReservationTime.create(DEFAULT_START_AT);
+    @Order(1)
+    @Test
+    void 새로운_시간_정보를_저장하고_저장된_정보를_반환한다() {
+        // given
+        ReservationTime transientTime = ReservationTime.create(DEFAULT_START_AT);
 
-            // when
-            timeRepository.persist(time);
+        // when
+        ReservationTime persistedTime = timeRepository.persist(transientTime);
 
-            // then
-            String timeCountSql = "SELECT count(*)"
-                    + " FROM reservation_time";
-            Integer timeCount = jdbcTemplate.queryForObject(
-                    timeCountSql,
-                    Integer.class
-            );
+        // then
+        String selectSql = "SELECT id, start_at"
+                + " FROM reservation_time";
+        List<ReservationTime> foundTimes = jdbcTemplate.query(selectSql, reservationTimeRowMapper());
 
-            assertThat(timeCount).isEqualTo(1);
-        }
-        
-        @Test
-        void 저장한_시간_정보를_반환한다() {
-            // given
-            ReservationTime transientTime = ReservationTime.create(DEFAULT_START_AT);
+        assertThat(foundTimes).hasSize(1);
+        assertThat(foundTimes.getFirst()).isEqualTo(persistedTime);
 
-            // when
-            ReservationTime persistedReservationTime = timeRepository.persist(transientTime);
-
-            // then
-            String selectSql = "SELECT id, start_at"
-                    + " FROM reservation_time";
-            List<ReservationTime> foundReservations = jdbcTemplate.query(selectSql, reservationTimeRowMapper());
-
-            assertThat(foundReservations).hasSize(1);
-            assertThat(foundReservations.getFirst()).isEqualTo(persistedReservationTime);
-        }
+        persistTestSuccessful = true;
     }
 
+    @Order(2)
     @Test
     void 저장된_모든_예약_시간을_조회한다() {
+        skipIfPersistTestFailed();
+
         // given
-        int insertCount = 5;
-        insertReservationTimeAsAmount(insertCount);
+        ReservationTime transientTime = ReservationTime.create(DEFAULT_START_AT);
+        ReservationTime persistedTime = timeRepository.persist(transientTime);
 
         // when
         List<ReservationTime> reservationTimes = timeRepository.findAll();
 
         // then
-        assertThat(reservationTimes).hasSize(insertCount);
+        assertThat(reservationTimes).containsExactly(persistedTime);
+
+        findAllTestSuccessful = true;
     }
 
     @Nested
-    class 예약_시간을_ID_기준으로_조회한다 {
+    class 저장_조회_의존_테스트 {
 
-        @Test
-        void 예약_시간을_ID_기준으로_조회한다() {
-            // given
-            insertReservationTime(DEFAULT_ID, DEFAULT_START_AT);
-            ReservationTime expected = ReservationTime.retrieve(DEFAULT_ID, DEFAULT_START_AT);
-
-            // when
-            Optional<ReservationTime> actual = timeRepository.findById(DEFAULT_ID);
-
-            // then
-            assertThat(actual).hasValue(expected);
+        @BeforeEach
+        void skipIfDependentTestFailed() {
+            skipIfPersistTestFailed();
+            skipIfFindAllTestFailed();
         }
 
-        @Test
-        void ID로_레코드가_조회되지_않는다면_빈_Optional을_반환한다() {
-            // when
-            Optional<ReservationTime> reservationTime = timeRepository.findById(NOT_EXIST_ID);
+        @Nested
+        class 예약_시간을_ID_기준으로_조회한다 {
 
-            // then
-            assertThat(reservationTime).isEmpty();
-        }
-    }
+            @Test
+            void 예약_시간을_ID_기준으로_조회한다() {
+                // given
+                ReservationTime transientTime = ReservationTime.create(DEFAULT_START_AT);
+                ReservationTime persistedTime = timeRepository.persist(transientTime);
 
-    @Nested
-    class 예약_시간_정보를_제거한다 {
+                // when
+                Optional<ReservationTime> foundTime = timeRepository.findById(persistedTime.getId());
 
-        @Test
-        void ID_기반으로_예약_시간을_제거한다() {
-            // given
-            insertReservationTime(DEFAULT_ID, DEFAULT_START_AT);
+                // then
+                assertThat(foundTime).hasValue(persistedTime);
+            }
 
-            // when
-            timeRepository.delete(DEFAULT_ID);
+            @Test
+            void ID로_레코드가_조회되지_않는다면_빈_Optional을_반환한다() {
+                // when
+                Optional<ReservationTime> reservationTime = timeRepository.findById(NOT_EXIST_ID);
 
-            // then
-            String countSql = "SELECT count(*)"
-                    + " FROM reservation_time"
-                    + " WHERE id = ?";
-            Integer timeCount = jdbcTemplate.queryForObject(
-                    countSql,
-                    Integer.class,
-                    DEFAULT_ID
-            );
-
-            assertThat(timeCount).isEqualTo(0);
+                // then
+                assertThat(reservationTime).isEmpty();
+            }
         }
 
-        @Test
-        void 레코드가_제거됐다면_true를_반환한다() {
-            // given
-            insertReservationTime(DEFAULT_ID, DEFAULT_START_AT);
+        @Nested
+        class 예약_시간_정보를_제거한다 {
 
-            // when
-            boolean deleted = timeRepository.delete(DEFAULT_ID);
+            @Test
+            void ID_기반으로_예약_시간을_제거한다() {
+                // given
+                ReservationTime transientTime = ReservationTime.create(DEFAULT_START_AT);
+                ReservationTime persistedTime = timeRepository.persist(transientTime);
 
-            // then
-            assertThat(deleted).isTrue();
-        }
+                // when
+                timeRepository.delete(persistedTime.getId());
 
-        @Test
-        void 아무_레코드도_제거되지_않았다면_false를_반환한다() {
-            boolean deleted = timeRepository.delete(NOT_EXIST_ID);
+                // then
+                List<ReservationTime> foundTimes = timeRepository.findAll();
 
-            assertThat(deleted).isFalse();
-        }
-    }
+                assertThat(foundTimes).doesNotContain(persistedTime);
+            }
 
-    private void insertReservationTime(
-            long id,
-            LocalTime startAt
-    ) {
-        String insertSql = "INSERT INTO reservation_time(id, start_at)"
-                + " VALUES (?, ?)";
-        jdbcTemplate.update(
-                insertSql,
-                id,
-                startAt
-        );
-    }
+            @Test
+            void 레코드가_제거됐다면_true를_반환한다() {
+                // given
+                ReservationTime transientTime = ReservationTime.create(DEFAULT_START_AT);
+                ReservationTime persistedTime = timeRepository.persist(transientTime);
 
-    private void insertReservationTimeAsAmount(int count) {
-        for (int i = 0; i < count; i++) {
-            String insertSql = "INSERT INTO reservation_time(start_at)"
-                    + " VALUES (?)";
-            jdbcTemplate.update(insertSql, DEFAULT_START_AT);
+                // when
+                boolean deleted = timeRepository.delete(persistedTime.getId());
+
+                // then
+                assertThat(deleted).isTrue();
+            }
+
+            @Test
+            void 아무_레코드도_제거되지_않았다면_false를_반환한다() {
+                boolean deleted = timeRepository.delete(NOT_EXIST_ID);
+
+                assertThat(deleted).isFalse();
+            }
         }
     }
 
@@ -183,5 +160,13 @@ class ReservationTimeRepositoryTest {
 
             return ReservationTime.retrieve(id, startAt);
         };
+    }
+
+    private static void skipIfPersistTestFailed() {
+        Assumptions.assumeTrue(persistTestSuccessful, "저장 기능 테스트에 실패하여 다른 테스트를 수행하지 않습니다.");
+    }
+
+    private static void skipIfFindAllTestFailed() {
+        Assumptions.assumeTrue(findAllTestSuccessful, "조회 기능 테스트에 실패하여 다른 테스트를 수행하지 않습니다.");
     }
 }
