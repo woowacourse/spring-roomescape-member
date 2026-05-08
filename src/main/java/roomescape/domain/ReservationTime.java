@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import lombok.Getter;
-import roomescape.domain.dto.ReservationTimeCreateData;
 
 import java.time.LocalTime;
 
@@ -20,11 +19,11 @@ public class ReservationTime {
         this.endAt = endAt;
     }
 
-    public static ReservationTime create(ReservationTimeCreateData data) {
+    public static ReservationTime create(final LocalTime startAt, final LocalTime endAt) {
         return new ReservationTime(
                 null,
-                data.startAt(),
-                data.endAt()
+                startAt,
+                endAt
         );
     }
 

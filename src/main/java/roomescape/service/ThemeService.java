@@ -3,7 +3,6 @@ package roomescape.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.domain.dto.ThemeCreateData;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.request.ThemeCreateRequest;
 import roomescape.service.dto.response.ThemeResponse;
@@ -16,18 +15,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ThemeService {
 
+    private static final int POPULAR_THEME_PERIOD_DAYS = 7;
     private final ThemeRepository themeRepository;
     private final Clock clock;
 
-    private static final int POPULAR_THEME_PERIOD_DAYS = 7;
-
     public ThemeResponse create(final ThemeCreateRequest request) {
         final Theme themeWithoutId = Theme.create(
-                new ThemeCreateData(
-                        request.name(),
-                        request.description(),
-                        request.thumbnailUrl()
-                )
+                request.name(),
+                request.description(),
+                request.thumbnailUrl()
         );
 
         Theme theme = themeRepository.save(themeWithoutId);
