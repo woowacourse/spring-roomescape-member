@@ -33,7 +33,7 @@ public class ThemeController {
     @GetMapping("/{themeId}/times")
     public ResponseEntity<List<ReservationTimeResponse>> getAvailableTimes(
             @PathVariable Long themeId,
-            @RequestParam(value = "date", required = false) LocalDate date) {
+            @RequestParam LocalDate date) {
 
         List<ReservationTimeResponse> reservationTimeResponses =
                 ReservationTimeResponse.from(themeService.getAvailableTimes(themeId, date));

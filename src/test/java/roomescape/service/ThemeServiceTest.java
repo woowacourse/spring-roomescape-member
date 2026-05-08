@@ -103,18 +103,6 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 날짜가_없으면_오늘_예약_가능_시간을_조회한다() {
-        LocalDate today = LocalDate.now();
-        List<ReservationTime> times = List.of(new ReservationTime(1L, LocalTime.of(10, 0)));
-
-        when(themeRepository.findAvailableTimes(1L, today)).thenReturn(times);
-        List<ReservationTime> result = themeService.getAvailableTimes(1L, null);
-
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result).isEqualTo(times);
-    }
-
-    @Test
     void 인기_테마를_조회한다() {
         LocalDate today = LocalDate.now();
         List<Theme> themes = List.of(

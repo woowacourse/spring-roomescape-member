@@ -7,7 +7,6 @@ import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class ThemeService {
@@ -37,13 +36,7 @@ public class ThemeService {
     }
 
     public List<ReservationTime> getAvailableTimes(Long themeId, LocalDate date) {
-        LocalDate selectedDate = date;
-
-        if (Objects.isNull(date)) {
-            selectedDate = LocalDate.now();
-        }
-
-        return themeRepository.findAvailableTimes(themeId, selectedDate);
+        return themeRepository.findAvailableTimes(themeId, date);
     }
 
     public List<Theme> findPopularThemes() {
