@@ -154,7 +154,7 @@ API 명세 설계에 대한 각자의 관점에 맞춰 판단하고
     - [x] Theme saveTime
     - [x] void removeTime
 -[x] class ThemeRepository
--[x] class ThemeDao
+-[x] class ThemeRepository
 -[x] record Reservation
     -[x] Theme theme
 

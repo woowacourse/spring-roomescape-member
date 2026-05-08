@@ -17,9 +17,9 @@ class TimeSlotServiceTest {
 
     @BeforeEach
     void setUp() {
-        FakeTimeSlotRepository fakeTimeDao = new FakeTimeSlotRepository();
+        FakeTimeSlotRepository fakeTimeRepository = new FakeTimeSlotRepository();
         FakeReservationRepository fakeReservationRepository = new FakeReservationRepository();
-        reservationTimeSlotService = new TimeSlotService(fakeTimeDao, fakeReservationRepository);
+        reservationTimeSlotService = new TimeSlotService(fakeTimeRepository, fakeReservationRepository);
     }
 
     @Test

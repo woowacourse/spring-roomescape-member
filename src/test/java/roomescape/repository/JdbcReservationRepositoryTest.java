@@ -43,8 +43,8 @@ class JdbcReservationRepositoryTest {
     }
 
     private void insertDependencyData() {
-        JdbcTimeSlotRepository timeDao = new JdbcTimeSlotRepository(jdbcTemplate);
-        savedTimeSlot = timeDao.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
+        JdbcTimeSlotRepository timeRepository = new JdbcTimeSlotRepository(jdbcTemplate);
+        savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
     }
 
     @Test

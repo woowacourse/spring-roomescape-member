@@ -24,12 +24,12 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        FakeTimeSlotRepository fakeReservationTimeDao = new FakeTimeSlotRepository();
+        FakeTimeSlotRepository fakeReservationTimeRepository = new FakeTimeSlotRepository();
         FakeReservationRepository fakeReservationRepository = new FakeReservationRepository();
         FakeThemeRepository fakeThemeRepository = new FakeThemeRepository();
-        reservationService = new ReservationService(fakeReservationRepository, fakeReservationTimeDao,
+        reservationService = new ReservationService(fakeReservationRepository, fakeReservationTimeRepository,
                 fakeThemeRepository);
-        savedTimeSlot = fakeReservationTimeDao.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
+        savedTimeSlot = fakeReservationTimeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
         savedTheme = fakeThemeRepository.save(Theme.transientOf("이름", "설명", "test.com"));
     }
 

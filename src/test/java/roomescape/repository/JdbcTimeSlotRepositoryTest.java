@@ -18,11 +18,11 @@ class JdbcTimeSlotRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private JdbcTimeSlotRepository timeDao;
+    private JdbcTimeSlotRepository timeRepository;
 
     @BeforeEach
     void setUp() {
-        timeDao = new JdbcTimeSlotRepository(jdbcTemplate);
+        timeRepository = new JdbcTimeSlotRepository(jdbcTemplate);
         executeSchema();
     }
 
@@ -38,31 +38,31 @@ class JdbcTimeSlotRepositoryTest {
     @DisplayName("예약 시간을 저장하고 영속화된 객체를 반환한다.")
     void save() {
         TimeSlot timeSlot = TimeSlot.transientOf(LocalTime.of(10, 0));
-        TimeSlot savedTimeSlot = timeDao.save(timeSlot);
+        TimeSlot savedTimeSlot = timeRepository.save(timeSlot);
         assertThat(savedTimeSlot.id()).isPositive();
     }
 
     @Test
     @DisplayName("식별자로 예약 시간 객체를 조회한다.")
     void findById() {
-        TimeSlot savedTimeSlot = timeDao.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
-        TimeSlot foundTimeSlot = timeDao.findById(savedTimeSlot.id());
+        TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
+        TimeSlot foundTimeSlot = timeRepository.findById(savedTimeSlot.id());
         assertThat(foundTimeSlot.startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test
     @DisplayName("모든 예약 시간 객체 목록을 조회한다.")
     void findAll() {
-        timeDao.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
-        List<TimeSlot> timeSlots = timeDao.findAll();
+        timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
+        List<TimeSlot> timeSlots = timeRepository.findAll();
         assertThat(timeSlots).hasSize(1);
     }
 
     @Test
     @DisplayName("식별자로 예약 시간을 삭제한다.")
     void deleteById() {
-        TimeSlot savedTimeSlot = timeDao.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
-        timeDao.deleteById(savedTimeSlot.id());
-        assertThat(timeDao.findAll()).isEmpty();
+        TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
+        timeRepository.deleteById(savedTimeSlot.id());
+        assertThat(timeRepository.findAll()).isEmpty();
     }
 }
