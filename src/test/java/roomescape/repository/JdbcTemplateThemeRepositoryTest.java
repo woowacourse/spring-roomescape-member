@@ -101,12 +101,13 @@ class JdbcTemplateThemeRepositoryTest {
     void 기간_밖_예약은_인기_집계에서_제외한다() {
         LocalDate inRange = LocalDate.of(2026, 5, 1);
         LocalDate outOfRange = LocalDate.of(2026, 4, 1);
+        LocalDate outOfRange2 = LocalDate.of(2026, 4, 2);
 
         addReservation("A", outOfRange, 1, 1);
         addReservation("B", outOfRange, 2, 1);
         addReservation("C", outOfRange, 3, 1);
-        addReservation("D", outOfRange, 1, 1);
-        addReservation("E", outOfRange, 2, 1);
+        addReservation("D", outOfRange2, 1, 1);
+        addReservation("E", outOfRange2, 2, 1);
         addReservation("F", inRange, 1, 1);
 
         addReservation("G", inRange, 2, 2);

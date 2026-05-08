@@ -66,7 +66,7 @@ class JdbcTemplateReservationRepositoryTest {
     void 특정_사용자의_예약을_조회한다() {
         addReservation("브라운", LocalDate.of(2026, 5, 3));
         addReservation("브라운", LocalDate.of(2026, 5, 4));
-        addReservation("조이", LocalDate.of(2026, 5, 4));
+        addReservation("조이", LocalDate.of(2026, 5, 5));
 
         List<Reservation> reservations = reservationRepository.findReservationsByName("브라운");
 
