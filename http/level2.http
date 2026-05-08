@@ -9,7 +9,7 @@ Content-Type: application/json
 }
 
 ### 시간 등록
-POST localhost:8080/times
+POST localhost:8080/admin/times
 Content-Type: application/json
 
 {

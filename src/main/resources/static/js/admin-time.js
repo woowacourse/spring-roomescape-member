@@ -10,7 +10,7 @@
     addBtn.addEventListener('click', async () => {
         const startAt = startAtEl.value;
         if (!startAt) return alert('시간을 입력해주세요.');
-        const res = await fetch('/times', {
+        const res = await fetch('/admin/times', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({startAt})
@@ -35,7 +35,7 @@
     async function deleteRow(tr) {
         if (!confirm('삭제하시겠습니까?')) return;
         const id = tr.dataset.id;
-        const res = await fetch(`/times/${id}`, {method: 'DELETE'});
+        const res = await fetch(`/admin/times/${id}`, {method: 'DELETE'});
         if (res.ok) tr.remove();
         else alert('삭제 실패');
     }
