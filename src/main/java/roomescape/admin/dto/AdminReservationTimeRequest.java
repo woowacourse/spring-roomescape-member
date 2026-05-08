@@ -1,9 +1,10 @@
-package roomescape.user.dto;
+package roomescape.admin.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
 
-public record ReservationTimeRequest(
+public record AdminReservationTimeRequest(
         @JsonFormat(pattern = "HH:mm")
-        LocalTime startAt) {
+        LocalTime startAt
+) {
 }

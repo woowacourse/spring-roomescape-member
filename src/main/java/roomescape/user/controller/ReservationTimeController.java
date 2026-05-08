@@ -4,17 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.ReservationTime;
 import roomescape.user.dto.AvailableTimeResponse;
-import roomescape.user.dto.ReservationTimeRequest;
 import roomescape.user.dto.ReservationTimeResponse;
 import roomescape.user.service.ReservationTimeService;
 
@@ -41,17 +35,5 @@ public class ReservationTimeController {
                                                                             @RequestParam LocalDate date) {
         List<AvailableTimeResponse> availableTimes = timeService.findByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(availableTimes);
-    }
-
-    @PostMapping("/times")
-    public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeRequest request) {
-        ReservationTime time = timeService.add(request.startAt());
-        return ResponseEntity.ok(ReservationTimeResponse.from(time));
-    }
-
-    @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        timeService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 }

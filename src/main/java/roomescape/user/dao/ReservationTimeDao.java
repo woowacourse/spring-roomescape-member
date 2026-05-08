@@ -6,8 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.user.dto.AvailableTimeResponse;
@@ -26,15 +24,10 @@ public class ReservationTimeDao {
         );
     };
 
-
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
     }
 
     public List<ReservationTime> selectAll() {
@@ -60,18 +53,5 @@ public class ReservationTimeDao {
                 + "AND r.date = ?";
 
         return jdbcTemplate.query(sql, availableTimeRowMapper, themeId, date);
-    }
-
-    public ReservationTime insert(ReservationTime time) {
-        MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("start_at", time.getStartAt());
-
-        Long id = (long) simpleJdbcInsert.executeAndReturnKey(parameters);
-        return new ReservationTime(id, time.getStartAt());
-    }
-
-    public void delete(Long id) {
-        String sql = "delete from reservation_time where id = ?";
-        jdbcTemplate.update(sql, id);
     }
 }

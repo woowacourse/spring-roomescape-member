@@ -228,7 +228,7 @@
     timeForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         try {
-            await requestJson('/user/times', {
+            await requestJson('/admin/times', {
                 method: 'POST',
                 body: JSON.stringify({startAt: document.querySelector('#start-at').value}),
             });
@@ -247,7 +247,7 @@
         }
 
         try {
-            await requestJson(`/user/times/${button.dataset.timeId}`, {method: 'DELETE'});
+            await requestJson(`/admin/times/${button.dataset.timeId}`, {method: 'DELETE'});
             setStatus('예약 시간을 삭제했습니다.');
             await loadTimes();
         } catch (error) {
