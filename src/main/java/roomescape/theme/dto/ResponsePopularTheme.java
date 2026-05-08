@@ -1,6 +1,6 @@
 package roomescape.theme.dto;
 
-import roomescape.theme.service.PopularTheme;
+import roomescape.theme.domain.Theme;
 
 public record ResponsePopularTheme(
         Long id,
@@ -9,13 +9,13 @@ public record ResponsePopularTheme(
         String thumbnail,
         int rank
 ) {
-    public static ResponsePopularTheme from(PopularTheme popularTheme) {
+    public static ResponsePopularTheme of(Theme theme, int rank) {
         return new ResponsePopularTheme(
-                popularTheme.id(),
-                popularTheme.name(),
-                popularTheme.description(),
-                popularTheme.thumbnail(),
-                popularTheme.rank()
+                theme.getId(),
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail(),
+                rank
         );
     }
 }

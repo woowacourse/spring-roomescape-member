@@ -9,7 +9,6 @@ import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Service
 @Transactional(readOnly = true)
@@ -50,13 +49,11 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<PopularTheme> getPopularThemes(int days, int limit) {
-        LocalDate endDate = LocalDate.now();
+    public List<Theme> getPopularThemes(int days, int limit) {
+        LocalDate now = LocalDate.now();
+        LocalDate endDate = now.minusDays(1);
         LocalDate startDate = endDate.minusDays(days);
-        List<Theme> themes = themeRepository.findPopularThemes(endDate, startDate, limit);
 
-        return IntStream.range(0, themes.size())
-                .mapToObj(idx -> PopularTheme.of(themes.get(idx), idx + 1))
-                .toList();
+        return themeRepository.findPopularThemes(startDate, endDate, limit);
     }
 }

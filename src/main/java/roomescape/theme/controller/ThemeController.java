@@ -8,11 +8,11 @@ import roomescape.theme.dto.ResponsePopularTheme;
 import roomescape.theme.dto.ResponseTheme;
 import roomescape.theme.dto.ResponseThemeAvailableTime;
 import roomescape.theme.service.AvailableTime;
-import roomescape.theme.service.PopularTheme;
 import roomescape.theme.service.ThemeService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @RestController
 @RequestMapping("/themes")
@@ -44,9 +44,9 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ResponsePopularTheme>> getPopularThemes(@RequestParam int days, @RequestParam int limit) {
-        List<PopularTheme> popularThemes = themeService.getPopularThemes(days, limit);
-        List<ResponsePopularTheme> response = popularThemes.stream()
-                .map(ResponsePopularTheme::from)
+        List<Theme> themes = themeService.getPopularThemes(days, limit);
+        List<ResponsePopularTheme> response = IntStream.range(0, themes.size())
+                .mapToObj(i -> ResponsePopularTheme.of(themes.get(i), i + 1))
                 .toList();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
