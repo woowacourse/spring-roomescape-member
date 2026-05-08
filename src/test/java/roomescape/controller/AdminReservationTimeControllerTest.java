@@ -4,7 +4,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
+import io.restassured.response.ValidatableResponse;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,34 +16,31 @@ public class AdminReservationTimeControllerTest {
 
     @Test
     void 시간_추가() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/times")
-                .then().log().all()
+        // when & then
+        createTime("10:00")
                 .statusCode(201)
                 .body("id", notNullValue());
     }
 
     @Test
     void 시간_삭제() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-
-        int timeId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/times")
-                .then().log().all()
+        // given
+        int timeId = createTime("10:00")
                 .statusCode(201)
                 .extract().path("id");
 
+        // when & then
         RestAssured.given().log().all()
                 .when().delete("/admin/times/" + timeId)
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    private ValidatableResponse createTime(String startAt) {
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("startAt", startAt))
+                .when().post("/admin/times")
+                .then().log().all();
     }
 }
