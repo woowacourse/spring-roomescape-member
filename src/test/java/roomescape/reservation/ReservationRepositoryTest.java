@@ -32,7 +32,7 @@ class ReservationRepositoryTest {
         ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
 
         Reservation saved = reservationRepository.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
-        Reservation found = reservationRepository.findById(saved.getId());
+        Reservation found = reservationRepository.findById(saved.getId()).orElseThrow();
 
         assertThat(found.getId()).isEqualTo(saved.getId());
         assertThat(found.getName()).isEqualTo("브라운");

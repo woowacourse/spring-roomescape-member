@@ -5,12 +5,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
+import roomescape.theme.Theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -49,31 +51,28 @@ class UserReservationTimeServiceTest {
         LocalDate date = LocalDate.of(2026, 5, 8);
         Long themeId = 1L;
 
-        List<AvailableTime> mockSchedules = List.of(
-                new AvailableTime(1L, LocalTime.of(10, 0), true),   // 예약 가능
-                new AvailableTime(2L, LocalTime.of(11, 0), false)   // 예약 불가 (이미 예약됨)
-        );
+        ReservationTime time1 = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime time2 = new ReservationTime(2L, LocalTime.of(11, 0));
+        when(reservationTimeRepository.findAll()).thenReturn(List.of(time1, time2));
 
-        when(reservationTimeRepository.findAvailableTimes(date, themeId))
-                .thenReturn(mockSchedules);
+        when(reservationRepository.findReservedTimeIds(date, themeId))
+                .thenReturn(List.of(2L));
 
         ScheduleResponse result = reservationTimeService.getSchedules(date, themeId);
 
         assertThat(result.themeId()).isEqualTo(themeId);
         assertThat(result.date()).isEqualTo(date);
         assertThat(result.schedules()).hasSize(2);
-
         assertThat(result.schedules().get(0).isAvailable()).isTrue();
         assertThat(result.schedules().get(1).isAvailable()).isFalse();
     }
 
     @Test
-    void 스케줄_목록이_비어있을_때() {
+    void 전체_시간_목록이_없으면_스케줄_목록도_비어있다() {
         LocalDate date = LocalDate.of(2026, 5, 8);
         Long themeId = 1L;
 
-        when(reservationTimeRepository.findAvailableTimes(date, themeId))
-                .thenReturn(Collections.emptyList());
+        when(reservationTimeRepository.findAll()).thenReturn(Collections.emptyList());
 
         ScheduleResponse result = reservationTimeService.getSchedules(date, themeId);
 

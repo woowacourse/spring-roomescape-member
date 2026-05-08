@@ -79,7 +79,7 @@ public class ReservationRepository {
         return jdbcTemplate.queryForList(sql, Long.class, date, themeId);
     }
 
-    public Optional<Reservation> findByIdOptional(long id) {
+    public Optional<Reservation> findById(long id) {
         String sql = "SELECT r.id AS reservation_id, r.name, r.date, " +
                 "rt.id AS time_id, rt.start_at AS time_value, " +
                 "th.id AS theme_id, th.name AS theme_name, " +
@@ -97,7 +97,8 @@ public class ReservationRepository {
         }
     }
 
-    public Reservation findById(long id) {
-        return findByIdOptional(id).orElse(null);
+    public List<Long> findReservedTimeIds(LocalDate date, long themeId) {
+        String sql = "SELECT DISTINCT time_id FROM reservation WHERE date = ? AND theme_id = ?";
+        return jdbcTemplate.queryForList(sql, Long.class, date, themeId);
     }
 }

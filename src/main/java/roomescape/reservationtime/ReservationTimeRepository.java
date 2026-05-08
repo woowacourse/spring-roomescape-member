@@ -21,11 +21,6 @@ public class ReservationTimeRepository {
             rs.getLong("id"),
             rs.getObject("start_at", LocalTime.class)
     );
-    private final RowMapper<AvailableTime> availableTimeRowMapper = (rs, rowNum) -> new AvailableTime(
-            rs.getLong("timeId"),
-            rs.getObject("time", LocalTime.class),
-            rs.getBoolean("isAvailable")
-    );
 
     public ReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -66,13 +61,4 @@ public class ReservationTimeRepository {
         }
     }
 
-    public List<AvailableTime> findAvailableTimes(LocalDate date, Long themeId) {
-        String sql =
-                "SELECT rt.id AS timeId, rt.start_at AS time, CASE WHEN r.id IS NULL THEN true ELSE false END AS isAvailable "
-                        + "FROM reservation_time rt "
-                        + "LEFT JOIN reservation AS r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? "
-                        + "ORDER BY rt.id";
-
-        return jdbcTemplate.query(sql, availableTimeRowMapper, date, themeId);
-    }
 }
