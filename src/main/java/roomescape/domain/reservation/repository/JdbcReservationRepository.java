@@ -1,7 +1,6 @@
 package roomescape.domain.reservation.repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -77,7 +76,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             rs.getDate("date").toLocalDate(),
             Time.reconstruct(
                 rs.getLong("time_id"),
-                LocalTime.parse(rs.getString("start_at"))
+                rs.getTime("start_at").toLocalTime()
             ),
             Theme.reconstruct(
                 rs.getLong("theme_id"),

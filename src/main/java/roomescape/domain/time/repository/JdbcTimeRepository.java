@@ -1,6 +1,5 @@
 package roomescape.domain.time.repository;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,7 +42,7 @@ public class JdbcTimeRepository implements TimeRepository {
             sql,
             (rs, rowNum) -> Time.reconstruct(
                 rs.getLong("id"),
-                LocalTime.parse(rs.getString("start_at"))
+                rs.getTime("start_at").toLocalTime()
             )
         );
     }
@@ -58,7 +57,7 @@ public class JdbcTimeRepository implements TimeRepository {
                 parameters,
                 (resultSet, rowNum) -> Time.reconstruct(
                     resultSet.getLong("id"),
-                    LocalTime.parse(resultSet.getString("start_at"))
+                    resultSet.getTime("start_at").toLocalTime()
                 )
             );
             return Optional.ofNullable(time);
