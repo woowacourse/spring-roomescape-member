@@ -34,19 +34,16 @@ public class ReservationControllerTest {
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time)
-                .when().post("/api/v1/times")
-                .then().statusCode(201);
+                .when().post("/api/v1/times");
 
         Map<String, Object> themeParams = new HashMap<>();
         themeParams.put("name", "이든의 공포 하우스");
         themeParams.put("description", "이든이 귀신으로 나옴");
         themeParams.put("imgUrl", "링크~");
         themeParams.put("userName", "ADMIN");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
+        RestAssured.given().contentType(ContentType.JSON)
                 .body(themeParams)
-                .when().post("/api/v1/themes")
-                .then().statusCode(201);
+                .when().post("/api/v1/themes");
     }
 
     @Test

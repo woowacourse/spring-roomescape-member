@@ -33,6 +33,8 @@ public class ThemeServiceTest {
 
     @Test
     void 없는_테마는_삭제할_수_없다() {
+
+
         assertThatThrownBy(() -> themeService.deleteTheme(1L, "ADMIN"))
                 .isInstanceOf(ThemeNotFoundException.class);
     }

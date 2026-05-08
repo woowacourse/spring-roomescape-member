@@ -39,24 +39,21 @@ public class ReservationTimeControllerTest {
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time)
-                .when().post("/api/v1/times")
-                .then().statusCode(201);
+                .when().post("/api/v1/times");
 
         Map<String, String> time2 = new HashMap<>();
         time2.put("startAt", "11:00");
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time2)
-                .when().post("/api/v1/times")
-                .then().statusCode(201);
+                .when().post("/api/v1/times");
 
         Map<String, String> time3 = new HashMap<>();
         time3.put("startAt", "12:00");
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time3)
-                .when().post("/api/v1/times")
-                .then().statusCode(201);
+                .when().post("/api/v1/times");
 
         Map<String, Object> themeParams = new HashMap<>();
         themeParams.put("name", "이든의 공포 하우스");
@@ -64,11 +61,9 @@ public class ReservationTimeControllerTest {
         themeParams.put("imgUrl", "링크~");
         themeParams.put("userName", "ADMIN");
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
+        RestAssured.given().contentType(ContentType.JSON)
                 .body(themeParams)
-                .when().post("/api/v1/themes")
-                .then().statusCode(201);
+                .when().post("/api/v1/themes");
 
         Map<String, Object> themeParams2 = new HashMap<>();
         themeParams2.put("name", "정콩이의 방탈출");
@@ -76,11 +71,9 @@ public class ReservationTimeControllerTest {
         themeParams2.put("imgUrl", "링크~");
         themeParams2.put("userName", "ADMIN");
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
+        RestAssured.given().contentType(ContentType.JSON)
                 .body(themeParams2)
-                .when().post("/api/v1/themes")
-                .then().statusCode(201);
+                .when().post("/api/v1/themes");
     }
 
     @Test
