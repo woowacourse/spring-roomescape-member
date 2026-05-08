@@ -47,8 +47,8 @@ class ReservationServiceTest {
     ReservationService reservationService;
 
     @Test
-    @DisplayName("예약을 성공적으로 생성한다.")
-    void saveReservation() {
+    @DisplayName("사용자가 예약을 성공적으로 생성한다.")
+    void saveReservationByUser() {
         // given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         when(reservationTimeRepository.findById(eq(1L)))
@@ -76,7 +76,7 @@ class ReservationServiceTest {
         );
 
         // when
-        ReservationResponse response = reservationService.saveReservation(request);
+        ReservationResponse response = reservationService.saveReservationByUser(request);
 
         // then
         assertThat(response.id()).isEqualTo(1L);
@@ -90,7 +90,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 시간으로 예약 시 예외가 발생한다.")
-    void saveReservation_throwsException_whenTimeNotFound() {
+    void saveReservation_ByUser_throwsException_whenTimeNotFound() {
         // given
         Long invalidTimeId = 999L;
 
@@ -105,7 +105,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> reservationService.saveReservation(request))
+        assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("해당 id의 ReservationTime이 존재하지 않습니다.");
     }
