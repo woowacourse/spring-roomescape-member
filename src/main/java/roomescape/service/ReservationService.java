@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -24,28 +22,26 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public ReservationResponse save(ReservationRequest request) {
-        final ReservationTime time = reservationTimeDao.findById(request.timeId())
+    public Reservation save(String name, LocalDate date, long timeId, long themeId) {
+        final ReservationTime time = reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
-        final Theme theme = themeDao.findById(request.themeId())
+        final Theme theme = themeDao.findById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-        if (request.date().isBefore(LocalDate.now())) {
+        if (date.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("과거 날짜로는 예약할 수 없습니다.");
         }
-        if (reservationDao.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
+        if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
-        final long id = reservationDao.save(request.name(), request.date(), request.timeId(), request.themeId());
-        return ReservationResponse.from(new Reservation(id, request.name(), request.date(), time, theme), theme);
+        final long id = reservationDao.save(name, date, timeId, themeId);
+        return new Reservation(id, name, date, time, theme);
     }
 
     public void delete(long id) {
         reservationDao.delete(id);
     }
 
-    public List<ReservationResponse> findAllByName(String username) {
-        return reservationDao.findByName(username).stream()
-                .map(r -> ReservationResponse.from(r, r.getTheme()))
-                .toList();
+    public List<Reservation> findAllByName(String username) {
+        return reservationDao.findByName(username);
     }
 }

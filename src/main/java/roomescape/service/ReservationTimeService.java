@@ -1,12 +1,11 @@
 package roomescape.service;
 
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {
@@ -18,18 +17,15 @@ public class ReservationTimeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<ReservationTimeResponse> findAll() {
-        return reservationTimeDao.findAll().stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+    public List<ReservationTime> findAll() {
+        return reservationTimeDao.findAll();
     }
 
-    public ReservationTimeResponse save(ReservationTimeRequest request) {
-        if (reservationTimeDao.existsByStartAt(request.startAt())) {
+    public ReservationTime save(LocalTime startAt) {
+        if (reservationTimeDao.existsByStartAt(startAt)) {
             throw new IllegalArgumentException("이미 존재하는 예약 시간입니다.");
         }
-        final ReservationTime saved = reservationTimeDao.save(request.startAt());
-        return ReservationTimeResponse.from(saved);
+        return reservationTimeDao.save(startAt);
     }
 
     public void delete(long id) {

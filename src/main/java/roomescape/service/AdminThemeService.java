@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.dto.ThemeRequest;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 
@@ -16,8 +15,8 @@ public class AdminThemeService {
         this.reservationDao = reservationDao;
     }
 
-    public Long save(ThemeRequest request) {
-        return themeDao.save(request.name(), request.description(), request.thumbnailUrl());
+    public long save(String name, String description, String thumbnailUrl) {
+        return themeDao.save(name, description, thumbnailUrl);
     }
 
     public void delete(long id) {

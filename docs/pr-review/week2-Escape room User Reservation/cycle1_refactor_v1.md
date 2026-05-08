@@ -13,7 +13,7 @@
   - `Reservation(id, name, date, time, theme)`: DB 조회 후 생성용 (id null 검증 추가)
   - `ReservationDao.save(Reservation)`: 도메인 객체를 받아 저장 → 검증 우회 방지
   - `equals()`/`hashCode()`: id 기반으로 재정의 (id null이면 object identity 사용)
-- [ ] **6. DTO 레이어 분리 - Service가 DTO 대신 Domain 객체만 사용하도록 변경하고, DTO는 `controller` 하위 패키지로 이동**
+- [x] **6. DTO 레이어 분리 - Service가 DTO 대신 Domain 객체만 사용하도록 변경하고, DTO는 `controller` 하위 패키지로 이동**
   - Controller: Request DTO → Domain 객체 변환 후 Service 호출
   - Service: Domain 객체만 사용
   - Controller: Service 결과(Domain) → Response DTO 변환
