@@ -25,11 +25,11 @@ public class ReservationTimeDao {
                 rs.getObject("start_at", LocalTime.class)
         );
 
-        if(TimeStatus.DELETED.toString().equals(rs.getString("status"))) {
+        if(TimeStatus.DELETED.name().equals(rs.getString("status"))) {
             return reservationTime.deleted();
         }
 
-        if(TimeStatus.HOLD.toString().equals(rs.getString("status"))) {
+        if(TimeStatus.HOLD.name().equals(rs.getString("status"))) {
             return reservationTime.hold();
         }
 
@@ -39,7 +39,7 @@ public class ReservationTimeDao {
     public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.startAt())
-                .addValue("status", TimeStatus.AVAILABLE.toString());
+                .addValue("status", TimeStatus.AVAILABLE.name());
 
         SimpleJdbcInsert insertExecutor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
@@ -54,8 +54,8 @@ public class ReservationTimeDao {
     }
 
     public void deleteByTimeId(long timeId) {
-        String sql = "UPDATE reservation_time SET status = 'DELETED' WHERE id = ?";
-        int affected = jdbcTemplate.update(sql, timeId);
+        String sql = "UPDATE reservation_time SET status = ? WHERE id = ?";
+        int affected = jdbcTemplate.update(sql, TimeStatus.DELETED.name(),timeId);
 
         if (affected == 0) {
             throw new NoSuchElementException("[ERROR] 삭제할 id에 해당하는 시간이 존재하지 않습니다.");
@@ -64,7 +64,7 @@ public class ReservationTimeDao {
 
     public List<ReservationTime> findAllReservationTimes() {
         String sql = "SELECT id, start_at, status FROM reservation_time WHERE status = ?";
-        return jdbcTemplate.query(sql, rowMapper, TimeStatus.AVAILABLE.toString());
+        return jdbcTemplate.query(sql, rowMapper, TimeStatus.AVAILABLE.name());
     }
 
     public List<ReservationTime> findAvailableReservationTimes(LocalDate date, long themeId) {
@@ -79,9 +79,9 @@ public class ReservationTimeDao {
                     AND r.date = ?
                     AND r.theme_id = ?
                 WHERE r.id IS NULL
-                    AND rt.status = 'AVAILABLE'
+                    AND rt.status = ?
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper, date, themeId);
+        return jdbcTemplate.query(sql, rowMapper, date, themeId, TimeStatus.AVAILABLE.name());
     }
 }

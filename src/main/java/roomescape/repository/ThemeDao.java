@@ -27,7 +27,7 @@ public class ThemeDao {
                 rs.getString("description")
         );
 
-        if (rs.getString("status").equals(ThemeStatus.DELETED.toString())) {
+        if (rs.getString("status").equals(ThemeStatus.DELETED.name())) {
             return theme.deleted();
         }
 
@@ -39,7 +39,7 @@ public class ThemeDao {
                 .addValue("name", theme.name())
                 .addValue("thumbnail_url", theme.thumbnailUrl())
                 .addValue("description", theme.description())
-                .addValue("status", ThemeStatus.AVAILABLE.toString());
+                .addValue("status", ThemeStatus.AVAILABLE.name());
 
         SimpleJdbcInsert themeInsertExecutor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
@@ -56,8 +56,8 @@ public class ThemeDao {
     }
 
     public void delete(long themeId) {
-        String sql = "UPDATE theme SET status = 'DELETED' WHERE id = ?";
-        int affected = jdbcTemplate.update(sql, themeId);
+        String sql = "UPDATE theme SET status = ? WHERE id = ?";
+        int affected = jdbcTemplate.update(sql, ThemeStatus.DELETED.name(), themeId);
 
         if(affected == 0) {
             throw new NoSuchElementException("[ERROR] 삭제할 id에 해당하는 예약이 존재하지 않습니다.");
@@ -95,6 +95,6 @@ public class ThemeDao {
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper, startAt, endAt, ThemeStatus.AVAILABLE.toString(), limit);
+        return jdbcTemplate.query(sql, rowMapper, startAt, endAt, ThemeStatus.AVAILABLE.name(), limit);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
@@ -33,26 +34,32 @@ public class ReservationDao {
                 rs.getObject("time_value", LocalTime.class)
         );
 
-        return Reservation.create(
+        Reservation reservation = Reservation.of(
                 rs.getLong("reservation_id"),
                 rs.getString("name"),
                 rs.getObject("date", LocalDate.class),
                 reservationTime,
                 theme
         );
+
+        if(ReservationStatus.DELETED.name().equals(rs.getString("status"))) {
+            return reservation.deleted();
+        }
+
+        if(ReservationStatus.HOLD.name().equals(rs.getString("status"))) {
+            return reservation.hold();
+        }
+
+        return reservation;
     };
 
     public Reservation save(Reservation reservation, long timeId, long themeId) {
-
-        if(existsByDateAndTimeIdAndThemeId(reservation.reservationDate(), timeId, themeId)) {
-            throw new IllegalStateException("이미 중복된 예약이 존재합니다.");
-        }
-
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.username())
                 .addValue("date", reservation.reservationDate())
                 .addValue("time_id", timeId)
-                .addValue("theme_id", themeId);
+                .addValue("theme_id", themeId)
+                .addValue("status", ReservationStatus.AVAILABLE.name());
 
         SimpleJdbcInsert reservationInsertExecutor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
@@ -65,6 +72,7 @@ public class ReservationDao {
                     reservation.id as reservation_id,
                     reservation.name,
                     reservation.date,
+                    reservation.status,
                     time.id as time_id,
                     time.start_at as time_value,
                     theme.id as theme_id,
@@ -83,8 +91,8 @@ public class ReservationDao {
     }
 
     public void delete(long reservationId) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
-        int affected = jdbcTemplate.update(sql, reservationId);
+        String sql = "UPDATE reservation SET status = ? WHERE id = ?";
+        int affected = jdbcTemplate.update(sql, ReservationStatus.DELETED.name(), reservationId);
 
         if (affected == 0) {
             throw new NoSuchElementException("[ERROR] 삭제할 id에 해당하는 예약이 존재하지 않습니다.");
@@ -97,6 +105,7 @@ public class ReservationDao {
                     reservation.id as reservation_id,
                     reservation.name,
                     reservation.date,
+                    reservation.status,
                     time.id as time_id,
                     time.start_at as time_value,
                     theme.id as theme_id,
@@ -108,22 +117,22 @@ public class ReservationDao {
                 ON reservation.time_id = time.id
                 INNER JOIN theme as theme
                 ON reservation.theme_id = theme.id
+                WHERE reservation.status = ?
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, rowMapper, ReservationStatus.AVAILABLE.name());
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
-        SELECT EXISTS (
-            SELECT 1 FROM reservation
-            WHERE date = ? AND time_id = ? AND theme_id = ?
-        )
-        """;
+                SELECT EXISTS (
+                    SELECT 1 FROM reservation
+                    WHERE status = ?
+                        AND date = ? AND time_id = ? AND theme_id = ?
+                )
+                """;
         return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId)
+                jdbcTemplate.queryForObject(sql, Boolean.class, ReservationStatus.AVAILABLE.name(), date, timeId, themeId)
         );
     }
-
 }
-

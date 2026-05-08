@@ -49,11 +49,7 @@ public class UserController {
     public ResponseEntity<List<ThemeResponse>> getSortedPopularThemesAtPeriod(
             @RequestParam("date") LocalDate today,
             @RequestParam("limit") int limit) {
-
-        LocalDate startAt = today.minusWeeks(1);
-        LocalDate endAt = today.minusDays(1);
-
-        List<ThemeResponse> popularThemesBy = themeQueryService.findPopularThemesBy(startAt, endAt, limit);
+        List<ThemeResponse> popularThemesBy = themeQueryService.findPopularThemesByPeriod(today, limit);
 
         return ResponseEntity.ok(popularThemesBy);
     }
