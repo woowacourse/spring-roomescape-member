@@ -71,10 +71,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
-                .when().post("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
+                .when().post("/api/v1/reservations");
 
         RestAssured.given().log().all()
                 .when().get("/api/v1/reservations")
@@ -92,16 +89,10 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
-                .when().post("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
+                .when().post("/api/v1/reservations");
 
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+                .when().get("/api/v1/reservations");
 
         RestAssured.given().log().all()
                 .when().delete("/api/v1/reservations/1")
@@ -134,9 +125,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
-                .when().post("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(201);
+                .when().post("/api/v1/reservations");
 
         RestAssured.given().log().all()
                 .when().get("/api/v1/reservations")

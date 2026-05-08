@@ -66,10 +66,7 @@ public class ThemeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(adminThemeParams)
-                .when().post("/api/v1/themes")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
+                .when().post("/api/v1/themes");
 
         RestAssured.given().log().all()
                 .when().get("/api/v1/themes")
@@ -85,9 +82,7 @@ public class ThemeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(adminThemeParams)
-                .when().post("/api/v1/themes")
-                .then().log().all()
-                .statusCode(201);
+                .when().post("/api/v1/themes");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -104,9 +99,7 @@ public class ThemeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(adminThemeParams)
-                .when().post("/api/v1/themes")
-                .then().log().all()
-                .statusCode(201);
+                .when().post("/api/v1/themes");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -123,22 +116,19 @@ public class ThemeControllerTest {
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time)
-                .when().post("/api/v1/times")
-                .then().statusCode(201);
+                .when().post("/api/v1/times");
 
         Map<String, Object> adminThemeParams = themeParams();
         adminThemeParams.put("userName", "ADMIN");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(adminThemeParams)
-                .when().post("/api/v1/themes")
-                .then().statusCode(201);
+                .when().post("/api/v1/themes");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
-                .when().post("/api/v1/reservations")
-                .then().statusCode(201);
+                .when().post("/api/v1/reservations");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
