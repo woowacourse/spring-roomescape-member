@@ -32,19 +32,19 @@ public class ReservationTimeDao {
     }
 
     public Optional<ReservationTime> findById(Long id) {
-        List<ReservationTime> results = jdbcTemplate.query(
+        final List<ReservationTime> results = jdbcTemplate.query(
                 "SELECT id, start_at FROM reservation_time WHERE id = ?", timeRowMapper, id);
         return results.stream().findFirst();
     }
 
     public boolean existsByStartAt(LocalTime startAt) {
-        Integer count = jdbcTemplate.queryForObject(
+        final Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?", Integer.class, startAt);
         return count > 0;
     }
 
     public ReservationTime save(LocalTime startAt) {
-        Long id = jdbcInsert.executeAndReturnKey(Map.of("start_at", startAt)).longValue();
+        final Long id = jdbcInsert.executeAndReturnKey(Map.of("start_at", startAt)).longValue();
         return new ReservationTime(id, startAt);
     }
 

@@ -25,9 +25,9 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest request) {
-        ReservationTime time = reservationTimeDao.findById(request.timeId())
+        final ReservationTime time = reservationTimeDao.findById(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
-        Theme theme = themeDao.findById(request.themeId())
+        final Theme theme = themeDao.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         if (request.date().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("과거 날짜로는 예약할 수 없습니다.");
@@ -35,7 +35,7 @@ public class ReservationService {
         if (reservationDao.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
             throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
-        Long id = reservationDao.save(request.name(), request.date(), request.timeId(), request.themeId());
+        final Long id = reservationDao.save(request.name(), request.date(), request.timeId(), request.themeId());
         return ReservationResponse.from(new Reservation(id, request.name(), request.date(), time, theme), theme);
     }
 

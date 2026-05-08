@@ -33,7 +33,7 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAll() {
-        String sql = """
+        final String sql = """
                 SELECT r.id AS reservation_id, r.name, r.date,
                        t.id AS time_id, t.start_at AS time_value,
                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail_url AS theme_thumbnail
@@ -54,19 +54,19 @@ public class ReservationDao {
     }
 
     public boolean existsByTimeId(Long timeId) {
-        Integer count = jdbcTemplate.queryForObject(
+        final Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM reservation WHERE time_id = ?", Integer.class, timeId);
         return count > 0;
     }
 
     public boolean existsByThemeId(long themeId) {
-        Integer count = jdbcTemplate.queryForObject(
+        final Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM reservation WHERE theme_id = ?", Integer.class, themeId);
         return count > 0;
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        Integer count = jdbcTemplate.queryForObject(
+        final Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?",
                 Integer.class, date, timeId, themeId);
         return count > 0;
@@ -77,7 +77,7 @@ public class ReservationDao {
     }
 
     public List<Reservation> findByName(String username) {
-        String sql = """
+        final String sql = """
                 SELECT r.id AS reservation_id, r.name, r.date,
                        t.id AS time_id, t.start_at AS time_value,
                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail_url AS theme_thumbnail
