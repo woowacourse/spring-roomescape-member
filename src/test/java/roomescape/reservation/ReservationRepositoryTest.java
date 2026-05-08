@@ -16,12 +16,12 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest(properties = "spring.sql.init.mode=never")
-@Import(ReservationDao.class)
+@Import(ReservationRepository.class)
 @Sql(scripts = "classpath:schema-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @Sql(scripts = "classpath:reset-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class ReservationDaoTest {
+class ReservationRepositoryTest {
     @Autowired
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -31,8 +31,8 @@ class ReservationDaoTest {
         Theme theme = createTheme("Theme A");
         ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
 
-        Reservation saved = reservationDao.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
-        Reservation found = reservationDao.findById(saved.getId());
+        Reservation saved = reservationRepository.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
+        Reservation found = reservationRepository.findById(saved.getId());
 
         assertThat(found.getId()).isEqualTo(saved.getId());
         assertThat(found.getName()).isEqualTo("브라운");
@@ -47,10 +47,10 @@ class ReservationDaoTest {
         ReservationTime firstTime = createReservationTime(LocalTime.of(10, 0));
         ReservationTime secondTime = createReservationTime(LocalTime.of(11, 0));
 
-        reservationDao.save("브라운", LocalDate.of(2026, 5, 1), firstTime, theme);
-        reservationDao.save("코니", LocalDate.of(2026, 5, 2), secondTime, theme);
+        reservationRepository.save("브라운", LocalDate.of(2026, 5, 1), firstTime, theme);
+        reservationRepository.save("코니", LocalDate.of(2026, 5, 2), secondTime, theme);
 
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
 
         assertThat(reservations).hasSize(2);
         assertThat(reservations)
@@ -63,11 +63,11 @@ class ReservationDaoTest {
         Theme theme = createTheme("Theme A");
         ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
 
-        Reservation saved = reservationDao.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
+        Reservation saved = reservationRepository.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
 
-        reservationDao.delete(saved.getId());
+        reservationRepository.delete(saved.getId());
 
-        assertThat(reservationDao.findAll()).isEmpty();
+        assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @Test
@@ -75,10 +75,10 @@ class ReservationDaoTest {
         Theme theme = createTheme("Theme A");
         ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
 
-        reservationDao.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
-        reservationDao.save("코니", LocalDate.of(2026, 5, 2), reservationTime, theme);
+        reservationRepository.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
+        reservationRepository.save("코니", LocalDate.of(2026, 5, 2), reservationTime, theme);
 
-        int count = reservationDao.countByTimeId(reservationTime.id());
+        int count = reservationRepository.countByTimeId(reservationTime.id());
 
         assertThat(count).isEqualTo(2);
     }
@@ -89,10 +89,10 @@ class ReservationDaoTest {
         ReservationTime firstTime = createReservationTime(LocalTime.of(10, 0));
         ReservationTime secondTime = createReservationTime(LocalTime.of(11, 0));
 
-        reservationDao.save("브라운", LocalDate.of(2026, 5, 1), firstTime, theme);
-        reservationDao.save("코니", LocalDate.of(2026, 5, 1), secondTime, theme);
+        reservationRepository.save("브라운", LocalDate.of(2026, 5, 1), firstTime, theme);
+        reservationRepository.save("코니", LocalDate.of(2026, 5, 1), secondTime, theme);
 
-        List<Long> reservedTimes = reservationDao.findByDateAndTheme(LocalDate.of(2026, 5, 1), theme.id());
+        List<Long> reservedTimes = reservationRepository.findByDateAndTheme(LocalDate.of(2026, 5, 1), theme.id());
 
         assertThat(reservedTimes).containsExactly(firstTime.id(), secondTime.id());
     }

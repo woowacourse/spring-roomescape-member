@@ -37,7 +37,7 @@ public class UserReservationService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));
         try {
-            return reservationRepository.save(theme, name, date, reservationTime);
+            return reservationRepository.save(name, date, reservationTime, theme);
         } catch (DuplicateKeyException e) {
             throw new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다");
         } catch (DataIntegrityViolationException e) {

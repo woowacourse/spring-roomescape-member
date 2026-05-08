@@ -14,21 +14,21 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest(properties = "spring.sql.init.mode=never")
-@Import(ThemeDao.class)
+@Import(ThemeRepository.class)
 @Sql(scripts = "classpath:schema-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @Sql(scripts = "classpath:reset-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class ThemeDaoTest {
+class ThemeRepositoryTest {
     @Autowired
-    private ThemeDao themeDao;
+    private ThemeRepository themeRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Test
     void 테마를_저장하고_ID로_조회할_수_있다() {
-        Theme saved = themeDao.save("Theme A", "desc", "https://example.com/a.png");
+        Theme saved = themeRepository.save("Theme A", "desc", "https://example.com/a.png");
 
-        Theme found = themeDao.findById(saved.id()).orElseThrow();
+        Theme found = themeRepository.findById(saved.id()).orElseThrow();
 
         assertThat(found.id()).isEqualTo(saved.id());
         assertThat(found.name()).isEqualTo("Theme A");
@@ -36,10 +36,10 @@ class ThemeDaoTest {
 
     @Test
     void 테마를_전체_조회할_수_있다() {
-        themeDao.save("Theme A", "desc", "https://example.com/a.png");
-        themeDao.save("Theme B", "desc", "https://example.com/b.png");
+        themeRepository.save("Theme A", "desc", "https://example.com/a.png");
+        themeRepository.save("Theme B", "desc", "https://example.com/b.png");
 
-        List<Theme> themes = themeDao.findAll();
+        List<Theme> themes = themeRepository.findAll();
 
         assertThat(themes).hasSize(2);
         assertThat(themes)
@@ -49,19 +49,19 @@ class ThemeDaoTest {
 
     @Test
     void 테마를_삭제할_수_있다() {
-        Theme saved = themeDao.save("Theme A", "desc", "https://example.com/a.png");
+        Theme saved = themeRepository.save("Theme A", "desc", "https://example.com/a.png");
 
-        themeDao.delete(saved.id());
+        themeRepository.delete(saved.id());
 
-        assertThat(themeDao.findAll()).isEmpty();
+        assertThat(themeRepository.findAll()).isEmpty();
     }
 
     @Test
     void 예약_수_기준으로_테마를_조회할_수_있다() {
-        Theme themeA = themeDao.save("Theme A", "desc", "https://example.com/a.png");
-        Theme themeB = themeDao.save("Theme B", "desc", "https://example.com/b.png");
-        Theme themeC = themeDao.save("Theme C", "desc", "https://example.com/c.png");
-        Theme themeD = themeDao.save("Theme D", "desc", "https://example.com/d.png");
+        Theme themeA = themeRepository.save("Theme A", "desc", "https://example.com/a.png");
+        Theme themeB = themeRepository.save("Theme B", "desc", "https://example.com/b.png");
+        Theme themeC = themeRepository.save("Theme C", "desc", "https://example.com/c.png");
+        Theme themeD = themeRepository.save("Theme D", "desc", "https://example.com/d.png");
 
         long time1 = insertTime(LocalTime.parse("10:00:00"));
         long time2 = insertTime(LocalTime.parse("11:00:00"));
@@ -87,7 +87,7 @@ class ThemeDaoTest {
 
         insertReservation(themeD.id(), time1, date1, "User10");
 
-        List<Theme> ranked = themeDao.findRanked("reservationCount", "DESC", LocalDate.of(2026, 5, 1),
+        List<Theme> ranked = themeRepository.findRanked("reservationCount", "DESC", LocalDate.of(2026, 5, 1),
                 LocalDate.of(2026, 5, 6), 10L);
 
         assertThat(ranked).hasSize(4);
