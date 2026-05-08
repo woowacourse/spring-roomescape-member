@@ -61,22 +61,10 @@ public class ReservationTimeDao {
         }
     }
 
-    public boolean existsById(Long reservationTimeId) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM reservation_time
-                    WHERE id = ?
-                )
-                """;
-
-        return jdbcTemplate.queryForObject(sql, boolean.class, reservationTimeId);
-    }
-
-    public void delete(long id) {
+    public int delete(long reservationTimeId) {
         String sql = """
                 DELETE FROM reservation_time
                 WHERE id = ?""";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, reservationTimeId);
     }
 }

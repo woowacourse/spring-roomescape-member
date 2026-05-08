@@ -63,13 +63,8 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(long reservationTimeId) {
-        validateReservationTimeExists(reservationTimeId);
-        reservationTimeDao.delete(reservationTimeId);
-    }
-
-    private void validateReservationTimeExists(Long reservationTimeId) {
-        boolean exists = reservationTimeDao.existsById(reservationTimeId);
-        if (!exists) {
+        int deleted = reservationTimeDao.delete(reservationTimeId);
+        if (deleted == 0) {
             throw new IllegalArgumentException("존재하지 않는 시간입니다.");
         }
     }
