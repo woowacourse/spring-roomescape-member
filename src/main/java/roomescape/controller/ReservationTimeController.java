@@ -23,7 +23,6 @@ import roomescape.dto.reservationTime.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
-@Profile("web")
 @RequestMapping("/times")
 public class ReservationTimeController {
     private final ReservationTimeService reservationTimeService;
