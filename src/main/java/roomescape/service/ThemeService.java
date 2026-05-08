@@ -19,7 +19,7 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final Clock clock;
 
-    private static final int DATA_RANGE = 7;
+    private static final int POPULAR_THEME_PERIOD_DAYS = 7;
 
     public ThemeResponse create(final ThemeCreateRequest request) {
         final Theme themeWithoutId = Theme.create(
@@ -45,7 +45,7 @@ public class ThemeService {
 
     public List<ThemeResponse> getPopularThemes() {
         final LocalDate today = LocalDate.now(clock);
-        final LocalDate startDate = today.minusDays(DATA_RANGE);
+        final LocalDate startDate = today.minusDays(POPULAR_THEME_PERIOD_DAYS);
 
         return themeRepository.findPopularThemes(startDate, today)
                 .stream()
