@@ -14,7 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.entity.Reservation;
-import roomescape.domain.theme.dto.request.ThemeCreatedRequestDto;
+import roomescape.domain.theme.dto.request.ThemeCreateRequestDto;
 import roomescape.domain.theme.dto.response.ThemeResponseDto;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.FakeThemeRepository;
@@ -114,7 +114,7 @@ class ThemeServiceTest {
         void 성공() {
 
             // given
-            ThemeCreatedRequestDto request = new ThemeCreatedRequestDto(
+            ThemeCreateRequestDto request = new ThemeCreateRequestDto(
                 "피온",
                 "테마 설명",
                 "https://roomescape.com/images/themes/prison-room.png"

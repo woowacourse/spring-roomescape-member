@@ -3,7 +3,7 @@ package roomescape.domain.theme.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.theme.dto.request.ThemeCreatedRequestDto;
+import roomescape.domain.theme.dto.request.ThemeCreateRequestDto;
 import roomescape.domain.theme.dto.response.ThemeResponseDto;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
@@ -31,7 +31,7 @@ public class ThemeService {
             .toList();
     }
 
-    public ThemeResponseDto saveTheme(ThemeCreatedRequestDto requestDto) {
+    public ThemeResponseDto saveTheme(ThemeCreateRequestDto requestDto) {
         Theme theme = Theme.create(requestDto.name(), requestDto.description(), requestDto.imageUrl());
 
         return ThemeResponseDto.from(themeRepository.save(theme));
