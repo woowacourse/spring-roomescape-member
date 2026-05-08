@@ -52,10 +52,6 @@ public class ThemeService {
         if (date == null) {
             date = LocalDate.now();
         }
-        List<Theme> famous = themeRepository.findFamous(days, date, limit);
-        for (Theme theme : famous) {
-            System.out.println(theme.getName());
-        }
-        return famous;
+        return themeRepository.findFamous(days, date, limit);
     }
 }
