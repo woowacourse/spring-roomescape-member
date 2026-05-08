@@ -49,10 +49,6 @@ public class ReservationService {
     }
 
     public List<Reservation> findReservationsByName(String name) {
-        if (Objects.isNull(name)) {
-            throw new NotFoundException("username");
-        }
-
         return reservationRepository.findReservationsByName(name);
     }
 }
