@@ -1,10 +1,8 @@
 package roomescape.user.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.admin.domain.Theme;
 import roomescape.user.dto.ThemeResponse;
 import roomescape.user.repository.ThemeRepository;
 

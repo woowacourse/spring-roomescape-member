@@ -6,7 +6,6 @@ import roomescape.admin.dto.AdminThemeRequest;
 import roomescape.admin.dto.AdminThemeResponse;
 import roomescape.admin.repository.AdminThemeRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
