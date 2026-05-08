@@ -9,9 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.domain.Reservation.Reservation;
-import roomescape.domain.ReservationTheme.ReservationTheme;
-import roomescape.domain.ReservationTime.ReservationTime;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservationTheme.ReservationTheme;
+import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.service.RoomReservationService;
 
 import java.util.List;

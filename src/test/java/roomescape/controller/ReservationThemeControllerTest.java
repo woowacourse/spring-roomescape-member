@@ -8,8 +8,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.domain.ReservationTheme.ReservationTheme;
-import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
+import roomescape.domain.reservationTheme.ReservationTheme;
+import roomescape.domain.reservationTheme.ReservationThemeWithCount;
 import roomescape.service.ReservationThemeService;
 
 import java.util.List;

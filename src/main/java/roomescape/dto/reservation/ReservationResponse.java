@@ -1,7 +1,7 @@
-package roomescape.dto.Reservation;
+package roomescape.dto.reservation;
 
-import roomescape.domain.Reservation.Reservation;
-import roomescape.dto.ReservationTime.ReservationTimeResponse;
+import roomescape.domain.reservation.Reservation;
+import roomescape.dto.reservationTime.ReservationTimeResponse;
 import roomescape.dto.theme.ReservationThemeResponse;
 
 public record ReservationResponse(long id, String name, String date, ReservationTimeResponse time, ReservationThemeResponse reservationTheme) {

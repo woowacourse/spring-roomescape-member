@@ -1,4 +1,4 @@
-package roomescape.repository.ReservationTheme;
+package roomescape.repository.reservationTheme;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +9,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.QueryWithParams;
-import roomescape.domain.ReservationTheme.PopularThemeCondition;
-import roomescape.domain.ReservationTheme.ReservationTheme;
-import roomescape.domain.ReservationTheme.ReservationThemeCommand;
-import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
+import roomescape.domain.reservationTheme.PopularThemeCondition;
+import roomescape.domain.reservationTheme.ReservationTheme;
+import roomescape.domain.reservationTheme.ReservationThemeCommand;
+import roomescape.domain.reservationTheme.ReservationThemeWithCount;
 
 @Repository
 public class JdbcReservationThemeRepository implements ReservationThemeRepository {

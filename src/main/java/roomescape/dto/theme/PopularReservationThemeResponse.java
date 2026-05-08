@@ -1,6 +1,6 @@
 package roomescape.dto.theme;
 
-import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
+import roomescape.domain.reservationTheme.ReservationThemeWithCount;
 
 public record PopularReservationThemeResponse(long id, String name, String description, String imageUrl, long count) {
     public static PopularReservationThemeResponse from(ReservationThemeWithCount reservationThemeWithCount) {

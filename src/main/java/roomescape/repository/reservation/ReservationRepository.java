@@ -1,10 +1,10 @@
 package roomescape.repository.reservation;
 
 import java.util.List;
-import roomescape.domain.Reservation.Reservation;
-import roomescape.domain.Reservation.ReservationCommand;
-import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationCommand;
+import roomescape.domain.reservationTime.ReservationTime;
+import roomescape.domain.reservationTheme.ReservationTheme;
 
 public interface ReservationRepository {
     List<Reservation> getAllReservation();

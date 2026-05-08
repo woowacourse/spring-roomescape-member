@@ -1,4 +1,4 @@
-package roomescape.domain.ReservationTheme;
+package roomescape.domain.reservationTheme;
 
 public record ReservationTheme(long id, String name, String description, String imageUrl) {
     public static ReservationTheme from(long id, ReservationThemeCommand command) {

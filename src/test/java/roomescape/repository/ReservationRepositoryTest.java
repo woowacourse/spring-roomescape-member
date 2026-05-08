@@ -7,10 +7,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.domain.Reservation.Reservation;
-import roomescape.domain.Reservation.ReservationCommand;
-import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.ReservationTheme.ReservationTheme;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationCommand;
+import roomescape.domain.reservationTime.ReservationTime;
+import roomescape.domain.reservationTheme.ReservationTheme;
 import roomescape.repository.reservation.JdbcReservationRepository;
 import roomescape.repository.reservation.ReservationRepository;
 

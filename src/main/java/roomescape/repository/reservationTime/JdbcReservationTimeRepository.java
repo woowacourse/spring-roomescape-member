@@ -9,10 +9,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.ReservationTime.ReservationTimeCommand;
-import roomescape.domain.ReservationTime.ReservationTimeCondition;
-import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
+import roomescape.domain.reservationTime.ReservationTime;
+import roomescape.domain.reservationTime.ReservationTimeCommand;
+import roomescape.domain.reservationTime.ReservationTimeCondition;
+import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 
 @Repository
 @Profile("web")

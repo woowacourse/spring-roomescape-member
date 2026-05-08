@@ -1,7 +1,7 @@
 package roomescape.view;
 
-import roomescape.domain.Reservation.Reservation;
-import roomescape.domain.ReservationTime.ReservationTime;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservationTime.ReservationTime;
 
 import java.util.List;
 

@@ -1,11 +1,11 @@
-package roomescape.repository.ReservationTheme;
+package roomescape.repository.reservationTheme;
 
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.ReservationTheme.PopularThemeCondition;
-import roomescape.domain.ReservationTheme.ReservationTheme;
-import roomescape.domain.ReservationTheme.ReservationThemeCommand;
-import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
+import roomescape.domain.reservationTheme.PopularThemeCondition;
+import roomescape.domain.reservationTheme.ReservationTheme;
+import roomescape.domain.reservationTheme.ReservationThemeCommand;
+import roomescape.domain.reservationTheme.ReservationThemeWithCount;
 
 public interface ReservationThemeRepository {
     ReservationTheme addTheme(ReservationThemeCommand reservationThemeCommand);
