@@ -96,11 +96,11 @@ public class ThemeServiceTest {
         themeService.save(createRequestDto2);
         themeService.save(createRequestDto3);
 
-        List<ThemeQueryResult> themeRespons = themeService.findAll();
+        List<ThemeQueryResult> themeResponse = themeService.findAll();
 
         SoftAssertions.assertSoftly(assertSoftly -> {
-            assertSoftly.assertThat(themeRespons.size()).isEqualTo(3);
-            assertSoftly.assertThat(themeRespons).containsExactly(
+            assertSoftly.assertThat(themeResponse.size()).isEqualTo(3);
+            assertSoftly.assertThat(themeResponse).containsExactly(
                     new ThemeQueryResult(1L, "theme name1", "theme description1", "theme img url1"),
                     new ThemeQueryResult(2L, "theme name2", "theme description2", "theme img url2"),
                     new ThemeQueryResult(3L, "theme name3", "theme description3", "theme img url3")
