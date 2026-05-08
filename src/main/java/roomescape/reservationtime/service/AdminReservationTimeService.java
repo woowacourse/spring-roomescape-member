@@ -1,13 +1,12 @@
 package roomescape.reservationtime.service;
 
+import java.time.LocalTime;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.ResourceInUseException;
 import roomescape.reservation.repository.ReservationRepository;
-
-import java.time.LocalTime;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 

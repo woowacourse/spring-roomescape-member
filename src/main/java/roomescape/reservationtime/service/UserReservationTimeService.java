@@ -1,15 +1,13 @@
 package roomescape.reservationtime.service;
 
+import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.repository.ReservationRepository;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
 import roomescape.reservationtime.domain.AvailableTime;
-import roomescape.reservationtime.controller.ScheduleResponse;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 

@@ -1,23 +1,21 @@
 package roomescape.reservationtime.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.reservation.repository.ReservationRepository;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
 import roomescape.reservationtime.domain.AvailableTime;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.reservationtime.controller.ScheduleResponse;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserReservationTimeServiceTest {
@@ -61,7 +59,6 @@ class UserReservationTimeServiceTest {
                 .thenReturn(List.of(2L));
 
         List<AvailableTime> result = reservationTimeService.getSchedules(date, themeId);
-
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).isAvailable()).isTrue();

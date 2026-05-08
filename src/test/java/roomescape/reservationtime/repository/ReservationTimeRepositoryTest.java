@@ -1,16 +1,15 @@
 package roomescape.reservationtime.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.time.LocalTime;
-import java.util.List;
 import roomescape.reservationtime.domain.ReservationTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest(properties = "spring.sql.init.mode=never")
 @Import(ReservationTimeRepository.class)
