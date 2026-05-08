@@ -21,7 +21,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final NamedParameterJdbcTemplate template;
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
             new Reservation(
-                    resultSet.getLong("id"),
+                    resultSet.getLong("reservation_id"),
                     resultSet.getString("name"),
                     LocalDate.parse(resultSet.getString("date")),
                     new ReservationTime(
