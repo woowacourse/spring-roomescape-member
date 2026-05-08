@@ -33,6 +33,7 @@ public class ThemeService {
         return themeRepository.getAllTheme();
     }
 
+    @Transactional
     public void deleteTheme(long id) {
         boolean hasTheme = reservationRepository.existsByThemeId(id);
 

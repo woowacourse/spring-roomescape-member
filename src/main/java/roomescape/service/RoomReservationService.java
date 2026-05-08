@@ -49,6 +49,7 @@ public class RoomReservationService {
         return reservationRepository.addReservation(reservationCommand, reservationTime, theme);
     }
 
+    @Transactional
     public void deleteReservation(long id) {
         reservationRepository.deleteReservation(id);
     }
