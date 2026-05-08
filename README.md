@@ -38,12 +38,12 @@
 
 ### 관리자 API
 
-| 분류 | 기능 | Method | URL | 성공 응답 | 에러 응답                             |
-|---|---|---|---|---|-----------------------------------|
-| 예약 시간 | 예약 시간 생성 | `POST` | `/admin/times` | `201 Created` | `400 Bad Request`, `409 Conflict` |
-| 예약 시간 | 예약 시간 삭제 | `DELETE` | `/admin/times/{id}` | `204 No Content` | `404 Not Found`, `409 Conflict`   |
-| 테마 | 테마 생성 | `POST` | `/admin/themes` | `201 Created` | `400 Bad Request`, `409 Conflict`            |
-| 테마 | 테마 삭제 | `DELETE` | `/admin/themes/{id}` | `204 No Content` | `404 Not Found`, `409 Conflict`   |
+| 분류 | 기능 | Method | URL                      | 성공 응답 | 에러 응답                             |
+|---|---|---|--------------------------|---|-----------------------------------|
+| 예약 시간 | 예약 시간 생성 | `POST` | `/api/admin/times`       | `201 Created` | `400 Bad Request`, `409 Conflict` |
+| 예약 시간 | 예약 시간 삭제 | `DELETE` | `/api/admin/times/{id}`  | `204 No Content` | `404 Not Found`, `409 Conflict`   |
+| 테마 | 테마 생성 | `POST` | `/api/admin/themes`      | `201 Created` | `400 Bad Request`, `409 Conflict`            |
+| 테마 | 테마 삭제 | `DELETE` | `/api/admin/themes/{id}` | `204 No Content` | `404 Not Found`, `409 Conflict`   |
 
 ## **프로그래밍 요구 사항**
 

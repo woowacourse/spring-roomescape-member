@@ -36,7 +36,7 @@ class AdminReservationTimeControllerTest {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "20:00");
 
-        mockMvc.perform(post("/admin/times")
+        mockMvc.perform(post("/api/admin/times")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isCreated());
@@ -47,7 +47,7 @@ class AdminReservationTimeControllerTest {
         willDoNothing()
                 .given(reservationTimeService).delete(1L);
 
-        mockMvc.perform(delete("/admin/times/1"))
+        mockMvc.perform(delete("/api/admin/times/1"))
                 .andExpect(status().isNoContent());
     }
 
@@ -56,7 +56,7 @@ class AdminReservationTimeControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("startAt", null);
 
-        mockMvc.perform(post("/admin/times")
+        mockMvc.perform(post("/api/admin/times")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isBadRequest());
@@ -67,7 +67,7 @@ class AdminReservationTimeControllerTest {
         willThrow(new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND))
                 .given(reservationTimeService).delete(0L);
 
-        mockMvc.perform(delete("/admin/times/0"))
+        mockMvc.perform(delete("/api/admin/times/0"))
                 .andExpect(status().isNotFound());
     }
 }

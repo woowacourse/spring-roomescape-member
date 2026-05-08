@@ -38,7 +38,7 @@ class AdminThemeControllerTest {
         params.put("description", "재밌는방탈출");
         params.put("thumbnail", "s3.com");
 
-        mockMvc.perform(post("/admin/themes")
+        mockMvc.perform(post("/api/admin/themes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isCreated());
@@ -48,7 +48,7 @@ class AdminThemeControllerTest {
     void 테마_삭제() throws Exception {
         willDoNothing().given(themeService).delete(1L);
 
-        mockMvc.perform(delete("/admin/themes/1"))
+        mockMvc.perform(delete("/api/admin/themes/1"))
                 .andExpect(status().isNoContent());
     }
 
@@ -59,7 +59,7 @@ class AdminThemeControllerTest {
         params.put("description", "재밌는방탈출");
         params.put("thumbnail", "s3.com");
 
-        mockMvc.perform(post("/admin/themes")
+        mockMvc.perform(post("/api/admin/themes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isBadRequest());
@@ -70,7 +70,7 @@ class AdminThemeControllerTest {
         willThrow(new RoomescapeException(ErrorCode.THEME_NOT_FOUND))
                 .given(themeService).delete(0L);
 
-        mockMvc.perform(delete("/admin/themes/0"))
+        mockMvc.perform(delete("/api/admin/themes/0"))
                 .andExpect(status().isNotFound());
     }
 }
