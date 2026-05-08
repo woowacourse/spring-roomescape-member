@@ -56,30 +56,20 @@ public class ThemeRepository {
     }
 
     public List<Theme> findRanked(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
-        String sql = getReservationSortSql(sort, order, limit);
+        SortColumn sortColumn = SortColumn.fromString(sort);
+        SortOrder sortOrder = SortOrder.fromString(order);
+        String sql = getReservationSortSql(sortColumn, sortOrder, limit);
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
     }
 
-    private String getReservationSortSql(String sort, String order, Long limit) {
-        String sortColumn = "reservationCount";
-        if ("id".equalsIgnoreCase(sort)) {
-            sortColumn = "id";
-        } else if ("name".equalsIgnoreCase(sort)) {
-            sortColumn = "name";
-        }
-
-        String sortOrder = "DESC";
-        if ("ASC".equalsIgnoreCase(order)) {
-            sortOrder = "ASC";
-        }
-
+    private String getReservationSortSql(SortColumn sortColumn, SortOrder sortOrder, Long limit) {
         StringBuilder sql = new StringBuilder(
                 "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount " +
                         "FROM themes t " +
                         "INNER JOIN reservation r ON t.id = r.theme_id " +
                         "WHERE r.date >= ? AND r.date <= ? " +
                         "GROUP BY t.id, t.name, t.description, t.thumbnail " +
-                        "ORDER BY " + sortColumn + " " + sortOrder
+                        "ORDER BY " + sortColumn.getValue() + " " + sortOrder.getValue()
         );
 
         if (limit != null) {
