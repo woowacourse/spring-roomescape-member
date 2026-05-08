@@ -50,7 +50,11 @@ class ReservationTimeDaoTest {
         // then
         assertAll(
                 () -> assertThat(reservationTimes.size()).isEqualTo(5),
-                () -> assertThat(reservationTimes.get(0).getStartAt()).isEqualTo(LocalTime.of(10, 0))
+                () -> assertThat(reservationTimes.get(0).getStartAt()).isEqualTo(LocalTime.of(10, 0)),
+                () -> assertThat(reservationTimes.get(1).getStartAt()).isEqualTo(LocalTime.of(11, 0)),
+                () -> assertThat(reservationTimes.get(2).getStartAt()).isEqualTo(LocalTime.of(12, 0)),
+                () -> assertThat(reservationTimes.get(3).getStartAt()).isEqualTo(LocalTime.of(13, 0)),
+                () -> assertThat(reservationTimes.get(4).getStartAt()).isEqualTo(LocalTime.of(14, 0))
         );
     }
 
@@ -66,6 +70,17 @@ class ReservationTimeDaoTest {
         assertAll(
                 () -> assertThat(selectReservationTime.isPresent()).isTrue(),
                 () -> assertThat(selectReservationTime.get().getStartAt()).isEqualTo(reservationTime.getStartAt())
+        );
+    }
+
+    @Test
+    void 아이디에_맞는_예약_시간이_존재하지_않으면_빈_값을_반환한다() {
+        // when
+        Optional<ReservationTime> selectReservationTime = timeDao.selectById(0L);
+
+        // then
+        assertAll(
+                () -> assertThat(selectReservationTime.isEmpty()).isTrue()
         );
     }
 
