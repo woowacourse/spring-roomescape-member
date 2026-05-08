@@ -3,12 +3,14 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.controller.dto.ThemeFamousFindRequest;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class ThemeService {
     private static final long DEFAULT_DAYS = 7;
     private static final long DEFAULT_LIMIT = 10;
@@ -29,11 +31,13 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
+    @Transactional
     public Theme create(ThemeCreateRequest request) {
         Theme theme = Theme.of(request.getName(), request.getDescription(), request.getThumbnailUrl());
         return themeRepository.save(theme);
     }
 
+    @Transactional
     public void delete(long id) {
         themeRepository.deleteById(id);
     }

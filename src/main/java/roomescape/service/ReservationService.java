@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
@@ -31,6 +32,7 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    @Transactional
     public Reservation reserve(ReservationCreateRequest request) {
         ReservationTime reservationTime = reservationTimeService.find(request.getTimeId());
         Theme theme = themeService.find(request.getThemeId());
@@ -46,6 +48,7 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
+    @Transactional
     public void cancel(long reservationId) {
         reservationRepository.findById(reservationId).orElseThrow(
                 () -> new IllegalArgumentException(INVALID_RESERVATION_ID));
