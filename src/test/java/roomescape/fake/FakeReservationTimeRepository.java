@@ -18,7 +18,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     private final Map<Long, ReservationTime> times = new LinkedHashMap<>();
     private final List<Reservation> reservations = new ArrayList<>();
-    private Long idHoler = 1L;
+    private Long idHolder = 1L;
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
@@ -33,8 +33,8 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime save(ReservationTime time) {
-        ReservationTime savedTime = time.withId(idHoler);
-        times.put(idHoler++, savedTime);
+        ReservationTime savedTime = time.withId(idHolder);
+        times.put(idHolder++, savedTime);
         return savedTime;
     }
 
