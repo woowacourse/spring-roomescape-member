@@ -15,6 +15,20 @@ import org.springframework.test.annotation.DirtiesContext;
 public class ThemeControllerTest {
 
     @Test
+    void 전체_테마를_조회한다() {
+        // given
+        createTheme("방탈출1", "다함께 탈출해요 방탈출1", "https://example.com/theme1.jpg");
+        createTheme("방탈출2", "다함께 탈출해요 방탈출2", "https://example.com/theme2.jpg");
+
+        // when & then
+        RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
+
+    @Test
     void 인기_테마를_조회한다() {
         // given
         setupPopularThemesViaApi();
