@@ -56,10 +56,10 @@ public class UserReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당 예약을 찾을 수 없습니다."));
 
-        if (reservation.getName().equals(name)) {
-            reservationRepository.delete(id);
-            return;
+        if (!reservation.getName().equals(name)) {
+            throw new UnauthorizedActionException("예약자 이름이 일치하지 않습니다.");
         }
-        throw new UnauthorizedActionException("예약자 이름이 일치하지 않습니다.");
+
+        reservationRepository.delete(id);
     }
 }
