@@ -59,7 +59,7 @@ public class ReservationDao {
         return count > 0;
     }
 
-    public boolean existsByThemeId(Long themeId) {
+    public boolean existsByThemeId(long themeId) {
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM reservation WHERE theme_id = ?", Integer.class, themeId);
         return count > 0;
