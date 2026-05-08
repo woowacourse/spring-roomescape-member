@@ -72,7 +72,7 @@ public class ThemeRepository {
                 id, date);
     }
 
-    public List<Theme> findPopularThemes(LocalDate endDate, LocalDate startDate, int limit) {
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = "SELECT r.theme_id, t.name, t.description, t.thumbnail " +
                 "FROM reservation r " +
                 "JOIN theme t ON r.theme_id = t.id " +
