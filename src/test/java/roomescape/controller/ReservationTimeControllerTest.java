@@ -32,48 +32,35 @@ public class ReservationTimeControllerTest {
         return params;
     }
 
-    @BeforeEach
-    void setUp() {
+    private void createTime(String startAt) {
         Map<String, String> time = new HashMap<>();
-        time.put("startAt", "10:00");
+        time.put("startAt", startAt);
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(time)
                 .when().post("/api/v1/times");
+    }
 
-        Map<String, String> time2 = new HashMap<>();
-        time2.put("startAt", "11:00");
-
-        RestAssured.given().contentType(ContentType.JSON)
-                .body(time2)
-                .when().post("/api/v1/times");
-
-        Map<String, String> time3 = new HashMap<>();
-        time3.put("startAt", "12:00");
-
-        RestAssured.given().contentType(ContentType.JSON)
-                .body(time3)
-                .when().post("/api/v1/times");
-
+    private void createTheme(String name, String description) {
         Map<String, Object> themeParams = new HashMap<>();
-        themeParams.put("name", "이든의 공포 하우스");
-        themeParams.put("description", "이든이 귀신으로 나옴");
+        themeParams.put("name", name);
+        themeParams.put("description", description);
         themeParams.put("imgUrl", "링크~");
         themeParams.put("userName", "ADMIN");
 
         RestAssured.given().contentType(ContentType.JSON)
                 .body(themeParams)
                 .when().post("/api/v1/themes");
+    }
 
-        Map<String, Object> themeParams2 = new HashMap<>();
-        themeParams2.put("name", "정콩이의 방탈출");
-        themeParams2.put("description", "니는 못나간다");
-        themeParams2.put("imgUrl", "링크~");
-        themeParams2.put("userName", "ADMIN");
+    @BeforeEach
+    void setUp() {
+        createTime("10:00");
+        createTime("11:00");
+        createTime("12:00");
 
-        RestAssured.given().contentType(ContentType.JSON)
-                .body(themeParams2)
-                .when().post("/api/v1/themes");
+        createTheme("이든의 공포 하우스", "이든이 귀신으로 나옴");
+        createTheme("정콩이의 방탈출", "니는 못나간다");
     }
 
     @Test
