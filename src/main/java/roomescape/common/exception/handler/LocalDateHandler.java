@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class LocalDateHandler implements FormatHandler {
     @Override
     public boolean isSupport(InvalidFormatException e) {
-        return e.getTargetType().equals(LocalDate.class);
+        return e.getTargetType() == LocalDate.class;
     }
 
     @Override
