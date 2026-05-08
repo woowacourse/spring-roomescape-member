@@ -1,39 +1,42 @@
-INSERT INTO theme (name, description, image) VALUES ('은하수', '은하수 테마방입니다.', 'http.jpg');
-INSERT INTO theme (name, description, image) VALUES ('지구', '지구 테마방입니다.', 'http.jpg');
-INSERT INTO theme (name, description, image) VALUES ('수성', '수성 테마방입니다.', 'http.jpg');
-INSERT INTO theme (name, description, image) VALUES ('금성', '금성 테마방입니다.', 'http.jpg');
-INSERT INTO theme (name, description, image) VALUES ('화성', '화성 테마방입니다.', 'http.jpg');
-INSERT INTO theme (name, description, image) VALUES ('목성', '목성 테마방입니다.', 'http.jpg');
-INSERT INTO theme (name, description, image) VALUES ('토성', '토성 테마방입니다.', 'http.jpg');
-INSERT INTO theme (name, description, image) VALUES ('보이저', '보이저 테마방입니다.', 'http.jpg');
-INSERT INTO theme (name, description, image) VALUES ('아폴로', '아폴로 테마방입니다.', 'http.jpg');
-INSERT INTO theme (name, description, image) VALUES ('허블', '허블 테마방입니다.', 'http.jpg');
-INSERT INTO theme (name, description, image) VALUES ('안드로메다', '안드로메다 테마방입니다.', 'http.jpg');
+INSERT INTO theme (name, description, image) VALUES
+    ('은하수', '은하수 테마방입니다.', 'http.jpg'),
+    ('지구', '지구 테마방입니다.', 'http.jpg'),
+    ('수성', '수성 테마방입니다.', 'http.jpg'),
+    ('금성', '금성 테마방입니다.', 'http.jpg'),
+    ('화성', '화성 테마방입니다.', 'http.jpg'),
+    ('목성', '목성 테마방입니다.', 'http.jpg'),
+    ('토성', '토성 테마방입니다.', 'http.jpg'),
+    ('보이저', '보이저 테마방입니다.', 'http.jpg'),
+    ('아폴로', '아폴로 테마방입니다.', 'http.jpg'),
+    ('허블', '허블 테마방입니다.', 'http.jpg'),
+    ('안드로메다', '안드로메다 테마방입니다.', 'http.jpg');
 
-INSERT INTO reservation_time (start_at) VALUES ('10:00');
-INSERT INTO reservation_time (start_at) VALUES ('11:00');
-INSERT INTO reservation_time (start_at) VALUES ('12:00');
-INSERT INTO reservation_time (start_at) VALUES ('13:00');
-INSERT INTO reservation_time (start_at) VALUES ('14:00');
-INSERT INTO reservation_time (start_at) VALUES ('15:00');
-INSERT INTO reservation_time (start_at) VALUES ('16:00');
-INSERT INTO reservation_time (start_at) VALUES ('17:00');
-INSERT INTO reservation_time (start_at) VALUES ('18:00');
-INSERT INTO reservation_time (start_at) VALUES ('19:00');
-INSERT INTO reservation_time (start_at) VALUES ('20:00');
+INSERT INTO reservation_time (start_at) VALUES
+    ('10:00'),
+    ('11:00'),
+    ('12:00'),
+    ('13:00'),
+    ('14:00'),
+    ('15:00'),
+    ('16:00'),
+    ('17:00'),
+    ('18:00'),
+    ('19:00'),
+    ('20:00');
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('워넬', '2026-05-05', 1L, 2L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('도우너', '2026-05-05', 2L, 2L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 1L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 3L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 4L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 5L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 6L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 7L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 8L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 9L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 10L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 11L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 4L, 1L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 4L, 2L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 4L, 3L);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES
+    ('워넬', '2026-05-05', 1, 2),
+    ('도우너', '2026-05-05', 2, 2),
+    ('로치', '2026-05-05', 1, 1),
+    ('로치', '2026-05-05', 1, 3),
+    ('로치', '2026-05-05', 1, 4),
+    ('로치', '2026-05-05', 1, 5),
+    ('로치', '2026-05-05', 1, 6),
+    ('로치', '2026-05-05', 1, 7),
+    ('로치', '2026-05-05', 1, 8),
+    ('로치', '2026-05-05', 1, 9),
+    ('로치', '2026-05-05', 1, 10),
+    ('로치', '2026-05-05', 1, 11),
+    ('로치', '2026-05-05', 4, 1),
+    ('로치', '2026-05-05', 4, 2),
+    ('로치', '2026-05-05', 4, 3);
