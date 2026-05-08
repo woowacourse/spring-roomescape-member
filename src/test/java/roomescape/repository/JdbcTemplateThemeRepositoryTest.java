@@ -28,7 +28,7 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
-    @Sql("/test-theme.sql")
+    @Sql({"/test-truncate.sql", "/test-theme.sql"})
     void 모든_테마_조회() {
         List<Theme> themes = themeRepository.findAll();
 
@@ -36,7 +36,7 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
-    @Sql("/test-theme.sql")
+    @Sql({"/test-truncate.sql", "/test-theme.sql"})
     void 테마를_저장한다() {
         Theme theme = new Theme(null, "마법 학교", "마법 학교의 마지막 시험을 통과하세요.", "https://example.com/theme10.jpg");
 
@@ -49,7 +49,7 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
-    @Sql("/test-theme.sql")
+    @Sql({"/test-truncate.sql", "/test-theme.sql"})
     void 테마를_삭제한다() {
         Theme theme = new Theme(null, "마법 학교", "마법 학교의 마지막 시험을 통과하세요.", "https://example.com/theme10.jpg");
         long id = themeRepository.save(theme).id();
@@ -59,7 +59,7 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
-    @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
+    @Sql({"/test-truncate.sql", "/test-theme.sql", "/test-reservation-time.sql"})
     void 예약_건수가_많은_순서로_인기_테마를_반환한다() {
         LocalDate inRange = LocalDate.of(2026, 5, 1);
         addReservation("A", inRange, 1, 1);
@@ -84,7 +84,7 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
-    @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
+    @Sql({"/test-truncate.sql", "/test-theme.sql", "/test-reservation-time.sql"})
     void limit_개수만큼만_반환한다() {
         LocalDate inRange = LocalDate.of(2026, 5, 1);
         addReservation("A", inRange, 1, 1);
@@ -97,7 +97,7 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
-    @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
+    @Sql({"/test-truncate.sql", "/test-theme.sql", "/test-reservation-time.sql"})
     void 기간_밖_예약은_인기_집계에서_제외한다() {
         LocalDate inRange = LocalDate.of(2026, 5, 1);
         LocalDate outOfRange = LocalDate.of(2026, 4, 1);

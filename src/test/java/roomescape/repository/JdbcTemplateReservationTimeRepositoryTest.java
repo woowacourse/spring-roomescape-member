@@ -74,7 +74,7 @@ class JdbcTemplateReservationTimeRepositoryTest {
     }
 
     @Test
-    @Sql({"/test-theme.sql", "/test-reservation-time.sql", "/test-reservation.sql"})
+    @Sql({"/test-truncate.sql", "/test-theme.sql", "/test-reservation-time.sql", "/test-reservation.sql"})
     void 예약_가능한_시간을_조회한다() {
         LocalDate date = LocalDate.of(2021, 1, 1);
 
