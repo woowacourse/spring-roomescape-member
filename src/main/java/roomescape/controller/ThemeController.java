@@ -27,10 +27,11 @@ public class ThemeController {
     }
 
     @GetMapping
-    public List<ThemeResponse> getThemes() {
-        return themeService.findAll().stream()
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
+        List<ThemeResponse> themes = themeService.findAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
+        return ResponseEntity.ok(themes);
     }
 
     @PostMapping
@@ -50,16 +51,18 @@ public class ThemeController {
     }
 
     @GetMapping("/{id}/times")
-    public List<TimeAvailabilityResponse> getAvailableTimes(@PathVariable Long id, @RequestParam("date") LocalDate date) {
-        return reservationService.findAvailableTime(id, date).stream()
+    public ResponseEntity<List<TimeAvailabilityResponse>> getAvailableTimes(@PathVariable Long id, @RequestParam("date") LocalDate date) {
+        List<TimeAvailabilityResponse> times = reservationService.findAvailableTime(id, date).stream()
                 .map(TimeAvailabilityResponse::from)
                 .toList();
+        return ResponseEntity.ok(times);
     }
 
     @GetMapping("/popular")
-    public List<PopularThemeResponse> getPopularThemes() {
-        return themeService.findWeeklyTopTen().stream()
+    public ResponseEntity<List<PopularThemeResponse>> getPopularThemes() {
+        List<PopularThemeResponse> themes = themeService.findWeeklyTopTen().stream()
                 .map(PopularThemeResponse::from)
                 .toList();
+        return ResponseEntity.ok(themes);
     }
 }
