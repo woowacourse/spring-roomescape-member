@@ -123,7 +123,7 @@ class ThemeJdbcDaoTest {
     void findPopulars() {
         int limit = 1;
 
-        PopularThemeRequestDto popularThemeRequestDto = new PopularThemeRequestDto(limit, 7);
+        PopularThemeRequestDto popularThemeRequestDto = new PopularThemeRequestDto(limit, 7, LocalDate.now());
         Theme popular = insertThemeHandler(theme1);
         Theme nonPopular = insertThemeHandler(theme2);
 

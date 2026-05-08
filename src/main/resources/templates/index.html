@@ -192,7 +192,8 @@ async function load(url, gridId, emptyMsg) {
   }
 }
 
-load('/themes/populars?limit=10&days=7', 'pgrid', '이번 주 인기 테마가 없습니다');
+const today = new Date().toISOString().split('T')[0];
+load(`/themes/populars?limit=10&days=7&date=${today}`, 'pgrid', '이번 주 인기 테마가 없습니다');
 load('/themes', 'tgrid', '등록된 테마가 없습니다');
 </script>
 </body>

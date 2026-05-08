@@ -154,10 +154,9 @@ public class ThemeJdbcDao implements ThemeDao {
                     ORDER BY reservation_count DESC
                     LIMIT :limit;
                 """;
-        LocalDate now = LocalDate.now();
 
-        SqlParameterSource params = new MapSqlParameterSource("startDate", now.minusDays(popularThemeRequestDto.days()))
-                .addValue("endDate", now)
+        SqlParameterSource params = new MapSqlParameterSource("startDate", popularThemeRequestDto.date().minusDays(popularThemeRequestDto.days()))
+                .addValue("endDate", popularThemeRequestDto.date())
                 .addValue("limit", popularThemeRequestDto.limit());
 
         return jdbcTemplate.query(sql, params, THEME_ROW_MAPPER);
