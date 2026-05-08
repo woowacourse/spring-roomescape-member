@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -15,6 +16,7 @@ import roomescape.dto.response.CreateReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 
 @Service
+@Transactional
 public class ReservationTimeService {
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
@@ -33,6 +35,7 @@ public class ReservationTimeService {
         return CreateReservationTimeResponse.from(newReservationTime);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationTimeResponse> getReservationTimes(Long themeId, LocalDate date) {
         validateTheme(themeId);
 

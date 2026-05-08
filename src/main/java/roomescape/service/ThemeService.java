@@ -3,12 +3,14 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 
 @Service
+@Transactional
 public class ThemeService {
     private static final int DATE_DIFFERENCE = 7;
 
@@ -31,12 +33,14 @@ public class ThemeService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<ThemeResponse> getThemes() {
         return themeDao.selectAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<ThemeResponse> getPopularThemes(LocalDate endDate) {
         LocalDate startDate = endDate.minusDays(DATE_DIFFERENCE);
         List<Theme> popularThemes = themeDao.selectPopularThemesByPeriod(startDate, endDate);
