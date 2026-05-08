@@ -57,7 +57,7 @@ public class ReservationService {
     }
 
     private void validDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new IllegalArgumentException("선택하신 시간과 테마는 이미 예약되었습니다.");
         }
     }
