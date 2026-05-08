@@ -47,20 +47,17 @@ public class ThemeController {
     }
 
     @GetMapping(params = "date")
-    public ResponseEntity<List<ThemeFindResponse>> findByDate(
+    public ResponseEntity<List<ThemeFindResponse>> findScheduledThemesByDate(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        List<ThemeFindResponse> responses = themeService.findByDate(date);
+        List<ThemeFindResponse> responses = themeService.findScheduledThemesByDate(date);
 
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeFindResponse>> findByDayAndLimit(
-            @RequestParam int day,
-            @RequestParam int limit
-    ) {
-        List<ThemeFindResponse> responses = themeService.findByDayAndLimit(day,limit);
+    public ResponseEntity<List<ThemeFindResponse>> findByDayAndLimit() {
+        List<ThemeFindResponse> responses = themeService.findByDayAndLimit();
 
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }

@@ -11,9 +11,9 @@ public interface ThemeRepository {
 
     void deleteById(long id);
 
-    List<Theme> findByDate(LocalDate date);
+    List<Theme> findScheduledThemesByDate(LocalDate date);
 
-    List<Theme> findByDayAndLimit(int day, int limit);
+    List<Theme> findByDayAndLimit();
 
     Optional<Theme> findById(long id);
 

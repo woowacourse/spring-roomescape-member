@@ -30,13 +30,13 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeFindResponse> findByDate(LocalDate date) {
-        List<Theme> themes = themeRepository.findByDate(date);
+    public List<ThemeFindResponse> findScheduledThemesByDate(LocalDate date) {
+        List<Theme> themes = themeRepository.findScheduledThemesByDate(date);
         return ThemeFindResponse.of(themes);
     }
 
-    public List<ThemeFindResponse> findByDayAndLimit(int day, int limit) {
-        List<Theme> themes = themeRepository.findByDayAndLimit(day, limit);
+    public List<ThemeFindResponse> findByDayAndLimit() {
+        List<Theme> themes = themeRepository.findByDayAndLimit();
         return ThemeFindResponse.of(themes);
     }
 

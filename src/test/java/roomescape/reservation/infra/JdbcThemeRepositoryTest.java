@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Theme;
 
@@ -51,7 +50,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 각_날짜에_존재하는_모든_테마_조회_레포토지리_테스트() {
-        List<Theme> themes = repository.findByDate(LocalDate.of(2026, 5, 5));
+        List<Theme> themes = repository.findScheduledThemesByDate(LocalDate.of(2026, 5, 5));
 
         assertThat(themes).hasSize(4);
         assertThat(themes).extracting(Theme::getId)
@@ -61,7 +60,7 @@ class JdbcThemeRepositoryTest {
     @Test
     void 최근_7일_예약_개수에_따른_인기_테마_조회_레포지토리_테스트() {
         // when
-        List<Theme> themes = repository.findByDayAndLimit(7, 10);
+        List<Theme> themes = repository.findByDayAndLimit();
 
         assertThat(themes).hasSize(4);
         assertThat(themes).extracting(Theme::getId)

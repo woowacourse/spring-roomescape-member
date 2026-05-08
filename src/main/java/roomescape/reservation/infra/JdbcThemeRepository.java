@@ -60,7 +60,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findByDate(LocalDate date) {
+    public List<Theme> findScheduledThemesByDate(LocalDate date) {
         String sql = "SELECT DISTINCT t.id, t.name, t.description, t.thumbnail_url " +
                 "FROM theme t " +
                 "JOIN schedule s ON t.id = s.theme_id " +
@@ -74,7 +74,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findByDayAndLimit(int day, int limit) {
+    public List<Theme> findByDayAndLimit() {
         String sql = "SELECT t.id, t.name, t.description, t.thumbnail_url " +
                 "FROM theme t " +
                 "LEFT JOIN schedule s ON t.id = s.theme_id " +
@@ -86,8 +86,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                 "LIMIT :limit";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("day", day)
-                .addValue("limit", limit);
+                .addValue("day", 7)
+                .addValue("limit", 10);
 
         return template.query(sql, params, themeRowMapper);
     }
