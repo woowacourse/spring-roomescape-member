@@ -3,9 +3,7 @@ package roomescape.user.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import roomescape.admin.domain.Theme;
 import roomescape.admin.repository.AdminThemeRepository;
 import roomescape.user.domain.Reservation;
@@ -34,15 +32,10 @@ public class ReservationService {
 
     public ReservationResponse createReservation(ReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "[ERROR] 존재하지 않는 time id입니다.")
-                );
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 time id입니다."));
         Theme theme = adminThemeRepository.findById(request.themeId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "[ERROR] 존재하지 않는 theme id입니다.")
-                );
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 theme id입니다."));
+
         Reservation reservation = Reservation.of(
                 request.name(),
                 request.date(),
