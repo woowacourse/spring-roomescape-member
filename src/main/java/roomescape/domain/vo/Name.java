@@ -13,8 +13,8 @@ public class Name {
     }
 
     private void validateLength(String name) {
-        if (name.length() < MIN_LENGTH || name.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException();
+        if (name.isBlank() || name.length() < MIN_LENGTH || name.length() > MAX_LENGTH) {
+            throw new IllegalArgumentException("이름은 2~15글자만 가능합니다.");
         }
     }
 
