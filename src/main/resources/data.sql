@@ -1,7 +1,7 @@
--- reservation_time
+-- 1. 예약 시간 등록
 INSERT INTO reservation_time (start_at) VALUES ('10:00');
 
--- reservation_theme (10개)
+-- 2. 테마 등록 (10개)
 INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마1', '설명1', 'https://picsum.photos/id/135/200');
 INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마2', '설명2', 'https://picsum.photos/id/136/200');
 INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마3', '설명3', 'https://picsum.photos/id/137/200');
@@ -13,11 +13,8 @@ INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마8', 
 INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마9', '설명9', 'https://picsum.photos/id/143/200');
 INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마10', '설명10', 'https://picsum.photos/id/144/200');
 
--- reservation (created_at은 자동으로 오늘 날짜가 들어감)
+-- 3. 예약 등록 (날짜/시간/테마가 겹치지 않도록 조정)
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 2);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 2);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 3);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 4);
