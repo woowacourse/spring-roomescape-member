@@ -22,10 +22,8 @@ import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.exception.code.ReservationErrorCode;
 import roomescape.exception.code.ReservationTimeErrorCode;
 import roomescape.exception.code.ThemeErrorCode;
-import roomescape.exception.domain.ReservationException;
 import roomescape.exception.domain.ReservationTimeException;
 import roomescape.exception.domain.ThemeException;
 
