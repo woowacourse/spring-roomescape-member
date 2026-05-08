@@ -31,9 +31,9 @@ public class TimeController {
         return ResponseEntity.ok().body(reservationTimes);
     }
 
-    @GetMapping("/{themeId}")
-    public ResponseEntity<List<TimeResponse>> readAllByThemeIdAndDate(@PathVariable Long themeId,
-                                                                      @RequestParam("date") String date) {
+    @GetMapping(params = {"themeId", "date"})
+    public ResponseEntity<List<TimeResponse>> readAllByThemeIdAndDate(@RequestParam Long themeId,
+                                                                      @RequestParam String date) {
         List<TimeResponse> reservationTimes = timeService.readAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(reservationTimes);
     }

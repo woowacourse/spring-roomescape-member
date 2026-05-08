@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.ThemeRequest;
 import roomescape.dto.TimeRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -31,7 +30,7 @@ public class ReservationTimeController {
     public void 테마_별_예약가능한_시간_조회_API() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("/times/2?date=2026-05-04")
+                .when().get("/times?themeId=2&date=2026-05-04")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(12));
@@ -48,7 +47,7 @@ public class ReservationTimeController {
 
     @Test
     public void 예약_가능한_시간_추가_API() {
-        TimeRequest timeRequest = new TimeRequest(LocalTime.of(8,0));
+        TimeRequest timeRequest = new TimeRequest(LocalTime.of(8, 0));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
