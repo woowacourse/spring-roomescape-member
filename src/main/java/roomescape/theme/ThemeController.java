@@ -1,5 +1,6 @@
 package roomescape.theme;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class ThemeController {
 
     @GetMapping("/popularity")
     public ResponseEntity<List<ThemeResponse>> readByPopularity() {
-        return ResponseEntity.status(HttpStatus.OK).body(themeService.readPopularThemes());
+        LocalDate now = LocalDate.now();
+        return ResponseEntity.status(HttpStatus.OK).body(themeService.readPopularThemes(now));
     }
 }

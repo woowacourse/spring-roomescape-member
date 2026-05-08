@@ -62,7 +62,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate start, LocalDate end) {
+    public List<Theme> findPopularThemes(LocalDate start, LocalDate end, Long limit) {
 
         String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail
@@ -71,9 +71,9 @@ public class JdbcThemeRepository implements ThemeRepository {
                 WHERE date BETWEEN ? AND ?
                 GROUP BY t.id, t.name, t.description, t.thumbnail
                 ORDER BY COUNT(*) DESC
-                LIMIT 10
+                LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, themeRowMapper, start, end);
+        return jdbcTemplate.query(sql, themeRowMapper, start, end, limit);
     }
 }

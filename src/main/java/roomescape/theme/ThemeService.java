@@ -12,6 +12,9 @@ import roomescape.theme.repository.ThemeRepository;
 @Service
 public class ThemeService {
 
+    private static final int POPULAR_PERIOD = 7;
+    private static final int POPULAR_OFFSET = 1;
+    private static final long POPULAR_LIMIT = 10L;
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
@@ -40,13 +43,11 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
+    public List<ThemeResponse> readPopularThemes(LocalDate now) {
+        LocalDate start = now.minusDays(POPULAR_PERIOD);
+        LocalDate end = now.minusDays(POPULAR_OFFSET);
+        List<Theme> themes = themeRepository.findPopularThemes(start, end, POPULAR_LIMIT);
 
-    public List<ThemeResponse> readPopularThemes() {
-        LocalDate now = LocalDate.now();
-        LocalDate start = now.minusDays(7);
-        LocalDate end = now.minusDays(1);
-
-        List<Theme> themes = themeRepository.findPopularThemes(start, end);
         return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
