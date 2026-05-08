@@ -6,15 +6,13 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservationdate.dto.AdminReservationDateResponse;
 import roomescape.domain.reservationdate.dto.CreateReservationDateRequest;
 import roomescape.domain.reservationdate.dto.CreateReservationDateResponse;
-import roomescape.domain.theme.Theme;
 import roomescape.support.exception.RoomescapeException;
+import roomescape.support.fake.FakeReservationDateRepository;
+import roomescape.support.fake.FakeReservationRepository;
 
 class ReservationDateServiceTest {
 
@@ -34,14 +32,11 @@ class ReservationDateServiceTest {
         );
 
         // then
-        assertSoftly(
-            softly -> {
-                assertThat(response.id()).isEqualTo(1L);
-                assertThat(response.reservationDate()).isEqualTo(LocalDate.of(2026, 5, 4));
-                assertThat(reservationDateRepository.savedReservationDate.getDate())
-                    .isEqualTo(LocalDate.of(2026, 5, 4));
-            }
-        );
+        assertSoftly(softly -> {
+            assertThat(response.id()).isEqualTo(1L);
+            assertThat(response.reservationDate()).isEqualTo(LocalDate.of(2026, 5, 4));
+            assertThat(reservationDateRepository.savedReservationDate.getDate()).isEqualTo(LocalDate.of(2026, 5, 4));
+        });
     }
 
     @Test
@@ -49,9 +44,7 @@ class ReservationDateServiceTest {
         // given
         FakeReservationRepository reservationRepository = new FakeReservationRepository();
         FakeReservationDateRepository reservationDateRepository = new FakeReservationDateRepository();
-        reservationDateRepository.findAllResult = List.of(
-            ReservationDate.of(1L, LocalDate.of(2026, 5, 4))
-        );
+        reservationDateRepository.findAllResult = List.of(ReservationDate.of(1L, LocalDate.of(2026, 5, 4)));
         ReservationDateService reservationDateService = new ReservationDateService(
             reservationRepository,
             reservationDateRepository
@@ -62,7 +55,7 @@ class ReservationDateServiceTest {
 
         // then
         assertSoftly(softly -> {
-            assertThat(responses.size()).isEqualTo(1);
+            assertThat(responses).hasSize(1);
             assertThat(responses.getFirst().id()).isEqualTo(1L);
             assertThat(responses.getFirst().reservationDate()).isEqualTo(LocalDate.of(2026, 5, 4));
         });
@@ -100,79 +93,5 @@ class ReservationDateServiceTest {
 
         // then
         assertThat(reservationDateRepository.deletedId).isEqualTo(1L);
-    }
-
-    private static class FakeReservationRepository implements ReservationRepository {
-
-        private int countByReservationDateIdResult;
-
-        @Override
-        public Reservation save(Reservation reservation) {
-            return null;
-        }
-
-        @Override
-        public List<Reservation> findAll() {
-            return List.of();
-        }
-
-        @Override
-        public int deleteById(Long id) {
-            return 0;
-        }
-
-        @Override
-        public int countByTimeId(Long timeId) {
-            return 0;
-        }
-
-        @Override
-        public int countByReservationDateId(Long dateId) {
-            return countByReservationDateIdResult;
-        }
-
-        @Override
-        public List<Long> findReservedTimes(Long themeId, Long dateId) {
-            return List.of();
-        }
-
-        @Override
-        public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate today) {
-            return List.of();
-        }
-
-        @Override
-        public int countByThemeId(Long id) {
-            return 0;
-        }
-    }
-
-    private static class FakeReservationDateRepository implements ReservationDateRepository {
-
-        private ReservationDate savedReservationDate;
-        private List<ReservationDate> findAllResult = List.of();
-        private Long deletedId;
-
-        @Override
-        public Optional<ReservationDate> findById(Long id) {
-            return Optional.empty();
-        }
-
-        @Override
-        public List<ReservationDate> findAll() {
-            return findAllResult;
-        }
-
-        @Override
-        public ReservationDate save(ReservationDate reservationDate) {
-            savedReservationDate = reservationDate;
-            return ReservationDate.of(1L, reservationDate.getDate());
-        }
-
-        @Override
-        public int deleteById(Long id) {
-            deletedId = id;
-            return 1;
-        }
     }
 }

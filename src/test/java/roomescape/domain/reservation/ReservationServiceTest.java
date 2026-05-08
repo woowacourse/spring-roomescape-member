@@ -7,18 +7,18 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.dto.CreateReservationRequest;
 import roomescape.domain.reservation.dto.CreateReservationResponse;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservationdate.ReservationDate;
-import roomescape.domain.reservationdate.ReservationDateRepository;
 import roomescape.domain.reservationtime.ReservationTime;
-import roomescape.domain.reservationtime.ReservationTimeRepository;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.ThemeRepository;
 import roomescape.support.exception.RoomescapeException;
+import roomescape.support.fake.FakeReservationDateRepository;
+import roomescape.support.fake.FakeReservationRepository;
+import roomescape.support.fake.FakeReservationTimeRepository;
+import roomescape.support.fake.FakeThemeRepository;
 
 class ReservationServiceTest {
 
@@ -41,12 +41,7 @@ class ReservationServiceTest {
             reservationDateRepository,
             themeRepository
         );
-        CreateReservationRequest request = new CreateReservationRequest(
-            "보예",
-            2L,
-            1L,
-            3L
-        );
+        CreateReservationRequest request = new CreateReservationRequest("보예", 2L, 1L, 3L);
 
         // when
         CreateReservationResponse response = reservationService.createReservation(request);
@@ -72,12 +67,7 @@ class ReservationServiceTest {
             new FakeReservationDateRepository(),
             new FakeThemeRepository()
         );
-        CreateReservationRequest request = new CreateReservationRequest(
-            "보예",
-            1L,
-            1L,
-            1L
-        );
+        CreateReservationRequest request = new CreateReservationRequest("보예", 1L, 1L, 1L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
@@ -98,12 +88,7 @@ class ReservationServiceTest {
             reservationDateRepository,
             new FakeThemeRepository()
         );
-        CreateReservationRequest request = new CreateReservationRequest(
-            "보예",
-            2L,
-            1L,
-            3L
-        );
+        CreateReservationRequest request = new CreateReservationRequest("보예", 2L, 1L, 3L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
@@ -146,128 +131,5 @@ class ReservationServiceTest {
             assertThat(responses.getFirst().theme().id()).isEqualTo(4L);
             assertThat(responses.getFirst().theme().name()).isEqualTo("공포");
         });
-    }
-
-    private static class FakeReservationRepository implements ReservationRepository {
-
-        private Reservation savedReservation;
-        private List<Reservation> findAllResult = List.of();
-
-        @Override
-        public Reservation save(Reservation reservation) {
-            savedReservation = reservation;
-            return Reservation.of(1L, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
-        }
-
-        @Override
-        public List<Reservation> findAll() {
-            return findAllResult;
-        }
-
-        @Override
-        public int deleteById(Long id) {
-            return 0;
-        }
-
-        @Override
-        public int countByTimeId(Long timeId) {
-            return 0;
-        }
-
-        @Override
-        public int countByReservationDateId(Long dateId) {
-            return 0;
-        }
-
-        @Override
-        public List<Long> findReservedTimes(Long themeId, Long dateId) {
-            return List.of();
-        }
-
-        @Override
-        public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate today) {
-            return List.of();
-        }
-
-        @Override
-        public int countByThemeId(Long id) {
-            return 0;
-        }
-    }
-
-    private static class FakeReservationTimeRepository implements ReservationTimeRepository {
-
-        private ReservationTime reservationTime;
-
-        @Override
-        public Optional<ReservationTime> findById(Long id) {
-            return Optional.ofNullable(reservationTime);
-        }
-
-        @Override
-        public ReservationTime save(ReservationTime reservationTime) {
-            return null;
-        }
-
-        @Override
-        public List<ReservationTime> findAll() {
-            return List.of();
-        }
-
-        @Override
-        public int deleteById(Long id) {
-            return 0;
-        }
-    }
-
-    private static class FakeReservationDateRepository implements ReservationDateRepository {
-
-        private ReservationDate reservationDate;
-
-        @Override
-        public Optional<ReservationDate> findById(Long id) {
-            return Optional.ofNullable(reservationDate);
-        }
-
-        @Override
-        public List<ReservationDate> findAll() {
-            return List.of();
-        }
-
-        @Override
-        public ReservationDate save(ReservationDate reservationDate) {
-            return reservationDate;
-        }
-
-        @Override
-        public int deleteById(Long id) {
-            return 0;
-        }
-    }
-
-    private static class FakeThemeRepository implements ThemeRepository {
-
-        private Theme theme;
-
-        @Override
-        public Optional<Theme> findById(Long id) {
-            return Optional.ofNullable(theme);
-        }
-
-        @Override
-        public List<Theme> findAll() {
-            return List.of();
-        }
-
-        @Override
-        public Theme save(Theme theme) {
-            return theme;
-        }
-
-        @Override
-        public int deleteById(Long id) {
-            return 0;
-        }
     }
 }
