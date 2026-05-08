@@ -4,27 +4,48 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Map;
+import javax.sql.DataSource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.reservation.entity.Reservation;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.domain.theme.dto.request.ThemeCreateRequestDTO;
 import roomescape.domain.theme.dto.response.ThemeResponseDTO;
 import roomescape.domain.theme.entity.Theme;
-import roomescape.domain.theme.repository.FakeThemeRepository;
-import roomescape.domain.time.entity.Time;
+import roomescape.domain.theme.repository.JdbcThemeRepository;
+import roomescape.domain.theme.repository.ThemeRepository;
 
 class ThemeServiceTest {
 
-    private final ThemeService themeService;
-    private final FakeThemeRepository themeRepository;
+    private ThemeService themeService;
+    private ThemeRepository themeRepository;
+    private JdbcTemplate jdbcTemplate;
+    private SimpleJdbcInsert timeInsert;
 
-    ThemeServiceTest() {
-        this.themeRepository = new FakeThemeRepository();
-        this.themeService = new ThemeService(themeRepository);
+    @BeforeEach
+    void setUp() {
+        DataSource dataSource = new DriverManagerDataSource(
+            "jdbc:h2:mem:" + System.nanoTime() + ";MODE=MySQL;DB_CLOSE_DELAY=-1",
+            "sa",
+            ""
+        );
+
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator(new ClassPathResource("schema.sql"));
+        populator.execute(dataSource);
+
+        themeRepository = new JdbcThemeRepository(dataSource);
+        themeService = new ThemeService(themeRepository);
+        jdbcTemplate = new JdbcTemplate(dataSource);
+        timeInsert = new SimpleJdbcInsert(dataSource)
+            .withTableName("reservation_time")
+            .usingColumns("start_at")
+            .usingGeneratedKeyColumns("id");
     }
 
     @Nested
@@ -45,30 +66,12 @@ class ThemeServiceTest {
 
         @Test
         void 성공() {
-            List<Theme> themes = IntStream.rangeClosed(1, 15).mapToObj(i -> {
-                return Theme.create("테마" + i, "설명" + i, "https://image.com/" + i + ".png");
-            }).collect(Collectors.toList());
-
-            themeRepository.saveAllThemes(themes);
-
-            List<Reservation> reservations = new ArrayList<>();
+            // given
             LocalDate targetDate = LocalDate.now();
-
-            List<Theme> savedThemes = themeRepository.findAllThemes();
-            for (int i = 0; i < savedThemes.size(); i++) {
-                Theme theme = savedThemes.get(i);
-                int reservationCount = (15 - i) * 5;
-                for (int j = 0; j < reservationCount; j++) {
-                    reservations.add(Reservation.create(
-                        "예약자" + j,
-                        targetDate,
-                        Time.reconstruct(1L, LocalTime.of(10, 0)),
-                        theme
-                    ));
-                }
+            for (int i = 1; i <= 15; i++) {
+                Theme theme = themeRepository.save(Theme.create("테마" + i, "설명" + i, "https://image.com/" + i + ".png"));
+                saveReservations(theme, targetDate, (16 - i) * 5);
             }
-
-            themeRepository.saveAllReservations(reservations);
 
             // when
             List<ThemeResponseDTO> actual = themeService.getPopularThemes();
@@ -115,10 +118,24 @@ class ThemeServiceTest {
 
             // when
             themeService.deleteThemeById(1L);
-            List<Theme> actual = themeRepository.findAllThemes();
+            List<ThemeResponseDTO> actual = themeService.getThemes();
 
             // then
             assertThat(actual).isEmpty();
+        }
+    }
+
+    private void saveReservations(Theme theme, LocalDate date, int count) {
+        for (int i = 0; i < count; i++) {
+            Long timeId = timeInsert.executeAndReturnKey(Map.of("start_at", LocalTime.of(10, 0).plusMinutes(i)))
+                .longValue();
+            jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "예약자" + theme.getId() + "-" + i,
+                date,
+                timeId,
+                theme.getId()
+            );
         }
     }
 }

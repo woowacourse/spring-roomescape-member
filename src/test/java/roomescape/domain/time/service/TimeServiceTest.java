@@ -5,33 +5,48 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import javax.sql.DataSource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.domain.reservation.entity.Reservation;
-import roomescape.domain.reservation.repository.FakeReservationRepository;
+import roomescape.domain.reservation.repository.JdbcReservationRepository;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.entity.Theme;
-import roomescape.domain.theme.repository.FakeThemeRepository;
+import roomescape.domain.theme.repository.JdbcThemeRepository;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.dto.request.TimeCreateRequestDTO;
 import roomescape.domain.time.dto.response.TimeResponseDTO;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.mapper.TimeMapper;
-import roomescape.domain.time.repository.FakeTimeRepository;
+import roomescape.domain.time.repository.JdbcTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
 
 class TimeServiceTest {
 
-    private final TimeService timeService;
-    private final TimeRepository timeRepository;
-    private final ThemeRepository themeRepository;
-    private final ReservationRepository reservationRepository;
+    private TimeService timeService;
+    private TimeRepository timeRepository;
+    private ThemeRepository themeRepository;
+    private ReservationRepository reservationRepository;
 
-    TimeServiceTest() {
-        this.themeRepository = new FakeThemeRepository();
-        this.timeRepository = new FakeTimeRepository();
-        this.reservationRepository = new FakeReservationRepository();
-        this.timeService = new TimeService(reservationRepository, timeRepository);
+    @BeforeEach
+    void setUp() {
+        DataSource dataSource = new DriverManagerDataSource(
+            "jdbc:h2:mem:" + System.nanoTime() + ";MODE=MySQL;DB_CLOSE_DELAY=-1",
+            "sa",
+            ""
+        );
+
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator(new ClassPathResource("schema.sql"));
+        populator.execute(dataSource);
+
+        themeRepository = new JdbcThemeRepository(dataSource);
+        timeRepository = new JdbcTimeRepository(dataSource);
+        reservationRepository = new JdbcReservationRepository(dataSource);
+        timeService = new TimeService(reservationRepository, timeRepository);
     }
 
     @Nested
