@@ -23,7 +23,8 @@ public class AdminThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody ThemeRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.addTheme(ThemeRequest.toEntity(request)));
+        ThemeResponse response = service.addTheme(ThemeRequest.toEntity(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
