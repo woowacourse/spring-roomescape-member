@@ -27,15 +27,10 @@ public class ThemeController {
         return ResponseEntity.ok(themeService.getAllThemes());
     }
 
-    @GetMapping(params = "condition")
-    public ResponseEntity<List<ThemeResponse>> getThemesByCondition(
-            @RequestParam String condition,
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
             @RequestParam(defaultValue = "10") int size) {
-        if ("popular".equals(condition)) {
-            return ResponseEntity.ok(themeService.getPopularThemes(size));
-        }
-
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(themeService.getPopularThemes(size));
     }
 
     @GetMapping("/{id}/times")

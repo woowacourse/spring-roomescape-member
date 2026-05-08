@@ -7,7 +7,7 @@
 - [x] **1. `AdminReservationController`의 `getAllReservations` 변수명 `list`로 되어있는거 다른 이름으로 고치기**
 - [x] **2. 재할당이 없는 지역 변수에는 final을 사용하도록 수정**
 - [x] **3. `AdminThemeController`의 `createTheme()`에 있는 `adminThemeService.save`를 Long이 아닌 long 타입으로 받도록 수정**
-- [ ] **4. `ThemeController`의 `getThemesByCondition` 엔드포인트를 `?condition=popular` 방식 대신 `/themes/popular` path 기반으로 변경**
+- [x] **4. `ThemeController`의 `getThemesByCondition` 엔드포인트를 `?condition=popular` 방식 대신 `/themes/popular` path 기반으로 변경**
 - [ ] **5. `Reservation` 저장 전/후 생성자 분리 + `save()` 수정 + `equals()`/`hashCode()` 재정의**
   - `Reservation(name, date, time, theme)`: 저장 전 도메인 검증용 (id 없음)
   - `Reservation(id, name, date, time, theme)`: DB 조회 후 생성용 (id null 검증 추가)
