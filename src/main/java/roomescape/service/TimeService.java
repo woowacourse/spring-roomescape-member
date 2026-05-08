@@ -49,7 +49,8 @@ public class TimeService {
     }
 
     public TimeResponse readById(Long id) {
-        ReservationTime reservationTime = timeRepository.findById(id);
+        ReservationTime reservationTime = timeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
         return TimeResponse.from(reservationTime);
     }
 }

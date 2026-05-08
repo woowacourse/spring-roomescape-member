@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -59,9 +61,13 @@ public class TimeRepository {
         return new ReservationTime(id, startAt);
     }
 
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         String sql = "select * from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
+        try{
+            return  Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
+        }catch(EmptyResultDataAccessException e){
+            return Optional.empty();
+        }
     }
 
     public int existsByStartAt(LocalTime startAt) {

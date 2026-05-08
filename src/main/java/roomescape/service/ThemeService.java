@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,8 @@ public class ThemeService {
     }
 
     public ThemeResponse readById(Long id) {
-        Theme theme = themeRepository.findById(id);
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 테마입니다."));
         return ThemeResponse.from(theme);
     }
 }

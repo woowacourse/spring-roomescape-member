@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -74,17 +76,6 @@ public class ReservationRepository {
 
         return new Reservation(id, reservationRequest.name(), reservationRequest.date(),
                 ReservationTime.from(timeResponse), Theme.from(themeResponse));
-    }
-
-    public Reservation findById(Long id) {
-        String sql =
-                "SELECT r.id, r.username, r.date, t.id as time_id, t.start_at, m.id as theme_id, m.name as theme_name, m.description, m.url  "
-                        +
-                        "FROM reservation r " +
-                        "INNER JOIN reservation_time t ON r.time_id = t.id " +
-                        "INNER JOIN theme m ON r.theme_id = m.id " +
-                        "WHERE r.id = ?";
-        return jdbcTemplate.queryForObject(sql, reservationMapper, id);
     }
 
     public int existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {

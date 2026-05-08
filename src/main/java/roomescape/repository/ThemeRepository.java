@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -47,9 +48,13 @@ public class ThemeRepository {
         return jdbcTemplate.update(sql, id);
     }
 
-    public Theme findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM THEME WHERE ID = ?";
-        return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+        try{
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, themeRowMapper, id));
+        } catch(EmptyResultDataAccessException e){
+            return Optional.empty();
+        }
     }
 
     public List<Theme> findAll() {
