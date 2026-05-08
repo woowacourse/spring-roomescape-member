@@ -109,7 +109,7 @@ class TimeServiceTest {
     }
 
     @Nested
-    class FindTimeIdsByDateAndThemeIdTest {
+    class GetAvailableTimesTest {
 
         @Test
         void 성공() {
