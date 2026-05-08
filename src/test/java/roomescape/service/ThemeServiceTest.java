@@ -2,14 +2,16 @@ package roomescape.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import roomescape.exception.InvalidRequestException;
 import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 @SpringBootTest
@@ -20,6 +22,22 @@ class ThemeServiceTest {
 
     @Mock
     private ThemeRepository themeRepository;
+
+    @Test
+    @DisplayName("이미 존재하는 이름의 테마를 생성하면 예외가 발생한다.")
+    public void create_fail() {
+        // given
+        given(themeRepository.existsByName("레벨2 탈출")).willReturn(true);
+
+        // when, then
+        assertThatThrownBy(() -> themeService.create(
+                "레벨2 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://example.com/theme.png"
+        ))
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessage("이미 존재하는 테마 이름입니다.");
+    }
 
     @Test
     @DisplayName("지정된 일 수 및 갯수를 기준으로 인기 테마를 조회한다.")

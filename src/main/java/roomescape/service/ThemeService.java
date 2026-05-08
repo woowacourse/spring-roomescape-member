@@ -3,6 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
+import roomescape.exception.InvalidRequestException;
 import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
@@ -10,6 +11,8 @@ import java.util.List;
 
 @Service
 public class ThemeService {
+    private static final String THEME_NAME_ALREADY_EXISTS_MESSAGE = "이미 존재하는 테마 이름입니다.";
+
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
@@ -19,8 +22,15 @@ public class ThemeService {
     @Transactional
     public Theme create(String name, String description, String thumbnail) {
         Theme theme = new Theme(name, description, thumbnail);
+        validateNotDuplicated(theme);
 
         return themeRepository.save(theme);
+    }
+
+    private void validateNotDuplicated(Theme theme) {
+        if (themeRepository.existsByName(theme.getName())) {
+            throw new InvalidRequestException(THEME_NAME_ALREADY_EXISTS_MESSAGE);
+        }
     }
 
     @Transactional(readOnly = true)

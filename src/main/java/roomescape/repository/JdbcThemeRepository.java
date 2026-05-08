@@ -98,6 +98,18 @@ public class JdbcThemeRepository implements ThemeRepository {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 
+    @Override
+    public boolean existsByName(String name) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM theme
+                    WHERE name = ?
+                )
+                """;
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
+    }
 
     @Override
     public void deleteById(Long id) {

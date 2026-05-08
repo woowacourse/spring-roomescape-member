@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 
@@ -77,6 +75,15 @@ class JdbcThemeRepositoryTest {
         assertThat(topThemes).hasSizeLessThanOrEqualTo(10)
                 .extracting(Theme::getId)
                 .containsExactly(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
+    }
+
+    @Test
+    @DisplayName("이름으로 Theme 존재 여부를 확인한다.")
+    public void existsByName() {
+        jdbcThemeRepository.save(new Theme("kim", "desc1", "thumb1"));
+
+        assertThat(jdbcThemeRepository.existsByName("kim")).isTrue();
+        assertThat(jdbcThemeRepository.existsByName("lee")).isFalse();
     }
 
     @Test

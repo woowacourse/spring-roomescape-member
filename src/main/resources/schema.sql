@@ -4,7 +4,8 @@ CREATE TABLE theme
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     thumbnail   VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE (name)
 );
 
 CREATE TABLE reservation_time
