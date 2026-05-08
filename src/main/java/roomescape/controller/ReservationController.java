@@ -31,17 +31,6 @@ public class ReservationController {
         return responseEntity;
     }
 
-    @GetMapping("/booked-times")
-    public ResponseEntity<List<ReservationTimeResponseDTO>> findReservedTimes(
-            @RequestParam LocalDate selectedDate,
-            @RequestParam Long themeId
-    ) {
-        List<ReservationTimeResponseDTO> reservedTimes = reservationService.findReservedTimes(
-                selectedDate, themeId
-        );
-        return ResponseEntity.ok(reservedTimes);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteReservation(id);
