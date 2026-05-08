@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.controller.dto.PopularThemeResponse;
 import roomescape.controller.dto.ThemeRequest;
 import roomescape.controller.dto.ThemeResponse;
 import roomescape.domain.Theme;
@@ -54,9 +55,9 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public List<ThemeResponse> getPopularThemes() {
+    public List<PopularThemeResponse> getPopularThemes() {
         return themeService.findWeeklyTopTen().stream()
-                .map(ThemeResponse::from)
+                .map(PopularThemeResponse::from)
                 .toList();
     }
 

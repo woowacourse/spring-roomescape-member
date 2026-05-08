@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.repository.dto.PopularThemeDto;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -53,7 +54,7 @@ public class ThemeRepository {
         return jdbcTemplate.update(sql, id);
     }
 
-    public List<Theme> findPopular(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<PopularThemeDto> findPopular(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                 SELECT
                     t.id,
@@ -70,7 +71,7 @@ public class ThemeRepository {
                 ORDER BY reservation_count DESC, t.id ASC
                 LIMIT ?;
                 """;
-        return jdbcTemplate.query(sql, themeRowMapper, startDate, endDate, limit);
+        return jdbcTemplate.query(sql, popularThemeRowMapper, startDate, endDate, limit);
     }
 
     private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> {
@@ -79,6 +80,16 @@ public class ThemeRepository {
                 resultSet.getString("name"),
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail"));
+        return theme;
+    };
+
+    private final RowMapper<PopularThemeDto> popularThemeRowMapper = (resultSet, rowNum) -> {
+        PopularThemeDto theme = new PopularThemeDto(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail"),
+                resultSet.getLong("reservation_count"));
         return theme;
     };
 }

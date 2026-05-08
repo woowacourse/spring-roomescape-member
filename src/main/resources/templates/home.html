@@ -604,7 +604,7 @@
 
         .popular-count {
             font-size: 0.7rem;
-            color: var(--text-muted);
+            color: var(--text-secondary);
         }
 
         .popular-arrow {
@@ -871,6 +871,7 @@
                     <div class="popular-sub">${t.description ? t.description.slice(0, 40) : '자세한 설명 없음'}</div>
                 </div>
                 <div class="popular-meta">
+                    <span class="popular-count">최근 1주일동안 ${t.reservationCount ?? 0}회 예약</span>
                     <span class="popular-arrow">→</span>
                 </div>
             `;
