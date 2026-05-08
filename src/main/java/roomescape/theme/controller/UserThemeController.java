@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/themes")
-public class ThemeController {
+public class UserThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public UserThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 

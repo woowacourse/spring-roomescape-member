@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/times")
-public class ReservationTimeController {
+public class UserReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public UserReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 

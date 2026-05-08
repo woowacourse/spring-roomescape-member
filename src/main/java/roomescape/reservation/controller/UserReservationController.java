@@ -13,11 +13,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
-public class ReservationController {
+public class UserReservationController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public UserReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
