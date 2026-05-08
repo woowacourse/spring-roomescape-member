@@ -19,7 +19,7 @@ public class AdminReservationController {
 
     @GetMapping
     public ResponseEntity<List<AdminReservationResponse>> getAllReservations() {
-        final List<AdminReservationResponse> list = adminReservationService.getAllReservations();
-        return ResponseEntity.ok(list);
+        final List<AdminReservationResponse> reservations = adminReservationService.getAllReservations();
+        return ResponseEntity.ok(reservations);
     }
 }

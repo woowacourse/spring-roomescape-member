@@ -4,7 +4,7 @@
 
 ## ✅ 리팩토링 할 것 목록
 
-- [ ] **1. `AdminReservationController`의 `getAllReservations` 변수명 `list`로 되어있는거 다른 이름으로 코치기**
+- [x] **1. `AdminReservationController`의 `getAllReservations` 변수명 `list`로 되어있는거 다른 이름으로 고치기**
 - [ ] **2. 재할당이 없는 지역 변수에는 final을 사용하도록 수정**
 - [ ] **3. `AdminThemeController`의 `createTheme()`에 있는 `adminThemeService.save`를 Long이 아닌 long 타입으로 받도록 수정**
 - [ ] **4. `ThemeController`의 `getThemesByCondition` 엔드포인트를 `?condition=popular` 방식 대신 `/themes/popular` path 기반으로 변경**
