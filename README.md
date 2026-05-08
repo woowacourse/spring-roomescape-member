@@ -11,10 +11,10 @@
 | **Theme**       | `GET`    | `/themes`            | -             | `topCount` (Long)<br>`during` (Long)   | -                                                       | `List<ThemeResponse>`       | 기간(`during`) 내 상위(`topCount`) 인기 테마 조회 |
 | **Theme**       | `POST`   | `/themes`            | -             | -                                      | `ThemeRequest`<br>*(name, description, thumbnailUrl)*   | `ThemeResponse`             | 새로운 테마 생성                              |
 | **Theme**       | `DELETE` | `/themes/{id}`       | `id` (Long)   | -                                      | -                                                       | `200 OK` (Void)             | 식별자를 통한 테마 삭제                          |
-| **Time**        | `GET`    | `/timeSlots`         | -             | -                                      | -                                                       | `List<TimeResponse>`        | 모든 예약 시간 목록 조회                         |
-| **Time**        | `GET`    | `/timeSlots`         | -             | `themeId` (long)<br>`date` (LocalDate) | -                                                       | `List<TimeResponse>`        | 특정 날짜, 테마의 예약 가능 시간 조회                 |
-| **Time**        | `POST`   | `/timeSlots`         | -             | -                                      | `TimeRequest`<br>*(startAt)*                            | `TimeResponse`              | 새로운 예약 시간 생성                           |
-| **Time**        | `DELETE` | `/timeSlots/{id}`    | `id` (Long)   | -                                      | -                                                       | `200 OK` (Void)             | 식별자를 통한 예약 시간 삭제                       |
+| **Time**        | `GET`    | `/time`         | -             | -                                      | -                                                       | `List<TimeResponse>`        | 모든 예약 시간 목록 조회                         |
+| **Time**        | `GET`    | `/time`         | -             | `themeId` (long)<br>`date` (LocalDate) | -                                                       | `List<TimeResponse>`        | 특정 날짜, 테마의 예약 가능 시간 조회                 |
+| **Time**        | `POST`   | `/time`         | -             | -                                      | `TimeRequest`<br>*(startAt)*                            | `TimeResponse`              | 새로운 예약 시간 생성                           |
+| **Time**        | `DELETE` | `/time/{id}`    | `id` (Long)   | -                                      | -                                                       | `200 OK` (Void)             | 식별자를 통한 예약 시간 삭제                       |
 
 [`React.js 클라이언트`](https://github.com/Uechann/react-roomscape)
 
@@ -190,7 +190,7 @@ DELETE /themes/{themeID}
 
 | 도메인             | Method | Endpoint        | Path Variable | Query Parameter                        | Request Body                                            | Response              | Description            |
 |:----------------|:-------|:----------------|:--------------|:---------------------------------------|:--------------------------------------------------------|:----------------------|:-----------------------|
-| **Time**        | `GET`  | `/timeSlots`    | -             | `themeId` (long)<br>`date` (LocalDate) | -                                                       | `List<TimeResponse>`  | 특정 날짜, 테마의 예약 가능 시간 조회 |
+| **Time**        | `GET`  | `/time`    | -             | `themeId` (long)<br>`date` (LocalDate) | -                                                       | `List<TimeResponse>`  | 특정 날짜, 테마의 예약 가능 시간 조회 |
 | **Reservation** | `POST` | `/reservations` | -             | -                                      | `ReservationRequest`<br>*(name, date, timeId, themeId)* | `ReservationResponse` | 새로운 예약 생성              |
 
 ### API 설계의 근거
