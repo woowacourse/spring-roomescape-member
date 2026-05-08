@@ -14,7 +14,7 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
     }
 
     public static Reservation forSave(ReservationSaveCommand command, ReservationTime reservationTime, Theme theme) {
-        new Reservation(null, command.name(), command.date(), reservationTime, theme);
+        return new Reservation(null, command.name(), command.date(), reservationTime, theme);
     }
 
     private void validateTheme(Theme theme) {

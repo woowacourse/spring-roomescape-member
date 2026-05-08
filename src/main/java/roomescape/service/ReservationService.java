@@ -52,11 +52,7 @@ public class ReservationService {
         if (Objects.isNull(name)) {
             throw new NotFoundException("username");
         }
-        List<Reservation> reservations = reservationRepository.findReservationsByName(name);
-        if (reservations.isEmpty()) {
-            throw new NotFoundException("reservation");
-        }
 
-        return reservations;
+        return reservationRepository.findReservationsByName(name);
     }
 }
