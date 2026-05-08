@@ -25,9 +25,14 @@ public class ReservationJdbcDao implements ReservationDao {
 
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationJdbcDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
+                .withTableName("reservations")
+                .usingGeneratedKeyColumns("id")
+                .usingColumns("name", "date", "time_id", "theme_id");
     }
 
     @Override
@@ -75,10 +80,6 @@ public class ReservationJdbcDao implements ReservationDao {
 
     @Override
     public Reservation insert(Reservation reservation) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
-                .withTableName("reservations")
-                .usingGeneratedKeyColumns("id")
-                .usingColumns("name", "date", "time_id", "theme_id");
 
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())

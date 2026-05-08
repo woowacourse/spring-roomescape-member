@@ -20,9 +20,13 @@ public class TimeJdbcDao implements TimeDao {
     );
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public TimeJdbcDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
+                .withTableName("times")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -54,10 +58,6 @@ public class TimeJdbcDao implements TimeDao {
 
     @Override
     public Time insert(Time time) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
-                .withTableName("times")
-                .usingGeneratedKeyColumns("id");
-
         SqlParameterSource params = new MapSqlParameterSource("start_at", time.getStartAt());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();

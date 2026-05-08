@@ -35,9 +35,14 @@ public class ThemeJdbcDao implements ThemeDao {
             );
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ThemeJdbcDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+
+        simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
+                .withTableName("themes")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -74,10 +79,6 @@ public class ThemeJdbcDao implements ThemeDao {
 
     @Override
     public Theme insert(Theme theme) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
-                .withTableName("themes")
-                .usingGeneratedKeyColumns("id");
-
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName().getValue())
                 .addValue("thumbnail_url", theme.getThumbnailUrl())
