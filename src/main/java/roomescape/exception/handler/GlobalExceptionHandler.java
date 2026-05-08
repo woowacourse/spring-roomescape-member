@@ -12,7 +12,8 @@ public class GlobalExceptionHandler {
             DataReferencedException.class,
             ReservationCommandException.class,
             ReservationTimeConditionException.class,
-            DuplicatedReservationRequestException.class
+            DuplicatedReservationRequestException.class,
+            ReservationException.class,
     })
     public ResponseEntity<String> handleCustomException(CustomException customException) {
         return new ResponseEntity<>(customException.getMessage(), HttpErrorMapping.getHttpStatus(customException.getErrorMessage()));

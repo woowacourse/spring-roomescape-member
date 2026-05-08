@@ -1,5 +1,6 @@
 package roomescape.repository.reservation;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -76,10 +77,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final RowMapper<Reservation> MAPPER = (rs, rowNumber) -> new Reservation(
             rs.getLong(COLUMN_ID),
             rs.getString(COLUMN_NAME),
-            rs.getString(COLUMN_DATE),
+            rs.getDate(COLUMN_DATE).toLocalDate(),
             new ReservationTime(
                     rs.getLong(ALIAS_TIME_ID),
-                    rs.getString(ALIAS_START_AT)
+                    rs.getTime(ALIAS_START_AT).toLocalTime()
             ),
             new ReservationTheme(
                     rs.getLong(ALIAS_THEME_ID),
@@ -139,7 +140,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, String date) {
+    public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date) {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE,
                 Boolean.class, timeId, themeId, date));
     }

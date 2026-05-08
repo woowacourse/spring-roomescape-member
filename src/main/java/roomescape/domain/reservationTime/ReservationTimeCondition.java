@@ -5,27 +5,26 @@ import java.time.format.DateTimeParseException;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.ReservationTimeConditionException;
 
-public record ReservationTimeCondition(String date, long themeId) {
-    public ReservationTimeCondition {
-        validate(date, themeId);
+public record ReservationTimeCondition(LocalDate date, long themeId) {
+    public ReservationTimeCondition(String date, long themeId) {
+        this(validateDate(date), validateThemeId(themeId));
     }
 
-    private static void validate(String date, long themeId) {
-        validateDate(date);
-        validateThemeId(themeId);
-    }
-
-    private static void validateDate(String date) {
+    private static LocalDate validateDate(String date) {
+        if(date == null || date.isBlank()) {
+            throw new ReservationTimeConditionException(ErrorMessage.INVALID_DATE_NULL);
+        }
         try {
-            LocalDate.parse(date);
+            return LocalDate.parse(date);
         } catch (DateTimeParseException e) {
             throw new ReservationTimeConditionException(ErrorMessage.INVALID_DATE_FORMAT);
         }
     }
 
-    private static void validateThemeId(long themeId) {
+    private static long validateThemeId(long themeId) {
         if(themeId <= 0) {
             throw new ReservationTimeConditionException(ErrorMessage.INVALID_THEME_ID);
         }
+        return themeId;
     }
 }

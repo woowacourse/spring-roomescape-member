@@ -41,12 +41,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     private static final RowMapper<ReservationTime> MAPPER = (rs, rowNumber) -> new ReservationTime(
             rs.getLong(COLUMN_ID),
-            rs.getString(COLUMN_START_AT)
+            rs.getTime(COLUMN_START_AT).toLocalTime()
     );
 
     private static final RowMapper<ReservationTimeWithAvailable> CONDITION_MAPPER = (rs, rowNumber) -> new ReservationTimeWithAvailable(
             rs.getLong(COLUMN_ID),
-            rs.getString(COLUMN_START_AT),
+            rs.getTime(COLUMN_START_AT).toLocalTime(),
             rs.getBoolean(COLUMN_AVAILABLE)
     );
 
