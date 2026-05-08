@@ -55,9 +55,7 @@ public class ReservationService {
     }
 
     public List<TimeResponse> getReservations(LocalDate date, Long themeId) {
-        List<Long> bookedTimeIds = reservationRepository.findTimeByDateAndThemeId(date, themeId);
-        return reservationTimeRepository.findAll().stream()
-                .filter(time -> !bookedTimeIds.contains(time.getId()))
+        return reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId).stream()
                 .map(TimeResponse::of)
                 .collect(Collectors.toList());
     }

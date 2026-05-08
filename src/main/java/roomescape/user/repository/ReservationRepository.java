@@ -1,8 +1,5 @@
 package roomescape.user.repository;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -36,9 +33,6 @@ public class ReservationRepository {
             )
     );
 
-    private final RowMapper<Long> timeMapper = (resultSet, rowNum) ->
-            resultSet.getLong("time_id");
-
     public ReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -54,16 +48,6 @@ public class ReservationRepository {
                 .addValue("theme_id", reservation.getTheme().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return Reservation.of(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
-    }
-
-    public List<Long> findTimeByDateAndThemeId(LocalDate date, Long themeId) {
-        String query = """
-                SELECT                                                                                                                                                                                                                                \s
-                      r.time_id                                                                                                                                                                                                                \s
-                  FROM reservation as r                                                                                                                                                                               \s
-                  WHERE r.date = ? AND r.theme_id = ?
-                """;
-        return jdbcTemplate.query(query, timeMapper, date, themeId);
     }
 
     public void deleteById(Long id) {
