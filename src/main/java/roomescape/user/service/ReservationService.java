@@ -57,13 +57,11 @@ public class ReservationService {
     public List<TimeResponse> getReservations(LocalDate date, Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         List<Long> reservations = reservationRepository.findTimeByDateAndThemeId(date, themeId);
-        List<TimeResponse>  responses = new ArrayList<>();
-        for (ReservationTime reservationTime : reservationTimes) {
-            Long timeId = reservationTime.getId();
-            if (!reservations.contains((timeId)))
-                responses.add(TimeResponse.of(reservationTime));
-        }
-        return responses;
+
+        return reservationTimes.stream()
+            .filter(reservationTime -> reservations.contains(reservationTime.getId()))
+            .map(TimeResponse::of)
+            .toList();
     }
 
     public void deleteReservation(Long id) {

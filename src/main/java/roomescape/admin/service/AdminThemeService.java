@@ -30,12 +30,9 @@ public class AdminThemeService {
     public List<AdminThemeResponse> getAllThemes() {
         List<Theme> themes = adminThemeRepository.findAll();
 
-        List<AdminThemeResponse> responses = new ArrayList<>();
-        for (Theme theme : themes) {
-            AdminThemeResponse response = AdminThemeResponse.from(theme);
-            responses.add(response);
-        }
-        return responses;
+        return themes.stream()
+            .map(AdminThemeResponse::from)
+            .toList();
     }
 
     public void deleteTheme(Long id) {

@@ -30,12 +30,9 @@ public class ReservationTimeService {
     public List<TimeResponse> getAllTimes() {
         List<ReservationTime> times = timeRepository.findAll();
 
-        List<TimeResponse> responses = new ArrayList<>();
-        for (ReservationTime time : times) {
-            TimeResponse response = TimeResponse.of(time);
-            responses.add(response);
-        }
-        return responses;
+        return times.stream()
+            .map(TimeResponse::of)
+            .toList();
     }
 
     public void deleteById(Long id) {

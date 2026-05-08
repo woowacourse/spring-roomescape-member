@@ -23,13 +23,9 @@ public class ThemeService {
 
         List<Long> themeIds = themeRepository.findThemeIdTop10(startDate, endDate);
 
-        List<ThemeResponse> responses = new ArrayList<>();
-        for (Long themeId : themeIds) {
-            Theme theme = themeRepository.findById(themeId);
-
-            ThemeResponse response = ThemeResponse.of(theme);
-            responses.add(response);
-        }
-        return responses;
+        return themeIds.stream()
+            .map(themeRepository::findById)
+            .map(ThemeResponse::of)
+            .toList();
     }
 }
