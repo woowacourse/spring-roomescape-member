@@ -33,12 +33,10 @@ public class TimeService {
     }
 
     public void removeById(Long id) {
-        try {
-            timeRepository.findById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("삭제하고자 하는 시간 ID가 없습니다.");
+        int deleteCnt = timeRepository.deleteById(id);
+        if(deleteCnt == 0) {
+            throw new IllegalArgumentException("존재하지 않는 시간의 ID 입니다.");
         }
-        timeRepository.deleteById(id);
     }
 
     public TimeResponse register(TimeRequest timeRequest) {

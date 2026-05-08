@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -27,12 +28,10 @@ public class ThemeService {
     }
 
     public void removeById(Long id) {
-        try {
-            themeRepository.findById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("삭제하려는 ID가 없습니다.");
+        int deleteCnt = themeRepository.deleteById(id);
+        if(deleteCnt == 0) {
+            throw new IllegalArgumentException("존재하지 않는 테마의 ID 입니다.");
         }
-        themeRepository.deleteById(id);
     }
 
     public List<ThemeResponse> readAll() {

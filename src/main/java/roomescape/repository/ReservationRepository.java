@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -25,7 +26,7 @@ public class ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static final RowMapper<Reservation> reservationMapper = (rs, rowNum) -> new Reservation(
+    private final RowMapper<Reservation> reservationMapper = (rs, rowNum) -> new Reservation(
             rs.getLong("id"),
             rs.getString("username"),
             rs.getObject("date", LocalDate.class),
@@ -51,9 +52,9 @@ public class ReservationRepository {
         return jdbcTemplate.query(selectSql, reservationMapper);
     }
 
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 
     public Reservation save(ReservationRequest reservationRequest, TimeResponse timeResponse,

@@ -2,6 +2,8 @@ package roomescape.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -40,9 +42,9 @@ public class ThemeRepository {
         return new Theme(id, themeRequest.name(), themeRequest.description(), themeRequest.url());
     }
 
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         String sql = "DELETE FROM THEME WHERE ID = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 
     public Theme findById(Long id) {

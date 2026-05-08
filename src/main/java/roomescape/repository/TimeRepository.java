@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -19,7 +20,7 @@ public class TimeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final static RowMapper<ReservationTime> timeRowMapper = (rs, rowNum) -> new ReservationTime(
+    private final RowMapper<ReservationTime> timeRowMapper = (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
             rs.getObject("start_at", LocalTime.class)
     );
@@ -39,9 +40,9 @@ public class TimeRepository {
         return jdbcTemplate.query(sql, timeRowMapper, date, themeId);
     }
 
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         String sql = "delete from reservation_time where id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 
     public ReservationTime save(LocalTime startAt) {
