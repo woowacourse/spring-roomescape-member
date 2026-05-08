@@ -5,10 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -20,31 +19,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@JdbcTest
 class ReservationTimeServiceTest {
 
-    private ReservationTimeService reservationTimeService;
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+    private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setup() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:reservation_time_service_test;DB_CLOSE_DELAY=-1");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
-
-        jdbcTemplate = new JdbcTemplate(dataSource);
-
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScript(new ClassPathResource("schema.sql"));
-        populator.execute(dataSource);
-
+        this.reservationTimeService = new ReservationTimeService(
+                new ReservationTimeRepository(jdbcTemplate),
+                new ReservationRepository(jdbcTemplate));
         jdbcTemplate.update("DELETE FROM reservation;");
         jdbcTemplate.update("DELETE FROM reservation_time;");
-
-        ReservationTimeRepository reservationTimeRepository = new ReservationTimeRepository(jdbcTemplate);
-        ReservationRepository reservationRepository = new ReservationRepository(jdbcTemplate);
-        this.reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
     @Test

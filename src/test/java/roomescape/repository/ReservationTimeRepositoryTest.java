@@ -2,10 +2,9 @@ package roomescape.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.domain.ReservationTime;
 
 import java.time.LocalTime;
@@ -14,24 +13,16 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@JdbcTest
 class ReservationTimeRepositoryTest {
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
     private ReservationTimeRepository dao;
 
     @BeforeEach
     void setup() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:reservation_time_dao_test;DB_CLOSE_DELAY=-1");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScript(new ClassPathResource("schema.sql"));
-        populator.execute(dataSource);
-
+        jdbcTemplate.update("DELETE FROM reservation;");
         jdbcTemplate.update("DELETE FROM reservation_time;");
         this.dao = new ReservationTimeRepository(jdbcTemplate);
     }
