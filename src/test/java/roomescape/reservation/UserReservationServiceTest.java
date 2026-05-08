@@ -104,7 +104,7 @@ class UserReservationServiceTest {
     @Test
     void 예약을_삭제할_수_있다() {
         Reservation savedReservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
-        when(reservationRepository.findById(eq(3L))).thenReturn(savedReservation);
+        when(reservationRepository.findById(eq(3L))).thenReturn(Optional.of(savedReservation));
 
         userReservationService.deleteReservation(3L, "브라운");
 
@@ -115,7 +115,7 @@ class UserReservationServiceTest {
     void 예약자_이름이_다르면_예외가_발생한다() {
         Reservation savedReservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
 
-        when(reservationRepository.findById(eq(3L))).thenReturn(savedReservation);
+        when(reservationRepository.findById(eq(3L))).thenReturn(Optional.of(savedReservation));
 
         assertThatThrownBy(() -> userReservationService.deleteReservation(3L, "코니"))
                 .isInstanceOf(ApiException.class)

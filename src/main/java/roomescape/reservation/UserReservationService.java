@@ -52,7 +52,9 @@ public class UserReservationService {
 
     @Transactional
     public void deleteReservation(long id, String name) {
-        Reservation reservation = reservationRepository.findById(id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("해당 예약을 찾을 수 없습니다."));
+
         if (reservation.getName().equals(name)) {
             reservationRepository.delete(id);
             return;
