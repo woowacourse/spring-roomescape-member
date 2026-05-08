@@ -40,4 +40,9 @@ public class FakeReservationRepository implements ReservationRepository {
     public void deleteById(long id) {
         storage.remove(id);
     }
+
+    @Override
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        return false;
+    }
 }
