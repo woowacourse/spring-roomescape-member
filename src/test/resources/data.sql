@@ -2,7 +2,8 @@ INSERT INTO themes (id, name, description, thumbnail)
 VALUES (1, 'Theme A', 'Desc A', 'https://picsum.photos/id/1011/200/300'),
        (2, 'Theme B', 'Desc B', 'https://picsum.photos/id/1015/200/300'),
        (3, 'Theme C', 'Desc C', 'https://picsum.photos/id/1025/200/300'),
-       (4, 'Theme D', 'Desc D', 'https://picsum.photos/id/1035/200/300');
+       (4, 'Theme D', 'Desc D', 'https://picsum.photos/id/1035/200/300'),
+       (5, 'Theme E', 'Desc E', 'https://picsum.photos/id/1045/200/300');
 
 INSERT INTO reservation_time (id, start_at)
 VALUES (1, '10:00:00'),

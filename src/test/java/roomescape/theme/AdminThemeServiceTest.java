@@ -7,8 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.ResourceInUseException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -43,5 +45,23 @@ class AdminThemeServiceTest {
                 .isInstanceOf(DuplicateException.class)
                 .extracting(Throwable::getMessage)
                 .isEqualTo("같은 이름의 테마가 존재합니다.");
+    }
+
+    @Test
+    void 예약이_있으면_테마를_삭제할_수_없다() {
+        when(themeRepository.countByThemeId(eq(1L))).thenReturn(1);
+
+        assertThatThrownBy(() -> adminThemeService.delete(1L))
+                .isInstanceOf(ResourceInUseException.class)
+                .extracting(Throwable::getMessage)
+                .isEqualTo("예약이 있어 삭제할 수 없습니다");
+    }
+
+    @Test
+    void 예약이_없으면_테마를_삭제할_수_있다() {
+        when(themeRepository.countByThemeId(eq(1L))).thenReturn(0);
+
+        assertThatCode(() -> adminThemeService.delete(1L))
+                .doesNotThrowAnyException();
     }
 }

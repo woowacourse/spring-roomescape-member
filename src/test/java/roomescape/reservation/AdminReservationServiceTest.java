@@ -43,7 +43,7 @@ class AdminReservationServiceTest {
 
         when(reservationTimeRepository.findById(eq(1L))).thenReturn(Optional.of(time));
         when(themeRepository.findById(eq(2L))).thenReturn(Optional.of(theme));
-        when(reservationRepository.save(eq(theme), eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(time)))
+        when(reservationRepository.save(eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(time), eq(theme)))
                 .thenReturn(saved);
 
         Reservation result = adminReservationService.createForceReservation(2L, "브라운", LocalDate.of(2026, 5, 1), 1L);

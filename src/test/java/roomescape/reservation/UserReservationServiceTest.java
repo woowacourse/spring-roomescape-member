@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +56,7 @@ class UserReservationServiceTest {
 
         when(reservationTimeRepository.findById(eq(time.id()))).thenReturn(Optional.of(time));
         when(themeRepository.findById(eq(theme.id()))).thenReturn(Optional.of(theme));
-        when(reservationRepository.save(eq(theme), eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(time)))
+        when(reservationRepository.save(eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(time), eq(theme)))
                 .thenReturn(savedReservation);
 
         Reservation saved = userReservationService.createReservation("브라운", LocalDate.of(2026, 5, 1), time.id(),
@@ -90,7 +91,7 @@ class UserReservationServiceTest {
     void 예약이_중복되면_예외가_발생한다() {
         when(reservationTimeRepository.findById(eq(time.id()))).thenReturn(Optional.of(time));
         when(themeRepository.findById(eq(theme.id()))).thenReturn(Optional.of(theme));
-        when(reservationRepository.save(eq(theme), any(), any(), eq(time)))
+        when(reservationRepository.save(any(), any(), eq(time), eq(theme)))
                 .thenThrow(new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다"));
 
         assertThatThrownBy(
@@ -103,14 +104,11 @@ class UserReservationServiceTest {
     @Test
     void 예약을_삭제할_수_있다() {
         Reservation savedReservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
-
         when(reservationRepository.findById(eq(3L))).thenReturn(savedReservation);
-        when(reservationRepository.findAll()).thenReturn(List.of());
 
         userReservationService.deleteReservation(3L, "브라운");
 
-        List<Reservation> reservations = userReservationService.getReservations();
-        assertThat(reservations).isEmpty();
+        verify(reservationRepository).delete(eq(3L));
     }
 
     @Test

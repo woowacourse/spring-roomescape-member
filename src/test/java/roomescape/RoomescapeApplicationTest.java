@@ -99,13 +99,13 @@ class RoomescapeApplicationTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .body("size()", is(4));
+                .body("size()", is(5));
     }
 
     @Test
     void 관리자는_특정_테마를_삭제할_수_있다() {
         RestAssured.given().log().all()
-                .when().delete("/admin/themes/1")
+                .when().delete("/admin/themes/5")
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }
