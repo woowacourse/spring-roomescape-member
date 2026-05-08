@@ -14,6 +14,7 @@ public class Reservation {
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Long themeId) {
+        validateName(name);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -39,5 +40,14 @@ public class Reservation {
 
     public Long getThemeId() {
         return themeId;
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()){
+            throw new IllegalArgumentException("[ERROR] 이름은 공백일 수 없습니다.");
+        }
+        if (name.length() > 20) {
+            throw new IllegalArgumentException("[ERROR] 이름은 20자를 초과할 수 없습니다");
+        }
     }
 }
