@@ -15,12 +15,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.TestDataHelper;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeApiTest {
+
+    @LocalServerPort
+    private int port;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -29,6 +33,7 @@ class ReservationTimeApiTest {
 
     @BeforeEach
     void setUp() {
+        RestAssured.port = port;
         testHelper = new TestDataHelper(jdbcTemplate);
         testHelper.clearDatabase();
     }
