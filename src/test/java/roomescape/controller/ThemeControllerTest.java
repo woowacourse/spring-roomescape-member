@@ -98,8 +98,8 @@ class ThemeControllerTest {
                 .willReturn(List.of(themeWithCount));
 
         mockMvc.perform(get("/themes/popular")
-                        .param("start_date", "2026-04-01")
-                        .param("end_date", "2026-05-01")
+                        .param("startDate", "2026-04-01")
+                        .param("endDate", "2026-05-01")
                         .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
@@ -111,8 +111,8 @@ class ThemeControllerTest {
     @DisplayName("잘못된 날짜 형식으로 인기 테마 조회 시 400을 반환한다")
     void getPopularThemeWithInvalidDate() throws Exception {
         mockMvc.perform(get("/themes/popular")
-                        .param("start_date", "20260401")  // 잘못된 형식
-                        .param("end_date", "2026-05-01")
+                        .param("startDate", "20260401")  // 잘못된 형식
+                        .param("endDate", "2026-05-01")
                         .param("size", "10"))
                 .andExpect(status().isBadRequest());
     }

@@ -56,7 +56,7 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping(value = "/popular", params = {"start_date", "end_date", "size"})
+    @GetMapping(value = "/popular", params = {"startDate", "endDate", "size"})
     public ResponseEntity<List<PopularThemeResponse>> getPopularTheme(@ModelAttribute @Valid PopularConditionRequest popularConditionRequest) {
         PopularThemeCondition popularThemeCondition = popularConditionRequest.to();
         List<ThemeWithCount> themeWithCounts = themeService.getPopularTheme(popularThemeCondition);
