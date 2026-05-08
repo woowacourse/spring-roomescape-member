@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.QueryWithParams;
@@ -26,6 +27,13 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation_theme WHERE id = ?";
     private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM reservation_theme WHERE id = ?";
 
+    private static final RowMapper<ReservationTheme> MAPPER = (rs, rowNum) -> new ReservationTheme(
+            rs.getLong(COLUMN_ID),
+            rs.getString(COLUMN_NAME),
+            rs.getString(COLUMN_DESCRIPTION),
+            rs.getString(COLUMN_IMAGE_URL)
+    );
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -46,11 +54,11 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     }
 
     public List<ReservationTheme> getAllTheme() {
-        return jdbcTemplate.query(SELECT_ALL_SQL, (rs, i) -> ReservationTheme.from(rs));
+        return jdbcTemplate.query(SELECT_ALL_SQL, MAPPER);
     }
 
     public Optional<ReservationTheme> getTheme(long id) {
-        return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, ((rs, rowNum) -> ReservationTheme.from(rs)), id)
+        return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, MAPPER, id)
                 .stream()
                 .findFirst();
     }
