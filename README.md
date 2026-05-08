@@ -427,16 +427,8 @@ POST /api/reservations
 #### URL
 
 ```http
-GET /themes/popular?startDate={startDate}&endDate={endDate}&limit={limit}
+GET /themes/rankings/last-7-days
 ```
-
-#### Query Parameters
-
-| 파라미터명     | 필수 여부 | 타입     | 설명        | 예시         |
-|-----------|-------|--------|-----------|------------|
-| startDate | 필수    | Date   | 조회 시작 날짜  | 2026-05-03 |
-| endDate   | 필수    | Date   | 조회 종료 날짜  | 2026-05-10 |
-| limit     | 필수    | BigInt | 조회할 테마 개수 | 10         |
 
 #### Request Body
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,33 +7,57 @@
   <!-- Bootstrap CSS (디자인을 위해 추가) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-	    .hero-section { background: #f8f9fa; padding: 60px 0; border-bottom: 1px solid #dee2e6; }
-	    .card-img-top { height: 200px; object-fit: cover; }
-	    .rank-badge { position: absolute; top: 10px; left: 10px; background: rgba(220, 53, 69, 0.9); color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; }
-	    .popular-scroll {
-	      display: flex;
-	      flex-wrap: nowrap;
-	      gap: 1.5rem;
-	      overflow-x: auto;
-	      scroll-behavior: smooth;
-	      scroll-snap-type: x mandatory;
-	      padding-bottom: 1rem;
-	      scrollbar-width: none;
-	      -ms-overflow-style: none;
-	    }
-	    .popular-scroll::-webkit-scrollbar { display: none; }
-	    .popular-scroll-item {
-	      flex: 0 0 320px;
-	      max-width: 320px;
-	      scroll-snap-align: start;
-	    }
-	    @media (max-width: 576px) {
-	      .popular-scroll-item {
-	        flex-basis: 85%;
-	        max-width: 85%;
-	      }
-	    }
-	  </style>
+    .hero-section {
+      background: #f8f9fa;
+      padding: 60px 0;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .rank-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(220, 53, 69, 0.9);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .popular-scroll {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 1.5rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 1rem;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .popular-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .popular-scroll-item {
+      flex: 0 0 320px;
+      max-width: 320px;
+      scroll-snap-align: start;
+    }
+
+    @media (max-width: 576px) {
+      .popular-scroll-item {
+        flex-basis: 85%;
+        max-width: 85%;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -61,9 +85,9 @@
   <section class="mb-5">
     <h2 class="mb-4">🔥 실시간 인기 테마 TOP 10</h2>
     <!-- id="popular-themes-list"인 이 공간에 JS가 카드를 생성해서 넣습니다. -->
-	    <div id="popular-themes-list" class="popular-scroll">
-	      <div class="text-center w-100">로딩 중...</div>
-	    </div>
+    <div id="popular-themes-list" class="popular-scroll">
+      <div class="text-center w-100">로딩 중...</div>
+    </div>
   </section>
 
   <hr class="my-5">
@@ -85,22 +109,10 @@
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     try {
-      const now = new Date();
-
-      const end = new Date();
-      end.setDate(now.getDate() - 1);
-
-      const start = new Date();
-      start.setDate(now.getDate() - 7);
-
-      const params = new URLSearchParams({
-        startDate: start.toISOString().split('T')[0],
-        endDate: end.toISOString().split('T')[0],
-        limit: 10
-      });
-
-      const response = await fetch(`/api/themes/popular?${params.toString()}`);
-      if (!response.ok) throw new Error("데이터를 불러오지 못했습니다.");
+      const response = await fetch('/api/themes/rankings/last-7-days');
+      if (!response.ok) {
+        throw new Error("데이터를 불러오지 못했습니다.");
+      }
 
       const popularThemes = await response.json();
       const listContainer = document.getElementById('popular-themes-list');
@@ -113,7 +125,7 @@
 
       // 3. 데이터를 순회하며 HTML 카드 생성
       // iterStat.count 대신 (index + 1)을 사용하여 순위를 표시합니다.
-	      listContainer.innerHTML = popularThemes.map((theme, index) => `
+      listContainer.innerHTML = popularThemes.map((theme, index) => `
 	            <div class="popular-scroll-item">
 	                <div class="card h-100 shadow-sm">
 	                    <div class="rank-badge">TOP ${index + 1}</div>
@@ -128,28 +140,30 @@
 	            </div>
 	        `).join('');
 
-	      startPopularAutoScroll(listContainer);
+      startPopularAutoScroll(listContainer);
 
-	    } catch (error) {
+    } catch (error) {
       console.error('인기 테마 로드 실패:', error);
       document.getElementById('popular-themes-list').innerHTML =
           '<p class="text-center w-100 text-danger">테마를 불러오는 중 오류가 발생했습니다.</p>';
     }
-	  });
+  });
 
-	  function startPopularAutoScroll(container) {
-	    const items = container.querySelectorAll('.popular-scroll-item');
-	    if (items.length <= 1) return;
+  function startPopularAutoScroll(container) {
+    const items = container.querySelectorAll('.popular-scroll-item');
+    if (items.length <= 1) {
+      return;
+    }
 
-	    let currentIndex = 0;
-	    setInterval(() => {
-	      currentIndex = (currentIndex + 1) % items.length;
-	      container.scrollTo({
-	        left: items[currentIndex].offsetLeft - container.offsetLeft,
-	        behavior: 'smooth'
-	      });
-	    }, 3000);
-	  }
+    let currentIndex = 0;
+    setInterval(() => {
+      currentIndex = (currentIndex + 1) % items.length;
+      container.scrollTo({
+        left: items[currentIndex].offsetLeft - container.offsetLeft,
+        behavior: 'smooth'
+      });
+    }, 3000);
+  }
 
   async function loadAllThemes() {
     try {

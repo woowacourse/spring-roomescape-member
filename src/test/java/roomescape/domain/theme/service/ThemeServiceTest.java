@@ -52,7 +52,7 @@ class ThemeServiceTest {
             themeRepository.saveAllThemes(themes);
 
             List<Reservation> reservations = new ArrayList<>();
-            LocalDate targetDate = LocalDate.of(2026, 5, 5); // 조회 범위 내 날짜
+            LocalDate targetDate = LocalDate.now();
 
             List<Theme> savedThemes = themeRepository.findAllThemes();
             for (int i = 0; i < savedThemes.size(); i++) {
@@ -71,11 +71,7 @@ class ThemeServiceTest {
             themeRepository.saveAllReservations(reservations);
 
             // when
-            List<ThemeResponseDTO> actual = themeService.getPopularThemes(
-                LocalDate.of(2026, 5, 1),
-                LocalDate.of(2026, 5, 31),
-                10
-            );
+            List<ThemeResponseDTO> actual = themeService.getPopularThemes();
 
             // then
             assertThat(actual)
