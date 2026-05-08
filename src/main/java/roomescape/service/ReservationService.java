@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -12,6 +13,7 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -29,6 +31,7 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    @Transactional
     public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
         validateAlreadyReserved(date, timeId, themeId);
         ReservationTime time = findReservationTime(timeId);
@@ -45,6 +48,7 @@ public class ReservationService {
         }
     }
 
+    @Transactional
     public void delete(Long id) {
         if (!reservationRepository.existsById(id)) {
             throw new NoSuchElementException("[ERROR] 존재하지 않는 ID입니다.");
