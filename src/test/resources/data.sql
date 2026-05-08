@@ -24,6 +24,9 @@ INSERT INTO reservation_time (start_at) VALUES ('16:00:00');
 INSERT INTO reservation_time (start_at) VALUES ('17:00:00');
 INSERT INTO reservation_time (start_at) VALUES ('18:00:00');
 
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', CURRENT_DATE - 9, 1, 11);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', CURRENT_DATE - 8, 1, 11);
+
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', CURRENT_DATE - 7, 1, 1);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', CURRENT_DATE - 7, 2, 1);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', CURRENT_DATE - 7, 3, 1);
@@ -46,3 +49,6 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', CUR
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', CURRENT_DATE - 4, 1, 8);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', CURRENT_DATE - 4, 1, 9);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', CURRENT_DATE - 4, 1, 10);
+
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', CURRENT_DATE, 1, 11);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', CURRENT_DATE, 2, 11);
