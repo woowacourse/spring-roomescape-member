@@ -10,7 +10,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
-import roomescape.dto.PopularThemeRequestDto;
+import roomescape.dto.request.PopularThemeRequestDto;
 import roomescape.dto.request.ThemeRequestDto;
 import roomescape.dto.response.AvailableTimeResponseDto;
 

@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
-import roomescape.dto.PopularThemeRequestDto;
+import roomescape.dto.request.PopularThemeRequestDto;
 import roomescape.dto.response.AvailableTimeResponseDto;
 
 

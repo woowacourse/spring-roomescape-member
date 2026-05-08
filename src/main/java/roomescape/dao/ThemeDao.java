@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
-import roomescape.dto.PopularThemeRequestDto;
+import roomescape.dto.request.PopularThemeRequestDto;
 import roomescape.dto.response.AvailableTimeResponseDto;
 
 public interface ThemeDao extends CommonDao<Theme> {
