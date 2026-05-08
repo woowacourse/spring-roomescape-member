@@ -38,11 +38,11 @@ class ReservationTimeDaoTest {
     @Test
     void 예약_시간_목록을_조회한다() {
         // given
-        timeDao.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
-        timeDao.save(ReservationTime.createWithoutId(LocalTime.of(11, 0)));
-        timeDao.save(ReservationTime.createWithoutId(LocalTime.of(12, 0)));
-        timeDao.save(ReservationTime.createWithoutId(LocalTime.of(13, 0)));
-        timeDao.save(ReservationTime.createWithoutId(LocalTime.of(14, 0)));
+        saveReservationTime(LocalTime.of(10, 0));
+        saveReservationTime(LocalTime.of(11, 0));
+        saveReservationTime(LocalTime.of(12, 0));
+        saveReservationTime(LocalTime.of(13, 0));
+        saveReservationTime(LocalTime.of(14, 0));
 
         // when
         List<ReservationTime> reservationTimes = timeDao.findAll();
@@ -57,7 +57,7 @@ class ReservationTimeDaoTest {
     @Test
     void 아이디에_맞는_예약_시간을_조회한다() {
         // given
-        ReservationTime reservationTime = timeDao.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        ReservationTime reservationTime = saveReservationTime(LocalTime.of(10, 0));
 
         // when
         Optional<ReservationTime> selectReservationTime = timeDao.findById(reservationTime.getId());
@@ -72,7 +72,7 @@ class ReservationTimeDaoTest {
     @Test
     void 예약_시간을_삭제한다() {
         // given
-        ReservationTime savedReservationTime = timeDao.save(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        ReservationTime savedReservationTime = saveReservationTime(LocalTime.of(10, 0));
 
         // when
         timeDao.delete(savedReservationTime.getId());
@@ -80,5 +80,10 @@ class ReservationTimeDaoTest {
         // then
         List<ReservationTime> reservationTimes = timeDao.findAll();
         assertThat(reservationTimes).hasSize(0);
+    }
+
+    private ReservationTime saveReservationTime(LocalTime startAt) {
+        ReservationTime reservationTime = ReservationTime.createWithoutId(startAt);
+        return timeDao.save(reservationTime);
     }
 }
