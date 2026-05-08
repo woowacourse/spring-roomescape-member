@@ -39,7 +39,7 @@ public class ReservationTimeController {
                 .map(ReservationTimeResponse::from)
                 .toList();
 
-        return new ResponseEntity<>(reservationTimeResponses, HttpStatus.OK);
+        return ResponseEntity.ok(reservationTimeResponses);
     }
 
     @PostMapping
@@ -65,6 +65,6 @@ public class ReservationTimeController {
                 .map(AvailableReservationTimeResponse::from)
                 .toList();
 
-        return new ResponseEntity<>(availableReservationTimeResponses, HttpStatus.OK);
+        return ResponseEntity.ok(availableReservationTimeResponses);
     }
 }

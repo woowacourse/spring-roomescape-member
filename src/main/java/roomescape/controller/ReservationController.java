@@ -28,7 +28,7 @@ public class ReservationController {
                 .map(ReservationResponse::from)
                 .toList();
 
-        return new ResponseEntity<>(reservationResponses, HttpStatus.OK);
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @PostMapping

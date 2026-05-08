@@ -38,7 +38,7 @@ public class ThemeController {
                 .map(ThemeResponse::from)
                 .toList();
 
-        return new ResponseEntity<>(themeResponses, HttpStatus.OK);
+        return ResponseEntity.ok(themeResponses);
     }
 
     @PostMapping
@@ -64,6 +64,6 @@ public class ThemeController {
                 .map(PopularThemeResponse::from)
                 .toList();
 
-        return new ResponseEntity<>(reservationThemeResponses, HttpStatus.OK);
+        return ResponseEntity.ok(reservationThemeResponses);
     }
 }
