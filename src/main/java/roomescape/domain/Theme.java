@@ -6,11 +6,11 @@ import lombok.Getter;
 public class Theme {
 
     private final Long id;
-    private final ThemeName name;
+    private final Name name;
     private final String description;
     private final String thumbnailUrl;
 
-    private Theme(final Long id, final ThemeName name, final String description, final String thumbnailUrl) {
+    private Theme(final Long id, final Name name, final String description, final String thumbnailUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -20,7 +20,7 @@ public class Theme {
     public static Theme create(final String name, final String description, final String thumbnailUrl) {
         return new Theme(
                 null,
-                ThemeName.from(name),
+                Name.from(name),
                 description,
                 thumbnailUrl
         );
@@ -34,7 +34,7 @@ public class Theme {
     ) {
         return new Theme(
                 id,
-                ThemeName.from(name),
+                Name.from(name),
                 description,
                 thumbnailUrl
         );

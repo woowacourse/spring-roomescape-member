@@ -1,16 +1,16 @@
 package roomescape.domain;
 
-public class PersonName {
+public class Name {
 
     private final String name;
 
-    private PersonName(final String value) {
+    private Name(final String value) {
         validate(value);
         this.name = value;
     }
 
-    public static PersonName from(String value) {
-        return new PersonName(value);
+    public static Name from(String value) {
+        return new Name(value);
     }
 
     private void validate(final String value) {

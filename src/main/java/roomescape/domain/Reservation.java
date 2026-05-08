@@ -9,16 +9,16 @@ import java.time.LocalDateTime;
 public class Reservation {
 
     private final Long id;
-    private final PersonName name;
+    private final Name customerName;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(final Long id, final PersonName name, final LocalDate date, final ReservationTime time, final Theme theme) {
+    private Reservation(final Long id, final Name customerName, final LocalDate date, final ReservationTime time, final Theme theme) {
         validateDateTime(date, time);
 
         this.id = id;
-        this.name = name;
+        this.customerName = customerName;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -27,7 +27,7 @@ public class Reservation {
     public static Reservation create(final String name, final LocalDate date, final ReservationTime reservationTime, final Theme theme) {
         return new Reservation(
                 null,
-                PersonName.from(name),
+                Name.from(name),
                 date,
                 reservationTime,
                 theme
@@ -37,7 +37,7 @@ public class Reservation {
     public Reservation saved(final Long id) {
         return new Reservation(
                 id,
-                name,
+                customerName,
                 date,
                 time,
                 theme
@@ -52,15 +52,15 @@ public class Reservation {
             final Theme theme) {
         return new Reservation(
                 id,
-                PersonName.from(name),
+                Name.from(name),
                 date,
                 time,
                 theme
         );
     }
 
-    public String getName() {
-        return name.getName();
+    public String getCustomerName() {
+        return customerName.getName();
     }
 
     private void validateDateTime(final LocalDate date, final ReservationTime time) {

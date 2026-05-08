@@ -155,7 +155,7 @@ public class ReservationRepository {
     private ReservationEntity toEntity(final Reservation reservation) {
         return new ReservationEntity(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getCustomerName(),
                 Date.valueOf(reservation.getDate()),
                 reservation.getTime().getId(),
                 reservation.getTheme().getId()
