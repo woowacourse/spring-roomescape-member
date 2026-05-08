@@ -1,3 +1,9 @@
+SET REFERENTIAL_INTEGRITY FALSE;
+TRUNCATE TABLE reservation RESTART IDENTITY;
+TRUNCATE TABLE reservation_time RESTART IDENTITY;
+TRUNCATE TABLE theme RESTART IDENTITY;
+SET REFERENTIAL_INTEGRITY TRUE;
+
 -- theme (11개 - 10위권 밖 케이스도 포함)
 INSERT INTO theme (name, thumbnail_url, description)
 VALUES ('공포의 저택', 'https://picsum.photos/seed/horror/400/300', '어둠 속에 숨겨진 공포를 체험하세요'),
