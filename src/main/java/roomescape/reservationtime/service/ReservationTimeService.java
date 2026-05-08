@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
@@ -11,9 +12,14 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(
+            final ReservationTimeRepository reservationTimeRepository,
+            final ReservationRepository reservationRepository
+    ) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
 
@@ -32,6 +38,9 @@ public class ReservationTimeService {
     }
 
     public void deleteById(final long timeId) {
+        if (reservationRepository.existsByTimeId(timeId)) {
+            throw new IllegalArgumentException("[ERROR] 이미 예약된 시간은 삭제할 수 없습니다.");
+        }
         reservationTimeRepository.deleteById(timeId);
     }
 

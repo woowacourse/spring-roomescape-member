@@ -53,4 +53,15 @@ public class MemoryReservationRepository implements ReservationRepository {
         return false;
     }
 
+    @Override
+    public boolean existsByTimeId(final long timeId) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getTime().getId() == timeId);
+    }
+
+    @Override
+    public boolean existsByThemeId(final long themeId) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getTheme().getId() == themeId);
+    }
 }
