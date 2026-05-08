@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.command.ReservationSaveCommand;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -9,6 +11,10 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
+    }
+
+    public static Reservation forSave(ReservationSaveCommand command, ReservationTime reservationTime, Theme theme) {
+        new Reservation(null, command.name(), command.date(), reservationTime, theme);
     }
 
     private void validateTheme(Theme theme) {

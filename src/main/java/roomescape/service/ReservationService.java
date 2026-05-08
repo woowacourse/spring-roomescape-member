@@ -45,8 +45,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(command.themeId())
                 .orElseThrow(() -> new NotFoundException("theme"));
 
-        return reservationRepository.addReservation(
-                new Reservation(null, command.name(), command.date(), reservationTime, theme));
+        return reservationRepository.addReservation(Reservation.forSave(command, reservationTime, theme));
     }
 
     public List<Reservation> findReservationsByName(String name) {

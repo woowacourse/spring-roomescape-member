@@ -36,7 +36,7 @@ public class AdminThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> saveTheme(@RequestBody ThemeRequest themeRequest) {
-        Theme theme = themeService.saveTheme(themeRequest.toDomain());
+        Theme theme = themeService.saveTheme(themeRequest.toDomainForSave());
         ThemeResponse themeResponse = ThemeResponse.from(theme);
 
         return ResponseEntity.created(getLocation(themeResponse.id())).body(themeResponse);
