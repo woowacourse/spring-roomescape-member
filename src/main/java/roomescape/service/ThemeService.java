@@ -16,11 +16,7 @@ public class ThemeService {
     }
 
 
-    public List<ThemeResponse> getPopularThemes(int size) {
-        final LocalDate today = LocalDate.now();
-        final LocalDate endDate = today.minusDays(1);
-        final LocalDate startDate = today.minusDays(7);
-
+    public List<ThemeResponse> getPopularThemes(int size, LocalDate startDate, LocalDate endDate) {
         return themeDao.findPopularThemes(size, startDate, endDate).stream()
                 .map(ThemeResponse::from)
                 .toList();
@@ -32,7 +28,7 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<AvailableReservationTimeResponse> getAvailableTimeResponses(Long themeId, LocalDate date) {
+    public List<AvailableReservationTimeResponse> getAvailableTimeResponses(long themeId, LocalDate date) {
         return themeDao.findAvailableTimeById(themeId, date);
     }
 }

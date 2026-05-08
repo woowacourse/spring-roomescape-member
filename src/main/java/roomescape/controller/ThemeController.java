@@ -30,7 +30,10 @@ public class ThemeController {
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes(
             @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(themeService.getPopularThemes(size));
+        final LocalDate today = LocalDate.now();
+        final LocalDate startDate = today.minusDays(7);
+        final LocalDate endDate = today.minusDays(1);
+        return ResponseEntity.ok(themeService.getPopularThemes(size, startDate, endDate));
     }
 
     @GetMapping("/{id}/times")
