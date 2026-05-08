@@ -1,0 +1,40 @@
+package roomescape.controller;
+
+import java.net.URI;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.service.ReservationTimeService;
+
+@RestController
+@RequestMapping("/admin/times")
+public class AdminReservationTimeController {
+
+    private static final String LOCATION_DEFAULT_VALUE = "/admin/times/";
+
+    private final ReservationTimeService reservationTimeService;
+
+    public AdminReservationTimeController(ReservationTimeService reservationTimeService) {
+        this.reservationTimeService = reservationTimeService;
+    }
+
+    @PostMapping
+    public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeRequest request) {
+        ReservationTimeResponse response = reservationTimeService.create(request);
+        return ResponseEntity.created(URI.create(LOCATION_DEFAULT_VALUE + response.id()))
+                .body(response);
+    }
+
+    @DeleteMapping("/{timeId}")
+    public ResponseEntity<Void> delete(@PathVariable("timeId") long reservationTimeId) {
+        reservationTimeService.delete(reservationTimeId);
+        return ResponseEntity.noContent()
+                .build();
+    }
+}
