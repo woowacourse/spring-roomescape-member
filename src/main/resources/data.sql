@@ -79,15 +79,23 @@ INSERT INTO schedule (date, time_id, theme_id) VALUES
 ('2026-05-05', 3, 10), -- 5월 5일 12시 붉은 파도
 ('2026-05-05', 4, 10); -- 5월 5일 13시 붉은 파도
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES
-('kim', '2026-05-05', 1, 1), -- 5월 5일 10시 세기의 도둑 예약
-('kim', '2026-05-05', 2, 1), -- 5월 5일 11시 세기의 도둑 예약
+INSERT INTO reservation (name, schedule_id)
+SELECT 'kim', id FROM schedule WHERE date = '2026-05-05' AND time_id = 1 AND theme_id = 1; -- 5월 5일 10시 세기의 도둑 예약
+INSERT INTO reservation (name, schedule_id)
+SELECT 'kim', id FROM schedule WHERE date = '2026-05-05' AND time_id = 2 AND theme_id = 1; -- 5월 5일 11시 세기의 도둑 예약
 
-('lee', '2026-05-05', 1, 2), -- 5월 5일 10시 심해 연구소 예약
-('lee', '2026-05-05', 2, 2), -- 5월 5일 11시 심해 연구소 예약
-('lee', '2026-05-05', 3, 2), -- 5월 5일 12시 심해 연구소 예약
+INSERT INTO reservation (name, schedule_id)
+SELECT 'lee', id FROM schedule WHERE date = '2026-05-05' AND time_id = 1 AND theme_id = 2; -- 5월 5일 10시 심해 연구소 예약
+INSERT INTO reservation (name, schedule_id)
+SELECT 'lee', id FROM schedule WHERE date = '2026-05-05' AND time_id = 2 AND theme_id = 2; -- 5월 5일 11시 심해 연구소 예약
+INSERT INTO reservation (name, schedule_id)
+SELECT 'lee', id FROM schedule WHERE date = '2026-05-05' AND time_id = 3 AND theme_id = 2; -- 5월 5일 12시 심해 연구소 예약
 
-('park', '2026-05-06', 1, 3), -- 5월 6일 10시 시간 여행자 예약
-('park', '2026-05-06', 2, 3), -- 5월 6일 11시 시간 여행자 예약
-('park', '2026-05-06', 3, 3), -- 5월 6일 12시 시간 여행자 예약
-('park', '2026-05-06', 4, 3); -- 5월 6일 13시 시간 여행자 예약
+INSERT INTO reservation (name, schedule_id)
+SELECT 'park', id FROM schedule WHERE date = '2026-05-06' AND time_id = 1 AND theme_id = 3; -- 5월 6일 10시 시간 여행자 예약
+INSERT INTO reservation (name, schedule_id)
+SELECT 'park', id FROM schedule WHERE date = '2026-05-06' AND time_id = 2 AND theme_id = 3; -- 5월 6일 11시 시간 여행자 예약
+INSERT INTO reservation (name, schedule_id)
+SELECT 'park', id FROM schedule WHERE date = '2026-05-06' AND time_id = 3 AND theme_id = 3; -- 5월 6일 12시 시간 여행자 예약
+INSERT INTO reservation (name, schedule_id)
+SELECT 'park', id FROM schedule WHERE date = '2026-05-06' AND time_id = 4 AND theme_id = 3; -- 5월 6일 13시 시간 여행자 예약

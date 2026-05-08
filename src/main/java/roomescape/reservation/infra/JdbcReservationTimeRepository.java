@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.ReservationTime;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,11 +24,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             );
 
     @Override
-    public ReservationTime save(LocalTime startAt) {
+    public ReservationTime save(ReservationTime time) {
         String sql = "INSERT INTO reservation_time(start_at) VALUES (:start_at)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", startAt.toString());
+                .addValue("start_at", time.getStartAt());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(sql, params, keyHolder);
@@ -39,7 +38,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             throw new IllegalStateException("reservation_time 저장 후 생성된 ID를 반환받지 못했습니다.");
         }
 
-        return new ReservationTime(keyHolder.getKey().longValue(), startAt);
+        return new ReservationTime(keyHolder.getKey().longValue(), time.getStartAt());
     }
 
     @Override
@@ -79,16 +78,5 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .addValue("themeId", themeId);
 
         return template.query(sql, params, reservationTimeRowMapper);
-    }
-
-    @Override
-    public boolean existScheduleById(long timeId) {
-        String sql = "SELECT COUNT(*) FROM schedule WHERE time_id = :timeId";
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("timeId", timeId);
-
-        return !template.query(sql, params, (resultSet, rowNum) -> resultSet.getInt("COUNT(*)") > 0)
-                .isEmpty();
     }
 }

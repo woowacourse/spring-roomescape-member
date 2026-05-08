@@ -4,9 +4,8 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
@@ -14,11 +13,10 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Sql(scripts = {"/truncate.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = {"/truncate.sql", "/test-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class ReservationTimeControllerTest {
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Test
     void 시간_관리_API() {
@@ -38,16 +36,14 @@ public class ReservationTimeControllerTest {
                 .statusCode(200)
                 .body("size()", is(5));
 
-        deleteTable();
-
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/5")
                 .then().log().all()
                 .statusCode(204);
     }
 
     @Test
-    void 특정날짜와_테마에_예약_가능_시간을_조회_API() {
+    void 특정날짜와_테마에_예약_가능_시간들_조회_API() {
         Map<String, Object> options = new HashMap<>();
         options.put("date", "2026-05-05");
         options.put("themeId", 1);
@@ -56,11 +52,8 @@ public class ReservationTimeControllerTest {
                 .params(options)
                 .when().get("/times/availability")
                 .then().log().all()
-                .body("size()", is(4))
+                .body("size()", is(1))
                 .body("[0].isAvailable", is(false))
-                .body("[1].isAvailable", is(false))
-                .body("[2].isAvailable", is(true))
-                .body("[3].isAvailable", is(true))
                 .statusCode(200);
     }
 
@@ -69,25 +62,23 @@ public class ReservationTimeControllerTest {
     void 정상_흐름_테스트() {
         Map<String, Object> options = new HashMap<>();
         options.put("date", "2026-05-05");
-        options.put("themeId", 2);
+        options.put("themeId", 4);
 
+        // 2026-05-05 4번 테마 조회
         RestAssured.given().log().all()
                 .params(options)
                 .when().get("/times/availability")
                 .then().log().all()
-                .body("size()", is(4))
-                .body("[0].isAvailable", is(false))
-                .body("[1].isAvailable", is(false))
-                .body("[2].isAvailable", is(false))
-                .body("[3].isAvailable", is(true))
+                .body("size()", is(1))
+                .body("[0].isAvailable", is(true))
                 .statusCode(200);
 
-        //5. 예약 생성
+        // 예약 생성
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2026-05-05");
         reservation.put("timeId", 4);
-        reservation.put("themeId", 2);
+        reservation.put("themeId", 4);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -96,25 +87,17 @@ public class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        //6. 특정날짜와_테마에_예약_가능_시간을_조회
+        // 특정날짜와_테마에_예약_가능_시간을_조회
         Map<String, Object> options1 = new HashMap<>();
         options1.put("date", "2026-05-05");
-        options1.put("themeId", 2);
+        options1.put("themeId", 4);
 
         RestAssured.given().log().all()
                 .params(options1)
                 .when().get("/times/availability")
                 .then().log().all()
-                .body("size()", is(4))
+                .body("size()", is(1))
                 .body("[0].isAvailable", is(false))
-                .body("[1].isAvailable", is(false))
-                .body("[2].isAvailable", is(false))
-                .body("[3].isAvailable", is(false))
                 .statusCode(200);
-    }
-
-    private void deleteTable() {
-        jdbcTemplate.update("DELETE FROM schedule");
-        jdbcTemplate.update("DELETE FROM reservation");
     }
 }

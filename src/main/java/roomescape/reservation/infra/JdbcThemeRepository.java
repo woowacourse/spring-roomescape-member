@@ -1,6 +1,5 @@
 package roomescape.reservation.infra;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -12,6 +11,7 @@ import roomescape.reservation.domain.Theme;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -77,12 +77,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     public List<Theme> findByDayAndLimit(int day, int limit) {
         String sql = "SELECT t.id, t.name, t.description, t.thumbnail_url " +
                 "FROM theme t " +
-                "LEFT JOIN reservation r " +
-                    "ON t.id = r.theme_id " +
-                    "AND r.date >= DATEADD('DAY', -:day, CURRENT_DATE) " +
-                    "AND r.date < CURRENT_DATE " +
+                "LEFT JOIN schedule s ON t.id = s.theme_id " +
+                "LEFT JOIN reservation r ON s.id = r.schedule_id " +
+                "AND s.date >= DATEADD('DAY', -:day, CURRENT_DATE) " +
+                "AND s.date < CURRENT_DATE " +
                 "GROUP BY t.id " +
-                "ORDER BY COUNT(r.theme_id) DESC " +
+                "ORDER BY COUNT(r.id) DESC " +
                 "LIMIT :limit";
 
         MapSqlParameterSource params = new MapSqlParameterSource()

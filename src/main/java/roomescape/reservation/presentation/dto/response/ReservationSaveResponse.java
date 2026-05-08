@@ -1,24 +1,26 @@
 package roomescape.reservation.presentation.dto.response;
 
-import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.Theme;
 import roomescape.reservation.presentation.dto.response.dto.TimeInformation;
 
-public record ReservationSaveResponse(@NotNull Long id,
-                                      @NotNull Long themeId,
-                                      @NotNull String name,
-                                      @NotNull LocalDate date,
-                                      @NotNull TimeInformation time) {
-    public static ReservationSaveResponse of(ReservationTime time, Theme theme, Reservation reservation) {
+import java.time.LocalDate;
+
+public record ReservationSaveResponse(
+        Long id,
+        Long themeId,
+        String name,
+        LocalDate date,
+        TimeInformation time
+) {
+    public static ReservationSaveResponse from(Reservation reservation) {
         return new ReservationSaveResponse(
                 reservation.getId(),
-                theme.getId(),
+                reservation.getSchedule().getTheme().getId(),
                 reservation.getName(),
-                reservation.getDate(),
-                new TimeInformation(time.getId(), time.getStartAt())
+                reservation.getSchedule().getDate(),
+                new TimeInformation(
+                        reservation.getSchedule().getTime().getId(),
+                        reservation.getSchedule().getTime().getStartAt())
         );
     }
 }

@@ -4,15 +4,14 @@ import roomescape.reservation.domain.Reservation;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public interface ReservationRepository {
     Reservation save(Reservation reservation);
 
     List<Reservation> findAll();
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
-    List<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId);
-
-    boolean existReservationByTimeId(long timeId);
+    Set<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId);
 }

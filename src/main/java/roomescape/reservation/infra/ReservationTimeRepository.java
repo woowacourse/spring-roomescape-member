@@ -3,12 +3,11 @@ package roomescape.reservation.infra;
 import roomescape.reservation.domain.ReservationTime;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface ReservationTimeRepository {
-    ReservationTime save(LocalTime startAt);
+    ReservationTime save(ReservationTime time);
 
     List<ReservationTime> findAll();
 
@@ -18,5 +17,4 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findTimesByDateAndThemeId(LocalDate date, long themeId);
 
-    boolean existScheduleById(long timeId);
 }

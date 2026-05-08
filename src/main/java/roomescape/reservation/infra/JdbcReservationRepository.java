@@ -9,10 +9,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Schedule;
 import roomescape.reservation.domain.Theme;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,27 +24,29 @@ public class JdbcReservationRepository implements ReservationRepository {
             new Reservation(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
-                    resultSet.getDate("date").toLocalDate(),
-                    new ReservationTime(
-                            resultSet.getLong("time_id"),
-                            resultSet.getTime("start_at").toLocalTime()
-                    ),
-                    new Theme(
-                            resultSet.getLong("theme_id"),
-                            resultSet.getString("theme_name"),
-                            resultSet.getString("theme_description"),
-                            resultSet.getString("theme_thumbnail")
-                    ));
+                    new Schedule(
+                            resultSet.getLong("schedule_id"),
+                            resultSet.getDate("date").toLocalDate(),
+                            new ReservationTime(
+                                    resultSet.getLong("time_id"),
+                                    resultSet.getTime("start_at").toLocalTime()
+                            ),
+                            new Theme(
+                                    resultSet.getLong("theme_id"),
+                                    resultSet.getString("theme_name"),
+                                    resultSet.getString("description"),
+                                    resultSet.getString("thumbnail_url")
+                            )
+                    )
+            );
 
     @Override
     public Reservation save(Reservation reservation) {
-        String insertReservationSql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (:name, :date, :timeId, :themeId)";
+        String insertReservationSql = "INSERT INTO reservation(name, schedule_id) VALUES (:name, :scheduleId)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
-                .addValue("date", reservation.getDate().toString())
-                .addValue("timeId", reservation.getTime().getId())
-                .addValue("themeId", reservation.getTheme().getId());
+                .addValue("scheduleId", reservation.getSchedule().getId());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(insertReservationSql, params, keyHolder);
@@ -55,37 +59,40 @@ public class JdbcReservationRepository implements ReservationRepository {
         return new Reservation(
                 keyHolder.getKey().longValue(),
                 reservation.getName(),
-                reservation.getDate(),
-                reservation.getTime(),
-                reservation.getTheme()
+                new Schedule(
+                        reservation.getSchedule().getId(),
+                        reservation.getSchedule().getDate(),
+                        reservation.getSchedule().getTime(),
+                        reservation.getSchedule().getTheme()
+                )
         );
     }
 
     @Override
     public List<Reservation> findAll() {
-        String sql = """                
-                SELECT                
-                    r.id AS reservation_id,
-                    r.name AS reservation_name,
-                    r.date AS reservation_date,
-                    rt.id AS time_id,
-                    rt.start_at AS start_at,
-                    t.id AS theme_id,
+        String sql = """
+                SELECT
+                    r.id,
+                    r.name,
+                    r.schedule_id,
+                    s.date,
+                    s.time_id,
+                    rt.start_at,
+                    s.theme_id,
                     t.name AS theme_name,
-                    t.description AS theme_description,
-                    t.thumbnail_url AS theme_thumbnail
+                    t.description,
+                    t.thumbnail_url
                 FROM reservation r
-                INNER JOIN reservation_time rt
-                    ON r.time_id = rt.id
-                INNER JOIN theme t
-                    ON r.theme_id = t.id
+                JOIN schedule s ON r.schedule_id = s.id
+                JOIN reservation_time rt ON s.time_id = rt.id
+                JOIN theme t ON s.theme_id = t.id
                 """;
 
         return template.query(sql, reservationRowMapper);
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "DELETE FROM reservation WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
@@ -94,28 +101,22 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId) {
-        String sql = "SELECT time_id " +
-                "FROM reservation " +
-                "WHERE date = :date AND theme_id = :themeId";
+    public Set<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId) {
+        String sql = """
+                SELECT
+                    s.time_id
+                FROM schedule s
+                LEFT JOIN reservation r ON s.id = r.schedule_id
+                WHERE s.date = :date
+                AND s.theme_id = :themeId
+                AND r.id IS NOT NULL
+                """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", date)
                 .addValue("themeId", themeId);
 
-        return template.query(sql, params,
-                (rs, rowNum) -> rs.getLong("time_id"));
-    }
-
-    @Override
-    public boolean existReservationByTimeId(long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = :timeId";
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("timeId", timeId);
-
-        return !template.query(sql, params,
-                        (resultSet, rowNum) -> resultSet.getInt("COUNT(*)") > 0)
-                .isEmpty();
+        return Set.copyOf(template.query(sql, params,
+                (rs, rowNum) -> rs.getLong("time_id")));
     }
 }

@@ -3,10 +3,13 @@ package roomescape.reservation.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
 @AllArgsConstructor
-public class Reservation {
+public class Schedule {
     private final Long id;
-    private String name;
-    private Schedule schedule;
+    private LocalDate date;
+    private ReservationTime time;
+    private Theme theme;
 }

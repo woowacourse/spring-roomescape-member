@@ -1,52 +1,38 @@
 package roomescape.reservation.application;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.Schedule;
 import roomescape.reservation.infra.ReservationRepository;
-import roomescape.reservation.infra.ReservationTimeRepository;
-import roomescape.reservation.infra.ThemeRepository;
+import roomescape.reservation.infra.ScheduleRepository;
 import roomescape.reservation.presentation.dto.request.ReservationSaveRequest;
 import roomescape.reservation.presentation.dto.response.ReservationFindResponse;
 import roomescape.reservation.presentation.dto.response.ReservationSaveResponse;
-import org.springframework.stereotype.Service;
 import roomescape.reservation.presentation.dto.response.dto.TimeInformation;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final ScheduleRepository scheduleRepository;
 
     public ReservationSaveResponse save(ReservationSaveRequest body) {
-        ReservationTime time = reservationTimeRepository.findById(body.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 시간대는 존재하지 않습니다."));
-        Theme theme = themeRepository.findById(body.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 테마는 존재하지 않습니다."));
-        Reservation reservation = reservationRepository.save(body.toDomain(time, theme));
+        Schedule schedule = scheduleRepository.findByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 조건을 가진 일정이 없습니다. date: " + body.date() + "timeId: " + body.timeId() + "themeId: " + body.themeId()));
 
-        return ReservationSaveResponse.of(time, theme, reservation);
+        Reservation reservation = reservationRepository.save(body.toDomain(schedule));
+        return ReservationSaveResponse.from(reservation);
     }
 
     public List<ReservationFindResponse> findAll() {
-        return reservationRepository.findAll().stream()
-                .map(reservation -> new ReservationFindResponse(
-                        reservation.getId(),
-                        reservation.getName(),
-                        reservation.getDate(),
-                        new TimeInformation(
-                                reservation.getTime().getId(),
-                                reservation.getTime().getStartAt()
-                        ),
-                        reservation.getTheme().getId()
-                ))
-                .toList();
+        List<Reservation> reservations = reservationRepository.findAll();
+        return ReservationFindResponse.from(reservations);
     }
 
-    public void delete(Long id) {
+    public void delete(long id) {
         reservationRepository.deleteById(id);
     }
 }

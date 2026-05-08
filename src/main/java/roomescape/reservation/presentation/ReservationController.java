@@ -1,8 +1,6 @@
 package roomescape.reservation.presentation;
 
 import jakarta.validation.Valid;
-
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +16,8 @@ import roomescape.reservation.presentation.dto.request.ReservationSaveRequest;
 import roomescape.reservation.presentation.dto.response.ReservationFindResponse;
 import roomescape.reservation.presentation.dto.response.ReservationSaveResponse;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/reservations")
 @RequiredArgsConstructor
@@ -26,7 +26,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationSaveResponse> save(
-            @RequestBody @Valid ReservationSaveRequest body) {
+            @RequestBody @Valid ReservationSaveRequest body
+    ) {
         ReservationSaveResponse response = reservationService.save(body);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -39,7 +40,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable long id) {
         reservationService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

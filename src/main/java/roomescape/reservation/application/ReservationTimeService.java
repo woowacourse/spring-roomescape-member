@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.infra.ReservationRepository;
 import roomescape.reservation.infra.ReservationTimeRepository;
+import roomescape.reservation.infra.ScheduleRepository;
 import roomescape.reservation.presentation.dto.request.ReservationTimeSaveRequest;
 import roomescape.reservation.presentation.dto.response.AvailableTimeFindResponse;
 import roomescape.reservation.presentation.dto.response.ReservationTimeFindResponse;
@@ -13,43 +14,36 @@ import roomescape.reservation.presentation.dto.response.dto.TimeInformation;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ScheduleRepository scheduleRepository;
     private final ReservationRepository reservationRepository;
 
     public ReservationTimeSaveResponse save(ReservationTimeSaveRequest body) {
-        ReservationTime reservationTime = reservationTimeRepository.save(body.startAt());
-
-        return new ReservationTimeSaveResponse(reservationTime.getId(), reservationTime.getStartAt());
+        return ReservationTimeSaveResponse.from(reservationTimeRepository.save(body.toDomain()));
     }
 
     public List<ReservationTimeFindResponse> findAll() {
-        return reservationTimeRepository.findAll().stream()
-                .map(reservationTime -> new ReservationTimeFindResponse(
-                        reservationTime.getId(),
-                        reservationTime.getStartAt()
-                ))
-                .toList();
+        return ReservationTimeFindResponse.from(reservationTimeRepository.findAll());
     }
 
     public void delete(long id) {
-        boolean reservationCheck = reservationRepository.existReservationByTimeId(id);
-        boolean scheduleCheck = reservationTimeRepository.existScheduleById(id);
-        if (reservationCheck || scheduleCheck) {
-            throw new IllegalStateException("해당 예약 시간은 예약 또는 스케줄에서 사용 중이므로 삭제할 수 없습니다.");
+        if (scheduleRepository.existsByTimeId(id)) {
+            throw new IllegalStateException("timeId= " + id + " 인 시간을 사용하는 스케줄이 있어 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(id);
     }
 
     public List<AvailableTimeFindResponse> findTimesByDateAndThemeId(LocalDate date, long themeId) {
-        // schedule에서 존재하는 타임 id 모두 조회
+        // schedule에서 존재하는 시간 id 모두 조회
         List<ReservationTime> totalTimes = reservationTimeRepository.findTimesByDateAndThemeId(date, themeId);
 
-        // date와 themeId에 해당하는 reservation를 모두 조회
-        List<Long> notAvailableTimeIds = reservationRepository.findTimeIdByDateAndThemeId(date, themeId);
+        // date와 themeId에 해당하는 reservation의 시간 id들을 모두 조회
+        Set<Long> notAvailableTimeIds = reservationRepository.findTimeIdByDateAndThemeId(date, themeId);
 
         return totalTimes.stream()
                 .map(time -> new AvailableTimeFindResponse(

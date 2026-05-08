@@ -2,8 +2,10 @@ package roomescape.reservation.infra;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Theme;
 
@@ -12,16 +14,15 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@JdbcTest
+@Transactional
+@ActiveProfiles("test")
+@Import(JdbcThemeRepository.class)
 class JdbcThemeRepositoryTest {
     @Autowired
     private JdbcThemeRepository repository;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @Test
-    @Transactional
     void 테마_저장_레포지토리_테스트() {
         Theme theme = new Theme(null, "무서운게 딱 좋아", "무서운 분위기의 방탈출", "https://example.com/theme.jpg");
 
@@ -33,51 +34,47 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    @Transactional
     void 테마_삭제_레포지토리_테스트() {
-        // CASCADE 해결용
-        jdbcTemplate.update("DELETE FROM schedule");
-        jdbcTemplate.update("DELETE FROM reservation");
+        // given
+        Theme theme = new Theme(null, "무서운게 딱 좋아", "무서운 분위기의 방탈출", "https://example.com/theme.jpg");
+        Theme savedTheme = repository.save(theme);
 
-        repository.deleteById(1L);
-        int rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
+        // when
+        repository.deleteById(savedTheme.getId());
 
-        assertThat(rowCount).isEqualTo(9);
+        // then
+        List<Theme> themes = repository.findAll();
+        assertThat(themes).hasSize(4);
+        assertThat(themes).extracting(Theme::getId)
+                .doesNotContain(savedTheme.getId());
     }
 
     @Test
-    @Transactional
     void 각_날짜에_존재하는_모든_테마_조회_레포토지리_테스트() {
         List<Theme> themes = repository.findByDate(LocalDate.of(2026, 5, 5));
 
-        assertThat(themes).hasSize(10);
-        assertThat(themes)
-                .extracting(Theme::getName)
-                .startsWith("세기의 도둑", "심해 연구소", "시간 여행자");
-        assertThat(themes)
-                .extracting(Theme::getId)
-                .startsWith(1L, 2L, 3L);
+        assertThat(themes).hasSize(4);
+        assertThat(themes).extracting(Theme::getId)
+                .containsExactlyInAnyOrder(1L, 2L, 3L, 4L);
     }
 
     @Test
-    @Transactional
     void 최근_7일_예약_개수에_따른_인기_테마_조회_레포지토리_테스트() {
+        // when
         List<Theme> themes = repository.findByDayAndLimit(7, 10);
 
-        assertThat(themes).hasSize(10);
-        assertThat(themes)
-                .extracting(Theme::getId)
-                .startsWith(3L, 2L, 1L);
+        assertThat(themes).hasSize(4);
+        assertThat(themes).extracting(Theme::getId)
+                .containsExactly(2L, 1L, 3L, 4L);
     }
 
     @Test
-    @Transactional
-    void 테마_전체_조회_레포지토리_테스트(){
+    void 테마_전체_조회_레포지토리_테스트() {
         List<Theme> themes = repository.findAll();
 
-        assertThat(themes).hasSize(10);
+        assertThat(themes).hasSize(4);
         assertThat(themes)
                 .extracting(Theme::getId)
-                .containsExactlyInAnyOrder(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
+                .containsExactlyInAnyOrder(1L, 2L, 3L, 4L);
     }
 }
