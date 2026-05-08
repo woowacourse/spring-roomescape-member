@@ -1,5 +1,7 @@
 package roomescape.reservation.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -40,8 +42,7 @@ class ReservationServiceTest {
     @DisplayName("사용자의 방탈출 예약 시간 추가를 테스트합니다.")
     @Test
     void save_user_reservation_successfully() {
-        themeService.save(new ThemeCreateCommand("theme name", "theme description", "theme img url"));
-        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(10, 0)));
+        setTimeAndTheme();
 
         ReservationCreateCommand request = new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
         ReservationQueryResult reservationQueryResult = reservationService.save(request, LocalDateTime.of(2000, 1, 1, 0, 0));
@@ -59,8 +60,7 @@ class ReservationServiceTest {
     @DisplayName("중복된 시간과 테마에 예약 추가 시 예외 발생을 테스트합니다.")
     @Test
     void validate_duplicated_reservation() {
-        themeService.save(new ThemeCreateCommand("theme name", "theme description", "theme img url"));
-        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(10, 0)));
+        setTimeAndTheme();
 
         ReservationCreateCommand firstRequest = new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
         reservationService.save(firstRequest, LocalDateTime.of(2000, 1, 1, 0, 0));
@@ -75,13 +75,28 @@ class ReservationServiceTest {
     @DisplayName("오늘보다 이전 날짜 혹은 시간 예약 시도 시 예외 발생을 테스트합니다.")
     @Test
     void validate_throw_exception_when_reserving_past_date_or_time() {
-        themeService.save(new ThemeCreateCommand("theme name", "theme description", "theme img url"));
-        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(10, 0)));
+        setTimeAndTheme();
 
         ReservationCreateCommand request = new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
 
         Assertions.assertThatThrownBy(() -> reservationService.save(request, LocalDateTime.of(2026, 5, 6, 11, 0)))
                 .isInstanceOf(ReservationException.class)
                 .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
+    }
+
+    @DisplayName("예약 삭제를 테스트합니다.")
+    @Test
+    void delete_reservation() {
+        setTimeAndTheme();
+
+        ReservationCreateCommand request = new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
+        ReservationQueryResult queryResult = reservationService.save(request, LocalDateTime.of(2026, 5, 6, 9, 0));
+
+        assertThat(timeService.delete(queryResult.id())).isEqualTo(1);
+    }
+
+    private void setTimeAndTheme() {
+        themeService.save(new ThemeCreateCommand("theme name", "theme description", "theme img url"));
+        timeService.save(new ReservationTimeCreateCommand(LocalTime.of(10, 0)));
     }
 }
