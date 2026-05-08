@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -42,9 +43,9 @@ class JdbcReservationTimeRepositoryTest {
         reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
     }
 
-
     @Test
-    void 예약_시간을_저장하고_조회한다() {
+    @DisplayName("예약 시간을 저장하고 조회한다.")
+    void saveAndFindById() {
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
 
         Optional<ReservationTime> found = reservationTimeRepository.findById(reservationTime.getId());
@@ -56,7 +57,8 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
-    void 예약_시간_목록을_조회한다() {
+    @DisplayName("예약 시간 목록을 조회한다.")
+    void findAll() {
         reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
 
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
@@ -66,7 +68,8 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
-    void 예약_시간_존재_여부를_조회한다() {
+    @DisplayName("예약 시간 존재 여부를 조회한다.")
+    void existsByStartAt() {
         reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
 
         boolean exists = reservationTimeRepository.existsByStartAt(LocalTime.of(10, 0));
@@ -75,7 +78,8 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
-    void 예약_시간을_삭제한다() {
+    @DisplayName("예약 시간을 삭제한다.")
+    void deleteById() {
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
 
         reservationTimeRepository.deleteById(reservationTime.getId());

@@ -2,6 +2,7 @@ package roomescape;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,9 +24,9 @@ public class MissionStepTest {
     @Autowired
     private ReservationController reservationController;
 
-
     @Test
-    void 시간_관리_API() {
+    @DisplayName("시간 관리 API")
+    void timeManagementApi() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
@@ -51,7 +52,8 @@ public class MissionStepTest {
     }
 
     @Test
-    void 중복된_예약_시간을_추가하면_bad_request를_반환한다() {
+    @DisplayName("중복된 예약 시간을 추가하면 bad request를 반환한다.")
+    void createDuplicatedReservationTime_returnsBadRequest() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
@@ -71,7 +73,8 @@ public class MissionStepTest {
     }
 
     @Test
-    void 예약과_시간_연결() {
+    @DisplayName("예약과 시간을 연결한다.")
+    void connectReservationWithTime() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");
 
@@ -121,7 +124,8 @@ public class MissionStepTest {
     }
 
     @Test
-    void 예약_가능_시간_조회_후_예약하면_해당_시간이_예약_불가가_된다() {
+    @DisplayName("예약 가능 시간 조회 후 예약하면 해당 시간이 예약 불가가 된다.")
+    void reserveAfterFindingAvailableTime_makesTimeUnavailable() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "23:00");
 
@@ -175,7 +179,8 @@ public class MissionStepTest {
     }
 
     @Test
-    void 계층화_리팩터링() {
+    @DisplayName("컨트롤러는 JdbcTemplate을 직접 의존하지 않는다.")
+    void controllerDoesNotDependOnJdbcTemplate() {
         boolean isJdbcTemplateInjected = false;
 
         for (Field field : reservationController.getClass().getDeclaredFields()) {

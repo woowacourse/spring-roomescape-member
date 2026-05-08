@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,9 +71,9 @@ class JdbcReservationRepositoryTest {
         reservationRepository = new JdbcReservationRepository(jdbcTemplate);
     }
 
-
     @Test
-    void 예약을_저장하고_조회한다() {
+    @DisplayName("예약을 저장하고 조회한다.")
+    void saveAndFindAll() {
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
         Reservation reservation = reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
@@ -99,7 +98,7 @@ class JdbcReservationRepositoryTest {
 
     @Test
     @DisplayName("특정 날짜 및 테마 id를 가진 예약 정보를 조회한다.")
-    public void findByDateAndThemeId() {
+    void findByDateAndThemeId() {
         // given
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme targetTheme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
@@ -115,13 +114,14 @@ class JdbcReservationRepositoryTest {
         List<Reservation> results = reservationRepository.findByDateAndThemeId(targetDate, targetTheme.getId());
 
         // then
-        Assertions.assertThat(results).hasSize(1)
+        assertThat(results).hasSize(1)
                 .contains(match)
                 .doesNotContain(nonMatch1, nonMatch2);
     }
 
     @Test
-    void 예약을_삭제한다() {
+    @DisplayName("예약을 삭제한다.")
+    void deleteById() {
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
         Reservation reservation = reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
