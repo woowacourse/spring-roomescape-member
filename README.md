@@ -154,7 +154,7 @@ DELETE /api/admin/reservations/{id}
 
 #### Response Body
 
-##### 200 OK
+##### 204 No Content
 
 없음
 
@@ -246,7 +246,7 @@ DELETE /api/admin/times/{id}
 
 #### Response Body
 
-##### 200 OK
+##### 204 No Content
 
 없음
 
@@ -309,7 +309,7 @@ DELETE /api/admin/themes/{id}
 
 #### Response Body
 
-##### 200 OK
+##### 204 No Content
 
 없음
 
@@ -338,7 +338,7 @@ POST /api/reservations
 
 #### Response Body
 
-##### 200 OK
+##### 201 Created
 
 ```json
 {
@@ -429,7 +429,7 @@ GET /api/times?date={date}&themeId={themeId}
 #### URL
 
 ```http
-GET /themes/popular?startDate={startDate}&endDate={endDate}&limit={limit}
+GET /api/themes/popular?startDate={startDate}&endDate={endDate}&limit={limit}
 ```
 
 #### Query Parameters
