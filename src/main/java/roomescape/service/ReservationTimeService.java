@@ -80,7 +80,7 @@ public class ReservationTimeService {
 
     private void validateReservationNotExistsBy(long reservationTimeId) {
         if (reservationDao.existsByReservationTime(reservationTimeId)) {
-            throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_EXISTS);
+            throw new ReservationTimeException(ReservationTimeErrorCode.RESERVATION_TIME_HAS_RESERVATION);
         }
     }
 }
