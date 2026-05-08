@@ -14,7 +14,7 @@ import roomescape.domain.Time;
 
 @Repository
 public class TimeJdbcDao implements TimeDao {
-    public static final RowMapper<Time> ROW_MAPPER = (resultSet, rowNum) -> new Time(
+    private static final RowMapper<Time> ROW_MAPPER = (resultSet, rowNum) -> new Time(
             resultSet.getLong("time_id"),
             LocalTime.parse(resultSet.getString("start_at"))
     );
@@ -80,10 +80,10 @@ public class TimeJdbcDao implements TimeDao {
     public boolean existsByStartAt(LocalTime startAt) {
         String sql = """
                 SELECT EXISTS(
-                    SELECT 1 FROM times WHERE start_at = :start_at
+                    SELECT 1 FROM times WHERE start_at = :startAt
                 )
                 """;
-        SqlParameterSource params = new MapSqlParameterSource("start_at", startAt);
+        SqlParameterSource params = new MapSqlParameterSource("startAt", startAt);
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, params, Boolean.class));
     }

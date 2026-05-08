@@ -1,6 +1,7 @@
 package roomescape.dao.jdbc;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,18 +12,32 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
+import roomescape.domain.Time;
+import roomescape.domain.vo.Name;
 
 @Repository
 public class ReservationJdbcDao implements ReservationDao {
-    public static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) ->
-            new Reservation(
-                    rs.getLong("reservation_id"),
-                    rs.getString("reservation_name"),
-                    LocalDate.parse(rs.getString("date")),
-                    TimeJdbcDao.ROW_MAPPER.mapRow(rs, rowNum),
-                    ThemeJdbcDao.THEME_ROW_MAPPER.mapRow(rs, rowNum)
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
+            new Theme(
+                    rs.getLong("theme_id"),
+                    new Name(rs.getString("theme_name")),
+                    rs.getString("theme_thumbnail_url"),
+                    rs.getString("theme_description")
             );
-
+    private static final RowMapper<Time> TIME_ROW_MAPPER = (resultSet, rowNum) ->
+            new Time(
+                    resultSet.getLong("time_id"),
+                    LocalTime.parse(resultSet.getString("time_start_at"))
+            );
+    private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) ->
+            new Reservation(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    LocalDate.parse(rs.getString("date")),
+                    TIME_ROW_MAPPER.mapRow(rs, rowNum),
+                    THEME_ROW_MAPPER.mapRow(rs, rowNum)
+            );
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -39,15 +54,15 @@ public class ReservationJdbcDao implements ReservationDao {
     public List<Reservation> findAll() {
         String sql = """
                 SELECT
-                    r.id AS reservation_id,
-                    r.name AS reservation_name,
+                    r.id,
+                    r.name,
                     r.date,
                     t.id AS time_id,
-                    t.start_at,
+                    t.start_at AS time_start_at,
                     th.id AS theme_id,
                     th.name AS theme_name,
-                    th.thumbnail_url,
-                    th.description
+                    th.thumbnail_url AS theme_thumbnail_url,
+                    th.description AS theme_description
                 FROM reservations r
                 INNER JOIN times t ON r.time_id = t.id
                 INNER JOIN themes th ON r.theme_id = th.id
@@ -59,15 +74,15 @@ public class ReservationJdbcDao implements ReservationDao {
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 SELECT
-                    r.id AS reservation_id,
-                    r.name AS reservation_name,
+                    r.id,
+                    r.name,
                     r.date,
                     t.id AS time_id,
-                    t.start_at,
+                    t.start_at AS time_start_at,
                     th.id AS theme_id,
                     th.name AS theme_name,
-                    th.thumbnail_url,
-                    th.description
+                    th.thumbnail_url AS theme_thumbnail_url,
+                    th.description AS theme_description
                 FROM reservations r
                 INNER JOIN times t ON r.time_id = t.id
                 INNER JOIN themes th ON r.theme_id = th.id
@@ -80,7 +95,6 @@ public class ReservationJdbcDao implements ReservationDao {
 
     @Override
     public Reservation insert(Reservation reservation) {
-
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
@@ -115,7 +129,7 @@ public class ReservationJdbcDao implements ReservationDao {
                     WHERE r.theme_id = :themeId
                     AND r.time_id = :timeId
                     AND r.date = :date
-                    )
+                )
                 """;
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("themeId", themeId)

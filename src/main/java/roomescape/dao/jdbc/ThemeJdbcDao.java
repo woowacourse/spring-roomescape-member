@@ -19,10 +19,10 @@ import roomescape.dto.response.AvailableTimeResponseDto;
 
 @Repository
 public class ThemeJdbcDao implements ThemeDao {
-    public static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
             new Theme(
-                    rs.getLong("theme_id"),
-                    new Name(rs.getString("theme_name")),
+                    rs.getLong("id"),
+                    new Name(rs.getString("name")),
                     rs.getString("thumbnail_url"),
                     rs.getString("description")
             );
@@ -30,7 +30,7 @@ public class ThemeJdbcDao implements ThemeDao {
     private static final RowMapper<AvailableTimeResponseDto> AVAILABLE_TIME_MAPPER = (rs, rowNum) ->
             new AvailableTimeResponseDto(
                     rs.getLong("time_id"),
-                    LocalTime.parse(rs.getString("start_at")),
+                    LocalTime.parse(rs.getString("time_start_at")),
                     rs.getBoolean("already_booked")
             );
 
@@ -49,8 +49,8 @@ public class ThemeJdbcDao implements ThemeDao {
     public List<Theme> findAll() {
         String sql = """
                 SELECT
-                    id AS theme_id,
-                    name AS theme_name,
+                    id,
+                    name,
                     thumbnail_url,
                     description
                 FROM themes
@@ -119,11 +119,11 @@ public class ThemeJdbcDao implements ThemeDao {
         String sql = """
                 SELECT
                     t.id as time_id,
-                    t.start_at as start_at,
+                    t.start_at as time_start_at,
                     EXISTS(
                         SELECT 1 FROM reservations r
                         WHERE r.time_id = t.id
-                        AND r.theme_id = :theme_id
+                        AND r.theme_id = :themeId
                         AND r.date = :date
                     ) as already_booked
                  FROM times t
@@ -131,7 +131,7 @@ public class ThemeJdbcDao implements ThemeDao {
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("theme_id", themeId)
+                .addValue("themeId", themeId)
                 .addValue("date", localDate);
 
         return jdbcTemplate.query(sql, params, AVAILABLE_TIME_MAPPER);
@@ -141,8 +141,8 @@ public class ThemeJdbcDao implements ThemeDao {
     public List<Theme> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
         String sql = """
                     SELECT
-                        th.id AS theme_id,
-                        th.name As theme_name,
+                        th.id,
+                        th.name,
                         th.thumbnail_url,
                         th.description,
                         COALESCE(r.cnt, 0) AS reservation_count
