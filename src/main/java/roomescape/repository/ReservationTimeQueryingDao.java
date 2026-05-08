@@ -1,8 +1,10 @@
 package roomescape.repository;
 
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservationtime.ReservationTime;
 
@@ -14,9 +16,9 @@ import java.util.Optional;
 @Repository
 public class ReservationTimeQueryingDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public ReservationTimeQueryingDao(JdbcTemplate jdbcTemplate) {
+    public ReservationTimeQueryingDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -29,9 +31,11 @@ public class ReservationTimeQueryingDao {
     };
 
     public Optional<ReservationTime> findReservationTimeById(long id) {
-        String sql = "select id, start_at from reservation_time where id = ?";
+        String sql = "select id, start_at from reservation_time where id = :id";
         try {
-            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
+            SqlParameterSource param = new MapSqlParameterSource()
+                    .addValue("id", id);
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, param, reservationTimeRowMapper);
             return Optional.of(reservationTime);
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
@@ -49,10 +53,14 @@ public class ReservationTimeQueryingDao {
         String sql = """
                 select t.id, t.start_at from reservation_time as t
                 left join reservation as r on t.id = r.time_id
-                                        and r.date = ?
-                                        and r.theme_id = ?
+                                        and r.date = :date
+                                        and r.theme_id = :theme_id
                 where r.id is null;
                 """;
-        return jdbcTemplate.query(sql, reservationTimeRowMapper, date, themeId);
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("theme_id", themeId);
+        return jdbcTemplate.query(sql, param, reservationTimeRowMapper);
     }
 }

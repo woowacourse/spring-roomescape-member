@@ -44,7 +44,7 @@ public class ReservationTimeService {
 
     @Transactional
     public void update(ReservationTimeRequest newReservationTimeReq, Long id) {
-        reservationTimeUpdatingDao.save(id, newReservationTimeReq);
+        reservationTimeUpdatingDao.update(id, newReservationTimeReq);
     }
 
     @Transactional
