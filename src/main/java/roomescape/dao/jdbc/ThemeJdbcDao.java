@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
-import roomescape.dto.PopularThemeRequestDto;
+import roomescape.dto.request.PopularThemeRequestDto;
 import roomescape.dto.response.AvailableTimeResponseDto;
 
 

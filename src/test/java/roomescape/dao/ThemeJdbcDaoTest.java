@@ -19,7 +19,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
-import roomescape.dto.PopularThemeRequestDto;
+import roomescape.dto.request.PopularThemeRequestDto;
 import roomescape.dto.response.AvailableTimeResponseDto;
 
 @JdbcTest
