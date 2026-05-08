@@ -24,7 +24,7 @@ public class AdminReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createForceReservation(
             @Valid @RequestBody ReservationRequest reservationRequest) {
-        Reservation reservation = adminReservationService.createForceReservation(reservationRequest.themeId(),
+        Reservation reservation = adminReservationService.forceCreateReservation(reservationRequest.themeId(),
                 reservationRequest.name(), reservationRequest.date(), reservationRequest.timeId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(reservation));

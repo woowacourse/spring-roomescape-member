@@ -41,7 +41,7 @@ class AdminReservationControllerTest {
 
         ReservationRequest request = new ReservationRequest(2L, "브라운", LocalDate.of(2026, 5, 1), 1L);
 
-        when(adminReservationService.createForceReservation(eq(2L), eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(1L)))
+        when(adminReservationService.forceCreateReservation(eq(2L), eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(1L)))
                 .thenReturn(reservation);
 
         mockMvc.perform(post("/admin/reservations")

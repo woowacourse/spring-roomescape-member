@@ -47,7 +47,7 @@ class AdminReservationServiceTest {
         when(reservationRepository.save(eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(time), eq(theme)))
                 .thenReturn(saved);
 
-        Reservation result = adminReservationService.createForceReservation(2L, "브라운", LocalDate.of(2026, 5, 1), 1L);
+        Reservation result = adminReservationService.forceCreateReservation(2L, "브라운", LocalDate.of(2026, 5, 1), 1L);
 
         assertThat(result.getId()).isEqualTo(3L);
         assertThat(result.getName()).isEqualTo("브라운");
@@ -60,7 +60,7 @@ class AdminReservationServiceTest {
         when(reservationTimeRepository.findById(eq(999L))).thenReturn(Optional.empty());
 
         assertThatThrownBy(
-                () -> adminReservationService.createForceReservation(2L, "브라운", LocalDate.of(2026, 5, 1), 999L))
+                () -> adminReservationService.forceCreateReservation(2L, "브라운", LocalDate.of(2026, 5, 1), 999L))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -71,7 +71,7 @@ class AdminReservationServiceTest {
         when(themeRepository.findById(eq(999L))).thenReturn(Optional.empty());
 
         assertThatThrownBy(
-                () -> adminReservationService.createForceReservation(999L, "브라운", LocalDate.of(2026, 5, 1), 1L))
+                () -> adminReservationService.forceCreateReservation(999L, "브라운", LocalDate.of(2026, 5, 1), 1L))
                 .isInstanceOf(NotFoundException.class);
     }
 }
