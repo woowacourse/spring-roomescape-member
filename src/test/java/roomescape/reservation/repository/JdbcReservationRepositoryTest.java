@@ -1,17 +1,15 @@
 package roomescape.reservation.repository;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
-import roomescape.theme.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,70 +17,31 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@JdbcTest
+@Import({
+        JdbcReservationRepository.class,
+        JdbcReservationTimeRepository.class,
+        JdbcThemeRepository.class
+})
 class JdbcReservationRepositoryTest {
 
-    private ReservationRepository reservationRepository;
-    private ReservationTimeRepository reservationTimeRepository;
-    private ThemeRepository themeRepository;
+    @Autowired
+    private JdbcReservationRepository jdbcReservationRepository;
 
-    @BeforeEach
-    void setUp() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_DELAY=-1");
-        dataSource.setUsername("test");
-        dataSource.setPassword("");
+    @Autowired
+    private JdbcReservationTimeRepository jdbcReservationTimeRepository;
 
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
-        jdbcTemplate.execute("DROP TABLE IF EXISTS reservation");
-        jdbcTemplate.execute("DROP TABLE IF EXISTS reservation_time");
-        jdbcTemplate.execute("DROP TABLE IF EXISTS theme");
-
-        jdbcTemplate.execute("""
-                CREATE TABLE theme (
-                    id          BIGINT       NOT NULL AUTO_INCREMENT,
-                    name        VARCHAR(255) NOT NULL,
-                    description VARCHAR(255) NOT NULL,
-                    thumbnail   VARCHAR(255) NOT NULL,
-                    PRIMARY KEY (id)
-                )
-                """);
-        jdbcTemplate.execute("""
-                CREATE TABLE reservation_time (
-                    id       BIGINT NOT NULL AUTO_INCREMENT,
-                    start_at TIME   NOT NULL,
-                    PRIMARY KEY (id)
-                )
-                """);
-
-        jdbcTemplate.execute("""
-                CREATE TABLE reservation (
-                    id       BIGINT       NOT NULL AUTO_INCREMENT,
-                    name     VARCHAR(255) NOT NULL,
-                    date     DATE         NOT NULL,
-                    time_id  BIGINT       NOT NULL,
-                    theme_id BIGINT       NOT NULL,
-                    PRIMARY KEY (id),
-                    UNIQUE (date, time_id, theme_id),
-                    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-                    FOREIGN KEY (theme_id) REFERENCES theme (id)
-                )
-                """);
-
-        reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
-        themeRepository = new JdbcThemeRepository(jdbcTemplate);
-        reservationRepository = new JdbcReservationRepository(jdbcTemplate);
-    }
+    @Autowired
+    private JdbcThemeRepository jdbcThemeRepository;
 
     @Test
     @DisplayName("예약을 저장하고 조회한다.")
     void saveAndFindAll() {
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
+        ReservationTime time = jdbcReservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        Theme theme = jdbcThemeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Reservation reservation = jdbcReservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
 
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = jdbcReservationRepository.findAll();
 
         assertThat(reservations).hasSize(1);
 
@@ -104,18 +63,18 @@ class JdbcReservationRepositoryTest {
     @DisplayName("특정 날짜 및 테마 id를 가진 예약 정보를 조회한다.")
     void findByDateAndThemeId() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Theme targetTheme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Theme nonTargetTheme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        ReservationTime time = jdbcReservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        Theme targetTheme = jdbcThemeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Theme nonTargetTheme = jdbcThemeRepository.save(new Theme("레벨2 입장", "우테코 레벨2에 입장하는 내용입니다.", "https://example.com/theme2.png"));
 
         LocalDate targetDate = LocalDate.of(2023, 8, 5);
-        Reservation match = reservationRepository.save(new Reservation("브라운", targetDate, time, targetTheme));
-        Reservation nonMatch1 = reservationRepository.save(new Reservation("브라운", LocalDate.of(2024, 9, 10), time, targetTheme));
-        Reservation nonMatch2 = reservationRepository.save(new Reservation("브라운", targetDate, time, nonTargetTheme));
+        Reservation match = jdbcReservationRepository.save(new Reservation("브라운", targetDate, time, targetTheme));
+        Reservation nonMatch1 = jdbcReservationRepository.save(new Reservation("브라운", LocalDate.of(2024, 9, 10), time, targetTheme));
+        Reservation nonMatch2 = jdbcReservationRepository.save(new Reservation("브라운", targetDate, time, nonTargetTheme));
 
 
         // when
-        List<Reservation> results = reservationRepository.findByDateAndThemeId(targetDate, targetTheme.getId());
+        List<Reservation> results = jdbcReservationRepository.findByDateAndThemeId(targetDate, targetTheme.getId());
 
         // then
         assertThat(results).hasSize(1)
@@ -126,12 +85,12 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("예약을 삭제한다.")
     void deleteById() {
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
+        ReservationTime time = jdbcReservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        Theme theme = jdbcThemeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Reservation reservation = jdbcReservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
 
-        reservationRepository.deleteById(reservation.getId());
+        jdbcReservationRepository.deleteById(reservation.getId());
 
-        assertThat(reservationRepository.findAll()).isEmpty();
+        assertThat(jdbcReservationRepository.findAll()).isEmpty();
     }
 }
