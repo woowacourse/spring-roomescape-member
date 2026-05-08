@@ -38,7 +38,7 @@ public class ReservationTimeController {
                 .map(ReservationTimeResponse::from)
                 .toList();
 
-        return new ResponseEntity<>(reservationTimeResponses, HttpStatus.OK);
+        return ResponseEntity.ok(reservationTimeResponses);
     }
 
     @PostMapping()
@@ -46,14 +46,14 @@ public class ReservationTimeController {
         ReservationTimeCommand reservationTimeCommand = new ReservationTimeCommand(addReservationTimeRequest.startAt());
         ReservationTime reservationTime = reservationTimeService.addReservationTime(reservationTimeCommand);
 
-        return new ResponseEntity<>(ReservationTimeResponse.from(reservationTime), HttpStatus.OK);
+        return ResponseEntity.ok(ReservationTimeResponse.from(reservationTime));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable("id") long id) {
         reservationTimeService.deleteReservationTime(id);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value = "/availability", params = {"date", "themeId"})
@@ -64,6 +64,6 @@ public class ReservationTimeController {
                 .map(AvailableReservationTimeResponse::from)
                 .toList();
 
-        return new ResponseEntity<>(availableReservationTimeResponses, HttpStatus.OK);
+        return ResponseEntity.ok(availableReservationTimeResponses);
     }
 }

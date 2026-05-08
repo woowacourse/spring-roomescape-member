@@ -38,7 +38,7 @@ public class ThemeController {
                 .map(ThemeResponse::from)
                 .toList();
 
-        return new ResponseEntity<>(themeResponses, HttpStatus.OK);
+        return ResponseEntity.ok(themeResponses);
     }
 
     @PostMapping()
@@ -53,7 +53,7 @@ public class ThemeController {
     public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
         themeService.deleteTheme(id);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value = "/popular", params = {"start_date", "end_date", "size"})
@@ -64,6 +64,6 @@ public class ThemeController {
                 .map(PopularThemeResponse::from)
                 .toList();
 
-        return new ResponseEntity<>(popularThemeResponses, HttpStatus.OK);
+        return ResponseEntity.ok(popularThemeResponses);
     }
 }

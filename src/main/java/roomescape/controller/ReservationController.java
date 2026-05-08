@@ -29,7 +29,7 @@ public class ReservationController {
                 .map(ReservationResponse::from)
                 .toList();
 
-        return new ResponseEntity<>(reservationResponses, HttpStatus.OK);
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @PostMapping()
@@ -37,14 +37,14 @@ public class ReservationController {
         ReservationCommand reservationCommand = addReservationRequest.to();
         Reservation addedReservation = roomReservationService.addReservation(reservationCommand);
 
-        return new ResponseEntity<>(ReservationResponse.from(addedReservation), HttpStatus.OK);
+        return ResponseEntity.ok(ReservationResponse.from(addedReservation));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable("id") long id) {
         roomReservationService.deleteReservation(id);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(params = {"name"})
@@ -54,6 +54,6 @@ public class ReservationController {
                 .map(ReservationResponse::from)
                 .toList();
 
-        return new ResponseEntity<>(reservationResponses, HttpStatus.OK);
+        return ResponseEntity.ok(reservationResponses);
     }
 }
