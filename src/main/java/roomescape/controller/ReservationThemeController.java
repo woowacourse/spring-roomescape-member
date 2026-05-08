@@ -31,7 +31,7 @@ public class ReservationThemeController {
         this.reservationThemeService = reservationThemeService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ReservationThemeResponse>> getThemes() {
         List<ReservationTheme> themes = reservationThemeService.getAllTheme();
         List<ReservationThemeResponse> themeResponses = themes.stream()
@@ -41,7 +41,7 @@ public class ReservationThemeController {
         return new ResponseEntity<>(themeResponses, HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ReservationThemeResponse> addTheme(@RequestBody @Valid AddThemeRequest addThemeRequest) {
         ReservationThemeCommand reservationThemeCommand = addThemeRequest.from();
         ReservationTheme addedReservationTheme = reservationThemeService.addTheme(reservationThemeCommand);

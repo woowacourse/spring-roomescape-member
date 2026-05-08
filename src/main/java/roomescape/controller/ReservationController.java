@@ -23,7 +23,7 @@ public class ReservationController {
         this.roomReservationService = roomReservationService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations() {
         List<Reservation> reservations = roomReservationService.getAllReservation();
         List<ReservationResponse> reservationResponses = reservations.stream()
@@ -33,7 +33,7 @@ public class ReservationController {
         return new ResponseEntity<>(reservationResponses, HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(@RequestBody @Valid AddReservationRequest addReservationRequest) {
         ReservationCommand reservationCommand = addReservationRequest.to();
         Reservation addedReservation = roomReservationService.addReservation(reservationCommand);

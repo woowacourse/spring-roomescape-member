@@ -32,7 +32,7 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTime();
         List<ReservationTimeResponse> reservationTimeResponses = reservationTimes.stream()
@@ -42,7 +42,7 @@ public class ReservationTimeController {
         return new ResponseEntity<>(reservationTimeResponses, HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody @Valid AddReservationTimeRequest addReservationTimeRequest) {
         ReservationTimeCommand reservationTimeCommand = new ReservationTimeCommand(addReservationTimeRequest.startAt());
         ReservationTime reservationTime = reservationTimeService.addReservationTime(reservationTimeCommand);
