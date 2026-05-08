@@ -22,11 +22,11 @@ public class Reservation {
     }
 
     public Reservation hold() {
-        return new Reservation(this.id, this.username, this.reservationDate, this.reservationTime, this.reservationTheme, ReservationStatus.DELETED);
+        return new Reservation(this.id, this.username, this.reservationDate, this.reservationTime, this.reservationTheme, ReservationStatus.HOLD);
     }
 
     public Reservation deleted () {
-        return new Reservation(null, this.username, this.reservationDate, this.reservationTime, this.reservationTheme, ReservationStatus.DELETED);
+        return new Reservation(this.id, this.username, this.reservationDate, this.reservationTime, this.reservationTheme, ReservationStatus.DELETED);
     }
 
     public long id() {

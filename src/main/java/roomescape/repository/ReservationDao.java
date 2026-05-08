@@ -91,8 +91,8 @@ public class ReservationDao {
     }
 
     public void delete(long reservationId) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
-        int affected = jdbcTemplate.update(sql, reservationId);
+        String sql = "UPDATE reservation SET status = ? WHERE id = ?";
+        int affected = jdbcTemplate.update(sql, ReservationStatus.DELETED.name(), reservationId);
 
         if (affected == 0) {
             throw new NoSuchElementException("[ERROR] 삭제할 id에 해당하는 예약이 존재하지 않습니다.");
@@ -117,23 +117,22 @@ public class ReservationDao {
                 ON reservation.time_id = time.id
                 INNER JOIN theme as theme
                 ON reservation.theme_id = theme.id
-                WHERE reservation.status = 'AVAILABLE'
+                WHERE reservation.status = ?
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, rowMapper, ReservationStatus.AVAILABLE.name());
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1 FROM reservation
-                    WHERE date = ? AND time_id = ? AND theme_id = ?
+                    WHERE status = ?
+                        AND date = ? AND time_id = ? AND theme_id = ?
                 )
                 """;
         return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId)
+                jdbcTemplate.queryForObject(sql, Boolean.class, ReservationStatus.AVAILABLE.name(), date, timeId, themeId)
         );
     }
-
 }
-
