@@ -1,6 +1,7 @@
 package roomescape.repository.reservation;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.QueryWithParams;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
@@ -102,13 +104,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> getAllReservation() {
-        return Collections.unmodifiableList(jdbcTemplate.query(SELECT_ALL_SQL, MAPPER));
-    }
-
-    @Override
-    public List<Reservation> getAllReservationByName(String name) {
-        return Collections.unmodifiableList(jdbcTemplate.query(SELECT_ALL_SQL + "WHERE r.name = ?", MAPPER, name));
+    public List<Reservation> getAllReservation(String name) {
+        QueryWithParams queryWithParams = getReservationsQuery(name);
+        return Collections.unmodifiableList(jdbcTemplate.query(queryWithParams.query(), MAPPER, queryWithParams.params().toArray()));
     }
 
     @Override
@@ -143,5 +141,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date) {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE,
                 Boolean.class, timeId, themeId, date));
+    }
+
+    private QueryWithParams getReservationsQuery(String name) {
+        StringBuilder query = new StringBuilder(SELECT_ALL_SQL);
+        List<String> params = new ArrayList<>();
+
+        if(name != null && !name.isBlank()) {
+            query.append("WHERE r.name = ?");
+            params.add(name);
+        }
+
+        return new QueryWithParams(query.toString(), params);
     }
 }

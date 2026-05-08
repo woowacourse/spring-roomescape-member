@@ -8,8 +8,7 @@ import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservationTheme.ReservationTheme;
 
 public interface ReservationRepository {
-    List<Reservation> getAllReservation();
-    List<Reservation> getAllReservationByName(String name);
+    List<Reservation> getAllReservation(String name);
     Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, ReservationTheme theme);
     void deleteReservation(long id);
     boolean existsByTimeId(long timeId);

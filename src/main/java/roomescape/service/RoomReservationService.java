@@ -26,12 +26,8 @@ public class RoomReservationService {
         this.reservationThemeRepository = reservationThemeRepository;
     }
 
-    public List<Reservation> getAllReservation() {
-        return reservationRepository.getAllReservation();
-    }
-
-    public List<Reservation> getAllReservationByName(String name) {
-        return reservationRepository.getAllReservationByName(name);
+    public List<Reservation> getAllReservation(String name) {
+        return reservationRepository.getAllReservation(name);
     }
 
     @Transactional
