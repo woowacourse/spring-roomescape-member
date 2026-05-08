@@ -151,7 +151,8 @@ public class JdbcReservationRepository implements ReservationRepository {
             rs.getString("name"),
             ReservationDate.of(
                 rs.getLong("date_id"),
-                LocalDate.parse(rs.getString("date"))),
+                rs.getDate("date").toLocalDate()
+            ),
             ReservationTime.of(
                 rs.getLong("time_id"),
                 LocalTime.parse(rs.getString("start_at"))

@@ -7,8 +7,8 @@ CREATE TABLE reservation_time
 
 CREATE TABLE reservation_date
 (
-    id   BIGINT       NOT NULL AUTO_INCREMENT,
-    date VARCHAR(255) NOT NULL,
+    id   BIGINT NOT NULL AUTO_INCREMENT,
+    date DATE   NOT NULL,
     PRIMARY KEY (id)
 );
 

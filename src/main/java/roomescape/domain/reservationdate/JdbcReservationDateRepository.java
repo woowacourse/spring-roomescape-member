@@ -1,8 +1,8 @@
 package roomescape.domain.reservationdate;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, reservationDate.getDate().toString());
+            ps.setDate(1, Date.valueOf(reservationDate.getDate()));
             return ps;
         }, keyHolder);
         long id = extractId(keyHolder);
@@ -57,7 +57,7 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
     private RowMapper<ReservationDate> reservationDateRowMapper() {
         return (rs, rowNum) -> ReservationDate.of(
             rs.getLong("id"),
-            LocalDate.parse(rs.getString("date"))
+            rs.getDate("date").toLocalDate()
         );
     }
 
