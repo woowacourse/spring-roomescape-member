@@ -18,137 +18,8 @@ public class ReservationControllerTest {
 
     @Test
     void 예약_추가() {
-        Map<String, String> timeParams = new HashMap<>();
-        timeParams.put("startAt", "10:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParams)
-                .when().post("/admin/times")
-                .then().log().all()
-                .statusCode(201);
-
-        Map<String, String> themeParams = new HashMap<>();
-        themeParams.put("name", "방탈출1");
-        themeParams.put("description", "다함께 탈출해요 방탈출.");
-        themeParams.put("thumbnail", "https://asdfsdf.sdfs");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParams)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2023-08-05");
-        params.put("timeId", 1);
-        params.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", notNullValue());
-    }
-
-    @Test
-    void 같은_날짜_및_시간이더라도_테마가_다르면_예약_가능하다() {
-        Map<String, String> timeParams = new HashMap<>();
-        timeParams.put("startAt", "10:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParams)
-                .when().post("/admin/times")
-                .then().log().all()
-                .statusCode(201);
-
-        Map<String, String> themeParams = new HashMap<>();
-        themeParams.put("name", "방탈출1");
-        themeParams.put("description", "다함께 탈출해요 방탈출.");
-        themeParams.put("thumbnail", "https://asdfsdf.sdfs");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParams)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        Map<String, String> themeParams2 = new HashMap<>();
-        themeParams2.put("name", "방탈출2");
-        themeParams2.put("description", "다함께 탈출해요 방탈출2.");
-        themeParams2.put("thumbnail", "https://asdfsdf.sdfssdafdasf");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParams2)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        Map<String, Object> resersvationParams1 = new HashMap<>();
-        resersvationParams1.put("name", "로지");
-        resersvationParams1.put("date", "2026-05-05");
-        resersvationParams1.put("timeId", 1);
-        resersvationParams1.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(resersvationParams1)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .body("name", is("로지"));
-
-        Map<String, Object> reservationParams2 = new HashMap<>();
-        reservationParams2.put("name", "러키");
-        reservationParams2.put("date", "2026-05-05");
-        reservationParams2.put("timeId", 1);
-        reservationParams2.put("themeId", 2);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationParams2)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .body("name", is("러키"));
-    }
-
-    @Test
-    void 예약_조회() {
-        Map<String, String> timeParams = new HashMap<>();
-        timeParams.put("startAt", "10:00");
-
-        Integer timeId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParams)
-                .when().post("/admin/times")
-                .then().log().all()
-                .statusCode(201)
-                .extract()
-                .jsonPath()
-                .getInt("id");
-
-        Map<String, String> themeParams = new HashMap<>();
-        themeParams.put("name", "방탈출1");
-        themeParams.put("description", "다함께 탈출해요 방탈출.");
-        themeParams.put("thumbnail", "https://asdfsdf.sdfs");
-
-        Integer themeId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParams)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201)
-                .extract()
-                .jsonPath()
-                .getInt("id");
+        long timeId = createTime("10:00");
+        long themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
@@ -161,7 +32,52 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .body("id", notNullValue())
+                .extract()
+                .jsonPath()
+                .getLong("id");
+    }
+
+    @Test
+    void 같은_날짜_및_시간이더라도_테마가_다르면_예약_가능하다() {
+        long timeId = createTime("10:00");
+        long themeId1 = createTheme("방탈출1", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
+        long themeId2 = createTheme("방탈출2", "다함께 탈출해요 방탈출2.", "https://asdfsdf.sdfssdafdasf");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "로지",
+                        "date", "2026-05-05",
+                        "timeId", timeId,
+                        "themeId", themeId1
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("name", is("로지"));
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "러키",
+                        "date", "2026-05-05",
+                        "timeId", timeId,
+                        "themeId", themeId2
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("name", is("러키"));
+    }
+
+    @Test
+    void 예약_조회() {
+        long timeId = createTime("10:00");
+        long themeId = createTheme("방탈출1", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
+
+        createReservation("브라운", "2023-08-05", timeId, themeId);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -172,45 +88,65 @@ public class ReservationControllerTest {
 
     @Test
     void 예약_삭제() {
-        Map<String, String> timeParams = new HashMap<>();
-        timeParams.put("startAt", "10:00");
+        long timeId = createTime("10:00");
+        long themeId = createTheme("방탈출11", "다함께 탈출해요 방탈출.", "https://asdfsdf.sdfs");
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParams)
-                .when().post("/admin/times")
-                .then().log().all()
-                .statusCode(201);
-
-        Map<String, String> themeParams = new HashMap<>();
-        themeParams.put("name", "방탈출11");
-        themeParams.put("description", "다함께 탈출해요 방탈출.");
-        themeParams.put("thumbnail", "https://asdfsdf.sdfs");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParams)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2023-08-05");
-        params.put("timeId", 1);
-        params.put("themeId", 1);
-
-        int reservationId = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .extract().path("id");
+        long reservationId = createReservation("브라운", "2023-08-05", timeId, themeId);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + reservationId)
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    private long createTime(String startAt) {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", startAt);
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .jsonPath()
+                .getLong("id");
+    }
+
+    private long createTheme(String name, String description, String thumbnail) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("description", description);
+        params.put("thumbnail", thumbnail);
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .jsonPath()
+                .getLong("id");
+    }
+
+    private long createReservation(String name, String date, long timeId, long themeId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("date", date);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", notNullValue())
+                .extract()
+                .jsonPath()
+                .getLong("id");
     }
 }
