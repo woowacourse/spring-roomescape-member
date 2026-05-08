@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.theme.dto.request.ThemeCreateRequestDTO;
 import roomescape.domain.theme.dto.response.ThemeResponseDTO;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.mapper.ThemeMapper;
 import roomescape.domain.theme.repository.ThemeRepository;
 
 @Service
@@ -27,13 +28,13 @@ public class ThemeService {
 
     private List<ThemeResponseDTO> convertThemesToDTO(List<Theme> themes) {
         return themes.stream()
-            .map(Theme::toResponseDTO)
+            .map(ThemeMapper::toResponseDTO)
             .toList();
     }
 
     public ThemeResponseDTO saveTheme(ThemeCreateRequestDTO requestDTO) {
         Theme theme = Theme.create(requestDTO.name(), requestDTO.description(), requestDTO.imageUrl());
-        return themeRepository.save(theme).toResponseDTO();
+        return ThemeMapper.toResponseDTO(themeRepository.save(theme));
     }
 
     public void deleteThemeById(Long id) {

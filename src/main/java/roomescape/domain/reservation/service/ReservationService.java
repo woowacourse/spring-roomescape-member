@@ -6,6 +6,7 @@ import roomescape.domain.reservation.dto.request.ReservationCreateRequestDTO;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDTO;
 import roomescape.domain.reservation.dto.response.ReservationResponseDTO;
 import roomescape.domain.reservation.entity.Reservation;
+import roomescape.domain.reservation.mapper.ReservationMapper;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
@@ -33,13 +34,13 @@ public class ReservationService {
 
     private List<ReservationResponseDTO> convertReservationsToDTO(List<Reservation> reservations) {
         return reservations.stream()
-            .map(Reservation::toResponseDTO)
+            .map(ReservationMapper::toResponseDTO)
             .toList();
     }
 
     public ReservationCreateResponseDTO saveReservation(ReservationCreateRequestDTO requestDTO) {
         Reservation reservation = createReservation(requestDTO);
-        return reservationRepository.save(reservation).toCreateResponseDTO();
+        return ReservationMapper.toCreateResponseDTO(reservationRepository.save(reservation));
     }
 
     private Reservation createReservation(ReservationCreateRequestDTO requestDTO) {

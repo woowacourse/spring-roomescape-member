@@ -1,7 +1,5 @@
 package roomescape.domain.theme.entity;
 
-import roomescape.domain.theme.dto.response.ThemeResponseDTO;
-
 public class Theme {
 
     private final Long id;
@@ -30,10 +28,6 @@ public class Theme {
 
     public String getImageUrl() {
         return imageUrl;
-    }
-
-    public ThemeResponseDTO toResponseDTO() {
-        return new ThemeResponseDTO(id, name, description, imageUrl);
     }
 
     public static Theme create(String name, String description, String imageUrl) {

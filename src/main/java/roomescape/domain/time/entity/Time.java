@@ -1,7 +1,6 @@
 package roomescape.domain.time.entity;
 
 import java.time.LocalTime;
-import roomescape.domain.time.dto.response.TimeResponseDTO;
 
 public class Time {
 
@@ -19,10 +18,6 @@ public class Time {
 
     public LocalTime getStartAt() {
         return startAt;
-    }
-
-    public TimeResponseDTO toResponseDTO() {
-        return new TimeResponseDTO(id, startAt);
     }
 
     public static Time create(LocalTime startAt) {

@@ -1,8 +1,6 @@
 package roomescape.domain.reservation.entity;
 
 import java.time.LocalDate;
-import roomescape.domain.reservation.dto.response.ReservationCreateResponseDTO;
-import roomescape.domain.reservation.dto.response.ReservationResponseDTO;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.time.entity.Time;
 
@@ -40,14 +38,6 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
-    }
-
-    public ReservationResponseDTO toResponseDTO() {
-        return new ReservationResponseDTO(id, name, date, time.toResponseDTO(), theme.toResponseDTO());
-    }
-
-    public ReservationCreateResponseDTO toCreateResponseDTO() {
-        return new ReservationCreateResponseDTO(id, name, date, time.getId(), theme.getId());
     }
 
     public static Reservation create(String name, LocalDate date, Time time, Theme theme) {
