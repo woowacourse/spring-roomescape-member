@@ -6,6 +6,3 @@ SET REFERENTIAL_INTEGRITY TRUE;
 
 INSERT INTO time_slot (id, start_at)
 VALUES (1, '10:00:00');
-
-INSERT INTO theme (NAME, DESCRIPTION, THUMBNAIL_URL)
-VALUES ('공포', '귀신의 집 탈출', 'https://test.com');
