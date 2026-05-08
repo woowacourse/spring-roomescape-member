@@ -13,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.JdbcReservationRepository;
-import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.JdbcThemeRepository;
+import roomescape.domain.reservation.Reservation;
+import roomescape.repository.reservation.JdbcReservationRepository;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.repository.reservationtime.JdbcReservationTimeRepository;
+import roomescape.domain.theme.Theme;
+import roomescape.repository.theme.JdbcThemeRepository;
 
 @JdbcTest
 class JdbcReservationRepositoryTest {

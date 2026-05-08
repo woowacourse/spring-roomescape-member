@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.MemoryReservationRepository;
-import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.reservationtime.service.ReservationTimeService;
-import roomescape.theme.domain.Theme;
+import roomescape.domain.reservation.Reservation;
+import roomescape.repository.reservation.MemoryReservationRepository;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.repository.reservationtime.ReservationTimeRepository;
+import roomescape.service.reservationtime.ReservationTimeService;
+import roomescape.domain.theme.Theme;
 
 class ReservationTimeServiceTest {
 

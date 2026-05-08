@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.MemoryReservationRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.ThemeRepository;
-import roomescape.theme.service.ThemeService;
+import roomescape.domain.reservation.Reservation;
+import roomescape.repository.reservation.MemoryReservationRepository;
+import roomescape.domain.theme.Theme;
+import roomescape.repository.theme.ThemeRepository;
+import roomescape.service.theme.ThemeService;
 
 class ThemeServiceTest {
 
@@ -71,7 +71,7 @@ class ThemeServiceTest {
                 "쿠다",
                 java.time.LocalDate.parse("2026-08-06"),
                 theme,
-                roomescape.reservationtime.domain.ReservationTime.of(1L, java.time.LocalTime.parse("10:00"))
+                roomescape.domain.reservationtime.ReservationTime.of(1L, java.time.LocalTime.parse("10:00"))
         ));
 
         assertThrows(IllegalArgumentException.class, () -> themeService.deleteById(theme.getId()));
