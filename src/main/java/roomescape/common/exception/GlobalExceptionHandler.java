@@ -16,8 +16,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException exception) {
         ErrorCode errorCode = exception.getErrorCode();
 
-        log.warn("비즈니스 예외가 발생했습니다. errorCode={}, message={}", errorCode, exception.getMessage());
-
         return ResponseEntity.status(errorCode.getStatus())
                 .body(ErrorResponse.of(errorCode, exception.getMessage()));
     }
