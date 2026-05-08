@@ -66,9 +66,9 @@ public class AdminThemeDaoTest {
         Theme actual = jdbcTemplate.query(sql, rowMapper, expected.getId()).getFirst();
 
         assertThat(expected.getId()).isEqualTo(actual.getId());
-        assertThat(expected.getName()).isEqualTo(theme.getName());
-        assertThat(expected.getDescription()).isEqualTo(theme.getDescription());
-        assertThat(expected.getImage()).isEqualTo(theme.getImage());
+        assertThat(expected.getName()).isEqualTo(actual.getName());
+        assertThat(expected.getDescription()).isEqualTo(actual.getDescription());
+        assertThat(expected.getImage()).isEqualTo(actual.getImage());
     }
 
     @Test
