@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 class ReservationTimeServiceTest {
@@ -39,7 +41,8 @@ class ReservationTimeServiceTest {
         jdbcTemplate.update("DELETE FROM reservation_time;");
 
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeRepository(jdbcTemplate);
-        this.reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+        ReservationRepository reservationRepository = new ReservationRepository(jdbcTemplate);
+        this.reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
     @Test
@@ -85,7 +88,7 @@ class ReservationTimeServiceTest {
     void 삭제하려는_id가_양수가_아니면_예외_발생(Long id) {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] id는 양수이어야 합니다.");
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("[ERROR] 존재하지 않는 ID입니다.");
     }
 }

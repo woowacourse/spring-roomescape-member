@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Theme;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.TimeAvailabilityDto;
 
 @JdbcTest
 class ThemeServiceTest {
@@ -25,8 +30,12 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setup() {
-        this.themeService = new ThemeService(new ThemeRepository(jdbcTemplate));
+        ThemeRepository themeRepository = new ThemeRepository(jdbcTemplate);
+        ReservationRepository reservationRepository = new ReservationRepository(jdbcTemplate);
+        ReservationTimeRepository reservationTimeRepository = new ReservationTimeRepository(jdbcTemplate);
+        this.themeService = new ThemeService(themeRepository, reservationRepository, reservationTimeRepository);
         jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
     }
 
@@ -73,7 +82,44 @@ class ThemeServiceTest {
     void 삭제하려는_id가_양수가_아니면_예외_발생(Long id) {
         // when & then
         assertThatThrownBy(() -> themeService.delete(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] id는 양수이어야 합니다.");
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("[ERROR] 존재하지 않는 ID입니다.");
+    }
+
+
+    @Test
+    void 예약_가능한_시간_조회_테스트() {
+        // given
+        LocalDate date = LocalDate.parse("2026-05-05");
+        jdbcTemplate.update(
+                "INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)",
+                "테스트 테마", "테스트 테마 설명", "테스트 테마 url"
+        );
+        Long themeId = jdbcTemplate.queryForObject(
+                "SELECT id FROM theme ORDER BY id DESC LIMIT 1",
+                Long.class
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO reservation_time(start_at) VALUES (?)",
+                "10:00"
+        );
+        Long timeId = jdbcTemplate.queryForObject(
+                "SELECT id FROM reservation_time ORDER BY id DESC LIMIT 1",
+                Long.class
+        );
+
+
+        jdbcTemplate.update(
+                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", date, timeId, themeId
+        );
+
+        // when
+        List<TimeAvailabilityDto> result = themeService.findAvailableTime(themeId, date);
+
+        // then
+        assertThat(result).extracting(TimeAvailabilityDto::available)
+                .containsOnlyOnce(false);
     }
 }

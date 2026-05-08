@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -96,8 +97,8 @@ class ReservationServiceTest {
     void 삭제하려는_id가_양수가_아니면_예외_발생(Long id) {
         // when & then
         assertThatThrownBy(() -> reservationService.delete(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] id는 양수이어야 합니다.");
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("[ERROR] 존재하지 않는 ID입니다.");
     }
 
     @Test
@@ -114,18 +115,5 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.create("홍길동", date, 1L, 999L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 존재하지 않는 테마입니다.");
-    }
-
-    @Test
-    void 예약_가능한_시간_조회_테스트() {
-        // given
-        reservationService.create("브라운", date, 1L, 1L);
-
-        // when
-        List<TimeAvailabilityDto> result = reservationService.findAvailableTime(1L, date);
-
-        // then
-        assertThat(result).extracting(TimeAvailabilityDto::available)
-                .containsOnlyOnce(false);
     }
 }
