@@ -2,8 +2,10 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
 
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -61,16 +63,25 @@ public class ThemeService {
 
     public List<ReservationTimeStatusResponse> findReservationTimeByDateAndThemeId(LocalDate date, Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        List<Long> timeIds = reservationDao.findReservedTimeIdsByDateAndThemeId(date, themeId);
-
+        Set<Long> reservedTimeIds = new HashSet<>(reservationDao.findReservedTimeIdsByDateAndThemeId(date, themeId));
         return reservationTimes.stream()
                 .map(reservationTime -> {
-                    boolean isPast = date.isBefore(LocalDate.now()) ||
-                                     (date.isEqual(LocalDate.now()) && reservationTime.getStartAt()
-                                             .isBefore(LocalTime.now()));
-                    boolean available = !timeIds.contains(reservationTime.getId()) && !isPast;
+                    boolean available = isAvailable(reservationTime, reservedTimeIds, date);
                     return ReservationTimeStatusResponse.of(reservationTime, available);
                 })
                 .toList();
+    }
+
+    private boolean isAvailable(ReservationTime reservationTime, Set<Long> reservedTimeIds, LocalDate date) {
+        return !reservedTimeIds.contains(reservationTime.getId()) && !isPastDateTime(date, reservationTime);
+    }
+
+    private boolean isPastDateTime(LocalDate date, ReservationTime reservationTime) {
+        return date.isBefore(LocalDate.now()) || isTodayAndPastTime(date, reservationTime);
+    }
+
+    private boolean isTodayAndPastTime(LocalDate date, ReservationTime reservationTime) {
+        return date.isEqual(LocalDate.now()) && reservationTime.getStartAt()
+                .isBefore(LocalTime.now());
     }
 }

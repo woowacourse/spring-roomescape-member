@@ -126,18 +126,20 @@
 - [x] SpringBootTest, DirtiesContext 작동법 / 장단점 / 단점 대체법 알아보기
 - [x] JdbcTemplate 활용하여 -> SpringBootTest, DirtiesContext제거
 
+
 - **ReservationDaoTest**
 - [x] Dao에 Service의존 문제 해결
 - [x] @JdbcTest 활용 -> SpringBootTest, DirtiesContext제거
 
+
 - **ThemeService**
 - [x] '7','30' 하드코딩 상수화
-- [ ] `findReservationTimeByDateAndThemeId()` 로직 분리
-- [ ] `timeIds.contains()` 시간 복잡도 알아보기
+- [x] `findReservationTimeByDateAndThemeId()` 로직 분리
+- [x] `timeIds.contains()` 시간 복잡도 알아보기
 
 
 - **PopularTheme**
-- [ ] 도메인인지 DTO인지 고민해보기
+- [ ] 도메인인지 DTO인지 고민 후 수정
 
 
 - **Reservation**
