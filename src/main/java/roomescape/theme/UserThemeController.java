@@ -39,7 +39,7 @@ public class UserThemeController {
                                                                @RequestParam(defaultValue = "10") Long limit) {
 
         LocalDate actualEndDate = endDate.orElseGet(LocalDate::now);
-        LocalDate actualStartDate = startDate.orElseGet(() -> actualEndDate.minusDays(7));
+        LocalDate actualStartDate = startDate.orElseGet(() -> actualEndDate.minusDays(6));
 
         List<ThemeResponse> response = userThemeService.getThemes(sort, order, actualStartDate, actualEndDate, limit)
                 .stream()
