@@ -485,6 +485,54 @@
             display: none;
         }
 
+        .navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid var(--line);
+            background-color: var(--surface-soft);
+            border-radius: 8px;
+        }
+
+        .nav-button.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent-strong);
+        }
+
+        .admin-section {
+            background-color: var(--surface);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .admin-section h2 {
+            color: var(--text);
+        }
+
+        .admin-section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .admin-section th, .admin-section td {
+            border: 1px solid var(--line);
+            padding: 8px;
+            text-align: left;
+        }
+
+        .admin-section input {
+             width: calc(100% - 24px);
+             margin-bottom: 10px;
+        }
+
         @keyframes shimmer {
             from {
                 background-position: 200% 0;
@@ -586,93 +634,215 @@
             <p class="subtitle">테마와 날짜를 고르고 가능한 시간에 바로 예약하세요.</p>
         </div>
         <div class="status" data-tone="neutral" id="statusCard">
-            <span id="statusMessage">테마 목록을 불러오는 중입니다.</span>
+            <span id="statusMessage">페이지를 불러오는 중입니다.</span>
         </div>
     </header>
 
-    <section class="section popular-section">
-        <div class="section-header popular-header">
-            <div>
-                <h2 class="section-title">최근 인기 테마</h2>
-                <p class="section-copy">지난 7일 동안 예약이 많았던 테마를 빠르게 선택할 수 있습니다.</p>
-            </div>
-            <span class="popular-range" id="popularRangeLabel">집계 기간 계산 중</span>
-        </div>
-        <div aria-live="polite" class="popular-list" id="popularThemeList">
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
-        </div>
-        <p class="empty hidden" id="popularThemeEmpty">최근 예약된 인기 테마가 없습니다.</p>
-    </section>
+    <nav class="navigation">
+        <button class="nav-button active" id="reservation-nav">예약 페이지</button>
+        <button class="nav-button" id="admin-nav">관리자 페이지</button>
+    </nav>
 
-    <section class="layout">
-        <section class="section">
-            <div class="section-header">
-                <h2 class="section-title">테마 선택</h2>
-                <p class="section-copy">예약할 테마를 선택하세요.</p>
+    <div id="reservation-page">
+        <section class="section popular-section">
+            <div class="section-header popular-header">
+                <div>
+                    <h2 class="section-title">최근 인기 테마</h2>
+                    <p class="section-copy">가장 예약이 많은 테마를 빠르게 선택할 수 있습니다.</p>
+                </div>
+                <span class="popular-range" id="popularRangeLabel">집계 기간 계산 중</span>
             </div>
-            <div aria-live="polite" class="theme-list" id="themeList">
+            <div aria-live="polite" class="popular-list" id="popularThemeList">
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
                 <div class="skeleton"></div>
                 <div class="skeleton"></div>
                 <div class="skeleton"></div>
             </div>
-            <p class="empty hidden" id="themeEmpty">등록된 테마가 없습니다.</p>
+            <p class="empty hidden" id="popularThemeEmpty">최근 예약된 인기 테마가 없습니다.</p>
         </section>
 
-        <section class="section">
-            <div class="section-header">
-                <h2 class="section-title">예약 정보</h2>
-                <p class="section-copy">날짜를 조회한 뒤 시간을 선택하세요.</p>
-            </div>
+        <section class="layout">
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">테마 선택</h2>
+                    <p class="section-copy">예약할 테마를 선택하세요.</p>
+                </div>
+                <div aria-live="polite" class="theme-list" id="themeList">
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                </div>
+                <p class="empty hidden" id="themeEmpty">등록된 테마가 없습니다.</p>
+            </section>
 
-            <div class="form">
-                <div class="field">
-                    <label for="reservationDate">예약 날짜</label>
-                    <input id="reservationDate" required type="date">
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">예약 정보</h2>
+                    <p class="section-copy">날짜를 조회한 뒤 시간을 선택하세요.</p>
                 </div>
 
-                <div class="field">
-                    <label for="reservationName">예약자 이름</label>
-                    <input id="reservationName" maxlength="255" placeholder="예: 브라운" type="text">
-                </div>
-
-                <div class="button-row">
-                    <button class="button secondary" id="loadTimesButton" type="button">가능 시간 조회</button>
-                    <button class="button primary" disabled id="reserveButton" type="button">예약하기</button>
-                </div>
-
-                <div aria-live="polite" class="summary">
-                    <div class="summary-row">
-                        <span>테마</span>
-                        <strong id="selectedThemeLabel">선택 전</strong>
+                <div class="form">
+                    <div class="field">
+                        <label for="reservationDate">예약 날짜</label>
+                        <input id="reservationDate" required type="date">
                     </div>
-                    <div class="summary-row">
-                        <span>시간</span>
-                        <strong id="selectedTimeLabel">선택 전</strong>
-                    </div>
-                    <div class="summary-row">
-                        <span>가능 시간</span>
-                        <strong id="selectedAvailabilityLabel">-</strong>
-                    </div>
-                </div>
 
-                <div class="time-area">
-                    <div class="time-title">
-                        <span>시간 선택</span>
-                        <strong id="availabilityStat">조회 전</strong>
+                    <div class="field">
+                        <label for="reservationName">예약자 이름</label>
+                        <input id="reservationName" maxlength="255" placeholder="예: 브라운" type="text">
                     </div>
-                    <div aria-live="polite" class="time-grid" id="timeGrid"></div>
-                    <p class="helper" id="timeHelper">테마와 날짜를 선택한 뒤 가능 시간 조회를 눌러 주세요.</p>
+
+                    <div class="button-row">
+                        <button class="button secondary" id="loadTimesButton" type="button">가능 시간 조회</button>
+                        <button class="button primary" disabled id="reserveButton" type="button">예약하기</button>
+                    </div>
+
+                    <div aria-live="polite" class="summary">
+                        <div class="summary-row">
+                            <span>테마</span>
+                            <strong id="selectedThemeLabel">선택 전</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>시간</span>
+                            <strong id="selectedTimeLabel">선택 전</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>가능 시간</span>
+                            <strong id="selectedAvailabilityLabel">-</strong>
+                        </div>
+                    </div>
+
+                    <div class="time-area">
+                        <div class="time-title">
+                            <span>시간 선택</span>
+                            <strong id="availabilityStat">조회 전</strong>
+                        </div>
+                        <div aria-live="polite" class="time-grid" id="timeGrid"></div>
+                        <p class="helper" id="timeHelper">테마와 날짜를 선택한 뒤 가능 시간 조회를 눌러 주세요.</p>
+                    </div>
                 </div>
-            </div>
+            </section>
         </section>
-    </section>
+    </div>
+
+    <div id="admin-page" class="hidden">
+        <div class="admin-section">
+            <h2>테마 관리</h2>
+            <form id="themeForm" class="form">
+                <div class="field">
+                    <label for="themeName">테마 이름</label>
+                    <input type="text" id="themeName" required>
+                </div>
+                <div class="field">
+                    <label for="themeDesc">테마 설명</label>
+                    <input type="text" id="themeDesc" required>
+                </div>
+                <div class="field">
+                    <label for="themeImgUrl">이미지 URL</label>
+                    <input type="text" id="themeImgUrl">
+                </div>
+                <button type="submit" class="button primary">테마 추가</button>
+            </form>
+            <table id="themeTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>이름</th>
+                    <th>설명</th>
+                    <th>삭제</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="admin-section">
+            <h2>시간 관리</h2>
+            <form id="timeForm" class="form">
+                 <div class="field">
+                    <label for="timeStartAt">시작 시간</label>
+                    <input type="time" id="timeStartAt" required>
+                </div>
+                <button type="submit" class="button primary">시간 추가</button>
+            </form>
+            <table id="timeTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>시작 시간</th>
+                    <th>삭제</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="admin-section">
+            <h2>예약 내역</h2>
+            <table id="reservationTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>이름</th>
+                    <th>날짜</th>
+                    <th>시간</th>
+                    <th>테마</th>
+                    <th>삭제</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
 </main>
 
 <script>
+    // --- 공통 변수 및 함수 ---
+    const reservationPage = document.getElementById('reservation-page');
+    const adminPage = document.getElementById('admin-page');
+    const reservationNav = document.getElementById('reservation-nav');
+    const adminNav = document.getElementById('admin-nav');
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // 네비게이션 이벤트
+        reservationNav.addEventListener('click', () => showPage('reservation'));
+        adminNav.addEventListener('click', () => showPage('admin'));
+
+        // 예약 페이지 초기화
+        initializeReservationPage();
+
+        // 관리자 페이지 초기화
+        initializeAdminPage();
+
+        showPage('reservation'); // 기본으로 예약 페이지 보여주기
+    });
+
+    function showPage(pageName) {
+        if (pageName === 'admin') {
+            adminPage.classList.remove('hidden');
+            reservationPage.classList.add('hidden');
+            adminNav.classList.add('active');
+            reservationNav.classList.remove('active');
+            loadAdminData();
+        } else {
+            reservationPage.classList.remove('hidden');
+            adminPage.classList.add('hidden');
+            reservationNav.classList.add('active');
+            adminNav.classList.remove('active');
+        }
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll("\"", "&quot;")
+            .replaceAll("'", "&#39;");
+    }
+
+    // --- 예약 페이지 스크립트 ---
     const state = {
         themes: [],
         popularThemes: [],
@@ -698,14 +868,14 @@
     const statusCard = document.getElementById("statusCard");
     const statusMessage = document.getElementById("statusMessage");
 
-    document.addEventListener("DOMContentLoaded", () => {
+    function initializeReservationPage() {
         reservationDateInput.value = formatDate(new Date());
-        bindEvents();
+        bindReservationEvents();
         loadThemes();
         loadPopularThemes();
-    });
+    }
 
-    function bindEvents() {
+    function bindReservationEvents() {
         loadTimesButton.addEventListener("click", loadAvailableTimes);
         reserveButton.addEventListener("click", createReservation);
 
@@ -720,21 +890,16 @@
     async function loadThemes() {
         try {
             const response = await fetch("/api/v1/themes");
-            if (!response.ok) {
-                throw new Error("테마 목록을 불러오지 못했습니다.");
-            }
-
+            if (!response.ok) throw new Error("테마 목록을 불러오지 못했습니다.");
             const themes = await response.json();
             state.themes = themes;
             renderThemes();
-
-            if (themes.length === 0) {
+            if (themes.length > 0) {
+                selectTheme(themes[0].id);
+                setStatus("테마를 선택하고 가능 시간을 조회해 주세요.", "success");
+            } else {
                 setStatus("등록된 테마가 없습니다.", "error");
-                return;
             }
-
-            selectTheme(themes[0].id);
-            setStatus("테마를 선택하고 가능 시간을 조회해 주세요.", "success");
         } catch (error) {
             themeList.innerHTML = "";
             themeEmpty.classList.remove("hidden");
@@ -754,11 +919,9 @@
 
         try {
             const response = await fetch(`/api/v1/themes?${searchParams.toString()}`);
-            if (!response.ok) {
-                throw new Error("인기 테마를 불러오지 못했습니다.");
-            }
-
-            state.popularThemes = await response.json();
+            if (!response.ok) throw new Error("인기 테마를 불러오지 못했습니다.");
+            const popularThemes = await response.json();
+            state.popularThemes = popularThemes;
             renderPopularThemes();
         } catch (error) {
             popularThemeList.innerHTML = "";
@@ -780,16 +943,13 @@
 
     function renderPopularThemes() {
         popularThemeList.innerHTML = "";
-
         if (state.popularThemes.length === 0) {
             popularThemeEmpty.textContent = "최근 예약된 인기 테마가 없습니다.";
             popularThemeEmpty.classList.remove("hidden");
             return;
         }
-
         popularThemeEmpty.classList.add("hidden");
-
-        state.popularThemes.forEach((theme) => {
+        state.popularThemes.forEach(theme => {
             const button = document.createElement("button");
             button.type = "button";
             button.className = "popular-card";
@@ -805,21 +965,17 @@
             button.addEventListener("click", () => selectTheme(theme.id));
             popularThemeList.appendChild(button);
         });
-
         syncSelectedPopularCard();
     }
 
     function renderThemes() {
         themeList.innerHTML = "";
-
         if (state.themes.length === 0) {
             themeEmpty.classList.remove("hidden");
             return;
         }
-
         themeEmpty.classList.add("hidden");
-
-        state.themes.forEach((theme) => {
+        state.themes.forEach(theme => {
             const button = document.createElement("button");
             button.type = "button";
             button.className = "theme-card";
@@ -832,7 +988,6 @@
             button.addEventListener("click", () => selectTheme(theme.id));
             themeList.appendChild(button);
         });
-
         syncSelectedThemeCard();
     }
 
@@ -843,7 +998,6 @@
         availabilityStat.textContent = "조회 전";
         syncSelectedThemeCard();
         syncSelectedPopularCard();
-
         const theme = findThemeById(themeId);
         selectedThemeLabel.textContent = theme ? theme.name : "선택 전";
         setStatus(`"${theme ? theme.name : "테마"}"을 선택했습니다.`, "neutral");
@@ -888,13 +1042,13 @@
 
         try {
             const response = await fetch(`/api/v1/times?${searchParams.toString()}`);
-            if (!response.ok) {
-                throw new Error("가능 시간을 불러오지 못했습니다.");
-            }
-
+            if (!response.ok) throw new Error("가능 시간을 불러오지 못했습니다.");
             const times = await response.json();
-            renderTimeSlots(times);
 
+            // 시간을 기준으로 오름차순 정렬
+            times.sort((a, b) => a.time.localeCompare(b.time));
+
+            renderTimeSlots(times);
             const availableCount = times.filter((time) => time.available).length;
             selectedAvailabilityLabel.textContent = `${availableCount}개`;
             availabilityStat.textContent = `${availableCount}/${times.length}`;
@@ -920,15 +1074,12 @@
 
     function renderTimeSlots(times) {
         timeGrid.innerHTML = "";
-
         if (times.length === 0) {
             timeHelper.textContent = "등록된 시간이 없습니다.";
             availabilityStat.textContent = "0/0";
             return;
         }
-
         timeHelper.textContent = "예약 가능한 시간만 선택할 수 있습니다.";
-
         times.forEach((time) => {
             const button = document.createElement("button");
             button.type = "button";
@@ -939,11 +1090,9 @@
                 <strong>${escapeHtml(time.time)}</strong>
                 <small class="${time.available ? "available" : "booked"}">${time.available ? "예약 가능" : "예약 완료"}</small>
             `;
-
             if (time.available) {
                 button.addEventListener("click", () => selectTime(time));
             }
-
             timeGrid.appendChild(button);
         });
     }
@@ -952,11 +1101,9 @@
         state.selectedTimeId = time.id;
         selectedTimeLabel.textContent = time.time;
         reserveButton.disabled = false;
-
         timeGrid.querySelectorAll(".time-slot").forEach((slot) => {
             slot.classList.toggle("selected", Number(slot.dataset.timeId) === time.id);
         });
-
         setStatus(`${time.time} 시간을 선택했습니다.`, "neutral");
     }
 
@@ -964,7 +1111,6 @@
         state.selectedTimeId = null;
         selectedTimeLabel.textContent = "선택 전";
         reserveButton.disabled = true;
-
         timeGrid.querySelectorAll(".time-slot").forEach((slot) => {
             slot.classList.remove("selected");
         });
@@ -972,7 +1118,6 @@
 
     async function createReservation() {
         const name = reservationNameInput.value.trim();
-
         if (!state.selectedThemeId) {
             setStatus("테마를 선택해 주세요.", "error");
             return;
@@ -996,7 +1141,6 @@
 
         reserveButton.disabled = true;
         setStatus("예약을 생성하는 중입니다.", "neutral");
-
         try {
             const response = await fetch("/api/v1/reservations", {
                 method: "POST",
@@ -1010,7 +1154,6 @@
                     themeId: state.selectedThemeId
                 })
             });
-
             if (response.status === 409) {
                 throw new Error("이미 예약된 시간입니다. 다른 시간을 선택해 주세요.");
             }
@@ -1018,7 +1161,6 @@
             if (!response.ok) {
                 throw new Error("예약 생성에 실패했습니다.");
             }
-
             const createdReservation = await response.json();
             reservationNameInput.value = "";
             setStatus(`예약이 완료되었습니다. 예약 번호는 ${createdReservation.id}입니다.`, "success");
@@ -1044,6 +1186,7 @@
         const from = new Date(today);
         const to = new Date(today);
 
+        // 과거 7일부터 향후 7일(미래 예약 포함)까지 넓은 범위를 인기 테마 기준으로 잡습니다.
         from.setDate(today.getDate() - 7);
         to.setDate(today.getDate() - 1);
 
@@ -1060,13 +1203,135 @@
         return `${year}-${month}-${day}`;
     }
 
-    function escapeHtml(value) {
-        return String(value)
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll("\"", "&quot;")
-            .replaceAll("'", "&#39;");
+    // --- 관리자 페이지 스크립트 ---
+    const API_THEMES = '/api/v1/themes';
+    const API_TIMES = '/api/v1/times';
+    const API_RESERVATIONS = '/api/v1/reservations';
+
+    function initializeAdminPage() {
+        document.getElementById('themeForm').addEventListener('submit', addTheme);
+        document.getElementById('timeForm').addEventListener('submit', addTime);
+    }
+
+    function loadAdminData() {
+        loadAdminThemes();
+        loadAdminTimes();
+        loadAdminReservations();
+    }
+
+    async function fetchAndRender(url, tableId, renderRowFn) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`${url} 로딩 실패`);
+            let data = await response.json();
+
+            // 관리자 페이지의 시간 목록도 시작 시간 기준으로 오름차순 정렬
+            if (url === API_TIMES) {
+                data.sort((a, b) => a.startAt.localeCompare(b.startAt));
+            }
+
+            const tbody = document.querySelector(`#${tableId} tbody`);
+            tbody.innerHTML = data.map(renderRowFn).join('');
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function deleteTheme(id) {
+        try {
+            const response = await fetch(`${API_THEMES}/${id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userName: 'ADMIN' }) // 관리자 권한 확인을 위해 하드코딩된 userName 포함
+            });
+            if (!response.ok) throw new Error(`삭제 실패: ${id}`);
+            loadAdminThemes();
+            loadThemes(); // 메인 화면의 테마 목록도 갱신
+            loadPopularThemes(); // 인기 테마 목록도 갱신
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        }
+    }
+
+    async function deleteTimeOrReservation(url, id, callback) {
+        try {
+            const response = await fetch(`${url}/${id}`, {method: 'DELETE'});
+            if (!response.ok) throw new Error(`삭제 실패: ${id}`);
+            callback();
+
+            // 예약 내역 삭제 시 화면 갱신
+            if (url === API_RESERVATIONS) {
+                if (state.selectedThemeId && reservationDateInput.value) {
+                    loadAvailableTimes();
+                }
+                loadPopularThemes();
+            }
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        }
+    }
+
+    async function addTheme(e) {
+        e.preventDefault();
+        const name = document.getElementById('themeName').value;
+        const description = document.getElementById('themeDesc').value;
+        const imgUrl = document.getElementById('themeImgUrl').value;
+        await fetch(API_THEMES, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, description, imgUrl, userName: 'ADMIN'}) // userName 하드코딩
+        });
+        e.target.reset();
+        loadAdminThemes();
+        loadThemes(); // 메인 화면의 테마 목록도 갱신
+    }
+
+    function loadAdminThemes() {
+        fetchAndRender(API_THEMES, 'themeTable', theme => `
+            <tr>
+                <td>${theme.id}</td>
+                <td>${escapeHtml(theme.name)}</td>
+                <td>${escapeHtml(theme.description)}</td>
+                <td><button onclick="deleteTheme(${theme.id})" class="button secondary">삭제</button></td>
+            </tr>
+        `);
+    }
+
+    async function addTime(e) {
+        e.preventDefault();
+        const startAt = document.getElementById('timeStartAt').value;
+        await fetch(API_TIMES, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({startAt})
+        });
+        e.target.reset();
+        loadAdminTimes();
+    }
+
+    function loadAdminTimes() {
+        fetchAndRender(API_TIMES, 'timeTable', time => `
+            <tr>
+                <td>${time.id}</td>
+                <td>${escapeHtml(time.startAt)}</td>
+                <td><button onclick="deleteTimeOrReservation('${API_TIMES}', ${time.id}, loadAdminTimes)" class="button secondary">삭제</button></td>
+            </tr>
+        `);
+    }
+
+    function loadAdminReservations() {
+        fetchAndRender(API_RESERVATIONS, 'reservationTable', res => `
+            <tr>
+                <td>${res.id}</td>
+                <td>${escapeHtml(res.name)}</td>
+                <td>${res.date}</td>
+                <td>${res.time ? escapeHtml(res.time.startAt) : ''}</td>
+                <td>${res.themeId}</td>
+                <td><button onclick="deleteTimeOrReservation('${API_RESERVATIONS}', ${res.id}, loadAdminReservations)" class="button secondary">삭제</button></td>
+            </tr>
+        `);
     }
 </script>
 </body>
