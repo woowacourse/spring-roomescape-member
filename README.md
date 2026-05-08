@@ -69,20 +69,18 @@
     
     **Response (200 OK)**
   ```json
-  {
-    "availableTimes": [
+    [
       {
-        "timeId": 1,
-        "time": "18:00",
+        "id": 1,
+        "startAt": "18:00",
         "isAvailable": true
       },
       {
-        "timeId": 2,
-        "time": "21:00",
+        "id": 2,
+        "startAt": "21:00",
         "isAvailable": false
       }
     ]
-  }
   ```
 
 - [x] 사용자가 예약할 수 있다.
@@ -119,14 +117,14 @@
     ```json
     [
       {
-        "themeId": 1,
+        "id": 1,
         "name": "테마명",
         "description": "설명",
         "thumbnail": "image-path",
         "rank": 1
       },
       {
-        "themeId": 2,
+        "id": 2,
         "name": "테마명2",
         "description": "설명2",
         "thumbnail": "image-path2",
