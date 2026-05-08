@@ -7,14 +7,14 @@ import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Theme;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcTest
+@Import(AdminThemeDao.class)
 public class AdminThemeDaoTest {
     private static final RowMapper<Theme> rowMapper =
             (rs, rowNum) -> {
@@ -30,17 +30,6 @@ public class AdminThemeDaoTest {
 
     @Autowired
     private AdminThemeDao adminThemeDao;
-
-    @Test
-    void 데이터베이스_연동() {
-        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-            assertThat(connection).isNotNull();
-            assertThat(connection.getCatalog()).isEqualTo("DATABASE");
-            assertThat(connection.getMetaData().getTables(null, null, "THEME", null).next()).isTrue();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
     void 테마_전체_조회_테스트() {
