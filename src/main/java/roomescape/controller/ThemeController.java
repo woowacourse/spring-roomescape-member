@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
@@ -26,9 +25,9 @@ public class ThemeController {
         return ResponseEntity.ok(responses);
     }
 
-    @GetMapping(params = "baseDate")
-    public ResponseEntity<List<ThemeResponse>> readPopularThemes(@RequestParam("baseDate") LocalDate baseDate) {
-        List<ThemeResponse> responses = themeService.getPopularThemes(baseDate);
+    @GetMapping("/rankings")
+    public ResponseEntity<List<ThemeResponse>> readThemeRankings() {
+        List<ThemeResponse> responses = themeService.getThemeRankings(LocalDate.now());
         return ResponseEntity.ok(responses);
     }
 }

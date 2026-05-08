@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
@@ -89,6 +90,83 @@ class ThemeServiceTest {
 
     }
 
+    @Test
+    void 테마를_조회한다() {
+        // given
+        Theme theme1 = saveTheme("테마1");
+        Theme theme2 = saveTheme("테마2");
+
+        // when
+        List<ThemeResponse> themes = themeService.getThemes();
+
+        // then
+        assertAll(
+                () -> assertThat(themes).hasSize(2),
+                () -> assertThat(themes)
+                        .extracting(
+                                ThemeResponse::id,
+                                ThemeResponse::name,
+                                ThemeResponse::description,
+                                ThemeResponse::thumbnail
+                        )
+                        .containsExactlyInAnyOrder(
+                                tuple(
+                                        theme1.getId(),
+                                        theme1.getName(),
+                                        theme1.getDescription(),
+                                        theme1.getThumbnail()
+                                ),
+                                tuple(
+                                        theme2.getId(),
+                                        theme2.getName(),
+                                        theme2.getDescription(),
+                                        theme2.getThumbnail()
+                                )
+                        )
+        );
+    }
+
+    @Test
+    void 인기_테마를_조회한다() {
+        // given
+        LocalDate baseDate = LocalDate.of(2026, 5, 8);
+
+        Theme popularTheme = saveTheme("인기 테마");
+        Theme normalTheme = saveTheme("보통 테마");
+        Theme unpopularTheme = saveTheme("비인기 테마");
+
+        ReservationTime time10 = saveReservationTime(LocalTime.of(10, 0));
+        ReservationTime time11 = saveReservationTime(LocalTime.of(11, 0));
+        ReservationTime time12 = saveReservationTime(LocalTime.of(12, 0));
+
+        // 인기 테마: 조회 기간 내 예약 3개
+        saveReservation("예약자1", baseDate.minusDays(1), time10, popularTheme);
+        saveReservation("예약자2", baseDate.minusDays(2), time11, popularTheme);
+        saveReservation("예약자3", baseDate.minusDays(3), time12, popularTheme);
+
+        // 보통 테마: 조회 기간 내 예약 2개
+        saveReservation("예약자4", baseDate.minusDays(1), time10, normalTheme);
+        saveReservation("예약자5", baseDate.minusDays(2), time11, normalTheme);
+
+        // 비인기 테마: 조회 기간 내 예약 1개
+        saveReservation("예약자6", baseDate.minusDays(1), time10, unpopularTheme);
+
+        // 조회 기간 밖 예약: 순위에 반영되면 안 됨
+        saveReservation("예약자7", baseDate, time10, unpopularTheme);
+        saveReservation("예약자8", baseDate.minusDays(8), time11, unpopularTheme);
+
+        // when
+        List<ThemeResponse> rankings = themeService.getThemeRankings(baseDate);
+
+        // then
+        assertThat(rankings)
+                .extracting(ThemeResponse::name)
+                .containsExactly(
+                        "인기 테마",
+                        "보통 테마",
+                        "비인기 테마"
+                );
+    }
 
     @Test
     void 테마를_삭제할_수_있다() {
@@ -156,5 +234,20 @@ class ThemeServiceTest {
     private ReservationTime saveReservationTime(LocalTime startAt) {
         ReservationTime reservationTime = ReservationTime.createWithoutId(startAt);
         return reservationTimeDao.save(reservationTime);
+    }
+
+    private Reservation saveReservation(
+            String name,
+            LocalDate date,
+            ReservationTime reservationTime,
+            Theme theme
+    ) {
+        Reservation reservation = Reservation.createWithoutId(
+                name,
+                date,
+                reservationTime,
+                theme
+        );
+        return reservationDao.save(reservation);
     }
 }

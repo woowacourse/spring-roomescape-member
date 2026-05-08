@@ -44,7 +44,7 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> getPopularThemes(LocalDate baseDate) {
+    public List<ThemeResponse> getThemeRankings(LocalDate baseDate) {
         LocalDate startDate = baseDate.minusDays(POPULAR_THEME_PERIOD_DAYS);
         LocalDate endDate = baseDate.minusDays(BASE_DATE_EXCLUDED_DAYS);
         List<Theme> popularThemes = themeDao.findPopularThemesByPeriod(startDate, endDate);
