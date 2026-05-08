@@ -26,7 +26,6 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-
     @Transactional
     public Reservation save(final String name, final LocalDate date, final Long timeId) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)

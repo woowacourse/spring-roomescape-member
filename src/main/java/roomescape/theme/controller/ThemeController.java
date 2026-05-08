@@ -11,7 +11,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
 
 @RestController
-@RequestMapping("/theme")
+@RequestMapping("/themes")
 @RequiredArgsConstructor
 public class ThemeController {
 

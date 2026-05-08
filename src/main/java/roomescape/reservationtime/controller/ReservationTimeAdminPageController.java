@@ -44,4 +44,5 @@ public class ReservationTimeAdminPageController {
         reservationTimeService.deleteById(timeId);
         return "redirect:/pages/admin/themes/" + themeId + "/times";
     }
+
 }
