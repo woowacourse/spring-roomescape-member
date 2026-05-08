@@ -80,7 +80,7 @@ public class ThemeJdbcDao implements ThemeDao {
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName().getValue())
-                .addValue("thumbnailUrl", theme.getThumbnailUrl())
+                .addValue("thumbnail_url", theme.getThumbnailUrl())
                 .addValue("description", theme.getDescription());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
@@ -118,13 +118,13 @@ public class ThemeJdbcDao implements ThemeDao {
         String sql = """
                 SELECT
                     t.id as time_id,
-                    t.start_at as start_at, 
-                     EXISTS(
-                         SELECT 1 FROM reservations r
-                         WHERE r.time_id = t.id
-                         AND r.theme_id = :theme_id
-                         AND r.date = :date
-                     ) as already_booked
+                    t.start_at as start_at,
+                    EXISTS(
+                        SELECT 1 FROM reservations r
+                        WHERE r.time_id = t.id
+                        AND r.theme_id = :theme_id
+                        AND r.date = :date
+                    ) as already_booked
                  FROM times t
                  ORDER BY t.start_at
                 """;
