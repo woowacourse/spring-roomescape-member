@@ -10,6 +10,7 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
+import roomescape.domain.reservation.response.ReservationsResponse;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 
@@ -32,10 +33,12 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResponse> findAllReservations() {
-        return reservationRepository.findAll().stream()
+    public ReservationsResponse findAllReservations() {
+        List<ReservationResponse> reservations = reservationRepository.findAll().stream()
                 .map(ReservationResponse::from)
                 .toList();
+
+        return new ReservationsResponse(reservations);
     }
 
     @Transactional

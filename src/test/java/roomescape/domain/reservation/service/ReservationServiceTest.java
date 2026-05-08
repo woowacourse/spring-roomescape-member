@@ -26,6 +26,7 @@ import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
 import roomescape.domain.reservation.response.ReservationTimeResponse;
+import roomescape.domain.reservation.response.ReservationsResponse;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.response.ThemeResponse;
@@ -125,10 +126,10 @@ class ReservationServiceTest {
         when(reservationRepository.findAll()).thenReturn(reservations);
 
         // when
-        List<ReservationResponse> responses = reservationService.findAllReservations();
+        ReservationsResponse foundReservations = reservationService.findAllReservations();
 
         // then
-        assertThat(responses).hasSize(2)
+        assertThat(foundReservations.reservations()).hasSize(2)
                 .extracting("username", "theme", "date", "time")
                 .containsExactly(
                         tuple(

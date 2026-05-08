@@ -27,8 +27,8 @@ public class AdminReservationController {
 
     @GetMapping
     public ResponseEntity<ReservationsResponse> findAll() {
-        List<ReservationResponse> reservations = reservationService.findAllReservations();
-        return ResponseEntity.ok(new ReservationsResponse(reservations));
+        ReservationsResponse reservations = reservationService.findAllReservations();
+        return ResponseEntity.ok(reservations);
     }
 
     @PostMapping
