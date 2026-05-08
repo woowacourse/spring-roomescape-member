@@ -9,11 +9,13 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Sql(scripts = {"/truncate.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class ReservationControllerTest {
+
     @Test
     void 예약_생성() {
         Map<String, Object> reservation = new HashMap<>();
@@ -22,13 +24,21 @@ public class ReservationControllerTest {
         reservation.put("timeId", 2);
         reservation.put("themeId", 1);
 
-        RestAssured.given().log().all()
+        Integer createdId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(10));
+                .extract()
+                .jsonPath()
+                .getInt("id");
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", hasItem(createdId));
     }
 
     @Test
@@ -37,7 +47,7 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(9)); // 아직 생성 요청이 없으니 0개
+                .body("size()", is(9));
     }
 
     @Test
