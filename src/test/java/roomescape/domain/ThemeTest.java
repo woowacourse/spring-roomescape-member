@@ -6,6 +6,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.InValidThemeException;
 
 class ThemeTest {
 
@@ -31,14 +32,7 @@ class ThemeTest {
     @DisplayName("테마 이름이 비어 있으면 예외")
     void validate_BlankName_ThrowsException() {
         assertThatThrownBy(() -> Theme.createNew(" ", "설명", "https://example.com/theme.png"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마 이름은 비어있을 수 없습니다.");
+                .isInstanceOf(InValidThemeException.class);
     }
 
-    @Test
-    @DisplayName("테마 of 생성 시  비어 있으면 예외")
-    void validate_id_null_ThrowsException() {
-        assertThatThrownBy(() -> Theme.of(null, "asd", "설명", "https://example.com/theme.png"))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
 }

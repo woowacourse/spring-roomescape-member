@@ -1,7 +1,14 @@
 package roomescape.theme.domain;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import roomescape.theme.exception.InValidThemeException;
+import roomescape.theme.exception.ThemeErrorCode;
 
+@Getter
+@EqualsAndHashCode(of = "id")
 public class Theme {
 
     private final Long id;
@@ -17,59 +24,28 @@ public class Theme {
         this.thumbnailUrl = thumbnailUrl;
     }
 
+    private void validateName(final String name) {
+        List<String> errors = new ArrayList<>();
+
+        if (name == null || name.isBlank()) {
+            errors.add(ThemeErrorCode.THEME_NAME_NOT_BLANK.getMessage());
+        }
+
+        if(!errors.isEmpty()){
+            throw new InValidThemeException(errors);
+        }
+    }
+
     public static Theme createNew(final String name, final String description, final String thumbnailUrl) {
         return new Theme(null, name, description, thumbnailUrl);
     }
 
-    public static Theme of(final Long id, final String name, final String description, final String thumbnailUrl) {
-        validateId(id);
+    public static Theme of(final long id, final String name, final String description, final String thumbnailUrl) {
         return new Theme(id, name, description, thumbnailUrl);
     }
 
-    public static void validateId(final Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("[ERROR] Id는 비어있을 수 없습니다.");
-        }
-    }
-
-    private void validateName(final String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 테마 이름은 비어있을 수 없습니다.");
-        }
-    }
-
-    public Theme withId(final Long id) {
-        validateId(id);
+    public Theme withId(final long id) {
         return new Theme(id, name, description, thumbnailUrl);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Theme t)) {
-            return false;
-        }
-        return Objects.equals(id, t.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 
 }

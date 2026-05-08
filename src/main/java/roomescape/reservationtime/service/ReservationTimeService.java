@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.exception.ReservationTimeDuplicateException;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
@@ -34,7 +35,7 @@ public class ReservationTimeService {
         ReservationTime reservationTime = ReservationTime.createNew(startAt, theme);
 
         if (reservationTimeRepository.existsByStartAtAndThemeId(startAt, themeId)) {
-            throw new IllegalArgumentException("[ERROR] 같은 시간을 추가할 수 없습니다.");
+            throw new ReservationTimeDuplicateException();
         }
 
         return reservationTimeRepository.save(reservationTime);

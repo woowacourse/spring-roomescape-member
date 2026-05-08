@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.exception.InvalidReservationException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -42,7 +43,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> Reservation.createNew(name, date, time))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidReservationException.class);
     }
 
     @DisplayName("예약 날짜 null 예외")
@@ -55,7 +56,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> Reservation.createNew(name, null, time))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidReservationException.class);
     }
 
     @DisplayName("예약 시간 null 예외")
@@ -67,7 +68,7 @@ class ReservationTest {
 
         // when & then
         assertThatThrownBy(() -> Reservation.createNew(name, date, null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidReservationException.class);
     }
 
 }

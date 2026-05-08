@@ -1,10 +1,20 @@
 package roomescape.reservationtime.domain;
 
 import java.time.LocalTime;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import roomescape.reservation.exception.InvalidReservationException;
+import roomescape.reservation.exception.ReservationErrorCode;
+import roomescape.reservationtime.exception.InValidReservationTimeException;
+import roomescape.reservationtime.exception.ReservationTimeErrorCode;
 import roomescape.theme.domain.Theme;
 
+@Getter
+@EqualsAndHashCode(of = "id")
 public class ReservationTime {
+
     private final Long id;
     private final LocalTime startAt;
     private final Theme theme;
@@ -17,55 +27,28 @@ public class ReservationTime {
         this.theme = theme;
     }
 
+    private void validateStartAt(LocalTime startAt) {
+        List<String> errors = new ArrayList<>();
+
+        if (startAt == null) {
+            errors.add(ReservationTimeErrorCode.RESERVATION_TIME_NOT_FOUND.getMessage());
+        }
+
+        if (!errors.isEmpty()) {
+            throw new InValidReservationTimeException(errors);
+        }
+    }
+
     public static ReservationTime createNew(final LocalTime startAt, final Theme theme) {
         return new ReservationTime(null, startAt, theme);
     }
 
-    public static ReservationTime of(final Long id, final LocalTime startAt, final Theme theme) {
-        validateId(id);
+    public static ReservationTime of(final long id, final LocalTime startAt, final Theme theme) {
         return new ReservationTime(id, startAt, theme);
     }
 
-    public static void validateId(final Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("[ERROR] Id는 비어있을 수 없습니다.");
-        }
-    }
-
-    private void validateStartAt(LocalTime startAt) {
-        if (startAt == null) {
-            throw new IllegalArgumentException("[ERROR] 예약 시간을 비어있을 수 없습니다.");
-        }
-    }
-
-    public ReservationTime withId(final Long id) {
-        validateId(id);
+    public ReservationTime withId(final long id) {
         return new ReservationTime(id, this.startAt, this.theme);
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public LocalTime getStartAt() {
-        return this.startAt;
-    }
-
-    public Theme getTheme() {
-        return this.theme;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof ReservationTime r)) {
-            return false;
-        }
-        return Objects.equals(id, r.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 
 }
