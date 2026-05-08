@@ -59,8 +59,7 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public List<ReservationTimeAvailability> findAvailableTimes(LocalDate date, Long themeId) {
-        themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException(THEME_NOT_FOUND_MESSAGE));
+        validateThemeExists(themeId);
 
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
 
@@ -73,5 +72,11 @@ public class ReservationTimeService {
                                 .noneMatch(reservation -> reservation.isSameTime(reservationTime))
                 ))
                 .toList();
+    }
+
+    private void validateThemeExists(Long themeId) {
+        if (!themeRepository.existsById(themeId)) {
+            throw new NotFoundException(THEME_NOT_FOUND_MESSAGE);
+        }
     }
 }
