@@ -7,9 +7,7 @@ public class Theme {
     private final String image;
 
     public Theme(String name, String description, String image) {
-        this.name = name;
-        this.description = description;
-        this.image = image;
+        this(null, name, description, image);
     }
 
     public Theme(Long id, String name, String description, String image) {

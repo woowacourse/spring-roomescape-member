@@ -12,7 +12,7 @@ public class ReservationTime {
     }
 
     public ReservationTime(LocalTime startAt) {
-        this.startAt = startAt;
+        this(null, startAt);
     }
 
     public Long getId() {
