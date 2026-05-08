@@ -119,7 +119,7 @@
 
 - **ThemeServiceTest**
 - [x] SpringBootTest, DirtiesContext 작동법 / 장단점 / 단점 대체법 알아보기
-- [ ] JdbcTemplate 활용하여 구현
+- [x] JdbcTemplate 활용하여 -> SpringBootTest, DirtiesContext제거
 
 - **ReservationDaoTest**
 - [ ] Dao에 Service의존 문제 해결

@@ -1,8 +1,11 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.ReservationTime;
@@ -15,17 +18,28 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ThemeServiceTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
     @Autowired
     private ThemeService themeService;
     @Autowired
     private ReservationService reservationService;
     @Autowired
     private ReservationTimeService reservationTimeService;
-    @Autowired
-    private ReservationDao reservationDao;
+
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+
+        jdbcTemplate.execute("TRUNCATE TABLE reservation RESTART IDENTITY");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation_time RESTART IDENTITY");
+        jdbcTemplate.execute("TRUNCATE TABLE theme RESTART IDENTITY");
+
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+    }
 
     @Test
     void 테마를_저장하고_조회한다() {
