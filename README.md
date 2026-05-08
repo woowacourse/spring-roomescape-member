@@ -139,7 +139,7 @@
 
 
 - **PopularTheme**
-- [ ] 도메인인지 DTO인지 고민 후 수정
+- [x] 도메인인지 DTO인지 고민 후 수정
 
 
 - **Reservation**

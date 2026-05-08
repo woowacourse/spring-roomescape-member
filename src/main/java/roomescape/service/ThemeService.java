@@ -41,8 +41,8 @@ public class ThemeService {
         return themeDao.findPopularThemes(startDate, endDate)
                 .stream()
                 .map(popularTheme -> PopularThemeResponse.of(
-                        popularTheme.getTheme(),
-                        popularTheme.getReservationCount())
+                        popularTheme.theme(),
+                        popularTheme.reservationCount())
                 )
                 .toList();
     }

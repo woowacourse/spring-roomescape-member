@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.PopularTheme;
 import roomescape.domain.Theme;
+import roomescape.dto.PopularThemeResult;
 
 @Repository
 public class ThemeDao {
@@ -40,7 +40,7 @@ public class ThemeDao {
                         resultSet.getString("thumbnail")));
     }
 
-    public List<PopularTheme> findPopularThemes(LocalDate startDate, LocalDate endDate) {
+    public List<PopularThemeResult> findPopularThemes(LocalDate startDate, LocalDate endDate) {
         String sql = """
                 select th.id, th.name, th.description, th.thumbnail, count(r.id) as reservation_count 
                 from theme th 
@@ -53,7 +53,7 @@ public class ThemeDao {
                 """;
 
         return jdbcTemplate.query(sql,
-                (resultSet, rowNum) -> new PopularTheme(
+                (resultSet, rowNum) -> new PopularThemeResult(
 
                         new Theme(resultSet.getLong("id"),
                                 resultSet.getString("name"),
