@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -69,5 +71,15 @@ class JdbcTemplateReservationTimeRepositoryTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM reservation_time", Integer.class);
         assertThat(count).isEqualTo(0);
+    }
+
+    @Test
+    @Sql({"/test-theme.sql", "/test-reservation-time.sql", "/test-reservation.sql"})
+    void 예약_가능한_시간을_조회한다() {
+        LocalDate date = LocalDate.of(2021, 1, 1);
+
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAvailableTimes(1L, date);
+
+        assertThat(reservationTimes.size()).isEqualTo(1);
     }
 }

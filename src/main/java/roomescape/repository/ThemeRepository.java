@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
@@ -15,8 +14,6 @@ public interface ThemeRepository {
     void delete(Long id);
 
     Optional<Theme> findById(Long id);
-
-    List<ReservationTime> findAvailableTimes(Long themeId, LocalDate date);
 
     List<Theme> findPopularThemes(LocalDate startInclusive, LocalDate endInclusive, int limit);
 }

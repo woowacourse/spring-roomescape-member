@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlMergeMode;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
@@ -16,8 +14,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-@Sql("/test-theme.sql")
-@SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 class JdbcTemplateThemeRepositoryTest {
     private static final int DEFAULT_THEME_SIZE = 10;
 
@@ -32,6 +28,7 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
+    @Sql("/test-theme.sql")
     void 모든_테마_조회() {
         List<Theme> themes = themeRepository.findAll();
 
@@ -39,6 +36,7 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
+    @Sql("/test-theme.sql")
     void 테마를_저장한다() {
         Theme theme = new Theme(null, "마법 학교", "마법 학교의 마지막 시험을 통과하세요.", "https://example.com/theme10.jpg");
 
@@ -51,6 +49,7 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
+    @Sql("/test-theme.sql")
     void 테마를_삭제한다() {
         Theme theme = new Theme(null, "마법 학교", "마법 학교의 마지막 시험을 통과하세요.", "https://example.com/theme10.jpg");
         long id = themeRepository.save(theme).id();
@@ -60,18 +59,7 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
-    @Sql("/test-reservation-time.sql")
-    @Sql("/test-reservation.sql")
-    void 예약_가능한_시간_조회() {
-        LocalDate date = LocalDate.of(2021, 1, 1);
-
-        List<ReservationTime> reservationTimes = themeRepository.findAvailableTimes(1L, date);
-
-        assertThat(reservationTimes.size()).isEqualTo(1);
-    }
-
-    @Test
-    @Sql("/test-reservation-time.sql")
+    @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
     void 예약_건수가_많은_순서로_인기_테마를_반환한다() {
         LocalDate inRange = LocalDate.of(2026, 5, 1);
         addReservation("A", inRange, 1, 1);
@@ -96,7 +84,7 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
-    @Sql("/test-reservation-time.sql")
+    @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
     void limit_개수만큼만_반환한다() {
         LocalDate inRange = LocalDate.of(2026, 5, 1);
         addReservation("A", inRange, 1, 1);
@@ -109,7 +97,7 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
-    @Sql("/test-reservation-time.sql")
+    @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
     void 기간_밖_예약은_인기_집계에서_제외한다() {
         LocalDate inRange = LocalDate.of(2026, 5, 1);
         LocalDate outOfRange = LocalDate.of(2026, 4, 1);

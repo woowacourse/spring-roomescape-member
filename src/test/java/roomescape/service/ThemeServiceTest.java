@@ -5,14 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
@@ -99,32 +97,6 @@ class ThemeServiceTest {
         themeService.deleteTheme(1L);
 
         verify(themeRepository).delete(1L);
-    }
-
-    @Test
-    void 날짜가_있으면_예약_가능_시간을_조회한다() {
-        LocalDate date = LocalDate.of(2026, 5, 3);
-        List<ReservationTime> times = List.of(
-                new ReservationTime(1L, LocalTime.of(10, 0)),
-                new ReservationTime(2L, LocalTime.of(11, 0))
-        );
-
-        when(themeRepository.findAvailableTimes(1L, date)).thenReturn(times);
-        List<ReservationTime> result = themeService.getAvailableTimes(1L, date);
-
-        assertThat(result.size()).isEqualTo(2);
-        assertThat(result).isEqualTo(times);
-    }
-
-    @Test
-    void 날짜가_없으면_오늘_예약_가능_시간을_조회한다() {
-        List<ReservationTime> times = List.of(new ReservationTime(1L, LocalTime.of(10, 0)));
-
-        when(themeRepository.findAvailableTimes(1L, FIXED_TODAY)).thenReturn(times);
-        List<ReservationTime> result = themeService.getAvailableTimes(1L, null);
-
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result).isEqualTo(times);
     }
 
     @Test

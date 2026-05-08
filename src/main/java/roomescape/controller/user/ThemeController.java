@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.response.ReservationTimeResponse;
 import roomescape.response.ThemeResponse;
+import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 
 import java.time.LocalDate;
@@ -18,9 +19,11 @@ import java.util.List;
 @RequestMapping("/themes")
 public class ThemeController {
     private final ThemeService themeService;
+    private final ReservationTimeService reservationTimeService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(ThemeService themeService, ReservationTimeService reservationTimeService) {
         this.themeService = themeService;
+        this.reservationTimeService = reservationTimeService;
     }
 
     @GetMapping
@@ -36,7 +39,7 @@ public class ThemeController {
             @RequestParam(value = "date", required = false) LocalDate date) {
 
         List<ReservationTimeResponse> reservationTimeResponses =
-                ReservationTimeResponse.from(themeService.getAvailableTimes(themeId, date));
+                ReservationTimeResponse.from(reservationTimeService.getAvailableTimes(themeId, date));
 
         return ResponseEntity.ok(reservationTimeResponses);
     }

@@ -17,7 +17,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-@Sql({"/test-theme.sql", "/test-reservation-time.sql"})
 @Import({JdbcTemplateReservationRepository.class, JdbcTemplateThemeRepository.class})
 class JdbcTemplateReservationRepositoryTest {
 
@@ -34,6 +33,7 @@ class JdbcTemplateReservationRepositoryTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
+    @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
     void 예약을_저장하면_id가_채워진_도메인을_반환한다() {
         Reservation saved = addReservation("브라운", LocalDate.of(2026, 5, 3));
 
@@ -50,6 +50,7 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
+    @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
     void 모든_예약을_조인_조회한다() {
         addReservation("브라운", LocalDate.of(2026, 5, 3));
         addReservation("조이", LocalDate.of(2026, 5, 4));
@@ -61,6 +62,7 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
+    @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
     void 특정_사용자의_예약을_조회한다() {
         addReservation("브라운", LocalDate.of(2026, 5, 3));
         addReservation("브라운", LocalDate.of(2026, 5, 4));
@@ -72,6 +74,7 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
+    @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
     void 예약이_없으면_빈_리스트를_반환한다() {
         List<Reservation> reservations = reservationRepository.findAllReservations();
 
@@ -79,6 +82,7 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
+    @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
     void id로_예약을_삭제한다() {
         long reservationId = addReservation("브라운", LocalDate.of(2026, 5, 3)).id();
 

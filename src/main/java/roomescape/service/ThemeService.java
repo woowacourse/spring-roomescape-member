@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
@@ -9,7 +8,6 @@ import roomescape.repository.ThemeRepository;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class ThemeService {
@@ -38,16 +36,6 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         themeRepository.delete(id);
-    }
-
-    public List<ReservationTime> getAvailableTimes(Long themeId, LocalDate date) {
-        LocalDate selectedDate = date;
-
-        if (Objects.isNull(date)) {
-            selectedDate = LocalDate.now(clock);
-        }
-
-        return themeRepository.findAvailableTimes(themeId, selectedDate);
     }
 
     public List<Theme> findPopularThemes() {
