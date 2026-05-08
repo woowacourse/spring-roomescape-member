@@ -45,6 +45,7 @@ public class UserReservationService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> getReservations() {
         return reservationRepository.findAll();
     }

@@ -27,7 +27,7 @@ public class AdminReservationService {
     @Transactional
     public Reservation createForceReservation(Long themeId, String name, LocalDate date, Long timeId) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException("해당 날짜를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 시간을찾을 수 없습니다."));
 
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));

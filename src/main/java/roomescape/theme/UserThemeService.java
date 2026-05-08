@@ -1,6 +1,7 @@
 package roomescape.theme;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,10 +15,12 @@ public class UserThemeService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<Theme> getThemes(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
         return themeRepository.findRanked(sort, order, startDate, endDate, limit);
     }
 
+    @Transactional(readOnly = true)
     public List<Theme> getAllThemes() {
         return themeRepository.findAll();
     }
