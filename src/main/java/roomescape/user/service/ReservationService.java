@@ -25,11 +25,11 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation add(String name, LocalDate date, Long timeId, Long themeId) {
+    public Reservation add(String name, LocalDate reservationDate, Long timeId, Long themeId) {
         ReservationTime time = timeDao.selectById(timeId);
-        Reservation reservation = new Reservation(name, date, time, themeId);
+        Reservation reservation = new Reservation(name, reservationDate, time, themeId);
 
-        boolean isAvailable = reservationDao.isAvailable(themeId, date, timeId);
+        boolean isAvailable = reservationDao.isAvailable(themeId, reservationDate, timeId);
 
         if (!isAvailable) {
             throw new IllegalArgumentException("[ERROR] 예약할 수 없습니다.");
