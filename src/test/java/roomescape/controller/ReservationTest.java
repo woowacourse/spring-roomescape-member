@@ -1,25 +1,52 @@
 package roomescape.controller;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.jdbc.Sql;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.hamcrest.Matchers.is;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 
 public class ReservationTest {
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.update("""
+            INSERT INTO reservation_time
+            VALUES (1, '10:00', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO theme
+            VALUES (1, '공포의 저택', 'url1', '설명1', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO theme
+            VALUES (2, '우주 탐험대', 'https://picsum.photos/seed/space/400/300', '은하계를 누비는 우주 탐험', 'AVAILABLE')
+            """);
+    }
+
+    @AfterEach
+    void tearDown() {
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
+    }
+
     @Test
-    @Sql(scripts = "/testData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("예약 생성 테스트")
     void createReservation() {
 
@@ -42,22 +69,26 @@ public class ReservationTest {
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(40))
-                .body("[39].id", is(40))
-                .body("[39].name", is("녀녕"))
-                .body("[39].date", is("2025-05-05"))
-                .body("[39].time.id", is(1))
-                .body("[39].time.startAt", is("10:00"))
-                .body("[39].theme.id", is(2))
-                .body("[39].theme.name", is("우주 탐험대"))
-                .body("[39].theme.thumbnailUrl", is("https://picsum.photos/seed/space/400/300"))
-                .body("[39].theme.description", is("은하계를 누비는 우주 탐험"));
+                .body("size()", is(1))
+                .body("[0].id", is(1))
+                .body("[0].name", is("녀녕"))
+                .body("[0].date", is("2025-05-05"))
+                .body("[0].time.id", is(1))
+                .body("[0].time.startAt", is("10:00"))
+                .body("[0].theme.id", is(2))
+                .body("[0].theme.name", is("우주 탐험대"))
+                .body("[0].theme.thumbnailUrl", is("https://picsum.photos/seed/space/400/300"))
+                .body("[0].theme.description", is("은하계를 누비는 우주 탐험"));
     }
 
     @Test
-    @Sql(scripts = "/testReservationData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("예약 삭제 테스트")
     void deleteReservationTest() {
+        jdbcTemplate.update("""
+            INSERT INTO reservation
+            VALUES (1, 'user_a', '2026-04-28', 'AVAILABLE', 1, 1)
+            """);
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().delete("/admin/reservations/1")
