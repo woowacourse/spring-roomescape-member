@@ -1,7 +1,7 @@
 package roomescape.controller.admin;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,13 +14,11 @@ import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/admin/themes")
 public class AdminThemeController {
-    private static final String DEFAULT_PATH = "/themes/";
     private final ThemeService themeService;
 
     public AdminThemeController(ThemeService themeService) {
@@ -39,7 +37,7 @@ public class AdminThemeController {
         Theme theme = themeService.saveTheme(themeRequest.domain());
         ThemeResponse themeResponse = ThemeResponse.from(theme);
 
-        return ResponseEntity.created(getLocation(themeResponse.id())).body(themeResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(themeResponse);
     }
 
     @DeleteMapping("/{id}")
@@ -49,8 +47,4 @@ public class AdminThemeController {
         return ResponseEntity.noContent().build();
     }
 
-    @NonNull
-    private static URI getLocation(long id) {
-        return URI.create(DEFAULT_PATH + id);
-    }
 }
