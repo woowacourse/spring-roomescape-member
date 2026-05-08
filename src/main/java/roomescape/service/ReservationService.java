@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -16,6 +17,7 @@ import java.util.List;
 @Service
 public class ReservationService {
     private static final String RESERVATION_TIME_NOT_FOUND_MESSAGE = "존재하지 않는 예약 시간입니다.";
+    private static final String RESERVATION_ALREADY_EXISTS_MESSAGE = "이미 예약된 시간입니다.";
     private static final String THEME_NOT_FOUND_MESSAGE = "존재하지 않는 테마입니다.";
 
     private final ReservationRepository reservationRepository;
@@ -42,8 +44,16 @@ public class ReservationService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException(THEME_NOT_FOUND_MESSAGE));
 
+        validateNotDuplicated(date, timeId, themeId);
+
         Reservation reservation = new Reservation(name, date, time, theme);
         return reservationRepository.save(reservation);
+    }
+
+    private void validateNotDuplicated(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new InvalidRequestException(RESERVATION_ALREADY_EXISTS_MESSAGE);
+        }
     }
 
     @Transactional
