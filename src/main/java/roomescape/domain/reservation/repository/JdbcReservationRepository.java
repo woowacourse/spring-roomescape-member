@@ -31,7 +31,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAllReservations() {
         return jdbcTemplate.query(
             """
-                SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at, t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
+                SELECT r.id, r.name, r.date,
+                       rt.id AS time_id, rt.start_at,
+                       t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
                 FROM reservation r
                 JOIN reservation_time rt ON r.time_id = rt.id
                 JOIN theme t ON r.theme_id = t.id
