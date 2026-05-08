@@ -5,14 +5,15 @@ import java.time.LocalTime;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import roomescape.theme.application.dto.ThemeCreateCommand;
 
-public class RepositoryTestHelper {
+public class TestDataHelper {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert themeInsert;
     private final SimpleJdbcInsert reservationTimeInsert;
 
-    public RepositoryTestHelper(JdbcTemplate jdbcTemplate) {
+    public TestDataHelper(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.themeInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
@@ -22,12 +23,22 @@ public class RepositoryTestHelper {
                 .usingGeneratedKeyColumns("id");
     }
 
+    public void clearDatabase() {
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
+    }
+
     public Long insertTheme(String name, String description, String thumbnailImgUrl) {
         return themeInsert.executeAndReturnKey(Map.of(
                 "name", name,
                 "description", description,
                 "thumbnail_img_url", thumbnailImgUrl
         )).longValue();
+    }
+
+    public Long insertTheme(ThemeCreateCommand command) {
+        return insertTheme(command.name(), command.description(), command.thumbnailImgUrl());
     }
 
     public Long insertReservationTime(LocalTime startAt) {
@@ -45,4 +56,5 @@ public class RepositoryTestHelper {
                 timeId
         );
     }
+
 }

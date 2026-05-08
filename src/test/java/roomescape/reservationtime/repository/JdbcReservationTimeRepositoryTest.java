@@ -17,7 +17,7 @@ import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.infra.JdbcThemeRepository;
 import roomescape.theme.domain.repository.ThemeRepository;
-import roomescape.support.RepositoryTestHelper;
+import roomescape.support.TestDataHelper;
 
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
@@ -27,13 +27,13 @@ class JdbcReservationTimeRepositoryTest {
 
     ReservationTimeRepository timeRepository;
     ThemeRepository themeRepository;
-    RepositoryTestHelper testHelper;
+    TestDataHelper testHelper;
 
     @BeforeEach
     void setUp() {
         timeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
-        testHelper = new RepositoryTestHelper(jdbcTemplate);
+        testHelper = new TestDataHelper(jdbcTemplate);
         testHelper.insertReservationTime(LocalTime.of(9, 0));
         testHelper.insertReservationTime(LocalTime.of(10, 0));
         testHelper.insertReservationTime(LocalTime.of(11, 0));

@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.infra.JdbcReservationRepository;
-import roomescape.support.RepositoryTestHelper;
+import roomescape.support.TestDataHelper;
 
 @JdbcTest
 class JdbcReservationRepositoryTest {
@@ -21,12 +21,12 @@ class JdbcReservationRepositoryTest {
     private JdbcTemplate jdbcTemplate;
 
     ReservationRepository reservationRepository;
-    RepositoryTestHelper testHelper;
+    TestDataHelper testHelper;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new JdbcReservationRepository(jdbcTemplate);
-        testHelper = new RepositoryTestHelper(jdbcTemplate);
+        testHelper = new TestDataHelper(jdbcTemplate);
     }
 
     @DisplayName("사용자의 방탈출 예약 시간 추가를 테스트합니다.")

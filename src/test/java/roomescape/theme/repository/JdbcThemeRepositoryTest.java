@@ -15,7 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
-import roomescape.support.RepositoryTestHelper;
+import roomescape.support.TestDataHelper;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.repository.PopularTheme;
 import roomescape.theme.domain.repository.ThemeRepository;
@@ -29,13 +29,13 @@ public class JdbcThemeRepositoryTest {
 
     ThemeRepository themeRepository;
     ReservationTimeRepository timeRepository;
-    RepositoryTestHelper testHelper;
+    TestDataHelper testHelper;
 
     @BeforeEach
     void setUp() {
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
         timeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
-        testHelper = new RepositoryTestHelper(jdbcTemplate);
+        testHelper = new TestDataHelper(jdbcTemplate);
     }
 
     @DisplayName("db의 정상 저장을 테스트 합니다.")

@@ -1,4 +1,4 @@
-package roomescape.fake;
+package roomescape.fixture.fake;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
