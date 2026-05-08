@@ -11,14 +11,14 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
+        validateName();
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
-        validateName();
     }
 
-    public void validateName() {
+    private void validateName() {
         if (name.length() < 2 || name.length() > 20) {
             throw new IllegalArgumentException("[ERROR] 사용자 이름은 2자 이상 20자 이하입니다.");
         }

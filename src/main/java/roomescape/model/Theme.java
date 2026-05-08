@@ -10,10 +10,10 @@ public class Theme {
 
     public Theme(Long id, String name, String description, String url) {
         this.id = id;
+        validateName();
         this.name = name;
         this.description = description;
         this.url = url;
-        validateName();
     }
 
     public static Theme from(ThemeResponse themeResponse) {
