@@ -1,0 +1,60 @@
+package roomescape.service.reservationtime;
+
+import java.time.LocalTime;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+import org.springframework.stereotype.Service;
+import roomescape.repository.reservation.ReservationRepository;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.repository.reservationtime.ReservationTimeRepository;
+
+@Service
+public class ReservationTimeService {
+
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
+
+    public ReservationTimeService(
+            final ReservationTimeRepository reservationTimeRepository,
+            final ReservationRepository reservationRepository
+    ) {
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
+    }
+
+
+    public ReservationTime save(final LocalTime startAt) {
+        ReservationTime reservationTime = ReservationTime.createNew(startAt);
+
+        if (reservationTimeRepository.existsByStartAt(startAt)) {
+            throw new IllegalArgumentException("[ERROR] 같은 시간을 추가할 수 없습니다.");
+        }
+
+        return reservationTimeRepository.save(reservationTime);
+    }
+
+    public List<ReservationTime> findAvailableTimes(final LocalDate date, final long themeId) {
+        Set<Long> reservedTimeIds = Set.copyOf(reservationRepository.findReservedTimeIdsByDateAndThemeId(date, themeId));
+
+        return reservationTimeRepository.findAll().stream()
+                .filter(reservationTime -> !reservedTimeIds.contains(reservationTime.getId()))
+                .toList();
+    }
+
+    public void deleteById(final long timeId) {
+        if (reservationRepository.existsByTimeId(timeId)) {
+            throw new IllegalArgumentException("[ERROR] 이미 예약된 시간은 삭제할 수 없습니다.");
+        }
+        reservationTimeRepository.deleteById(timeId);
+    }
+
+    public List<ReservationTime> getAll() {
+        return reservationTimeRepository.findAll();
+    }
+
+    public ReservationTime getById(final long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 찾는 시간이 없습니다"));
+    }
+}
