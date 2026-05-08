@@ -10,7 +10,7 @@ public record PopularThemeRequestDto(
         @Max(value = 15)
         int limit,
         @RequestParam(defaultValue = "7")
-        @Positive(message = "days는 양수를 입력해 주세요")
+        @Positive(message = "days는 양수를 입력해 주세요") // 0은 허용되지 않는다.
         @Max(value = 10)
         int days
 ) {

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
-import roomescape.dto.request.PopularThemeRequestDto;
 import roomescape.dto.response.AvailableTimeResponseDto;
 
 
@@ -149,7 +148,7 @@ public class ThemeJdbcDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
+    public List<Theme> findPopulars(LocalDate from, LocalDate to, int limit) {
         String sql = """
                     SELECT
                         th.id,
@@ -161,17 +160,17 @@ public class ThemeJdbcDao implements ThemeDao {
                     LEFT JOIN (
                         SELECT theme_id, COUNT(*) AS cnt
                         FROM reservations
-                        WHERE date BETWEEN :startDate AND :endDate
+                        WHERE date BETWEEN :from AND :to
                         GROUP BY theme_id
                     ) r ON th.id = r.theme_id
                     ORDER BY reservation_count DESC
                     LIMIT :limit;
                 """;
-        LocalDate now = LocalDate.now();
 
-        SqlParameterSource params = new MapSqlParameterSource("startDate", now.minusDays(popularThemeRequestDto.days()))
-                .addValue("endDate", now)
-                .addValue("limit", popularThemeRequestDto.limit());
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("from", from)
+                .addValue("to", to)
+                .addValue("limit", limit);
 
         return jdbcTemplate.query(sql, params, THEME_ROW_MAPPER);
     }

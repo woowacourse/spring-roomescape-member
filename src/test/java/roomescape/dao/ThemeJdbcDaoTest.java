@@ -131,7 +131,10 @@ class ThemeJdbcDaoTest {
         Theme nonPopular = insertThemeHandler(theme2);
 
         reservationDao.insert(new Reservation("이름1", LocalDate.parse("2026-05-05"), time1, popular));
-        List<Theme> populars = themeDao.findPopulars(popularThemeRequestDto);
+        List<Theme> populars = themeDao.findPopulars(
+                LocalDate.parse("2026-05-05"),
+                LocalDate.parse("2026-05-05"),
+                limit);
 
         assertThat(populars)
                 .hasSize(limit)

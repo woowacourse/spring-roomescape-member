@@ -1,15 +1,15 @@
 package roomescape.service.fake;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
-import roomescape.dto.request.PopularThemeRequestDto;
 import roomescape.dto.response.AvailableTimeResponseDto;
 
 public class FakeThemeDao extends FakeCommonDao<Theme> implements ThemeDao {
-    
+
     @Override
     public boolean existsByName(Name name) {
         return store.values()
@@ -23,8 +23,8 @@ public class FakeThemeDao extends FakeCommonDao<Theme> implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
-        return List.of();
+    public List<Theme> findPopulars(LocalDate from, LocalDate to, int limit) {
+        return Collections.emptyList();
     }
 
     @Override
