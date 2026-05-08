@@ -1,6 +1,6 @@
 package roomescape.theme.dto;
 
-public record RequestTheme(
+public record ThemeRequest(
         String name,
         String description,
         String thumbnail

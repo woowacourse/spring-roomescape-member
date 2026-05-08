@@ -60,7 +60,7 @@ class ReservationE2ETest {
     }
 
     @Test
-    @DisplayName("POST /reservations - 예약을 생성하면 201과 ResponseReservation을 반환한다")
+    @DisplayName("POST /reservations - 예약을 생성하면 201과 ReservationResponse을 반환한다")
     void createReservation() {
         Map<String, Object> body = new HashMap<>();
         body.put("name", "브라운");
