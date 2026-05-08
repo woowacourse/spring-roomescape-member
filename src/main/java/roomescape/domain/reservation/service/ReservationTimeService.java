@@ -10,6 +10,7 @@ import roomescape.domain.reservation.exception.ReservationTimeDeleteConflictExce
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.request.ReservationTimeCreateRequest;
 import roomescape.domain.reservation.response.ReservationTimeResponse;
+import roomescape.domain.reservation.response.ReservationTimesResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,10 +23,11 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<ReservationTimeResponse> findAllReservationTimes() {
-        return reservationTimeRepository.findAll().stream()
+    public ReservationTimesResponse findAllReservationTimes() {
+        List<ReservationTimeResponse> times = reservationTimeRepository.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
+        return new ReservationTimesResponse(times);
     }
 
     @Transactional

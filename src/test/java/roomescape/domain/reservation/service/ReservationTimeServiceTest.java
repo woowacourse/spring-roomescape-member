@@ -17,6 +17,7 @@ import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.request.ReservationTimeCreateRequest;
 import roomescape.domain.reservation.response.ReservationTimeResponse;
+import roomescape.domain.reservation.response.ReservationTimesResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
@@ -61,10 +62,10 @@ class ReservationTimeServiceTest {
                 .thenReturn(reservationTimes);
 
         // when
-        List<ReservationTimeResponse> responses = reservationTimeService.findAllReservationTimes();
+        ReservationTimesResponse foundTimes = reservationTimeService.findAllReservationTimes();
 
         // then
-        assertThat(responses).hasSize(2)
+        assertThat(foundTimes.times()).hasSize(2)
                 .extracting("startAt")
                 .containsExactly(LocalTime.of(10, 0), LocalTime.of(11, 0));
 
