@@ -103,6 +103,90 @@
 - [x] 인기 테마 조회 service 구현
 - [x] 인기 테마 조회 controller 구현
 
-#### 추가
+#### SQL, 추가
 - [x] data.sql 구현
 - [x] 화면 구현
+
+---
+
+### 리뷰 받은 후 리팩토링 실행 목록
+
+- **READ.ME**
+- [x] PR본문 관련 코멘트 작성
+- [ ] 실행 가이드 문서화
+- [x] ERD 문서화
+
+
+- **ThemeServiceTest**
+- [x] SpringBootTest, DirtiesContext 작동법 / 장단점 / 단점 대체법 알아보기
+- [ ] JdbcTemplate 활용하여 구현
+
+- **ReservationDaoTest**
+- [ ] Dao에 Service의존 문제 해결
+- [ ] @JdbcTest 활용 -> SpringBootTest, DirtiesContext제거
+
+- **ThemeService**
+- [ ] '7','30' 하드코딩 상수화
+- [ ] `findReservationTimeByDateAndThemeId()` 로직 분리
+- [ ] `timeIds.contains()` 시간 복잡도 알아보기
+
+
+- **PopularTheme**
+- [ ] 도메인인지 DTO인지 고민해보기
+
+
+- **Reservation**
+- [ ] 이름 검증 로직 - '빈 칸일 경우'/ '이름이 너무 길 때' 메시지 응답 분리
+- [ ] 하드코딩 숫자 상수화
+
+
+- **ThemeDao**
+- [ ] 테스트 필요성 인식 및 작성
+
+
+- **ReservationTimeDao**
+- [ ] `findAll()` 로직 테스트 작성
+
+
+- **ReservationDao**
+- [ ] 예약자 이름 정렬 취소(하나밖에 없기 때문에)
+- [ ] count대신 exist사용
+- [ ] `existByDateAndTimeIAndThemeId` 메서드명 변경
+
+
+- **ReservationTimeController**
+- [ ] 중복된 `read()` 메서드 명 변경
+- [ ] `findAll()` 대신 `findAvailableTimes()`와 같은 메서드 명 변경
+
+
+- **GlobalExceptionHandler**
+- [ ] `EmptyResultDataAccessException` 대체할 예외 찾기(너무 구체적이기 때문에)
+
+
+##  ERD
+
+```mermaid
+erDiagram
+THEME {
+BIGINT id PK
+VARCHAR name
+VARCHAR description
+VARCHAR thumbnail
+}
+
+    RESERVATION_TIME {
+        BIGINT id PK
+        VARCHAR start_at
+    }
+    
+    RESERVATION {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR date
+        BIGINT time_id FK
+        BIGINT theme_id FK
+    }
+
+    RESERVATION }o--|| RESERVATION_TIME : "참조 (time_id)"
+    RESERVATION }o--|| THEME : "참조 (theme_id)"
+```
