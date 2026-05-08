@@ -1,5 +1,6 @@
 package roomescape.reservationtime.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,18 +13,11 @@ import roomescape.theme.service.ThemeService;
 
 @Controller
 @RequestMapping("/pages/admin/themes/{themeId}/times")
+@RequiredArgsConstructor
 public class ReservationTimeAdminPageController {
 
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
-
-    public ReservationTimeAdminPageController(
-            final ReservationTimeService reservationTimeService,
-            final ThemeService themeService
-    ) {
-        this.reservationTimeService = reservationTimeService;
-        this.themeService = themeService;
-    }
 
     @GetMapping
     public String read(@PathVariable final Long themeId, final Model model) {

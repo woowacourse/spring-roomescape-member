@@ -1,5 +1,6 @@
 package roomescape.theme.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,13 +12,10 @@ import roomescape.theme.service.ThemeService;
 
 @Controller
 @RequestMapping("/pages/admin/themes")
+@RequiredArgsConstructor
 public class ThemeAdminPageController {
 
     private final ThemeService themeService;
-
-    public ThemeAdminPageController(final ThemeService themeService) {
-        this.themeService = themeService;
-    }
 
     @GetMapping
     public String read(final Model model) {
