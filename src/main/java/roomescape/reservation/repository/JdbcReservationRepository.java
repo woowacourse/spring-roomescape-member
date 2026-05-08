@@ -88,7 +88,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     ON r.time_id = t.id
                 INNER JOIN theme th
                     ON r.theme_id = th.id
-                WHERE date = ? AND theme_Id = ?
+                WHERE date = ? AND theme_id = ?
                 """;
 
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);

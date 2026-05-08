@@ -2,11 +2,11 @@ package roomescape.reservationtime.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.reservationtime.domain.ReservationTimeAvailability;
 import roomescape.reservationtime.dto.AvailableTimesResponse;
 import roomescape.reservationtime.dto.AvailableTimeResponse;
 import roomescape.reservationtime.dto.ReservationTimesResponse;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
+import roomescape.reservationtime.service.ReservationTimeAvailability;
 import roomescape.reservationtime.service.ReservationTimeService;
 
 import java.time.LocalDate;
