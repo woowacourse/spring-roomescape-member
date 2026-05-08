@@ -40,21 +40,21 @@
 
 ### 미션 진행중 작성
 
-- **규칙때문에 바뀐점** : 
+- **규칙때문에 바뀐점** :
     - 관리자와 사용자의 구분을 하지 않았었다.
     - Get은 사용자와 관리자 같이 사용가능하고 Post와 Delete는 관리자에게만 하도록 URL 에서 /admin을 따로 주었다.
     - 단, 사용자가 예약을 생성해야하므로 post/reservations는 /admin을 포함하지 않는다.
 
-- **막혔던 부분** : 
+- **막혔던 부분** :
     - 2단계에서 `날짜와 테마를 선택하면 예약 가능한 시간 목록`을 구현할 때 SQL문이 생각이 나지 않았다.
-    - 해결: ReservationTime 을 전체 가능한 시간을 두고 예약된 시간을 제거하니 가능한 시간이 추출되었다. 
-  
+    - 해결: ReservationTime 을 전체 가능한 시간을 두고 예약된 시간을 제거하니 가능한 시간이 추출되었다.
+
 - **테스트 작성이 어려웠던 부분**:
     - "지난 날짜는 예약할 수 없습니다."라는 에러를 뱉으며 실패했다.
     - 원인 파악: `ThemeServiceTest` 등에서 예약 날짜를 `2024-05-01` 같은 특정 날짜로 하드코딩해 두었기 때문이었다.
-  시간이 지나면서 그 날짜가 과거가 되어버렸고, 과거로직 방지 코드에 걸려 실패했다.
-    - 해결: 날짜와 시간에 의존적인 로직을 테스트할 때는, 항상 미래의 날짜(예: 2030-05-06)를 하드코딩하거나 
-  `LocalDate.now().plusDays(1)`처럼 동적으로 현재 시간 기준 미래를 계산하도록 짜야 한다는 것을 깨달았다.
+      시간이 지나면서 그 날짜가 과거가 되어버렸고, 과거로직 방지 코드에 걸려 실패했다.
+    - 해결: 날짜와 시간에 의존적인 로직을 테스트할 때는, 항상 미래의 날짜(예: 2030-05-06)를 하드코딩하거나
+      `LocalDate.now().plusDays(1)`처럼 동적으로 현재 시간 기준 미래를 계산하도록 짜야 한다는 것을 깨달았다.
 
 ## 기능 구현 목록
 
@@ -79,24 +79,28 @@
 - [x] http메서드에 상태코드 구현
 - [x] `ThemeDao`, `ThemeService`, `ReservationDAO`, `ReservationService` 테스트 구현
 
-
 #### 2단계 - 사용자 예약
+
 - [x] API 명세 작성
+
  ```
     예약 가능 시간 조회    GET /themes/1/reservation-times?date=2026-05-08         -        [{id, startAt, available}...]
 ```
+
 - [x] 예약 가능한 시간인 ReservationTimeStatusResponse Dto 구현
 - [x] ReservationDao에서 사용자가 선택한 날짜와 테마에 해당하는 예약시간Id를 가져오는 메서드 구현
 - [x] ThemeService에서 예약 가능한 시간을 계산하는 메서드 구현
 - [x] 예약 가능 시간 조회 Controller 구현
 - [x] 같은 시간, 같은 테마, 같은 날짜 중복 예약 불가 검증 구현
 
-
 #### 3단계 - 인기 테마 조회
+
 - [x] API 명세 작성
+
  ```
     인기 테마 조회    GET /themes/popular             -             [{id, name, description, thumbnail, reservationCount}...]
 ```
+
 - [x] 인기 테마 조회 응답 dto 구현
 - [x] 인기 테마 도메인 구현
 - [x] 인기 테마 조회 dao 구현
@@ -104,6 +108,7 @@
 - [x] 인기 테마 조회 controller 구현
 
 #### SQL, 추가
+
 - [x] data.sql 구현
 - [x] 화면 구현
 
@@ -126,7 +131,7 @@
 - [x] @JdbcTest 활용 -> SpringBootTest, DirtiesContext제거
 
 - **ThemeService**
-- [ ] '7','30' 하드코딩 상수화
+- [x] '7','30' 하드코딩 상수화
 - [ ] `findReservationTimeByDateAndThemeId()` 로직 분리
 - [ ] `timeIds.contains()` 시간 복잡도 알아보기
 
@@ -162,23 +167,22 @@
 - **GlobalExceptionHandler**
 - [ ] `EmptyResultDataAccessException` 대체할 예외 찾기(너무 구체적이기 때문에)
 
-
-##  ERD
+## ERD
 
 ```mermaid
 erDiagram
-THEME {
-BIGINT id PK
-VARCHAR name
-VARCHAR description
-VARCHAR thumbnail
-}
+    THEME {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR description
+        VARCHAR thumbnail
+    }
 
     RESERVATION_TIME {
         BIGINT id PK
         VARCHAR start_at
     }
-    
+
     RESERVATION {
         BIGINT id PK
         VARCHAR name
@@ -187,6 +191,6 @@ VARCHAR thumbnail
         BIGINT theme_id FK
     }
 
-    RESERVATION }o--|| RESERVATION_TIME : "참조 (time_id)"
-    RESERVATION }o--|| THEME : "참조 (theme_id)"
+    RESERVATION }o--|| RESERVATION_TIME: "참조 (time_id)"
+    RESERVATION }o--|| THEME: "참조 (theme_id)"
 ```
