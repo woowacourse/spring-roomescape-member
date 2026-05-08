@@ -6,8 +6,8 @@ import roomescape.admin.dto.AdminThemeRequest;
 import roomescape.admin.dto.AdminThemeResponse;
 import roomescape.admin.repository.AdminThemeRepository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminThemeService {
@@ -28,14 +28,9 @@ public class AdminThemeService {
     }
 
     public List<AdminThemeResponse> getAllThemes() {
-        List<Theme> themes = adminThemeRepository.findAll();
-
-        List<AdminThemeResponse> responses = new ArrayList<>();
-        for (Theme theme : themes) {
-            AdminThemeResponse response = AdminThemeResponse.from(theme);
-            responses.add(response);
-        }
-        return responses;
+        return adminThemeRepository.findAll().stream()
+                .map(AdminThemeResponse::from)
+                .collect(Collectors.toList());
     }
 
     public void deleteTheme(Long id) {

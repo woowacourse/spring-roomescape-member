@@ -1,8 +1,8 @@
 package roomescape.user.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -55,15 +55,11 @@ public class ReservationService {
     }
 
     public List<TimeResponse> getReservations(LocalDate date, Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        List<Long> reservations = reservationRepository.findTimeByDateAndThemeId(date, themeId);
-        List<TimeResponse>  responses = new ArrayList<>();
-        for (ReservationTime reservationTime : reservationTimes) {
-            Long timeId = reservationTime.getId();
-            if (!reservations.contains((timeId)))
-                responses.add(TimeResponse.of(reservationTime));
-        }
-        return responses;
+        List<Long> bookedTimeIds = reservationRepository.findTimeByDateAndThemeId(date, themeId);
+        return reservationTimeRepository.findAll().stream()
+                .filter(time -> !bookedTimeIds.contains(time.getId()))
+                .map(TimeResponse::of)
+                .collect(Collectors.toList());
     }
 
     public void deleteReservation(Long id) {
