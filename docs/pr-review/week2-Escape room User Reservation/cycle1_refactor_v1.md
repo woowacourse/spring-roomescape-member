@@ -17,7 +17,7 @@
   - Controller: Request DTO → Domain 객체 변환 후 Service 호출
   - Service: Domain 객체만 사용
   - Controller: Service 결과(Domain) → Response DTO 변환
-- [ ] **7. 미사용 `SearchRequest` 삭제**
+- [x] **7. 미사용 `SearchRequest` 삭제**
 - [ ] **8. DTO의 `date`/`time` 필드를 `String` 대신 `LocalDate`/`LocalTime` 타입으로 유지하기**
   - `ReservationResponse` - `date` (LocalDate), `time` (LocalTime)
   - `AdminReservationResponse` - `date` (LocalDate), `time` (LocalTime)
