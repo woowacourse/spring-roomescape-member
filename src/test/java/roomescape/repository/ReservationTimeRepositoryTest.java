@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,9 +43,9 @@ public class ReservationTimeRepositoryTest {
     @Test
     void timeId로_시간을_조회할_수_있다() {
         // when
-        ReservationTime time = timeRepository.findById(2L);
+        Optional<ReservationTime> time = timeRepository.findById(2L);
         // then
-        Assertions.assertEquals(LocalTime.of(11, 0), time.getStartAt());
+        Assertions.assertEquals(LocalTime.of(11, 0), time.get().getStartAt());
     }
 
     @Test

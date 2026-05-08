@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,13 +67,13 @@ public class ThemeRepositoryTest {
         Long themeId = 2L;
 
         // when
-        Theme theme = themeRepository.findById(themeId);
+        Optional<Theme> theme = themeRepository.findById(themeId);
 
         // then
-        Assertions.assertEquals(themeId, theme.getId());
-        Assertions.assertEquals("루팡의 예고장", theme.getName());
-        Assertions.assertEquals("세계 최고의 보석 '여신의 눈물'이 전시된 박물관. 당신은 예고된 시간에 맞춰 보석을 훔쳐낼 수 있을까요?", theme.getDescription());
-        Assertions.assertEquals("https://escape.com/images/lupin.png", theme.getUrl());
+        Assertions.assertEquals(themeId, theme.get().getId());
+        Assertions.assertEquals("루팡의 예고장", theme.get().getName());
+        Assertions.assertEquals("세계 최고의 보석 '여신의 눈물'이 전시된 박물관. 당신은 예고된 시간에 맞춰 보석을 훔쳐낼 수 있을까요?", theme.get().getDescription());
+        Assertions.assertEquals("https://picsum.photos/seed/lupin/400/300", theme.get().getUrl());
 
     }
 

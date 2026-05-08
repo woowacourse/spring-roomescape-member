@@ -10,15 +10,15 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        validateName(name);
         this.id = id;
-        validateName();
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    private void validateName() {
+    private void validateName(String name) {
         if (name.length() < 2 || name.length() > 20) {
             throw new IllegalArgumentException("[ERROR] 사용자 이름은 2자 이상 20자 이하입니다.");
         }

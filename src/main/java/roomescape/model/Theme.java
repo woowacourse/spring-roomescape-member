@@ -9,8 +9,8 @@ public class Theme {
     private final String url;
 
     public Theme(Long id, String name, String description, String url) {
+        validateName(name);
         this.id = id;
-        validateName();
         this.name = name;
         this.description = description;
         this.url = url;
@@ -20,7 +20,7 @@ public class Theme {
         return new Theme(themeResponse.id(), themeResponse.name(), themeResponse.description(), themeResponse.url());
     }
 
-    private void validateName(){
+    private void validateName(String name){
         if (name.length() < 1 || name.length() > 20) {
             throw new IllegalArgumentException("[ERROR] 테마 이름은 1자 이상 20자 이하입니다.");
         }
