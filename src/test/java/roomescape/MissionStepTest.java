@@ -114,7 +114,7 @@ public class MissionStepTest {
     void 존재하지_않는_시간으로_예약하면_400을_반환한다() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "3000-08-05");
         reservation.put("timeId", 999);
 
         RestAssured.given().log().all()
@@ -129,7 +129,7 @@ public class MissionStepTest {
     void 이름이_빈_문자열이면_400을_반환한다() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "3000-08-05");
         reservation.put("timeId", 1);   // timeId같은 경우 어떤게 들어가도 테스트에 지장이 가지 않는다.
 
         RestAssured.given().log().all()
@@ -143,7 +143,7 @@ public class MissionStepTest {
     @Test
     void 이름이_null이면_400을_반환한다() {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("date", "2026-12-01");
+        reservation.put("date", "3000-08-05");
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
