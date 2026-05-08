@@ -1,8 +1,6 @@
 package roomescape.user.dao;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,12 +14,12 @@ import roomescape.user.dto.AvailableTimeResponse;
 public class ReservationTimeDao {
     private static final RowMapper<ReservationTime> timeRowMapper = (rs, rowNum) -> {
         return new ReservationTime(rs.getLong("id")
-                , LocalTime.parse(rs.getString("start_at"), DateTimeFormatter.ofPattern("HH:mm")));
+                , rs.getTime("start_at").toLocalTime());
     };
 
     private static final RowMapper<AvailableTimeResponse> availableTimeRowMapper = (rs, rowNum) -> {
         return new AvailableTimeResponse(
-                LocalTime.parse(rs.getString("start_at")),
+                rs.getTime("start_at").toLocalTime(),
                 rs.getBoolean("is_available")
         );
     };

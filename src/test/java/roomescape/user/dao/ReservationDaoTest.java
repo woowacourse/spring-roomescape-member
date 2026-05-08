@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,9 +20,9 @@ public class ReservationDaoTest {
         return new Reservation(
                 rs.getLong("reservation_id"),
                 rs.getString("name"),
-                LocalDate.parse(rs.getString("date")),
+                rs.getDate("date").toLocalDate(),
                 new ReservationTime(rs.getLong("time_id"),
-                        LocalTime.parse(rs.getString("start_at"), DateTimeFormatter.ofPattern("HH:mm"))),
+                        rs.getTime("start_at").toLocalTime()),
                 rs.getLong("theme_id")
         );
     };

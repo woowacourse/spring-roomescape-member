@@ -47,8 +47,8 @@ public class ThemeDao {
                     COUNT(r.id) AS reservation_count
                 FROM theme t
                 JOIN reservation r ON r.theme_id = t.id
-                WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') >= ?
-                    AND PARSEDATETIME(r.date, 'yyyy-MM-dd') < ?
+                WHERE r.date >= ?
+                    AND r.date < ?
                 GROUP BY t.id, t.name, t.description, t.image
                 ORDER BY reservation_count DESC
                 LIMIT ?;
