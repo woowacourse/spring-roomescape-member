@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     private static final Map<Class<?>, String> ERROR_MESSAGES = Map.of(
-            LocalTime.class, "[ERROR] 시간 형식은 HH:mm 이어야 합니다.",
-            LocalDate.class, "[ERROR] 날짜 형식은 yyyy-MM-dd 이어야 합니다."
+            LocalTime.class, "시간 형식은 HH:mm 이어야 합니다.",
+            LocalDate.class, "날짜 형식은 yyyy-MM-dd 이어야 합니다."
     );
 
     @ExceptionHandler
