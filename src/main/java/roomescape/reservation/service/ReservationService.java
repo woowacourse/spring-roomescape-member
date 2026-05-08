@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.exception.DuplicateReservationException;
 import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
@@ -37,6 +38,9 @@ public class ReservationService {
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new InvalidReservationTimeException(timeId));
         Theme theme = themeRepository.findById(themeId);
+        if (reservationRepository.existsByTimeIdAndThemeId(timeId, themeId)) {
+            throw new DuplicateReservationException("이미 존재하는 예약입니다.");
+        }
         Reservation reservation = new Reservation(null, name, date, time, theme);
 
         return reservationRepository.save(reservation);

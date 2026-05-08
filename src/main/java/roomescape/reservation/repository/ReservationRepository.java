@@ -90,4 +90,10 @@ public class ReservationRepository {
             );
         };
     }
+
+    public boolean existsByTimeIdAndThemeId(Long timeId, Long themeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ? AND theme_id = ?";
+        Integer row = jdbcTemplate.queryForObject(sql, Integer.class, timeId, themeId);
+        return row != null && row > 0;
+    }
 }
