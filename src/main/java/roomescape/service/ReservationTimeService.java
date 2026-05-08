@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +40,22 @@ public class ReservationTimeService {
     public List<ReservationTimeResponseDTO> findAllReservationTime() {
         return reservationTimeRepository.findAll().stream()
                 .map(ReservationTimeResponseDTO::from).collect(Collectors.toList());
+    }
+
+    public List<ReservationTimeResponseDTO> findReservedTimes(LocalDate targetDate, Long targetThemeId) {
+        List<Long> reservedTimesOfTargetThemeOnTargetDate = reservationRepository.findAll()
+                .stream()
+                .filter(reservation -> reservation.getDate().equals(targetDate))
+                .filter(reservation -> reservation.getTheme().getId().equals(targetThemeId))
+                .map(reservation -> reservation.getTimeId())
+                .toList();
+
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+
+        return reservationTimes.stream()
+                .filter(reservationTime -> reservedTimesOfTargetThemeOnTargetDate.contains(reservationTime.getId()))
+                .map(ReservationTimeResponseDTO::from)
+                .toList();
     }
 
     @Transactional

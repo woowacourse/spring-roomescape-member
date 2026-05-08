@@ -14,15 +14,15 @@ import roomescape.dto.ThemeResponseDTO;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql("/data.sql")
-class ReservationServiceTest {
+class ThemeServiceTest {
 
     @Autowired
-    private ReservationService reservationService;
+    private ThemeService themeService;
 
     @DisplayName("인기 테마를 조회한다")
     @Test
     void 최근_1주_동안의_예약_상위_10개의_테마를_조회한다() {
-        List<ThemeResponseDTO> popularThemes = reservationService.getPopularThemes();
+        List<ThemeResponseDTO> popularThemes = themeService.getPopularThemes();
         assertThat(popularThemes)
                 .map(theme -> theme.id())
                 .containsExactly(

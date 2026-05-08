@@ -28,4 +28,10 @@ public class ThemeController {
     public ResponseEntity<ThemeResponseDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(themeService.findById(id));
     }
+
+    @GetMapping("/popular-themes")
+    public ResponseEntity<List<ThemeResponseDTO>> getPopularThemes() {
+        List<ThemeResponseDTO> popularThemes = themeService.getPopularThemes();
+        return ResponseEntity.ok(popularThemes);
+    }
 }

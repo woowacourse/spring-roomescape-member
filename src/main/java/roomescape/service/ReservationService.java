@@ -10,7 +10,6 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
 import roomescape.dto.ReservationTimeResponseDTO;
-import roomescape.dto.ThemeResponseDTO;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -49,15 +48,6 @@ public class ReservationService {
         return reservationTimes.stream()
                 .filter(reservationTime -> reservedTimesOfTargetThemeOnTargetDate.contains(reservationTime.getId()))
                 .map(ReservationTimeResponseDTO::from)
-                .toList();
-    }
-
-    public List<ThemeResponseDTO> getPopularThemes() {
-        List<Long> popularThemeIds = reservationRepository.findPopularThemeIds();
-
-        return popularThemeIds.stream()
-                .map(id -> themeRepository.findById(id).get())
-                .map(ThemeResponseDTO::from)
                 .toList();
     }
 

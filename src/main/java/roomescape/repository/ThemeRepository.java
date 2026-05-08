@@ -12,5 +12,7 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(Long id);
 
+    List<Long> findPopularThemeIds();
+
     void delete(Long id);
 }
