@@ -18,6 +18,25 @@ import org.springframework.test.annotation.DirtiesContext;
 public class ThemeControllerTest {
 
     @Test
+    void 전체_테마를_조회한다() {
+        // given
+        createTheme("방탈출1", "설명1", "https://example.com/theme1.jpg");
+        createTheme("방탈출2", "설명2", "https://example.com/theme2.jpg");
+
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("name", contains(
+                        "방탈출1",
+                        "방탈출2"
+                ));
+    }
+
+    @Test
     void 최근_7일간_인기_테마_상위_10개를_조회한다() {
         // given
         createData();
