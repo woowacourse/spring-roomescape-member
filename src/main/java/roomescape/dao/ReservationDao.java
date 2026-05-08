@@ -105,22 +105,10 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, ROW_MAPPER, themeId, date);
     }
 
-    public boolean existsById(Long reservationId) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM reservation
-                    WHERE id = ?
-                )
-                """;
-
-        return jdbcTemplate.queryForObject(sql, boolean.class, reservationId);
-    }
-
-    public void delete(Long reservationId) {
+    public int delete(Long reservationId) {
         String sql = """
                 DELETE FROM reservation
                 WHERE id = ?""";
-        jdbcTemplate.update(sql, reservationId);
+        return jdbcTemplate.update(sql, reservationId);
     }
 }

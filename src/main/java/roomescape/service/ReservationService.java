@@ -50,13 +50,8 @@ public class ReservationService {
     }
 
     public void delete(Long reservationId) {
-        validateReservationExists(reservationId);
-        reservationDao.delete(reservationId);
-    }
-
-    private void validateReservationExists(Long reservationId) {
-        boolean exists = reservationDao.existsById(reservationId);
-        if (!exists) {
+        int deleted = reservationDao.delete(reservationId);
+        if (deleted == 0) {
             throw new IllegalArgumentException("존재하지 않는 예약입니다.");
         }
     }

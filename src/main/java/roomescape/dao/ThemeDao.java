@@ -114,10 +114,10 @@ public class ThemeDao {
         return jdbcTemplate.queryForObject(sql, boolean.class, name);
     }
 
-    public void delete(long themeId) {
+    public int delete(long themeId) {
         String sql = """
                 DELETE FROM theme
                 WHERE id = ?""";
-        jdbcTemplate.update(sql, themeId);
+        return jdbcTemplate.update(sql, themeId);
     }
 }

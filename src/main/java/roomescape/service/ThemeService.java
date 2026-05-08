@@ -46,13 +46,8 @@ public class ThemeService {
     }
 
     public void delete(long themeId) {
-        validateThemeExists(themeId);
-        themeDao.delete(themeId);
-    }
-
-    private void validateThemeExists(Long themeId) {
-        boolean exists = themeDao.existsById(themeId);
-        if (!exists) {
+        int deleted = themeDao.delete(themeId);
+        if (deleted == 0) {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
         }
     }
