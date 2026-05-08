@@ -11,6 +11,7 @@ public class Theme {
     }
 
     public Theme(Long id, String name, String description, String image) {
+        validateName(name);
         this.id = id;
         this.name = name;
         this.description = description;
@@ -31,5 +32,14 @@ public class Theme {
 
     public String getImage() {
         return image;
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()){
+            throw new IllegalArgumentException("[ERROR] 이름은 공백일 수 없습니다.");
+        }
+        if (name.length() > 20) {
+            throw new IllegalArgumentException("[ERROR] 이름은 20자를 초과할 수 없습니다");
+        }
     }
 }
