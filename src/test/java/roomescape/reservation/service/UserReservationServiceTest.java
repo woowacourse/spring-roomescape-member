@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.exception.ApiException;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
@@ -91,14 +92,14 @@ class UserReservationServiceTest {
     void 예약이_중복되면_예외가_발생한다() {
         when(reservationTimeRepository.findById(eq(time.id()))).thenReturn(Optional.of(time));
         when(themeRepository.findById(eq(theme.id()))).thenReturn(Optional.of(theme));
+
         when(reservationRepository.save(any(), any(), eq(time), eq(theme)))
-                .thenThrow(new DuplicateException("해당 날짜의 해당 시간은 이미 예약되었습니다"));
+                .thenThrow(new DuplicateKeyException("DB 레벨의 중복 키 에러 발생"));
 
         assertThatThrownBy(
                 () -> userReservationService.createReservation("코니", LocalDate.of(2026, 5, 1), time.id(), theme.id()))
                 .isInstanceOf(DuplicateException.class)
-                .extracting(Throwable::getMessage)
-                .isEqualTo("해당 날짜의 해당 시간은 이미 예약되었습니다");
+                .hasMessage("해당 날짜의 해당 시간은 이미 예약되었습니다");
     }
 
     @Test
