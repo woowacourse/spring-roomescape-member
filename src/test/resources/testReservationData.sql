@@ -5,5 +5,5 @@ VALUES ('공포의 저택', 'https://picsum.photos/seed/horror/400/300', '어둠
 INSERT INTO reservation_time (start_at, status)
 VALUES ('10:00', 'AVAILABLE');
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('user_a', '2026-04-28', 1, 1);
+INSERT INTO reservation (name, date, time_id, theme_id, status)
+VALUES ('user_a', '2026-04-28', 1, 1, 'AVAILABLE');

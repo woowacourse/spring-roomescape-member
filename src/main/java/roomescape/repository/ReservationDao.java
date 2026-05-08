@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
@@ -33,13 +34,23 @@ public class ReservationDao {
                 rs.getObject("time_value", LocalTime.class)
         );
 
-        return Reservation.create(
+        Reservation reservation = Reservation.of(
                 rs.getLong("reservation_id"),
                 rs.getString("name"),
                 rs.getObject("date", LocalDate.class),
                 reservationTime,
                 theme
         );
+
+        if(ReservationStatus.DELETED.name().equals(rs.getString("status"))) {
+            return reservation.deleted();
+        }
+
+        if(ReservationStatus.HOLD.name().equals(rs.getString("status"))) {
+            return reservation.hold();
+        }
+
+        return reservation;
     };
 
     public Reservation save(Reservation reservation, long timeId, long themeId) {
@@ -47,7 +58,8 @@ public class ReservationDao {
                 .addValue("name", reservation.username())
                 .addValue("date", reservation.reservationDate())
                 .addValue("time_id", timeId)
-                .addValue("theme_id", themeId);
+                .addValue("theme_id", themeId)
+                .addValue("status", ReservationStatus.AVAILABLE.name());
 
         SimpleJdbcInsert reservationInsertExecutor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
@@ -60,6 +72,7 @@ public class ReservationDao {
                     reservation.id as reservation_id,
                     reservation.name,
                     reservation.date,
+                    reservation.status,
                     time.id as time_id,
                     time.start_at as time_value,
                     theme.id as theme_id,
@@ -92,6 +105,7 @@ public class ReservationDao {
                     reservation.id as reservation_id,
                     reservation.name,
                     reservation.date,
+                    reservation.status,
                     time.id as time_id,
                     time.start_at as time_value,
                     theme.id as theme_id,
@@ -103,6 +117,7 @@ public class ReservationDao {
                 ON reservation.time_id = time.id
                 INNER JOIN theme as theme
                 ON reservation.theme_id = theme.id
+                WHERE reservation.status = 'AVAILABLE'
                 """;
 
         return jdbcTemplate.query(sql, rowMapper);
@@ -110,11 +125,11 @@ public class ReservationDao {
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
-        SELECT EXISTS (
-            SELECT 1 FROM reservation
-            WHERE date = ? AND time_id = ? AND theme_id = ?
-        )
-        """;
+                SELECT EXISTS (
+                    SELECT 1 FROM reservation
+                    WHERE date = ? AND time_id = ? AND theme_id = ?
+                )
+                """;
         return Boolean.TRUE.equals(
                 jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId)
         );
