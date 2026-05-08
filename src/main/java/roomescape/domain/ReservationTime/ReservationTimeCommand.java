@@ -11,7 +11,7 @@ public record ReservationTimeCommand(String startAt) {
     }
 
     private static void validateStartAt(String startAt) {
-        if(startAt.isBlank()) {
+        if(startAt == null || startAt.isBlank()) {
             throw new ReservationCommandException(ErrorMessage.INVALID_START_TIME_NULL);
         }
         try {
