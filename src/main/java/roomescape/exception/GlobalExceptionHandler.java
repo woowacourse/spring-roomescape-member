@@ -10,8 +10,8 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<Void> handleNoSuchElement(NoSuchElementException exception) {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<String> handleNoSuchElement(NoSuchElementException exception) {
+        return ResponseEntity.status(404).body(exception.getMessage());
     }
 
     @ExceptionHandler(DuplicateReservationException.class)

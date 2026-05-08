@@ -52,7 +52,7 @@ public class ThemeDao {
         int affected = jdbcTemplate.update(sql, themeId);
 
         if(affected == 0) {
-            throw new NoSuchElementException("[ERROR] 삭제할 id에 해당하는 예약이 존재하지 않습니다.");
+            throw new NoSuchElementException("[ERROR] 삭제할 id에 해당하는 테마가 존재하지 않습니다.");
         }
     }
 
