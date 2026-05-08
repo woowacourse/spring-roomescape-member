@@ -8,9 +8,9 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ReservationTimeDao;
-import roomescape.repository.ThemeDao;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 
 @Service
 public class ReservationService {

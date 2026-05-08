@@ -23,7 +23,7 @@
   - `AdminReservationResponse` - `date` (LocalDate), `time` (LocalTime)
   - `ReservationTimeResponse` - `startAt` (LocalTime)
   - `AvailableReservationTimeResponse` - `startAt` (LocalTime)
-- [ ] **9. `repository` 패키지명을 `dao`로 변경**
+- [x] **9. `repository` 패키지명을 `dao`로 변경**
 - [ ] **10. `ThemeDao.findById()`의 try-catch를 `query()` + `stream().findFirst()`로 대체**
 - [ ] **11. 미흡 테스트 추가**
 - [ ] **12. `AdminThemeService`의 `delete`에 있는 불필요한 타입 캐스팅 제거**

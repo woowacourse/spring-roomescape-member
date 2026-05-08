@@ -3,7 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.AdminReservationResponse;
-import roomescape.repository.ReservationDao;
+import roomescape.dao.ReservationDao;
 
 @Service
 public class AdminReservationService {

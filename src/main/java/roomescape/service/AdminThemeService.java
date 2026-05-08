@@ -2,8 +2,8 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.dto.ThemeRequest;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ThemeDao;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ThemeDao;
 
 @Service
 public class AdminThemeService {
