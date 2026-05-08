@@ -14,12 +14,6 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    public Theme(String name, String description, String thumbnail) {
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
-    }
-
     public Long getId() {
         return id;
     }

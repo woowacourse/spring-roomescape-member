@@ -35,7 +35,7 @@ class ThemeRepositoryTest {
 
     @Test
     void 테마를_저장하면_생성된_id와_테마_정보를_반환한다() {
-        Theme saved = themeRepository.save(new Theme("공포방", "무서운방입니다.", "image-url"));
+        Theme saved = themeRepository.save(new Theme(null, "공포방", "무서운방입니다.", "image-url"));
 
         assertThat(saved.getId()).isPositive();
         assertThat(saved.getName()).isEqualTo("공포방");
@@ -45,7 +45,7 @@ class ThemeRepositoryTest {
 
     @Test
     void 존재하는_id로_조회하면_테마를_반환한다() {
-        Theme saved = themeRepository.save(new Theme("공포방", "무서운방입니다.", "image-url"));
+        Theme saved = themeRepository.save(new Theme(null,"공포방", "무서운방입니다.", "image-url"));
 
         Theme result = themeRepository.findById(saved.getId());
 
@@ -57,8 +57,8 @@ class ThemeRepositoryTest {
 
     @Test
     void 여러_테마를_저장한_뒤_전체_조회하면_모든_테마를_반환한다() {
-        themeRepository.save(new Theme("공포방", "무서운방입니다.", "image-url"));
-        themeRepository.save(new Theme("추리방", "단서를 찾아 탈출합니다.", "mystery-image-url"));
+        themeRepository.save(new Theme(null, "공포방", "무서운방입니다.", "image-url"));
+        themeRepository.save(new Theme(null, "추리방", "단서를 찾아 탈출합니다.", "mystery-image-url"));
 
         List<Theme> result = themeRepository.findAll();
 
@@ -67,7 +67,7 @@ class ThemeRepositoryTest {
 
     @Test
     void 존재하는_id로_삭제하면_해당_테마가_삭제된다() {
-        Theme saved = themeRepository.save(new Theme("공포방", "무서운방입니다.", "image-url"));
+        Theme saved = themeRepository.save(new Theme(null, "공포방", "무서운방입니다.", "image-url"));
 
         themeRepository.remove(saved.getId());
 
