@@ -89,6 +89,42 @@ class ReservationRepositoryTest {
                 () -> assertThat(reservationRepository.findById(id1)).isEmpty());
     }
 
+    @Test
+    void 테마_id에_해당하는_예약이_존재하는지_확인한다() {
+        // given
+        ReservationTime time = findTimeByStartAt("15:00");
+        Theme theme = new Theme(1L, "테마 이름", "테마 설명", "썸네일");
+        Reservation reservation = new Reservation(null, "브라운", date, time, theme);
+        reservationRepository.insert(reservation);
+
+        // when
+        boolean exists = reservationRepository.existsByThemeId(1L);
+        boolean notExists = reservationRepository.existsByThemeId(999L);
+
+        // then
+        assertAll(
+                () -> assertThat(exists).isTrue(),
+                () -> assertThat(notExists).isFalse());
+    }
+
+    @Test
+    void 시간_id에_해당하는_예약이_존재하는지_확인한다() {
+        // given
+        ReservationTime time = findTimeByStartAt("15:00");
+        Theme theme = new Theme(1L, "테마 이름", "테마 설명", "썸네일");
+        Reservation reservation = new Reservation(null, "브라운", date, time, theme);
+        reservationRepository.insert(reservation);
+
+        // when
+        boolean exists = reservationRepository.existsByTimeId(time.getId());
+        boolean notExists = reservationRepository.existsByTimeId(999L);
+
+        // then
+        assertAll(
+                () -> assertThat(exists).isTrue(),
+                () -> assertThat(notExists).isFalse());
+    }
+
     private ReservationTime findTimeByStartAt(String startAt) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE start_at = ?;";
         return jdbcTemplate.queryForObject(

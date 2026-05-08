@@ -3,6 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.dto.PopularThemeDto;
 
@@ -14,9 +15,11 @@ import java.util.List;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<Theme> findAll() {
@@ -34,6 +37,7 @@ public class ThemeService {
     @Transactional
     public void delete(Long id) {
         validateId(id);
+        validateDeletable(id);
         themeRepository.delete(id);
     }
 
@@ -46,6 +50,12 @@ public class ThemeService {
     private void validateId(Long id) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("[ERROR] id는 양수이어야 합니다.");
+        }
+    }
+
+    private void validateDeletable(Long id) {
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new IllegalArgumentException("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
         }
     }
 }

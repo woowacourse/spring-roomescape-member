@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Theme;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 import java.util.List;
@@ -26,7 +27,9 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setup() {
-        this.themeService = new ThemeService(new ThemeRepository(jdbcTemplate));
+        this.themeService = new ThemeService(
+                new ThemeRepository(jdbcTemplate),
+                new ReservationRepository(jdbcTemplate));
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM theme");
     }
@@ -76,5 +79,22 @@ class ThemeServiceTest {
         assertThatThrownBy(() -> themeService.delete(id))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] id는 양수이어야 합니다.");
+    }
+
+    @Test
+    void 예약이_존재하는_테마는_삭제시_예외_발생() {
+        // given
+        Theme created = themeService.create("테스트테마", "테스트용 테마입니다.", "/썸네일");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운",
+                "2023-08-05",
+                1,
+                created.getId());
+
+        // when & then
+        assertThatThrownBy(() -> themeService.delete(created.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
     }
 }
