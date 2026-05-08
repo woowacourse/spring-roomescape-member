@@ -92,7 +92,7 @@ class ThemeRepositoryTest {
             }
         }
 
-        List<Theme> themes = themeRepository.findPopularThemes(LocalDate.now(), LocalDate.now().minusDays(7L), 10);
+        List<Theme> themes = themeRepository.findPopularThemes(LocalDate.now().minusDays(7L), LocalDate.now(), 10);
 
         assertThat(themes).hasSize(10);
         assertThat(themes.get(0).getName()).isEqualTo("테마1");
