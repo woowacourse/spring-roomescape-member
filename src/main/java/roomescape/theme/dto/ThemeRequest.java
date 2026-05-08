@@ -1,5 +1,6 @@
 package roomescape.theme.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,6 +15,7 @@ public record ThemeRequest(
         String imageUrl,
 
         @NotNull(message = "테마 소요 시간은 필수입니다.")
+        @JsonFormat(pattern = "HH:mm")
         LocalTime requiredTime
 ) {
 }
