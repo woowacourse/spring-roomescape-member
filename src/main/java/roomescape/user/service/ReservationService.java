@@ -35,6 +35,7 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 time id입니다."));
         Theme theme = adminThemeRepository.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 theme id입니다."));
+        validateDuplicateReservation(request);
 
         Reservation reservation = Reservation.of(
                 request.name(),
@@ -42,8 +43,19 @@ public class ReservationService {
                 time,
                 theme
         );
+
         Reservation saved = reservationRepository.save(reservation);
         return ReservationResponse.from(saved);
+    }
+
+    private void validateDuplicateReservation(ReservationRequest request) {
+        boolean isDuplicated = reservationRepository.existsByDateAndTimeIdAndThemeId(
+            request.date(),
+            request.timeId(),
+            request.themeId());
+        if (isDuplicated) {
+            throw new IllegalArgumentException("다른 사용자에의해 예약이 완료되었습니다.");
+        }
     }
 
     public List<TimeResponse> getReservations(LocalDate date, Long themeId) {
