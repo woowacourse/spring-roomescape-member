@@ -35,6 +35,14 @@ public class ReservationTimeService {
     }
 
     public void deleteById(Long id) {
+        validateReservationId(id);
         timeRepository.deleteById(id);
+    }
+
+    private void validateReservationId(Long id) {
+        boolean isValidId = timeRepository.existsById(id);
+        if (!isValidId) {
+            throw new IllegalArgumentException("[ERROR] 유효하지 않은 Id입니다");
+        }
     }
 }

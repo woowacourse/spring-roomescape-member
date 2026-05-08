@@ -80,4 +80,15 @@ public class ReservationRepository {
         Integer count = jdbcTemplate.queryForObject(query, Integer.class, date, timeId, themeId);
         return count != null && count > 0;
     }
+
+    public boolean existsById(Long id) {
+        String query = """
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE id = ?
+                """;
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
+        System.out.println(count);
+        return count != null && count > 0;
+    }
 }

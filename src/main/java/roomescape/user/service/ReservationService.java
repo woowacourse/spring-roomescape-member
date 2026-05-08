@@ -54,7 +54,7 @@ public class ReservationService {
             request.timeId(),
             request.themeId());
         if (isDuplicated) {
-            throw new IllegalArgumentException("다른 사용자에의해 예약이 완료되었습니다.");
+            throw new IllegalArgumentException("[ERROR] 다른 사용자에의해 예약이 완료되었습니다.");
         }
     }
 
@@ -69,6 +69,14 @@ public class ReservationService {
     }
 
     public void deleteReservation(Long id) {
+        validateReservationId(id);
         reservationRepository.deleteById(id);
+    }
+
+    private void validateReservationId(Long id) {
+        boolean isValidId = reservationRepository.existsById(id);
+        if (!isValidId) {
+            throw new IllegalArgumentException("[ERROR] 유효하지 않은 Id입니다");
+        }
     }
 }
