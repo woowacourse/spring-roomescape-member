@@ -39,7 +39,7 @@ public class ThemeService {
 
     public List<Theme> findPopularThemes() {
         LocalDate currentDate = LocalDate.now();
-        LocalDate startInclusive = currentDate.minusDays(8);
+        LocalDate startInclusive = currentDate.minusDays(7);
         LocalDate endInclusive = currentDate.minusDays(1);
 
         return themeRepository.findPopularThemes(startInclusive, endInclusive, TOP_NUMBERS);

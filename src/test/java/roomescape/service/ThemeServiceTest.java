@@ -110,7 +110,7 @@ class ThemeServiceTest {
                 new Theme(2L, "escape2", "방탈출2", "http://example.com/img2.jpg")
         );
 
-        when(themeRepository.findPopularThemes(today.minusDays(8), today.minusDays(1), 10)).thenReturn(themes);
+        when(themeRepository.findPopularThemes(today.minusDays(7), today.minusDays(1), 10)).thenReturn(themes);
         List<Theme> result = themeService.findPopularThemes();
 
         assertThat(result.size()).isEqualTo(2);
