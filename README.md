@@ -122,8 +122,8 @@
 - [x] JdbcTemplate 활용하여 -> SpringBootTest, DirtiesContext제거
 
 - **ReservationDaoTest**
-- [ ] Dao에 Service의존 문제 해결
-- [ ] @JdbcTest 활용 -> SpringBootTest, DirtiesContext제거
+- [x] Dao에 Service의존 문제 해결
+- [x] @JdbcTest 활용 -> SpringBootTest, DirtiesContext제거
 
 - **ThemeService**
 - [ ] '7','30' 하드코딩 상수화
