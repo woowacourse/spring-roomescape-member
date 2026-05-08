@@ -3,7 +3,6 @@ package roomescape.repository.reservation;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -14,7 +13,7 @@ import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservationTheme.ReservationTheme;
 
 @Repository
-@Profile("web")
+//@Profile("web")
 public class JdbcReservationRepository implements ReservationRepository {
     private static final String TABLE_NAME = "reservation";
 
