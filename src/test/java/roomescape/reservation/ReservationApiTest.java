@@ -60,7 +60,14 @@ class ReservationApiTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(1))
+                .body("[0].id", is(1))
+                .body("[0].name", is("브라운"))
+                .body("[0].date", is("2023-08-05"))
+                .body("[0].theme.id", is(1))
+                .body("[0].theme.name", is("미술관의 밤"))
+                .body("[0].time.id", is(1))
+                .body("[0].time.startAt", is("15:40:00"));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -145,7 +152,11 @@ class ReservationApiTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(1))
+                .body("[0].name", is("브라운"))
+                .body("[0].theme.id", is(1))
+                .body("[0].time.id", is(1))
+                .body("[0].time.startAt", is("10:00:00"));
     }
 
     @Test
