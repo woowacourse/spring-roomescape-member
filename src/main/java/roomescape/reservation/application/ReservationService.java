@@ -38,10 +38,10 @@ public class ReservationService {
                         reservation.getName(),
                         reservation.getDate(),
                         new TimeInformation(
-                                reservation.getTime().getId(),
-                                reservation.getTime().getStartAt()
+                                reservation.getTimeId(),
+                                reservation.getStartAt()
                         ),
-                        reservation.getTheme().getId()
+                        reservation.getThemeId()
                 ))
                 .toList();
     }
