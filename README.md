@@ -26,24 +26,24 @@
 
 ### 사용자 API
 
-| 분류 | 기능 | Method | URL | 성공 응답 | 에러 응답 |
-|---|---|---|---|---|---|
-| 예약 | 예약 생성 | `POST` | `/api/reservations` | `201 Created` | `400`, `404`, `409` |
-| 예약 | 예약 목록 조회 | `GET` | `/api/reservations` | `200 OK` | - |
-| 예약 | 예약 삭제 | `DELETE` | `/api/reservations/{id}` | `204 No Content` | `404` |
-| 예약 시간 | 예약 시간 목록 조회 | `GET` | `/api/times` | `200 OK` | - |
-| 예약 시간 | 예약 가능한 시간 조회 | `GET` | `/api/times/availablity?theme_id={theme_id}&date={date}` | `200 OK` | `400`, `404` |
-| 테마 | 테마 목록 조회 | `GET` | `/api/themes` | `200 OK` | - |
-| 테마 | 인기 테마 조회 | `GET` | `/api/themes/popularity` | `200 OK` | - |
+| 분류 | 기능 | Method | URL | 성공 응답 | 에러 응답                                              |
+|---|---|---|---|---|----------------------------------------------------|
+| 예약 | 예약 생성 | `POST` | `/api/reservations` | `201 Created` | `400 Bad Request`, `404 Not Found`, `409 Conflict` |
+| 예약 | 예약 목록 조회 | `GET` | `/api/reservations` | `200 OK` | -                                                  |
+| 예약 | 예약 삭제 | `DELETE` | `/api/reservations/{id}` | `204 No Content` | `404 Not Found`                                    |
+| 예약 시간 | 예약 시간 목록 조회 | `GET` | `/api/times` | `200 OK` | -                                                  |
+| 예약 시간 | 예약 가능한 시간 조회 | `GET` | `/api/times/availablity?theme_id={theme_id}&date={date}` | `200 OK` | `400 Bad Request`, `404 Not Found`                            |
+| 테마 | 테마 목록 조회 | `GET` | `/api/themes` | `200 OK` | -                                                  |
+| 테마 | 인기 테마 조회 | `GET` | `/api/themes/popularity` | `200 OK` | -                                                  |
 
 ### 관리자 API
 
-| 분류 | 기능 | Method | URL | 성공 응답 | 에러 응답 |
-|---|---|---|---|---|---|
-| 예약 시간 | 예약 시간 생성 | `POST` | `/admin/times` | `201 Created` | `400`, `409` |
-| 예약 시간 | 예약 시간 삭제 | `DELETE` | `/admin/times/{id}` | `204 No Content` | `404`, `409` |
-| 테마 | 테마 생성 | `POST` | `/admin/themes` | `201 Created` | `400`, `409` |
-| 테마 | 테마 삭제 | `DELETE` | `/admin/themes/{id}` | `204 No Content` | `404`, `409` |
+| 분류 | 기능 | Method | URL | 성공 응답 | 에러 응답                             |
+|---|---|---|---|---|-----------------------------------|
+| 예약 시간 | 예약 시간 생성 | `POST` | `/admin/times` | `201 Created` | `400 Bad Request`, `409 Conflict` |
+| 예약 시간 | 예약 시간 삭제 | `DELETE` | `/admin/times/{id}` | `204 No Content` | `404 Not Found`, `409 Conflict`   |
+| 테마 | 테마 생성 | `POST` | `/admin/themes` | `201 Created` | `400 Bad Request`, `409 Conflict`            |
+| 테마 | 테마 삭제 | `DELETE` | `/admin/themes/{id}` | `204 No Content` | `404 Not Found`, `409 Conflict`   |
 
 ## **프로그래밍 요구 사항**
 
