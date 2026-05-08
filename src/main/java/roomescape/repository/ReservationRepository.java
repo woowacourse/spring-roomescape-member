@@ -25,41 +25,45 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findAll() {
-        String sql = "SELECT\n" +
-                "    r.id as reservation_id,\n" +
-                "    r.name as username,\n" +
-                "    r.date,\n" +
-                "    rt.id as time_id,\n" +
-                "    rt.start_at as time_value,\n" +
-                "    t.id as theme_id,\n" +
-                "    t.name as theme_name,\n" +
-                "    t.description,\n" +
-                "    t.thumbnail\n" +
-                "FROM reservation as r\n" +
-                "INNER JOIN reservation_time as rt\n" +
-                "  ON r.time_id = rt.id\n" +
-                "INNER JOIN theme as t\n" +
-                "  ON r.theme_id = t.id\n";
+        String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name as username,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at as time_value,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description,
+                    t.thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as rt
+                  ON r.time_id = rt.id
+                INNER JOIN theme as t
+                  ON r.theme_id = t.id;
+                """;
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     public Optional<Reservation> findById(Long id) {
-        String sql = "SELECT\n" +
-                "    r.id as reservation_id,\n" +
-                "    r.name as username,\n" +
-                "    r.date,\n" +
-                "    rt.id as time_id,\n" +
-                "    rt.start_at as time_value,\n" +
-                "    t.id as theme_id,\n" +
-                "    t.name as theme_name,\n" +
-                "    t.description,\n" +
-                "    t.thumbnail\n" +
-                "FROM reservation as r\n" +
-                "INNER JOIN reservation_time as rt\n" +
-                "  ON r.time_id = rt.id\n" +
-                "INNER JOIN theme as t\n" +
-                "  ON r.theme_id = t.id\n" +
-                "WHERE r.id = ?";
+        String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name as username,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at as time_value,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description,
+                    t.thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as rt
+                  ON r.time_id = rt.id
+                INNER JOIN theme as t
+                  ON r.theme_id = t.id
+                WHERE r.id = ?;
+                """;
         List<Reservation> result = jdbcTemplate.query(sql, reservationRowMapper, id);
         return result.stream().findAny();
     }
@@ -87,24 +91,25 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findReservationsByThemeAndDate(Long themeId, LocalDate date) {
-        String sql = "SELECT\n" +
-                "    r.id as reservation_id,\n" +
-                "    r.name as username,\n" +
-                "    r.date,\n" +
-                "    rt.id as time_id,\n" +
-                "    rt.start_at as time_value,\n" +
-                "    t.id as theme_id,\n" +
-                "    t.name as theme_name,\n" +
-                "    t.description,\n" +
-                "    t.thumbnail\n" +
-                "FROM reservation as r\n" +
-                "INNER JOIN reservation_time as rt\n" +
-                "  ON r.time_id = rt.id\n" +
-                "INNER JOIN theme as t\n" +
-                "  ON r.theme_id = t.id\n" +
-                "WHERE t.id = ? "
-                + "AND r.date = ?";
-
+        String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name as username,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at as time_value,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description,
+                    t.thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as rt
+                  ON r.time_id = rt.id
+                INNER JOIN theme as t
+                  ON r.theme_id = t.id
+                WHERE t.id = ?\s
+                AND r.date = ?;
+                """;
         return jdbcTemplate.query(sql, reservationRowMapper, themeId, date);
     }
 

@@ -54,21 +54,22 @@ public class ThemeRepository {
     }
 
     public List<Theme> findPopular(LocalDate startDate, LocalDate endDate, int limit) {
-        String sql = "SELECT\n"
-                + "    t.id,\n"
-                + "    t.name,\n"
-                + "    t.description,\n"
-                + "    t.thumbnail,\n"
-                + "    COUNT(r.id) AS reservation_count\n"
-                + "FROM theme AS t\n"
-                + "LEFT JOIN reservation AS r\n"
-                + "    ON r.theme_id = t.id\n"
-                + "    AND r.date >= ?\n"
-                + "    AND r.date < ?\n"
-                + "GROUP BY t.id, t.name, t.description, t.thumbnail\n"
-                + "ORDER BY reservation_count DESC, t.id ASC\n"
-                + "LIMIT ?";
-
+        String sql = """
+                SELECT
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.thumbnail,
+                    COUNT(r.id) AS reservation_count
+                FROM theme AS t
+                LEFT JOIN reservation AS r
+                    ON r.theme_id = t.id
+                    AND r.date >= ?
+                    AND r.date < ?
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY reservation_count DESC, t.id ASC
+                LIMIT ?;
+                """;
         return jdbcTemplate.query(sql, themeRowMapper, startDate, endDate, limit);
     }
 
