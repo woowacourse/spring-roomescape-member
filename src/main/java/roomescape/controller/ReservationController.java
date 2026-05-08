@@ -38,7 +38,7 @@ public class ReservationController {
         ReservationCommand reservationCommand = addReservationRequest.to();
         Reservation addedReservation = roomReservationService.addReservation(reservationCommand);
 
-        return new ResponseEntity<>(ReservationResponse.from(addedReservation), HttpStatus.OK);
+        return new ResponseEntity<>(ReservationResponse.from(addedReservation), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")

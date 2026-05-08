@@ -47,7 +47,7 @@ public class ReservationTimeController {
         ReservationTimeCommand reservationTimeCommand = new ReservationTimeCommand(addReservationTimeRequest.startAt());
         ReservationTime reservationTime = reservationTimeService.addReservationTime(reservationTimeCommand);
 
-        return new ResponseEntity<>(ReservationTimeResponse.from(reservationTime), HttpStatus.OK);
+        return new ResponseEntity<>(ReservationTimeResponse.from(reservationTime), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
