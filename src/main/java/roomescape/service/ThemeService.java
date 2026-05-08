@@ -48,13 +48,14 @@ public class ThemeService {
 
     @Transactional
     public void delete(Long id) {
-        Theme theme = themeDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
-        if (reservationDao.existsByThemeId(theme.getId())) {
+        if (!themeDao.existsById(id)) {
+            throw new NotFoundException("존재하지 않는 테마입니다.");
+        }
+        if (reservationDao.existsByThemeId(id)) {
             throw new ConflictException("예약이 존재하여 테마를 삭제할 수 없습니다.");
         }
 
-        themeDao.delete(theme.getId());
+        themeDao.delete(id);
     }
 
     public List<AvailableTimeResponseDto> findAvailableTimesById(Long themeId, LocalDate localDate) {

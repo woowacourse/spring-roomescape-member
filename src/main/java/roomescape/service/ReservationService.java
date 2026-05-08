@@ -53,9 +53,10 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        Reservation reservation = reservationDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+        if (!reservationDao.existsById(id)) {
+            throw new NotFoundException("존재하지 않는 예약입니다.");
+        }
 
-        reservationDao.delete(reservation.getId());
+        reservationDao.delete(id);
     }
 }

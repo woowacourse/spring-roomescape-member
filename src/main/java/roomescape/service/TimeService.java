@@ -42,11 +42,13 @@ public class TimeService {
 
     @Transactional
     public void delete(Long id) {
-        Time time = timeDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
-        if (reservationDao.existsByTimeId(time.getId())) {
+        if (!timeDao.existsById(id)) {
+            throw new NotFoundException("존재하지 않는 시간입니다.");
+        }
+        if (reservationDao.existsByTimeId(id)) {
             throw new ConflictException("예약이 존재하여 시간을 삭제할 수 없습니다.");
         }
-        timeDao.delete(time.getId());
+
+        timeDao.delete(id);
     }
 }
