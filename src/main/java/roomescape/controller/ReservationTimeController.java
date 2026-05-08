@@ -18,6 +18,7 @@ import roomescape.domain.ReservationTime.ReservationTimeCommand;
 import roomescape.domain.ReservationTime.ReservationTimeCondition;
 import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
 import roomescape.dto.ReservationTime.AddReservationTimeRequest;
+import roomescape.dto.ReservationTime.AvailableReservationTimeRequest;
 import roomescape.dto.ReservationTime.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTime.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
@@ -58,7 +59,8 @@ public class ReservationTimeController {
     }
 
     @GetMapping(value = "/availability", params = {"date", "themeId"})
-    public ResponseEntity<List<AvailableReservationTimeResponse>> getAvailableReservationTimeByDateAndTheme(@ModelAttribute ReservationTimeCondition reservationTimeCondition) {
+    public ResponseEntity<List<AvailableReservationTimeResponse>> getAvailableReservationTimeByDateAndTheme(@ModelAttribute AvailableReservationTimeRequest availableReservationTimeRequest) {
+        ReservationTimeCondition reservationTimeCondition = new ReservationTimeCondition(availableReservationTimeRequest.date(), availableReservationTimeRequest.themeId());
         List<ReservationTimeWithAvailable> reservationTimesWithAvailable  = reservationTimeService.getAvailableReservationTimeByDateAndTheme(reservationTimeCondition);
         List<AvailableReservationTimeResponse> availableReservationTimeResponses = reservationTimesWithAvailable.stream()
                 .map(AvailableReservationTimeResponse::from)
