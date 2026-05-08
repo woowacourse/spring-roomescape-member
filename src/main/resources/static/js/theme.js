@@ -91,7 +91,7 @@ function saveTheme() {
     body: JSON.stringify(body)
   })
     .then(res => {
-      if (res.status === 200) return res.json();
+      if (res.status === 201) return res.json();
       throw new Error('테마 추가 실패');
     })
     .then(theme => {

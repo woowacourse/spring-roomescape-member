@@ -189,7 +189,7 @@ function confirmBooking() {
     })
   })
     .then(res => {
-      if (res.status === 200) return res.json();
+      if (res.status === 201) return res.json();
       throw new Error('예약 실패');
     })
     .then(() => {
