@@ -3,7 +3,9 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ReservationCreateRequest;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
@@ -40,7 +42,8 @@ public class ReservationService {
             throw new IllegalArgumentException(DUPLICATED_RESERVATION);
         }
 
-        Reservation reservation = Reservation.of(request.getName(), request.getDate(), reservationTime, theme);
+        Reservation reservation = Reservation.of(Name.from(request.getName()), ReservationDate.from(request.getDate()),
+                reservationTime, theme);
 
         return reservationRepository.save(reservation);
     }

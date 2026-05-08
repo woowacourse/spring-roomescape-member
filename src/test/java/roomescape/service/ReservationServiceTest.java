@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.controller.dto.ReservationCreateRequest;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -38,7 +39,7 @@ class ReservationServiceTest {
         ReservationTime reservationTime = ReservationTime.of("10:00");
         ReservationDate reservationDate = ReservationDate.from("2026-05-03");
         Theme theme = Theme.of(1L, "공포", "무서워요", "https://zeze.com");
-        Reservation reservation = Reservation.of(1L, "zeze", reservationDate, reservationTime, theme);
+        Reservation reservation = Reservation.of(1L, Name.from("zeze"), reservationDate, reservationTime, theme);
 
         given(reservationRepository.findById(1L)).willReturn(Optional.of(reservation));
 

@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,7 +13,7 @@ import roomescape.domain.ReservationTime;
 @Repository
 public class ReservationTimeRepository {
     private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNum) ->
-            ReservationTime.of(resultSet.getLong("id"), LocalTime.parse(resultSet.getString("start_at")));
+            ReservationTime.of(resultSet.getLong("id"), resultSet.getTime("start_at").toLocalTime());
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;

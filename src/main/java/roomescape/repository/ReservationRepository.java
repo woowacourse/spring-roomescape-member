@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,7 +8,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
@@ -17,9 +18,9 @@ import roomescape.domain.Theme;
 public class ReservationRepository {
     public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> Reservation.of(
             resultSet.getLong("reservation_id"),
-            resultSet.getString("name"),
-            resultSet.getString("date"),
-            ReservationTime.of(resultSet.getLong("time_id"), LocalTime.parse(resultSet.getString("start_at"))),
+            Name.from(resultSet.getString("name")),
+            ReservationDate.from(resultSet.getDate("date").toLocalDate()),
+            ReservationTime.of(resultSet.getLong("time_id"), resultSet.getTime("start_at").toLocalTime()),
             Theme.of(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
                     resultSet.getString("description"), resultSet.getString("thumbnail_url")));
     private static final String SELECT_ALL = """
@@ -69,7 +70,8 @@ public class ReservationRepository {
 
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return Reservation.of(generatedKey, reservation.getName(), reservation.getDate(), reservation.getTime(),
+        return Reservation.of(generatedKey, Name.from(reservation.getName()), reservation.getDate(),
+                reservation.getTime(),
                 reservation.getTheme());
     }
 
