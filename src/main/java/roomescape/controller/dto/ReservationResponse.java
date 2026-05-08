@@ -1,22 +1,25 @@
 package roomescape.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 
 public record ReservationResponse(long id,
-                                  String date,
+                                  LocalDate date,
                                   String themeName,
                                   String themeDescription,
                                   String themeThumbnailUrl,
-                                  String time) {
+                                  @JsonFormat(pattern = "HH:mm") LocalTime time) {
     public static ReservationResponse from(Reservation reservation, Theme theme) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getDate().toString(),
+                reservation.getDate(),
                 theme.getName(),
                 theme.getDescription(),
                 theme.getThumbnailUrl(),
-                reservation.getTime().getStartAt().toString()
+                reservation.getTime().getStartAt()
         );
     }
 }
