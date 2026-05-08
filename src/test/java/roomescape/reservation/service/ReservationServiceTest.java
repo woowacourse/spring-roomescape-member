@@ -16,6 +16,7 @@ import roomescape.theme.model.Theme;
 import roomescape.user.model.Role;
 import roomescape.user.model.User;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -53,7 +54,7 @@ class ReservationServiceTest {
                 1L, 1L, "2026-12-10 12:00:00", "2026-12-10 14:00:00");
         jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
                 2L, 1L, "2026-12-10 15:00:00", "2026-12-10 17:00:00");
-        reservationRepository.create(new Reservation(user, schedule, theme));
+        reservationRepository.create(new Reservation(user, schedule));
     }
 
     @Test
@@ -65,7 +66,7 @@ class ReservationServiceTest {
 
     @Test
     void 새로운_예약을_생성한다() {
-        ReservationRequest request = new ReservationRequest("2026-12-10", "15:00", 1L, "user1");
+        ReservationRequest request = new ReservationRequest(LocalDate.of(2026, 12, 10), LocalTime.of(15, 0), 1L, "user1");
 
         ReservationIdResponse response = reservationService.create(request);
 

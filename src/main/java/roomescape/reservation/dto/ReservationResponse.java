@@ -9,21 +9,22 @@ public class ReservationResponse {
     private final Long reservationId;
     private final Long userId;
     private final String userName;
-    private final Long themeId;
-    private final String themeName;
     private final Long scheduleId;
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
+    private final Long themeId;
+    private final String themeName;
 
-    private ReservationResponse(Long reservationId, Long userId, String userName, Long themeId, String themeName, Long scheduleId, LocalDateTime startAt, LocalDateTime endAt) {
+    private ReservationResponse(Long reservationId, Long userId, String userName, Long scheduleId,
+                                LocalDateTime startAt, LocalDateTime endAt, Long themeId, String themeName) {
         this.reservationId = reservationId;
         this.userId = userId;
         this.userName = userName;
-        this.themeId = themeId;
-        this.themeName = themeName;
         this.scheduleId = scheduleId;
         this.startAt = startAt;
         this.endAt = endAt;
+        this.themeId = themeId;
+        this.themeName = themeName;
     }
 
     public static ReservationResponse from(Reservation reservation) {
@@ -31,11 +32,11 @@ public class ReservationResponse {
                 reservation.getId(),
                 reservation.getUser().getId(),
                 reservation.getUser().getName(),
-                reservation.getTheme().getId(),
-                reservation.getTheme().getName(),
                 reservation.getSchedule().getId(),
                 reservation.getSchedule().getStartAt(),
-                reservation.getSchedule().getEndAt()
+                reservation.getSchedule().getEndAt(),
+                reservation.getSchedule().getTheme().getId(),
+                reservation.getSchedule().getTheme().getName()
         );
     }
 
@@ -51,14 +52,6 @@ public class ReservationResponse {
         return userName;
     }
 
-    public Long getThemeId() {
-        return themeId;
-    }
-
-    public String getThemeName() {
-        return themeName;
-    }
-
     public Long getScheduleId() {
         return scheduleId;
     }
@@ -69,5 +62,13 @@ public class ReservationResponse {
 
     public LocalDateTime getEndAt() {
         return endAt;
+    }
+
+    public Long getThemeId() {
+        return themeId;
+    }
+
+    public String getThemeName() {
+        return themeName;
     }
 }

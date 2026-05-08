@@ -20,16 +20,15 @@ class ReservationTest {
 
     @Test
     void 올바른_정보로_예약을_생성하면_예외가_발생하지_않는다() {
-        assertThatCode(() -> new Reservation(user, schedule, theme))
+        assertThatCode(() -> new Reservation(user, schedule))
                 .doesNotThrowAnyException();
     }
 
     @Test
-    void 스케줄이나_테마_정보가_누락되면_예외가_발생한다() {
-        assertThatThrownBy(() -> new Reservation(user, null, theme))
+    void 스케줄이나_이름이_누락되면_예외가_발생한다() {
+        assertThatThrownBy(() -> new Reservation(user, null))
                 .isInstanceOf(IllegalArgumentException.class);
-
-        assertThatThrownBy(() -> new Reservation(user, schedule, null))
+        assertThatThrownBy(() -> new Reservation(null, schedule))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

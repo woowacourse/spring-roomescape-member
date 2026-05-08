@@ -47,15 +47,15 @@ public class ReservationService {
 
         Theme theme = themeRepository.findById(request.themeId());
 
-        LocalDateTime startAt = LocalDateTime.of(LocalDate.parse(request.date()), LocalTime.parse(request.time()));
+        LocalDateTime startAt = LocalDateTime.of(request.date(), request.time());
 
         Schedule schedule = new Schedule(startAt, theme);
         Long scheduleId = scheduleRepository.create(schedule);
         Schedule savedSchedule = new Schedule(scheduleId, startAt, theme);
 
-        Reservation reservation = new Reservation(user, savedSchedule, theme);
+        Reservation reservation = new Reservation(user, savedSchedule);
         Long reservationId = reservationRepository.create(reservation);
-        Reservation savedReservation = new Reservation(reservationId, user, schedule, schedule.getTheme());
+        Reservation savedReservation = new Reservation(reservationId, user, schedule);
         return ReservationIdResponse.from(savedReservation);
     }
 

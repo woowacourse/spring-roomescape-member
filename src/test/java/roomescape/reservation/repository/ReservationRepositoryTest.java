@@ -49,7 +49,7 @@ public class ReservationRepositoryTest {
 
     @Test
     void 예약을_데이터베이스에_성공적으로_저장하고_생성된_ID를_반환한다() {
-        Reservation reservation = new Reservation(user, schedule, theme);
+        Reservation reservation = new Reservation(user, schedule);
 
         Long savedId = reservationRepository.create(reservation);
 
@@ -62,7 +62,7 @@ public class ReservationRepositoryTest {
 
     @Test
     void 예약을_데이터베이스에서_정상적으로_조회한다() {
-        Reservation reservation = new Reservation(user, schedule, theme);
+        Reservation reservation = new Reservation(user, schedule);
 
         reservationRepository.create(reservation);
 
@@ -72,12 +72,12 @@ public class ReservationRepositoryTest {
         assertThat(reservations.size()).isEqualTo(1);
         assertThat(reservations.getFirst().getUser().getName()).isEqualTo(user.getName());
         assertThat(reservations.getFirst().getSchedule().getStartAt()).isEqualTo(schedule.getStartAt());
-        assertThat(reservations.getFirst().getTheme().getName()).isEqualTo(theme.getName());
+        assertThat(reservations.getFirst().getSchedule().getTheme().getName()).isEqualTo(theme.getName());
     }
 
     @Test
     void 예약을_데이터베이스에서_정상적으로_삭제한다() {
-        Reservation reservation = new Reservation(user, schedule, theme);
+        Reservation reservation = new Reservation(user, schedule);
         Long savedId = reservationRepository.create(reservation);
 
         reservationRepository.delete(savedId);

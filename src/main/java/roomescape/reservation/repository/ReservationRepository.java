@@ -75,7 +75,7 @@ public class ReservationRepository {
                     resultSet.getObject("start_at", LocalDateTime.class),
                     theme);
 
-            return new Reservation(resultSet.getLong("reservation_id"), user, schedule, theme);
+            return new Reservation(resultSet.getLong("reservation_id"), user, schedule);
         });
     }
 
