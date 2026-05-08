@@ -35,10 +35,8 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeService.find(request.getTimeId());
         Theme theme = themeService.find(request.getThemeId());
 
-        boolean isExists = reservationRepository.findByTimeAndThemeAndDate(request.getTimeId(),
-                request.getThemeId(), request.getDate()).isPresent();
-
-        if (isExists) {
+        if (reservationRepository.existsByTimeAndThemeAndDate(request.getTimeId(), request.getThemeId(),
+                request.getDate())) {
             throw new IllegalArgumentException(DUPLICATED_RESERVATION);
         }
 

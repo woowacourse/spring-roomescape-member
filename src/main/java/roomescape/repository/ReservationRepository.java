@@ -38,8 +38,13 @@ public class ReservationRepository {
             INNER JOIN theme             t  ON r.theme_id = t.id
             """;
     private static final String SELECT_BY_ID = SELECT_ALL + "WHERE r.id = ?";
-    private static final String SELECT_BY_TIME_AND_THEME_AND_DATE =
-            SELECT_ALL + "WHERE time_id = ? AND theme_id = ? AND date = ?";
+    private static final String EXISTS_BY_DATE_AND_TIME_AND_THEME_ID = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation
+                WHERE date = ? AND time_id = ? AND theme_id = ?
+            )
+            """;
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -80,14 +85,9 @@ public class ReservationRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    public Optional<Reservation> findByTimeAndThemeAndDate(Long timeId, Long themeId, LocalDate date) {
-        List<Reservation> reservations = jdbcTemplate.query(SELECT_BY_TIME_AND_THEME_AND_DATE, RESERVATION_ROW_MAPPER,
-                timeId,
-                themeId, date);
-
-        if (reservations.isEmpty()) {
-            return Optional.empty();
-        }
-        return reservations.stream().findFirst();
+    public boolean existsByTimeAndThemeAndDate(Long timeId, Long themeId, LocalDate date) {
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(EXISTS_BY_DATE_AND_TIME_AND_THEME_ID, Boolean.class, date, timeId,
+                        themeId));
     }
 }
