@@ -1,11 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +9,13 @@ import roomescape.domain.TimeSlot;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeThemeRepository;
 import roomescape.repository.FakeTimeSlotRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationServiceTest {
 
@@ -79,7 +80,7 @@ class ReservationServiceTest {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation savedReservation = reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(),
                 savedTheme.id());
-        Reservation foundReservation = reservationService.findReservation(savedReservation.id());
+        Reservation foundReservation = reservationService.findReservationById(savedReservation.id());
         assertThat(foundReservation.name()).isEqualTo("브라운");
     }
 }

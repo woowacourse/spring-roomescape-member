@@ -13,6 +13,7 @@ import roomescape.domain.TimeSlot;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,8 +70,9 @@ class JdbcReservationRepositoryTest {
                 savedTimeSlot,
                 savedTheme
         ));
-        Reservation foundReservation = jdbcReservationRepository.findById(savedReservation.id());
-        assertThat(foundReservation.name()).isEqualTo("브라운");
+        Optional<Reservation> foundReservation = jdbcReservationRepository.findById(savedReservation.id());
+        assertThat(foundReservation).isPresent();
+        assertThat(foundReservation.get().name()).isEqualTo("브라운");
     }
 
     @Test

@@ -1,10 +1,12 @@
 package roomescape.repository;
 
+import roomescape.domain.Theme;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import roomescape.domain.Theme;
+import java.util.Optional;
 
 public class FakeThemeRepository implements ThemeRepository {
 
@@ -17,8 +19,8 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme findById(long id) {
-        return storage.get(id);
+    public Optional<Theme> findById(long id) {
+        return Optional.ofNullable(storage.get(id));
     }
 
     @Override

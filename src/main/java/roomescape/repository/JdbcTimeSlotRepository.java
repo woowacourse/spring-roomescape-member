@@ -1,13 +1,16 @@
 package roomescape.repository;
 
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.TimeSlot;
+
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcTimeSlotRepository implements TimeSlotRepository {
@@ -25,9 +28,10 @@ public class JdbcTimeSlotRepository implements TimeSlotRepository {
     }
 
     @Override
-    public TimeSlot findById(long timeId) {
+    public Optional<TimeSlot> findById(long timeId) {
         String sql = "SELECT id, start_at FROM time_slot where id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper(), timeId);
+        List<TimeSlot> timeSlots = jdbcTemplate.query(sql, rowMapper(), timeId);
+        return Optional.ofNullable(DataAccessUtils.singleResult(timeSlots));
     }
 
     @Override

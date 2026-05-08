@@ -1,9 +1,5 @@
 package roomescape.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.TimeSlot;
+
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 class JdbcTimeSlotRepositoryTest {
@@ -46,8 +48,9 @@ class JdbcTimeSlotRepositoryTest {
     @DisplayName("식별자로 예약 시간 객체를 조회한다.")
     void findById() {
         TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
-        TimeSlot foundTimeSlot = timeRepository.findById(savedTimeSlot.id());
-        assertThat(foundTimeSlot.startAt()).isEqualTo(LocalTime.of(10, 0));
+        Optional<TimeSlot> foundTimeSlot = timeRepository.findById(savedTimeSlot.id());
+        assertThat(foundTimeSlot).isPresent();
+        assertThat(foundTimeSlot.get().startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test

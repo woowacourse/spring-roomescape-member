@@ -1,9 +1,6 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -11,6 +8,12 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -47,7 +50,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(long reservationId) {
+    public Optional<Reservation> findById(long reservationId) {
         String sql = """
                 SELECT
                     r.id AS r_id,
@@ -64,7 +67,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN theme th ON r.theme_id = th.id
                 WHERE r.id = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, rowMapper(), reservationId);
+        List<Reservation> reservations = jdbcTemplate.query(sql, rowMapper(), reservationId);
+        return Optional.ofNullable(DataAccessUtils.singleResult(reservations));
     }
 
     @Override

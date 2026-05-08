@@ -1,9 +1,11 @@
 package roomescape.repository;
 
+import roomescape.domain.TimeSlot;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import roomescape.domain.TimeSlot;
+import java.util.Optional;
 
 public class FakeTimeSlotRepository implements TimeSlotRepository {
 
@@ -16,8 +18,8 @@ public class FakeTimeSlotRepository implements TimeSlotRepository {
     }
 
     @Override
-    public TimeSlot findById(long id) {
-        return storage.get(id);
+    public Optional<TimeSlot> findById(long id) {
+        return Optional.ofNullable(storage.get(id));
     }
 
     @Override

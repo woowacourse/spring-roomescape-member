@@ -1,10 +1,12 @@
 package roomescape.repository;
 
+import roomescape.domain.Reservation;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import roomescape.domain.Reservation;
+import java.util.Optional;
 
 public class FakeReservationRepository implements ReservationRepository {
 
@@ -17,8 +19,8 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(long id) {
-        return storage.get(id);
+    public Optional<Reservation> findById(long id) {
+        return Optional.ofNullable(storage.get(id));
     }
 
     @Override

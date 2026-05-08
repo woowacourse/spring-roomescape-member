@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
@@ -9,6 +7,9 @@ import roomescape.domain.TimeSlot;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeSlotRepository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ReservationService {
@@ -32,7 +33,8 @@ public class ReservationService {
     }
 
     public Reservation findReservationById(long id) {
-        return reservationRepository.findById(id);
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + id));
     }
 
     public Reservation saveReservation(
@@ -42,18 +44,16 @@ public class ReservationService {
             Long themeId
     ) {
         validDuplicatedReservation(date, timeId, themeId);
-        TimeSlot timeSlot = timeSlotRepository.findById(timeId);
-        Theme theme = themeRepository.findById(themeId);
+        TimeSlot timeSlot = timeSlotRepository.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + timeId));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + themeId));
         Reservation transientReservation = Reservation.transientOf(name, date, timeSlot, theme);
         return reservationRepository.save(transientReservation);
     }
 
     public void removeReservation(long reservationId) {
         reservationRepository.deleteById(reservationId);
-    }
-
-    public Reservation findReservation(long reservationId) {
-        return reservationRepository.findById(reservationId);
     }
 
     private void validDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {

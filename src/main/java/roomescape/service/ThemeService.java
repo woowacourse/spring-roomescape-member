@@ -23,7 +23,9 @@ public class ThemeService {
     }
 
     public Theme findThemeById(long id) {
-        return themeRepository.findById(id);
+        return themeRepository.findById(id)
+
+                .orElseThrow(() -> new IllegalArgumentException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + id));
     }
 
     public Theme saveTheme(String name, String description, String thumbnailUrl) {

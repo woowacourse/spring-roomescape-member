@@ -1,9 +1,5 @@
 package roomescape.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +8,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Sql("/test-setup.sql")
@@ -39,8 +41,9 @@ class JdbcThemeRepositoryTest {
     @DisplayName("식별자로 테마를 조회한다.")
     void findById() {
         Theme savedTheme = jdbcThemeRepository.save(Theme.transientOf("공포", "귀신의 집", "https://url"));
-        Theme foundTheme = jdbcThemeRepository.findById(savedTheme.id());
-        assertThat(foundTheme.name()).isEqualTo("공포");
+        Optional<Theme> foundTheme = jdbcThemeRepository.findById(savedTheme.id());
+        assertThat(foundTheme).isPresent();
+        assertThat(foundTheme.get().name()).isEqualTo("공포");
     }
 
     @Test

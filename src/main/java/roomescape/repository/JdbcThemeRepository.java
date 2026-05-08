@@ -1,13 +1,16 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -33,9 +36,10 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme findById(long id) {
+    public Optional<Theme> findById(long id) {
         String sql = "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper(), id);
+        List<Theme> themes = jdbcTemplate.query(sql, rowMapper(), id);
+        return Optional.ofNullable(DataAccessUtils.singleResult(themes));
     }
 
     @Override

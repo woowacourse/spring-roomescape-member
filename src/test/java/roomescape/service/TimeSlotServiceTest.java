@@ -1,15 +1,16 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.TimeSlot;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeTimeSlotRepository;
+
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TimeSlotServiceTest {
 
@@ -49,7 +50,7 @@ class TimeSlotServiceTest {
     @DisplayName("식별자를 통해 특정 예약 시간 객체를 조회한다.")
     void findTime() {
         TimeSlot savedTimeSlot = reservationTimeSlotService.saveTime(LocalTime.of(10, 0));
-        TimeSlot foundTimeSlot = reservationTimeSlotService.findTime(savedTimeSlot.id());
+        TimeSlot foundTimeSlot = reservationTimeSlotService.findTimeSlotById(savedTimeSlot.id());
         assertThat(foundTimeSlot.startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 }
