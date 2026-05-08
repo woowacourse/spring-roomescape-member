@@ -16,9 +16,6 @@ public class ThemeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Long> idRowMapper = (resultSet, rowNum)
-        -> resultSet.getLong("theme_id");
-
     private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> Theme.of(
         resultSet.getLong("id"),
         resultSet.getString("name"),
@@ -26,21 +23,16 @@ public class ThemeRepository {
         resultSet.getString("image_url")
     );
 
-    public List<Long> findThemeIdTop10(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findTop10ByDateBetween(LocalDate startDate, LocalDate endDate) {
         String query = """
-            SELECT r.theme_id AS theme_id
-            FROM reservation r
+            SELECT t.id, t.name, t.description, t.image_url
+            FROM theme t
+            INNER JOIN reservation r ON t.id = r.theme_id
             WHERE r.date BETWEEN ? AND ?
-            GROUP BY r.theme_id
+            GROUP BY t.id, t.name, t.description, t.image_url
             ORDER BY COUNT(r.id) DESC
             LIMIT 10
             """;
-
-        return jdbcTemplate.query(query, idRowMapper, startDate, endDate);
-    }
-
-    public Theme findById(Long id) {
-        String query = "select * from theme where id = ?";
-        return jdbcTemplate.queryForObject(query, rowMapper, id);
+        return jdbcTemplate.query(query, rowMapper, startDate, endDate);
     }
 }
