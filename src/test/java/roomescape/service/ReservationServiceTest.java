@@ -11,7 +11,6 @@ import roomescape.dto.ReservationRequest;
 
 @SpringBootTest
 @Transactional
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationServiceTest {
 
     @Autowired
