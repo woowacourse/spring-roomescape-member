@@ -37,7 +37,7 @@ public class ThemeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Optional<Theme> findById(Long id) {
+    public Optional<Theme> findById(long id) {
         return jdbcTemplate.query(
                 "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?",
                 themeRowMapper, id

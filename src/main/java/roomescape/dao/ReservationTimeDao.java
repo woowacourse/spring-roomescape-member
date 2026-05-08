@@ -31,7 +31,7 @@ public class ReservationTimeDao {
         return jdbcTemplate.query("SELECT id, start_at FROM reservation_time", timeRowMapper);
     }
 
-    public Optional<ReservationTime> findById(Long id) {
+    public Optional<ReservationTime> findById(long id) {
         final List<ReservationTime> results = jdbcTemplate.query(
                 "SELECT id, start_at FROM reservation_time WHERE id = ?", timeRowMapper, id);
         return results.stream().findFirst();
@@ -44,11 +44,11 @@ public class ReservationTimeDao {
     }
 
     public ReservationTime save(LocalTime startAt) {
-        final Long id = jdbcInsert.executeAndReturnKey(Map.of("start_at", startAt)).longValue();
+        final long id = jdbcInsert.executeAndReturnKey(Map.of("start_at", startAt)).longValue();
         return new ReservationTime(id, startAt);
     }
 
-    public void delete(Long id) {
+    public void delete(long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 }

@@ -33,7 +33,7 @@
   - `@Transactional`: `ReservationService.save/delete`, `ReservationTimeService.save/delete`, `AdminThemeService.save/delete`
   - `@Transactional(readOnly = true)`: `AdminReservationService.getAllReservations`, `ReservationService.findAllByName`, `ReservationTimeService.findAll`, `ThemeService.getPopularThemes/getAllThemes/getAvailableTimeResponses`
 - [ ] **15. `ThemeService.getPopularThemes()`에서 정책(7일)과 기능 분리 - `startDate`, `endDate`를 외부에서 주입받도록 변경**
-- [ ] **16. `Long` → `long` 원시 타입으로 통일 (null 가능성 제거)**
+- [x] **16. `Long` → `long` 원시 타입으로 통일 (null 가능성 제거)**
   - `ReservationService.delete()`, `ReservationTimeService.delete()`
   - `ReservationDao.delete()`, `existsByTimeId()`, `existsByThemeId()`
   - `ReservationTimeDao.findById()`, `delete()`

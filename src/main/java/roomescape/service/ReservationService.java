@@ -35,11 +35,11 @@ public class ReservationService {
         if (reservationDao.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
             throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
-        final Long id = reservationDao.save(request.name(), request.date(), request.timeId(), request.themeId());
+        final long id = reservationDao.save(request.name(), request.date(), request.timeId(), request.themeId());
         return ReservationResponse.from(new Reservation(id, request.name(), request.date(), time, theme), theme);
     }
 
-    public void delete(Long id) {
+    public void delete(long id) {
         reservationDao.delete(id);
     }
 

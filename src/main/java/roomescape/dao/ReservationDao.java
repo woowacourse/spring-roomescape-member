@@ -44,7 +44,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
-    public Long save(String name, LocalDate date, Long timeId, Long themeId) {
+    public long save(String name, LocalDate date, long timeId, long themeId) {
         return jdbcInsert.executeAndReturnKey(Map.of(
                 "name", name,
                 "date", date,
@@ -53,7 +53,7 @@ public class ReservationDao {
         )).longValue();
     }
 
-    public boolean existsByTimeId(Long timeId) {
+    public boolean existsByTimeId(long timeId) {
         final Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM reservation WHERE time_id = ?", Integer.class, timeId);
         return count > 0;
@@ -65,14 +65,14 @@ public class ReservationDao {
         return count > 0;
     }
 
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
         final Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?",
                 Integer.class, date, timeId, themeId);
         return count > 0;
     }
 
-    public void delete(Long id) {
+    public void delete(long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 

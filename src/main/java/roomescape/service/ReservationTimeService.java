@@ -32,7 +32,7 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(saved);
     }
 
-    public void delete(Long id) {
+    public void delete(long id) {
         if (reservationDao.existsByTimeId(id)) {
             throw new IllegalArgumentException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
         }
