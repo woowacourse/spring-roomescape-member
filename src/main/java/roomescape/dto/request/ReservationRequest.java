@@ -1,8 +1,6 @@
-package roomescape.request;
+package roomescape.dto.request;
 
-import roomescape.command.ReservationSaveCommand;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import roomescape.service.command.ReservationSaveCommand;
 
 import java.time.LocalDate;
 
