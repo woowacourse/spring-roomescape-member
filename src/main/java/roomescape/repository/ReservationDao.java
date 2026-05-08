@@ -34,19 +34,14 @@ public class ReservationDao {
                 rs.getObject("time_value", LocalTime.class)
         );
 
-        Reservation reservation = Reservation.of(
+        return Reservation.of(
                 rs.getLong("reservation_id"),
                 rs.getString("name"),
                 rs.getObject("date", LocalDate.class),
                 reservationTime,
-                theme
+                theme,
+                ReservationStatus.from(rs.getString("status"))
         );
-
-        if(ReservationStatus.DELETED.name().equals(rs.getString("status"))) {
-            return reservation.deleted();
-        }
-
-        return reservation;
     };
 
     public Reservation save(Reservation reservation, long timeId, long themeId) {
