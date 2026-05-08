@@ -97,13 +97,9 @@ class ThemeServiceTest {
 
         when(themeRepository.findPopularThemes(any(), any(), anyInt())).thenReturn(themes);
 
-        List<PopularTheme> result = themeService.getPopularThemes(7, 10);
+        List<Theme> result = themeService.getPopularThemes(7, 10);
         verify(themeRepository, times(1)).findPopularThemes(any(), any(), anyInt());
 
         assertThat(result.size()).isEqualTo(10);
-        assertThat(result.get(0).rank()).isEqualTo(1);
-        assertThat(result.get(1).rank()).isEqualTo(2);
-        assertThat(result.get(8).rank()).isEqualTo(9);
-        assertThat(result.get(9).rank()).isEqualTo(10);
     }
 }

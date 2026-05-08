@@ -63,19 +63,19 @@ class ThemeControllerTest {
 
     @Test
     void 인기테마_목록을_조회한다() throws Exception {
-        List<PopularTheme> popularThemes = List.of(
-                new PopularTheme(1L, "레서방1", "레서방입니다1.", "path/to/image1", 1),
-                new PopularTheme(2L, "레서방2", "레서방입니다2.", "path/to/image2", 2),
-                new PopularTheme(3L, "레서방3", "레서방입니다3.", "path/to/image3", 3),
-                new PopularTheme(4L, "레서방4", "레서방입니다4.", "path/to/image4", 4),
-                new PopularTheme(5L, "레서방5", "레서방입니다5.", "path/to/image5", 5),
-                new PopularTheme(6L, "레서방6", "레서방입니다6.", "path/to/image6", 6),
-                new PopularTheme(7L, "레서방7", "레서방입니다7.", "path/to/image7", 7),
-                new PopularTheme(8L, "레서방8", "레서방입니다8.", "path/to/image8", 8),
-                new PopularTheme(9L, "레서방9", "레서방입니다9.", "path/to/image9", 9),
-                new PopularTheme(10L, "레서방10", "레서방입니다10.", "path/to/image10", 10)
+        List<Theme> themes = List.of(
+                new Theme(1L, "레서방1", "레서방입니다1.", "path/to/image1"),
+                new Theme(2L, "레서방2", "레서방입니다2.", "path/to/image2"),
+                new Theme(3L, "레서방3", "레서방입니다3.", "path/to/image3"),
+                new Theme(4L, "레서방4", "레서방입니다4.", "path/to/image4"),
+                new Theme(5L, "레서방5", "레서방입니다5.", "path/to/image5"),
+                new Theme(6L, "레서방6", "레서방입니다6.", "path/to/image6"),
+                new Theme(7L, "레서방7", "레서방입니다7.", "path/to/image7"),
+                new Theme(8L, "레서방8", "레서방입니다8.", "path/to/image8"),
+                new Theme(9L, "레서방9", "레서방입니다9.", "path/to/image9"),
+                new Theme(10L, "레서방10", "레서방입니다10.", "path/to/image10")
         );
-        when(themeService.getPopularThemes(anyInt(), anyInt())).thenReturn(popularThemes);
+        when(themeService.getPopularThemes(anyInt(), anyInt())).thenReturn(themes);
 
         mockMvc.perform(get("/themes/popular")
                         .param("days", "1")
