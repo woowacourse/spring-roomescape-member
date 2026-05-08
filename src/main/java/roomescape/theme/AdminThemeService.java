@@ -4,6 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.ResourceInUseException;
 
 @Service
 public class AdminThemeService {
@@ -26,6 +27,12 @@ public class AdminThemeService {
 
     @Transactional
     public void delete(long id) {
+        int reservationCount = themeRepository.countByThemeId(id);
+
+        if (reservationCount > 0) {
+            throw new ResourceInUseException("예약이 있어 삭제할 수 없습니다");
+        }
+
         themeRepository.delete(id);
     }
 }
