@@ -139,6 +139,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Long> findReservedTimeIdsByDateAndThemeId(final LocalDate date, final long themeId) {
+        final String sql = """
+                SELECT time_id
+                FROM reservation
+                WHERE date = ? AND theme_id = ?
+                """;
+
+        return jdbcTemplate.queryForList(sql, Long.class, Date.valueOf(date), themeId);
+    }
+
+    @Override
     public boolean existsByTimeId(final long timeId) {
         final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
 
