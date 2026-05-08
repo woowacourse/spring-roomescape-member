@@ -111,10 +111,12 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 사용자명이_없으면_NotFound_예외() {
+    void 사용자명에_해당하는_예약이_없으면_빈_리스트를_반환한다() {
         given(reservationRepository.findReservationsByName(any())).willReturn(List.of());
-        assertThatThrownBy(() -> reservationService.findReservationsByName(" "))
-                .isInstanceOf(NotFoundException.class);
+
+        List<Reservation> reservations = reservationService.findReservationsByName(" ");
+
+        assertThat(reservations).isEmpty();
         verify(reservationRepository, times(1)).findReservationsByName(any());
     }
 
