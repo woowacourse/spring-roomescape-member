@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +9,9 @@ import roomescape.dto.response.PopularThemeResponse;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.exception.UnauthorizedException;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)

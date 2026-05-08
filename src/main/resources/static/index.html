@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>방탈출 예약</title>
     <style>
         :root {
@@ -32,12 +32,11 @@
             min-height: 100vh;
             color: var(--text);
             font-family: "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
-            background:
-                    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-                    radial-gradient(circle at 14% 12%, rgba(159, 47, 36, 0.28), transparent 24%),
-                    radial-gradient(circle at 82% 18%, rgba(215, 198, 174, 0.12), transparent 26%),
-                    linear-gradient(145deg, #101010 0%, #1e1b19 42%, #25201c 100%);
+            background: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+            radial-gradient(circle at 14% 12%, rgba(159, 47, 36, 0.28), transparent 24%),
+            radial-gradient(circle at 82% 18%, rgba(215, 198, 174, 0.12), transparent 26%),
+            linear-gradient(145deg, #101010 0%, #1e1b19 42%, #25201c 100%);
             background-size: 34px 34px, 34px 34px, auto, auto, auto;
         }
 
@@ -148,9 +147,8 @@
             position: absolute;
             inset: 0;
             pointer-events: none;
-            background:
-                    linear-gradient(90deg, rgba(159, 47, 36, 0.08), transparent 18%),
-                    linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent 42%);
+            background: linear-gradient(90deg, rgba(159, 47, 36, 0.08), transparent 18%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent 42%);
         }
 
         .section:hover {
@@ -161,8 +159,7 @@
         .section-header {
             padding: 20px 22px;
             border-bottom: 1px solid var(--line);
-            background:
-                    linear-gradient(180deg, #fff8ee, #f3e8d8);
+            background: linear-gradient(180deg, #fff8ee, #f3e8d8);
             position: relative;
         }
 
@@ -191,9 +188,8 @@
             padding: 14px;
             border: 1px solid rgba(215, 198, 174, 0.9);
             border-radius: 10px;
-            background:
-                    radial-gradient(circle at top right, rgba(159, 47, 36, 0.12), transparent 34%),
-                    #fff8ee;
+            background: radial-gradient(circle at top right, rgba(159, 47, 36, 0.12), transparent 34%),
+            #fff8ee;
             color: var(--text);
             text-align: left;
             cursor: pointer;
@@ -209,9 +205,8 @@
 
         .popular-card.selected {
             border-color: var(--accent);
-            background:
-                    radial-gradient(circle at top right, rgba(159, 47, 36, 0.18), transparent 38%),
-                    var(--accent-soft);
+            background: radial-gradient(circle at top right, rgba(159, 47, 36, 0.18), transparent 38%),
+            var(--accent-soft);
             box-shadow: inset 0 0 0 1px rgba(159, 47, 36, 0.18);
         }
 
@@ -590,7 +585,7 @@
             <h1 class="title">방탈출 예약</h1>
             <p class="subtitle">테마와 날짜를 고르고 가능한 시간에 바로 예약하세요.</p>
         </div>
-        <div id="statusCard" class="status" data-tone="neutral">
+        <div class="status" data-tone="neutral" id="statusCard">
             <span id="statusMessage">테마 목록을 불러오는 중입니다.</span>
         </div>
     </header>
@@ -601,16 +596,16 @@
                 <h2 class="section-title">최근 인기 테마</h2>
                 <p class="section-copy">지난 7일 동안 예약이 많았던 테마를 빠르게 선택할 수 있습니다.</p>
             </div>
-            <span id="popularRangeLabel" class="popular-range">집계 기간 계산 중</span>
+            <span class="popular-range" id="popularRangeLabel">집계 기간 계산 중</span>
         </div>
-        <div id="popularThemeList" class="popular-list" aria-live="polite">
+        <div aria-live="polite" class="popular-list" id="popularThemeList">
             <div class="skeleton"></div>
             <div class="skeleton"></div>
             <div class="skeleton"></div>
             <div class="skeleton"></div>
             <div class="skeleton"></div>
         </div>
-        <p id="popularThemeEmpty" class="empty hidden">최근 예약된 인기 테마가 없습니다.</p>
+        <p class="empty hidden" id="popularThemeEmpty">최근 예약된 인기 테마가 없습니다.</p>
     </section>
 
     <section class="layout">
@@ -619,12 +614,12 @@
                 <h2 class="section-title">테마 선택</h2>
                 <p class="section-copy">예약할 테마를 선택하세요.</p>
             </div>
-            <div id="themeList" class="theme-list" aria-live="polite">
+            <div aria-live="polite" class="theme-list" id="themeList">
                 <div class="skeleton"></div>
                 <div class="skeleton"></div>
                 <div class="skeleton"></div>
             </div>
-            <p id="themeEmpty" class="empty hidden">등록된 테마가 없습니다.</p>
+            <p class="empty hidden" id="themeEmpty">등록된 테마가 없습니다.</p>
         </section>
 
         <section class="section">
@@ -636,20 +631,20 @@
             <div class="form">
                 <div class="field">
                     <label for="reservationDate">예약 날짜</label>
-                    <input id="reservationDate" type="date" required>
+                    <input id="reservationDate" required type="date">
                 </div>
 
                 <div class="field">
                     <label for="reservationName">예약자 이름</label>
-                    <input id="reservationName" type="text" maxlength="255" placeholder="예: 브라운">
+                    <input id="reservationName" maxlength="255" placeholder="예: 브라운" type="text">
                 </div>
 
                 <div class="button-row">
-                    <button id="loadTimesButton" class="button secondary" type="button">가능 시간 조회</button>
-                    <button id="reserveButton" class="button primary" type="button" disabled>예약하기</button>
+                    <button class="button secondary" id="loadTimesButton" type="button">가능 시간 조회</button>
+                    <button class="button primary" disabled id="reserveButton" type="button">예약하기</button>
                 </div>
 
-                <div class="summary" aria-live="polite">
+                <div aria-live="polite" class="summary">
                     <div class="summary-row">
                         <span>테마</span>
                         <strong id="selectedThemeLabel">선택 전</strong>
@@ -669,8 +664,8 @@
                         <span>시간 선택</span>
                         <strong id="availabilityStat">조회 전</strong>
                     </div>
-                    <div id="timeGrid" class="time-grid" aria-live="polite"></div>
-                    <p id="timeHelper" class="helper">테마와 날짜를 선택한 뒤 가능 시간 조회를 눌러 주세요.</p>
+                    <div aria-live="polite" class="time-grid" id="timeGrid"></div>
+                    <p class="helper" id="timeHelper">테마와 날짜를 선택한 뒤 가능 시간 조회를 눌러 주세요.</p>
                 </div>
             </div>
         </section>
