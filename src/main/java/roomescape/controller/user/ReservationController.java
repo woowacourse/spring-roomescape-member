@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
-import roomescape.exception.NotFoundException;
-import roomescape.request.ReservationRequest;
-import roomescape.response.ReservationResponse;
+import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
@@ -34,8 +33,8 @@ public class ReservationController {
         try {
             List<ReservationResponse> responses = ReservationResponse.from(reservationService.findReservationsByName(name));
             return ResponseEntity.ok(responses);
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -46,8 +45,6 @@ public class ReservationController {
             ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
 
             return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }

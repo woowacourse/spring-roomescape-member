@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
@@ -63,11 +62,11 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 없는_id로_조회하면_NotFound_예외() {
+    void 없는_id로_조회하면_예외() {
         when(themeRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> themeService.findById(1L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

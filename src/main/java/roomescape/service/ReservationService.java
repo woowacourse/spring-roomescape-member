@@ -1,11 +1,10 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.command.ReservationSaveCommand;
+import roomescape.service.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -51,10 +50,10 @@ public class ReservationService {
 
     public Reservation saveReservation(ReservationSaveCommand command) {
         ReservationTime reservationTime = reservationTimeRepository.findById(command.timeId())
-                .orElseThrow(() -> new NotFoundException("reservation"));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
         Theme theme = themeRepository.findById(command.themeId())
-                .orElseThrow(() -> new NotFoundException("theme"));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         Reservation reservation = new Reservation(null, command.name(), command.date(), reservationTime, theme);
 
         return reservationRepository.addReservation(reservation);
@@ -62,11 +61,11 @@ public class ReservationService {
 
     public List<Reservation> findReservationsByName(String name) {
         if (Objects.isNull(name)) {
-            throw new NotFoundException("username");
+            throw new IllegalArgumentException("이름은 필수입니다.");
         }
         List<Reservation> reservations = reservationRepository.findReservationsByName(name);
         if (reservations.isEmpty()) {
-            throw new NotFoundException("reservation");
+            throw new IllegalArgumentException("예약을 찾을 수 없습니다.");
         }
 
         return reservations;

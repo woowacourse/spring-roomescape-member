@@ -5,11 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.command.ReservationSaveCommand;
+import roomescape.service.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -26,7 +25,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -97,7 +95,7 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -108,7 +106,7 @@ class ReservationServiceTest {
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -126,10 +124,10 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 사용자명이_없으면_NotFound_예외() {
+    void 사용자명에_해당하는_예약이_없으면_예외() {
         given(reservationRepository.findReservationsByName(any())).willReturn(List.of());
         assertThatThrownBy(() -> reservationService.findReservationsByName(" "))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(IllegalArgumentException.class);
         verify(reservationRepository, times(1)).findReservationsByName(any());
     }
 
