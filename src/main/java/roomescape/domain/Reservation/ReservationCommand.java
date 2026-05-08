@@ -49,7 +49,7 @@ public record ReservationCommand(String name, String date, long timeId, long the
 
     private static void validateThemeId(long themeId) {
         if (themeId <= 0) {
-            throw new ReservationCommandException(ErrorMessage.INVALID_TIME_ID_FORMAT);
+            throw new ReservationCommandException(ErrorMessage.INVALID_THEME_ID_FORMAT);
         }
     }
 }
