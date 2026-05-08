@@ -69,10 +69,15 @@ public class ThemeControllerTest {
                 .when().post("/api/v1/themes");
 
         RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(adminThemeParams)
+                .when().post("/api/v1/themes");
+
+        RestAssured.given().log().all()
                 .when().get("/api/v1/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(2));
     }
 
     @Test

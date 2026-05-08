@@ -27,6 +27,12 @@ public class ReservationControllerTest {
         return params;
     }
 
+    private Map<String, Object> reservationParams(Map<String, Object> overrides) {
+        Map<String, Object> params = reservationParams();
+        params.putAll(overrides);
+        return Map.copyOf(params);
+    }
+
     @BeforeEach
     void setUp() {
         Map<String, String> time = new HashMap<>();
@@ -47,7 +53,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 예약_조회() {
+    void 빈_예약_목록_조회() {
         RestAssured.given().log().all()
                 .when().get("/api/v1/reservations")
                 .then().log().all()
@@ -67,32 +73,48 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void 예약_추가_조회() {
+    void 예약_목록_조회() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
+                .when().post("/api/v1/reservations");
+
+        Map<String, String> time2 = new HashMap<>();
+        time2.put("startAt", "11:00");
+        RestAssured.given().contentType(ContentType.JSON)
+                .body(time2)
+                .when().post("/api/v1/times");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams(Map.of("name", "브리", "timeId", 2, "themeId", 1)))
                 .when().post("/api/v1/reservations");
 
         RestAssured.given().log().all()
                 .when().get("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(200)
+                .body("size()", is(2))
                 .body("[0].id", is(1))
                 .body("[0].name", is("브라운"))
                 .body("[0].date", is("2023-08-05"))
                 .body("[0].time.id", is(1))
-                .body("[0].time.startAt", is("10:00"));
+                .body("[0].time.startAt", is("10:00"))
+                .body("[0].themeId", is(1))
+                .body("[1].id", is(2))
+                .body("[1].name", is("브리"))
+                .body("[1].date", is("2023-08-05"))
+                .body("[1].time.id", is(2))
+                .body("[1].time.startAt", is("11:00"))
+                .body("[1].themeId", is(1));
     }
 
     @Test
-    void 예약_추가_및_삭제() {
+    void 예약_삭제() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams())
                 .when().post("/api/v1/reservations");
-
-        RestAssured.given().log().all()
-                .when().get("/api/v1/reservations");
 
         RestAssured.given().log().all()
                 .when().delete("/api/v1/reservations/1")
@@ -109,28 +131,8 @@ public class ReservationControllerTest {
     @Test
     void 존재하지_않는_예약을_삭제하면_404를_반환한다() {
         RestAssured.given().log().all()
-                .when().get("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-
-        RestAssured.given().log().all()
                 .when().delete("/api/v1/reservations/1")
                 .then().log().all()
                 .statusCode(404);
-    }
-
-    @Test
-    void 예약과_시간_연결() {
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationParams())
-                .when().post("/api/v1/reservations");
-
-        RestAssured.given().log().all()
-                .when().get("/api/v1/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 }
