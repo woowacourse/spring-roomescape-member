@@ -51,7 +51,7 @@ class ReservationCommandTest {
     @Test
     @DisplayName("날짜가 null인 경우 예외 테스트")
     void NullDateTest() {
-        assertThatThrownBy(() -> new ReservationCommand("브라운", null, 1L, 1L))
+        assertThatThrownBy(() -> new ReservationCommand("브라운", (String) null, 1L, 1L))
                 .isInstanceOf(ReservationCommandException.class)
                 .hasMessage(ErrorMessage.INVALID_DATE_NULL.getMessage());
     }

@@ -98,8 +98,8 @@ class ReservationThemeControllerTest {
                 .willReturn(List.of(themeWithCount));
 
         mockMvc.perform(get("/themes/popular")
-                        .param("start_date", "2026-04-01")
-                        .param("end_date", "2026-05-01")
+                        .param("startDate", "2026-04-01")
+                        .param("endDate", "2026-05-01")
                         .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))

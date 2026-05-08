@@ -3,6 +3,7 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -45,17 +46,12 @@ public class ReservationThemeServiceTest {
             }
 
             @Override
-            public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, String date) {
+            public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date) {
                 return false;
             }
 
             @Override
-            public List<Reservation> getAllReservation() {
-                return List.of();
-            }
-
-            @Override
-            public List<Reservation> getAllReservationByName(String name) {
+            public List<Reservation> getAllReservation(String name) {
                 return List.of();
             }
         };

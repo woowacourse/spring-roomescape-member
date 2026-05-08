@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ class ReservationTimeControllerTest {
 
     @BeforeEach
     void setUp() {
-        reservationTime = new ReservationTime(1L, "10:00");
+        reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
     }
 
     @Test
@@ -51,7 +52,7 @@ class ReservationTimeControllerTest {
     }
 
     @Test
-    @DisplayName("시간 추가 시 200과 바디를 반환한다")
+    @DisplayName("시간 추가 시 201과 바디를 반환한다")
     void addReservationTime() throws Exception {
         given(reservationTimeService.addReservationTime(any()))
                 .willReturn(reservationTime);
@@ -65,7 +66,7 @@ class ReservationTimeControllerTest {
         mockMvc.perform(post("/times")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.startAt").value("10:00"));
     }

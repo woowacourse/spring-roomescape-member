@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class ReservationControllerTest {
 
     @BeforeEach
     void setUp() {
-        ReservationTime reservationTime = new ReservationTime(1L, "10:00");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         ReservationTheme reservationTheme = new ReservationTheme(1L, "테마1", "테마 설명", "image url");
         reservation = new Reservation(1L, "홍길동", "2026-05-06", reservationTime, reservationTheme);
     }
@@ -44,7 +45,7 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약 목록 조회 시 200과 바디를 반환한다")
     void getReservations() throws Exception {
-        given(roomReservationService.getAllReservation())
+        given(roomReservationService.getAllReservation(null))
                 .willReturn(List.of(reservation));
 
         mockMvc.perform(get("/reservations"))
@@ -59,7 +60,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("예약 추가 시 200과 바디를 반환한다")
+    @DisplayName("예약 추가 시 201과 바디를 반환한다")
     void addReservation() throws Exception {
         given(roomReservationService.addReservation(any()))
                 .willReturn(reservation);
@@ -76,7 +77,7 @@ class ReservationControllerTest {
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("홍길동"))
                 .andExpect(jsonPath("$.date").value("2026-05-06"))
@@ -94,7 +95,7 @@ class ReservationControllerTest {
     @Test
     @DisplayName("이름으로 예약 조회 시 200과 바디를 반환한다")
     void getReservationByName() throws Exception {
-        given(roomReservationService.getAllReservationByName("홍길동"))
+        given(roomReservationService.getAllReservation("홍길동"))
                 .willReturn(List.of(reservation));
 
         mockMvc.perform(get("/reservations")
