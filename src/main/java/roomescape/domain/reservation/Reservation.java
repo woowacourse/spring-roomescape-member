@@ -3,12 +3,12 @@ package roomescape.domain.reservation;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import roomescape.domain.reservationTime.ReservationTime;
-import roomescape.domain.reservationTheme.ReservationTheme;
+import roomescape.domain.theme.Theme;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.ReservationException;
 
-public record Reservation(long id, String name, LocalDate date, ReservationTime time, ReservationTheme reservationTheme) {
-    public Reservation(long id, String name, String date, ReservationTime time, ReservationTheme theme) {
+public record Reservation(long id, String name, LocalDate date, ReservationTime time, Theme reservationTheme) {
+    public Reservation(long id, String name, String date, ReservationTime time, Theme theme) {
         this(id, name, validateDate(date), time, theme);
     }
 

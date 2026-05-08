@@ -13,7 +13,7 @@ import roomescape.domain.QueryWithParams;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
-import roomescape.domain.reservationTheme.ReservationTheme;
+import roomescape.domain.theme.Theme;
 
 @Repository
 //@Profile("web")
@@ -86,7 +86,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     rs.getLong(ALIAS_TIME_ID),
                     rs.getTime(ALIAS_START_AT).toLocalTime()
             ),
-            new ReservationTheme(
+            new Theme(
                     rs.getLong(ALIAS_THEME_ID),
                     rs.getString(ALIAS_THEME_NAME),
                     rs.getString(ALIAS_THEME_DESCRIPTION),
@@ -112,7 +112,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, ReservationTheme reservationTheme) {
+    public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
                 COLUMN_NAME, reservationCommand.name(),
                 COLUMN_DATE, reservationCommand.date(),
@@ -121,7 +121,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         )).longValue();
 
         return new Reservation(id, reservationCommand.name(), reservationCommand.date(), reservationTime,
-                reservationTheme);
+                theme);
     }
 
     @Override

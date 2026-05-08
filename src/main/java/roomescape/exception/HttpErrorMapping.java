@@ -10,6 +10,7 @@ public enum HttpErrorMapping {
     BAD_REQUEST_ERRORS(HttpStatus.BAD_REQUEST, List.of(
             INVALID_NAME_BLANK,
             INVALID_NAME_LENGTH,
+            INVALID_DATE_NULL,
             INVALID_DATE_FORMAT,
             INVALID_TIME_ID_FORMAT,
             INVALID_THEME_ID_FORMAT,
@@ -22,8 +23,8 @@ public enum HttpErrorMapping {
 
     CONFLICT_ERRORS(HttpStatus.CONFLICT, List.of(
             CANNOT_DELETE_RESERVATION_TIME_IN_USE,
-            CANNOT_DELETE_RESERVATION_THEME_IN_USE,
-            CANNOT_DELETE_RESERVATION_THEME_IN_USE
+            CANNOT_DELETE_THEME_IN_USE,
+            INTEGRITY_VIOLATION_ON_DELETE
     )),
     ;
 

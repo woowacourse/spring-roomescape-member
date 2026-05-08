@@ -1,4 +1,4 @@
-package roomescape.repository.reservationTheme;
+package roomescape.repository.theme;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,13 +9,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.QueryWithParams;
-import roomescape.domain.reservationTheme.PopularThemeCondition;
-import roomescape.domain.reservationTheme.ReservationTheme;
-import roomescape.domain.reservationTheme.ReservationThemeCommand;
-import roomescape.domain.reservationTheme.ReservationThemeWithCount;
+import roomescape.domain.theme.PopularThemeCondition;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ReservationThemeCommand;
+import roomescape.domain.theme.ReservationThemeWithCount;
 
 @Repository
-public class JdbcReservationThemeRepository implements ReservationThemeRepository {
+public class JdbcThemeRepository implements ThemeRepository {
     private static final String TABLE_NAME = "reservation_theme";
 
     private static final String COLUMN_ID = "id";
@@ -27,7 +27,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation_theme WHERE id = ?";
     private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM reservation_theme WHERE id = ?";
 
-    private static final RowMapper<ReservationTheme> MAPPER = (rs, rowNum) -> new ReservationTheme(
+    private static final RowMapper<Theme> MAPPER = (rs, rowNum) -> new Theme(
             rs.getLong(COLUMN_ID),
             rs.getString(COLUMN_NAME),
             rs.getString(COLUMN_DESCRIPTION),
@@ -37,27 +37,27 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcReservationThemeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TABLE_NAME)
                 .usingGeneratedKeyColumns(COLUMN_ID);    }
 
-    public ReservationTheme addTheme(ReservationThemeCommand reservationThemeCommand) {
+    public Theme addTheme(ReservationThemeCommand reservationThemeCommand) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
                 COLUMN_NAME, reservationThemeCommand.name(),
                 COLUMN_DESCRIPTION, reservationThemeCommand.description(),
                 COLUMN_IMAGE_URL, reservationThemeCommand.imageUrl()
         )).longValue();
 
-        return ReservationTheme.from(id, reservationThemeCommand);
+        return Theme.from(id, reservationThemeCommand);
     }
 
-    public List<ReservationTheme> getAllTheme() {
+    public List<Theme> getAllTheme() {
         return jdbcTemplate.query(SELECT_ALL_SQL, MAPPER);
     }
 
-    public Optional<ReservationTheme> getTheme(long id) {
+    public Optional<Theme> getTheme(long id) {
         return jdbcTemplate.query(SELECT_SPECIFIC_ID_SQL, MAPPER, id)
                 .stream()
                 .findFirst();
