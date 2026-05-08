@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -39,14 +38,10 @@ public class ThemeDao {
     }
 
     public Optional<Theme> findById(Long id) {
-        try {
-            Theme theme = jdbcTemplate.queryForObject(
-                    "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?",
-                    themeRowMapper, id);
-            return Optional.ofNullable(theme);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return jdbcTemplate.query(
+                "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?",
+                themeRowMapper, id
+        ).stream().findFirst();
     }
 
     public List<Theme> findAll() {
