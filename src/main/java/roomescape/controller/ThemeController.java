@@ -60,8 +60,8 @@ public class ThemeController {
     @GetMapping("/most-reserved-themes")
     public ResponseEntity<List<ReservedTheme>> findMostReserved(
             @RequestParam int limit,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
     ) {
         Duration duration = new Duration(startDate, endDate);
         List<ReservedTheme> responses = service.findMostReserved(limit, duration);

@@ -71,7 +71,7 @@ public class ThemeRepository {
                 + " FROM theme t"
                 + " LEFT OUTER JOIN reservation r"
                 + " ON t.id = r.theme_id"
-                + " WHERE (? IS NULL OR r.date >= ?) AND (? IS NULL OR r.date <= ?)"
+                + " WHERE r.date >= ? AND r.date <= ?"
                 + " GROUP BY t.id"
                 + " ORDER BY reservation_count DESC"
                 + " LIMIT ?";
@@ -82,7 +82,7 @@ public class ThemeRepository {
         return jdbcTemplate.query(
                 findSql,
                 reservedThemeRowMapper(),
-                startDate, startDate, endDate, endDate,
+                startDate, endDate,
                 limit
         );
     }

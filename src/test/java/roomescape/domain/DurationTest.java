@@ -1,9 +1,9 @@
 package roomescape.domain;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -13,30 +13,24 @@ class DurationTest {
     private static final LocalDate DEFAULT_END_DATE = LocalDate.of(3000, 1, 1);
 
     @Nested
-    class 시작일이나_종료일_중_하나_이상이_null이라면_정상_생성된다 {
+    class 값이_존재함을_검증한다 {
 
         @Test
-        void 시작일이_null이라면_정상_생성된다() {
-            assertThatNoException().isThrownBy(() -> new Duration(
+        void 시작일이_null이라면_예외를_던진다() {
+            assertThatThrownBy(() -> new Duration(
                     null,
                     DEFAULT_END_DATE
-            ));
+            )).isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("시작일이 필요합니다.");
         }
 
         @Test
-        void 종료일이_null이라면_정상_생성된다() {
-            assertThatNoException().isThrownBy(() -> new Duration(
+        void 종료일이_null이라면_예외를_던진다() {
+            assertThatThrownBy(() -> new Duration(
                     DEFAULT_START_DATE,
                     null
-            ));
-        }
-
-        @Test
-        void 시작일과_종료일이_null이라면_정상_생성된다() {
-            assertThatNoException().isThrownBy(() -> new Duration(
-                    null,
-                    null
-            ));
+            )).isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("종료일이 필요합니다.");
         }
     }
 
