@@ -49,7 +49,7 @@ class ReservationRepositoryTest {
         // given
         ReservationTime time = findTimeByStartAt("15:00");
         Theme theme = new Theme(1L, "테마 이름", "테마 설명", "썸네일");
-        Reservation reservation = new Reservation(null, "브라운", date, time, theme);
+        Reservation reservation = new Reservation("브라운", date, time, theme);
 
         // when
         Long id = reservationRepository.insert(reservation);
@@ -73,8 +73,8 @@ class ReservationRepositoryTest {
         Theme theme1 = new Theme(1L, "테마 이름1", "테마 설명1", "썸네일1");
         ReservationTime time2 = findTimeByStartAt("12:00");
         Theme theme2 = new Theme(2L, "테마 이름2", "테마 설명2", "썸네일2");
-        Reservation reservation1 = new Reservation(null, "브라운", date, time1, theme1);
-        Reservation reservation2 = new Reservation(null, "구구", date, time2, theme2);
+        Reservation reservation1 = new Reservation("브라운", date, time1, theme1);
+        Reservation reservation2 = new Reservation("구구", date, time2, theme2);
         Long id1 = reservationRepository.insert(reservation1);
         Long id2 = reservationRepository.insert(reservation2);
 

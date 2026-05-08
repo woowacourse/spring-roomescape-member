@@ -18,6 +18,10 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
+    public Theme(String name, String description, String thumbnail) {
+        this(null, name, description, thumbnail);
+    }
+
     public Long getId() {
         return id;
     }

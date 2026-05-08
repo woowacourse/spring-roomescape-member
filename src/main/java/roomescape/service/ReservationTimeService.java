@@ -28,7 +28,7 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTime create(LocalTime startAt) {
-        Long id = reservationTimeRepository.insert(new ReservationTime(null, startAt));
+        Long id = reservationTimeRepository.insert(new ReservationTime(startAt));
         return reservationTimeRepository.findBy(id)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다."));
     }

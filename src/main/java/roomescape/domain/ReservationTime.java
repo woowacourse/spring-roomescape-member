@@ -10,9 +10,12 @@ public class ReservationTime {
 
     public ReservationTime(Long id, LocalTime startAt) {
         validateTime(startAt);
-
         this.id = id;
         this.startAt = startAt;
+    }
+
+    public ReservationTime(LocalTime startAt) {
+        this(null, startAt);
     }
 
     public Long getId() {

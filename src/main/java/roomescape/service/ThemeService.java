@@ -34,7 +34,7 @@ public class ThemeService {
 
     @Transactional
     public Theme create(String name, String description, String thumbnail) {
-        Theme theme = new Theme(null, name, description, thumbnail);
+        Theme theme = new Theme(name, description, thumbnail);
         Long id = themeRepository.insert(theme);
         return themeRepository.findBy(id)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다."));

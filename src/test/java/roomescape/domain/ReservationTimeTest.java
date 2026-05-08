@@ -22,7 +22,7 @@ class ReservationTimeTest {
         LocalTime startAt = LocalTime.parse("10:00");
 
         // when
-        ReservationTime result = new ReservationTime(null, startAt);
+        ReservationTime result = new ReservationTime(startAt);
 
         // then
         assertThat(result.getStartAt()).isEqualTo(startAt);

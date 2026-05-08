@@ -28,7 +28,7 @@ class ThemeRepositoryTest {
     @Test
     void 테마_추가_테스트() {
         // given
-        Theme theme = new Theme(null, "새로운 테마", "새로운 테마 설명", "새로운 썸네일 링크");
+        Theme theme = new Theme("새로운 테마", "새로운 테마 설명", "새로운 썸네일 링크");
 
         // when
         Long id = themeRepository.insert(theme);
@@ -45,8 +45,8 @@ class ThemeRepositoryTest {
     @Test
     void 예약_삭제_테스트() {
         // given
-        Theme theme1 = new Theme(null, "새로운 테마1", "새로운 테마 설명1", "새로운 썸네일 링크1");
-        Theme theme2 = new Theme(null, "새로운 테마2", "새로운 테마 설명2", "새로운 썸네일 링크2");
+        Theme theme1 = new Theme("새로운 테마1", "새로운 테마 설명1", "새로운 썸네일 링크1");
+        Theme theme2 = new Theme("새로운 테마2", "새로운 테마 설명2", "새로운 썸네일 링크2");
         Long id1 = themeRepository.insert(theme1);
         Long id2 = themeRepository.insert(theme2);
 

@@ -36,7 +36,7 @@ public class ReservationService {
         validateAlreadyReserved(date, timeId, themeId);
         ReservationTime time = findReservationTime(timeId);
         Theme theme = findTheme(themeId);
-        Reservation reservation = new Reservation(null, name, date, time, theme);
+        Reservation reservation = new Reservation(name, date, time, theme);
         Long id = reservationRepository.insert(reservation);
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 ID입니다."));

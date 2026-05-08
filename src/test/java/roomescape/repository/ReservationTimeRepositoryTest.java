@@ -38,7 +38,7 @@ class ReservationTimeRepositoryTest {
     @Test
     void 시간_추가_테스트() {
         // given
-        ReservationTime time = new ReservationTime(null, LocalTime.of(8, 0));
+        ReservationTime time = new ReservationTime(LocalTime.of(8, 0));
 
         // when
         Long id = dao.insert(time);
@@ -55,8 +55,8 @@ class ReservationTimeRepositoryTest {
     @Test
     void 예약_삭제_테스트() {
         // given
-        ReservationTime time1 = new ReservationTime(null, LocalTime.of(8, 0));
-        ReservationTime time2 = new ReservationTime(null, LocalTime.of(21, 0));
+        ReservationTime time1 = new ReservationTime(LocalTime.of(8, 0));
+        ReservationTime time2 = new ReservationTime(LocalTime.of(21, 0));
         Long id1 = dao.insert(time1);
         Long id2 = dao.insert(time2);
 

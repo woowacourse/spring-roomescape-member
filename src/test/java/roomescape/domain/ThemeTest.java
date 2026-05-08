@@ -15,7 +15,7 @@ class ThemeTest {
     @ValueSource(strings = {"", " "})
     void 빈_이름으로_테마_생성시_예외(String name) {
         // when
-        assertThatThrownBy(() -> new Theme(null, name, "설명", "썸네일 경로"))
+        assertThatThrownBy(() -> new Theme(name, "설명", "썸네일 경로"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 테마 이름은 비어 있을 수 없습니다.");
     }
@@ -26,7 +26,7 @@ class ThemeTest {
         String name = "a".repeat(256);
 
         // when & then
-        assertThatThrownBy(() -> new Theme(null, name, "설명", "썸네일 경로"))
+        assertThatThrownBy(() -> new Theme(name, "설명", "썸네일 경로"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 테마 이름은 255자를 넘을 수 없습니다.");
     }
@@ -37,7 +37,7 @@ class ThemeTest {
         String description = "a".repeat(256);
 
         // when & then
-        assertThatThrownBy(() -> new Theme(null, "테마이름", description, "썸네일 경로"))
+        assertThatThrownBy(() -> new Theme("테마이름", description, "썸네일 경로"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 테마 설명은 255자를 넘을 수 없습니다.");
     }
@@ -48,7 +48,7 @@ class ThemeTest {
         String thumbnail = "a".repeat(256);
 
         // when & then
-        assertThatThrownBy(() -> new Theme(null, "테마이름", "설명", thumbnail))
+        assertThatThrownBy(() -> new Theme("테마이름", "설명", thumbnail))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 썸네일 경로는 255자를 넘을 수 없습니다.");
     }
@@ -61,7 +61,7 @@ class ThemeTest {
         String thumbnail = "썸네일 경로";
 
         // when
-        Theme result = new Theme(null, name, description, thumbnail);
+        Theme result = new Theme(name, description, thumbnail);
 
         // then
         assertThat(result.getName()).isEqualTo(name);
