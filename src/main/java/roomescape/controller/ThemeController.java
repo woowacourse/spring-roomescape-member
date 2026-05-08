@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.controller.dto.PopularThemeResponse;
 import roomescape.controller.dto.ThemeRequest;
 import roomescape.controller.dto.ThemeResponse;
+import roomescape.controller.dto.TimeAvailabilityResponse;
 import roomescape.domain.Theme;
 import roomescape.service.ReservationService;
 import roomescape.service.ThemeService;
-import roomescape.service.dto.TimeAvailabilityDto;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -50,8 +50,10 @@ public class ThemeController {
     }
 
     @GetMapping("/{id}/times")
-    public List<TimeAvailabilityDto> getAvailableTimes(@PathVariable Long id, @RequestParam("date") LocalDate date) {
-        return reservationService.findAvailableTime(id, date);
+    public List<TimeAvailabilityResponse> getAvailableTimes(@PathVariable Long id, @RequestParam("date") LocalDate date) {
+        return reservationService.findAvailableTime(id, date).stream()
+                .map(TimeAvailabilityResponse::from)
+                .toList();
     }
 
     @GetMapping("/popular")

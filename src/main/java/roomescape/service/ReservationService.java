@@ -8,7 +8,7 @@ import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.TimeAvailabilityDto;
+import roomescape.service.result.TimeAvailabilityResult;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -54,13 +54,14 @@ public class ReservationService {
         reservationRepository.delete(id);
     }
 
-    public List<TimeAvailabilityDto> findAvailableTime(Long themeId, LocalDate date) {
+    public List<TimeAvailabilityResult> findAvailableTime(Long themeId, LocalDate date) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
         List<Reservation> reservations = reservationRepository.findReservationsByThemeAndDate(themeId, date);
 
         return times.stream()
-                .map(time -> new TimeAvailabilityDto(
-                        time,
+                .map(time -> new TimeAvailabilityResult(
+                        time.getId(),
+                        time.getStartAt(),
                         isAvailable(time, reservations)
                 ))
                 .toList();
