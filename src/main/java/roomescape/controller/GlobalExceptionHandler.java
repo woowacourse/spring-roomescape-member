@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseErrorMessage handleValidation(MethodArgumentNotValidException e) {
-        log.error("[HttpMessageNotReadableException] ", e);
+        log.error("[MethodArgumentNotValidException] ", e);
         List<String> messages = e.getBindingResult().getFieldErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .toList();
@@ -47,21 +47,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseErrorMessage handleIllegalArgument(IllegalArgumentException e) {
-        log.error("[HttpMessageNotReadableException] ", e);
+        log.error("[IllegalArgumentException] ", e);
         return new ResponseErrorMessage(e.getMessage());
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseErrorMessage handleNoSuchElement(NoSuchElementException e) {
-        log.error("[HttpMessageNotReadableException] ", e);
+        log.error("[NoSuchElementException] ", e);
         return new ResponseErrorMessage(e.getMessage());
     }
     
     @ExceptionHandler(ForbiddenAccessException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseErrorMessage handleIForbiddenAccessException(ForbiddenAccessException e) {
-        log.error("[HttpMessageNotReadableException] ", e);
+        log.error("[ForbiddenAccessException] ", e);
         return new ResponseErrorMessage(e.getMessage());
     }
 }
