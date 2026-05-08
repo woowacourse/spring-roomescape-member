@@ -62,7 +62,7 @@ public class ThemeService {
 
     @Transactional
     public ThemeResponse saveTheme(ThemeCreateRequest request) {
-        Theme theme = new Theme(
+        Theme theme = Theme.create(
                 request.name(),
                 request.description(),
                 request.thumbnailUrl()

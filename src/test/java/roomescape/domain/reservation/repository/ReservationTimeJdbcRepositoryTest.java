@@ -33,7 +33,7 @@ class ReservationTimeJdbcRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        reservationTimeRepository = new ReservationTimeJdbcRepository(jdbcTemplate, dataSource);
+        reservationTimeRepository = new ReservationTimeJdbcRepository(jdbcTemplate);
 
         simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
@@ -79,7 +79,7 @@ class ReservationTimeJdbcRepositoryTest {
     @DisplayName("예약 시간을 저장한다.")
     void saveTest() {
         // given
-        ReservationTime time = new ReservationTime(LocalTime.of(20, 0));
+        ReservationTime time = ReservationTime.create(LocalTime.of(20, 0));
 
         // when
         ReservationTime saved = reservationTimeRepository.save(time);

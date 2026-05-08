@@ -76,7 +76,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         Number key = simpleJdbcInsert.executeAndReturnKey(parameters);
         Long generatedId = key.longValue();
 
-        reservation.setId(generatedId);
+        reservation.assignId(generatedId);
 
         return reservation;
     }

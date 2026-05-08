@@ -53,7 +53,7 @@ class ReservationServiceTest {
         when(reservationTimeRepository.findById(eq(1L)))
                 .thenReturn(Optional.of(reservationTime));
 
-        Theme theme = new Theme("theme1", "description1", "thumbnail url 1");
+        Theme theme = Theme.create("theme1", "description1", "thumbnail url 1");
         when(themeRepository.findById(eq(1L)))
                 .thenReturn(Optional.of(theme));
 

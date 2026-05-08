@@ -48,7 +48,7 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "해당 id에 해당하는 theme가 존재하지 않습니다. themeId=" + request.themeId()));
 
-        Reservation reservation = new Reservation(
+        Reservation reservation = Reservation.create(
                 request.username(),
                 theme,
                 request.date(),

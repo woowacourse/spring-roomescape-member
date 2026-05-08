@@ -145,7 +145,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
                 .addValue("thumbnail_url", theme.getThumbnailUrl());
 
         Number key = simpleJdbcInsert.executeAndReturnKey(parameters);
-        theme.setId(key.longValue());
+        theme.assignId(key.longValue());
 
         return theme;
     }

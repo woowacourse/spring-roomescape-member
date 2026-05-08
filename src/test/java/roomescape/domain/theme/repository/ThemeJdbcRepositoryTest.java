@@ -143,7 +143,7 @@ class ThemeJdbcRepositoryTest {
     @DisplayName("테마를 저장한다.")
     void saveTest() {
         // given
-        Theme theme = new Theme("new name", "new description", "new url");
+        Theme theme = Theme.create("new name", "new description", "new url");
 
         // when
         Theme saved = themeRepository.save(theme);

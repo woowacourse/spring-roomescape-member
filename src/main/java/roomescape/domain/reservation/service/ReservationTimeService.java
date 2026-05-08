@@ -30,9 +30,7 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse saveReservationTime(ReservationTimeCreateRequest request) {
-        ReservationTime reservationTime = new ReservationTime(
-                request.startAt()
-        );
+        ReservationTime reservationTime = ReservationTime.create(request.startAt());
 
         ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
 
