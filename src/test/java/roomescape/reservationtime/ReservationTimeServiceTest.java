@@ -1,6 +1,7 @@
 package roomescape.reservationtime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,6 +18,32 @@ import roomescape.reservationtime.service.ReservationTimeService;
 import roomescape.theme.domain.Theme;
 
 class ReservationTimeServiceTest {
+
+    @Test
+    @DisplayName("예약 시간을 저장한다")
+    void save() {
+        ReservationTimeService reservationTimeService = new ReservationTimeService(
+                new TestReservationTimeRepository(),
+                new MemoryReservationRepository()
+        );
+
+        ReservationTime saved = reservationTimeService.save(LocalTime.parse("10:00"));
+
+        assertThat(saved.getId()).isEqualTo(1L);
+        assertThat(saved.getStartAt()).isEqualTo(LocalTime.parse("10:00"));
+    }
+
+    @Test
+    @DisplayName("중복된 예약 시간은 저장할 수 없다")
+    void saveDuplicateTime() {
+        ReservationTimeService reservationTimeService = new ReservationTimeService(
+                new TestReservationTimeRepository(),
+                new MemoryReservationRepository()
+        );
+        reservationTimeService.save(LocalTime.parse("10:00"));
+
+        assertThrows(IllegalArgumentException.class, () -> reservationTimeService.save(LocalTime.parse("10:00")));
+    }
 
     @Test
     @DisplayName("특정 날짜와 테마에 이미 예약된 시간을 제외한 예약 가능 시간을 조회한다")
@@ -42,6 +69,48 @@ class ReservationTimeServiceTest {
         assertThat(availableTimes)
                 .extracting(ReservationTime::getId)
                 .containsExactly(eleven.getId());
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 예약 시간은 삭제할 수 없다")
+    void deleteById() {
+        ReservationTimeRepository reservationTimeRepository = new TestReservationTimeRepository();
+        MemoryReservationRepository reservationRepository = new MemoryReservationRepository();
+        ReservationTimeService reservationTimeService = new ReservationTimeService(
+                reservationTimeRepository,
+                reservationRepository
+        );
+
+        ReservationTime savedTime = reservationTimeService.save(LocalTime.parse("10:00"));
+        Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        reservationRepository.save(Reservation.createNew("쿠다", LocalDate.parse("2026-08-06"), theme, savedTime));
+
+        assertThrows(IllegalArgumentException.class, () -> reservationTimeService.deleteById(savedTime.getId()));
+    }
+
+    @Test
+    @DisplayName("ID로 예약 시간을 조회한다")
+    void getById() {
+        ReservationTimeService reservationTimeService = new ReservationTimeService(
+                new TestReservationTimeRepository(),
+                new MemoryReservationRepository()
+        );
+        ReservationTime saved = reservationTimeService.save(LocalTime.parse("10:00"));
+
+        ReservationTime found = reservationTimeService.getById(saved.getId());
+
+        assertThat(found).isEqualTo(saved);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 ID로 예약 시간을 조회할 수 없다")
+    void getByIdNotFound() {
+        ReservationTimeService reservationTimeService = new ReservationTimeService(
+                new TestReservationTimeRepository(),
+                new MemoryReservationRepository()
+        );
+
+        assertThrows(IllegalArgumentException.class, () -> reservationTimeService.getById(1L));
     }
 
     private static class TestReservationTimeRepository implements ReservationTimeRepository {

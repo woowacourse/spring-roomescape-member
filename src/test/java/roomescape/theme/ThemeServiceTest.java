@@ -1,5 +1,6 @@
 package roomescape.theme;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
@@ -14,6 +15,48 @@ import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.ThemeService;
 
 class ThemeServiceTest {
+
+    @Test
+    @DisplayName("테마를 저장한다")
+    void save() {
+        ThemeService themeService = new ThemeService(new TestThemeRepository(), new MemoryReservationRepository());
+
+        Theme saved = themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+
+        assertThat(saved.getId()).isEqualTo(1L);
+        assertThat(saved.getName()).isEqualTo("미술관의 밤");
+    }
+
+    @Test
+    @DisplayName("중복된 이름의 테마는 저장할 수 없다")
+    void saveDuplicateName() {
+        ThemeService themeService = new ThemeService(new TestThemeRepository(), new MemoryReservationRepository());
+        themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> themeService.save("미술관의 밤", "새 설명", "https://example.com/new-theme.png")
+        );
+    }
+
+    @Test
+    @DisplayName("ID로 테마를 조회한다")
+    void getById() {
+        ThemeService themeService = new ThemeService(new TestThemeRepository(), new MemoryReservationRepository());
+        Theme saved = themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+
+        Theme found = themeService.getById(saved.getId());
+
+        assertThat(found).isEqualTo(saved);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 ID로 테마를 조회할 수 없다")
+    void getByIdNotFound() {
+        ThemeService themeService = new ThemeService(new TestThemeRepository(), new MemoryReservationRepository());
+
+        assertThrows(IllegalArgumentException.class, () -> themeService.getById(1L));
+    }
 
     @Test
     @DisplayName("예약이 존재하는 테마는 삭제할 수 없다")
