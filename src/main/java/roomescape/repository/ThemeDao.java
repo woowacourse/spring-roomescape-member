@@ -66,10 +66,10 @@ public class ThemeDao {
 
     public List<Theme> findAllThemes() {
         String sql = """
-                SELECT * FROM theme
+                SELECT * FROM theme WHERE status = ?
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, rowMapper, ThemeStatus.AVAILABLE.name());
     }
 
     public List<Theme> findSortedPopularThemesBy(LocalDate startAt, LocalDate endAt, int limit) {
