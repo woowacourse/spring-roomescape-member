@@ -29,11 +29,27 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ErrorResponse> handleApiException(ApiException e) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
         return ResponseEntity
-                .status(e.getStatus())
+                .status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+
+    @ExceptionHandler(ResourceInUseException.class)
+    public ResponseEntity<ErrorResponse> handleResourceInUseException(ResourceInUseException e) {
+        ErrorResponse response = new ErrorResponse(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+
+    @ExceptionHandler({DuplicateException.class, UnauthorizedActionException.class, ApiException.class})
+    public ResponseEntity<ErrorResponse> handleBadRequestExceptions(ApiException e) {
+        ErrorResponse response = new ErrorResponse(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(response);
     }
 
@@ -46,3 +62,5 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 }
+
+
