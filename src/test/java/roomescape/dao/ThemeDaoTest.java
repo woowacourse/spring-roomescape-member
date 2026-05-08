@@ -40,16 +40,18 @@ class ThemeDaoTest {
     @DisplayName("최근 7일간 예약이 많은 순서대로 테마를 조회한다.")
     void 최근_7일간_예약이_많은_테마_조회_테스트() {
         // given
-        String today = "2026-05-08";
-        int expected = 3;
+        List<String> expectedNames = List.of(
+                "우테코 공포물", "미래 도시", "고대 이집트", "우주 탐험", "마법 학교",
+                "해저 왕국", "좀비 아포칼립스", "탐정 사무소", "시간 여행", "서부 개척시대"
+        );
 
         // when
-        List<Theme> topThemes = themeDao.findTopThemes(3L);
+        List<Theme> topThemes = themeDao.findTopThemes(10L);
 
         // then
-        assertThat(topThemes).hasSize(expected);
-        assertThat(topThemes.get(0).getName()).isEqualTo("우테코 공포물");
-        assertThat(topThemes.get(1).getName()).isEqualTo("미래 도시");
-        assertThat(topThemes.get(2).getName()).isEqualTo("고대 이집트");
+        assertThat(topThemes).hasSize(expectedNames.size());
+        for (int i = 0; i < expectedNames.size(); i++) {
+            assertThat(topThemes.get(i).getName()).isEqualTo(expectedNames.get(i));
+        }
     }
 }
