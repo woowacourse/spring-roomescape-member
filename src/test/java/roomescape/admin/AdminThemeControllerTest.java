@@ -1,56 +1,76 @@
 package roomescape.admin;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
+import roomescape.theme.ThemeService;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@WebMvcTest(AdminThemeController.class)
 class AdminThemeControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private ThemeService themeService;
+
     @Test
-    void 테마_관리() {
+    void 테마_추가() throws Exception {
         Map<String, String> params = new HashMap<>();
         params.put("name", "재밌는방탈출");
         params.put("description", "재밌는방탈출");
         params.put("thumbnail", "s3.com");
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().delete("/admin/themes/6")
-                .then().log().all()
-                .statusCode(204);
+        mockMvc.perform(post("/admin/themes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params)))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    void 빈값으로_테마_추가시_400() {
+    void 테마_삭제() throws Exception {
+        willDoNothing().given(themeService).delete(1L);
+
+        mockMvc.perform(delete("/admin/themes/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void 빈값으로_테마_추가시_400() throws Exception {
         Map<String, Object> params = new HashMap<>();
         params.put("name", null);
         params.put("description", "재밌는방탈출");
         params.put("thumbnail", "s3.com");
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(400);
+        mockMvc.perform(post("/admin/themes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    void 존재하지_않는_테마_삭제시_404() {
-        RestAssured.given().log().all()
-                .when().delete("/admin/themes/0")
-                .then().log().all()
-                .statusCode(404);
+    void 존재하지_않는_테마_삭제시_404() throws Exception {
+        willThrow(new RoomescapeException(ErrorCode.THEME_NOT_FOUND))
+                .given(themeService).delete(0L);
+
+        mockMvc.perform(delete("/admin/themes/0"))
+                .andExpect(status().isNotFound());
     }
 }

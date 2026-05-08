@@ -25,13 +25,20 @@ class ThemeServiceTest {
 
     @Test
     void 인기_테마_조회() {
-        Theme theme = new Theme(5L, "초보자 방", "방탈출이 처음이신 분들을 위한 입문 테마.", "https://example.com/themes/beginner.jpg");
-        given(themeRepository.findPopularThemes(any(LocalDate.class), any(LocalDate.class)))
+        LocalDate testDate = LocalDate.of(2026, 5, 10);
+        LocalDate expectedStart = testDate.minusDays(7);
+        LocalDate expectedEnd = testDate.minusDays(1);
+        Long limit = 10L;
+
+        Theme theme = new Theme(5L, "초보자 방", "입문 테마", "s3.com");
+
+        given(themeRepository.findPopularThemes(expectedStart, expectedEnd, limit))
                 .willReturn(List.of(theme));
 
-        List<ThemeResponse> themes = themeService.readPopularThemes();
+        List<ThemeResponse> themes = themeService.readPopularThemes(testDate);
 
         assertThat(themes).hasSize(1);
         assertThat(themes.get(0).id()).isEqualTo(5L);
+        assertThat(themes.get(0).name()).isEqualTo("초보자 방");
     }
 }

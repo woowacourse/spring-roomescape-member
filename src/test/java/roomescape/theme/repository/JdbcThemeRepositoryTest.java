@@ -21,7 +21,9 @@ class JdbcThemeRepositoryTest {
     void 인기_테마_조회() {
         LocalDate start = LocalDate.of(2026, 05, 10);
         LocalDate end = LocalDate.of(2026, 05, 17);
-        List<Theme> themes = themeRepository.findPopularThemes(start, end);
+        Long limit = 10L;
+
+        List<Theme> themes = themeRepository.findPopularThemes(start, end, limit);
 
         assertThat(themes).hasSize(5);
         assertThat(themes.getFirst().getId()).isEqualTo(1L);
