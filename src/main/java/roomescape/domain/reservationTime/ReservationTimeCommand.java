@@ -1,4 +1,4 @@
-package roomescape.domain.ReservationTime;
+package roomescape.domain.reservationTime;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;

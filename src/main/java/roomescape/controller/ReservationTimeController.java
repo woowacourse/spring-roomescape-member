@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.ReservationTime.ReservationTimeCommand;
-import roomescape.domain.ReservationTime.ReservationTimeCondition;
-import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
-import roomescape.dto.ReservationTime.AddReservationTimeRequest;
-import roomescape.dto.ReservationTime.AvailableReservationTimeResponse;
-import roomescape.dto.ReservationTime.ReservationTimeResponse;
+import roomescape.domain.reservationTime.ReservationTime;
+import roomescape.domain.reservationTime.ReservationTimeCommand;
+import roomescape.domain.reservationTime.ReservationTimeCondition;
+import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
+import roomescape.dto.reservationTime.AddReservationTimeRequest;
+import roomescape.dto.reservationTime.AvailableReservationTimeResponse;
+import roomescape.dto.reservationTime.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController

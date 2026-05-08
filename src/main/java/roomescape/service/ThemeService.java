@@ -4,13 +4,13 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.Theme.PopularThemeCondition;
-import roomescape.domain.Theme.Theme;
-import roomescape.domain.Theme.ThemeCommand;
-import roomescape.domain.Theme.ThemeWithCount;
+import roomescape.domain.theme.PopularThemeCondition;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeCommand;
+import roomescape.domain.theme.ThemeWithCount;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
-import roomescape.repository.Theme.ThemeRepository;
+import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
 @Service

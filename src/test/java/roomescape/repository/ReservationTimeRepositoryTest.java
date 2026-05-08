@@ -2,10 +2,10 @@ package roomescape.repository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.ReservationTime.ReservationTimeCommand;
-import roomescape.domain.ReservationTime.ReservationTimeCondition;
-import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
+import roomescape.domain.reservationTime.ReservationTime;
+import roomescape.domain.reservationTime.ReservationTimeCommand;
+import roomescape.domain.reservationTime.ReservationTimeCondition;
+import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.repository.reservationTime.JdbcReservationTimeRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 

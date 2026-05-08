@@ -1,6 +1,6 @@
-package roomescape.dto.ReservationTime;
+package roomescape.dto.reservationTime;
 
-import roomescape.domain.ReservationTime.ReservationTimeWithAvailable;
+import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 
 public record AvailableReservationTimeResponse(long id, String startAt, boolean isAvailable) {
     public static AvailableReservationTimeResponse from(ReservationTimeWithAvailable reservationTimeWithAvailable) {

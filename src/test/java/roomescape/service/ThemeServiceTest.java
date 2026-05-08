@@ -8,16 +8,16 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
-import roomescape.domain.Reservation.Reservation;
-import roomescape.domain.Reservation.ReservationCommand;
-import roomescape.domain.Theme.PopularThemeCondition;
-import roomescape.domain.Theme.ThemeWithCount;
-import roomescape.domain.Theme.Theme;
-import roomescape.domain.ReservationTime.ReservationTime;
-import roomescape.domain.Theme.ThemeCommand;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationCommand;
+import roomescape.domain.theme.PopularThemeCondition;
+import roomescape.domain.theme.ThemeWithCount;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.reservationTime.ReservationTime;
+import roomescape.domain.theme.ThemeCommand;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
-import roomescape.repository.Theme.ThemeRepository;
+import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
 public class ThemeServiceTest {

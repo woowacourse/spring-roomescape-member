@@ -1,4 +1,4 @@
-package roomescape.repository.Theme;
+package roomescape.repository.theme;
 
 import java.util.List;
 import java.util.Map;
@@ -6,10 +6,10 @@ import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme.PopularThemeCondition;
-import roomescape.domain.Theme.Theme;
-import roomescape.domain.Theme.ThemeCommand;
-import roomescape.domain.Theme.ThemeWithCount;
+import roomescape.domain.theme.PopularThemeCondition;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeCommand;
+import roomescape.domain.theme.ThemeWithCount;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {

@@ -1,9 +1,9 @@
-package roomescape.dto.Reservation;
+package roomescape.dto.reservation;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import roomescape.domain.Reservation.ReservationCommand;
+import roomescape.domain.reservation.ReservationCommand;
 
 public record AddReservationRequest(
         @NotBlank(message = "이름이 반드시 포함되어야 합니다.")

@@ -2,12 +2,12 @@ package roomescape.repository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Theme.PopularThemeCondition;
-import roomescape.domain.Theme.Theme;
-import roomescape.domain.Theme.ThemeCommand;
-import roomescape.domain.Theme.ThemeWithCount;
-import roomescape.repository.Theme.JdbcThemeRepository;
-import roomescape.repository.Theme.ThemeRepository;
+import roomescape.domain.theme.PopularThemeCondition;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeCommand;
+import roomescape.domain.theme.ThemeWithCount;
+import roomescape.repository.theme.JdbcThemeRepository;
+import roomescape.repository.theme.ThemeRepository;
 
 import java.util.List;
 import java.util.Optional;

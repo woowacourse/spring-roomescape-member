@@ -6,11 +6,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.Reservation.Reservation;
-import roomescape.domain.Reservation.ReservationCommand;
-import roomescape.dto.Reservation.ReservationCondition;
-import roomescape.dto.Reservation.AddReservationRequest;
-import roomescape.dto.Reservation.ReservationResponse;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationCommand;
+import roomescape.dto.reservation.ReservationCondition;
+import roomescape.dto.reservation.AddReservationRequest;
+import roomescape.dto.reservation.ReservationResponse;
 import roomescape.service.RoomReservationService;
 
 @RestController
