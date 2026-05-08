@@ -1,7 +1,6 @@
 package roomescape.model;
 
 import java.time.LocalTime;
-import roomescape.dto.TimeResponse;
 
 public class ReservationTime {
     private static final int START_MINUTE = 0;
@@ -15,9 +14,6 @@ public class ReservationTime {
         validateStartAt();
     }
 
-    public static ReservationTime from(TimeResponse timeResponse) {
-        return new ReservationTime(timeResponse.id(), timeResponse.startAt());
-    }
 
     private void validateStartAt() {
         if (startAt.getMinute() != START_MINUTE) {

@@ -1,7 +1,5 @@
 package roomescape.model;
 
-import roomescape.dto.ThemeResponse;
-
 public class Theme {
     private static final int MIN_THEME_NAME_LENGTH = 1;
     private static final int MAX_THEME_NAME_LENGTH = 20;
@@ -19,9 +17,6 @@ public class Theme {
         validateName();
     }
 
-    public static Theme from(ThemeResponse themeResponse) {
-        return new Theme(themeResponse.id(), themeResponse.name(), themeResponse.description(), themeResponse.url());
-    }
 
     private void validateName() {
         if (name.length() < MIN_THEME_NAME_LENGTH || name.length() > MAX_THEME_NAME_LENGTH) {

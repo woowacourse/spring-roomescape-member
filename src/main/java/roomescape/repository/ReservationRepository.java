@@ -71,8 +71,12 @@ public class ReservationRepository {
 
         Long id = keyHolder.getKey().longValue();
 
+        ReservationTime reservationTime = new ReservationTime(timeResponse.id(), timeResponse.startAt());
+        Theme theme = new Theme(themeResponse.id(), themeResponse.name(), themeResponse.description(),
+                themeResponse.url());
+
         return new Reservation(id, reservationRequest.name(), reservationRequest.date(),
-                ReservationTime.from(timeResponse), Theme.from(themeResponse));
+                reservationTime, theme);
     }
 
     public Reservation findById(Long id) {
