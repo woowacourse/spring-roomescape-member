@@ -1,11 +1,13 @@
 package roomescape.repository.ReservationTheme;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.QueryWithParams;
 import roomescape.domain.ReservationTheme.PopularThemeCondition;
 import roomescape.domain.ReservationTheme.ReservationTheme;
 import roomescape.domain.ReservationTheme.ReservationThemeCommand;
@@ -23,19 +25,6 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     private static final String SELECT_ALL_SQL = "SELECT id, name, description, image_url FROM reservation_theme";
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation_theme WHERE id = ?";
     private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM reservation_theme WHERE id = ?";
-
-    private static final String SELECT_POPULAR_THEMES_BY_DATE_RANGE = """
-        SELECT t.id AS id, t.name AS name, t.description AS description, t.image_url AS image_url, reservation_count AS count
-        FROM reservation_theme t
-        JOIN (
-            SELECT theme_id, COUNT(id) AS reservation_count
-            FROM reservation
-            WHERE created_at BETWEEN ? AND ?
-            GROUP BY theme_id
-        ) AS r ON r.theme_id = t.id
-        ORDER BY r.reservation_count DESC
-        LIMIT ?
-    """;
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -72,10 +61,50 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
 
     @Override
     public List<ReservationThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
-        return jdbcTemplate.query(SELECT_POPULAR_THEMES_BY_DATE_RANGE, (rs, i) -> ReservationThemeWithCount.from(rs),
-                popularThemeCondition.startDate(),
-                popularThemeCondition.endDate(),
-                popularThemeCondition.size()
+        QueryWithParams queryWithParams = getPopularThemQuery(popularThemeCondition);
+        return jdbcTemplate.query(
+                queryWithParams.query(),
+                (rs, i) -> ReservationThemeWithCount.from(rs),
+                queryWithParams.params().toArray()
         );
+    }
+
+    private QueryWithParams getPopularThemQuery(PopularThemeCondition popularThemeCondition) {
+        StringBuilder query = new StringBuilder("""
+          SELECT t.id, t.name, t.description, t.image_url, r.reservation_count AS count
+          FROM reservation_theme t
+          JOIN (
+              SELECT theme_id, COUNT(id) AS reservation_count
+              FROM reservation
+        """);
+
+        List<String> condition = new ArrayList<>();
+        List<String> params = new ArrayList<>();
+
+        if(popularThemeCondition.startDate() != null) {
+            condition.add("created_at >= ?");
+            params.add(popularThemeCondition.startDate());
+        }
+
+        if(popularThemeCondition.endDate() != null) {
+            condition.add("created_at <= ?");
+            params.add(popularThemeCondition.endDate());
+        }
+
+        if(!condition.isEmpty()) {
+            query.append(" WHERE ");
+            query.append(String.join(" AND ", condition));
+        }
+
+        query.append("""
+               GROUP BY theme_id
+          ) AS r ON r.theme_id = t.id
+          ORDER BY r.reservation_count DESC
+          LIMIT ?
+        """);
+
+        params.add(String.valueOf(popularThemeCondition.size()));
+
+        return new QueryWithParams(query.toString(), params);
     }
 }

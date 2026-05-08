@@ -16,7 +16,6 @@ import roomescape.domain.ReservationTheme.PopularThemeCondition;
 import roomescape.domain.ReservationTheme.ReservationTheme;
 import roomescape.domain.ReservationTheme.ReservationThemeCommand;
 import roomescape.domain.ReservationTheme.ReservationThemeWithCount;
-import roomescape.dto.ReservationTime.AvailableReservationTimeResponse;
 import roomescape.dto.theme.AddThemeRequest;
 import roomescape.dto.theme.PopularConditionRequest;
 import roomescape.dto.theme.PopularReservationThemeResponse;
