@@ -22,5 +22,5 @@ public interface ThemeSlotRepository {
 
     boolean isExistBy(long themeId, LocalDate date);
 
-    ThemeSlot update(ThemeSlot themeSlot);
+    void update(ThemeSlot themeSlot);
 }

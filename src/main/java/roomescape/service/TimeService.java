@@ -64,10 +64,9 @@ public class TimeService {
             return themeSlotRepository.findByThemeIdAndDate(themeId, date);
         }
 
-        // 존재하지 않으면 생성 후 저장 후 반환
+        // 존재하지 않으면 생성, 저장 후 반환
         Theme theme = getThemeOrElseThrow(themeId);
         List<Time> times = timeRepository.findAll();
-
         List<ThemeSlot> themeSlots = new ArrayList<>();
         times.forEach(time -> themeSlots.add(new ThemeSlot(theme, date, time, false)));
         return themeSlotRepository.saveAll(themeSlots);

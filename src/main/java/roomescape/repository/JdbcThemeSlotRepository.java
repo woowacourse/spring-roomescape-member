@@ -99,10 +99,11 @@ public class JdbcThemeSlotRepository implements ThemeSlotRepository {
                         SELECT EXISTS (
                             SELECT 1
                             FROM theme_slot 
-                            WHERE theme_id = ? and date = ?
+                            WHERE theme_id = ? 
+                            AND date = ?
                         ) 
                 """;
-        return Boolean.TRUE.equals(jdbcTemplate.queryForList(sql, Boolean.class, themeId, date));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId, date));
     }
 
     @Override
@@ -150,8 +151,21 @@ public class JdbcThemeSlotRepository implements ThemeSlotRepository {
     }
 
     @Override
-    public ThemeSlot update(ThemeSlot themeSlot) {
-        return null;
+    public void update(ThemeSlot themeSlot) {
+        String sql = """
+                UPDATE theme_slot 
+                SET is_reserved = ? 
+                WHERE theme_id = ?
+                AND date = ?
+                AND time_id = ?
+                """;
+
+        jdbcTemplate.update(sql,
+                themeSlot.isReserved(),
+                themeSlot.getTheme().getId(),
+                themeSlot.getDate(),
+                themeSlot.getTime().getId()
+        );
     }
 
     private RowMapper<ThemeSlot> rowMapper() {
