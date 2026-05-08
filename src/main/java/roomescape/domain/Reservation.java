@@ -13,10 +13,6 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
         validateTheme(theme);
     }
 
-    public static Reservation forSave(ReservationSaveCommand command, ReservationTime reservationTime, Theme theme) {
-        return new Reservation(null, command.name(), command.date(), reservationTime, theme);
-    }
-
     private void validateTheme(Theme theme) {
         if (Objects.isNull(theme)) {
             throw new IllegalArgumentException("유효하지 않는 테마입니다.");
@@ -42,6 +38,10 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
         if (Objects.isNull(date)) {
             throw new IllegalArgumentException("유효하지 않은 날짜입니다");
         }
+    }
+
+    public static Reservation forSave(ReservationSaveCommand command, ReservationTime reservationTime, Theme theme) {
+        return new Reservation(null, command.name(), command.date(), reservationTime, theme);
     }
 
     public long timeId() {
