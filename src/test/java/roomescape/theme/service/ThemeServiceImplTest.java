@@ -6,11 +6,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import static org.mockito.ArgumentMatchers.any;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import roomescape.holiday.repository.HolidayRepository;
-import roomescape.reservation.domain.ReservationTime;
+import roomescape.time.domain.ReservationTime;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
@@ -41,8 +41,19 @@ class ThemeServiceImplTest {
     @Mock
     private ReservationRepository reservationRepository;
 
-    @InjectMocks
     private ThemeServiceImpl themeService;
+
+    @BeforeEach
+    void setUp() {
+        themeService = new ThemeServiceImpl(
+                themeRepository,
+                timeService,
+                holidayRepository,
+                reservationRepository,
+                7,
+                10
+        );
+    }
 
     @Test
     void getAll() {

@@ -1,6 +1,6 @@
 package roomescape.reservation.controller.dto;
 
-import roomescape.reservation.domain.ReservationTime;
+import roomescape.time.domain.ReservationTime;
 
 public record ReservationTimeResponseDto(Long id, String startAt, String endAt) {
 

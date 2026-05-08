@@ -1,6 +1,6 @@
 package roomescape.theme.controller.dto;
 
-import roomescape.reservation.domain.ReservationTime;
+import roomescape.time.domain.ReservationTime;
 
 public record ThemeAvailableTimeResponseDto(Long id, String startAt) {
     public static ThemeAvailableTimeResponseDto from(ReservationTime time) {
