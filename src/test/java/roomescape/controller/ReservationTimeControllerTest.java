@@ -69,7 +69,10 @@ public class ReservationTimeControllerTest {
                 .when().get("/api/v1/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(3))
+                .body("[0].startAt", is("10:00"))
+                .body("[1].startAt", is("11:00"))
+                .body("[2].startAt", is("12:00"));
 
         RestAssured.given().log().all()
                 .when().delete("/api/v1/times/1")
@@ -88,7 +91,10 @@ public class ReservationTimeControllerTest {
                 .when().get("/api/v1/times?date=2026-05-05&themeId=1")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(3))
+                .body("[0].available", is(false))
+                .body("[1].available", is(true))
+                .body("[2].available", is(true));
     }
 
     @Test

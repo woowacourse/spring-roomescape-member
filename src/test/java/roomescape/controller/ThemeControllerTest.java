@@ -77,7 +77,9 @@ public class ThemeControllerTest {
                 .when().get("/api/v1/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(2))
+                .body("[0].id", is(1))
+                .body("[1].id", is(2));
     }
 
     @Test
@@ -150,6 +152,16 @@ public class ThemeControllerTest {
                 .when().get("/api/v1/themes?from=2026-05-01&to=2026-05-07")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(10));
+                .body("size()", is(10))
+                .body("[0].name", is("이든의 공포 하우스"))
+                .body("[1].name", is("정콩이의 방탈출"))
+                .body("[2].name", is("우주 정거장 탈출"))
+                .body("[3].name", is("고대 유적의 비밀"))
+                .body("[4].name", is("마법사의 서재"))
+                .body("[5].name", is("좀비 연구소"))
+                .body("[6].name", is("해적선의 보물"))
+                .body("[7].name", is("미스터리 호텔"))
+                .body("[8].name", is("시간의 문"))
+                .body("[9].name", is("사라진 탐정"));
     }
 }
