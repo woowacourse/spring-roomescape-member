@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -12,6 +13,7 @@ import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 
 @Service
+@Transactional
 public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
@@ -36,12 +38,13 @@ public class ReservationService {
         return reservationTimeDao.selectById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
     }
-
+    
     private Theme getTheme(long themeId) {
         return themeDao.selectById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationResponse> getAllReservations() {
         List<Reservation> reservations = reservationDao.select();
         return reservations.stream()
