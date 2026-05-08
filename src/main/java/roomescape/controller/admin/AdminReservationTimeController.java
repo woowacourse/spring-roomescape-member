@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.ReservationTime;
+import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -20,8 +21,9 @@ public class AdminReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTime> create(@RequestBody ReservationTime reservationTime) {
-        return ResponseEntity.ok(reservationTimeService.save(reservationTime));
+    public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeRequest request) {
+        ReservationTimeResponse response = reservationTimeService.save(request);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
