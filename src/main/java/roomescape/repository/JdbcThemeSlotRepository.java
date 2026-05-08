@@ -13,7 +13,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Repository
 public class JdbcThemeSlotRepository implements ThemeSlotRepository {
@@ -42,55 +41,6 @@ public class JdbcThemeSlotRepository implements ThemeSlotRepository {
             results.add(ThemeSlot.of(themeSlotId, themeSlot));
         }
         return results;
-    }
-
-    @Override
-    public List<ThemeSlot> findAll() {
-        String sql = """
-                SELECT 
-                    ts.id AS id,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail_url AS theme_thumbnail_url,
-                    ts.date AS date,
-                    t.id AS time_id, 
-                    t.start_at AS start_at,
-                    ts.is_reserved AS is_reserved
-                FROM 
-                    theme_slot ts
-                        INNER JOIN time t ON ts.time_id = t.id 
-                        INNER JOIN theme th ON ts.theme_id = th.id
-                """;
-        return jdbcTemplate.query(sql, rowMapper());
-    }
-
-    @Override
-    public Optional<ThemeSlot> findById(long reservationId) {
-        String sql = """
-                SELECT 
-                    r.id AS r_id,
-                    r.name,
-                    r.date,
-                    t.id AS t_id,
-                    t.start_at, 
-                    theme.id as theme_id,
-                    theme.name AS theme_name,
-                    theme.description AS theme_description,
-                    theme.thumbnail_url AS theme_thumbnail_url
-                FROM 
-                    reservation r 
-                        INNER JOIN 
-                        time t 
-                        INNER JOIN 
-                        theme theme
-                            ON 
-                                r.time_id = t.id 
-                                   AND 
-                                r.theme_id = theme.id
-                WHERE r.id = ?
-                """;
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), reservationId));
     }
 
     @Override

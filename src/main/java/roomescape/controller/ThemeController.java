@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,17 +31,13 @@ public class ThemeController {
     }
 
     @GetMapping(params = {"topCount", "during"})
-    public ResponseEntity<List<ThemeResponse>> popularThemes(
-            Long topCount,
-            Long during
-    ) {
+    public ResponseEntity<List<ThemeResponse>> popularThemes(Long topCount, Long during) {
         return ResponseEntity.ok(convertToTimeResponses(themeService.findPopularThemes(topCount, during)));
     }
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTime(@RequestBody ThemeRequest themeRequest) {
-        Theme Theme = themeService.saveTheme(themeRequest.name(), themeRequest.description(),
-                themeRequest.thumbnailUrl());
+        Theme Theme = themeService.saveTheme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnailUrl());
         return ResponseEntity.ok(ThemeResponse.from(Theme));
     }
 
