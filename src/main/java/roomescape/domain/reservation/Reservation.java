@@ -48,6 +48,16 @@ public class Reservation {
         );
     }
 
+    public static Reservation createWithId(long id, Reservation reservation) {
+        return of(
+            id,
+            reservation.getName(),
+            reservation.getDate(),
+            reservation.getTime(),
+            reservation.getTheme()
+        );
+    }
+
     public static Reservation of(
         long id,
         String name,
