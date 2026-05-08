@@ -4,6 +4,8 @@ import java.time.LocalTime;
 import roomescape.dto.TimeResponse;
 
 public class ReservationTime {
+    private static final int START_MINUTE = 0;
+
     private final Long id;
     private final LocalTime startAt;
 
@@ -18,7 +20,7 @@ public class ReservationTime {
     }
 
     private void validateStartAt() {
-        if (startAt.getMinute() != 0) {
+        if (startAt.getMinute() != START_MINUTE) {
             throw new IllegalArgumentException("[ERROR] 방탈출의 시작 시간은 정각이어야 합니다.");
         }
     }

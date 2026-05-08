@@ -3,6 +3,9 @@ package roomescape.model;
 import java.time.LocalDate;
 
 public class Reservation {
+    private static final int MIM_RESERVATION_NAME_LENGTH = 2;
+    private static final int MAX_RESERVATION_NAME_LENGTH = 20;
+
     private final Long id;
     private final String name;
     private final LocalDate date;
@@ -19,7 +22,7 @@ public class Reservation {
     }
 
     public void validateName() {
-        if (name.length() < 2 || name.length() > 20) {
+        if (name.length() < MIM_RESERVATION_NAME_LENGTH || name.length() > MAX_RESERVATION_NAME_LENGTH) {
             throw new IllegalArgumentException("[ERROR] 사용자 이름은 2자 이상 20자 이하입니다.");
         }
     }
