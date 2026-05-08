@@ -104,6 +104,12 @@ public class JdbcReservationRepository implements ReservationRepository {
         jdbcTemplate.update(sql, reservationId);
     }
 
+    @Override
+    public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = "SELECT EXISTS (SELECT * FROM reservation WHERE date = ? AND theme_id = ? AND time_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
+    }
+
     private SimpleJdbcInsert createInsert() {
         return new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")

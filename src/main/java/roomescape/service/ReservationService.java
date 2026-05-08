@@ -38,10 +38,11 @@ public class ReservationService {
     public Reservation saveReservation(
             String name,
             LocalDate date,
-            Long reservationTimeId,
+            Long timeId,
             Long themeId
     ) {
-        TimeSlot timeSlot = timeSlotRepository.findById(reservationTimeId);
+        validDuplicatedReservation(date, timeId, themeId);
+        TimeSlot timeSlot = timeSlotRepository.findById(timeId);
         Theme theme = themeRepository.findById(themeId);
         Reservation transientReservation = Reservation.transientOf(name, date, timeSlot, theme);
         return reservationRepository.save(transientReservation);
@@ -53,5 +54,11 @@ public class ReservationService {
 
     public Reservation findReservation(long reservationId) {
         return reservationRepository.findById(reservationId);
+    }
+
+    private void validDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new IllegalArgumentException("선택하신 시간과 테마는 이미 예약되었습니다.");
+        }
     }
 }
