@@ -45,7 +45,15 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler({DuplicateException.class, UnauthorizedActionException.class, ApiException.class})
+    @ExceptionHandler(UnauthorizedActionException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedActionException(UnauthorizedActionException e) {
+        ErrorResponse response = new ErrorResponse(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(response);
+    }
+
+    @ExceptionHandler({DuplicateException.class, ApiException.class})
     public ResponseEntity<ErrorResponse> handleBadRequestExceptions(ApiException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
         return ResponseEntity
