@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -63,7 +63,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         try {
             Theme theme = jdbcTemplate.queryForObject(sql, parameters, this::mapTheme);
             return Optional.ofNullable(theme);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
         }
     }
