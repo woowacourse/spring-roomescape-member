@@ -40,6 +40,12 @@ public class ReservationService {
 
     public ReservationCreateResponseDTO saveReservation(ReservationCreateRequestDTO requestDTO) {
         Reservation reservation = createReservation(requestDTO);
+
+        if (reservationRepository.existsReservationByDateAndTimeAndTheme(reservation.getDate(), reservation.getTime(),
+            reservation.getTheme())) {
+            throw new IllegalStateException();
+        }
+
         return ReservationMapper.toCreateResponseDTO(reservationRepository.save(reservation));
     }
 

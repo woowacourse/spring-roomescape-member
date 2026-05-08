@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.reservation.entity.Reservation;
+import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.time.entity.Time;
 
 public class FakeReservationRepository implements ReservationRepository {
@@ -42,5 +43,13 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public void deleteReservationById(Long id) {
         reservations.removeIf(reservation -> Objects.equals(reservation.getId(), id));
+    }
+
+    @Override
+    public boolean existsReservationByDateAndTimeAndTheme(LocalDate date, Time time, Theme theme) {
+        return reservations.stream()
+            .anyMatch(reservation -> reservation.getDate().equals(date)
+                && reservation.getTime().getId().equals(time.getId())
+                && reservation.getTheme().getId().equals(theme.getId()));
     }
 }
