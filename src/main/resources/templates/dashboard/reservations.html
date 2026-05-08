@@ -46,9 +46,9 @@
                     </select>
                 </label>
                 <label>시작 시간
-                    <select name="time" required>
+                    <select name="timeId" required>
                         <option value="">시간 선택</option>
-                        <option th:each="time : ${times}" th:value="${time.startAt()}" th:text="|${time.startAt()} ~ ${time.endAt()}|"></option>
+                        <option th:each="time : ${times}" th:value="${time.id()}" th:text="|${time.startAt()} ~ ${time.endAt()}|"></option>
                     </select>
                 </label>
                 <button type="submit">예약 생성</button>

@@ -109,7 +109,7 @@ class RoomescapePageControllerTest {
                         .param("name", "브라운")
                 .param("date", "2026-05-06")
                 .param("themeId", "1")
-                .param("time", "10:00"))
+                .param("timeId", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/dashboard/reservations"))
                 .andExpect(flash().attribute("successMessage", "예약을 생성했습니다."));
@@ -126,7 +126,7 @@ class RoomescapePageControllerTest {
                         .param("name", "브라운")
                         .param("date", "2026-05-06")
                         .param("themeId", "1")
-                        .param("time", "10:00"))
+                        .param("timeId", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("errorMessage", "예약 생성에 실패했습니다. 입력값을 다시 확인해 주세요."));
     }

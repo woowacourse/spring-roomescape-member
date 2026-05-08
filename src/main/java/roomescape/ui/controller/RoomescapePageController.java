@@ -103,11 +103,11 @@ public class RoomescapePageController {
             @RequestParam String name,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam Long themeId,
-            @RequestParam String time,
+            @RequestParam Long timeId,
             RedirectAttributes redirectAttributes
     ) {
         try {
-            reservationService.create(new ReservationSaveServiceDto(name, date, themeId, time));
+            reservationService.create(new ReservationSaveServiceDto(name, date, themeId, timeId));
             addSuccessMessage(redirectAttributes, "예약을 생성했습니다.");
         } catch (IllegalArgumentException | ThemeNotFoundException | TimeNotFoundException e) {
             addExpectedErrorMessage(redirectAttributes, "예약 생성에 실패했습니다. 입력값을 다시 확인해 주세요.", e);

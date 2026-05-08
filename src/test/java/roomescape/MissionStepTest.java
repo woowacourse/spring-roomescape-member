@@ -54,7 +54,7 @@ public class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("themeId", 1);
-        params.put("time", "15:40");
+        params.put("timeId", 1);
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -126,7 +126,7 @@ public class MissionStepTest {
         reservation1.put("name", "브라운");
         reservation1.put("date", "2023-08-05");
         reservation1.put("themeId", 1);
-        reservation1.put("time", "10:00");
+        reservation1.put("timeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -140,7 +140,7 @@ public class MissionStepTest {
         reservation2.put("name", "초코");
         reservation2.put("date", "2023-08-05");
         reservation2.put("themeId", 2);
-        reservation2.put("time", "10:00");
+        reservation2.put("timeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -219,7 +219,7 @@ public class MissionStepTest {
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
         reservation.put("themeId", 1);
-        reservation.put("time", "10:00");
+        reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

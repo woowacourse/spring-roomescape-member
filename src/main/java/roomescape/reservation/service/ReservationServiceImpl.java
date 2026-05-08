@@ -42,7 +42,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Reservation create(ReservationSaveServiceDto reservation) {
-        ReservationTime time = findTime(reservation.time());
+        ReservationTime time = findTime(reservation.timeId());
         Long themeId = findThemeId(reservation.themeId());
         LocalDate date = reservation.date();
         if (holidayService.isHoliday(reservation.date())) {
@@ -69,8 +69,11 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationRepository.isDuplicated(themeId, time, date);
     }
 
-    private ReservationTime findTime(String startAt) {
-        return timeService.findByStartAt(startAt);
+    private ReservationTime findTime(Long timeId) {
+        if (timeId == null) {
+            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+        }
+        return timeService.findById(timeId);
     }
 
     private Long findThemeId(Long themeId) {
