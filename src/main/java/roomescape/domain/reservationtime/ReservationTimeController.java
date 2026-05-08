@@ -39,10 +39,10 @@ public class ReservationTimeController {
         HttpServletRequest httpServletRequest,
         @RequestBody CreateTimeRequest createTimeRequest
     ) {
-        createTimeRequest.validate();
         if (validator.isUnauthorized(httpServletRequest)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        createTimeRequest.validate();
         CreateTimeResponse response = reservationTimeService.createReservationTime(createTimeRequest);
         return ResponseEntity.ok(response);
     }
