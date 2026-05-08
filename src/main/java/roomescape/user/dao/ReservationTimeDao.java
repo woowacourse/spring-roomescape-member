@@ -51,7 +51,8 @@ public class ReservationTimeDao {
                 LEFT JOIN reservation r
                 ON t.id = r.time_id
                 AND r.theme_id = ?
-                AND r.date = ?""";
+                AND r.date = ?
+                """;
 
         return jdbcTemplate.query(sql, availableTimeRowMapper, themeId, date);
     }
