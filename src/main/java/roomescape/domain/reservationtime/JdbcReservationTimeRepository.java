@@ -2,7 +2,7 @@ package roomescape.domain.reservationtime;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.time.LocalTime;
+import java.sql.Time;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, reservationTime.getFormattedStartAt());
+            ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
             return ps;
         }, keyHolder);
         long id = extractId(keyHolder);
@@ -57,7 +57,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
         return (rs, rowNum) -> ReservationTime.of(
             rs.getLong("id"),
-            LocalTime.parse(rs.getString("start_at"))
+            rs.getTime("start_at").toLocalTime()
         );
     }
 

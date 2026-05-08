@@ -3,7 +3,6 @@ package roomescape.domain.reservation;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -155,7 +154,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             ),
             ReservationTime.of(
                 rs.getLong("time_id"),
-                LocalTime.parse(rs.getString("start_at"))
+                rs.getTime("start_at").toLocalTime()
             ),
             Theme.of(
                 rs.getLong("theme_id"),

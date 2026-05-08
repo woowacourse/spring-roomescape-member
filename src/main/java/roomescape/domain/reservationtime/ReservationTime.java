@@ -1,15 +1,12 @@
 package roomescape.domain.reservationtime;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import lombok.Getter;
 import roomescape.support.exception.ReservationTimeErrorCode;
 import roomescape.support.exception.RoomescapeException;
 
 @Getter
 public class ReservationTime {
-
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private final Long id;
     private final LocalTime startAt;
@@ -32,10 +29,6 @@ public class ReservationTime {
 
     public static ReservationTime of(Long id, LocalTime startAt) {
         return new ReservationTime(id, startAt);
-    }
-
-    public String getFormattedStartAt() {
-        return startAt.format(TIME_FORMATTER);
     }
 
     private static void validate(LocalTime startAt) {
