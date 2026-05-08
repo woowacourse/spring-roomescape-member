@@ -366,48 +366,21 @@
                 return;
             }
 
-            const groups = {
-                '오전': [],
-                '오후': [],
-                '저녁': []
-            };
-
-            times.forEach(time => {
-                const hour = parseInt(time.startAt.split(':')[0], 10);
-
-                if (hour < 12) {
-                    groups['오전'].push(time);
-                    return;
-                }
-
-                if (hour < 18) {
-                    groups['오후'].push(time);
-                    return;
-                }
-
-                groups['저녁'].push(time);
-            });
-
-            container.innerHTML = Object.entries(groups)
-                .filter(([, groupTimes]) => groupTimes.length > 0)
-                .map(([label, groupTimes]) => `
-                    <div class="time-slot-group">
-                        <p class="time-slot-group-title">${label}</p>
-                        <div class="time-slot-group-buttons">
-                            ${groupTimes.map(time => `
-                                <button
-                                    type="button"
-                                    class="time-slot-btn"
-                                    data-time-id="${time.id}"
-                                    aria-pressed="false"
-                                    onclick="selectTime(${time.id})"
-                                >
-                                    ${time.startAt}
-                                </button>
-                            `).join('')}
-                        </div>
-                    </div>
-                `).join('');
+            container.innerHTML = `
+                <div class="time-slot-group-buttons">
+                    ${times.map(time => `
+                        <button
+                            type="button"
+                            class="time-slot-btn"
+                            data-time-id="${time.id}"
+                            aria-pressed="false"
+                            onclick="selectTime(${time.id})"
+                        >
+                            ${time.startAt.substring(0, 5)}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
         }
 
         function selectTime(timeId) {
@@ -436,11 +409,17 @@
         }
 
         function loadReservations() {
-            fetch('/reservations')
-                .then(response => response.json())
-                .then(reservations => {
-                    const container = document.getElementById('reservationsList');
+            const container = document.getElementById('reservationsList');
+            const myName = localStorage.getItem('reservationName');
 
+            if (!myName) {
+                container.innerHTML = '<div class="empty-state">예약 내역이 없습니다.</div>';
+                return;
+            }
+
+            fetch(`/reservations/mine?name=${encodeURIComponent(myName)}`)
+                .then(res => res.json())
+                .then(reservations => {
                     if (reservations.length === 0) {
                         container.innerHTML = '<div class="empty-state">예약 내역이 없습니다.</div>';
                         return;
@@ -475,8 +454,7 @@
                 })
                 .catch(error => {
                     console.error('예약 목록 불러오기 실패:', error);
-                    document.getElementById('reservationsList').innerHTML =
-                        '<div class="empty-state">예약 목록을 불러오는데 실패했습니다.</div>';
+                    container.innerHTML = '<div class="empty-state">예약 목록을 불러오는데 실패했습니다.</div>';
                 });
         }
 
@@ -504,13 +482,17 @@
             })
             .then(response => {
                 if (response.ok) {
-                    alert('예약이 완료되었습니다!');
-                    document.getElementById('reservationForm').reset();
-                    document.querySelectorAll('.time-slot-btn').forEach(button => {
-                        button.classList.remove('selected');
-                        button.setAttribute('aria-pressed', 'false');
+                    return response.json().then(() => {
+                        // 예약한 이름을 localStorage에 저장
+                        localStorage.setItem('reservationName', reservationData.name);
+                        alert('예약이 완료되었습니다!');
+                        document.getElementById('reservationForm').reset();
+                        document.querySelectorAll('.time-slot-btn').forEach(button => {
+                            button.classList.remove('selected');
+                            button.setAttribute('aria-pressed', 'false');
+                        });
+                        loadReservations();
                     });
-                    loadReservations();
                 } else {
                     return response.json().then(error => {
                         alert('예약 실패: ' + (error.message || '알 수 없는 오류'));

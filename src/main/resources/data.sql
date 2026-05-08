@@ -2,6 +2,14 @@ INSERT INTO reservation_time (start_at) VALUES ('10:00');
 INSERT INTO reservation_time (start_at) VALUES ('11:00');
 INSERT INTO reservation_time (start_at) VALUES ('12:00');
 INSERT INTO reservation_time (start_at) VALUES ('13:00');
+INSERT INTO reservation_time (start_at) VALUES ('14:00');
+INSERT INTO reservation_time (start_at) VALUES ('15:00');
+INSERT INTO reservation_time (start_at) VALUES ('16:00');
+INSERT INTO reservation_time (start_at) VALUES ('17:00');
+INSERT INTO reservation_time (start_at) VALUES ('18:00');
+INSERT INTO reservation_time (start_at) VALUES ('19:00');
+INSERT INTO reservation_time (start_at) VALUES ('20:00');
+INSERT INTO reservation_time (start_at) VALUES ('21:00');
 
 INSERT INTO theme (name, description, url)
 VALUES ('인형의 집', '공포 테마의 클래식, 밤마다 살아 움직이는 인형들이 가득한 저택을 탈출하세요.', 'https://example.com/1');

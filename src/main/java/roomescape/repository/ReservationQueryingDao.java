@@ -72,6 +72,17 @@ public class ReservationQueryingDao {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
+    public List<Reservation> findAllByName(String name) {
+        String sql = """
+                select r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, r.time_id, r.created_at as reservation_created_at, t.start_at, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.url as theme_url
+                from reservation as r
+                inner join reservation_time as t on r.time_id = t.id
+                inner join theme as th on th.id = r.theme_id
+                where r.name = ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
+    }
+
     public Optional<Reservation> findReservationByThemeAndDateAndTime(Long themeId, LocalDate date, Long timeId) {
         String sql = """
                 select r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, r.time_id, r.created_at as reservation_created_at, t.start_at, th.id as theme_id, th.name as theme_name, th.description as theme_description, th.url as theme_url

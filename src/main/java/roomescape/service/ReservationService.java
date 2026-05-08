@@ -50,6 +50,13 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> readByName(String name) {
+        return reservationQueryingDao.findAllByName(name)
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     @Transactional
     public ReservationResponse create(ReservationRequest reservationReq) {
         ReservationTime reservationTimeById = reservationTimeQueryingDao.findReservationTimeById(reservationReq.getTimeId())
