@@ -56,4 +56,31 @@ class ReservationControllerTest {
                 .body("theme.id", equalTo(themeId.intValue()))
                 .body("theme.name", equalTo("theme name"));
     }
+
+    @DisplayName("방탈출 예약 삭제 API를 테스트합니다.")
+    @Test
+    void delete_reservation() {
+        Long themeId = testHelper.insertTheme("theme name", "theme description", "theme img url");
+        Long timeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "스타크");
+        params.put("date", "2028-05-06");
+        params.put("themeId", String.valueOf(themeId));
+        params.put("timeId", String.valueOf(timeId));
+
+        Integer reservationId = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        RestAssured.given()
+                .when().delete("/reservations/{id}", reservationId)
+                .then().log().all()
+                .statusCode(204);
+    }
 }
