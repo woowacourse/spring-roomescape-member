@@ -33,7 +33,7 @@ class MissionStep3Test {
     void 시간_조회_API() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         RestAssured.given().log().all()
-                .when().get("/user/times")
+                .when().get("/user/times/reservation-time")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(12));

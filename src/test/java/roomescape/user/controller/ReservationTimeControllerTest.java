@@ -14,7 +14,7 @@ public class ReservationTimeControllerTest {
     @Test
     void 예약_가능_시간_조회_테스트() {
         RestAssured.given().log().all()
-                .when().get("/user/times?themeId=1&date=2026-05-05")
+                .when().get("/user/times/available-time?themeId=1&date=2026-05-05")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(11));

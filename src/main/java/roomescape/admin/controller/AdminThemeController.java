@@ -1,8 +1,8 @@
 package roomescape.admin.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +47,8 @@ public class AdminThemeController {
                 request.description(),
                 request.image());
         AdminThemeResponse adminThemeResponse = AdminThemeResponse.from(theme);
-        return ResponseEntity.status(HttpStatus.CREATED).body(adminThemeResponse);
+        URI location = URI.create("/admin/themes" + adminThemeResponse.id());
+        return ResponseEntity.created(location).body(adminThemeResponse);
     }
 
     @DeleteMapping("/themes/{id}")

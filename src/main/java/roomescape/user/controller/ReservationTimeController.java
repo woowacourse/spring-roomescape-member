@@ -3,6 +3,7 @@ package roomescape.user.controller;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ import roomescape.user.dto.ReservationTimeResponse;
 import roomescape.user.service.ReservationTimeService;
 
 @RestController
-@RequestMapping("user")
+@RequestMapping("/user")
 public class ReservationTimeController {
 
     private final ReservationTimeService timeService;
@@ -28,7 +29,7 @@ public class ReservationTimeController {
         this.timeService = timeService;
     }
 
-    @GetMapping("/times")
+    @GetMapping("/times/reservation-time")
     public ResponseEntity<List<ReservationTimeResponse>> readAll() {
         List<ReservationTimeResponse> reservationTimes = timeService.findAll().stream()
                 .map(ReservationTimeResponse::from)
@@ -36,7 +37,7 @@ public class ReservationTimeController {
         return ResponseEntity.ok().body(reservationTimes);
     }
 
-    @GetMapping(value = "/times", params = {"themeId", "date"})
+    @GetMapping(value = "/times/available-time", params = {"themeId", "date"})
     public ResponseEntity<List<AvailableTimeResponse>> readByThemeIdAndDate(@RequestParam Long themeId,
                                                                             @RequestParam LocalDate date) {
         List<AvailableTimeResponse> availableTimes = timeService.findByThemeIdAndDate(themeId, date);
@@ -46,7 +47,8 @@ public class ReservationTimeController {
     @PostMapping("/times")
     public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeRequest request) {
         ReservationTime time = timeService.add(request.startAt());
-        return ResponseEntity.ok(ReservationTimeResponse.from(time));
+        ReservationTimeResponse response = ReservationTimeResponse.from(time);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/times/{id}")
