@@ -50,6 +50,8 @@ public class JdbcReservationRepository implements ReservationRepository {
         JOIN reservation_theme AS t ON r.theme_id = t.id
     """;
 
+    private static final String CONDITION_NAME_SQL = "WHERE r.name = ?";
+
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation WHERE id = ?";
     private static final String EXIST_BY_TIME_ID_SQL = """
             SELECT EXISTS (\s
@@ -100,7 +102,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TABLE_NAME)
                 .usingGeneratedKeyColumns(COLUMN_ID)
-                .usingColumns("name", "date", "time_id", "theme_id");
+                .usingColumns(COLUMN_NAME, COLUMN_DATE, COLUMN_TIME_ID, COLUMN_THEME_ID);
     }
 
     @Override
@@ -148,7 +150,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         List<String> params = new ArrayList<>();
 
         if(name != null && !name.isBlank()) {
-            query.append("WHERE r.name = ?");
+            query.append(CONDITION_NAME_SQL);
             params.add(name);
         }
 
