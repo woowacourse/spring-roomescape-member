@@ -17,7 +17,7 @@ public record ThemeImageUrl(
 
     private void validateNotBlank(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("빈 문자열은 테마명으로 사용할 수 없습니다.");
+            throw new IllegalArgumentException("빈 문자열은 이미지 URL로 사용할 수 없습니다.");
         }
     }
 
