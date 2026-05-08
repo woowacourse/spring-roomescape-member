@@ -2,16 +2,16 @@
 INSERT INTO reservation_time (start_at) VALUES ('10:00');
 
 -- 2. 테마 등록 (10개)
-INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마1', '설명1', 'https://picsum.photos/id/135/200');
-INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마2', '설명2', 'https://picsum.photos/id/136/200');
-INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마3', '설명3', 'https://picsum.photos/id/137/200');
-INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마4', '설명4', 'https://picsum.photos/id/145/200');
-INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마5', '설명5', 'https://picsum.photos/id/139/200');
-INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마6', '설명6', 'https://picsum.photos/id/140/200');
-INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마7', '설명7', 'https://picsum.photos/id/141/200');
-INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마8', '설명8', 'https://picsum.photos/id/142/200');
-INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마9', '설명9', 'https://picsum.photos/id/143/200');
-INSERT INTO reservation_theme (name, description, image_url) VALUES ('테마10', '설명10', 'https://picsum.photos/id/144/200');
+INSERT INTO theme (name, description, image_url) VALUES ('테마1', '설명1', 'https://picsum.photos/id/135/200');
+INSERT INTO theme (name, description, image_url) VALUES ('테마2', '설명2', 'https://picsum.photos/id/136/200');
+INSERT INTO theme (name, description, image_url) VALUES ('테마3', '설명3', 'https://picsum.photos/id/137/200');
+INSERT INTO theme (name, description, image_url) VALUES ('테마4', '설명4', 'https://picsum.photos/id/145/200');
+INSERT INTO theme (name, description, image_url) VALUES ('테마5', '설명5', 'https://picsum.photos/id/139/200');
+INSERT INTO theme (name, description, image_url) VALUES ('테마6', '설명6', 'https://picsum.photos/id/140/200');
+INSERT INTO theme (name, description, image_url) VALUES ('테마7', '설명7', 'https://picsum.photos/id/141/200');
+INSERT INTO theme (name, description, image_url) VALUES ('테마8', '설명8', 'https://picsum.photos/id/142/200');
+INSERT INTO theme (name, description, image_url) VALUES ('테마9', '설명9', 'https://picsum.photos/id/143/200');
+INSERT INTO theme (name, description, image_url) VALUES ('테마10', '설명10', 'https://picsum.photos/id/144/200');
 
 -- 3. 예약 등록 (날짜/시간/테마가 겹치지 않도록 조정)
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('홍길동', '2026-05-06', 1, 1);

@@ -16,16 +16,16 @@ import roomescape.domain.theme.ReservationThemeWithCount;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
-    private static final String TABLE_NAME = "reservation_theme";
+    private static final String TABLE_NAME = "theme";
 
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_DESCRIPTION = "description";
     private static final String COLUMN_IMAGE_URL = "image_url";
 
-    private static final String SELECT_ALL_SQL = "SELECT id, name, description, image_url FROM reservation_theme";
-    private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation_theme WHERE id = ?";
-    private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM reservation_theme WHERE id = ?";
+    private static final String SELECT_ALL_SQL = "SELECT id, name, description, image_url FROM theme";
+    private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM theme WHERE id = ?";
+    private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, name, description, image_url FROM theme WHERE id = ?";
 
     private static final RowMapper<Theme> MAPPER = (rs, rowNum) -> new Theme(
             rs.getLong(COLUMN_ID),
@@ -80,7 +80,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     private QueryWithParams getPopularThemQuery(PopularThemeCondition popularThemeCondition) {
         StringBuilder query = new StringBuilder("""
           SELECT t.id, t.name, t.description, t.image_url, r.reservation_count AS count
-          FROM reservation_theme t
+          FROM theme t
           JOIN (
               SELECT theme_id, COUNT(id) AS reservation_count
               FROM reservation

@@ -4,7 +4,7 @@ CREATE TABLE reservation_time (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE reservation_theme (
+CREATE TABLE theme (
     id          BIGINT           NOT NULL AUTO_INCREMENT,
     name        VARCHAR(255)     NOT NULL,
     description VARCHAR(255)     NOT NULL,
@@ -21,5 +21,5 @@ CREATE TABLE reservation (
      created_at DATE DEFAULT CURRENT_DATE,
      PRIMARY KEY (id),
      FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-     FOREIGN KEY (theme_id) REFERENCES reservation_theme (id)
+     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
