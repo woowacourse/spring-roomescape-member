@@ -29,10 +29,6 @@ public class ReservationTimeDao {
             return reservationTime.deleted();
         }
 
-        if(TimeStatus.HOLD.name().equals(rs.getString("status"))) {
-            return reservationTime.hold();
-        }
-
         return reservationTime;
     };
 

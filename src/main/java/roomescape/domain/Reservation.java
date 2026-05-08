@@ -21,10 +21,6 @@ public class Reservation {
         return new Reservation(id, username, date, time, theme, ReservationStatus.AVAILABLE);
     }
 
-    public Reservation hold() {
-        return new Reservation(this.id, this.username, this.reservationDate, this.reservationTime, this.reservationTheme, ReservationStatus.HOLD);
-    }
-
     public Reservation deleted () {
         return new Reservation(this.id, this.username, this.reservationDate, this.reservationTime, this.reservationTheme, ReservationStatus.DELETED);
     }

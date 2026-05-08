@@ -18,10 +18,6 @@ public class ReservationTime {
         return new ReservationTime(id, startAt, TimeStatus.AVAILABLE);
     }
 
-    public ReservationTime hold() {
-        return new ReservationTime(this.id, this.startAt, TimeStatus.HOLD);
-    }
-
     public ReservationTime deleted() {
         return new ReservationTime(this.id, this.startAt, TimeStatus.DELETED);
     }
@@ -36,9 +32,5 @@ public class ReservationTime {
 
     public TimeStatus status() {
         return status;
-    }
-
-    public boolean isUnavailable() {
-        return status.isUnavailable();
     }
 }

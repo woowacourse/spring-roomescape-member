@@ -27,7 +27,7 @@ public class ThemeDao {
                 rs.getString("description")
         );
 
-        if (rs.getString("status").equals(ThemeStatus.DELETED.name())) {
+        if (ThemeStatus.DELETED.name().equals(rs.getString("status"))) {
             return theme.deleted();
         }
 

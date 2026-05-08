@@ -46,10 +46,6 @@ public class ReservationDao {
             return reservation.deleted();
         }
 
-        if(ReservationStatus.HOLD.name().equals(rs.getString("status"))) {
-            return reservation.hold();
-        }
-
         return reservation;
     };
 
