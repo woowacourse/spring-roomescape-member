@@ -49,26 +49,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation findById(long reservationId) {
         String sql = """
-                SELECT 
+                SELECT
                     r.id AS r_id,
                     r.name,
                     r.date,
                     t.id AS t_id,
-                    t.start_at, 
-                    theme.id as theme_id,
-                    theme.name AS theme_name,
-                    theme.description AS theme_description,
-                    theme.thumbnail_url AS theme_thumbnail_url
-                FROM 
-                    reservation r 
-                        INNER JOIN 
-                        time_slot t 
-                        INNER JOIN 
-                        theme theme
-                            ON 
-                                r.time_id = t.id 
-                                   AND 
-                                r.theme_id = theme.id
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail_url AS theme_thumbnail_url
+                FROM reservation r
+                INNER JOIN time_slot t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
                 WHERE r.id = ?
                 """;
         return jdbcTemplate.queryForObject(sql, rowMapper(), reservationId);
