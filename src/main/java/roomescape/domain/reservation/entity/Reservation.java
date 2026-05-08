@@ -20,6 +20,14 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public static Reservation create(String name, LocalDate date, Time time, Theme theme) {
+        return new Reservation(null, name, date, time, theme);
+    }
+
+    public static Reservation reconstruct(Long id, String name, LocalDate date, Time time, Theme theme) {
+        return new Reservation(id, name, date, time, theme);
+    }
+
     public Long getId() {
         return id;
     }
@@ -38,13 +46,5 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
-    }
-
-    public static Reservation create(String name, LocalDate date, Time time, Theme theme) {
-        return new Reservation(null, name, date, time, theme);
-    }
-
-    public static Reservation reconstruct(Long id, String name, LocalDate date, Time time, Theme theme) {
-        return new Reservation(id, name, date, time, theme);
     }
 }

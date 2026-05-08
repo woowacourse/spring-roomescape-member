@@ -14,6 +14,14 @@ public class Theme {
         this.imageUrl = imageUrl;
     }
 
+    public static Theme create(String name, String description, String imageUrl) {
+        return new Theme(null, name, description, imageUrl);
+    }
+
+    public static Theme reconstruct(Long id, String name, String description, String imageUrl) {
+        return new Theme(id, name, description, imageUrl);
+    }
+
     public Long getId() {
         return id;
     }
@@ -28,13 +36,5 @@ public class Theme {
 
     public String getImageUrl() {
         return imageUrl;
-    }
-
-    public static Theme create(String name, String description, String imageUrl) {
-        return new Theme(null, name, description, imageUrl);
-    }
-
-    public static Theme reconstruct(Long id, String name, String description, String imageUrl) {
-        return new Theme(id, name, description, imageUrl);
     }
 }
