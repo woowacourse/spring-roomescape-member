@@ -89,7 +89,7 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, availableReservationTimeRowMapper, themeId, date);
     }
 
-    public Long save(String name, String description, String thumbnailUrl) {
+    public long save(String name, String description, String thumbnailUrl) {
         return jdbcInsert.executeAndReturnKey(Map.of(
                 "name", name,
                 "description", description,
