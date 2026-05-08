@@ -2,16 +2,16 @@ package roomescape.controller.dto;
 
 import java.time.LocalDate;
 import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
 
 public class ReservationResponse {
     private final long id;
     private final String name;
     private final LocalDate date;
     private final ReservationTimeResponse time;
-    private final Theme theme;
+    private final ThemeResponse theme;
 
-    public ReservationResponse(long id, String name, LocalDate date, ReservationTimeResponse time, Theme theme) {
+    public ReservationResponse(long id, String name, LocalDate date, ReservationTimeResponse time,
+                               ThemeResponse theme) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -23,7 +23,7 @@ public class ReservationResponse {
         return new ReservationResponse(reservation.getId(), reservation.getName(),
                 reservation.getDate().getDate(),
                 ReservationTimeResponse.toDto(reservation.getTime()),
-                reservation.getTheme());
+                ThemeResponse.toDto(reservation.getTheme()));
     }
 
     public long getId() {
@@ -42,7 +42,7 @@ public class ReservationResponse {
         return time;
     }
 
-    public Theme getTheme() {
+    public ThemeResponse getTheme() {
         return theme;
     }
 }
