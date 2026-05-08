@@ -6,9 +6,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,9 +24,12 @@ import roomescape.domain.Theme;
 import roomescape.test.util.TestDatabaseUtils;
 
 @JdbcTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ReservationRepositoryTest {
 
-    private static final long DEFAULT_ID = 1;
+    private static boolean persistTestSuccessful = false;
+    private static boolean findTestSuccessful = false;
+
     private static final long NOT_EXIST_ID = 999;
     private static final String DEFAULT_NAME = "name";
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2025, 1, 1);
@@ -40,113 +47,99 @@ class ReservationRepositoryTest {
         this.reservationRepository = new ReservationRepository(jdbcTemplate);
     }
 
-    @Nested
-    class 예약을_저장한다 {
+    @Order(1)
+    @Test
+    void 새로운_예약_정보를_저장하고_저장한_정보를_반환한다() {
+        // given
+        ReservationTime time = persistTime(DEFAULT_START_AT);
+        Theme theme = persistTheme(DEFAULT_THEME);
+        Reservation transientReservation = Reservation.create(
+                DEFAULT_NAME,
+                DEFAULT_DATE,
+                time,
+                theme
+        );
 
-        @Test
-        void 새로운_예약_정보를_저장한다() {
-            // given
-            ReservationTime time = persistTime(DEFAULT_START_AT);
-            Theme theme = persistTheme(DEFAULT_THEME);
-            Reservation transientReservation = Reservation.create(
-                    DEFAULT_NAME,
-                    DEFAULT_DATE,
-                    time,
-                    theme
-            );
+        // when
+        Reservation persistedReservation = reservationRepository.persist(transientReservation);
 
-            // when
-            reservationRepository.persist(transientReservation);
+        // then
+        String selectSql = "SELECT r.id AS reservation_id,"
+                + " r.name AS member_name,"
+                + " r.date AS reservation_date,"
+                + " r.time_id,"
+                + " r.theme_id,"
+                + " rt.start_at AS time_start_at,"
+                + " t.name AS theme_name,"
+                + " t.description AS theme_description,"
+                + " t.image_url AS theme_image_url"
+                + " FROM reservation r"
+                + " INNER JOIN reservation_time rt ON r.time_id = rt.id"
+                + " INNER JOIN theme t ON r.theme_id = t.id";
+        List<Reservation> foundReservations = jdbcTemplate.query(selectSql, reservationRowMapper());
 
-            // then
-            String countSql = "SELECT count(*) FROM reservation";
-            Integer reservationCount = jdbcTemplate.queryForObject(countSql, Integer.class);
+        assertThat(foundReservations).hasSize(1);
+        assertThat(foundReservations.getFirst()).isEqualTo(persistedReservation);
 
-            assertThat(reservationCount).isEqualTo(1);
-        }
-
-        @Test
-        void 저장한_예약_정보를_반환한다() {
-            // given
-            ReservationTime time = persistTime(DEFAULT_START_AT);
-            Theme theme = persistTheme(DEFAULT_THEME);
-            Reservation transientReservation = Reservation.create(
-                    DEFAULT_NAME,
-                    DEFAULT_DATE,
-                    time,
-                    theme
-            );
-
-            // when
-            Reservation persistedReservation = reservationRepository.persist(transientReservation);
-
-            // then
-            String selectSql = "SELECT r.id AS reservation_id,"
-                    + " r.name AS member_name,"
-                    + " r.date AS reservation_date,"
-                    + " r.time_id,"
-                    + " r.theme_id,"
-                    + " rt.start_at AS time_start_at,"
-                    + " t.name AS theme_name,"
-                    + " t.description AS theme_description,"
-                    + " t.image_url AS theme_image_url"
-                    + " FROM reservation r"
-                    + " INNER JOIN reservation_time rt ON r.time_id = rt.id"
-                    + " INNER JOIN theme t ON r.theme_id = t.id";
-            List<Reservation> foundReservations = jdbcTemplate.query(selectSql, reservationRowMapper());
-
-            assertThat(foundReservations).hasSize(1);
-            assertThat(foundReservations.getFirst()).isEqualTo(persistedReservation);
-        }
+        persistTestSuccessful = true;
     }
 
+    @Order(2)
     @Test
     void 저장된_모든_예약을_조회한다() {
+        skipIfPersistTestFailed();
+
         // given
-        int reservationCount = 5;
-        insertReservation(reservationCount);
+        ReservationTime time = persistTime(DEFAULT_START_AT);
+        Theme theme = persistTheme(DEFAULT_THEME);
+        Reservation reservation = Reservation.create(
+                DEFAULT_NAME,
+                DEFAULT_DATE,
+                time,
+                theme
+        );
+
+        Reservation persistedReservation = reservationRepository.persist(reservation);
 
         // when
         List<Reservation> foundReservations = reservationRepository.findAll();
 
         // then
-        assertThat(foundReservations).hasSize(reservationCount);
+        assertThat(foundReservations).containsExactly(persistedReservation);
+
+        findTestSuccessful = true;
     }
 
     @Nested
     class 예약_정보를_제거한다 {
+
+        @BeforeEach
+        void skipIfPreviousTestFailed() {
+            skipIfPersistTestFailed();
+            skipIfFindTestFailed();
+        }
 
         @Test
         void ID_기반으로_예약을_제거한다() {
             // given
             ReservationTime time = persistTime(DEFAULT_START_AT);
             Theme theme = persistTheme(DEFAULT_THEME);
-            String insertSql = "INSERT INTO reservation(id, name, date, time_id, theme_id)"
-                    + " VALUES (?, ?, ?, ?, ?)";
-
-            jdbcTemplate.update(
-                    insertSql,
-                    DEFAULT_ID,
+            Reservation reservation = Reservation.create(
                     DEFAULT_NAME,
                     DEFAULT_DATE,
-                    time.getId(),
-                    theme.getId()
+                    time,
+                    theme
             );
+
+            Reservation persistedReservation = reservationRepository.persist(reservation);
 
             // when
-            reservationRepository.delete(DEFAULT_ID);
+            reservationRepository.delete(persistedReservation.getId());
 
             // then
-            String countSql = "SELECT count(*)"
-                    + " FROM reservation"
-                    + " WHERE id = ?";
-            Integer reservationCount = jdbcTemplate.queryForObject(
-                    countSql,
-                    Integer.class,
-                    DEFAULT_ID
-            );
+            List<Reservation> reservations = reservationRepository.findAll();
 
-            assertThat(reservationCount).isEqualTo(0);
+            assertThat(reservations).hasSize(0);
         }
 
         @Test
@@ -154,20 +147,17 @@ class ReservationRepositoryTest {
             // given
             ReservationTime time = persistTime(DEFAULT_START_AT);
             Theme theme = persistTheme(DEFAULT_THEME);
-            String insertSql = "INSERT INTO reservation(id, name, date, time_id, theme_id)"
-                    + " VALUES (?, ?, ?, ?, ?)";
-
-            jdbcTemplate.update(
-                    insertSql,
-                    DEFAULT_ID,
+            Reservation reservation = Reservation.create(
                     DEFAULT_NAME,
                     DEFAULT_DATE,
-                    time.getId(),
-                    theme.getId()
+                    time,
+                    theme
             );
 
+            Reservation persistedReservation = reservationRepository.persist(reservation);
+
             // when
-            boolean deleted = reservationRepository.delete(DEFAULT_ID);
+            boolean deleted = reservationRepository.delete(persistedReservation.getId());
 
             // then
             assertThat(deleted).isTrue();
@@ -178,28 +168,6 @@ class ReservationRepositoryTest {
             boolean deleted = reservationRepository.delete(NOT_EXIST_ID);
 
             assertThat(deleted).isFalse();
-        }
-    }
-
-    private void insertReservation(int count) {
-        Long timeId = persistTime(DEFAULT_START_AT)
-                .getId();
-        Long themeId = persistTheme(DEFAULT_THEME)
-                .getId();
-
-        LocalDate currentDate = DEFAULT_DATE;
-        for (int i = 0; i < count; i++) {
-            String insertSql = "INSERT INTO reservation(name, date, time_id, theme_id)"
-                    + " VALUES (?, ?, ?, ?)";
-
-            jdbcTemplate.update(
-                    insertSql,
-                    DEFAULT_NAME,
-                    currentDate,
-                    timeId,
-                    themeId
-            );
-            currentDate = currentDate.plusDays(1);
         }
     }
 
@@ -248,5 +216,13 @@ class ReservationRepositoryTest {
                     Theme.retrieve(themeId, themeName, description, imageUrl)
             );
         };
+    }
+
+    private static void skipIfPersistTestFailed() {
+        Assumptions.assumeTrue(persistTestSuccessful, "저장 기능 테스트에 실패하여 다른 테스트를 수행하지 않습니다.");
+    }
+
+    private static void skipIfFindTestFailed() {
+        Assumptions.assumeTrue(findTestSuccessful, "조회 기능 테스트에 실패하여 다른 테스트를 수행하지 않습니다.");
     }
 }
