@@ -21,79 +21,76 @@ class ReservationTimeDaoTest {
 
     @Test
     void 예약_시간을_생성한다() {
-        // given
-        LocalTime startAt = LocalTime.of(10, 0);
-        ReservationTime reservationTime = ReservationTime.createWithoutId(startAt);
-
         // when
-        ReservationTime savedReservationTime = timeDao.insert(reservationTime);
+        ReservationTime saved = saveTime(10, 0);
 
         // then
         assertAll(
-                () -> assertThat(savedReservationTime.getId()).isNotNull(),
-                () -> assertThat(savedReservationTime.getStartAt()).isEqualTo(startAt)
+                () -> assertThat(saved.getId()).isNotNull(),
+                () -> assertThat(saved.getStartAt()).isEqualTo(LocalTime.of(10, 0))
         );
     }
 
     @Test
     void 예약_시간_목록을_조회한다() {
         // given
-        timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
-        timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(11, 0)));
-        timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(12, 0)));
-        timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(13, 0)));
-        timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(14, 0)));
+        saveTime(10, 0);
+        saveTime(11, 0);
+        saveTime(12, 0);
+        saveTime(13, 0);
+        saveTime(14, 0);
 
         // when
-        List<ReservationTime> reservationTimes = timeDao.selectAll();
+        List<ReservationTime> times = timeDao.selectAll();
 
         // then
         assertAll(
-                () -> assertThat(reservationTimes.size()).isEqualTo(5),
-                () -> assertThat(reservationTimes.get(0).getStartAt()).isEqualTo(LocalTime.of(10, 0)),
-                () -> assertThat(reservationTimes.get(1).getStartAt()).isEqualTo(LocalTime.of(11, 0)),
-                () -> assertThat(reservationTimes.get(2).getStartAt()).isEqualTo(LocalTime.of(12, 0)),
-                () -> assertThat(reservationTimes.get(3).getStartAt()).isEqualTo(LocalTime.of(13, 0)),
-                () -> assertThat(reservationTimes.get(4).getStartAt()).isEqualTo(LocalTime.of(14, 0))
+                () -> assertThat(times).hasSize(5),
+                () -> assertThat(times.get(0).getStartAt()).isEqualTo(LocalTime.of(10, 0)),
+                () -> assertThat(times.get(1).getStartAt()).isEqualTo(LocalTime.of(11, 0)),
+                () -> assertThat(times.get(2).getStartAt()).isEqualTo(LocalTime.of(12, 0)),
+                () -> assertThat(times.get(3).getStartAt()).isEqualTo(LocalTime.of(13, 0)),
+                () -> assertThat(times.get(4).getStartAt()).isEqualTo(LocalTime.of(14, 0))
         );
     }
 
     @Test
     void 아이디에_맞는_예약_시간을_조회한다() {
         // given
-        ReservationTime reservationTime = timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        ReservationTime saved = saveTime(10, 0);
 
         // when
-        Optional<ReservationTime> selectReservationTime = timeDao.selectById(reservationTime.getId());
+        Optional<ReservationTime> found = timeDao.selectById(saved.getId());
 
         // then
         assertAll(
-                () -> assertThat(selectReservationTime.isPresent()).isTrue(),
-                () -> assertThat(selectReservationTime.get().getStartAt()).isEqualTo(reservationTime.getStartAt())
+                () -> assertThat(found).isPresent(),
+                () -> assertThat(found.get().getStartAt()).isEqualTo(saved.getStartAt())
         );
     }
 
     @Test
     void 아이디에_맞는_예약_시간이_존재하지_않으면_빈_값을_반환한다() {
         // when
-        Optional<ReservationTime> selectReservationTime = timeDao.selectById(0L);
+        Optional<ReservationTime> found = timeDao.selectById(0L);
 
         // then
-        assertAll(
-                () -> assertThat(selectReservationTime.isEmpty()).isTrue()
-        );
+        assertThat(found).isEmpty();
     }
 
     @Test
     void 예약_시간을_삭제한다() {
         // given
-        ReservationTime savedReservationTime = timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(10, 0)));
+        ReservationTime saved = saveTime(10, 0);
 
         // when
-        timeDao.delete(savedReservationTime.getId());
+        timeDao.delete(saved.getId());
 
         // then
-        List<ReservationTime> reservationTimes = timeDao.selectAll();
-        assertThat(reservationTimes.size()).isEqualTo(0);
+        assertThat(timeDao.selectAll()).isEmpty();
+    }
+
+    private ReservationTime saveTime(int hour, int minute) {
+        return timeDao.insert(ReservationTime.createWithoutId(LocalTime.of(hour, minute)));
     }
 }
