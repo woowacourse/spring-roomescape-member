@@ -48,10 +48,10 @@ public class ReservationService {
 
     public List<TimeResponse> getReservations(LocalDate date, Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        List<Long> reservations = reservationRepository.findTimeByDateAndThemeId(date, themeId);
+        List<Long> bookedTimeIds = reservationRepository.findTimeByDateAndThemeId(date, themeId);
 
         return reservationTimes.stream()
-            .filter(reservationTime -> reservations.contains(reservationTime.getId()))
+            .filter(reservationTime -> !bookedTimeIds.contains(reservationTime.getId()))
             .map(TimeResponse::of)
             .toList();
     }
