@@ -182,6 +182,50 @@ public class MissionStepTest {
     }
 
     @Test
+    void 예약이_존재하는_시간_삭제_테스트() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2023-08-05");
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(400)
+                .body(is("[ERROR] 예약이 존재하는 시간은 삭제할 수 없습니다."));
+    }
+
+    @Test
+    void 예약이_존재하는_테마_삭제_테스트() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2023-08-05");
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(400)
+                .body(is("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다."));
+    }
+
+    @Test
     void 계층화_리팩터링() {
         boolean isJdbcTemplateInjected = false;
 
