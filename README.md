@@ -410,7 +410,7 @@ POST /api/reservations
 
 #### Response Body
 
-##### 200 OK
+##### 201 CREATED
 
 ```json
 {
@@ -427,7 +427,7 @@ POST /api/reservations
 #### URL
 
 ```http
-GET /themes/rankings/last-7-days
+GET /api/themes/rankings/last-7-days
 ```
 
 #### Request Body
