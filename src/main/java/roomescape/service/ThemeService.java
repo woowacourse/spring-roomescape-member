@@ -8,9 +8,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
-import roomescape.exception.code.ReservationErrorCode;
 import roomescape.exception.code.ThemeErrorCode;
-import roomescape.exception.domain.ReservationException;
 import roomescape.exception.domain.ThemeException;
 
 @Service
@@ -66,7 +64,7 @@ public class ThemeService {
 
     private void validateReservationNotExistsBy(long themeId) {
         if (reservationDao.existsByTheme(themeId)) {
-            throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_EXISTS);
+            throw new ThemeException(ThemeErrorCode.THEME_HAS_RESERVATION);
         }
     }
 }
