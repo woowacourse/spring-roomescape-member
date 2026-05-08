@@ -35,7 +35,7 @@ class ReservationJdbcRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        reservationRepository = new ReservationJdbcRepository(jdbcTemplate, dataSource);
+        reservationRepository = new ReservationJdbcRepository(jdbcTemplate);
 
         simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")

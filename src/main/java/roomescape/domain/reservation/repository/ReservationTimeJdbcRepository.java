@@ -3,7 +3,6 @@ package roomescape.domain.reservation.repository;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -35,12 +34,9 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ReservationTimeJdbcRepository(
-            NamedParameterJdbcTemplate jdbcTemplate,
-            DataSource dataSource
-    ) {
+    public ReservationTimeJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }
@@ -83,7 +79,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
         Number key = simpleJdbcInsert.executeAndReturnKey(parameters);
         Long generatedId = key.longValue();
 
-        reservationTime.setId(generatedId);
+        reservationTime.assignId(generatedId);
 
         return reservationTime;
     }

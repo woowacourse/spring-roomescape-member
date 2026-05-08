@@ -37,7 +37,7 @@ class ThemeJdbcRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        themeRepository = new ThemeJdbcRepository(jdbcTemplate, dataSource);
+        themeRepository = new ThemeJdbcRepository(jdbcTemplate);
 
         simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
