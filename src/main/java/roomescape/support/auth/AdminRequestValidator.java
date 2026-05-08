@@ -1,4 +1,4 @@
-package roomescape.admin;
+package roomescape.support.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
