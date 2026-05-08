@@ -16,6 +16,7 @@ import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.dto.request.TimeCreateRequestDTO;
 import roomescape.domain.time.dto.response.TimeResponseDTO;
 import roomescape.domain.time.entity.Time;
+import roomescape.domain.time.mapper.TimeMapper;
 import roomescape.domain.time.repository.FakeTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
 
@@ -131,8 +132,8 @@ class TimeServiceTest {
 
             LocalDate date = LocalDate.of(2026, 5, 10);
             Long themeId = 1L;
-            List<TimeResponseDTO> expected = List.of(time2.toResponseDTO(), time3.toResponseDTO(),
-                time4.toResponseDTO());
+            List<TimeResponseDTO> expected = List.of(TimeMapper.toResponseDTO(time2), TimeMapper.toResponseDTO(time3),
+                TimeMapper.toResponseDTO(time4));
 
             // when
             List<TimeResponseDTO> actual = timeService.getAvailableTimes(date, themeId);

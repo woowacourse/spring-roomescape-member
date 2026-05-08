@@ -14,9 +14,11 @@ import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.FakeReservationRepository;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.mapper.ThemeMapper;
 import roomescape.domain.theme.repository.FakeThemeRepository;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.entity.Time;
+import roomescape.domain.time.mapper.TimeMapper;
 import roomescape.domain.time.repository.FakeTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
 
@@ -56,11 +58,14 @@ class ReservationServiceTest {
 
             // then
             assertThat(actual).containsExactly(
-                new ReservationResponseDTO(1L, "제이콥", date, time.toResponseDTO(), theme.toResponseDTO()),
+                new ReservationResponseDTO(1L, "제이콥", date, TimeMapper.toResponseDTO(time),
+                    ThemeMapper.toResponseDTO(theme)),
                 new ReservationResponseDTO(2L, "라이", date.plusDays(1),
-                    Time.reconstruct(2L, LocalTime.of(11, 0)).toResponseDTO(), theme.toResponseDTO()),
+                    TimeMapper.toResponseDTO(Time.reconstruct(2L, LocalTime.of(11, 0))),
+                    ThemeMapper.toResponseDTO(theme)),
                 new ReservationResponseDTO(3L, "티모", date.plusDays(2),
-                    Time.reconstruct(3L, LocalTime.of(12, 0)).toResponseDTO(), theme.toResponseDTO())
+                    TimeMapper.toResponseDTO(Time.reconstruct(3L, LocalTime.of(12, 0))),
+                    ThemeMapper.toResponseDTO(theme))
             );
         }
     }
