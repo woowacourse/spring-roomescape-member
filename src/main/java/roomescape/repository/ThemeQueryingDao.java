@@ -52,7 +52,7 @@ public class ThemeQueryingDao {
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
-    public List<Theme> findAllByTopTheme() {
+    public List<Theme> findAllByTopTheme(Integer period, Integer limit) {
         String sql = """
                 SELECT t.id, t.name, t.description, t.url
                 FROM theme as t
@@ -62,10 +62,10 @@ public class ThemeQueryingDao {
                     WHERE r.created_at >= ?
                     GROUP BY r.theme_id
                     ORDER BY count(1) DESC
-                    LIMIT 10
+                    LIMIT ?
                 ) AS top_themes ON t.id = top_themes.theme_id;
                 """;
-        LocalDateTime filtered = LocalDateTime.now().minusWeeks(1);
-        return jdbcTemplate.query(sql, themeRowMapper, filtered);
+        LocalDateTime filtered = LocalDateTime.now().minusDays(period);
+        return jdbcTemplate.query(sql, themeRowMapper, filtered, limit);
     }
 }

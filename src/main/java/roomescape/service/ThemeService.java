@@ -35,8 +35,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> findPopularTheme() {
-        return themeQueryingDao.findAllByTopTheme().stream()
+    public List<ThemeResponse> findPopularTheme(Integer period, Integer limit) {
+        return themeQueryingDao.findAllByTopTheme(period, limit).stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
