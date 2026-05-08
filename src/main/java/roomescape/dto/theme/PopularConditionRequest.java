@@ -13,7 +13,7 @@ public record PopularConditionRequest(
         @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜는 YYYY-MM-DD 형식이여야 합니다.")
         String end_date,
         @NotNull
-        long size // Long으로 바꾸기
+        Long size
 ) {
     public PopularThemeCondition to() {
         return new PopularThemeCondition(start_date, end_date, size);
