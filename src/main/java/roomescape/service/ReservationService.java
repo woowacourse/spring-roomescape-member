@@ -6,12 +6,11 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.NotFoundException;
+import roomescape.policy.ReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
-import java.time.Clock;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,17 +19,14 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
-    private final Clock clock;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository,
-            Clock clock) {
+            ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
-        this.clock = clock;
     }
 
     public List<Reservation> findAllReservations() {
@@ -41,27 +37,16 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public Reservation saveUserReservation(ReservationSaveCommand command) {
-        if (isPast(command)) {
-            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
-        }
+    public Reservation saveReservation(ReservationSaveCommand command, ReservationSavePolicy policy) {
+        policy.validate(command);
 
-        return saveReservation(command);
-    }
-
-    private boolean isPast(ReservationSaveCommand command) {
-        return Objects.nonNull(command.date()) && command.date().isBefore(LocalDate.now(clock));
-    }
-
-    public Reservation saveReservation(ReservationSaveCommand command) {
         ReservationTime reservationTime = reservationTimeRepository.findById(command.timeId())
                 .orElseThrow(() -> new NotFoundException("reservation"));
-
         Theme theme = themeRepository.findById(command.themeId())
                 .orElseThrow(() -> new NotFoundException("theme"));
-        Reservation reservation = new Reservation(null, command.name(), command.date(), reservationTime, theme);
 
-        return reservationRepository.addReservation(reservation);
+        return reservationRepository.addReservation(
+                new Reservation(null, command.name(), command.date(), reservationTime, theme));
     }
 
     public List<Reservation> findReservationsByName(String name) {

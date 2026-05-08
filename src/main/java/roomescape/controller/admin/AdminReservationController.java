@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.exception.NotFoundException;
+import roomescape.policy.AdminReservationSavePolicy;
 import roomescape.request.ReservationRequest;
 import roomescape.response.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -25,7 +26,8 @@ public class AdminReservationController {
     private static final String DEFAULT_PATH = "/reservations/";
     private final ReservationService reservationService;
 
-    public AdminReservationController(ReservationService reservationService) {
+    public AdminReservationController(
+            ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
@@ -36,7 +38,7 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest request) {
-        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand());
+        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand(), new AdminReservationSavePolicy());
         ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
 
         return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);

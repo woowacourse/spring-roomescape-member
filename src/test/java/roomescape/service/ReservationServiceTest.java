@@ -10,14 +10,13 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.NotFoundException;
+import roomescape.policy.ReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,8 +33,6 @@ class ReservationServiceTest {
 
     private static final long TIME_ID = 1L;
     private static final long THEME_ID = 1L;
-    private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 5, 8);
-    private static final ZoneId ZONE = ZoneId.of("Asia/Seoul");
 
     @Mock
     private ReservationRepository reservationRepository;
@@ -46,18 +43,17 @@ class ReservationServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
+    @Mock
+    private ReservationSavePolicy policy;
+
     private ReservationService reservationService;
 
     @BeforeEach
     void setUp() {
-        Clock fixedClock = Clock.fixed(
-                FIXED_TODAY.atStartOfDay(ZONE).toInstant(),
-                ZONE);
         reservationService = new ReservationService(
                 reservationRepository,
                 reservationTimeRepository,
-                themeRepository,
-                fixedClock);
+                themeRepository);
     }
 
     @Test
@@ -71,7 +67,7 @@ class ReservationServiceTest {
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
         given(reservationRepository.addReservation(any(Reservation.class))).willReturn(persisted);
 
-        Reservation saved = reservationService.saveReservation(saveCommand);
+        Reservation saved = reservationService.saveReservation(saveCommand, policy);
 
         assertThat(saved.id()).isEqualTo(99L);
         assertThat(saved.name()).isEqualTo("브라운");
@@ -81,36 +77,11 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 사용자는_지난_날짜로_예약을_저장할_수_없다() {
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", FIXED_TODAY.minusDays(1), TIME_ID, THEME_ID);
-
-        assertThatThrownBy(() -> reservationService.saveUserReservation(saveCommand))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void 관리자는_지난_날짜로도_예약을_저장할_수_있다() {
-        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
-        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
-        LocalDate yesterday = FIXED_TODAY.minusDays(1);
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", yesterday, TIME_ID, THEME_ID);
-        Reservation persisted = new Reservation(99L, "브라운", yesterday, time, theme);
-
-        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
-        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
-        given(reservationRepository.addReservation(any(Reservation.class))).willReturn(persisted);
-
-        Reservation saved = reservationService.saveReservation(saveCommand);
-
-        assertThat(saved.date()).isEqualTo(yesterday);
-    }
-
-    @Test
     void 존재하지_않는_시간으로_저장하면_예외가_발생한다() {
         ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 3), TIME_ID, THEME_ID);
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, policy))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -121,7 +92,7 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, policy))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -158,10 +129,8 @@ class ReservationServiceTest {
 
     @Test
     void id로_예약을_삭제한다() {
-        long reservationId = 1L;
+        reservationService.deleteById(1L);
 
-        reservationService.deleteById(reservationId);
-
-        verify(reservationRepository).deleteById(eq(reservationId));
+        verify(reservationRepository).deleteById(eq(1L));
     }
 }
