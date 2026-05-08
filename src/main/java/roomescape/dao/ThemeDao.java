@@ -43,17 +43,15 @@ public class ThemeDao {
         return jdbcTemplate.query(
                 """
                            SELECT
-                           t.id,
-                           t.name,
-                           t.description,
-                           t.url,
-                           COUNT(r.id) AS reservation_count
+                           t.id, t.name, t.description, t.url, r.reservation_count
                            FROM theme t
-                           INNER JOIN reservation r ON t.id = r.theme_id
-                           WHERE r.date >= CURRENT_DATE - 7  
-                               AND r.date < CURRENT_DATE
-                           GROUP BY t.id, t.name
-                           ORDER BY reservation_count DESC
+                           INNER JOIN (
+                               SELECT theme_id, COUNT(id) AS reservation_count
+                               FROM reservation
+                               WHERE date >= CURRENT_DATE - 7 AND date < CURRENT_DATE
+                               GROUP BY theme_id
+                           ) r ON t.id = r.theme_id
+                           ORDER BY r.reservation_count DESC
                            LIMIT ?;
                         """,
                 THEME_ROW_MAPPER,
