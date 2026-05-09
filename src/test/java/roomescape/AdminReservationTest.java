@@ -54,7 +54,7 @@ public class AdminReservationTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         assertThat(jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class))
                 .isEqualTo(0);

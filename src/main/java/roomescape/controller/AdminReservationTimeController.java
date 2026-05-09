@@ -51,7 +51,7 @@ public class AdminReservationTimeController {
 
     @Operation(summary = "예약 시간 삭제", description = "ID로 예약 시간 슬롯을 삭제합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "예약 시간 삭제 성공"),
+            @ApiResponse(responseCode = "204", description = "예약 시간 삭제 성공"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 시간 ID")
     })
     @DeleteMapping("/{id}")
@@ -59,6 +59,6 @@ public class AdminReservationTimeController {
             @Parameter(description = "삭제할 예약 시간 ID", example = "1")
             @PathVariable Long id) {
         reservationTimeService.deleteReservationTime(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

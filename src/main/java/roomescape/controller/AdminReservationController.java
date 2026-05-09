@@ -78,7 +78,7 @@ public class AdminReservationController {
 
     @Operation(summary = "예약 삭제", description = "ID로 예약을 삭제합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "예약 삭제 성공"),
+            @ApiResponse(responseCode = "204", description = "예약 삭제 성공"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 예약 ID")
     })
     @DeleteMapping("/{id}")
@@ -86,6 +86,6 @@ public class AdminReservationController {
             @Parameter(description = "삭제할 예약 ID", example = "1")
             @PathVariable Long id) {
         reservationService.deleteReservation(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

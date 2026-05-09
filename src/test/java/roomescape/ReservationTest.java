@@ -49,7 +49,7 @@ public class ReservationTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1?userId=1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/reservations/my?userId=1")
@@ -83,7 +83,7 @@ public class ReservationTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1?userId=1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         assertThat(jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class))
                 .isEqualTo(0);

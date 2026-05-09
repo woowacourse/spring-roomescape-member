@@ -40,7 +40,7 @@ public class AdminThemeController {
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> readThemes() {
         List<Theme> themes = themeService.getThemes();
-        return ResponseEntity.ok().body(themes.stream()
+        return ResponseEntity.ok(themes.stream()
                 .map(ThemeResponse::from)
                 .toList());
     }
@@ -56,7 +56,7 @@ public class AdminThemeController {
 
     @Operation(summary = "테마 삭제", description = "ID로 테마를 삭제합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "테마 삭제 성공"),
+            @ApiResponse(responseCode = "204", description = "테마 삭제 성공"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 테마 ID")
     })
     @DeleteMapping("/{id}")
@@ -64,7 +64,7 @@ public class AdminThemeController {
             @Parameter(description = "삭제할 테마 ID", example = "1")
             @PathVariable Long id) {
         themeService.deleteTheme(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "테마별 예약 가능 시간 조회",

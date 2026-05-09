@@ -59,7 +59,7 @@ public class ReservationController {
 
     @Operation(summary = "예약 삭제", description = "본인의 예약만 삭제할 수 있습니다. 타인의 예약 삭제 시 403을 반환합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "예약 삭제 성공"),
+            @ApiResponse(responseCode = "204", description = "예약 삭제 성공"),
             @ApiResponse(responseCode = "403", description = "본인의 예약이 아님"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 예약 ID")
     })
@@ -70,6 +70,6 @@ public class ReservationController {
             @Parameter(description = "요청자 사용자 ID", example = "1")
             @RequestParam Long userId) {
         reservationService.deleteMyReservation(id, userId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

@@ -57,7 +57,7 @@ public class AdminThemeTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class AdminThemeTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
         assertThat(count).isEqualTo(0);
