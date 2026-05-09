@@ -19,6 +19,11 @@ import roomescape.support.exception.RoomescapeException;
 @RequiredArgsConstructor
 public class JdbcThemeRepository implements ThemeRepository {
 
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_CONTENT = "content";
+    private static final String COLUMN_URL = "url";
+
     private static final String FIND_ALL_SQL = "select id, name, content, url from theme order by id";
     private static final String FIND_BY_ID_SQL = "select id, name, content, url from theme where id = ?";
     private static final String INSERT_SQL = "insert into theme(name, content, url) values (?, ?, ?)";
@@ -63,10 +68,10 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     private RowMapper<Theme> themeRowMapper() {
         return ((rs, rowNum) -> Theme.of(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("content"),
-            rs.getString("url")
+            rs.getLong(COLUMN_ID),
+            rs.getString(COLUMN_NAME),
+            rs.getString(COLUMN_CONTENT),
+            rs.getString(COLUMN_URL)
         ));
     }
 

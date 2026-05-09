@@ -18,6 +18,19 @@ import roomescape.domain.theme.Theme;
 @RequiredArgsConstructor
 public class JdbcReservationRepository implements ReservationRepository {
 
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_DATE_ID = "date_id";
+    private static final String COLUMN_DATE = "date";
+    private static final String COLUMN_TIME_ID = "time_id";
+    private static final String COLUMN_START_AT = "start_at";
+    private static final String COLUMN_THEME_ID = "theme_id";
+    private static final String COLUMN_THEME_NAME = "theme_name";
+    private static final String COLUMN_THEME_CONTENT = "theme_content";
+    private static final String COLUMN_THEME_URL = "theme_url";
+    private static final String COLUMN_CONTENT = "content";
+    private static final String COLUMN_URL = "url";
+
     private static final String INSERT_SQL = "insert into reservation(name, date_id, time_id, theme_id) values (?, ?, ?, ?)";
     private static final String FIND_ALL_SQL =
         """
@@ -140,35 +153,35 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private RowMapper<Reservation> reservationRowMapper() {
         return (rs, rowNum) -> Reservation.of(
-            rs.getLong("id"),
-            rs.getString("name"),
+            rs.getLong(COLUMN_ID),
+            rs.getString(COLUMN_NAME),
             ReservationDate.of(
-                rs.getLong("date_id"),
-                rs.getDate("date").toLocalDate()
+                rs.getLong(COLUMN_DATE_ID),
+                rs.getDate(COLUMN_DATE).toLocalDate()
             ),
             ReservationTime.of(
-                rs.getLong("time_id"),
-                rs.getTime("start_at").toLocalTime()
+                rs.getLong(COLUMN_TIME_ID),
+                rs.getTime(COLUMN_START_AT).toLocalTime()
             ),
             Theme.of(
-                rs.getLong("theme_id"),
-                rs.getString("theme_name"),
-                rs.getString("theme_content"),
-                rs.getString("theme_url")
+                rs.getLong(COLUMN_THEME_ID),
+                rs.getString(COLUMN_THEME_NAME),
+                rs.getString(COLUMN_THEME_CONTENT),
+                rs.getString(COLUMN_THEME_URL)
             )
         );
     }
 
     private RowMapper<Long> reservationTimeIdRowMapper() {
-        return (rs, rowNum) -> rs.getLong("time_id");
+        return (rs, rowNum) -> rs.getLong(COLUMN_TIME_ID);
     }
 
     private RowMapper<Theme> popularThemeRowMapper() {
         return (rs, rowNum) -> Theme.of(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("content"),
-            rs.getString("url")
+            rs.getLong(COLUMN_ID),
+            rs.getString(COLUMN_NAME),
+            rs.getString(COLUMN_CONTENT),
+            rs.getString(COLUMN_URL)
         );
     }
 

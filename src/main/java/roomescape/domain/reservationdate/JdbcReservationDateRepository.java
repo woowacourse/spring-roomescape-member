@@ -16,6 +16,9 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class JdbcReservationDateRepository implements ReservationDateRepository {
 
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_DATE = "date";
+
     private static final String INSERT_SQL = "insert into reservation_date(`date`) values (?)";
     private static final String FIND_BY_ID_SQL = "select id, `date` from reservation_date where id = ?";
     private static final String FIND_ALL_SQL = "select id, `date` from reservation_date order by id";
@@ -56,8 +59,8 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
 
     private RowMapper<ReservationDate> reservationDateRowMapper() {
         return (rs, rowNum) -> ReservationDate.of(
-            rs.getLong("id"),
-            rs.getDate("date").toLocalDate()
+            rs.getLong(COLUMN_ID),
+            rs.getDate(COLUMN_DATE).toLocalDate()
         );
     }
 

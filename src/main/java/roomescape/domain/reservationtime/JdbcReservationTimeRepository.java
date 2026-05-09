@@ -16,6 +16,9 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_START_AT = "start_at";
+
     private static final String INSERT_SQL = "insert into reservation_time(start_at) values (?)";
     private static final String FIND_ALL_SQL = "select id, start_at from reservation_time order by id";
     private static final String FIND_BY_ID_SQL = "select id, start_at from reservation_time where id = ?";
@@ -56,8 +59,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
         return (rs, rowNum) -> ReservationTime.of(
-            rs.getLong("id"),
-            rs.getTime("start_at").toLocalTime()
+            rs.getLong(COLUMN_ID),
+            rs.getTime(COLUMN_START_AT).toLocalTime()
         );
     }
 
