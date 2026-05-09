@@ -2,13 +2,14 @@ package roomescape.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.TimeResponse;
 import roomescape.model.Reservation;
+import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 
 @Service
@@ -49,8 +50,10 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 존재하는 예약입니다.");
         }
 
-        Reservation reservation = reservationRepository.save(reservationRequest, timeResponse, themeResponse);
-        return ReservationResponse.from(reservation);
+        Reservation reservation = new Reservation(null, reservationRequest.name(), reservationRequest.date(),
+                ReservationTime.from(timeResponse), Theme.from(themeResponse));
+        Reservation saved = reservationRepository.save(reservation);
+        return ReservationResponse.from(saved);
     }
 
 }

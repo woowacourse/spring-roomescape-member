@@ -12,9 +12,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ThemeResponse;
-import roomescape.dto.TimeResponse;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -59,23 +56,22 @@ public class ReservationRepository {
         return jdbcTemplate.update(sql, id);
     }
 
-    public Reservation save(ReservationRequest reservationRequest, TimeResponse timeResponse,
-                            ThemeResponse themeResponse) {
+    public Reservation save(Reservation reservation) {
         String sql = "INSERT INTO reservation(username, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservationRequest.name());
-            ps.setObject(2, reservationRequest.date());
-            ps.setLong(3, reservationRequest.timeId());
-            ps.setLong(4, reservationRequest.themeId());
+            ps.setString(1, reservation.getName());
+            ps.setObject(2, reservation.getDate());
+            ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
 
-        return new Reservation(id, reservationRequest.name(), reservationRequest.date(),
-                ReservationTime.from(timeResponse), Theme.from(themeResponse));
+        return new Reservation(id, reservation.getName(), reservation.getDate(),
+                reservation.getTime(), reservation.getTheme());
     }
 
     public int existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {

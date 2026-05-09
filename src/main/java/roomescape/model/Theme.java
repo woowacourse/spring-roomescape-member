@@ -7,6 +7,8 @@ public class Theme {
     private final String name;
     private final String description;
     private final String url;
+    private static final int MIN_THEME_LENGTH = 1;
+    private static final int MAX_THEME_LENGTH = 20;
 
     public Theme(Long id, String name, String description, String url) {
         validateName(name);
@@ -21,8 +23,8 @@ public class Theme {
     }
 
     private void validateName(String name){
-        if (name.length() < 1 || name.length() > 20) {
-            throw new IllegalArgumentException("[ERROR] 테마 이름은 1자 이상 20자 이하입니다.");
+        if (name.isBlank() || name.length() > MAX_THEME_LENGTH) {
+            throw new IllegalArgumentException("[ERROR] 테마 이름은 "+MIN_THEME_LENGTH+ "이상 "+MAX_THEME_LENGTH+"자 이하입니다.");
         }
     }
 

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.dto.ThemeRequest;
 import roomescape.model.Theme;
 
 
@@ -28,16 +27,16 @@ public class ThemeRepositoryTest {
     @Test
     public void 새로운_테마를_등록할_수_있다() {
         // given
-        ThemeRequest themeRequest = new ThemeRequest("테스트 테마", "테스트 테마입니다", "url.com");
+        Theme theme = new Theme(null, "테스트 테마", "테스트 테마입니다", "url.com");
 
         // when
-        Theme newTheme = themeRepository.save(themeRequest);
+        Theme newTheme = themeRepository.save(theme);
 
         // then
         Assertions.assertEquals(18L, newTheme.getId());
-        Assertions.assertEquals(themeRequest.name(), newTheme.getName());
-        Assertions.assertEquals(themeRequest.description(), newTheme.getDescription());
-        Assertions.assertEquals(themeRequest.url(), newTheme.getUrl());
+        Assertions.assertEquals("테스트 테마", newTheme.getName());
+        Assertions.assertEquals("테스트 테마입니다", newTheme.getDescription());
+        Assertions.assertEquals("url.com", newTheme.getUrl());
     }
 
     @Test

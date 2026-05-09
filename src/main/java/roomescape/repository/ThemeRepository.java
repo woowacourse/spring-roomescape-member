@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.dto.ThemeRequest;
 import roomescape.model.Theme;
 
 @Repository
@@ -29,18 +28,18 @@ public class ThemeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Theme save(ThemeRequest themeRequest) {
+    public Theme save(Theme theme) {
         String sql = "INSERT INTO theme(name, description, url) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, themeRequest.name());
-            ps.setObject(2, themeRequest.description());
-            ps.setObject(3, themeRequest.url());
+            ps.setString(1, theme.getName());
+            ps.setObject(2, theme.getDescription());
+            ps.setObject(3, theme.getUrl());
             return ps;
         }, keyHolder);
         Long id = keyHolder.getKey().longValue();
-        return new Theme(id, themeRequest.name(), themeRequest.description(), themeRequest.url());
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getUrl());
     }
 
     public int deleteById(Long id) {

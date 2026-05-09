@@ -8,6 +8,8 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private static final int MIN_NAME_LENGTH = 2;
+    private static final int MAX_NAME_LENGTH = 20;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
@@ -19,8 +21,8 @@ public class Reservation {
     }
 
     private void validateName(String name) {
-        if (name.length() < 2 || name.length() > 20) {
-            throw new IllegalArgumentException("[ERROR] 사용자 이름은 2자 이상 20자 이하입니다.");
+        if (name.length() < MIN_NAME_LENGTH || name.length() > MAX_NAME_LENGTH) {
+            throw new IllegalArgumentException("[ERROR] 사용자 이름은 "+MIN_NAME_LENGTH+ "이상 "+MAX_NAME_LENGTH+"자 이하입니다.");
         }
     }
 
