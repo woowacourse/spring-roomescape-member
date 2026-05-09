@@ -60,7 +60,7 @@ public class ThemeService {
 
     @Transactional
     public void delete(Long id) {
-        if (themeDao.findById(id).isEmpty()) {
+        if (!themeDao.existsById(id)) {
             throw new NotFoundException("존재하지 않는 테마입니다.");
         }
 

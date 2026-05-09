@@ -27,22 +27,17 @@ public class AdminTimeController {
 
     @PostMapping
     public ResponseEntity<TimeResponseDto> create(@Valid @RequestBody TimeRequestDto timeRequest) {
-        Time time = timeService.create(timeRequest);
-        return ResponseEntity.ok(TimeResponseDto.from(time));
+        return ResponseEntity.ok(timeService.create(timeRequest));
     }
 
     @GetMapping
     public ResponseEntity<List<TimeResponseDto>> findAll() {
-        List<Time> times = timeService.findAll();
-        return ResponseEntity.ok(times.stream()
-                .map(TimeResponseDto::from)
-                .toList());
+        return ResponseEntity.ok(timeService.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TimeResponseDto> findById(@PathVariable Long id) {
-        Time timeById = timeService.findById(id);
-        return ResponseEntity.ok(TimeResponseDto.from(timeById));
+        return ResponseEntity.ok(timeService.findById(id));
     }
 
     @DeleteMapping("/{id}")

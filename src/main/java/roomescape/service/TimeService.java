@@ -10,6 +10,7 @@ import roomescape.dao.TimeDao;
 import roomescape.dao.row.TimeRow;
 import roomescape.domain.Time;
 import roomescape.dto.request.TimeRequestDto;
+import roomescape.dto.response.TimeResponseDto;
 
 import java.util.List;
 
@@ -24,37 +25,38 @@ public class TimeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<Time> findAll() {
+    public List<TimeResponseDto> findAll() {
         return timeDao.findAll().stream()
-                .map(TimeRow::toDomain)
+                .map(TimeResponseDto::from)
                 .toList();
     }
 
-    public Time findById(Long id) {
+    public TimeResponseDto findById(Long id) {
         return timeDao.findById(id)
-                .map(TimeRow::toDomain)
+                .map(TimeResponseDto::from)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
     }
 
     @Transactional
-    public Time create(TimeRequestDto timeRequest) {
-        if (timeDao.existsByStartAt(timeRequest.startAt())) {
+    public TimeResponseDto create(TimeRequestDto timeRequest) {
+        Time time = Time.create(timeRequest.startAt());
+
+        if (timeDao.existsByStartAt(time.getStartAt())) {
             throw new ConflictException("이미 존재하는 시간 입니다.");
         }
-        Time time = new Time(timeRequest.startAt());
 
-        return timeDao.create(TimeRow.from(time)).toDomain();
+        return TimeResponseDto.from(timeDao.create(TimeRow.from(time)));
     }
 
     @Transactional
     public void delete(Long id) {
-        Time time = timeDao.findById(id)
-                .map(TimeRow::toDomain)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
+        if(!timeDao.existsById(id)){
+            throw new NotFoundException("존재하지 않는 시간입니다.");
+        }
 
-        if (reservationDao.existsByTimeId(time.getId())) {
+        if (reservationDao.existsByTimeId(id)) {
             throw new ConflictException("예약이 존재하여 시간을 삭제할 수 없습니다.");
         }
-        timeDao.delete(time.getId());
+        timeDao.delete(id);
     }
 }

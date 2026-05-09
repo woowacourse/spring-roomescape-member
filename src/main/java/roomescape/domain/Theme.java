@@ -13,7 +13,6 @@ public class Theme {
     private final Description description;
 
     public Theme(Long id, Name name, ThumbnailUrl thumbnailUrl, Description description) {
-        validateNotNull(name, thumbnailUrl, description);
         this.id = id;
         this.name = name;
         this.thumbnailUrl = thumbnailUrl;
@@ -22,12 +21,6 @@ public class Theme {
 
     public static Theme create(Name name, ThumbnailUrl thumbnailUrl, Description description) {
         return new Theme(null, name, thumbnailUrl, description);
-    }
-
-    private static void validateNotNull(Name name, ThumbnailUrl thumbnailUrl, Description description) {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(thumbnailUrl);
-        Objects.requireNonNull(description);
     }
 
     @Override
