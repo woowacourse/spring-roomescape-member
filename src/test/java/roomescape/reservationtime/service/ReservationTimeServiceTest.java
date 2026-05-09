@@ -25,7 +25,7 @@ class ReservationTimeServiceTest {
     @BeforeEach
     void setUp() {
         timeRepository = new FakeReservationTimeRepository();
-        timeService = new ReservationTimeService(timeRepository);
+        timeService = new ReservationTimeService(timeRepository, timeRepository);
         timeRepository.save(ReservationTime.builder().startAt(LocalTime.of(9, 0)).build());
         timeRepository.save(ReservationTime.builder().startAt(LocalTime.of(10, 0)).build());
     }

@@ -12,9 +12,10 @@ import java.util.stream.Collectors;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.domain.repository.AvailableReservationTime;
+import roomescape.reservationtime.domain.repository.AvailableTimeRepository;
 import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 
-public class FakeReservationTimeRepository implements ReservationTimeRepository {
+public class FakeReservationTimeRepository implements ReservationTimeRepository, AvailableTimeRepository {
 
     private final Map<Long, ReservationTime> times = new LinkedHashMap<>();
     private final List<Reservation> reservations = new ArrayList<>();

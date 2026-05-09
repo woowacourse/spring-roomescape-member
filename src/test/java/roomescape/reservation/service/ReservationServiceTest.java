@@ -33,7 +33,8 @@ class ReservationServiceTest {
     @BeforeEach
     void setUp() {
         themeService = new ThemeService(new FakeThemeRepository());
-        timeService = new ReservationTimeService(new FakeReservationTimeRepository());
+        FakeReservationTimeRepository fakeTimeRepository = new FakeReservationTimeRepository();
+        timeService = new ReservationTimeService(fakeTimeRepository, fakeTimeRepository);
         ReservationRepository reservationRepository = new FakeReservationRepository();
         reservationService = new ReservationService(reservationRepository, themeService, timeService);
     }
