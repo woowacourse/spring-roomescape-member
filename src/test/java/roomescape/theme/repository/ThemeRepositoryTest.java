@@ -11,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.theme.controller.SortColumn;
+import roomescape.theme.controller.SortOrder;
 import roomescape.theme.domain.Theme;
 
 @JdbcTest(properties = "spring.sql.init.mode=never")
@@ -87,7 +89,7 @@ class ThemeRepositoryTest {
 
         insertReservation(themeD.id(), time1, date1, "User10");
 
-        List<Theme> ranked = themeRepository.findRanked("reservationCount", "DESC", LocalDate.of(2026, 5, 1),
+        List<Theme> ranked = themeRepository.findRanked(SortColumn.RESERVATION_COUNT, SortOrder.DESC, LocalDate.of(2026, 5, 1),
                 LocalDate.of(2026, 5, 6), 10L);
 
         assertThat(ranked).hasSize(4);

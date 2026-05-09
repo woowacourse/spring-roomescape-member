@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.ResourceInUseException;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -22,6 +23,9 @@ class AdminThemeServiceTest {
 
     @Mock
     private ThemeRepository themeRepository;
+
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @InjectMocks
     private AdminThemeService adminThemeService;
@@ -51,7 +55,7 @@ class AdminThemeServiceTest {
 
     @Test
     void 예약이_있으면_테마를_삭제할_수_없다() {
-        when(themeRepository.countByThemeId(eq(1L))).thenReturn(1);
+        when(reservationRepository.countByThemeId(eq(1L))).thenReturn(1);
 
         assertThatThrownBy(() -> adminThemeService.delete(1L))
                 .isInstanceOf(ResourceInUseException.class)
@@ -61,7 +65,7 @@ class AdminThemeServiceTest {
 
     @Test
     void 예약이_없으면_테마를_삭제할_수_있다() {
-        when(themeRepository.countByThemeId(eq(1L))).thenReturn(0);
+        when(reservationRepository.countByThemeId(eq(1L))).thenReturn(0);
 
         assertThatCode(() -> adminThemeService.delete(1L))
                 .doesNotThrowAnyException();

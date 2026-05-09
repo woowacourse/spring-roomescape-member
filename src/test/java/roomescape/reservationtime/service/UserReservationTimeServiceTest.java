@@ -55,7 +55,7 @@ class UserReservationTimeServiceTest {
         ReservationTime time2 = new ReservationTime(2L, LocalTime.of(11, 0));
         when(reservationTimeRepository.findAll()).thenReturn(List.of(time1, time2));
 
-        when(reservationRepository.findReservedTimeIds(date, themeId))
+        when(reservationRepository.findByDateAndTheme(date, themeId))
                 .thenReturn(List.of(2L));
 
         List<AvailableTime> result = reservationTimeService.getSchedules(date, themeId);

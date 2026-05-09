@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.theme.controller.SortColumn;
+import roomescape.theme.controller.SortOrder;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -30,11 +32,11 @@ class UserThemeServiceTest {
                 new Theme(2L, "Theme B", "desc", "thumb2")
         );
 
-        when(themeRepository.findRanked(eq("reservationCount"), eq("DESC"), eq(LocalDate.of(2026, 5, 1)),
+        when(themeRepository.findRanked(eq(SortColumn.RESERVATION_COUNT), eq(SortOrder.DESC), eq(LocalDate.of(2026, 5, 1)),
                 eq(LocalDate.of(2026, 5, 31)), eq(10L)))
                 .thenReturn(themes);
 
-        List<Theme> result = userThemeService.getThemes("reservationCount", "DESC", LocalDate.of(2026, 5, 1),
+        List<Theme> result = userThemeService.getThemes(SortColumn.RESERVATION_COUNT, SortOrder.DESC, LocalDate.of(2026, 5, 1),
                 LocalDate.of(2026, 5, 31), 10L);
 
         assertThat(result).hasSize(2);

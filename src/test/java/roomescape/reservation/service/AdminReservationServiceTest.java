@@ -3,7 +3,7 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -73,5 +73,14 @@ class AdminReservationServiceTest {
         assertThatThrownBy(
                 () -> adminReservationService.forceCreateReservation(999L, "브라운", LocalDate.of(2026, 5, 1), 1L))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void 관리자가_예약을_검증_없이_삭제할_수_있다() {
+        long targetReservationId = 1L;
+
+        adminReservationService.forceDeleteReservation(targetReservationId);
+
+        verify(reservationRepository, times(1)).delete(eq(targetReservationId));
     }
 }
