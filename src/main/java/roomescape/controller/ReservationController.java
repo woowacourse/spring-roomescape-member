@@ -16,6 +16,7 @@ import roomescape.domain.Reservation;
 import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.dto.reservation.ReservationsResponseDto;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -30,10 +31,10 @@ public class ReservationController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationResponseDto> getReservations() {
-        return reservationService.getReservations().stream()
+    public ReservationsResponseDto getReservations() {
+        return new ReservationsResponseDto(reservationService.getReservations().stream()
                 .map(ReservationResponseDto::from)
-                .toList();
+                .toList());
     }
 
     @PostMapping

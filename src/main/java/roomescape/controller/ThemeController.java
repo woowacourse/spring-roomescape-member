@@ -17,6 +17,7 @@ import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.theme.PopularThemesResponseDto;
 import roomescape.dto.theme.ThemeRequestDto;
 import roomescape.dto.theme.ThemeResponseDto;
+import roomescape.dto.theme.ThemesResponseDto;
 import roomescape.exception.ForbiddenAccessException;
 import roomescape.service.ThemeService;
 
@@ -59,10 +60,10 @@ public class ThemeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ThemeResponseDto> findAll() {
-        return themeService.getThemes().stream()
+    public ThemesResponseDto findAll() {
+        return new ThemesResponseDto(themeService.getThemes().stream()
             .map(ThemeResponseDto::from)
-            .toList();
+            .toList());
     }
 
     @GetMapping("/popular/week")
