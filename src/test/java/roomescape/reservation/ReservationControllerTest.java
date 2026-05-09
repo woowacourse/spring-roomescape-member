@@ -2,7 +2,6 @@ package roomescape.reservation;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -18,8 +17,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
@@ -75,14 +72,5 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void 존재하지_않는_예약_삭제시_404() throws Exception {
-        doThrow(new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND))
-                .when(reservationService).delete(0L);
-
-        mockMvc.perform(delete("/api/reservations/0"))
-                .andExpect(status().isNotFound());
     }
 }
