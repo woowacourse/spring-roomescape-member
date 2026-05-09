@@ -2,7 +2,9 @@ package roomescape.date.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
+import jakarta.validation.Valid;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import roomescape.date.dto.request.ReservationDateSaveDto;
 import roomescape.date.dto.response.ReservationDateDetailDto;
 import roomescape.date.service.ReservationDateService;
 
+@Slf4j
 @RestController
 @RequestMapping("/admin")
 public class ReservationDateAdminController {
@@ -35,7 +38,7 @@ public class ReservationDateAdminController {
 
     @PostMapping("/dates")
     public ResponseEntity<ReservationDateDetailDto> createReservationDate(
-            @RequestBody ReservationDateSaveDto dto
+            @Valid @RequestBody ReservationDateSaveDto dto
     ) {
         ReservationDate reservationDate = reservationDateService.register(dto.date());
         ReservationDateDetailDto responseData = ReservationDateDetailDto.from(reservationDate);

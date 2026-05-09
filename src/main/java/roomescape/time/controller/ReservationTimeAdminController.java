@@ -2,7 +2,9 @@ package roomescape.time.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
+import jakarta.validation.Valid;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,7 @@ import roomescape.time.dto.request.ReservationTimeSaveDto;
 import roomescape.time.dto.response.ReservationTimeDetailDto;
 import roomescape.time.service.ReservationTimeService;
 
+@Slf4j
 @RestController
 @RequestMapping("/admin")
 public class ReservationTimeAdminController {
@@ -31,7 +34,7 @@ public class ReservationTimeAdminController {
 
     @PostMapping("/times")
     public ResponseEntity<ReservationTimeDetailDto> create(
-            @RequestBody ReservationTimeSaveDto reservationTimeSaveDto) {
+            @Valid @RequestBody ReservationTimeSaveDto reservationTimeSaveDto) {
         return ResponseEntity.status(CREATED).body(reservationTimeService.create(reservationTimeSaveDto));
     }
 
