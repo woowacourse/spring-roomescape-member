@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.dto.ThemeResponses;
 import roomescape.facade.ReservationFacade;
 import roomescape.service.ThemeService;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/themes")
@@ -32,12 +32,8 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> search() {
-        List<ThemeResponse> responses = themeService.getThemes().stream()
-                .map(ThemeResponse::from)
-                .toList();
-
-        return ResponseEntity.ok().body(responses);
+    public ResponseEntity<ThemeResponses> search() {
+        return ResponseEntity.ok().body(ThemeResponses.from(themeService.getThemes()));
     }
 
     @PostMapping
@@ -56,15 +52,11 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> searchPopular(
+    public ResponseEntity<ThemeResponses> searchPopular(
             @RequestParam(required = false) LocalDate now,
             @RequestParam(defaultValue = "7") Integer days,
             @RequestParam(defaultValue = "10") Integer limit) {
         LocalDate baseDate = (now != null) ? now : LocalDate.now();
-        List<ThemeResponse> responses = themeService.getPopularThemes(baseDate, days, limit).stream()
-                .map(ThemeResponse::from)
-                .toList();
-
-        return ResponseEntity.ok().body(responses);
+        return ResponseEntity.ok().body(ThemeResponses.from(themeService.getPopularThemes(baseDate, days, limit)));
     }
 }

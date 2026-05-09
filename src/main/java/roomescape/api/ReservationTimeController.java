@@ -1,7 +1,6 @@
 package roomescape.api;
 
 import java.time.LocalDate;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.TimeWithStatusResponse;
+import roomescape.dto.ReservationTimeResponses;
+import roomescape.dto.TimeWithStatusResponses;
 import roomescape.facade.ReservationFacade;
 import roomescape.service.ReservationTimeService;
 
@@ -33,19 +33,15 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> search() {
-        List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes()
-                .stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
-
-        return ResponseEntity.ok().body(responses);
+    public ResponseEntity<ReservationTimeResponses> search() {
+        return ResponseEntity.ok().body(ReservationTimeResponses.from(reservationTimeService.getReservationTimes()));
     }
 
     @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<TimeWithStatusResponse>> searchAvailableReservationTime(@RequestParam LocalDate date,
-                                                                                       @RequestParam Long themeId) {
-        return ResponseEntity.ok().body(reservationFacade.getTimesWithAvailability(date, themeId));
+    public ResponseEntity<TimeWithStatusResponses> searchAvailableReservationTime(@RequestParam LocalDate date,
+                                                                                  @RequestParam Long themeId) {
+        return ResponseEntity.ok().body(
+                TimeWithStatusResponses.of(reservationFacade.getTimesWithAvailability(date, themeId)));
     }
 
     @PostMapping

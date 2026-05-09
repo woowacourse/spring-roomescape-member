@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.ReservationResponses;
 import roomescape.facade.ReservationFacade;
 import roomescape.service.ReservationService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
@@ -30,12 +29,8 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> search() {
-        List<ReservationResponse> responses = reservationService.getReservations().stream()
-                .map(ReservationResponse::from)
-                .toList();
-
-        return ResponseEntity.ok().body(responses);
+    public ResponseEntity<ReservationResponses> search() {
+        return ResponseEntity.ok().body(ReservationResponses.from(reservationService.getReservations()));
     }
 
     @PostMapping
