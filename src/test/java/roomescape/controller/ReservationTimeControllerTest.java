@@ -9,6 +9,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.reservationTime.AvailableReservationTimesResponseDto;
 import roomescape.dto.reservationTime.ReservationTimeRequestDto;
+import roomescape.dto.reservationTime.ReservationTimeResponseDto;
+import roomescape.dto.reservationTime.ReservationTimesResponseDto;
 import roomescape.service.ReservationService;
 import roomescape.service.ThemeService;
 
@@ -84,8 +87,32 @@ class ReservationTimeControllerTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
+    
+    @Test
+    void 모든_시간을_조회한다() {
+        // given
+        List<ReservationTime> reservationTimes = List.of(new ReservationTime(1L, LocalTime.parse("12:00")), new ReservationTime(2L, LocalTime.parse("13:00")));
+        ReservationTimesResponseDto expected = new ReservationTimesResponseDto(reservationTimes.stream()
+                .map(ReservationTimeResponseDto::from)
+                .toList());
 
-    // TODO: 시간 전체 조회 테스트 추가
+        when(reservationService.getReservationTimes())
+                .thenReturn(reservationTimes);
+
+        // when
+        Response response = RestAssured
+                .given().log().all()
+                .when().get("/times");
+
+        // then
+        response
+                .then()
+                .statusCode(HttpStatus.OK.value());
+
+        ReservationTimesResponseDto responseDto = response.as(ReservationTimesResponseDto.class);
+        assertThat(responseDto.times()).hasSize(2);
+        assertThat(responseDto).isEqualTo(expected);
+    }
 
     @Test
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
