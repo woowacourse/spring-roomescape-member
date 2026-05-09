@@ -9,10 +9,10 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.EntityNotFoundException;
-import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.ReservationCreateCommand;
 
 @Service
 @RequiredArgsConstructor
@@ -25,14 +25,14 @@ public class ReservationService {
 
     @Transactional
     public Reservation create(
-            ReservationCreateRequest createRequest
+            ReservationCreateCommand command
     ) {
-        ReservationTime time = findTimeById(createRequest.timeId());
-        Theme theme = findThemeById(createRequest.themeId());
+        ReservationTime time = findTimeById(command.timeId());
+        Theme theme = findThemeById(command.themeId());
 
         Reservation reservation = Reservation.create(
-                createRequest.name(),
-                createRequest.date(),
+                command.name(),
+                command.date(),
                 time,
                 theme
         );

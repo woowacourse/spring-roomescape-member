@@ -17,6 +17,7 @@ import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.controller.mapper.ReservationTimeMapper;
 import roomescape.domain.ReservationTime;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.dto.ReservationTimeCreateCommand;
 
 @RestController
 @RequestMapping("/times")
@@ -30,7 +31,8 @@ public class ReservationTimeController {
     public ResponseEntity<ReservationTimeResponse> create(
             @RequestBody ReservationTimeCreateRequest createRequest
     ) {
-        ReservationTime createdTime = service.create(createRequest);
+        ReservationTimeCreateCommand createCommand = mapper.mapToCommand(createRequest);
+        ReservationTime createdTime = service.create(createCommand);
 
         ReservationTimeResponse response = mapper.mapToResponse(createdTime);
 

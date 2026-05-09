@@ -20,6 +20,7 @@ import roomescape.domain.Duration;
 import roomescape.domain.Theme;
 import roomescape.repository.dto.ReservedTheme;
 import roomescape.service.ThemeService;
+import roomescape.service.dto.ThemeCreateCommand;
 
 @RestController
 @RequestMapping("/themes")
@@ -41,10 +42,12 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> create(
-            @RequestBody ThemeCreateRequest themeCreateRequest
+            @RequestBody ThemeCreateRequest createRequest
     ) {
-        Theme theme = service.create(themeCreateRequest);
-        ThemeResponse response = mapper.mapToResponse(theme);
+        ThemeCreateCommand createCommand = mapper.mapToCommand(createRequest);
+        Theme createdTheme = service.create(createCommand);
+
+        ThemeResponse response = mapper.mapToResponse(createdTheme);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

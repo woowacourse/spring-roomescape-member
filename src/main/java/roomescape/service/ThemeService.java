@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.domain.Duration;
 import roomescape.domain.Theme;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.dto.ReservedTheme;
+import roomescape.service.dto.ThemeCreateCommand;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +21,12 @@ public class ThemeService {
 
     @Transactional
     public Theme create(
-            ThemeCreateRequest createRequest
+            ThemeCreateCommand command
     ) {
         Theme theme = Theme.create(
-                createRequest.name(),
-                createRequest.description(),
-                createRequest.imageUrl()
+                command.name(),
+                command.description(),
+                command.imageUrl()
         );
 
         return themeRepository.persist(theme);
