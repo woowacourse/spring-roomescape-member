@@ -32,7 +32,7 @@ public class ThemeController {
     public ResponseEntity<ThemeListResponse> popularThemes(@RequestParam(value = "days", defaultValue = "7") int days,
                                                            @RequestParam(value = "size", defaultValue = "10") int size) {
         return ResponseEntity.ok(
-                ThemeListResponse.from(themeService.findPopularThemes(days, LocalDate.now() ,size)
+                ThemeListResponse.from(themeService.findPopularThemes(days ,size)
                         .stream()
                         .map(ThemeResponse::from)
                         .toList())

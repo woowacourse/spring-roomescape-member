@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.common.exception;
 
 public enum ErrorCode {
     INVALID_RESERVATION_ID("예약 id는 비어 있을 수 없습니다."),

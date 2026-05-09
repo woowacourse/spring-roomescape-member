@@ -2,6 +2,8 @@ package roomescape.exception;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import roomescape.common.exception.ErrorCode;
+import roomescape.common.exception.ErrorStatusMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

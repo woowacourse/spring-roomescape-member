@@ -1,7 +1,7 @@
 package roomescape.domain;
 
-import roomescape.exception.DomainException;
-import roomescape.exception.ErrorCode;
+import roomescape.common.exception.DomainException;
+import roomescape.common.exception.ErrorCode;
 
 public class Theme {
     private final Long id;

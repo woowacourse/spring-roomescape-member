@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ThemeService {
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     @Transactional
     public Theme create(String name, String description, String thumbnail) {
@@ -27,8 +29,9 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> findPopularThemes(int days, LocalDate now, int size){
-        LocalDate startDate = now.minusDays(days + 1);
+    public List<Theme> findPopularThemes(int days, int size){
+        LocalDate now = LocalDate.now(clock);
+        LocalDate startDate = now.minusDays(days);
         LocalDate endDate = now.minusDays(1);
 
         return themeRepository.findTopThemesByReservationCount(startDate, endDate, size);

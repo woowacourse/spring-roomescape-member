@@ -5,17 +5,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeAvailability;
 import roomescape.domain.Theme;
-import roomescape.exception.DomainException;
-import roomescape.exception.ErrorCode;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.common.exception.DomainException;
+import roomescape.common.exception.ErrorCode;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -31,20 +33,28 @@ class ReservationTimeServiceTest {
     ReservationTimeService reservationTimeService;
 
     @Autowired
-    ReservationTimeRepository reservationTimeRepository;
+    JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    ThemeRepository themeRepository;
+    @Test
+    @DisplayName("예약 시간을 생성한다.")
+    public void create_success() {
+        // given
+        LocalTime startAt = LocalTime.of(10, 0);
 
-    @Autowired
-    ReservationRepository reservationRepository;
+        // when
+        ReservationTime reservationTime = reservationTimeService.create(startAt);
+
+        // then
+        assertThat(reservationTime.getId()).isNotNull();
+        assertThat(reservationTime.getStartAt()).isEqualTo(startAt);
+    }
 
     @Test
     @DisplayName("이미 존재하는 예약 시간을 생성하면 예외가 발생한다.")
     public void create_fail() {
         // given
-        LocalTime startAt = LocalTime.of(23, 59);
-        reservationTimeService.create(startAt);
+        LocalTime startAt = LocalTime.of(10, 0);
+        insertReservationTime(startAt);
 
         // when, then
         assertThatThrownBy(() -> reservationTimeService.create(startAt))
@@ -56,15 +66,15 @@ class ReservationTimeServiceTest {
     @DisplayName("특정 날짜 및 테마의 예약 가능한 시간들을 반환한다.")
     public void findAvailableTimes_success() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        ReservationTime time2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
-        Theme targetTheme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Theme nonTargetTheme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        ReservationTime time2 = insertReservationTime(LocalTime.of(12, 0));
+        Theme targetTheme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Theme nonTargetTheme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
 
         LocalDate targetDate = LocalDate.of(2023, 8, 5);
-        Reservation targetReservation = reservationRepository.save(new Reservation("브라운", targetDate, time, targetTheme));
-        Reservation nonTargetReservation1 = reservationRepository.save(new Reservation("브라운", LocalDate.of(2024, 9, 10), time, targetTheme));
-        Reservation nonTargetReservation2 = reservationRepository.save(new Reservation("브라운", targetDate, time, nonTargetTheme));
+        insertReservation("브라운", targetDate, time, targetTheme);
+        insertReservation("브라운", LocalDate.of(2024, 9, 10), time, targetTheme);
+        insertReservation("브라운", targetDate, time, nonTargetTheme);
 
 
         // when
@@ -84,5 +94,59 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.findAvailableTimes(LocalDate.of(26,5,6), 37L))
                 .isInstanceOf(DomainException.class)
                 .hasMessage(ErrorCode.THEME_NOT_FOUND.message());
+    }
+
+    private ReservationTime insertReservationTime(LocalTime startAt) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO reservation_time (start_at)
+                    VALUES (?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, startAt.toString());
+            return preparedStatement;
+        }, keyHolder);
+
+        return new ReservationTime(getGeneratedId(keyHolder), startAt);
+    }
+
+    private Theme insertTheme(String name, String description, String thumbnail) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO theme (name, description, thumbnail)
+                    VALUES (?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setString(3, thumbnail);
+            return preparedStatement;
+        }, keyHolder);
+
+        return new Theme(getGeneratedId(keyHolder), name, description, thumbnail);
+    }
+
+    private Reservation insertReservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO reservation (name, date, time_id, theme_id)
+                    VALUES (?, ?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, name);
+            preparedStatement.setDate(2, Date.valueOf(date));
+            preparedStatement.setLong(3, time.getId());
+            preparedStatement.setLong(4, theme.getId());
+            return preparedStatement;
+        }, keyHolder);
+
+        return new Reservation(getGeneratedId(keyHolder), name, date, time, theme);
+    }
+
+    private Long getGeneratedId(KeyHolder keyHolder) {
+        return keyHolder.getKey().longValue();
     }
 }

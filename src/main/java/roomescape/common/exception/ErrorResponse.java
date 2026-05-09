@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.common.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

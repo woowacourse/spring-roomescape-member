@@ -2,8 +2,8 @@ package roomescape.domain;
 
 
 import lombok.Getter;
-import roomescape.exception.DomainException;
-import roomescape.exception.ErrorCode;
+import roomescape.common.exception.DomainException;
+import roomescape.common.exception.ErrorCode;
 
 @Getter
 public class ReservationTimeAvailability {

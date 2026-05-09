@@ -1,8 +1,8 @@
 package roomescape.domain;
 
 import org.junit.jupiter.api.Test;
-import roomescape.exception.DomainException;
-import roomescape.exception.ErrorCode;
+import roomescape.common.exception.DomainException;
+import roomescape.common.exception.ErrorCode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

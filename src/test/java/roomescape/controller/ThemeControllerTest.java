@@ -86,7 +86,7 @@ class ThemeControllerTest {
                 new Theme(2L, "레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.", "https://example.com/theme-2.png"),
                 new Theme(3L, "레벨4 탈출", "우테코 레벨4를 탈출하는 내용입니다.", "https://example.com/theme-3.png")
         );
-        given(themeService.findPopularThemes(anyInt(), any(), anyInt()))
+        given(themeService.findPopularThemes(anyInt(), anyInt()))
                 .willReturn(themes);
 
         // when then
@@ -116,7 +116,7 @@ class ThemeControllerTest {
                 );
 
         then(themeService).should()
-                .findPopularThemes(eq(7), any(LocalDate.class), eq(10));
+                .findPopularThemes(eq(7), eq(10));
 
     }
 

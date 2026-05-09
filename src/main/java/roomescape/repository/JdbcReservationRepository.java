@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.InfrastructureException;
+import roomescape.common.exception.ErrorCode;
+import roomescape.common.exception.InfrastructureException;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;

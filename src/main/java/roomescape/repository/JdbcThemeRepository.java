@@ -7,8 +7,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.InfrastructureException;
+import roomescape.common.exception.ErrorCode;
+import roomescape.common.exception.InfrastructureException;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
