@@ -31,6 +31,11 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
             WHERE id = :id
             """;
 
+    private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNumber) -> ReservationTime.of(
+            resultSet.getLong("id"),
+            resultSet.getObject("start_at", LocalTime.class)
+    );
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -45,7 +50,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     public List<ReservationTime> findAll() {
         return jdbcTemplate.query(
                 FIND_ALL_RESERVATION_TIMES_QUERY,
-                reservationTimeRowMapper()
+                RESERVATION_TIME_ROW_MAPPER
         );
     }
 
@@ -58,7 +63,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
             ReservationTime reservationTime = jdbcTemplate.queryForObject(
                     FIND_RESERVATION_TIME_BY_ID_QUERY,
                     parameters,
-                    reservationTimeRowMapper()
+                    RESERVATION_TIME_ROW_MAPPER
             );
 
             return Optional.ofNullable(reservationTime);
@@ -92,13 +97,6 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
         jdbcTemplate.update(
                 DELETE_RESERVATION_TIME_BY_ID_QUERY,
                 parameters
-        );
-    }
-
-    private RowMapper<ReservationTime> reservationTimeRowMapper() {
-        return (resultSet, rowNumber) -> ReservationTime.of(
-                resultSet.getLong("id"),
-                resultSet.getObject("start_at", LocalTime.class)
         );
     }
 }

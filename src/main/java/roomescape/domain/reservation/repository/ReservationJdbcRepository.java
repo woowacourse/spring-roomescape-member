@@ -39,6 +39,20 @@ public class ReservationJdbcRepository implements ReservationRepository {
             WHERE id = :id
             """;
 
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNumber) -> Reservation.of(
+            resultSet.getLong("reservation_id"),
+            resultSet.getString("username"),
+            Theme.of(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_thumbnail_url")),
+            resultSet.getObject("date", LocalDate.class),
+            ReservationTime.of(
+                    resultSet.getLong("time_id"),
+                    resultSet.getObject("start_at", LocalTime.class))
+    );
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -53,7 +67,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
                 FIND_ALL_RESERVATIONS_WITH_TIME_QUERY,
-                reservationWithTimeRowMapper());
+                RESERVATION_ROW_MAPPER
+        );
     }
 
     @Override
@@ -84,21 +99,5 @@ public class ReservationJdbcRepository implements ReservationRepository {
         jdbcTemplate.update(
                 DELETE_RESERVATION_BY_ID_QUERY,
                 parameters);
-    }
-
-    private RowMapper<Reservation> reservationWithTimeRowMapper() {
-        return (resultSet, rowNumber) -> Reservation.of(
-                resultSet.getLong("reservation_id"),
-                resultSet.getString("username"),
-                Theme.of(
-                        resultSet.getLong("theme_id"),
-                        resultSet.getString("theme_name"),
-                        resultSet.getString("theme_description"),
-                        resultSet.getString("theme_thumbnail_url")),
-                resultSet.getObject("date", LocalDate.class),
-                ReservationTime.of(
-                        resultSet.getLong("time_id"),
-                        resultSet.getObject("start_at", LocalTime.class))
-        );
     }
 }

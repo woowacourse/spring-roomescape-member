@@ -63,6 +63,27 @@ public class ThemeJdbcRepository implements ThemeRepository {
             LIMIT :limit;
             """;
 
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNumber) -> Theme.of(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("thumbnail_url")
+    );
+
+    private static final RowMapper<ThemeReservationTimeResponse> THEME_RESERVATION_TIME_RESPONSE_ROW_MAPPER = (resultSet, rowNumber) -> new ThemeReservationTimeResponse(
+            resultSet.getLong("id"),
+            resultSet.getObject("start_at", LocalTime.class),
+            resultSet.getBoolean("is_available")
+    );
+
+    private static final RowMapper<PopularThemeResult> POPULAR_THEME_RESULT_ROW_MAPPER = (resultSet, rowNumber) -> new PopularThemeResult(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("thumbnail_url"),
+            resultSet.getInt("rank")
+    );
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -77,7 +98,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     public List<Theme> findAll() {
         return jdbcTemplate.query(
                 FIND_ALL_THEMES_QUERY,
-                themeRowMapper()
+                THEME_ROW_MAPPER
         );
     }
 
@@ -90,7 +111,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
             Theme theme = jdbcTemplate.queryForObject(
                     FIND_THEME_BY_ID_QUERY,
                     parameters,
-                    themeRowMapper()
+                    THEME_ROW_MAPPER
             );
 
             return Optional.ofNullable(theme);
@@ -111,7 +132,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
         return jdbcTemplate.query(
                 FIND_ALL_THEME_RESERVATION_TIMES_BY_THEME_ID_AND_DATE_QUERY,
                 parameters,
-                themeReservationTimeResponseRowMapper()
+                THEME_RESERVATION_TIME_RESPONSE_ROW_MAPPER
         );
     }
 
@@ -129,7 +150,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
         return jdbcTemplate.query(
                 FIND_POPULAR_THEMES_QUERY,
                 parameters,
-                popularThemeRowMapper()
+                POPULAR_THEME_RESULT_ROW_MAPPER
         );
     }
 
@@ -154,33 +175,6 @@ public class ThemeJdbcRepository implements ThemeRepository {
         jdbcTemplate.update(
                 DELETE_THEME_BY_ID_QUERY,
                 parameters
-        );
-    }
-
-    private RowMapper<Theme> themeRowMapper() {
-        return (resultSet, rowNumber) -> Theme.of(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail_url")
-        );
-    }
-
-    private RowMapper<ThemeReservationTimeResponse> themeReservationTimeResponseRowMapper() {
-        return (resultSet, rowNumber) -> new ThemeReservationTimeResponse(
-                resultSet.getLong("id"),
-                resultSet.getObject("start_at", LocalTime.class),
-                resultSet.getBoolean("is_available")
-        );
-    }
-
-    private RowMapper<PopularThemeResult> popularThemeRowMapper() {
-        return (resultSet, rowNumber) -> new PopularThemeResult(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail_url"),
-                resultSet.getInt("rank")
         );
     }
 }
