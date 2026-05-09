@@ -1,6 +1,7 @@
 package roomescape.common.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,6 +32,13 @@ public class GlobalExceptionHandler {
         log.warn("Bad Request: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException e) {
+        log.warn("Data integrity violation: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.of(HttpStatus.CONFLICT.value(), "중복된 데이터가 존재합니다."));
     }
 
     @ExceptionHandler(Exception.class)

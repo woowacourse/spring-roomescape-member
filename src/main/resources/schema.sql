@@ -33,5 +33,6 @@ CREATE TABLE IF NOT EXISTS reservation
     PRIMARY KEY (id),
     FOREIGN KEY (date) REFERENCES reservation_date (date),
     FOREIGN KEY (start_at) REFERENCES reservation_time (start_at),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    CONSTRAINT uk_reservation_date_time_theme UNIQUE (date, start_at, theme_id)
 );
