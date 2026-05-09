@@ -106,4 +106,15 @@ class ReservationServiceTest {
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("[ERROR] 존재하지 않는 ID입니다.");
     }
+
+    @Test
+    void 중복_예약_시_예외_발생() {
+        // given
+        reservationService.create("브라운", date, 1L, 1L);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.create("브라운", date, 1L, 1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 이미 예약된 시간입니다.");
+    }
 }
