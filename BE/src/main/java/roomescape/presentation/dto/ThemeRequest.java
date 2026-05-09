@@ -28,7 +28,7 @@ public record ThemeRequest(
     }
 
     private static void validateStringValueNotEmpty(String value, ErrorCode errorCode) {
-        if (value == null || value.trim().isBlank()) {
+        if (value == null || value.isBlank()) {
             throw new InvalidRequestException(errorCode);
         }
     }

@@ -10,14 +10,14 @@ public record ReservationRequest(
         Long timeId,
         Long themeId
 ) {
-    public ReservationRequest{
+    public ReservationRequest {
         validateNameNotEmpty(name);
         validateDateNotEmpty(date);
         validateTimeIdNotEmpty(timeId);
     }
 
     private static void validateNameNotEmpty(String name) {
-        if (name == null || name.trim().isBlank()) {
+        if (name == null || name.isBlank()) {
             throw new InvalidRequestException(ErrorCode.RESERVATION_NAME_EMPTY);
         }
     }
