@@ -76,44 +76,36 @@ class ThemeServiceTest {
         assertThat(themeService.findAll()).isEmpty();
     }
 
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(longs = {0, -1})
-    void 삭제하려는_id가_양수가_아니면_예외_발생(Long id) {
+    @Test
+    void 존재하지않는_theme_id_삭제_시_예외_발생() {
         // when & then
-        assertThatThrownBy(() -> themeService.delete(id))
+        assertThatThrownBy(() -> themeService.delete(999L))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("[ERROR] 존재하지 않는 ID입니다.");
     }
+
+    @Test
+    void 예약된_테마_삭제_시_예외_발생() {
+        LocalDate date = LocalDate.parse("2026-05-05");
+        Long timeId = createReservationTime();
+        Long themeId = createTheme();
+        createReservation(date, timeId, themeId);
+
+        // when & then
+        assertThatThrownBy(() -> themeService.delete(themeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 해당 테마의 예약이 존재합니다.");
+    }
+
 
 
     @Test
     void 예약_가능한_시간_조회_테스트() {
         // given
         LocalDate date = LocalDate.parse("2026-05-05");
-        jdbcTemplate.update(
-                "INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)",
-                "테스트 테마", "테스트 테마 설명", "테스트 테마 url"
-        );
-        Long themeId = jdbcTemplate.queryForObject(
-                "SELECT id FROM theme ORDER BY id DESC LIMIT 1",
-                Long.class
-        );
-
-        jdbcTemplate.update(
-                "INSERT INTO reservation_time(start_at) VALUES (?)",
-                "10:00"
-        );
-        Long timeId = jdbcTemplate.queryForObject(
-                "SELECT id FROM reservation_time ORDER BY id DESC LIMIT 1",
-                Long.class
-        );
-
-
-        jdbcTemplate.update(
-                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", date, timeId, themeId
-        );
+        Long timeId = createReservationTime();
+        Long themeId = createTheme();
+        createReservation(date, timeId, themeId);
 
         // when
         List<TimeAvailabilityDto> result = themeService.findAvailableTime(themeId, date);
@@ -121,5 +113,34 @@ class ThemeServiceTest {
         // then
         assertThat(result).extracting(TimeAvailabilityDto::available)
                 .containsOnlyOnce(false);
+    }
+
+    private Long createTheme() {
+        jdbcTemplate.update(
+                "INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)",
+                "테스트 테마", "테스트 테마 설명", "테스트 테마 url"
+        );
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM theme ORDER BY id DESC LIMIT 1",
+                Long.class
+        );
+    }
+
+    private Long createReservationTime() {
+        jdbcTemplate.update(
+                "INSERT INTO reservation_time(start_at) VALUES (?)",
+                "10:00"
+        );
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM reservation_time ORDER BY id DESC LIMIT 1",
+                Long.class
+        );
+    }
+
+    private void createReservation(LocalDate date, Long timeId, Long themeId) {
+        jdbcTemplate.update(
+                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", date, timeId, themeId
+        );
     }
 }

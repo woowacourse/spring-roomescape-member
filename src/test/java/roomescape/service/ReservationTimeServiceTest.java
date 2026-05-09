@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -20,26 +23,18 @@ import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
+@JdbcTest
 class ReservationTimeServiceTest {
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
     private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setup() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:reservation_time_service_test;DB_CLOSE_DELAY=-1");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScript(new ClassPathResource("schema.sql"));
-        populator.execute(dataSource);
-
+        jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time;");
-
+        jdbcTemplate.update("DELETE FROM theme");
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeRepository(jdbcTemplate);
         ReservationRepository reservationRepository = new ReservationRepository(jdbcTemplate);
         this.reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
@@ -82,13 +77,54 @@ class ReservationTimeServiceTest {
         assertThat(reservationTimeService.findAll()).isEmpty();
     }
 
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(longs = {0, -1})
-    void 삭제하려는_id가_양수가_아니면_예외_발생(Long id) {
+    @Test
+    void 존재하지않는_time_id_삭제_시_예외_발생() {
         // when & then
-        assertThatThrownBy(() -> reservationTimeService.delete(id))
+        assertThatThrownBy(() -> reservationTimeService.delete(999L))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("[ERROR] 존재하지 않는 ID입니다.");
+    }
+
+    @Test
+    void 예약된_시간대_삭제_시_예외_발생() {
+        //given
+        LocalDate date = LocalDate.parse("2026-05-05");
+        Long timeId = createReservationTime();
+        Long themeId = createTheme();
+        createReservation(date, timeId, themeId);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.delete(timeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 해당 시간에 예약이 존재합니다.");
+    }
+
+    private Long createTheme() {
+        jdbcTemplate.update(
+                "INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)",
+                "테스트 테마", "테스트 테마 설명", "테스트 테마 url"
+        );
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM theme ORDER BY id DESC LIMIT 1",
+                Long.class
+        );
+    }
+
+    private Long createReservationTime() {
+        jdbcTemplate.update(
+                "INSERT INTO reservation_time(start_at) VALUES (?)",
+                "10:00"
+        );
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM reservation_time ORDER BY id DESC LIMIT 1",
+                Long.class
+        );
+    }
+
+    private void createReservation(LocalDate date, Long timeId, Long themeId) {
+        jdbcTemplate.update(
+                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", date, timeId, themeId
+        );
     }
 }
