@@ -12,6 +12,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
+@Transactional
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
@@ -25,7 +26,6 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    @Transactional
     public ReservationTimeResponseDTO addReservationTime(ReservationTimeRequestDTO reservationTimeRequest) {
         ReservationTime reservationTime = ReservationTime.withoutId(
                 LocalTime.parse(reservationTimeRequest.startAt())
@@ -45,7 +45,6 @@ public class ReservationTimeService {
         return reservationTimeRepository.findReservedTimes(selectedDate, themeId);
     }
 
-    @Transactional
     public void deleteReservationTime(Long id) {
         if (reservationRepository.existByTimeId(id)) {
             throw new IllegalArgumentException("이미 예약된 시간은 삭제할 수 없습니다.");
