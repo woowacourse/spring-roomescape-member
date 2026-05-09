@@ -30,7 +30,7 @@ class ThemeControllerTest {
     void 최근_1주_동안_예약이_많은_테마_상위_10개를_조회한다() {
         RestAssured.given().log().all()
                 .queryParam("days", 7)
-                .queryParam("limits", 10)
+                .queryParam("limit", 10)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
