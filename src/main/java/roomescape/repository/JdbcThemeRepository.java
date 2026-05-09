@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -94,12 +95,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     private static RowMapper<Theme> getThemeRowMapper() {
-        return (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("image_url")
-        );
+        return new DataClassRowMapper<>(Theme.class);
     }
 }
 
