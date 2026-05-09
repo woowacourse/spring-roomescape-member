@@ -62,7 +62,7 @@ class RoomescapeApplicationTest {
     }
 
     @Test
-    void 과거_날짜로_사용_시간_조회시_500을_반환한다() {
+    void 과거_날짜로_사용_시간_조회시_400을_반환한다() {
         String past = "2020-01-01";
 
         RestAssured.given()
