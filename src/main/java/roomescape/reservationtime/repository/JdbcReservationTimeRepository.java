@@ -20,7 +20,7 @@ import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<ReservationTime> reservationTimeRowMapper = (rs, rowNum) ->
+    public static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (rs, rowNum) ->
             ReservationTime.of(
                     rs.getLong("id"),
                     rs.getObject("start_at", LocalTime.class)
@@ -54,7 +54,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
-            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, RESERVATION_TIME_ROW_MAPPER, id);
             return Optional.ofNullable(reservationTime);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -64,7 +64,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         String sql = "SELECT id, start_at FROM reservation_time ORDER BY id";
-        return jdbcTemplate.query(sql, reservationTimeRowMapper);
+        return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 )
                 ORDER BY rt.id
                 """;
-        return jdbcTemplate.query(sql, reservationTimeRowMapper, date, themeId);
+        return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER, date, themeId);
     }
 
     @Override

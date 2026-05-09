@@ -25,7 +25,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Theme> themeRowMapper = (rs, rowNum) ->
+    public static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
             Theme.of(
                     rs.getLong("id"),
                     rs.getString("name"),
@@ -61,7 +61,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, description, thumbnail_url, runtime FROM theme WHERE id = ?";
         try {
-            Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+            Theme theme = jdbcTemplate.queryForObject(sql, THEME_ROW_MAPPER, id);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -71,7 +71,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         String sql = "SELECT id, name, description, thumbnail_url, runtime FROM theme ORDER BY id";
-        return jdbcTemplate.query(sql, themeRowMapper);
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, themeRowMapper, days, limit);
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, days, limit);
     }
 
     @Override

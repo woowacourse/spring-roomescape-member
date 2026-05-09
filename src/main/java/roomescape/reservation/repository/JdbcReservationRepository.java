@@ -1,9 +1,10 @@
 package roomescape.reservation.repository;
 
+import static roomescape.reservationtime.repository.JdbcReservationTimeRepository.RESERVATION_TIME_ROW_MAPPER;
+import static roomescape.theme.repository.JdbcThemeRepository.THEME_ROW_MAPPER;
+
 import java.sql.PreparedStatement;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 r.id AS reservation_id,
                 r.name AS reservation_name,
                 r.date,
-                rt.id AS time_id,
+                rt.id AS id,
                 rt.start_at,
                 t.id AS theme_id,
                 t.name AS theme_name,
@@ -48,17 +49,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                     rs.getLong("reservation_id"),
                     rs.getString("reservation_name"),
                     rs.getObject("date", LocalDate.class),
-                    ReservationTime.of(
-                            rs.getLong("time_id"),
-                            rs.getObject("start_at", LocalTime.class)
-                    ),
-                    Theme.of(
-                            rs.getLong("theme_id"),
-                            rs.getString("theme_name"),
-                            rs.getString("description"),
-                            rs.getString("thumbnail_url"),
-                            Duration.ofHours(rs.getLong("runtime"))
-                    )
+                    RESERVATION_TIME_ROW_MAPPER.mapRow(rs, rowNum),
+                    THEME_ROW_MAPPER.mapRow(rs, rowNum)
             );
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
