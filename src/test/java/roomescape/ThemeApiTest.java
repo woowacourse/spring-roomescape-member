@@ -36,7 +36,7 @@ class ThemeApiTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("id", notNullValue())
                 .body("name", is("공포"))
                 .body("description", is("무서운 테마"))
@@ -55,7 +55,7 @@ class ThemeApiTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/themes")
@@ -143,7 +143,7 @@ class ThemeApiTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().jsonPath().get("id");
 
         RestAssured.given().log().all()
@@ -169,7 +169,7 @@ class ThemeApiTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().jsonPath().get("id");
     }
 
@@ -182,7 +182,7 @@ class ThemeApiTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().jsonPath().get("id");
     }
 
@@ -198,6 +198,6 @@ class ThemeApiTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
     }
 }

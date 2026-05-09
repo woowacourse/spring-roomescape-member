@@ -1,5 +1,6 @@
 package roomescape.api;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +45,7 @@ public class ThemeController {
         Theme theme = new Theme(null, request.name(), request.description(), request.thumbnailImageUrl());
         ThemeResponse response = ThemeResponse.from(themeService.addTheme(theme));
 
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")

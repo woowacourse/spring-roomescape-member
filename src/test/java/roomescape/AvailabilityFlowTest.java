@@ -44,7 +44,7 @@ class AvailabilityFlowTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         // 3) 가용 시간 재조회 - 11시만 reserved=true
         RestAssured.given().log().all()
@@ -66,7 +66,7 @@ class AvailabilityFlowTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().jsonPath().get("id");
     }
 
@@ -81,7 +81,7 @@ class AvailabilityFlowTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().jsonPath().get("id");
     }
 }

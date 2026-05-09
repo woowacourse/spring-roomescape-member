@@ -40,7 +40,7 @@ class ReservationApiTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("id", notNullValue())
                 .body("name", is("민욱"))
                 .body("date", is("2026-08-05"));
@@ -62,7 +62,7 @@ class ReservationApiTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -88,7 +88,7 @@ class ReservationApiTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().jsonPath().get("id");
 
         RestAssured.given().log().all()
@@ -169,7 +169,7 @@ class ReservationApiTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().jsonPath().get("id");
     }
 
@@ -184,7 +184,7 @@ class ReservationApiTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().jsonPath().get("id");
     }
 }

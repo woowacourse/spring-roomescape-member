@@ -33,7 +33,7 @@ public class MissionStepTest {
                 .body(timeParams)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().jsonPath().get("id");
 
         Map<String, String> themeParams = new HashMap<>();
@@ -46,7 +46,7 @@ public class MissionStepTest {
                 .body(themeParams)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().jsonPath().get("id");
 
         Map<String, Object> params = new HashMap<>();
@@ -60,7 +60,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("id", is(1));
 
         RestAssured.given().log().all()
