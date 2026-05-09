@@ -118,7 +118,7 @@ public class ReservationDao {
         return count != null && count > 0;
     }
 
-    public boolean existByDateAndTimeIAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean hasDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
         String sql = """
                 SELECT EXISTS(SELECT 1 FROM reservation 
                               WHERE date = ?
