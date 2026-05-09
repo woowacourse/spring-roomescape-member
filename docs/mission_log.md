@@ -1,0 +1,71 @@
+# 🧾 미션 중 기록
+
+<img width="781" height="672" alt="image" src="https://github.com/user-attachments/assets/3cd8cc65-4269-40d4-9816-48922c1c5a9f" />
+
+- [x] 규칙을 적용해서 변경한 코드 1곳 이상
+  - `ReservationTime` ➡️ `Time` ➡️ `TimeSlot` 으로 도메인 객체의 이름이 변경되었지만  
+    엔드포인트는 `/time` 로 고정됨 
+  - time 은 요구사항에서 식별된 리소스이자 
+  - 클라이언트(사용자/관리자) 관점에서 직관적인 엔드포인트이기 때문 
+ 
+
+- [x] 테스트 작성이 어려웠던 코드 1곳 이상
+  - ```java
+    @Test
+    @DisplayName("기간 내 인기 테마를 예약 건수 기반으로 조회한다.")
+    void findPopularThemes() {
+        Theme savedTheme = jdbcThemeRepository.save(Theme.transientOf("공포", "귀신의 집", "https://url"));
+        insertReservation(savedTheme.id());
+        List<Theme> themes = jdbcThemeRepository.findPopularThemes(10L, LocalDate.now().minusDays(1),
+                LocalDate.now().plusDays(1));
+        assertThat(themes).hasSize(1);
+    }
+    ``` 
+  - 조회의 대상은 `테마`지만 그 조건으로 `예약`에 대한 정보가 필요하고,  
+  - `예약`의 생성을 위해선 `시간대`에 대한 정보가 필요.
+  - 예약 생성은 조회의 조건이기에 테스트 코드에서 표현할 근거가 있지만  
+  - 예약 생성의 조건인 시간대에 대해서도 표현해야 하는가?  
+    - `@Sql("/test-setup.sql")` 로 시간대 더미 데이터 추가 및 격리
+
+
+- [x] 막힌 순간 1회 이상 
+  - 인기 테마 조회 로직을 어디에서 구현할 것인가?  
+  - DB 단에서? 서버 단에서? 
+  - 쿼리의 복잡도 증가? 로직의 복잡도 증가? 
+  - 서비스의 단일 책임? 저장소의 단일 책임? 
+
+
+✅ DB 가 조건에 맞춰 인기 테마를 조회해 반환한다.  
+데이터베이스의 `이론적 완성도`보단  
+서버의 `실무적 효용성`이 우선이기 때문
+```java
+public List<Theme> findPopularThemes(Long topCount, LocalDate fromDate, LocalDate toDate) {
+    String sql = """
+            SELECT
+                t.id,
+                t.name,
+                t.description,
+                t.thumbnail_url,
+                count(*) as reservation_count
+            FROM (
+                SELECT *
+                FROM reservation
+                WHERE date BETWEEN ? AND ?
+            ) as r
+            
+            INNER JOIN theme t
+            ON r.theme_id = t.id
+            GROUP BY t.id
+            ORDER BY reservation_count DESC
+            LIMIT ?
+            """;
+
+    return jdbcTemplate.query(
+            sql,
+            rowMapper(),
+            fromDate,
+            toDate,
+            topCount
+    );
+}
+```
