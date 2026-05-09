@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -81,9 +82,9 @@ class ReservationTimeControllerTest {
     @DisplayName("GET /times - 예약 시간 전체 조회 요청을 서비스에 전달하고 200 응답을 반환한다.")
     void readReservationTimes_success() throws Exception {
         // given
-        given(reservationTimeService.getTimes()).willReturn(
-                List.of(ReservationTime.createRow(1L, LocalTime.of(10, 0)))
-        );
+        ReservationTime time = ReservationTime.createRow(1L, LocalTime.of(10, 0));
+        given(reservationTimeService.getBookedTimes(null, null)).willReturn(List.of());
+        given(reservationTimeService.getTimes()).willReturn(List.of(time));
 
         // when & then
         mockMvc.perform(get("/times"))
@@ -91,8 +92,41 @@ class ReservationTimeControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].startAt").value("10:00"));
+                .andExpect(jsonPath("$[0].startAt").value("10:00"))
+                .andExpect(jsonPath("$[0].alreadyBooked").value(false));
 
+        then(reservationTimeService).should().getBookedTimes(null, null);
+        then(reservationTimeService).should().getTimes();
+    }
+
+    @Test
+    @DisplayName("GET /times?date=...&themeId=... - 예약 여부가 포함된 시간 목록을 반환한다.")
+    void readReservationTimes_with_booking_status() throws Exception {
+        // given
+        ReservationTime bookedTime = ReservationTime.createRow(1L, LocalTime.of(10, 0));
+        ReservationTime availableTime = ReservationTime.createRow(2L, LocalTime.of(11, 0));
+        given(reservationTimeService.getBookedTimes(
+                LocalDate.of(2026, 5, 5),
+                1L
+        )).willReturn(List.of(bookedTime));
+        given(reservationTimeService.getTimes()).willReturn(List.of(bookedTime, availableTime));
+
+        // when & then
+        mockMvc.perform(get("/times")
+                        .param("date", "2026-05-05")
+                        .param("themeId", "1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].alreadyBooked").value(true))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].alreadyBooked").value(false));
+
+        then(reservationTimeService).should().getBookedTimes(
+                LocalDate.of(2026, 5, 5),
+                1L
+        );
         then(reservationTimeService).should().getTimes();
     }
 

@@ -1,15 +1,18 @@
 package roomescape.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.global.exception.customException.ReservationTimeException;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
@@ -18,14 +21,15 @@ import roomescape.domain.ReservationTimeRepository;
 
 class ReservationTimeServiceTest {
 
-    private final  ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-    private final ReservationRepository reservationRepository = new FakeReservationRepository();
-
+    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationRepository reservationRepository;
     private ReservationTimeService reservationTimeService;
 
 
     @BeforeEach
     void setUp() {
+        reservationTimeRepository = new FakeReservationTimeRepository();
+        reservationRepository = new FakeReservationRepository();
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
@@ -61,6 +65,25 @@ class ReservationTimeServiceTest {
         Assertions.assertDoesNotThrow(
                 () -> reservationTimeService.getTimes()
         );
+    }
+
+    @Test
+    @DisplayName("날짜와 테마 기준으로 예약된 시간을 조회한다")
+    void getBookedTimes() {
+        // given
+        ReservationTime bookedTime = reservationTimeService.saveTime(LocalTime.of(10, 0));
+        reservationTimeService.saveTime(LocalTime.of(11, 0));
+        Theme theme = Theme.createRow(1L, "공포", "설명", "https://good.com/thumb-nail/1");
+        LocalDate date = LocalDate.now();
+        reservationRepository.save(Reservation.create("테스터", date, bookedTime, theme));
+
+        // when
+        List<ReservationTime> result = reservationTimeService.getBookedTimes(date, theme.id());
+
+        // then
+        assertThat(result)
+                .extracting(ReservationTime::id)
+                .containsExactlyInAnyOrder(bookedTime.id());
     }
 
     @Test

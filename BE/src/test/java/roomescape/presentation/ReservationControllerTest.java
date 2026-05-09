@@ -117,13 +117,13 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("GET /reservations?date=...&themeId=... - 예약 가능 시간 목록을 반환한다.")
-    void readAvailableReservations_filter_by_date_and_theme() throws Exception {
+    @DisplayName("GET /reservations?date=...&themeId=... - 예약 응답 형식을 유지하면서 필터링한다.")
+    void readReservations_filter_by_date_and_theme() throws Exception {
         // given
         LocalDate date = LocalDate.of(2026, 5, 5);
         List<Reservation> reservations = List.of(
-                sampleReservation(null, null, date, 1L, "10:00", 1L, "테마A"),
-                sampleReservation(1L, "브라운", date, 2L, "11:00", 1L, "테마A")
+                sampleReservation(1L, "브라운", date, 1L, "10:00", 1L, "테마A"),
+                sampleReservation(2L, "리오", date, 2L, "11:00", 1L, "테마A")
         );
         given(reservationService.getReservationsByDateAndTheme(date, 1L)).willReturn(reservations);
 
@@ -133,7 +133,11 @@ class ReservationControllerTest {
                         .param("themeId", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("브라운"))
                 .andExpect(jsonPath("$[0].time.id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].name").value("리오"))
                 .andExpect(jsonPath("$[1].time.id").value(2));
 
         then(reservationService).should().getReservationsByDateAndTheme(date, 1L);

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ReservationService;
+import roomescape.domain.Reservation;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
 
@@ -41,22 +42,21 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<ReservationResponse> response = (service.getReservations()).stream()
+    public ResponseEntity<List<ReservationResponse>> getReservations(
+            @RequestParam(required = false) LocalDate date,
+            @RequestParam(required = false) Long themeId
+    ) {
+        List<ReservationResponse> response = findReservations(date, themeId).stream()
                 .map(ReservationResponse::from)
                 .toList();
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<ReservationResponse>> getReservationsByDateAndThemeId(
-            @RequestParam LocalDate date,
-            @RequestParam Long themeId
-    ) {
-        List<ReservationResponse> response = (service.getReservationsByDateAndTheme(date, themeId)).stream()
-                        .map(ReservationResponse::from)
-                        .toList();
-        return ResponseEntity.ok(response);
+    private List<Reservation> findReservations(LocalDate date, Long themeId) {
+        if (date != null || themeId != null) {
+            return service.getReservationsByDateAndTheme(date, themeId);
+        }
+        return service.getReservations();
     }
 
     @DeleteMapping("/{id}")

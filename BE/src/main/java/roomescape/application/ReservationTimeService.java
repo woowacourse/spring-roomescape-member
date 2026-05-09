@@ -1,9 +1,11 @@
 package roomescape.application;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.Reservation;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ReservationTimeException;
 import roomescape.domain.ReservationRepository;
@@ -31,6 +33,16 @@ public class ReservationTimeService {
 
     public List<ReservationTime> getTimes() {
         return reservationTimeRepository.findAll();
+    }
+
+    public List<ReservationTime> getBookedTimes(LocalDate date, Long themeId) {
+        if (date == null || themeId == null) {
+            return List.of();
+        }
+        return reservationRepository.findByDateAndThemeId(date, themeId)
+                .stream()
+                .map(Reservation::time)
+                .toList();
     }
 
     @Transactional

@@ -4,12 +4,18 @@ import roomescape.domain.ReservationTime;
 
 public record ReservationTimeResponse(
         Long id,
-        String startAt
+        String startAt,
+        boolean alreadyBooked
 ) {
     public static ReservationTimeResponse from(ReservationTime reservationTime) {
+        return from(reservationTime, false);
+    }
+
+    public static ReservationTimeResponse from(ReservationTime reservationTime, boolean alreadyBooked) {
         return new ReservationTimeResponse(
                 reservationTime.id(),
-                reservationTime.startAt().toString()
+                reservationTime.startAt().toString(),
+                alreadyBooked
         );
     }
 }

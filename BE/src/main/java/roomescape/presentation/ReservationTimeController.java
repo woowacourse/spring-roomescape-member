@@ -1,7 +1,10 @@
 package roomescape.presentation;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,8 +12,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ReservationTimeService;
+import roomescape.domain.ReservationTime;
 import roomescape.presentation.dto.ReservationTimeRequest;
 import roomescape.presentation.dto.ReservationTimeResponse;
 
@@ -34,9 +39,17 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getTimes() {
+    public ResponseEntity<List<ReservationTimeResponse>> getTimes(
+            @RequestParam(required = false) LocalDate date,
+            @RequestParam(required = false) Long themeId
+    ) {
+        Set<Long> bookedTimeIds = service.getBookedTimes(date, themeId)
+                .stream()
+                .map(ReservationTime::id)
+                .collect(Collectors.toSet());
+
         List<ReservationTimeResponse> responses = (service.getTimes()).stream()
-                .map(ReservationTimeResponse::from)
+                .map(time -> ReservationTimeResponse.from(time, bookedTimeIds.contains(time.id())))
                 .toList();
         return ResponseEntity.ok(responses);
     }
