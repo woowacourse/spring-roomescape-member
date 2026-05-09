@@ -1,12 +1,11 @@
 package roomescape.reservationtime.application.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
 import roomescape.reservationtime.domain.repository.AvailableReservationTime;
 
 public record AvailableReservationTimeQueryResult(
         Long id,
-        @JsonFormat(pattern = "HH:mm") LocalTime startAt,
+        LocalTime startAt,
         boolean available
 ) {
 
