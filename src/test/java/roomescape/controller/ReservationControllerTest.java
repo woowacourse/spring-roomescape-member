@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.service.dto.response.ReservationOptionResponse;
+import roomescape.service.dto.response.AvailableDateResponse;
 import roomescape.service.dto.response.ReservationTimeStatusResponse;
 
 import java.time.Clock;
@@ -53,33 +53,24 @@ class ReservationControllerTest {
     }
 
     @Test
-    @Sql(scripts = {
-            "/clear.sql",
-            "/popular-themes-test-data.sql"
-    })
-    void 전체_날짜와_테마_조회() {
-        ReservationOptionResponse responses = RestAssured.given().log().all()
-                .when().get("/reservations/date-and-theme")
+    void 전체_날짜_조회() {
+        AvailableDateResponse responses = RestAssured.given().log().all()
+                .when().get("/reservations/available-dates")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getObject(".", ReservationOptionResponse.class);
+                .jsonPath().getObject(".", AvailableDateResponse.class);
 
-        // 기간 검증
         final LocalDate expectedStartDate = LocalDate.of(2026, 05, 01);
         final LocalDate expectedEndDate = expectedStartDate.plusDays(14 - 1);
 
         final List<LocalDate> actualDates = responses.dates();
-        assertThat(actualDates).hasSize(14);
 
-        assertThat(actualDates).doesNotContainAnyElementsOf(
+        assertThat(actualDates).hasSize(14).doesNotContainAnyElementsOf(
                 List.of(
                         expectedStartDate.minusDays(1),
                         expectedEndDate.plusDays(1)
                 )
         );
-
-        // 테마 검증
-        assertThat(responses.themes()).hasSize(12);
     }
 
     @Test
@@ -97,7 +88,7 @@ class ReservationControllerTest {
 
         // 예약 전
         List<ReservationTimeStatusResponse> timeStatusesBeforeReservation = getReservationTimeStatusResponses();
-        assertThat(timeStatusesBeforeReservation.size()).isEqualTo(5);
+        assertThat(timeStatusesBeforeReservation).hasSize(5);
         assertThat(countReservableTimes(timeStatusesBeforeReservation)).isEqualTo(5);
 
         // 예약 추가 1
@@ -105,7 +96,7 @@ class ReservationControllerTest {
 
         // 예약 후
         List<ReservationTimeStatusResponse> timeStatusesAfterReservation = getReservationTimeStatusResponses();
-        assertThat(timeStatusesAfterReservation.size()).isEqualTo(5);
+        assertThat(timeStatusesAfterReservation).hasSize(5);
         assertThat(countReservableTimes(timeStatusesAfterReservation)).isEqualTo(4);
     }
 

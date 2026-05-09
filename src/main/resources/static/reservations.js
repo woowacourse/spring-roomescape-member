@@ -97,11 +97,16 @@ function toISODate(date) {
   return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 }
 
-// ===== Themes =====
+// ===== Themes & Dates (초기 데이터 로드) =====
 async function loadThemes() {
-  const opts = await api.get('/reservations/date-and-theme');
-  state.availableDates = opts.dates || [];
-  state.themes = opts.themes || [];
+  const [datesData, themesData] = await Promise.all([
+    api.get('/reservations/available-dates'),
+    api.get('/themes')
+  ]);
+
+  state.availableDates = datesData.dates || datesData || [];
+  state.themes = themesData || [];
+
   renderCalendar();
   renderThemes();
 }

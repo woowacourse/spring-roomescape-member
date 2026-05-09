@@ -62,4 +62,16 @@ public class ThemeService {
                 ))
                 .toList();
     }
+
+    public List<ThemeResponse> getThemes() {
+        return themeRepository.findAll()
+                .stream()
+                .map(theme -> new ThemeResponse(
+                        theme.getId(),
+                        theme.getName(),
+                        theme.getDescription(),
+                        theme.getThumbnailUrl()
+                ))
+                .toList();
+    }
 }

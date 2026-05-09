@@ -10,7 +10,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.request.ReservationCreateRequest;
-import roomescape.service.dto.response.ReservationOptionResponse;
+import roomescape.service.dto.response.AvailableDateResponse;
 import roomescape.service.dto.response.ReservationResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
 import roomescape.service.dto.response.ReservationTimeStatusResponse;
@@ -78,21 +78,11 @@ public class ReservationService {
         }
     }
 
-    public ReservationOptionResponse getReservationOptions() {
+    public AvailableDateResponse getReservationOptions() {
         LocalDate today = LocalDate.now(clock);
         List<LocalDate> dates = today.datesUntil(today.plusDays(RESERVABLE_DAYS_RANGE)).toList();
 
-        List<ThemeResponse> themes = themeRepository.findAll()
-                .stream()
-                .map(theme -> new ThemeResponse(
-                        theme.getId(),
-                        theme.getName(),
-                        theme.getDescription(),
-                        theme.getThumbnailUrl()
-                ))
-                .toList();
-
-        return new ReservationOptionResponse(dates, themes);
+        return new AvailableDateResponse(dates);
     }
 
     private static ReservationResponse mapDomainToDto(final Reservation reservation) {
