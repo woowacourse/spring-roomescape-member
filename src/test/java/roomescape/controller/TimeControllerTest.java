@@ -42,7 +42,7 @@ public class TimeControllerTest {
                 .contentType(ContentType.JSON)
                 .when().delete("/times/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(500);
     }
 
     @Test

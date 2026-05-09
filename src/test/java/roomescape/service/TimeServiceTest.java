@@ -21,14 +21,7 @@ public class TimeServiceTest {
         Assertions.assertThatThrownBy(() -> timeService.removeById(-1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-
-    @Test
-    void 존재하는_시간을_삭제하는_경우_삭제된다() {
-        // then
-        Assertions.assertThatCode(() -> timeService.removeById(1L))
-                .doesNotThrowAnyException();
-    }
-
+    
     @Test
     public void 존재하지_않는_시간에_대한_추가는_정상동작된다() {
         // given
@@ -46,6 +39,13 @@ public class TimeServiceTest {
 
         // when
         Assertions.assertThatThrownBy(() -> timeService.register(timeRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void 예약이_존재하는_시간에_대한_삭제는_예외가_발생한다() {
+        // when
+        Assertions.assertThatThrownBy(() -> timeService.removeById(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
