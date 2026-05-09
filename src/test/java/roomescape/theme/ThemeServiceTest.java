@@ -28,7 +28,7 @@ class ThemeServiceTest {
         LocalDate testDate = LocalDate.of(2026, 5, 10);
         LocalDate expectedStart = testDate.minusDays(7);
         LocalDate expectedEnd = testDate.minusDays(1);
-        Long limit = 10L;
+        int limit = 10;
 
         Theme theme = new Theme(5L, "초보자 방", "입문 테마", "s3.com");
 

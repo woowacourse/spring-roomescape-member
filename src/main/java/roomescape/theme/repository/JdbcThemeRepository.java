@@ -62,7 +62,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate start, LocalDate end, Long limit) {
+    public List<Theme> findPopularThemes(LocalDate start, LocalDate end, int limit) {
 
         String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail
