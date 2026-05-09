@@ -95,15 +95,15 @@ public class MissionStepTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
                 "2023-08-05", 1, 1);
 
-        List<Reservation> reservations = RestAssured.given().log().all()
+        int size = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
+                .jsonPath().getList(".").size();
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
-        assertThat(reservations.size()).isEqualTo(count);
+        assertThat(size).isEqualTo(count);
     }
 
     @Test
@@ -228,7 +228,7 @@ public class MissionStepTest {
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .when().get("/themes/popular")
+                .when().get("/themes/weekly-top")
                 .then().log().all()
                 .statusCode(200);
     }
