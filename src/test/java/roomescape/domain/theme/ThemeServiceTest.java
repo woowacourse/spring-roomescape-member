@@ -127,6 +127,11 @@ class ThemeServiceTest {
             deletedId = id;
             return 1;
         }
+
+        @Override
+        public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate endDay) {
+            return List.of();
+        }
     }
 
     private static class FakeReservationRepository implements ReservationRepository{
@@ -158,11 +163,6 @@ class ThemeServiceTest {
 
         @Override
         public List<Long> findReservedTimes(Long themeId, Long dateId) {
-            return List.of();
-        }
-
-        @Override
-        public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate today) {
             return List.of();
         }
 

@@ -37,8 +37,8 @@ class ReservationDateServiceTest {
         assertSoftly(
             softly -> {
                 assertThat(response.id()).isEqualTo(1L);
-                assertThat(response.reservationDate()).isEqualTo(LocalDate.of(2026, 5, 4));
-                assertThat(reservationDateRepository.savedReservationDate.getDate())
+                assertThat(response.playDay()).isEqualTo(LocalDate.of(2026, 5, 4));
+                assertThat(reservationDateRepository.savedReservationDate.getPlayDay())
                     .isEqualTo(LocalDate.of(2026, 5, 4));
             }
         );
@@ -137,11 +137,6 @@ class ReservationDateServiceTest {
         }
 
         @Override
-        public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate today) {
-            return List.of();
-        }
-
-        @Override
         public int countByThemeId(Long id) {
             return 0;
         }
@@ -166,7 +161,7 @@ class ReservationDateServiceTest {
         @Override
         public ReservationDate save(ReservationDate reservationDate) {
             savedReservationDate = reservationDate;
-            return ReservationDate.of(1L, reservationDate.getDate());
+            return ReservationDate.of(1L, reservationDate.getPlayDay());
         }
 
         @Override

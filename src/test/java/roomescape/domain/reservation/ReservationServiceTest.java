@@ -186,11 +186,6 @@ class ReservationServiceTest {
         }
 
         @Override
-        public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate today) {
-            return List.of();
-        }
-
-        @Override
         public int countByThemeId(Long id) {
             return 0;
         }
@@ -268,6 +263,11 @@ class ReservationServiceTest {
         @Override
         public int deleteById(Long id) {
             return 0;
+        }
+
+        @Override
+        public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate endDay) {
+            return List.of();
         }
     }
 }
