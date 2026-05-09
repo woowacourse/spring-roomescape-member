@@ -24,7 +24,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResult create(ReservationTimeCreateCommand command) {
-        ReservationTime saved = reservationTimeRepository.save(new ReservationTime(null, command.getStartAt()));
+        ReservationTime saved = reservationTimeRepository.save(new ReservationTime(null, command.startAt()));
         return ReservationTimeResult.from(saved);
     }
 

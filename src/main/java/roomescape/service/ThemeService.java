@@ -25,7 +25,7 @@ public class ThemeService {
 
     public ThemeResult create(ThemeCreateCommand command) {
         Theme saved = themeRepository.save(
-                new Theme(null, command.getName(), command.getDescription(), command.getThumbnail())
+                new Theme(null, command.name(), command.description(), command.thumbnailUrl())
         );
         return ThemeResult.from(saved);
     }
@@ -37,8 +37,8 @@ public class ThemeService {
     public List<PopularThemeResult> findPopular() {
         return themeRepository.findPopular().stream()
                 .map(p -> new PopularThemeResult(
-                        ThemeResult.from(p.getTheme()),
-                        p.getReservationCount()))
+                        ThemeResult.from(p.theme()),
+                        p.reservationCount()))
                 .toList();
     }
 

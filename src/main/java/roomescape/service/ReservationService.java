@@ -36,13 +36,13 @@ public class ReservationService {
     }
 
     public ReservationResult create(ReservationCreateCommand command) {
-        ReservationTime time = reservationTimeRepository.findById(command.getTimeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다: " + command.getTimeId()));
+        ReservationTime time = reservationTimeRepository.findById(command.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다: " + command.timeId()));
 
-        Theme theme = themeRepository.findById(command.getThemeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다: " + command.getThemeId()));
+        Theme theme = themeRepository.findById(command.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다: " + command.themeId()));
 
-        Reservation reservation = new Reservation(null, command.getName(), command.getDate(), time, theme);
+        Reservation reservation = new Reservation(null, command.name(), command.date(), time, theme);
         Reservation saved = reservationRepository.save(reservation);
         return ReservationResult.from(saved);
     }
