@@ -1,6 +1,10 @@
 package roomescape.date.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
+import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
+import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
+import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -119,6 +123,21 @@ class ReservationDateAdminControllerTest {
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/admin/dates")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("예약이 이미 된 날짜를 관리자가 삭제하는 경우 400 예외가 발생한다.")
+    void shouldThrowException_WhenDeleteDate_AboutAlreadyReserved() {
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime("10:00");
+        Integer themeId = createTheme("테마1");
+        String name = "송송";
+        createReservation(name, dateId, timeId, themeId);
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/dates/" + dateId)
                 .then().log().all()
                 .statusCode(400);
     }
