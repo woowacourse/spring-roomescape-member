@@ -51,7 +51,7 @@ class ReservationTimeControllerTest {
     }
 
     @Test
-    @DisplayName("시간 추가 시 200과 바디를 반환한다")
+    @DisplayName("시간 추가 시 201과 바디를 반환한다")
     void addReservationTime() throws Exception {
         given(reservationTimeService.addReservationTime(any()))
                 .willReturn(reservationTime);
@@ -65,7 +65,7 @@ class ReservationTimeControllerTest {
         mockMvc.perform(post("/times")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.startAt").value("10:00"));
     }

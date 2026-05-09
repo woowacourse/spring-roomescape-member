@@ -59,7 +59,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("예약 추가 시 200과 바디를 반환한다")
+    @DisplayName("예약 추가 시 201과 바디를 반환한다")
     void addReservation() throws Exception {
         given(roomReservationService.addReservation(any()))
                 .willReturn(reservation);
@@ -76,7 +76,7 @@ class ReservationControllerTest {
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("홍길동"))
                 .andExpect(jsonPath("$.date").value("2026-05-06"))
