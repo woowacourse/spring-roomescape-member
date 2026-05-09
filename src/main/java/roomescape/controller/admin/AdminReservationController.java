@@ -28,21 +28,17 @@ public class AdminReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponseDto>> findAll() {
-        return ResponseEntity.ok(reservationService.findAll().stream()
-                .map(ReservationResponseDto::from)
-                .toList());
+        return ResponseEntity.ok(reservationService.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponseDto> findById(@PathVariable Long id) {
-        Reservation reservationById = reservationService.findById(id);
-        return ResponseEntity.ok(ReservationResponseDto.from(reservationById));
+        return ResponseEntity.ok(reservationService.findById(id));
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponseDto> create(@Valid @RequestBody ReservationRequestDto reservationRequest) {
-        Reservation reservation = reservationService.create(reservationRequest);
-        return ResponseEntity.ok(ReservationResponseDto.from(reservation));
+        return ResponseEntity.ok(reservationService.create(reservationRequest));
     }
 
     @DeleteMapping("/{id}")

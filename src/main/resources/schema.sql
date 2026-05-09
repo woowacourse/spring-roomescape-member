@@ -13,7 +13,7 @@ CREATE TABLE times
 CREATE TABLE themes
 (
     id            BIGINT      NOT NULL AUTO_INCREMENT,
-    name          VARCHAR(40) NOT NULL,
+    name          VARCHAR(50) NOT NULL,
     thumbnail_url VARCHAR(500),
     description   VARCHAR(500),
     PRIMARY KEY (id),
@@ -24,7 +24,7 @@ CREATE TABLE themes
 CREATE TABLE reservations
 (
     id       BIGINT      NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(20) NOT NULL,
+    name     VARCHAR(50) NOT NULL,
     date     DATE        NOT NULL,
     time_id  BIGINT,
     theme_id BIGINT,

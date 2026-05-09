@@ -4,27 +4,42 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ThemeDao;
+import roomescape.dao.TimeDao;
 import roomescape.dao.row.ThemeRow;
 import roomescape.dao.row.TimeRow;
 import roomescape.domain.Reservation;
 import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.response.ReservationResponseDto;
 import roomescape.service.fake.FakeReservationDao;
 import roomescape.service.fake.FakeThemeDao;
 import roomescape.service.fake.FakeTimeDao;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationServiceTest {
 
+    private static final Clock FIXED_CLOCK = Clock.fixed(
+            Instant.parse("2026-05-10T03:00:00Z"),
+            ZoneId.of("Asia/Seoul")
+    );
+    private static final LocalDate TODAY = LocalDate.of(2026, 5, 10);
+
     private ReservationService reservationService;
-    private FakeReservationDao reservationDao;
-    private FakeTimeDao timeDao;
-    private FakeThemeDao themeDao;
+    private ReservationDao reservationDao;
+    private TimeDao timeDao;
+    private ThemeDao themeDao;
+
 
     private ReservationRequestDto requestDto1;
     private ReservationRequestDto requestDto2;
@@ -34,18 +49,18 @@ class ReservationServiceTest {
         reservationDao = new FakeReservationDao();
         timeDao = new FakeTimeDao();
         themeDao = new FakeThemeDao();
-        reservationService = new ReservationService(reservationDao, timeDao, themeDao);
+        reservationService = new ReservationService(reservationDao, timeDao, themeDao, FIXED_CLOCK);
 
-        TimeRow time1 = timeDao.create(new TimeRow(LocalTime.of(13, 0)));
-        TimeRow time2 = timeDao.create(new TimeRow(LocalTime.of(14, 0)));
+        TimeRow time1 = timeDao.create(new TimeRow(LocalTime.of(14, 0)));
+        TimeRow time2 = timeDao.create(new TimeRow(LocalTime.of(15, 0)));
 
         ThemeRow theme1 = themeDao.create(new ThemeRow("방탈출 이름1", "http://thumbnail_url", "방탈출을 할 수 있다."));
         ThemeRow theme2 = themeDao.create(new ThemeRow("방탈출 이름2", "http://thumbnail_url", "방탈출을 할 수 있다."));
 
         requestDto1 = new ReservationRequestDto(
-                "유저1", LocalDate.of(2026, 5, 3), time1.id(), theme1.id());
+                "유저1", TODAY, time1.id(), theme1.id());
         requestDto2 = new ReservationRequestDto(
-                "유저2", LocalDate.of(2026, 5, 3), time2.id(), theme2.id());
+                "유저2", TODAY, time2.id(), theme2.id());
     }
 
     @Test
@@ -62,10 +77,6 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.delete(notExistsReservationId))
                 .isInstanceOf(NotFoundException.class);
-    }
-
-    private Reservation createDtoHandler(ReservationRequestDto requestDto) {
-        return reservationService.create(requestDto);
     }
 
     @Nested
@@ -90,7 +101,7 @@ class ReservationServiceTest {
             Long notExistsThemeId = 3L;
 
             ReservationRequestDto requestDto = new ReservationRequestDto("유저1",
-                    LocalDate.of(2026, 5, 3), existsTimeId, notExistsThemeId);
+                    TODAY, existsTimeId, notExistsThemeId);
 
             assertThatThrownBy(() -> reservationService.create(requestDto))
                     .isInstanceOf(NotFoundException.class);
@@ -98,10 +109,13 @@ class ReservationServiceTest {
 
         @Test
         void 테마_날짜_시간_동일한_예약이면_예외를_반환한다() {
-            Reservation saved = createDtoHandler(requestDto1);
+            ReservationResponseDto saved = createDtoHandler(requestDto1);
             assertThatThrownBy(() -> reservationService.create(requestDto1))
                     .isInstanceOf(ConflictException.class);
         }
     }
 
+    private ReservationResponseDto createDtoHandler(ReservationRequestDto requestDto) {
+        return reservationService.create(requestDto);
+    }
 }

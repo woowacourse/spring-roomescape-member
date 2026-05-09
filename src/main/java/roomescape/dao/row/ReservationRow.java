@@ -1,6 +1,7 @@
 package roomescape.dao.row;
 
 import roomescape.domain.Reservation;
+import roomescape.domain.vo.Name;
 
 import java.time.LocalDate;
 
@@ -18,7 +19,7 @@ public record ReservationRow(Long id,
     public static ReservationRow from(Reservation reservation) {
         return new ReservationRow(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getName().value(),
                 reservation.getDate(),
                 TimeRow.from(reservation.getTime()),
                 ThemeRow.from(reservation.getTheme())
@@ -27,6 +28,6 @@ public record ReservationRow(Long id,
 
     @Override
     public Reservation toDomain() {
-        return new Reservation(id, name, date, timeRow.toDomain(), themeRow.toDomain());
+        return new Reservation(id, new Name(name), date, timeRow.toDomain(), themeRow.toDomain());
     }
 }

@@ -15,10 +15,17 @@ class ThumbnailUrlTest {
 
     @Test
     void URL이_500자가_넘으면_예외_처리된다() {
-        String invalidValue = "a".repeat(501);
+        String invalidValue = "https://test1.com" + "a".repeat(501);
 
         assertThatThrownBy(() -> new ThumbnailUrl(invalidValue))
                 .isInstanceOf(DomainException.class);
     }
 
+    @Test
+    void URL이_http_양식을_지키지_않으면_예외_처리한다() {
+        String invalidValue = "a".repeat(12);
+
+        assertThatThrownBy(() -> new ThumbnailUrl(invalidValue))
+                .isInstanceOf(DomainException.class);
+    }
 }
