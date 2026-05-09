@@ -13,8 +13,9 @@ public class ReservationDate {
     }
 
     public static ReservationDate create(LocalDate date) {
+        ReservationDate reservationDate = new ReservationDate(null, date);
         validatePast(date);
-        return new ReservationDate(null, date);
+        return reservationDate;
     }
 
     public static ReservationDate load(Long id, LocalDate date) {

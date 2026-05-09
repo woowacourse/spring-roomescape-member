@@ -24,8 +24,9 @@ public class Reservation {
     }
 
     public static Reservation create(String name, LocalDate date, LocalTime time, Theme theme) {
+        Reservation reservation = new Reservation(null, name, date, time, theme, ReservationStatus.RESERVED);
         validatePast(date, time);
-        return new Reservation(null, name, date, time, theme, ReservationStatus.RESERVED);
+        return reservation;
     }
 
     public static Reservation load(Long id, String name, LocalDate date, LocalTime time, Theme theme, ReservationStatus status) {

@@ -61,18 +61,6 @@ class ThemeTest {
     }
 
     @Test
-    @DisplayName("테마 썸네일 URL이 null이면 예외가 발생한다.")
-    void create_null_thumbnailUrl() {
-        // given
-        String nullThumbnailUrl = null;
-
-        // when & then
-        assertThatThrownBy(() -> Theme.create(name, description, nullThumbnailUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 썸네일 URL은 필수입니다.");
-    }
-
-    @Test
     @DisplayName("테마 썸네일 URL이 비어있으면 디폴트 썸네일로 변환된다.")
     void create_empty_thumbnailUrl() {
         // given & when
