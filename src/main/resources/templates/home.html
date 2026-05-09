@@ -893,7 +893,7 @@
         .then(themes => renderThemeIntroGrid(themes))
         .catch(() => renderThemeIntroGrid(dummyThemes));
 
-    fetch('/themes/popular')
+    fetch('/themes/weekly-top')
         .then(res => res.json())
         .then(themes => renderPopularList(themes))
         .catch(() => renderPopularList(dummyThemes));

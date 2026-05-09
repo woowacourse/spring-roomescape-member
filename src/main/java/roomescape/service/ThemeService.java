@@ -16,6 +16,7 @@ import roomescape.service.dto.TimeAvailabilityDto;
 @Service
 @Transactional(readOnly = true)
 public class ThemeService {
+    private static final int WEEKLY_TOP_LIMIT = 10;
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -51,10 +52,10 @@ public class ThemeService {
         themeRepository.delete(id);
     }
 
-    public List<Theme> findWeeklyTopTen() {
+    public List<Theme> findWeeklyTop() {
         LocalDate startDate = LocalDate.now().minusWeeks(1);
         LocalDate endDate = startDate.plusDays(6);
-        return themeRepository.findPopular(startDate, endDate, 10);
+        return themeRepository.findPopular(startDate, endDate, WEEKLY_TOP_LIMIT);
     }
 
     public List<TimeAvailabilityDto> findAvailableTime(Long themeId, LocalDate date) {
