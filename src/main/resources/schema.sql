@@ -35,5 +35,6 @@ CREATE TABLE theme_slot
     is_reserved BOOLEAN NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    UNIQUE (theme_id, date, time_id)
 );
