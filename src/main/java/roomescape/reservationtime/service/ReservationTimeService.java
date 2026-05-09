@@ -9,9 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.exception.ReservationTimeConstraintException;
 import roomescape.reservationtime.exception.ReservationTimeDuplicateException;
+import roomescape.reservationtime.exception.ReservationTimeErrorCode;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeNotFoundException;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.ThemeService;
 
 @Service
@@ -20,18 +24,19 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
-    private final ThemeService themeService;
+    private final ThemeRepository themeRepository;
 
     public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
-                                  ReservationRepository reservationRepository, ThemeService themeService) {
+                                  ReservationRepository reservationRepository, ThemeRepository themeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
-        this.themeService = themeService;
+        this.themeRepository = themeRepository;
     }
 
     @Transactional
     public ReservationTime save(final LocalTime startAt, final Long themeId) {
-        Theme theme = themeService.getById(themeId);
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(ThemeNotFoundException::new);
         ReservationTime reservationTime = ReservationTime.createNew(startAt, theme);
 
         if (reservationTimeRepository.existsByStartAtAndThemeId(startAt, themeId)) {
@@ -43,6 +48,11 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteById(final long timeId) {
+        if(reservationRepository.existsByTimeId(timeId)) {
+            throw new ReservationTimeConstraintException(
+                    ReservationTimeErrorCode.RESERVATION_TIME_CONSTRAINT.getMessage()
+            );
+        }
         reservationTimeRepository.deleteById(timeId);
     }
 
