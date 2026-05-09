@@ -20,7 +20,8 @@ import roomescape.support.exception.ThemeErrorCode;
 public class ThemeService {
 
     private static final int RANK_LIMIT = 10;
-    private static final int RANK_DAYS_LIMIT = 6;
+    private static final int RANK_DAYS_START = 7;
+    private static final int RANK_DAYS_END = 1;
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -54,8 +55,9 @@ public class ThemeService {
 
     public List<ThemeRankResponse> getThemeRank() {
         LocalDate today = LocalDate.now();
-        LocalDate startDay = today.minusDays(RANK_DAYS_LIMIT);
-        List<Theme> populateThemes = themeRepository.findPopularThemes(RANK_LIMIT, startDay, today);
+        LocalDate startDay = today.minusDays(RANK_DAYS_START);
+        LocalDate endDay = today.minusDays(RANK_DAYS_END);
+        List<Theme> populateThemes = themeRepository.findPopularThemes(RANK_LIMIT, startDay, endDay);
         return populateThemes.stream()
             .map(ThemeRankResponse::from)
             .toList();
