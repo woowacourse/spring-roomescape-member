@@ -5,18 +5,39 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationControllerTest {
+
+    @TestConfiguration
+    static class FixedClockConfig {
+
+        @Bean
+        @Primary
+        Clock fixedClock() {
+            return Clock.fixed(
+                    LocalDate.of(2026, 5, 6)
+                            .atStartOfDay(ZoneId.systemDefault())
+                            .toInstant(),
+                    ZoneId.systemDefault()
+            );
+        }
+    }
 
     @LocalServerPort
     int port;
@@ -51,7 +72,7 @@ class ReservationControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "새로운 사용자");
         params.put("themeId", 3);
-        params.put("date", "2026-05-08");
+        params.put("date", LocalDate.of(2026, 5, 8));
         params.put("timeId", 6);
 
         RestAssured.given().log().all()

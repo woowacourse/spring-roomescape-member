@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.theme.entity.Theme;
-import roomescape.domain.theme.response.PopularThemeResponse;
 import roomescape.domain.theme.response.ThemeReservationTimeResponse;
 
 public interface ThemeRepository {
@@ -15,7 +14,7 @@ public interface ThemeRepository {
 
     List<ThemeReservationTimeResponse> findAllThemeReservationTimesByThemeIdAndDate(Long themeId, LocalDate date);
 
-    List<PopularThemeResponse> findPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit);
+    List<PopularThemeResult> findPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit);
 
     Theme save(Theme theme);
 

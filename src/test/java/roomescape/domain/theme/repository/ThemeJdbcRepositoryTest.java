@@ -19,7 +19,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.theme.entity.Theme;
-import roomescape.domain.theme.response.PopularThemeResponse;
 import roomescape.domain.theme.response.ThemeReservationTimeResponse;
 
 @JdbcTest
@@ -123,15 +122,15 @@ class ThemeJdbcRepositoryTest {
         int limit = 10;
 
         // when
-        List<PopularThemeResponse> result = themeRepository.findPopularThemes(
+        List<PopularThemeResult> popularThemes = themeRepository.findPopularThemes(
                 startDate,
                 endDate,
                 limit
         );
 
         // then
-        assertThat(result).hasSize(10);
-        assertThat(result)
+        assertThat(popularThemes).hasSize(10);
+        assertThat(popularThemes)
                 .extracting("name", "rank")
                 .containsSubsequence(
                         tuple("워너비", 1),
