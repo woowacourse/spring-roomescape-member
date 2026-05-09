@@ -34,7 +34,7 @@ public class TimeRepositoryTest {
     @Test
     void 특정_시간을_삭제할_수_있다() {
         // when
-        timeRepository.deleteById(2L);
+        timeRepository.deleteById(12L);
         // then
         Assertions.assertEquals(13, timeRepository.findAll().size());
     }
