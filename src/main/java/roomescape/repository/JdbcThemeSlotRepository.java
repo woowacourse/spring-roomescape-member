@@ -1,13 +1,19 @@
 package roomescape.repository;
 
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeSlot;
 import roomescape.domain.Time;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -36,11 +42,40 @@ public class JdbcThemeSlotRepository implements ThemeSlotRepository {
 
     @Override
     public List<ThemeSlot> saveAll(List<ThemeSlot> themeSlots) {
+        String sql = """
+                INSERT INTO theme_slot 
+                (theme_id, date, time_id, is_reserved)
+                VALUES (?, ?, ?, ?);                
+                """;
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.batchUpdate(
+                con -> con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS),
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ThemeSlot slot = themeSlots.get(i);
+                        ps.setLong(1, slot.getTheme().getId());
+                        ps.setObject(2, slot.getDate());
+                        ps.setLong(3, slot.getTime().getId());
+                        ps.setBoolean(4, slot.isReserved());
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return themeSlots.size();
+                    }
+                },
+                keyHolder
+        );
+
+        List<Long> keys = keyHolder.getKeyList().stream()
+                .map(m -> ((Number) m.get("GENERATED_KEY")).longValue())
+                .toList();
+
         List<ThemeSlot> results = new ArrayList<>();
-        for (ThemeSlot themeSlot : themeSlots) {
-            Map<String, Object> params = createParams(themeSlot);
-            long themeSlotId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-            results.add(ThemeSlot.of(themeSlotId, themeSlot));
+        for (int i = 0; i < themeSlots.size(); i++) {
+            results.add(ThemeSlot.of(keys.get(i), themeSlots.get(i)));
         }
         return results;
     }
