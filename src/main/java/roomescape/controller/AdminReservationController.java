@@ -40,6 +40,18 @@ public class AdminReservationController {
                 .toList());
     }
 
+    @Operation(summary = "예약 단건 조회", description = "ID로 특정 예약 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "예약 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 예약 ID")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservationResponse> readReservation(
+            @Parameter(description = "조회할 예약 ID", example = "1")
+            @PathVariable Long id) {
+        return ResponseEntity.ok(ReservationResponse.from(reservationService.getReservation(id)));
+    }
+
     @Operation(summary = "예약 생성", description = "새로운 예약을 생성합니다. 동일 날짜·시간·테마의 중복 예약은 불가합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "예약 생성 성공"),

@@ -22,6 +22,10 @@ public class ReservationService {
         return reservationDao.findAll();
     }
 
+    public Reservation getReservation(Long id){
+        return reservationDao.findById(id);
+    }
+
     public Reservation createReservation(CreateReservationRequest request) {
         checkDuplicateReservation(request);
 
