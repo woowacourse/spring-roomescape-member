@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.projection.ReservationEntity;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {

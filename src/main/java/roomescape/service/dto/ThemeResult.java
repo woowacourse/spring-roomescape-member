@@ -1,7 +1,7 @@
 package roomescape.service.dto;
 
 import roomescape.domain.Theme;
-import roomescape.repository.ThemeEntity;
+import roomescape.repository.projection.ThemeEntity;
 
 public class ThemeResult {
 

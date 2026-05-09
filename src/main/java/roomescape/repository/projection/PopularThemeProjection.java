@@ -1,13 +1,10 @@
-package roomescape.service.dto;
+package roomescape.repository.projection;
 
-import roomescape.repository.ThemeEntity;
-
-
-public class PopularTheme {
+public class PopularThemeProjection {
     private final ThemeEntity themeEntity;
     private final long reservationCount;
 
-    public PopularTheme(ThemeEntity themeEntity, long reservationCount) {
+    public PopularThemeProjection(ThemeEntity themeEntity, long reservationCount) {
         this.themeEntity = themeEntity;
         this.reservationCount = reservationCount;
     }

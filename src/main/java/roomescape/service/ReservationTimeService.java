@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.repository.ReservationTimeEntity;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.projection.ReservationTimeEntity;
 import roomescape.service.dto.ReservationTimeCreateCommand;
 import roomescape.service.dto.ReservationTimeResult;
 

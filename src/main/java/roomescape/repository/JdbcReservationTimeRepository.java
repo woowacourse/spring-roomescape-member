@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.projection.ReservationTimeEntity;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {

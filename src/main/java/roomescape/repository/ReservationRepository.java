@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.util.List;
 import roomescape.domain.Reservation;
+import roomescape.repository.projection.ReservationEntity;
 
 public interface ReservationRepository {
     List<ReservationEntity> findAll();

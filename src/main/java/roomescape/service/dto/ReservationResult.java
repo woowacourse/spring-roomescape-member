@@ -2,7 +2,7 @@ package roomescape.service.dto;
 
 import java.time.LocalDate;
 import roomescape.domain.Reservation;
-import roomescape.repository.ReservationEntity;
+import roomescape.repository.projection.ReservationEntity;
 
 public class ReservationResult {
 

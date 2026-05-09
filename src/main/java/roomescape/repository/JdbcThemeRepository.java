@@ -9,7 +9,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.service.dto.PopularTheme;
+import roomescape.repository.projection.PopularThemeProjection;
+import roomescape.repository.projection.ThemeEntity;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -25,7 +26,7 @@ public class JdbcThemeRepository implements ThemeRepository {
             )
     );
 
-    private static final RowMapper<PopularTheme> POPULAR_ROW_MAPPER = (rs, rowNum) -> new PopularTheme(
+    private static final RowMapper<PopularThemeProjection> POPULAR_ROW_MAPPER = (rs, rowNum) -> new PopularThemeProjection(
             new ThemeEntity(
                     rs.getLong("id"),
                     new Theme(
@@ -83,7 +84,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<PopularTheme> findPopular() {
+    public List<PopularThemeProjection> findPopular() {
         String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail_url,
                        COUNT(r.id) AS reservation_count
