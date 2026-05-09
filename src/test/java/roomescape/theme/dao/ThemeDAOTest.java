@@ -87,7 +87,7 @@ class ThemeDAOTest {
 
         @Test
         void 존재하지_않는_ID로_조회하면_예외를_던진다() {
-            // when & then
+            // when // then
             assertThatThrownBy(() -> themeDAO.findById(999L))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("존재하지 않는 테마");

@@ -16,7 +16,7 @@ class ThemeTest {
 
         @Test
         void 이름_정보가_없다면_예외를_던진다() {
-            // when & then
+            // when // then
             assertThatThrownBy(() -> new Theme(null, DEFAULT_DESCRIPTION, DEFAULT_IMAGE_URL))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("테마엔 이름이 존재해야 합니다.");
@@ -24,7 +24,7 @@ class ThemeTest {
 
         @Test
         void 설명_정보가_없다면_예외를_던진다() {
-            // when & then
+            // when // then
             assertThatThrownBy(() -> new Theme(DEFAULT_NAME, null, DEFAULT_IMAGE_URL))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("테마엔 설명이 존재해야 합니다.");
@@ -32,7 +32,7 @@ class ThemeTest {
 
         @Test
         void 이미지_정보가_없다면_예외를_던진다() {
-            // when & then
+            // when // then
             assertThatThrownBy(() -> new Theme(DEFAULT_NAME, DEFAULT_DESCRIPTION, null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("테마엔 이미지가 존재해야 합니다.");

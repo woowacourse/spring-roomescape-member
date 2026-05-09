@@ -16,7 +16,7 @@ class ReservationTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "\t", "\n"})
     void 이름이_공백이면_예외를_던진다(String blankName) {
-        // when & then
+        // when // then
         assertThatThrownBy(() -> Reservation.of(1L, blankName, DEFAULT_DATE, DEFAULT_TIME))
                 .isInstanceOf(IllegalArgumentException.class);
     }
