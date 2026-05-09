@@ -1,7 +1,7 @@
 package roomescape.repository;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -11,9 +11,9 @@ import roomescape.domain.theme.ThemeRequest;
 @Repository
 public class ThemeUpdatingDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public ThemeUpdatingDao(JdbcTemplate jdbcTemplate) {
+    public ThemeUpdatingDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -25,7 +25,7 @@ public class ThemeUpdatingDao {
                 .addValue("name", themeRequest.getName())
                 .addValue("description", themeRequest.getDescription())
                 .addValue("url", themeRequest.getUrl());
-        jdbcTemplate.update(sql, param, keyHolder);
+        jdbcTemplate.update(sql, param, keyHolder, new String[]{"id"});
 
         return keyHolder.getKey().longValue();
     }

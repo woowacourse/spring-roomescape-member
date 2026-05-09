@@ -12,7 +12,6 @@ import roomescape.domain.reservation.ReservationResponse;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,7 @@ public class MissionStep2Test {
     void DB_조회_API_전환() {
         jdbcTemplate.update("INSERT INTO theme (name,  description, url) VALUES (?, ?, ?)","무서워", "akdk", "https://hello.com");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id, created_at) VALUES (?, ?, ?, ?, ?)", "브라운", "2023-08-05", 1, 1, LocalDateTime.now());
+        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05", 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")

@@ -63,9 +63,12 @@ public class ReservationService {
         if (savedReservation.isPresent()) {
             return ReservationResponse.from(savedReservation.get());
         }
-        LocalDateTime now = LocalDateTime.now();
-        Long generatedId = reservationUpdatingDao.insert(reservationReq, now);
-        return ReservationResponse.from(new Reservation(generatedId, reservationReq.getName(), reservationReq.getDate(), reservationTimeById, themeById, now));
+
+        Long generatedId = reservationUpdatingDao.insert(reservationReq);
+        Reservation findReservation = reservationQueryingDao.findReservationById(generatedId)
+                .orElseThrow(() -> new ReservationNotFoundException(generatedId));
+
+        return ReservationResponse.from(findReservation);
     }
 
     @Transactional

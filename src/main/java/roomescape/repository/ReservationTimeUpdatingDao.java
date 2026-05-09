@@ -22,7 +22,7 @@ public class ReservationTimeUpdatingDao {
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("start_at", reservationTimeReq.getStartAt());
 
-        jdbcTemplate.update(sql, param, keyHolder);
+        jdbcTemplate.update(sql, param, keyHolder, new String[]{"id"});
         return keyHolder.getKey().longValue();
     }
 

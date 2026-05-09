@@ -1,9 +1,9 @@
 package roomescape.repository;
 
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
@@ -15,9 +15,9 @@ import java.util.Optional;
 @Repository
 public class ThemeQueryingDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public ThemeQueryingDao(JdbcTemplate jdbcTemplate) {
+    public ThemeQueryingDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -41,7 +41,7 @@ public class ThemeQueryingDao {
         try {
             SqlParameterSource param = new MapSqlParameterSource()
                     .addValue("id", id);
-            Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper, param);
+            Theme theme = jdbcTemplate.queryForObject(sql, param, themeRowMapper);
             return Optional.of(theme);
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
@@ -75,6 +75,6 @@ public class ThemeQueryingDao {
                 .addValue("limit", limit)
                 .addValue("created_at", filtered);
 
-        return jdbcTemplate.query(sql, themeRowMapper, param);
+        return jdbcTemplate.query(sql, param, themeRowMapper);
     }
 }
