@@ -107,4 +107,18 @@ public class JdbcThemeRepository implements ThemeRepository {
                 limit
         );
     }
+
+    @Override
+    public void update(Theme theme) {
+        String sql = "update theme set name = ?, description = ?, thumbnail_url = ? where id = ?";
+        int updatedCount = jdbcTemplate.update(sql,
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnailUrl(),
+                theme.getId());
+
+        if (updatedCount == 0) {
+            throw new IllegalArgumentException("수정하려는 테마가 존재하지 않습니다. (ID: " + theme.getId() + ")");
+        }
+    }
 }

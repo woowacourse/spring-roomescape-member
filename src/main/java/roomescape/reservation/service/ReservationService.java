@@ -68,6 +68,10 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public List<Reservation> findByFilter(LocalDate date, Long themeId) {
+        return reservationRepository.findByFilter(date, themeId);
+    }
+
     private void validateDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new IllegalStateException("이미 해당 날짜와 시간에 예약이 존재합니다.");

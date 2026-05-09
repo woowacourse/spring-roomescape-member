@@ -54,6 +54,20 @@ public class ThemeService {
         );
     }
 
+    @Transactional
+    public Theme update(Long id, ThemeRequest request) {
+        Theme theme = getById(id);
+
+        if (!theme.getName().equals(request.name())) {
+            validateDuplicateName(request);
+        }
+
+        Theme updatedTheme = theme.update(request.name(), request.description(), request.thumbnailUrl());
+        themeRepository.update(updatedTheme);
+
+        return updatedTheme;
+    }
+
     private void validateDuplicateName(ThemeRequest request) {
         if (themeRepository.existsByName(request.name())) {
             throw new DuplicateResourceException("이미 존재하는 테마 이름입니다.");

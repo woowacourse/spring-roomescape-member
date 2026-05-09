@@ -1,10 +1,17 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.ReservationService;
+
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/reservations")
@@ -14,6 +21,33 @@ public class AdminReservationController {
 
     public AdminReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationResponse>> readAll(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) Long themeId
+    ) {
+        List<ReservationResponse> responses = reservationService.findByFilter(date, themeId)
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return ResponseEntity.ok(responses);
+    }
+
+    @PostMapping
+    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody ReservationRequest requestDto) {
+        Reservation reservation = reservationService.save(requestDto);
+        ReservationResponse response = ReservationResponse.from(reservation);
+        return ResponseEntity
+                .created(URI.create("/reservations/" + response.id()))
+                .body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        reservationService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping

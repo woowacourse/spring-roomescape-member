@@ -34,4 +34,10 @@ public class AdminThemeController {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ThemeResponse> update(@PathVariable Long id, @Valid @RequestBody ThemeRequest requestDto) {
+        Theme theme = themeService.update(id, requestDto);
+        return ResponseEntity.ok(ThemeResponse.from(theme));
+    }
 }

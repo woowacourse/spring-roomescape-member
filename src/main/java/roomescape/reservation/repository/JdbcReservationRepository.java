@@ -12,6 +12,7 @@ import roomescape.time.domain.ReservationTime;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -119,6 +120,39 @@ public class JdbcReservationRepository implements ReservationRepository {
             order by r.id
             """;
         return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    @Override
+    public List<Reservation> findByFilter(LocalDate date, Long themeId) {
+        StringBuilder sql = new StringBuilder("""
+            select
+                r.id as reservation_id,
+                r.name as reservation_name,
+                r.reservation_date,
+                r.time_id,
+                t.start_at as time_start_at,
+                h.id as theme_id,
+                h.name as theme_name,
+                h.description as theme_description,
+                h.thumbnail_url as theme_thumbnail_url
+            from reservation r
+            inner join reservation_time t on r.time_id = t.id
+            inner join theme h on r.theme_id = h.id
+            where 1=1
+            """);
+        List<Object> params = new ArrayList<>();
+
+        if (date != null) {
+            sql.append(" and r.reservation_date = ?");
+            params.add(Date.valueOf(date));
+        }
+        if (themeId != null) {
+            sql.append(" and r.theme_id = ?");
+            params.add(themeId);
+        }
+        sql.append(" order by r.id");
+
+        return jdbcTemplate.query(sql.toString(), reservationRowMapper, params.toArray());
     }
 
     @Override

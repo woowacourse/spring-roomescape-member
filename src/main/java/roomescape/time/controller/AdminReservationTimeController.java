@@ -9,6 +9,7 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/times")
@@ -18,6 +19,15 @@ public class AdminReservationTimeController {
 
     public AdminReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationTimeResponse>> readAll() {
+        List<ReservationTimeResponse> responses = reservationTimeService.findAll()
+                .stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping

@@ -19,4 +19,6 @@ public interface ThemeRepository {
     boolean existsByName(String name);
 
     List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit);
+
+    void update(Theme theme);
 }

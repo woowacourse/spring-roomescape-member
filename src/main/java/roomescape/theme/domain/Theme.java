@@ -25,6 +25,10 @@ public class Theme {
         return new Theme(null, name, description, thumbnailUrl);
     }
 
+    public Theme update(String name, String description, String thumbnailUrl) {
+        return new Theme(this.id, name, description, thumbnailUrl);
+    }
+
     private void validateText(String value, String fieldName, int maxLength) {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException(String.format("테마 %s은(는) 비어 있을 수 없습니다.", fieldName));
