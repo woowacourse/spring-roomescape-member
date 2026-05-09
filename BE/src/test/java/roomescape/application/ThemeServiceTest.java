@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.domain.ThemeSortType;
 import roomescape.fake.FakeThemeRepository;
 
 class ThemeServiceTest {
@@ -70,7 +69,7 @@ class ThemeServiceTest {
     void findTopNByPeriod_success() {
         // when & then
         Assertions.assertDoesNotThrow(
-                () -> themeService.findTopNByPeriod(LocalDate.now().minusDays(1), LocalDate.now(), ThemeSortType.POPULAR, 10L)
+                () -> themeService.findTopNByPeriod(LocalDate.now().minusDays(1), LocalDate.now(), "POPULAR", 10L)
         );
     }
 }

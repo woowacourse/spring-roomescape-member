@@ -28,7 +28,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.application.ThemeService;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeSortType;
 import roomescape.global.auth.AdminInterceptor;
 
 @WebMvcTest(ThemeController.class)
@@ -109,7 +108,7 @@ class ThemeControllerTest {
         // given
         LocalDate from = LocalDate.of(2026, 5, 1);
         LocalDate to = LocalDate.of(2026, 5, 31);
-        given(themeService.findTopNByPeriod(from, to, ThemeSortType.POPULAR, 2L)).willReturn(
+        given(themeService.findTopNByPeriod(from, to, "POPULAR", 2L)).willReturn(
                 List.of(
                         Theme.createWithId(1L, "테마1", "설명1", "URL1"),
                         Theme.createWithId(2L, "테마2", "설명2", "URL2")
@@ -127,7 +126,7 @@ class ThemeControllerTest {
                 .andExpect(jsonPath("$[0].name").value("테마1"))
                 .andExpect(jsonPath("$[1].name").value("테마2"));
 
-        then(themeService).should().findTopNByPeriod(from, to, ThemeSortType.POPULAR, 2L);
+        then(themeService).should().findTopNByPeriod(from, to, "POPULAR", 2L);
     }
 
     @Test
