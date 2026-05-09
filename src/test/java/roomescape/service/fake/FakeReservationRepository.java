@@ -1,4 +1,4 @@
-package roomescape.repository.collection;
+package roomescape.service.fake;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationRepository;
 
-public class MemoryReservationRepository implements ReservationRepository {
+public class FakeReservationRepository implements ReservationRepository {
 
     private final List<Reservation> reservations = new CopyOnWriteArrayList<>();
     private final AtomicLong counter = new AtomicLong(1);

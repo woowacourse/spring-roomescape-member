@@ -17,8 +17,8 @@ import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.repository.collection.MemoryReservationTimeRepository;
 import roomescape.service.command.ThemeRegisterCommand;
+import roomescape.service.fake.FakeReservationTimeRepository;
 import roomescape.service.fake.FakeThemeRepository;
 import roomescape.service.result.ThemeRegisterResult;
 import roomescape.service.result.ThemeTimesResult;
@@ -42,7 +42,7 @@ class ThemeServiceTest {
     @BeforeEach
     void setUp() {
         this.themeRepository = new FakeThemeRepository();
-        this.reservationTimeRepository = new MemoryReservationTimeRepository();
+        this.reservationTimeRepository = new FakeReservationTimeRepository();
         this.themeService = new ThemeService(themeRepository, reservationTimeRepository);
     }
 

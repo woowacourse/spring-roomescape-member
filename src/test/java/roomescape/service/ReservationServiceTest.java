@@ -19,9 +19,9 @@ import roomescape.domain.fixture.ThemeFixture;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.repository.collection.MemoryReservationRepository;
-import roomescape.repository.collection.MemoryReservationTimeRepository;
 import roomescape.service.command.ReservationCommand;
+import roomescape.service.fake.FakeReservationRepository;
+import roomescape.service.fake.FakeReservationTimeRepository;
 import roomescape.service.fake.FakeThemeRepository;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
@@ -35,8 +35,8 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        this.reservationRepository = new MemoryReservationRepository();
-        this.reservationTimeRepository = new MemoryReservationTimeRepository();
+        this.reservationRepository = new FakeReservationRepository();
+        this.reservationTimeRepository = new FakeReservationTimeRepository();
         this.themeRepository = new FakeThemeRepository();
         this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
     }
