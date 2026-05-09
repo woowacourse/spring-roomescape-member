@@ -32,24 +32,21 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> saveReservation(
             @RequestBody ReservationRequest request
     ) {
-        Reservation created = service.saveReservation(
+        ReservationResponse response = ReservationResponse.from(service.saveReservation(
                 request.name(),
                 request.date(),
                 request.timeId(),
                 request.themeId()
-        );
-
-        ReservationResponse response = ReservationResponse.from(created);
-        return ResponseEntity.created(URI.create("/reservations/" + created.id()))
+        ));
+        return ResponseEntity.created(URI.create("/reservations/" + response.id()))
                 .body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<Reservation> reservations = service.getReservations();
-
-        List<ReservationResponse> response = parseToReservationResponse(reservations);
-
+        List<ReservationResponse> response = (service.getReservations()).stream()
+                .map(ReservationResponse::from)
+                .toList();
         return ResponseEntity.ok(response);
     }
 
@@ -58,22 +55,10 @@ public class ReservationController {
             @RequestParam LocalDate date,
             @RequestParam Long themeId
     ) {
-        List<Reservation> reservations = service.getReservationsByDateAndTheme(date, themeId);
-        List<AvailableReservationResponse> response = parseToAvailableReservationResponse(reservations);
-
+        List<AvailableReservationResponse> response = (service.getReservationsByDateAndTheme(date, themeId)).stream()
+                        .map(AvailableReservationResponse::from)
+                        .toList();
         return ResponseEntity.ok(response);
-    }
-
-    private List<ReservationResponse> parseToReservationResponse(List<Reservation> reservations) {
-        return reservations.stream()
-                .map(ReservationResponse::from)
-                .toList();
-    }
-
-    private List<AvailableReservationResponse> parseToAvailableReservationResponse(List<Reservation> reservations) {
-        return reservations.stream()
-                .map(AvailableReservationResponse::from)
-                .toList();
     }
 
     @DeleteMapping("/{id}")

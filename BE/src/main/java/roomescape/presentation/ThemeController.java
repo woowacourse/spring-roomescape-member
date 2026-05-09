@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.application.ThemeService;
-import roomescape.domain.Theme;
 import roomescape.domain.ThemeSortType;
 import roomescape.global.auth.Admin;
 import roomescape.presentation.dto.ThemeRequest;
@@ -35,13 +34,11 @@ public class ThemeController {
     public ResponseEntity<ThemeResponse> saveTheme(
             @RequestBody ThemeRequest request
     ) {
-        Theme saved = service.save(
+        ThemeResponse result = ThemeResponse.from(service.save(
                 request.name(),
                 request.description(),
                 request.thumbnail()
-        );
-
-        ThemeResponse result = ThemeResponse.from(saved);
+        ));
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -54,9 +51,7 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes() {
-        List<Theme> result = service.findAll();
-
-        List<ThemeResponse> response = result.stream()
+        List<ThemeResponse> response = (service.findAll()).stream()
                 .map(ThemeResponse::from)
                 .toList();
 
@@ -68,17 +63,9 @@ public class ThemeController {
             @RequestParam String sortBy,
             @RequestParam LocalDate from,
             @RequestParam LocalDate to,
-            @RequestParam(required = false) Long limit
-            ) {
-
-        Long countLimit = 10L;
-        if(limit != null) {
-            countLimit = limit;
-        }
-
-        ThemeSortType sortType = ThemeSortType.valueOf(sortBy.toUpperCase());
-        List<Theme> result = service.findTopNByPeriod(from, to, sortType, countLimit);
-        List<ThemeResponse> response = result.stream()
+            @RequestParam(required = false, defaultValue = "10L") Long limit
+    ) {
+        List<ThemeResponse> response = (service.findTopNByPeriod(from, to, sortBy, limit)).stream()
                 .map(ThemeResponse::from)
                 .toList();
         return ResponseEntity.ok(response);

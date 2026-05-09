@@ -31,7 +31,8 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public List<Theme> findTopNByPeriod(LocalDate startAt, LocalDate endAt, ThemeSortType sortType, Long limit) {
+    public List<Theme> findTopNByPeriod(LocalDate startAt, LocalDate endAt, String sortBy, Long limit) {
+        ThemeSortType sortType = ThemeSortType.valueOf(sortBy.toUpperCase());
         return themeRepository.findTopNByPeriod(startAt, endAt, sortType, limit);
     }
 
