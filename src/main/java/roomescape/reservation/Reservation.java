@@ -12,15 +12,12 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
 
-    public Reservation(Long id, String userName, Theme theme, LocalDate date, ReservationTime time) {
-        this.id = id;
-        this.userName = userName;
-        this.theme = theme;
-        this.date = date;
-        this.time = time;
+    public Reservation(String userName, Theme theme, LocalDate date, ReservationTime time) {
+        this(null, userName, theme, date, time);
     }
 
-    public Reservation(String userName, Theme theme, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String userName, Theme theme, LocalDate date, ReservationTime time) {
+        this.id = id;
         this.userName = userName;
         this.theme = theme;
         this.date = date;
