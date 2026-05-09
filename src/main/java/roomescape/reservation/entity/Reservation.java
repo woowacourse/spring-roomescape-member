@@ -18,11 +18,30 @@ public class Reservation {
     }
 
     private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        validate(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("예약자 이름은 필수입니다.");
+        }
+        if (name.length() > 10) {
+            throw new IllegalArgumentException("예약자 이름은 10자 이하여야 합니다.");
+        }
+        if (date == null) {
+            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+        }
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+        }
+        if (theme == null) {
+            throw new IllegalArgumentException("예약 테마는 필수입니다.");
+        }
     }
 
     public static Reservation of(String name, LocalDate date, ReservationTime time, Theme theme) {

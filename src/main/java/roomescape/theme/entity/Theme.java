@@ -16,11 +16,27 @@ public class Theme {
     }
 
     private Theme(Long id, String name, String description, String thumbnailUrl, Duration runtime) {
+        validate(name, description, thumbnailUrl, runtime);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
         this.runtime = runtime;
+    }
+
+    private void validate(String name, String description, String thumbnailUrl, Duration runtime) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("테마 이름은 필수입니다.");
+        }
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("테마 설명은 필수입니다.");
+        }
+        if (thumbnailUrl == null || thumbnailUrl.isBlank()) {
+            throw new IllegalArgumentException("테마 썸네일은 필수입니다.");
+        }
+        if (runtime == null) {
+            throw new IllegalArgumentException("테마 진행 시간은 필수입니다.");
+        }
     }
 
     public static Theme of(String name, String description, String thumbnailUrl, Duration runtime) {
