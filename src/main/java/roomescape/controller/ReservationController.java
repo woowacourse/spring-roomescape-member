@@ -3,11 +3,11 @@ package roomescape.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.repository.dto.ReservationTimesWithStatus;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.request.ReservationCreateRequest;
 import roomescape.service.dto.response.ReservationOptionResponse;
 import roomescape.service.dto.response.ReservationResponse;
-import roomescape.service.dto.response.ReservationTimeStatusResponse;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -21,11 +21,11 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping(path = "/available-times", params = {"date", "themeId"})
-    public ResponseEntity<List<ReservationTimeStatusResponse>> getReservationTimeStatuses(
+    public ResponseEntity<List<ReservationTimesWithStatus>> getReservationTimeStatuses(
             @RequestParam(value = "date", required = false) LocalDate date,
             @RequestParam(value = "themeId", required = false) Long themeId
     ) {
-        final List<ReservationTimeStatusResponse> results = reservationService.getReservationTimeStatuses(date, themeId);
+        final List<ReservationTimesWithStatus> results = reservationService.getReservationTimeStatuses(date, themeId);
         return ResponseEntity.ok(results);
     }
 

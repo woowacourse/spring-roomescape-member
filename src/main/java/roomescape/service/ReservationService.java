@@ -8,10 +8,10 @@ import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.repository.dto.ReservationTimesWithStatus;
 import roomescape.service.dto.request.ReservationCreateRequest;
 import roomescape.service.dto.response.ReservationOptionResponse;
 import roomescape.service.dto.response.ReservationResponse;
-import roomescape.service.dto.response.ReservationTimeStatusResponse;
 import roomescape.service.dto.response.ThemeResponse;
 
 import java.time.Clock;
@@ -35,10 +35,9 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<ReservationTimeStatusResponse> getReservationTimeStatuses(final LocalDate date, final Long themeId) {
+    public List<ReservationTimesWithStatus> getReservationTimeStatuses(final LocalDate date, final Long themeId) {
         return reservationRepository.findReservationTimeStatusesByDateAndThemeId(date, themeId)
                 .stream()
-                .map(ReservationTimeStatusResponse::from)
                 .toList();
     }
 
