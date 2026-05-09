@@ -54,16 +54,16 @@ class RoomescapePageControllerTest {
     private AvailabilityService availabilityService;
 
     private void stubDashboardData() {
+        Theme theme = new Theme("미궁의 유산", "고대 미궁", "https://example.com/theme.png").withId(1L);
         Mockito.when(reservationService.getAll()).thenReturn(List.of(
-                new Reservation("브라운", LocalDate.of(2026, 5, 6), new ReservationTime(1L, "10:00", "11:00"), 1L)
+                new Reservation("브라운", LocalDate.of(2026, 5, 6), new ReservationTime(1L, "10:00", "11:00"), theme)
                         .withId(1L)
-                        .withTheme(new Theme("미궁의 유산", "고대 미궁", "https://example.com/theme.png").withId(1L))
         ));
         Mockito.when(themeService.getAll()).thenReturn(List.of(
-                new Theme("미궁의 유산", "고대 미궁", "https://example.com/theme.png").withId(1L)
+                theme
         ));
         Mockito.when(themeService.getBestThemes()).thenReturn(List.of(
-                new Theme("미궁의 유산", "고대 미궁", "https://example.com/theme.png").withId(1L)
+                theme
         ));
         Mockito.when(timeService.findAll()).thenReturn(List.of(
                 new ReservationTime(1L, "10:00", "11:00")

@@ -12,6 +12,7 @@ import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.time.service.TimeService;
+import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
@@ -43,7 +44,8 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Reservation create(ReservationSaveServiceDto reservation) {
         ReservationTime time = findTime(reservation.timeId());
-        Long themeId = findThemeId(reservation.themeId());
+        Theme theme = findTheme(reservation.themeId());
+        Long themeId = theme.getId();
         LocalDate date = reservation.date();
         if (holidayService.isHoliday(reservation.date())) {
             throw new IllegalArgumentException("휴일은 예약이 불가합니다.");
@@ -53,10 +55,9 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.name(),
                 reservation.date(),
                 time,
-                themeId
+                theme
         );
-        Reservation saved = reservationRepository.save(newReservation);
-        return saved.withTheme(themeRepository.findById(themeId));
+        return reservationRepository.save(newReservation);
     }
 
     private void validateDuplicatedReservation(Long themeId, ReservationTime time, LocalDate date) {
@@ -76,14 +77,14 @@ public class ReservationServiceImpl implements ReservationService {
         return timeService.findById(timeId);
     }
 
-    private Long findThemeId(Long themeId) {
+    private Theme findTheme(Long themeId) {
         if (themeId == null) {
             throw new IllegalArgumentException("테마는 필수입니다.");
         }
         if (!themeRepository.existsById(themeId)) {
             throw new IllegalArgumentException("테마가 존재하지 않습니다. id=" + themeId);
         }
-        return themeId;
+        return themeRepository.findById(themeId);
     }
 
     @Override

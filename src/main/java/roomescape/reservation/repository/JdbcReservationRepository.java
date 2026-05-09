@@ -57,7 +57,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getThemeId()));
+                .addValue("theme_id", reservation.getTheme().getId()));
         return reservation.withId(id.longValue());
     }
 
@@ -116,9 +116,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                     rs.getString("name"),
                     rs.getDate("date").toLocalDate(),
                     time,
-                    rs.getLong("theme_id")
+                    theme
             );
-            return reservation.withId(rs.getLong("id")).withTheme(theme);
+            return reservation.withId(rs.getLong("id"));
         }
     }
 }
