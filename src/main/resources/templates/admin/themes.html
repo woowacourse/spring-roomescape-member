@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Admin · Themes</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="/styles.css" rel="stylesheet" />
+</head>
+<body>
+<main class="page">
+  <header class="hero">
+    <p class="eyebrow">// Roomescape · Admin · Themes</p>
+    <h1>테마 관리</h1>
+    <p>방탈출 테마를 추가/수정/삭제. 예약에 사용 중인 테마는 삭제할 수 없다.</p>
+    <p><a class="admin-link" href="/admin">↩ 관리자 홈</a></p>
+  </header>
+
+  <section class="panel">
+    <h2 id="formTitle">테마 추가</h2>
+    <p class="panel-sub" id="formSub">새로운 테마를 등록한다.</p>
+    <form class="grid-form" id="themeForm">
+      <input type="hidden" name="id" id="themeId" />
+      <div class="field">
+        <label>이름</label>
+        <input maxlength="255" name="name" placeholder="공포의 수랏간" required />
+      </div>
+      <div class="field">
+        <label>썸네일 URL</label>
+        <input maxlength="1024" name="thumbnailUrl" placeholder="https://…" required type="url" />
+      </div>
+      <div class="field" style="grid-column: span 2;">
+        <label>설명</label>
+        <input maxlength="255" name="description" placeholder="아주 무섭습니다" required />
+      </div>
+      <div class="field" style="align-self: end;">
+        <button class="primary" id="submitBtn" type="submit">추가</button>
+      </div>
+      <div class="field" style="align-self: end;">
+        <button class="ghost" id="cancelEditBtn" type="button" style="display: none;">수정 취소</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="section-header">
+      <div>
+        <h2>등록된 테마</h2>
+        <p class="panel-sub" id="listSummary" style="margin-bottom: 0;">…</p>
+      </div>
+      <div class="actions">
+        <button class="ghost" id="refreshBtn" type="button">새로고침</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width: 60px;">ID</th>
+            <th style="width: 80px;">썸네일</th>
+            <th>이름</th>
+            <th>설명</th>
+            <th style="width: 160px;"></th>
+          </tr>
+        </thead>
+        <tbody id="themeRows">
+          <tr><td colspan="5" class="muted" style="text-align: center;">불러오는 중…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="message" id="message"></p>
+</main>
+<script src="/admin/themes.js"></script>
+</body>
+</html>

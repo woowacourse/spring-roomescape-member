@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Admin · Times</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="/styles.css" rel="stylesheet" />
+</head>
+<body>
+<main class="page">
+  <header class="hero">
+    <p class="eyebrow">// Roomescape · Admin · Times</p>
+    <h1>시간 관리</h1>
+    <p>예약 가능한 시간 슬롯을 추가하거나 삭제한다. 예약에 사용 중인 시간은 삭제할 수 없다.</p>
+    <p><a class="admin-link" href="/admin">↩ 관리자 홈</a></p>
+  </header>
+
+  <section class="panel">
+    <h2>시간 추가</h2>
+    <form class="grid-form" id="timeForm">
+      <div class="field">
+        <label>시작 시각</label>
+        <input name="startAt" required type="time" />
+      </div>
+      <div class="field" style="align-self: end;">
+        <button class="primary" type="submit">시간 추가</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="section-header">
+      <div>
+        <h2>등록된 시간</h2>
+        <p class="panel-sub" id="listSummary" style="margin-bottom: 0;">…</p>
+      </div>
+      <div class="actions">
+        <button class="ghost" id="refreshBtn" type="button">새로고침</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width: 60px;">ID</th>
+            <th>시작 시각</th>
+            <th style="width: 90px;"></th>
+          </tr>
+        </thead>
+        <tbody id="timeRows">
+          <tr><td colspan="3" class="muted" style="text-align: center;">불러오는 중…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="message" id="message"></p>
+</main>
+<script src="/admin/times.js"></script>
+</body>
+</html>

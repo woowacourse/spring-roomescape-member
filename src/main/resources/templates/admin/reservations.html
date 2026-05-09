@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Admin · Reservations</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="/styles.css" rel="stylesheet" />
+</head>
+<body>
+<main class="page">
+  <header class="hero">
+    <p class="eyebrow">// Roomescape · Admin · Reservations</p>
+    <h1>예약 관리</h1>
+    <p>전체/필터 조회 · 단건 추가 · 단건 삭제 · 일괄 삭제</p>
+    <p><a class="admin-link" href="/admin">↩ 관리자 홈</a></p>
+  </header>
+
+  <section class="panel">
+    <div class="section-header">
+      <div>
+        <h2>필터</h2>
+        <p class="panel-sub" style="margin-bottom: 0;">날짜와 테마로 좁혀서 조회한다. 둘 다 비우면 전체 조회.</p>
+      </div>
+      <div class="actions">
+        <button class="ghost" id="resetFilter" type="button">필터 해제</button>
+        <button class="primary" id="applyFilter" type="button">조회</button>
+      </div>
+    </div>
+    <form class="grid-form filter-bar" id="filterForm" onsubmit="return false;">
+      <div class="field">
+        <label>날짜</label>
+        <input id="filterDate" name="date" type="date" />
+      </div>
+      <div class="field">
+        <label>테마</label>
+        <select id="filterTheme" name="themeId">
+          <option value="">전체 테마</option>
+        </select>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>새 예약 등록</h2>
+    <p class="panel-sub">관리자 권한으로 임의의 사용자 이름을 입력해 예약을 만들 수 있다.</p>
+    <form class="grid-form" id="createForm" onsubmit="return false;">
+      <div class="field">
+        <label>예약자 이름</label>
+        <input maxlength="10" name="name" placeholder="홍길동" required />
+      </div>
+      <div class="field">
+        <label>날짜</label>
+        <input name="date" required type="date" />
+      </div>
+      <div class="field">
+        <label>시간</label>
+        <select name="timeId" required>
+          <option value="">시간 선택</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>테마</label>
+        <select name="themeId" required>
+          <option value="">테마 선택</option>
+        </select>
+      </div>
+      <div class="field" style="grid-column: span 2; align-self: end;">
+        <button class="primary" id="createBtn" type="button">예약 추가</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="section-header">
+      <div>
+        <h2>예약 목록</h2>
+        <p class="panel-sub" id="listSummary" style="margin-bottom: 0;">…</p>
+      </div>
+      <div class="actions">
+        <button class="ghost" id="refreshList" type="button">새로고침</button>
+        <button class="danger" id="deleteAll" type="button">전체 삭제</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width: 56px;">ID</th>
+            <th>이름</th>
+            <th style="width: 130px;">날짜</th>
+            <th style="width: 90px;">시간</th>
+            <th>테마</th>
+            <th style="width: 90px;"></th>
+          </tr>
+        </thead>
+        <tbody id="reservationRows">
+          <tr><td colspan="6" class="muted" style="text-align: center;">불러오는 중…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="message" id="message"></p>
+</main>
+<script src="/admin/reservations.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Roomescape — Reservation</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="/styles.css" rel="stylesheet" />
+</head>
+<body>
+<main class="page">
+  <header class="hero">
+    <p class="eyebrow">// Roomescape · Booking Console</p>
+    <h1>방을 고르고, 시간을 잡아라.</h1>
+    <p>테마를 선택하고 날짜를 입력하면, 비어 있는 시각을 알려줄게. 자정 이전에 결정해야 할걸.</p>
+    <p><a class="admin-link" href="/admin">⌘ 관리자 콘솔</a></p>
+  </header>
+
+  <section class="panel">
+    <h2>1 · 테마 선택</h2>
+    <p class="panel-sub">예약하고 싶은 방탈출 테마를 클릭해.</p>
+    <div class="theme-grid" id="themeGrid"></div>
+  </section>
+
+  <section class="panel">
+    <h2>2 · 예약 가능 시간 조회</h2>
+    <p class="panel-sub">날짜를 입력하면 위에서 고른 테마의 비어있는 시각이 나타난다.</p>
+    <form class="grid-form" id="reservationForm" onsubmit="return false;">
+      <div class="field">
+        <label>예약자 이름</label>
+        <input maxlength="10" name="name" placeholder="홍길동" required />
+      </div>
+      <div class="field">
+        <label>날짜</label>
+        <input name="date" required type="date" />
+      </div>
+      <div class="field" style="grid-column: span 2; align-self: end;">
+        <button id="loadTimes" type="button" class="primary">예약 가능 시간 조회</button>
+      </div>
+    </form>
+    <div class="chips" id="availableTimes">
+      <p class="chip-empty">날짜와 테마를 먼저 선택해 줘.</p>
+    </div>
+    <div class="success-box" id="reservationSuccess"></div>
+  </section>
+
+  <section class="panel">
+    <div class="section-header">
+      <div>
+        <h2>3 · 최근 1주 인기 테마</h2>
+        <p class="panel-sub" style="margin-bottom: 0;">예약자가 많은 순서대로.</p>
+      </div>
+      <div class="actions">
+        <button class="ghost" id="loadPopular">새로고침</button>
+      </div>
+    </div>
+    <ol class="rank-list" id="popularThemes"></ol>
+  </section>
+
+  <p class="message" id="message"></p>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>
