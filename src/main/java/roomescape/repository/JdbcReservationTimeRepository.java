@@ -14,6 +14,19 @@ import roomescape.domain.ReservationTime;
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
+    private static final String FIND_RESERVED_TIMES_BY_DATE_AND_THEME = """
+            SELECT id, start_at
+            FROM reservation_time
+            WHERE id IN (
+              SELECT rt.id
+              FROM reservation_time AS rt
+              INNER JOIN reservation AS re
+              ON rt.id = re.time_id
+              WHERE re.date = ?
+              AND re.theme_id = ?
+            )
+            """;
+
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
@@ -61,21 +74,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findReservedTimes(LocalDate selectedDate, Long themeId) {
-        String sql = """
-                SELECT id, start_at
-                FROM reservation_time
-                WHERE id IN (
-                  SELECT rt.id
-                  FROM reservation_time AS rt
-                  INNER JOIN reservation AS re
-                  ON rt.id = re.time_id
-                  WHERE re.date = ?
-                  AND re.theme_id = ?
-                )
-                """;
-
         return jdbcTemplate.query(
-                sql,
+                FIND_RESERVED_TIMES_BY_DATE_AND_THEME,
                 getReservationTimeRowMapper(),
                 selectedDate, themeId
         );

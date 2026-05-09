@@ -14,6 +14,18 @@ import roomescape.domain.Theme;
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
+    private static final String FIND_POPULAR_THEMES = """
+                SELECT th.id, th.name, th.description, th.image_url, th.running_time, COUNT(re.id) AS reservation_count
+                FROM theme AS th
+                LEFT JOIN reservation AS re
+                ON th.id = re.theme_id
+                    AND re.date >= ?
+                    AND re.date < ?
+                GROUP BY th.id, th.name
+                ORDER BY reservation_count DESC, th.name
+                LIMIT 10
+            """;
+
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
@@ -63,22 +75,11 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findPopularThemes() {
-        String sql = """
-                    SELECT th.id, th.name, th.description, th.image_url, th.running_time, COUNT(re.id) AS reservation_count
-                    FROM theme AS th
-                    LEFT JOIN reservation AS re
-                    ON th.id = re.theme_id
-                        AND re.date >= ?
-                        AND re.date < ?
-                    GROUP BY th.id, th.name
-                    ORDER BY reservation_count DESC, th.name
-                    LIMIT 10
-                """;
-
         LocalDate today = LocalDate.now();
         LocalDate beforeOneWeeks = today.minusWeeks(1);
+
         return jdbcTemplate.query(
-                sql,
+                FIND_POPULAR_THEMES,
                 getThemeRowMapper(),
                 beforeOneWeeks, today
         );
