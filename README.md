@@ -1,6 +1,132 @@
 ## 방탈출 사용자 예약
 
-### 토론규칙
+---
+
+## 실행 가이드
+
+### 요구 사항
+
+- Java 21
+
+### 실행 방법
+
+```bash
+git clone -b step1 https://github.com/haechanmoon/spring-roomescape-member.git
+cd spring-roomescape-member
+./gradlew bootRun
+```
+
+### 접속
+
+- 사용자 페이지: http://localhost:8080
+- 관리자 페이지: http://localhost:8080/admin
+
+---
+
+## ERD
+
+```mermaid
+erDiagram
+    THEME {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR description
+        VARCHAR thumbnail
+    }
+
+    RESERVATION_TIME {
+        BIGINT id PK
+        VARCHAR start_at
+    }
+
+    RESERVATION {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR date
+        BIGINT time_id FK
+        BIGINT theme_id FK
+    }
+
+    RESERVATION }o--|| RESERVATION_TIME: "참조 (time_id)"
+    RESERVATION }o--|| THEME: "참조 (theme_id)"
+```
+
+---
+
+## 기능 구현 목록
+
+<details>
+<summary>1단계 - 테마 도메인 추가</summary>
+
+- [x] API 명세 작성
+
+ ```
+    테마 조회	GET /themes	        —	                     [{id, name, description, thumbnail}...]
+    테마 추가	POST /admin/themes	   {name, description, thumbnail}    {id, name, description, thumbnail}
+    테마 삭제	DELETE /admin/themes/{id}	—	                     200 OK
+```
+
+- [x] 테마 테이블 구현
+- [x] 테마 도메인 구현
+- [x] 테마 DTO 구현
+- [x] 테마 DAO 구현
+- [x] 테마 Service 구현
+- [x] 테마 Controller 구현
+- [x] 예약에 테마 정보 포함하도록 기존 메인 코드 변경
+- [x] 예약에 테마 정보 포함하도록 기존 테스트 코드 변경
+- [x] http메서드에 상태코드 구현
+- [x] `ThemeDao`, `ThemeService`, `ReservationDAO`, `ReservationService` 테스트 구현
+
+</details>
+
+<details>
+<summary>2단계 - 사용자 예약</summary>
+
+- [x] API 명세 작성
+
+ ```
+    예약 가능 시간 조회    GET /themes/1/reservation-times?date=2026-05-08         -        [{id, startAt, available}...]
+```
+
+- [x] 예약 가능한 시간인 ReservationTimeStatusResponse Dto 구현
+- [x] ReservationDao에서 사용자가 선택한 날짜와 테마에 해당하는 예약시간Id를 가져오는 메서드 구현
+- [x] ThemeService에서 예약 가능한 시간을 계산하는 메서드 구현
+- [x] 예약 가능 시간 조회 Controller 구현
+- [x] 같은 시간, 같은 테마, 같은 날짜 중복 예약 불가 검증 구현
+
+</details>
+
+<details>
+<summary>3단계 - 인기 테마 조회</summary>
+
+- [x] API 명세 작성
+
+ ```
+    인기 테마 조회    GET /themes/popular             -             [{id, name, description, thumbnail, reservationCount}...]
+```
+
+- [x] 인기 테마 조회 응답 dto 구현
+- [x] 인기 테마 도메인 구현
+- [x] 인기 테마 조회 dao 구현
+- [x] 인기 테마 조회 service 구현
+- [x] 인기 테마 조회 controller 구현
+
+</details>
+
+<details>
+<summary>SQL, 추가</summary>
+
+- [x] data.sql 구현
+- [x] 화면 구현
+
+</details>
+
+---
+
+## 미션 중 기록
+
+<details>
+<summary>📝 토론규칙</summary>
 
 ```
 1. 리소스 식별 기준
@@ -38,7 +164,10 @@
       이유: 화면 명세가 바뀌었을 때 API가 수정되면, 화면에 API가 종속되어 재사용이 불가능하다는 신호이기 때문이다.
 ```
 
-### 미션 진행중 작성
+</details>
+
+<details>
+<summary>📓 미션 진행중 작성</summary>
 
 - **규칙때문에 바뀐점** :
     - 관리자와 사용자의 구분을 하지 않았었다.
@@ -56,71 +185,18 @@
     - 해결: 날짜와 시간에 의존적인 로직을 테스트할 때는, 항상 미래의 날짜(예: 2030-05-06)를 하드코딩하거나
       `LocalDate.now().plusDays(1)`처럼 동적으로 현재 시간 기준 미래를 계산하도록 짜야 한다는 것을 깨달았다.
 
-## 기능 구현 목록
-
-#### 1단계 - 테마 도메인 추가
-
-- [x] API 명세 작성
-
- ```
-    테마 조회	GET /themes	        —	                     [{id, name, description, thumbnail}...]
-    테마 추가	POST /admin/themes	   {name, description, thumbnail}    {id, name, description, thumbnail}
-    테마 삭제	DELETE /admin/themes/{id}	—	                     200 OK
-```
-
-- [x] 테마 테이블 구현
-- [x] 테마 도메인 구현
-- [x] 테마 DTO 구현
-- [x] 테마 DAO 구현
-- [x] 테마 Service 구현
-- [x] 테마 Controller 구현
-- [x] 예약에 테마 정보 포함하도록 기존 메인 코드 변경
-- [x] 예약에 테마 정보 포함하도록 기존 테스트 코드 변경
-- [x] http메서드에 상태코드 구현
-- [x] `ThemeDao`, `ThemeService`, `ReservationDAO`, `ReservationService` 테스트 구현
-
-#### 2단계 - 사용자 예약
-
-- [x] API 명세 작성
-
- ```
-    예약 가능 시간 조회    GET /themes/1/reservation-times?date=2026-05-08         -        [{id, startAt, available}...]
-```
-
-- [x] 예약 가능한 시간인 ReservationTimeStatusResponse Dto 구현
-- [x] ReservationDao에서 사용자가 선택한 날짜와 테마에 해당하는 예약시간Id를 가져오는 메서드 구현
-- [x] ThemeService에서 예약 가능한 시간을 계산하는 메서드 구현
-- [x] 예약 가능 시간 조회 Controller 구현
-- [x] 같은 시간, 같은 테마, 같은 날짜 중복 예약 불가 검증 구현
-
-#### 3단계 - 인기 테마 조회
-
-- [x] API 명세 작성
-
- ```
-    인기 테마 조회    GET /themes/popular             -             [{id, name, description, thumbnail, reservationCount}...]
-```
-
-- [x] 인기 테마 조회 응답 dto 구현
-- [x] 인기 테마 도메인 구현
-- [x] 인기 테마 조회 dao 구현
-- [x] 인기 테마 조회 service 구현
-- [x] 인기 테마 조회 controller 구현
-
-#### SQL, 추가
-
-- [x] data.sql 구현
-- [x] 화면 구현
+</details>
 
 ---
 
-### 리뷰 받은 후 리팩토링 실행 목록
+## 리팩토링
 
+<details>
+<summary>리뷰 받은 후 리팩토링 목록</summary>
 - **READ.ME**
 - [x] PR본문 관련 코멘트 작성
-- [ ] 실행 가이드 문서화
+- [x] 실행 가이드 문서화
 - [x] ERD 문서화
-
 
 - **ThemeServiceTest**
 - [x] SpringBootTest, DirtiesContext 작동법 / 장단점 / 단점 대체법 알아보기
@@ -168,30 +244,4 @@
 - **GlobalExceptionHandler**
 - [x] `EmptyResultDataAccessException` 대체할 예외 찾기(너무 구체적이기 때문에)
 
-## ERD
-
-```mermaid
-erDiagram
-    THEME {
-        BIGINT id PK
-        VARCHAR name
-        VARCHAR description
-        VARCHAR thumbnail
-    }
-
-    RESERVATION_TIME {
-        BIGINT id PK
-        VARCHAR start_at
-    }
-
-    RESERVATION {
-        BIGINT id PK
-        VARCHAR name
-        VARCHAR date
-        BIGINT time_id FK
-        BIGINT theme_id FK
-    }
-
-    RESERVATION }o--|| RESERVATION_TIME: "참조 (time_id)"
-    RESERVATION }o--|| THEME: "참조 (theme_id)"
-```
+</details>
