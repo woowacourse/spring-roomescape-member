@@ -24,7 +24,7 @@ class ReservationTest {
         LocalDate date = LocalDate.now().plusDays(1);
 
         // when
-        Reservation reservation = Reservation.reserve(name, date, theme, reservationTime);
+        Reservation reservation = Reservation.createNew(name, date, theme, reservationTime);
 
         // then
         assertThat(reservation)
@@ -40,7 +40,7 @@ class ReservationTest {
         LocalDate date = LocalDate.now().plusDays(1);
 
         // when & then
-        assertThatThrownBy(() -> Reservation.reserve(invalidName, date, theme, reservationTime))
+        assertThatThrownBy(() -> Reservation.createNew(invalidName, date, theme, reservationTime))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약자 정보는 비어있을 수 없습니다.");
     }
@@ -49,7 +49,7 @@ class ReservationTest {
     @MethodSource("roomescape.domain.fixture.ReservationFixture#invalidReservationConstructor")
     void 예약_일시와_테마_검증_통합_테스트(LocalDate date, Theme theme, ReservationTime reservationTime, String expectedMessage) {
         // when & then
-        assertThatThrownBy(() -> Reservation.reserve("이프", date, theme, reservationTime))
+        assertThatThrownBy(() -> Reservation.createNew("이프", date, theme, reservationTime))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(expectedMessage);
     }

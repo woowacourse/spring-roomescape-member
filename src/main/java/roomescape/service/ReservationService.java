@@ -30,7 +30,7 @@ public class ReservationService {
         ReservationTime time = findTimeWithThrow(command.timeId());
         validateAlreadyReservation(command, time);
 
-        Reservation reservation = Reservation.reserve(command.name(), command.date(), theme, time);
+        Reservation reservation = Reservation.createNew(command.name(), command.date(), theme, time);
         Reservation saved = reservationRepository.save(reservation);
 
         return ReservationResult.from(saved);

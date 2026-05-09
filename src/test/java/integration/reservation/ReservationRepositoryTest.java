@@ -41,7 +41,7 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     @Test
     void 예약을_저장하고_ID로_조회한다() {
         // given: 시간 먼저 저장
-        Reservation reservation = Reservation.reserve("이프", LocalDate.now().plusDays(1), theme, reservationTime);
+        Reservation reservation = Reservation.createNew("이프", LocalDate.now().plusDays(1), theme, reservationTime);
 
         // when
         Reservation saved = reservationRepository.save(reservation);
@@ -54,8 +54,8 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     @Test
     void 동일한_날짜와_시간으로_저장하면_DB_제약조건_에러가_발생한다() {
         // given
-        Reservation first = Reservation.reserve("이프", LocalDate.now().plusDays(1), theme, reservationTime);
-        Reservation second = Reservation.reserve("아루", LocalDate.now().plusDays(1), theme, reservationTime);
+        Reservation first = Reservation.createNew("이프", LocalDate.now().plusDays(1), theme, reservationTime);
+        Reservation second = Reservation.createNew("아루", LocalDate.now().plusDays(1), theme, reservationTime);
         reservationRepository.save(first);
 
         // when & then: 서비스 로직 없이 DB의 UK Constraint 확인
@@ -67,7 +67,7 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     void 특정_날짜와_시간에_예약이_존재하는지_확인한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
-        reservationRepository.save(Reservation.reserve("이프", date, theme, reservationTime));
+        reservationRepository.save(Reservation.createNew("이프", date, theme, reservationTime));
 
         // when & then
         Long otherTimeId = 99L;
@@ -80,7 +80,7 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     @Test
     void 예약을_삭제한다() {
         // given
-        Reservation saved = reservationRepository.save(Reservation.reserve("이프", LocalDate.now().plusDays(1), theme, reservationTime));
+        Reservation saved = reservationRepository.save(Reservation.createNew("이프", LocalDate.now().plusDays(1), theme, reservationTime));
 
         // when
         reservationRepository.delete(saved.getId());
