@@ -33,7 +33,7 @@ public class ThemeRepository {
         return themeDao.findById(id);
     }
 
-    public List<Theme> getPopularTop10Themes(LocalDate start, LocalDate end) {
-        return themeDao.getPopularTop10Themes(start, end);
+    public List<Theme> getPopularThemes(LocalDate start, LocalDate end, Integer limit) {
+        return themeDao.getPopularThemes(start, end, limit);
     }
 }

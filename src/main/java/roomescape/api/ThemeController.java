@@ -55,11 +55,12 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> searchPopularTop10(
+    public ResponseEntity<List<ThemeResponse>> searchPopular(
             @RequestParam(required = false) LocalDate now,
-            @RequestParam(defaultValue = "7") Integer days) {
+            @RequestParam(defaultValue = "7") Integer days,
+            @RequestParam(defaultValue = "10") Integer limit) {
         LocalDate baseDate = (now != null) ? now : LocalDate.now();
-        List<ThemeResponse> responses = themeService.getPopularTop10Themes(baseDate, days).stream()
+        List<ThemeResponse> responses = themeService.getPopularThemes(baseDate, days, limit).stream()
                 .map(ThemeResponse::from)
                 .toList();
 

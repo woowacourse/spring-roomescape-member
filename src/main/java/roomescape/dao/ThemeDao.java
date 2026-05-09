@@ -58,7 +58,7 @@ public class ThemeDao {
         return results.stream().findFirst();
     }
 
-    public List<Theme> getPopularTop10Themes(LocalDate start, LocalDate end) {
+    public List<Theme> getPopularThemes(LocalDate start, LocalDate end, Integer limit) {
         String sql = """
                 SELECT
                 t.id, t.name, t.description, t.thumbnail_image_url
@@ -68,14 +68,14 @@ public class ThemeDao {
                 WHERE r.date BETWEEN ? AND ?
                 GROUP BY t.id, t.name, t.description, t.thumbnail_image_url
                 ORDER BY COUNT(*) DESC
-                LIMIT 10;
+                LIMIT ?;
                 """;
         return jdbcTemplate.query(
                 sql,
                 themeRowMapper,
                 start,
-                end
+                end,
+                limit
         );
-
     }
 }

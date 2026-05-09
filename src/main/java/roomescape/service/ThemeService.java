@@ -37,9 +37,9 @@ public class ThemeService {
         return themeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 ID입니다."));
     }
 
-    public List<Theme> getPopularTop10Themes(LocalDate now, Integer days) {
+    public List<Theme> getPopularThemes(LocalDate now, Integer days, Integer limit) {
         LocalDate start = now.minusDays(days);
         LocalDate end = now.minusDays(1);
-        return themeRepository.getPopularTop10Themes(start, end);
+        return themeRepository.getPopularThemes(start, end, limit);
     }
 }

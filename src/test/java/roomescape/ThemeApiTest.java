@@ -103,6 +103,27 @@ class ThemeApiTest {
     }
 
     @Test
+    void 인기_테마_조회_limit_파라미터로_결과_개수를_조절한다() {
+        Integer themeA = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer themeB = createTheme("추리", "단서를 찾아라", "https://example.com/mystery.jpg");
+        Integer themeC = createTheme("SF", "우주에서 탈출", "https://example.com/sf.jpg");
+        Integer time = createTime("10:00");
+        Integer time2 = createTime("11:00");
+
+        createReservation("user1", "2026-05-05", time, themeA);
+        createReservation("user2", "2026-05-04", time, themeA);
+        createReservation("user3", "2026-05-05", time, themeB);
+        createReservation("user4", "2026-05-05", time2, themeB);
+        createReservation("user5", "2026-05-04", time2, themeC);
+
+        RestAssured.given().log().all()
+                .when().get("/themes/popular?now=2026-05-06&days=7&limit=2")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
+
+    @Test
     void 인기_테마_조회_now_미지정시_시스템_시각_기준_200() {
         RestAssured.given().log().all()
                 .when().get("/themes/popular")
