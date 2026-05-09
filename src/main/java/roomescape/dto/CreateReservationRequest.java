@@ -5,8 +5,8 @@ import java.time.LocalDate;
 
 @Schema(description = "예약 생성 요청")
 public record CreateReservationRequest(
-        @Schema(description = "예약자 이름", example = "홍길동")
-        String name,
+        @Schema(description = "예약자 사용자 ID", example = "1")
+        Long userId,
 
         @Schema(description = "테마 ID", example = "1")
         Long themeId,
