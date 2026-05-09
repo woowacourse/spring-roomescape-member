@@ -91,9 +91,9 @@ public class JdbcThemeSlotRepository implements ThemeSlotRepository {
     }
 
     @Override
-    public void deleteById(long reservationId) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(sql, reservationId);
+    public void deleteById(long id) {
+        String sql = "DELETE FROM theme_slot WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
