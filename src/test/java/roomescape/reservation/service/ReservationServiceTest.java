@@ -4,63 +4,46 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.DuplicateResourceException;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.service.ThemeService;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.service.ReservationTimeService;
+import roomescape.support.FixedClockConfig;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@Transactional
+@Import(FixedClockConfig.class)
 class ReservationServiceTest {
 
     private static final LocalDate FUTURE_DATE = LocalDate.of(2026, 12, 31);
-    private static final LocalTime START_AT = LocalTime.of(10, 0);
-    private static final Long TIME_ID = 1L;
-    private static final Long THEME_ID = 1L;
+    private static final LocalDate TODAY = LocalDate.of(2026, 5, 6);
 
-    @Mock
-    private ReservationRepository reservationRepository;
-
-    @Mock
-    private ReservationTimeService reservationTimeService;
-
-    @Mock
-    private ThemeService themeService;
-
+    @Autowired
     private ReservationService reservationService;
 
-    private ReservationTime reservationTime;
-    private Theme theme;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private Long timeId10;
+    private Long timeId08;
+    private Long themeId;
 
     @BeforeEach
     void setUp() {
-        Clock fixedClock = Clock.fixed(
-                LocalDateTime.of(2026, 5, 6, 9, 0).atZone(ZoneId.systemDefault()).toInstant(),
-                ZoneId.systemDefault()
-        );
-        reservationService = new ReservationService(
-                reservationRepository,
-                reservationTimeService,
-                themeService,
-                fixedClock
-        );
-
-        reservationTime = new ReservationTime(TIME_ID, START_AT);
-        theme = new Theme(THEME_ID, "우테코", "우테코 전용 테마", "https://example.com");
+        timeId10 = insertReservationTime(LocalTime.of(10, 0));
+        timeId08 = insertReservationTime(LocalTime.of(8, 0));
+        themeId = insertTheme("우테코", "우테코 전용 테마", "https://example.com/thumb.jpg");
     }
 
     @Nested
@@ -68,105 +51,66 @@ class ReservationServiceTest {
     class Save {
 
         @Test
-        @DisplayName("정상 요청이면 예약을 저장하고 저장된 예약을 반환한다.")
+        @DisplayName("정상 요청이면 예약을 저장하고 생성된 예약을 반환한다.")
         void saveSuccess() {
             // given
-            ReservationRequest request = new ReservationRequest("브라운", FUTURE_DATE, TIME_ID, THEME_ID);
-
-            given(reservationTimeService.getById(TIME_ID)).willReturn(reservationTime);
-            given(themeService.getById(THEME_ID)).willReturn(theme);
-            given(reservationRepository.existsByDateAndTimeIdAndThemeId(FUTURE_DATE, TIME_ID, THEME_ID))
-                    .willReturn(false);
-
-            Reservation saved = new Reservation(99L, "브라운", FUTURE_DATE, reservationTime, theme);
-            given(reservationRepository.save(any(Reservation.class))).willReturn(saved);
+            ReservationRequest request = new ReservationRequest("브라운", FUTURE_DATE, timeId10, themeId);
 
             // when
-            Reservation result = reservationService.save(request);
+            Reservation saved = reservationService.save(request);
 
             // then
-            assertThat(result.getId()).isEqualTo(99L);
-            assertThat(result.getName()).isEqualTo("브라운");
-            verify(reservationRepository, times(1)).save(any(Reservation.class));
+            assertThat(saved.getId()).isNotNull();
+            assertThat(saved.getName()).isEqualTo("브라운");
+            assertThat(saved.getDate()).isEqualTo(FUTURE_DATE);
+            assertThat(saved.getTime().getId()).isEqualTo(timeId10);
+            assertThat(saved.getTheme().getId()).isEqualTo(themeId);
         }
 
         @Test
-        @DisplayName("예약 일시가 현재보다 과거이면 예외가 발생하고 저장되지 않는다.")
-        void saveFailWhenPast() {
+        @DisplayName("예약 일자가 과거이면 IllegalArgumentException 이 발생하고 저장되지 않는다.")
+        void saveFailWhenPastDate() {
             // given
             LocalDate pastDate = LocalDate.of(2026, 5, 5);
-            ReservationRequest request = new ReservationRequest("브라운", pastDate, TIME_ID, THEME_ID);
-
-            given(reservationTimeService.getById(TIME_ID)).willReturn(reservationTime);
-            given(themeService.getById(THEME_ID)).willReturn(theme);
+            ReservationRequest request = new ReservationRequest("브라운", pastDate, timeId10, themeId);
 
             // when & then
             assertThatThrownBy(() -> reservationService.save(request))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("과거 시각");
 
-            verify(reservationRepository, never()).save(any(Reservation.class));
-        }
-
-        @Test
-        @DisplayName("동일한 날짜/시간/테마 조합의 예약이 이미 존재하면 예외가 발생한다.")
-        void saveFailWhenDuplicate() {
-            // given
-            ReservationRequest request = new ReservationRequest("브라운", FUTURE_DATE, TIME_ID, THEME_ID);
-
-            given(reservationTimeService.getById(TIME_ID)).willReturn(reservationTime);
-            given(themeService.getById(THEME_ID)).willReturn(theme);
-            given(reservationRepository.existsByDateAndTimeIdAndThemeId(FUTURE_DATE, TIME_ID, THEME_ID))
-                    .willReturn(true);
-
-            // when & then
-            assertThatThrownBy(() -> reservationService.save(request))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("이미 해당 날짜와 시간에 예약이 존재합니다.");
-
-            verify(reservationRepository, never()).save(any(Reservation.class));
+            assertThat(reservationService.findAll()).isEmpty();
         }
 
         @Test
         @DisplayName("오늘 날짜라도 예약 시간이 현재 시각보다 이전이면 예외가 발생한다.")
         void saveFailWhenTodayButPastTime() {
-            // given
-            LocalDate today = LocalDate.of(2026, 5, 6);
-            LocalTime pastTimeAt = LocalTime.of(8, 0);
-            ReservationTime pastReservationTime = new ReservationTime(TIME_ID, pastTimeAt);
-
-            ReservationRequest request = new ReservationRequest("브라운", today, TIME_ID, THEME_ID);
-
-            given(reservationTimeService.getById(TIME_ID)).willReturn(pastReservationTime);
-            given(themeService.getById(THEME_ID)).willReturn(theme);
+            // given - 고정 시각 09:00, 시간 슬롯은 08:00
+            ReservationRequest request = new ReservationRequest("브라운", TODAY, timeId08, themeId);
 
             // when & then
             assertThatThrownBy(() -> reservationService.save(request))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("과거 시각");
 
-            verify(reservationRepository, never()).save(any(Reservation.class));
+            assertThat(reservationService.findAll()).isEmpty();
         }
 
         @Test
-        @DisplayName("정상 요청 시 Repository에 저장되는 객체의 필드 값을 검증한다.")
-        void saveSuccessDetail() {
+        @DisplayName("동일한 날짜/시간/테마 조합의 예약이 이미 존재하면 DuplicateResourceException 이 발생한다.")
+        void saveFailWhenDuplicate() {
             // given
-            ReservationRequest request = new ReservationRequest("브라운", FUTURE_DATE, TIME_ID, THEME_ID);
-            given(reservationTimeService.getById(TIME_ID)).willReturn(reservationTime);
-            given(themeService.getById(THEME_ID)).willReturn(theme);
-            given(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), any(), any())).willReturn(false);
+            ReservationRequest request = new ReservationRequest("브라운", FUTURE_DATE, timeId10, themeId);
+            reservationService.save(request);
 
-            given(reservationRepository.save(any(Reservation.class)))
-                    .willAnswer(invocation -> invocation.getArgument(0));
+            ReservationRequest duplicate = new ReservationRequest("제임스", FUTURE_DATE, timeId10, themeId);
 
-            // when
-            Reservation result = reservationService.save(request);
+            // when & then
+            assertThatThrownBy(() -> reservationService.save(duplicate))
+                    .isInstanceOf(DuplicateResourceException.class)
+                    .hasMessageContaining("이미 해당 날짜와 시간에 예약이 존재합니다.");
 
-            // then
-            assertThat(result.getName()).isEqualTo("브라운");
-            assertThat(result.getDate()).isEqualTo(FUTURE_DATE);
-            assertThat(result.getTime()).isEqualTo(reservationTime);
-            assertThat(result.getTheme()).isEqualTo(theme);
+            assertThat(reservationService.findAll()).hasSize(1);
         }
     }
 
@@ -175,13 +119,18 @@ class ReservationServiceTest {
     class DeleteById {
 
         @Test
-        @DisplayName("ID에 해당하는 예약 삭제를 Repository에 위임한다.")
-        void deleteByIdDelegatesToRepository() {
+        @DisplayName("ID에 해당하는 예약을 삭제한다.")
+        void deleteByIdRemovesReservation() {
+            // given
+            Reservation saved = reservationService.save(
+                    new ReservationRequest("브라운", FUTURE_DATE, timeId10, themeId)
+            );
+
             // when
-            reservationService.deleteById(1L);
+            reservationService.deleteById(saved.getId());
 
             // then
-            verify(reservationRepository, times(1)).deleteById(1L);
+            assertThat(reservationService.findAll()).isEmpty();
         }
     }
 
@@ -190,13 +139,17 @@ class ReservationServiceTest {
     class DeleteAll {
 
         @Test
-        @DisplayName("모든 예약 삭제를 Repository에 위임한다.")
-        void deleteAllDelegatesToRepository() {
+        @DisplayName("모든 예약을 삭제한다.")
+        void deleteAllRemovesEverything() {
+            // given
+            reservationService.save(new ReservationRequest("브라운", FUTURE_DATE, timeId10, themeId));
+            reservationService.save(new ReservationRequest("제임스", FUTURE_DATE.plusDays(1), timeId10, themeId));
+
             // when
             reservationService.deleteAll();
 
             // then
-            verify(reservationRepository, times(1)).deleteAll();
+            assertThat(reservationService.findAll()).isEmpty();
         }
     }
 
@@ -205,14 +158,43 @@ class ReservationServiceTest {
     class FindAll {
 
         @Test
-        @DisplayName("Repository가 반환한 예약 목록을 그대로 돌려준다.")
-        void findAllReturnsRepositoryResult() {
+        @DisplayName("저장된 예약을 ID 오름차순으로 반환한다.")
+        void findAllReturnsAll() {
             // given
-            Reservation reservation = new Reservation(1L, "브라운", FUTURE_DATE, reservationTime, theme);
-            given(reservationRepository.findAll()).willReturn(List.of(reservation));
+            reservationService.save(new ReservationRequest("브라운", FUTURE_DATE, timeId10, themeId));
+            reservationService.save(new ReservationRequest("제임스", FUTURE_DATE.plusDays(1), timeId10, themeId));
 
             // when
             List<Reservation> result = reservationService.findAll();
+
+            // then
+            assertThat(result).extracting(Reservation::getName)
+                    .containsExactly("브라운", "제임스");
+        }
+
+        @Test
+        @DisplayName("예약이 없으면 빈 목록을 반환한다.")
+        void findAllReturnsEmpty() {
+            assertThat(reservationService.findAll()).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("findByFilter 메서드는")
+    class FindByFilter {
+
+        @Test
+        @DisplayName("date 와 themeId 조건에 모두 부합하는 예약만 반환한다.")
+        void findByFilterAppliesBothConditions() {
+            // given
+            Long otherThemeId = insertTheme("다른 테마", "설명", "https://example.com/thumb2.jpg");
+
+            reservationService.save(new ReservationRequest("브라운", FUTURE_DATE, timeId10, themeId));
+            reservationService.save(new ReservationRequest("제임스", FUTURE_DATE, timeId10, otherThemeId));
+            reservationService.save(new ReservationRequest("나나", FUTURE_DATE.plusDays(1), timeId10, themeId));
+
+            // when
+            List<Reservation> result = reservationService.findByFilter(FUTURE_DATE, themeId);
 
             // then
             assertThat(result).hasSize(1);
@@ -220,16 +202,38 @@ class ReservationServiceTest {
         }
 
         @Test
-        @DisplayName("예약이 없으면 빈 목록을 반환한다.")
-        void findAllReturnsEmpty() {
+        @DisplayName("두 조건이 모두 null 이면 전체 예약을 반환한다.")
+        void findByFilterReturnsAllWhenNoFilter() {
             // given
-            given(reservationRepository.findAll()).willReturn(List.of());
+            reservationService.save(new ReservationRequest("브라운", FUTURE_DATE, timeId10, themeId));
+            reservationService.save(new ReservationRequest("제임스", FUTURE_DATE.plusDays(1), timeId10, themeId));
 
             // when
-            List<Reservation> result = reservationService.findAll();
+            List<Reservation> result = reservationService.findByFilter(null, null);
 
             // then
-            assertThat(result).isEmpty();
+            assertThat(result).hasSize(2);
         }
+    }
+
+    private Long insertReservationTime(LocalTime startAt) {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", startAt.toString());
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM reservation_time WHERE start_at = ?",
+                Long.class,
+                startAt.toString()
+        );
+    }
+
+    private Long insertTheme(String name, String description, String thumbnailUrl) {
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
+                name, description, thumbnailUrl
+        );
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM theme WHERE name = ?",
+                Long.class,
+                name
+        );
     }
 }

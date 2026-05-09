@@ -56,7 +56,7 @@ class ReservationTest {
         @DisplayName("필수 데이터(날짜, 시간, 테마)가 누락되면 예외가 발생한다.")
         void failWhenRequiredFieldIsNull() {
             assertThatThrownBy(() -> new Reservation(1L, "브라운", null, reservationTime, theme))
-                    .isInstanceOf(NullPointerException.class);
+                    .isInstanceOf(IllegalArgumentException.class);
         }
     }
 
@@ -95,7 +95,7 @@ class ReservationTest {
         void failWhenTodayButPastTime() {
             // given
             LocalDate today = LocalDate.of(2026, 5, 7);
-            LocalTime pastTime = LocalTime.of(9, 0); // 예약 시간 9시
+            LocalTime pastTime = LocalTime.of(9, 0);
             ReservationTime time = new ReservationTime(1L, pastTime);
 
             Reservation reservation = new Reservation(1L, "브라운", today, time, theme);
