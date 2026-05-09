@@ -9,6 +9,7 @@ public class Theme {
     private boolean isActive;
 
     private Theme(Long id, String name, String description, String thumbnailUrl, boolean isActive) {
+        validate(name, description, thumbnailUrl);
         this.id = id;
         this.name = name;
         this.description = description;
@@ -17,13 +18,11 @@ public class Theme {
     }
 
     public static Theme create(String name, String description, String thumbnailUrl) {
-        validate(name, description, thumbnailUrl);
         return new Theme(null, name, description, resolveThumbnailUrl(thumbnailUrl), false);
     }
 
     public static Theme load(Long id, String name, String description, String thumbnailUrl, boolean isActive) {
         validateId(id);
-        validate(name, description, thumbnailUrl);
         return new Theme(id, name, description, resolveThumbnailUrl(thumbnailUrl), isActive);
     }
 

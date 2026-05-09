@@ -176,7 +176,7 @@ class ReservationRepositoryTest {
 
     private Reservation save(Reservation reservation) {
         Long savedId = jdbcReservationRepository.save(reservation);
-        return Reservation.of(savedId, reservation.name(), reservation.date(), reservation.time(), reservation.theme(),
+        return Reservation.load(savedId, reservation.name(), reservation.date(), reservation.time(), reservation.theme(),
                 reservation.status());
     }
 

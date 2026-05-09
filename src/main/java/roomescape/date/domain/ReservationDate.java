@@ -7,12 +7,13 @@ public class ReservationDate {
     private LocalDate date;
 
     private ReservationDate(Long id, LocalDate date) {
+        validateDate(date);
         this.id = id;
         this.date = date;
     }
 
     public static ReservationDate create(LocalDate date) {
-        validateDate(date);
+        validatePast(date);
         return new ReservationDate(null, date);
     }
 
@@ -39,7 +40,9 @@ public class ReservationDate {
         if (date == null) {
             throw new IllegalArgumentException("예약 날짜는 필수입니다.");
         }
+    }
 
+    private static void validatePast(LocalDate date) {
         if (date.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("과거 날짜는 등록할 수 없습니다.");
         }

@@ -24,12 +24,11 @@ public class Reservation {
     }
 
     public static Reservation create(String name, LocalDate date, LocalTime time, Theme theme) {
-        validate(name, date, time, theme);
         validatePast(date, time);
         return new Reservation(null, name, date, time, theme, ReservationStatus.RESERVED);
     }
 
-    public static Reservation of(Long id, String name, LocalDate date, LocalTime time, Theme theme, ReservationStatus status) {
+    public static Reservation load(Long id, String name, LocalDate date, LocalTime time, Theme theme, ReservationStatus status) {
         validateId(id);
         return new Reservation(id, name, date, time, theme, status);
     }

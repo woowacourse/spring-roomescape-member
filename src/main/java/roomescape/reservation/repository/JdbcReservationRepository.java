@@ -19,7 +19,7 @@ import roomescape.theme.domain.Theme;
 public class JdbcReservationRepository implements ReservationRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNumber) -> Reservation.of(
+    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNumber) -> Reservation.load(
             resultSet.getLong("reservation_id"),
             resultSet.getString("name"),
             resultSet.getDate("date").toLocalDate(),

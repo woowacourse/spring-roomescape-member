@@ -2,10 +2,12 @@ package roomescape.reservation.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-
-import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 
 public class FakeReservationRepository implements ReservationRepository {
@@ -33,7 +35,7 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public Long save(Reservation reservation) {
         Long id = idGenerator.getAndIncrement();
-        Reservation saved = Reservation.of(id, reservation.name(), reservation.date(), reservation.time(),
+        Reservation saved = Reservation.load(id, reservation.name(), reservation.date(), reservation.time(),
                 reservation.theme(), reservation.status());
         store.put(id, saved);
         return id;
@@ -49,7 +51,7 @@ public class FakeReservationRepository implements ReservationRepository {
 
     public Reservation saveV2(Reservation reservation) {
         Long id = idGenerator.getAndIncrement();
-        Reservation saved = Reservation.of(id, reservation.name(), reservation.date(), reservation.time(),
+        Reservation saved = Reservation.load(id, reservation.name(), reservation.date(), reservation.time(),
                 reservation.theme(), reservation.status());
         store.put(id, saved);
         return saved;
