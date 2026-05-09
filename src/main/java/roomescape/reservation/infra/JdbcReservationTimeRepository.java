@@ -20,14 +20,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
             new ReservationTime(
                     resultSet.getLong("id"),
-                    LocalTime.parse(resultSet.getString("start_at")));
+                    resultSet.getObject("start_at", LocalTime.class));
 
     @Override
     public ReservationTime save(LocalTime startAt) {
         String sql = "INSERT INTO reservation_time(start_at) VALUES (:start_at)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", startAt.toString());
+                .addValue("start_at", startAt);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(sql, params, keyHolder);
@@ -51,7 +51,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         template.update(sql, params);
     }
 
-    public Optional<ReservationTime> findById(long timeId){
+    public Optional<ReservationTime> findById(long timeId) {
         String sql = "SELECT * FROM reservation_time WHERE id = :timeId";
 
         MapSqlParameterSource params = new MapSqlParameterSource()

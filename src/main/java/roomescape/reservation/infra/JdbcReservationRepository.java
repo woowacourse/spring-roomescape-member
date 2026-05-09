@@ -22,11 +22,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
-                    LocalDate.parse(resultSet.getString("date")),
+                    resultSet.getString("reservation_name"),
+                    resultSet.getObject("reservation_date", LocalDate.class),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
-                            LocalTime.parse(resultSet.getString("start_at"))
+                            resultSet.getObject("start_at", LocalTime.class)
                     ),
                     new Theme(
                             resultSet.getLong("theme_id"),
@@ -41,7 +41,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
-                .addValue("date", reservation.getDate().toString())
+                .addValue("date", reservation.getDate())
                 .addValue("timeId", reservation.getTime().getId())
                 .addValue("themeId", reservation.getTheme().getId());
 
