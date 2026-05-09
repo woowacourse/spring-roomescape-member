@@ -62,13 +62,13 @@ class ReservationJdbcRepositoryTest {
     @DisplayName("예약을 저장한다.")
     void saveTest() {
         // given
-        Theme theme = new Theme(
+        Theme theme = Theme.of(
                 3L,
                 "우주 정거장",
                 "우주에서 살아남으세요.",
                 "https://example.com/space.png"
         );
-        ReservationTime time = new ReservationTime(6L, LocalTime.of(15, 0));
+        ReservationTime time = ReservationTime.of(6L, LocalTime.of(15, 0));
         Reservation reservation = Reservation.create(
                 "조이",
                 theme,

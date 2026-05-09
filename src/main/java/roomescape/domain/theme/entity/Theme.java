@@ -12,7 +12,7 @@ public class Theme {
 
     private final String thumbnailUrl;
 
-    public Theme(Long id, String name, String description, String thumbnailUrl) {
+    private Theme(Long id, String name, String description, String thumbnailUrl) {
         validateId(id);
         validateName(name);
         validateDescription(description);
@@ -26,6 +26,10 @@ public class Theme {
 
     public static Theme create(String name, String description, String thumbnailUrl) {
         return new Theme(null, name, description, thumbnailUrl);
+    }
+
+    public static Theme of(Long id, String name, String description, String thumbnailUrl) {
+        return new Theme(id, name, description, thumbnailUrl);
     }
 
     public void assignId(Long id) {

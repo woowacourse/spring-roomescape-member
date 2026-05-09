@@ -35,7 +35,7 @@ class ReservationTimeServiceTest {
         // given
         ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
 
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
         when(reservationTimeRepository.save(any(ReservationTime.class)))
                 .thenReturn(time);
 
@@ -53,8 +53,8 @@ class ReservationTimeServiceTest {
     @DisplayName("모든 예약 시간을 조회한다.")
     void findAllReservationTimes() {
         // given
-        ReservationTime time1 = new ReservationTime(1L, LocalTime.of(10, 0));
-        ReservationTime time2 = new ReservationTime(1L, LocalTime.of(11, 0));
+        ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
+        ReservationTime time2 = ReservationTime.of(1L, LocalTime.of(11, 0));
 
         List<ReservationTime> reservationTimes = List.of(time1, time2);
 

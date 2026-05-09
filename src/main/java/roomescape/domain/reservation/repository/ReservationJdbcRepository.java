@@ -87,17 +87,18 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     private RowMapper<Reservation> reservationWithTimeRowMapper() {
-        return (resultSet, rowNumber) -> new Reservation(
+        return (resultSet, rowNumber) -> Reservation.of(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("username"),
-                new Theme(
+                Theme.of(
                         resultSet.getLong("theme_id"),
                         resultSet.getString("theme_name"),
                         resultSet.getString("theme_description"),
                         resultSet.getString("theme_thumbnail_url")),
                 resultSet.getObject("date", LocalDate.class),
-                new ReservationTime(
+                ReservationTime.of(
                         resultSet.getLong("time_id"),
-                        resultSet.getObject("start_at", LocalTime.class)));
+                        resultSet.getObject("start_at", LocalTime.class))
+        );
     }
 }

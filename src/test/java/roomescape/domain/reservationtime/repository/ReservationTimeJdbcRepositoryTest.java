@@ -135,7 +135,7 @@ class ReservationTimeJdbcRepositoryTest {
     }
 
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
-        return (resultSet, rowNumber) -> new ReservationTime(
+        return (resultSet, rowNumber) -> ReservationTime.of(
                 resultSet.getLong("id"),
                 LocalTime.parse(resultSet.getString("start_at"))
         );

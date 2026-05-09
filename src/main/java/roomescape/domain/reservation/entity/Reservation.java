@@ -17,7 +17,7 @@ public class Reservation {
 
     private final ReservationTime time;
 
-    public Reservation(Long id, String username, Theme theme, LocalDate date, ReservationTime time) {
+    private Reservation(Long id, String username, Theme theme, LocalDate date, ReservationTime time) {
         validateId(id);
         validateUsername(username);
         validateTheme(theme);
@@ -33,6 +33,10 @@ public class Reservation {
 
     public static Reservation create(String username, Theme theme, LocalDate date, ReservationTime time) {
         return new Reservation(null, username, theme, date, time);
+    }
+
+    public static Reservation of(Long id, String username, Theme theme, LocalDate date, ReservationTime time) {
+        return new Reservation(id, username, theme, date, time);
     }
 
     public void assignId(Long id) {

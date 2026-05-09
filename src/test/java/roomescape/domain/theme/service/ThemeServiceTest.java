@@ -37,7 +37,7 @@ class ThemeServiceTest {
     @DisplayName("테마를 성공적으로 생성한다.")
     void saveTheme() {
         // given
-        Theme theme = new Theme(1L, "테마", "요약", "www.url.com");
+        Theme theme = Theme.of(1L, "테마", "요약", "www.url.com");
         ThemeCreateRequest request = new ThemeCreateRequest("테마", "요약", "www.url.com");
 
         when(themeRepository.save(any(Theme.class)))
@@ -60,8 +60,8 @@ class ThemeServiceTest {
     void findAllThemes() {
         // given
         List<Theme> themes = List.of(
-                new Theme(1L, "테마A", "요약", "www.url.com/A"),
-                new Theme(2L, "테마B", "요약", "www.url.com/B")
+                Theme.of(1L, "테마A", "요약", "www.url.com/A"),
+                Theme.of(2L, "테마B", "요약", "www.url.com/B")
         );
 
         when(themeRepository.findAll()).thenReturn(themes);

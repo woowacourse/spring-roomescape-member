@@ -203,7 +203,7 @@ class ThemeJdbcRepositoryTest {
     }
 
     private RowMapper<Theme> themeRowMapper() {
-        return (resultSet, rowNumber) -> new Theme(
+        return (resultSet, rowNumber) -> Theme.of(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),

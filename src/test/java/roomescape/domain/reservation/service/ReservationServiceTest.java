@@ -69,7 +69,7 @@ class ReservationServiceTest {
     @DisplayName("사용자가 예약을 성공적으로 생성한다.")
     void saveReservationByUser() {
         // given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
         when(reservationTimeRepository.findById(eq(1L)))
                 .thenReturn(Optional.of(reservationTime));
 
@@ -77,7 +77,7 @@ class ReservationServiceTest {
         when(themeRepository.findById(eq(1L)))
                 .thenReturn(Optional.of(theme));
 
-        Reservation reservation = new Reservation(
+        Reservation reservation = Reservation.of(
                 1L,
                 "브라운",
                 theme,
@@ -134,12 +134,12 @@ class ReservationServiceTest {
     void findAllReservations() {
         // given
         List<Reservation> reservations = new ArrayList<>();
-        Theme theme = new Theme(1L, "theme1", "description1", "thumbnail url 1");
-        ReservationTime time1 = new ReservationTime(1L, LocalTime.of(10, 0));
-        ReservationTime time2 = new ReservationTime(2L, LocalTime.of(11, 0));
+        Theme theme = Theme.of(1L, "theme1", "description1", "thumbnail url 1");
+        ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
+        ReservationTime time2 = ReservationTime.of(2L, LocalTime.of(11, 0));
 
-        reservations.add(new Reservation(1L, "브라운", theme, LocalDate.of(2026, 4, 30), time1));
-        reservations.add(new Reservation(2L, "크루", theme, LocalDate.of(2026, 4, 30), time2));
+        reservations.add(Reservation.of(1L, "브라운", theme, LocalDate.of(2026, 4, 30), time1));
+        reservations.add(Reservation.of(2L, "크루", theme, LocalDate.of(2026, 4, 30), time2));
         when(reservationRepository.findAll()).thenReturn(reservations);
 
         // when
