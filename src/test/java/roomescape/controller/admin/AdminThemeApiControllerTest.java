@@ -55,7 +55,6 @@ class AdminThemeApiControllerTest extends BaseControllerUnitTest {
                 .when().post("/api/admin/themes")
                 .then().log().all()
                 .status(HttpStatus.CREATED)
-                .header("Location", containsString("/api/admin/themes/1"))
                 .extract().as(new TypeRef<>() {
                 });
 

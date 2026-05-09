@@ -1,8 +1,9 @@
 package roomescape.controller.admin.api;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,11 +29,7 @@ public class AdminThemeApiController {
     @PostMapping
     public ResponseEntity<AdminThemeResponse> register(@Valid @RequestBody AdminThemeRequest request) {
         ThemeRegisterResult result = themeService.register(request.toCommand());
-
-        URI uri = URI.create("/api/admin/themes/" + result.id());
-
-        return ResponseEntity.created(uri)
-                .body(AdminThemeResponse.from(result));
+        return ResponseEntity.status(CREATED).body(AdminThemeResponse.from(result));
     }
 
     @DeleteMapping("/{id}")

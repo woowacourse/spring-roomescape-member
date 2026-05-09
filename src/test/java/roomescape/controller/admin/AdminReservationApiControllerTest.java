@@ -71,7 +71,6 @@ class AdminReservationApiControllerTest extends BaseControllerUnitTest {
                 .when().post("/api/admin/reservations")
                 .then().log().all()
                 .status(HttpStatus.CREATED)
-                .header("Location", containsString("/api/admin/reservations/1"))
                 .extract().as(new TypeRef<>() {
                 });
 

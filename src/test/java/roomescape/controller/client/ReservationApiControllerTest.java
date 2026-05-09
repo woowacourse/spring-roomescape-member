@@ -65,7 +65,6 @@ class ReservationApiControllerTest extends BaseControllerUnitTest {
                 .when().post("/api/reservations")
                 .then().log().all()
                 .status(HttpStatus.CREATED)
-                .header("Location", containsString("/api/reservations/1"))
                 .extract().as(new TypeRef<>() {
                 });
 

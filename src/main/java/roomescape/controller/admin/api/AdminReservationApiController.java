@@ -1,8 +1,9 @@
 package roomescape.controller.admin.api;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +31,7 @@ public class AdminReservationApiController {
     @PostMapping
     public ResponseEntity<AdminReservationResponse> reserve(@Valid @RequestBody AdminReservationRequest request) {
         ReservationResult result = reservationService.reserve(request.toCommand());
-
-        URI location = URI.create("/api/admin/reservations/" + result.id());
-
-        return ResponseEntity.created(location).body(AdminReservationResponse.from(result));
+        return ResponseEntity.status(CREATED).body(AdminReservationResponse.from(result));
     }
 
     @DeleteMapping("/{id}")

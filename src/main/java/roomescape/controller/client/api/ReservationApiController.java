@@ -1,7 +1,8 @@
 package roomescape.controller.client.api;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 import jakarta.validation.Valid;
-import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +24,6 @@ public class ReservationApiController {
     @PostMapping
     public ResponseEntity<ReservationResponse> reserve(@Valid @RequestBody ReservationRequest request) {
         ReservationResult result = reservationService.reserve(request.toCommand());
-
-        URI location = URI.create("/api/reservations/" + result.id());
-
-        return ResponseEntity.created(location).body(ReservationResponse.from(result));
+        return ResponseEntity.status(CREATED).body(ReservationResponse.from(result));
     }
 }

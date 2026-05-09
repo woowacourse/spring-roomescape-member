@@ -64,7 +64,6 @@ class AdminReservationTimeApiControllerTest extends BaseControllerUnitTest {
                 .when().post("/api/admin/times")
                 .then().log().all()
                 .status(HttpStatus.CREATED)
-                .header("Location", containsString("/api/admin/times/1"))
                 .extract().as(new TypeRef<>() {
                 });
         assertThat(response).isEqualTo(AdminReservationTimeResponse.from(result));
