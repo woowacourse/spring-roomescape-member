@@ -8,6 +8,7 @@ import roomescape.domain.reservation.ReservationResponse;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeResponse;
 import roomescape.domain.theme.Theme;
+import roomescape.exception.ReservationAlreadyExistException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.exception.ThemeNotFoundException;
@@ -69,7 +70,7 @@ public class ReservationService {
 
         Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(themeById.getId(), reservationReq.getDate(), reservationTimeById.getId());
         if (savedReservation.isPresent()) {
-            return ReservationResponse.from(savedReservation.get());
+            throw new ReservationAlreadyExistException();
         }
         LocalDateTime now = LocalDateTime.now();
         Long generatedId = reservationUpdatingDao.insert(reservationReq, now);
