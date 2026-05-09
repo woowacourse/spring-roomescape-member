@@ -5,18 +5,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.exception.ReservationDuplicatedException;
-import roomescape.reservation.exception.ReservationNotFoundException;
-import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({
-            ReservationNotFoundException.class,
-            ReservationTimeNotFoundException.class
-    })
-    public ResponseEntity<String> handleNotFound(RuntimeException e) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleNotFound(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
