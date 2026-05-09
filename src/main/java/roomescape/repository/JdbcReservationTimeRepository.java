@@ -15,15 +15,16 @@ import roomescape.domain.ReservationTime;
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
     }
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
-                .withTableName("reservation_time")
+        simpleJdbcInsert.withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
 
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(

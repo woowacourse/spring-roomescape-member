@@ -19,9 +19,10 @@ import roomescape.domain.Theme;
 public class JdbcReservationRepository implements ReservationRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-
+    private final SimpleJdbcInsert simpleJdbcInsert;
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
     }
 
     private static RowMapper<Reservation> getReservationRowMapper() {
@@ -49,9 +50,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(
-                jdbcTemplate.getJdbcTemplate())
-                .withTableName("reservation")
+        simpleJdbcInsert.withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
 
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(

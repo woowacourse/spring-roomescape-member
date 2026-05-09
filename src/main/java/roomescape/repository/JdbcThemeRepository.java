@@ -20,9 +20,11 @@ import roomescape.domain.Theme;
 public class JdbcThemeRepository implements ThemeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
     }
 
     private static RowMapper<Theme> getThemeRowMapper() {
@@ -36,11 +38,11 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Theme save(Theme theme) {
-        SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
+       simpleJdbcInsert
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
 
-        long generatedKey = insert.executeAndReturnKey(
+        long generatedKey = simpleJdbcInsert.executeAndReturnKey(
                 new BeanPropertySqlParameterSource(theme)
         ).longValue();
 
