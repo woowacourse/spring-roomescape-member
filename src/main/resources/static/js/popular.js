@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function refresh() {
     try {
-        const themes = await fetchJson(API);
-        render(themes);
+        const data = await fetchJson(API);
+        render(data.themes);
     } catch (error) {
         console.error('인기 테마 조회 실패:', error);
         showEmpty('인기 테마를 불러오지 못했습니다.');

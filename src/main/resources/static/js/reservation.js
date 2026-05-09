@@ -12,13 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function refresh() {
     try {
-        const [reservations, themes] = await Promise.all([
+        const [reservationData, themeData] = await Promise.all([
             fetchJson(API),
             fetchJson(THEMES_API)
         ]);
 
-        cachedThemes = themes;
-        render(reservations);
+        cachedThemes = themeData.themes;
+        render(reservationData.reservations);
     } catch (error) {
         console.error('예약 조회 실패:', error);
     }
@@ -124,9 +124,10 @@ async function refreshAvailableTimes(date, themeId, timeSelect) {
     }
 
     try {
-        const times = await fetchJson(
+        const data = await fetchJson(
             `${TIMES_API}?date=${encodeURIComponent(date)}&themeId=${encodeURIComponent(themeId)}`
         );
+        const times = data.times;
 
         clearSelect(timeSelect);
 

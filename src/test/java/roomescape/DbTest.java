@@ -53,7 +53,7 @@ public class DbTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Map.class);
+                .jsonPath().getList("reservations", Map.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 

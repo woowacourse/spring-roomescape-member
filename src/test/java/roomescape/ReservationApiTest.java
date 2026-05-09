@@ -21,7 +21,7 @@ class ReservationApiTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("reservations.size()", is(0));
     }
 
     @Test
@@ -68,8 +68,8 @@ class ReservationApiTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].name", is("티뉴"));
+                .body("reservations.size()", is(1))
+                .body("reservations[0].name", is("티뉴"));
     }
 
     @Test
@@ -100,7 +100,7 @@ class ReservationApiTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("reservations.size()", is(0));
     }
 
     @Test

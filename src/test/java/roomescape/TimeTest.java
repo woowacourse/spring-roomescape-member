@@ -30,7 +30,7 @@ public class TimeTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("reservationTimes.size()", is(1));
 
         RestAssured.given().log().all()
                 .when().delete("/times/1")
@@ -77,6 +77,6 @@ public class TimeTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("reservations.size()", is(1));
     }
 }

@@ -23,7 +23,7 @@ class ReservationTimeApiTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("reservationTimes.size()", is(0));
     }
 
     @Test
@@ -57,8 +57,8 @@ class ReservationTimeApiTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].startAt", is("13:30"));
+                .body("reservationTimes.size()", is(1))
+                .body("reservationTimes[0].startAt", is("13:30"));
     }
 
     @Test
@@ -83,7 +83,7 @@ class ReservationTimeApiTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("reservationTimes.size()", is(0));
     }
 
     @Test
@@ -107,7 +107,7 @@ class ReservationTimeApiTest {
                 .when().get("/times?date=2026-08-05&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("times.size()", is(0));
     }
 
     @Test
@@ -120,8 +120,8 @@ class ReservationTimeApiTest {
                 .when().get("/times?date=2026-08-05&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2))
-                .body("reserved", contains(false, false));
+                .body("times.size()", is(2))
+                .body("times.reserved", contains(false, false));
     }
 
     @Test
@@ -135,9 +135,9 @@ class ReservationTimeApiTest {
                 .when().get("/times?date=2026-08-05&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2))
-                .body("find { it.id == " + reservedTimeId + " }.reserved", is(true))
-                .body("findAll { it.id != " + reservedTimeId + " }.reserved", hasItems(false));
+                .body("times.size()", is(2))
+                .body("times.find { it.id == " + reservedTimeId + " }.reserved", is(true))
+                .body("times.findAll { it.id != " + reservedTimeId + " }.reserved", hasItems(false));
     }
 
     @Test
@@ -151,8 +151,8 @@ class ReservationTimeApiTest {
                 .when().get("/times?date=2026-08-05&themeId=" + themeA)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].reserved", is(false));
+                .body("times.size()", is(1))
+                .body("times[0].reserved", is(false));
     }
 
     @Test
@@ -165,8 +165,8 @@ class ReservationTimeApiTest {
                 .when().get("/times?date=2026-08-06&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].reserved", is(false));
+                .body("times.size()", is(1))
+                .body("times[0].reserved", is(false));
     }
 
     private Integer createTime(String startAt) {

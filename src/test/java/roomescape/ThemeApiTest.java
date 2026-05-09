@@ -21,7 +21,7 @@ class ThemeApiTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("themes.size()", is(0));
     }
 
     @Test
@@ -61,8 +61,8 @@ class ThemeApiTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].name", is("추리"));
+                .body("themes.size()", is(1))
+                .body("themes[0].name", is("추리"));
     }
 
     @Test
@@ -84,9 +84,9 @@ class ThemeApiTest {
                 .when().get("/themes/popular?now=2026-05-06&days=7")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2))
-                .body("[0].name", is("공포"))
-                .body("[1].name", is("추리"));
+                .body("themes.size()", is(2))
+                .body("themes[0].name", is("공포"))
+                .body("themes[1].name", is("추리"));
     }
 
     @Test
@@ -99,7 +99,7 @@ class ThemeApiTest {
                 .when().get("/themes/popular?now=2026-01-01&days=7")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("themes.size()", is(0));
     }
 
     @Test
@@ -120,7 +120,7 @@ class ThemeApiTest {
                 .when().get("/themes/popular?now=2026-05-06&days=7&limit=2")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("themes.size()", is(2));
     }
 
     @Test
@@ -155,7 +155,7 @@ class ThemeApiTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("themes.size()", is(0));
     }
 
     private Integer createTheme(String name, String description, String thumbnailImageUrl) {

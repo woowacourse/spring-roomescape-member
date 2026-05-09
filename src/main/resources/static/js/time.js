@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function refresh() {
     try {
-        const times = await fetchJson(API);
-        render(times);
+        const data = await fetchJson(API);
+        render(data.reservationTimes);
     } catch (error) {
         console.error('시간 조회 실패:', error);
     }

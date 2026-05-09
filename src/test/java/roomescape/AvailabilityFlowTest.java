@@ -27,10 +27,10 @@ class AvailabilityFlowTest {
                 .when().get("/times?date=" + date + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3))
-                .body("find { it.id == " + time10 + " }.reserved", is(false))
-                .body("find { it.id == " + time11 + " }.reserved", is(false))
-                .body("find { it.id == " + time12 + " }.reserved", is(false));
+                .body("times.size()", is(3))
+                .body("times.find { it.id == " + time10 + " }.reserved", is(false))
+                .body("times.find { it.id == " + time11 + " }.reserved", is(false))
+                .body("times.find { it.id == " + time12 + " }.reserved", is(false));
 
         // 2) 11시로 예약 생성
         Map<String, Object> reservation = new HashMap<>();
@@ -51,10 +51,10 @@ class AvailabilityFlowTest {
                 .when().get("/times?date=" + date + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3))
-                .body("find { it.id == " + time10 + " }.reserved", is(false))
-                .body("find { it.id == " + time11 + " }.reserved", is(true))
-                .body("find { it.id == " + time12 + " }.reserved", is(false));
+                .body("times.size()", is(3))
+                .body("times.find { it.id == " + time10 + " }.reserved", is(false))
+                .body("times.find { it.id == " + time11 + " }.reserved", is(true))
+                .body("times.find { it.id == " + time12 + " }.reserved", is(false));
     }
 
     private Integer createTime(String startAt) {
