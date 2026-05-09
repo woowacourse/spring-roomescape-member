@@ -1,16 +1,12 @@
 package roomescape.dto;
 
-public record ThemeRequest(String name, String description, String url) {
-    public ThemeRequest(String name, String description, String url) {
-        this.name = name;
-        this.description = description;
-        this.url = url;
-        validateName();
-    }
+import jakarta.validation.constraints.Size;
 
-    private void validateName() {
-        if (name.length() < 1 || name.length() > 20) {
-            throw new IllegalArgumentException("[ERROR] 테마 이름은 1자 이상 20자 이하입니다.");
-        }
-    }
+public record ThemeRequest(
+        @Size(min = 1, max = 20, message = "[ERROR] 테마 이름은 1자 이상 20자 이하입니다.")
+        String name,
+        
+        String description,
+
+        String url) {
 }
