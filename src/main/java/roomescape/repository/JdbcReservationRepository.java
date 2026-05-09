@@ -3,10 +3,12 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
@@ -16,10 +18,10 @@ import roomescape.domain.Theme;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
     }
 
     private static RowMapper<Reservation> getReservationRowMapper() {
@@ -47,13 +49,14 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(
+                jdbcTemplate.getJdbcTemplate())
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
 
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(
-                new BeanPropertySqlParameterSource(reservation)
-        ).longValue();
+                new BeanPropertySqlParameterSource(reservation))
+                .longValue();
 
         return Reservation.of(
                 generatedKey,
@@ -106,26 +109,31 @@ public class JdbcReservationRepository implements ReservationRepository {
                     on r.time_id = t.id 
                     inner join theme as th
                     on r.theme_id = th.id
-                    where r.id = ?
+                    where r.id = :id
                 """;
+
+        Map<String, Object> params = Map.of("id", id);
 
         List<Reservation> results = jdbcTemplate.query(
                 sql,
-                getReservationRowMapper(), id
+                params,
+                getReservationRowMapper()
         );
-        return results.stream()
-                .findFirst();
+        return results.stream().findFirst();
     }
 
     @Override
     public void delete(Long id) {
-        jdbcTemplate.update("delete from reservation where id = ?", id);
+        String sql = "delete from reservation where id = :id";
+        Map<String, Object> params = Map.of("id", id);
+        jdbcTemplate.update(sql, params);
     }
 
     @Override
     public boolean existByTimeId(Long timeId) {
-        String sql = "select count(*) from reservation where time_id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
-        return count != null && count > 0;
+        String sql = "select count(*) from reservation where time_id = :time_id";
+        Map<String, Object> params = Map.of("time_id", timeId);
+        Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count > 0;
     }
 }
