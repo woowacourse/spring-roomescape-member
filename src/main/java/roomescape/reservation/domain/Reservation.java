@@ -29,11 +29,19 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme) {
-        return new Reservation(null, name, date, time, theme);
+    public static Reservation create(
+            String name,
+            LocalDate date,
+            ReservationTime time,
+            Theme theme,
+            LocalDateTime now
+    ) {
+        Reservation reservation = new Reservation(null, name, date, time, theme);
+        reservation.validateNotPast(now);
+        return reservation;
     }
 
-    public void validateNotPast(LocalDateTime now) {
+    private void validateNotPast(LocalDateTime now) {
         validateNotNull(now, "현재 시각(now)은 필수입니다.");
 
         if (time.getStartAt() == null) {

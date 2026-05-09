@@ -6,7 +6,9 @@ import roomescape.exception.DuplicateResourceException;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
+import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
 
 import java.time.Clock;
@@ -37,19 +39,21 @@ public class ReservationService {
 
     @Transactional
     public Reservation save(ReservationRequest request) {
+        validateDuplicateReservation(
+                request.date(),
+                request.timeId(),
+                request.themeId()
+        );
+
+        ReservationTime time = reservationTimeService.getById(request.timeId());
+        Theme theme = themeService.getById(request.themeId());
+
         Reservation reservation = Reservation.create(
                 request.name(),
                 request.date(),
-                reservationTimeService.getById(request.timeId()),
-                themeService.getById(request.themeId())
-        );
-
-        reservation.validateNotPast(LocalDateTime.now(clock));
-
-        validateDuplicateReservation(
-                reservation.getDate(),
-                request.timeId(),
-                request.themeId()
+                time,
+                theme,
+                LocalDateTime.now(clock)
         );
 
         return reservationRepository.save(reservation);

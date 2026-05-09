@@ -61,31 +61,29 @@ class ReservationTest {
     }
 
     @Nested
-    @DisplayName("validateNotPast 메서드는")
-    class ValidateNotPastTest {
+    @DisplayName("create 팩토리는")
+    class CreateFactoryTest {
 
         @Test
-        @DisplayName("예약 일시가 현재 시각보다 미래라면 예외가 발생하지 않는다.")
-        void successWhenFuture() {
+        @DisplayName("미래 일시면 정상 생성한다.")
+        void createSuccessWhenFuture() {
             // given
-            Reservation reservation = new Reservation(1L, "브라운", futureDate, reservationTime, theme);
             LocalDateTime now = LocalDateTime.of(2026, 5, 7, 10, 0);
 
             // when & then
-            assertThatCode(() -> reservation.validateNotPast(now))
+            assertThatCode(() -> Reservation.create("브라운", futureDate, reservationTime, theme, now))
                     .doesNotThrowAnyException();
         }
 
         @Test
-        @DisplayName("예약 일시가 현재 시각보다 과거라면 예외가 발생한다.")
-        void failWhenPast() {
+        @DisplayName("과거 일시로 생성하면 invariant 위반으로 IllegalArgumentException 이 발생한다.")
+        void createFailWhenPast() {
             // given
             LocalDate pastDate = LocalDate.of(2026, 5, 6);
-            Reservation reservation = new Reservation(1L, "브라운", pastDate, reservationTime, theme);
             LocalDateTime now = LocalDateTime.of(2026, 5, 7, 10, 0);
 
             // when & then
-            assertThatThrownBy(() -> reservation.validateNotPast(now))
+            assertThatThrownBy(() -> Reservation.create("브라운", pastDate, reservationTime, theme, now))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("과거 시각으로는 예약할 수 없습니다.");
         }
@@ -97,13 +95,23 @@ class ReservationTest {
             LocalDate today = LocalDate.of(2026, 5, 7);
             LocalTime pastTime = LocalTime.of(9, 0);
             ReservationTime time = new ReservationTime(1L, pastTime);
-
-            Reservation reservation = new Reservation(1L, "브라운", today, time, theme);
             LocalDateTime now = LocalDateTime.of(2026, 5, 7, 10, 0);
 
             // when & then
-            assertThatThrownBy(() -> reservation.validateNotPast(now))
+            assertThatThrownBy(() -> Reservation.create("브라운", today, time, theme, now))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @DisplayName("이름이 비어있으면 invariant 검증 이전에 IllegalArgumentException 이 발생한다.")
+        void createFailWhenNameBlank() {
+            // given
+            LocalDateTime now = LocalDateTime.of(2026, 5, 7, 10, 0);
+
+            // when & then
+            assertThatThrownBy(() -> Reservation.create(" ", futureDate, reservationTime, theme, now))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("이름은 비어 있을 수 없습니다.");
         }
     }
 }
