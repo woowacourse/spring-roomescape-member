@@ -23,7 +23,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final String FIND_ALL_SQL =
         """
             select r.id, r.name,
-                   rd.id as date_id, rd.date,
+                   rd.id as date_id, rd.play_day,
                    rt.id as time_id, rt.start_at,
                    th.id as theme_id, th.name as theme_name, th.content as theme_content, th.url as theme_url
             from reservation r
@@ -131,7 +131,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             rs.getString("name"),
             ReservationDate.of(
                 rs.getLong("date_id"),
-                LocalDate.parse(rs.getString("date"))),
+                LocalDate.parse(rs.getString("play_day"))),
             ReservationTime.of(
                 rs.getLong("time_id"),
                 LocalTime.parse(rs.getString("start_at"))

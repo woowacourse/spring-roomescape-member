@@ -4,7 +4,7 @@ import roomescape.domain.theme.Theme;
 
 public record ThemeRankResponse(
     Long id,
-    String themeName,
+    String name,
     String url
 ) {
 

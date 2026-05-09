@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import roomescape.domain.reservationdate.ReservationDate;
 
 public record CreateReservationDateRequest(
-    LocalDate reservationDate
+    LocalDate playDay
 ) {
 
     public ReservationDate toEntity() {
-        return ReservationDate.createWithoutId(reservationDate);
+        return ReservationDate.createWithoutId(playDay);
     }
 }

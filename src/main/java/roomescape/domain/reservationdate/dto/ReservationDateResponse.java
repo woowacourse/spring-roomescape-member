@@ -5,13 +5,13 @@ import roomescape.domain.reservationdate.ReservationDate;
 
 public record ReservationDateResponse(
     Long id,
-    LocalDate reservationDate
+    LocalDate playDay
 ) {
 
     public static ReservationDateResponse from(ReservationDate reservationDate) {
         return new ReservationDateResponse(
             reservationDate.getId(),
-            reservationDate.getDate()
+            reservationDate.getPlayDay()
         );
     }
 }

@@ -7,11 +7,11 @@ import lombok.Getter;
 public class ReservationDate {
 
     private final Long id;
-    private final LocalDate date;
+    private final LocalDate playDay;
 
-    public ReservationDate(Long id, LocalDate date) {
+    public ReservationDate(Long id, LocalDate playDay) {
         this.id = id;
-        this.date = date;
+        this.playDay = playDay;
     }
 
     public static ReservationDate of(long dateId, LocalDate date) {

@@ -141,7 +141,7 @@
 [
   {
     "id": 1,
-    "reservationDate": "2026-05-01"
+    "playDay": "2026-05-01"
   }
 ]
 ```
@@ -156,7 +156,7 @@
 [
   {
     "id": 1,
-    "reservationDate": "2026-05-01"
+    "playDay": "2026-05-01"
   }
 ]
 ```
@@ -169,7 +169,7 @@
 
 ```json
 {
-  "reservationDate": "2026-05-10"
+  "playDay": "2026-05-10"
 }
 ```
 
@@ -178,7 +178,7 @@
 ```json
 {
   "id": 10,
-  "reservationDate": "2026-05-10"
+  "playDay": "2026-05-10"
 }
 ```
 
@@ -279,7 +279,7 @@
 [
   {
     "id": 1,
-    "themeName": "공포",
+    "name": "공포",
     "url": "/themes/scary"
   }
 ]

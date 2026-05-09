@@ -97,8 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
         dateList.innerHTML = state.dates.map((date) => `
             <label class="date-card date-card-refined${state.selectedDateId === date.id ? " selected" : ""}">
                 <input type="radio" name="dateId" value="${date.id}" ${state.selectedDateId === date.id ? "checked" : ""}>
-                <span class="date-day">${formatShortDate(date.reservationDate)}</span>
-                <span class="date-full">${formatDate(date.reservationDate)}</span>
+                <span class="date-day">${formatShortDate(date.playDay)}</span>
+                <span class="date-full">${formatDate(date.playDay)}</span>
             </label>
         `).join("");
 
@@ -113,10 +113,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderRankedThemes() {
         rankList.innerHTML = state.rankedThemes.map((theme, index) => `
             <li>
-                <img class="rank-thumbnail" src="/images/theme-placeholder.svg" alt="${theme.themeName}">
+                <img class="rank-thumbnail" src="/images/theme-placeholder.svg" alt="${theme.name}">
                 <span class="rank-number">${index + 1}</span>
                 <div>
-                    <strong>${theme.themeName}</strong>
+                    <strong>${theme.name}</strong>
                 </div>
             </li>
         `).join("");
@@ -170,8 +170,8 @@ document.addEventListener("DOMContentLoaded", () => {
         renderTimes();
         selectedThemeInput.value = String(state.selectedThemeId);
         selectedDateInput.value = String(state.selectedDateId);
-        selectionSummary.textContent = `${selectedTheme.name} · ${selectedDate.reservationDate} 기준으로 가능한 시간입니다.`;
-        reservationFormSummary.textContent = `${selectedTheme.name} · ${selectedDate.reservationDate}`;
+        selectionSummary.textContent = `${selectedTheme.name} · ${selectedDate.playDay} 기준으로 가능한 시간입니다.`;
+        reservationFormSummary.textContent = `${selectedTheme.name} · ${selectedDate.playDay}`;
         timeSection.hidden = false;
         updateStatus("가능한 시간을 불러왔습니다.");
         timeSection.scrollIntoView({ behavior: "smooth", block: "start" });

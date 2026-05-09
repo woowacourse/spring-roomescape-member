@@ -19,7 +19,7 @@ public record CreateReservationResponse(
         return new CreateReservationResponse(
             reservation.getId(),
             reservation.getName(),
-            reservation.getDate().getDate(), // TODO: 네이밍 변경!!!
+            reservation.getDate().getPlayDay(),
             reservation.getTime().getStartAt(),
             ThemePayload.from(reservation.getTheme())
         );

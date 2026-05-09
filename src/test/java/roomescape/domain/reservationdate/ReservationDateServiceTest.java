@@ -64,7 +64,7 @@ class ReservationDateServiceTest {
         assertSoftly(softly -> {
             assertThat(responses.size()).isEqualTo(1);
             assertThat(responses.getFirst().id()).isEqualTo(1L);
-            assertThat(responses.getFirst().reservationDate()).isEqualTo(LocalDate.of(2026, 5, 4));
+            assertThat(responses.getFirst().playDay()).isEqualTo(LocalDate.of(2026, 5, 4));
         });
     }
 

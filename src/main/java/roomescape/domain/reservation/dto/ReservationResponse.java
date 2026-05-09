@@ -19,7 +19,7 @@ public record ReservationResponse(
         return new ReservationResponse(
             reservation.getId(),
             reservation.getName(),
-            reservation.getDate().getDate(),
+            reservation.getDate().getPlayDay(),
             ReservationTimePayload.from(reservation.getTime()),
             ThemePayload.from(reservation.getTheme())
         );

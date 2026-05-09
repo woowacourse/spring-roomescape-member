@@ -5,7 +5,7 @@ VALUES ('10:00'),
        ('15:00'),
        ('16:00');
 
-INSERT INTO reservation_date (date)
+INSERT INTO reservation_date (play_day)
 VALUES ('2026-05-01'),
        ('2026-05-02'),
        ('2026-05-03'),

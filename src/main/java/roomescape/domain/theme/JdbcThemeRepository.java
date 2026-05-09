@@ -28,7 +28,7 @@ public class JdbcThemeRepository implements ThemeRepository {
             from theme th
             join reservation r on th.id = r.theme_id
             join reservation_date rd on r.date_id = rd.id
-            where rd.date between ? and ?
+            where rd.play_day between ? and ?
             group by th.id
             order by count(r.id) desc, th.id asc
             limit ?

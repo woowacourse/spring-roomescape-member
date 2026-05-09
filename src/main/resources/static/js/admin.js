@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
         datesList.innerHTML = dates.map((date) => `
             <article class="admin-item">
                 <div class="item-main">
-                    <h3 class="item-title">${date.reservationDate}</h3>
+                    <h3 class="item-title">${date.playDay}</h3>
                 </div>
                 <div class="item-actions">
                     <button type="button" class="danger-button" data-delete-type="date" data-id="${date.id}">삭제</button>
@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         const formData = new FormData(dateForm);
         const payload = {
-            reservationDate: formData.get("reservationDate")
+            playDay: formData.get("playDay")
         };
 
         const response = await adminFetch("/admin/reservation-dates", {

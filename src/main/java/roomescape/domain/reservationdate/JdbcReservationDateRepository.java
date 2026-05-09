@@ -16,9 +16,9 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class JdbcReservationDateRepository implements ReservationDateRepository {
 
-    private static final String INSERT_SQL = "insert into reservation_date(`date`) values (?)";
-    private static final String FIND_BY_ID_SQL = "select id, `date` from reservation_date where id = ?";
-    private static final String FIND_ALL_SQL = "select id, `date` from reservation_date order by id";
+    private static final String INSERT_SQL = "insert into reservation_date(play_day) values (?)";
+    private static final String FIND_BY_ID_SQL = "select id, play_day from reservation_date where id = ?";
+    private static final String FIND_ALL_SQL = "select id, play_day from reservation_date order by id";
     private static final String DELETE_BY_ID_SQL = "delete from reservation_date where id = ?";
 
     private final JdbcTemplate jdbcTemplate;
@@ -39,13 +39,13 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, reservationDate.getDate().toString());
+            ps.setString(1, reservationDate.getPlayDay().toString());
             return ps;
         }, keyHolder);
         long id = extractId(keyHolder);
         return ReservationDate.of(
             id,
-            reservationDate.getDate()
+            reservationDate.getPlayDay()
         );
     }
 
@@ -57,7 +57,7 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
     private RowMapper<ReservationDate> reservationDateRowMapper() {
         return (rs, rowNum) -> ReservationDate.of(
             rs.getLong("id"),
-            LocalDate.parse(rs.getString("date"))
+            LocalDate.parse(rs.getString("play_day"))
         );
     }
 
