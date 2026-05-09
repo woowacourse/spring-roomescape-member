@@ -2,7 +2,7 @@
  * 관리자 테마 관리 (templates/admin/themes.html)
  *
  * 백엔드 API
- *  - GET    /themes              : 전체 테마 조회 (UserThemeController)
+ *  - GET    /admin/themes              : 전체 테마 조회 (UserThemeController)
  *  - POST   /admin/themes        : 테마 추가
  *  - PUT    /admin/themes/{id}   : 테마 수정
  *  - DELETE /admin/themes/{id}   : 테마 삭제 (예약에 사용 중이면 409 ResourceInUse)
@@ -109,7 +109,7 @@ function renderThemes(themes) {
 let cachedThemes = [];
 
 async function refresh() {
-  cachedThemes = await api("/themes");
+  cachedThemes = await api("/admin/themes");
   renderThemes(cachedThemes);
 }
 

@@ -9,6 +9,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/themes")
@@ -18,6 +19,15 @@ public class AdminThemeController {
 
     public AdminThemeController(ThemeService themeService) {
         this.themeService = themeService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> readAll() {
+        List<ThemeResponse> responses = themeService.findAll()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping
