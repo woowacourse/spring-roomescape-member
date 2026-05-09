@@ -1,6 +1,8 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(ReservationTimeNotFoundException::new);
 
-        validDate(date);
+        validateDateTime(date, reservationTime.getStartAt());
         existsByDateAndTimeId(date, timeId);
 
         Reservation reservation =
@@ -40,9 +42,14 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    private void validDate(final LocalDate date){
-        if(date.isBefore(LocalDate.now()))
-            throw new ReservationBadRequestException(ReservationErrorCode.RESERVATION_INVALID_DATE.getMessage());
+    private void validateDateTime(final LocalDate date, final LocalTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
+
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new ReservationBadRequestException(
+                    ReservationErrorCode.RESERVATION_INVALID_DATE.getMessage()
+            );
+        }
     }
 
     private void existsByDateAndTimeId(final LocalDate date, final Long timeId) {
