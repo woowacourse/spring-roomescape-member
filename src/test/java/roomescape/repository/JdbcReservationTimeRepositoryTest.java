@@ -1,14 +1,14 @@
 package roomescape.repository;
 
 import org.assertj.core.groups.Tuple;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeAvailability;
+import roomescape.service.dto.ReservationTimeAvailability;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
@@ -18,63 +18,18 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@JdbcTest
+@Import({JdbcReservationTimeRepository.class, JdbcReservationRepository.class, JdbcThemeRepository.class})
 class JdbcReservationTimeRepositoryTest {
 
+    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
     private ThemeRepository themeRepository;
-
-    @BeforeEach
-    void setUp() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_DELAY=-1");
-        dataSource.setUsername("test");
-        dataSource.setPassword("");
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
-        jdbcTemplate.execute("DROP TABLE IF EXISTS reservation");
-        jdbcTemplate.execute("DROP TABLE IF EXISTS reservation_time");
-        jdbcTemplate.execute("DROP TABLE IF EXISTS theme");
-
-        jdbcTemplate.execute("""
-                CREATE TABLE theme (
-                    id          BIGINT       NOT NULL AUTO_INCREMENT,
-                    name        VARCHAR(255) NOT NULL,
-                    description VARCHAR(255) NOT NULL,
-                    thumbnail   VARCHAR(255) NOT NULL,
-                    PRIMARY KEY (id)
-                )
-                """);
-
-        jdbcTemplate.execute("""
-                CREATE TABLE reservation_time (
-                    id       BIGINT NOT NULL AUTO_INCREMENT,
-                    start_at TIME   NOT NULL,
-                    PRIMARY KEY (id),
-                    UNIQUE (start_at)
-                )
-                """);
-
-        jdbcTemplate.execute("""
-                CREATE TABLE reservation (
-                    id       BIGINT       NOT NULL AUTO_INCREMENT,
-                    name     VARCHAR(255) NOT NULL,
-                    date     DATE         NOT NULL,
-                    time_id  BIGINT       NOT NULL,
-                    theme_id BIGINT       NOT NULL,
-                    PRIMARY KEY (id),
-                    UNIQUE (date, time_id, theme_id),
-                    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-                    FOREIGN KEY (theme_id) REFERENCES theme (id)
-                )
-                """);
-
-        reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
-        reservationRepository = new JdbcReservationRepository(jdbcTemplate);
-        themeRepository = new JdbcThemeRepository(jdbcTemplate);
-    }
 
 
     @Test

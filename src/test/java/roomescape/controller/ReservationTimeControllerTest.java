@@ -13,7 +13,7 @@ import roomescape.controller.dto.AvailableTimeResponse;
 import roomescape.controller.dto.ReservationTimeListResponse;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeAvailability;
+import roomescape.service.dto.ReservationTimeAvailability;
 import roomescape.service.ReservationTimeService;
 
 import java.time.LocalDate;

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeAvailability;
+import roomescape.service.dto.ReservationTimeAvailability;
 import roomescape.common.exception.DomainException;
 import roomescape.common.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;

@@ -1,9 +1,8 @@
-package roomescape.domain;
+package roomescape.service.dto;
 
 
 import lombok.Getter;
-import roomescape.common.exception.DomainException;
-import roomescape.common.exception.ErrorCode;
+import roomescape.domain.ReservationTime;
 
 @Getter
 public class ReservationTimeAvailability {
@@ -12,7 +11,6 @@ public class ReservationTimeAvailability {
 
 
     private ReservationTimeAvailability(ReservationTime reservationTime, boolean isAvailable) {
-        validateReservationTime(reservationTime);
         this.reservationTime = reservationTime;
         this.isAvailable = isAvailable;
     }
@@ -23,11 +21,5 @@ public class ReservationTimeAvailability {
 
     public static ReservationTimeAvailability unavailable(ReservationTime reservationTime) {
         return new ReservationTimeAvailability(reservationTime, false);
-    }
-
-    private void validateReservationTime(ReservationTime reservationTime) {
-        if (reservationTime == null) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_TIME);
-        }
     }
 }

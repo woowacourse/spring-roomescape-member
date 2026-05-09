@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.ReservationTimeAvailability;
+import roomescape.service.dto.ReservationTimeAvailability;
 import roomescape.controller.dto.AvailableTimeListResponse;
 import roomescape.controller.dto.AvailableTimeResponse;
 import roomescape.controller.dto.ReservationTimeListResponse;
