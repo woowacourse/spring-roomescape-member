@@ -3,6 +3,9 @@ package roomescape.theme.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.DuplicateResourceException;
+import roomescape.exception.ResourceInUseException;
+import roomescape.exception.ResourceNotFoundException;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -19,10 +22,16 @@ public class ThemeService {
     private static final int DEFAULT_POPULAR_LIMIT = 10;
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
     private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository, Clock clock) {
+    public ThemeService(
+            ThemeRepository themeRepository,
+            ReservationRepository reservationRepository,
+            Clock clock
+    ) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
         this.clock = clock;
     }
 
@@ -36,6 +45,10 @@ public class ThemeService {
 
     @Transactional
     public void deleteById(Long id) {
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new ResourceInUseException("이 테마를 참조하는 예약이 있어 삭제할 수 없습니다. ID: " + id);
+        }
+
         themeRepository.deleteById(id);
     }
 
@@ -76,6 +89,6 @@ public class ThemeService {
 
     public Theme getById(Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 테마가 존재하지 않습니다. ID: " + id));
     }
 }

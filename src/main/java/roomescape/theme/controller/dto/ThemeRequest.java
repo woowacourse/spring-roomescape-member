@@ -13,7 +13,7 @@ public record ThemeRequest(
         String description,
 
         @NotBlank(message = "테마 썸네일 URL은 비어있을 수 없습니다.")
-        @Size(max = 255, message = "테마 썸네일 URL은 255자 이하여야 합니다.")
+        @Size(max = 1024, message = "테마 썸네일 URL은 255자 이하여야 합니다.")
         String thumbnailUrl
 ) {
 }

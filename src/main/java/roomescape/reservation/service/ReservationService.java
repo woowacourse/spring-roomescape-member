@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.DuplicateResourceException;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -74,7 +75,7 @@ public class ReservationService {
 
     private void validateDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new IllegalStateException("이미 해당 날짜와 시간에 예약이 존재합니다.");
+            throw new DuplicateResourceException("이미 해당 날짜와 시간에 예약이 존재합니다.");
         }
     }
 }

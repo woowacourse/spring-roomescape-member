@@ -146,6 +146,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             sql.append(" and r.reservation_date = ?");
             params.add(Date.valueOf(date));
         }
+
         if (themeId != null) {
             sql.append(" and r.theme_id = ?");
             params.add(themeId);
@@ -159,5 +160,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = "select exists (select 1 from reservation where reservation_date = ? and time_id = ? and theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        String sql = "select exists (select 1 from reservation where time_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+    }
+
+    @Override
+    public boolean existsByThemeId(Long themeId) {
+        String sql = "select exists (select 1 from reservation where theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 }
