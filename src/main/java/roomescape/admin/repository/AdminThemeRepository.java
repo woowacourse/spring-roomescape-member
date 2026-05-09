@@ -55,4 +55,10 @@ public class AdminThemeRepository {
         String query = "select * from theme";
         return jdbcTemplate.query(query, rowMapper);
     }
+
+    public boolean existsById(Long id) {
+        String query = "select count(*) from theme where id = ?";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
+        return count != null && count > 0;
+    }
 }

@@ -81,6 +81,16 @@ public class ReservationRepository {
         return count != null && count > 0;
     }
 
+    public boolean existsByThemeId(Long themeId) {
+        String query = """
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE theme_id = ?
+                """;
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, themeId);
+        return count != null && count > 0;
+    }
+
     public boolean existsById(Long id) {
         String query = """
                 SELECT COUNT(*)

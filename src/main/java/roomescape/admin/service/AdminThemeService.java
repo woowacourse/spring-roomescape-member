@@ -5,15 +5,21 @@ import roomescape.admin.domain.Theme;
 import roomescape.admin.dto.AdminThemeRequest;
 import roomescape.admin.dto.AdminThemeResponse;
 import roomescape.admin.repository.AdminThemeRepository;
+import roomescape.user.repository.ReservationRepository;
 
 import java.util.List;
 
 @Service
 public class AdminThemeService {
     private final AdminThemeRepository adminThemeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public AdminThemeService(AdminThemeRepository adminThemeRepository) {
+    public AdminThemeService(
+        AdminThemeRepository adminThemeRepository,
+        ReservationRepository reservationRepository
+    ) {
         this.adminThemeRepository = adminThemeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public AdminThemeResponse createTheme(AdminThemeRequest request) {
@@ -35,6 +41,12 @@ public class AdminThemeService {
     }
 
     public void deleteTheme(Long id) {
+        if (!adminThemeRepository.existsById(id)) {
+            throw new IllegalArgumentException("[ERROR] 존재하지 않는 theme id 입니다.");
+        }
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new IllegalArgumentException("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
+        }
         adminThemeRepository.deleteById(id);
     }
 }
