@@ -28,9 +28,9 @@ public class ThemeService {
         themeRepository.deleteById(timeId);
     }
 
-    public Theme findTheme(long timeId) {
-        return themeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("타임 ID가 존재하지 않습니다."));
+    public Theme findTheme(long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("테마 ID가 존재하지 않습니다."));
     }
 
     public List<Theme> findPopularThemes(Long topCount, Long during) {
