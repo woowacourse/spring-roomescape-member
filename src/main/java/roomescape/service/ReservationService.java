@@ -78,16 +78,6 @@ public class ReservationService {
     }
 
     @Transactional
-    public void update(ReservationRequest newReservationReq, Long id) {
-        ReservationTime reservationTime = reservationTimeQueryingDao.findReservationTimeById(newReservationReq.timeId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException(newReservationReq.timeId()));
-        Theme theme = themeQueryingDao.findThemeById(newReservationReq.themeId())
-                .orElseThrow(() -> new ThemeNotFoundException(newReservationReq.themeId()));
-        Reservation reservation = new Reservation(newReservationReq.name(), newReservationReq.date(), reservationTime, theme);
-        reservationUpdatingDao.update(id, reservation);
-    }
-
-    @Transactional
     public void delete(Long id) {
         int count = reservationUpdatingDao.delete(id);
 

@@ -48,12 +48,6 @@ public class ReservationRestController {
         return ResponseEntity.created(uri).body(newReservation);
     }
 
-    @PutMapping("/reservations/{id}")
-    public ResponseEntity<Void> update(@RequestBody ReservationRequest newReservationReq, @PathVariable Long id) {
-        reservationService.update(newReservationReq, id);
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.delete(id);
