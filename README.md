@@ -8,9 +8,9 @@
 docker-compose up
 ```
 
-| 서비스 | URL |
-|------|-----|
-| 백엔드 | http://localhost:8080 |
+| 서비스   | URL                   |
+|-------|-----------------------|
+| 백엔드   | http://localhost:8080 |
 | 프론트엔드 | http://localhost:4173 |
 
 - 백엔드는 레포지터리 소스를 기반으로 직접 빌드됩니다.
@@ -53,24 +53,23 @@ docker-compose up
 
 ### 사용자 API
 
-| 기능       | 메서드 / URL                   | 요청 본문                           | 쿼리 파라미터 (전체 optional)                              | 응답                                                                          |
-|----------|-----------------------------|---------------------------------|----------------------------------------------------|-----------------------------------------------------------------------------|
-| 예약 목록 조회 | `GET /reservations`         | -                               | -                                                  | `200 OK` <br> `[{reservationId, name, date, theme, time}, ...]`             |
-| 예약 단건 조회 | `GET /reservations/{id}`    | -                               | -                                                  | `200 OK` <br> `{reservationId, name, date, theme, time}`                    |
-| 예약 추가    | `POST /reservations`        | `{name, themeId, date, timeId}` | -                                                  | `201 Created` <br> `{reservationId, name, theme: {...}, date, time: {...}}` |
-| 예약 삭제    | `DELETE /reservations/{id}` | -                               | -                                                  | `200 OK`                                                                    |
-| 시간 조회    | `GET /times`                | -                               | -                                                  | `200 OK` <br> `[{timeId, startAt}, ...]`                                    |
-| 시간 조회    | `GET /times/available`      | -                               | `date`, `themeId`                                  | `200 OK` <br> `[{timeId, startAt}, ...]`                                    |
-| 테마 목록 조회 | `GET /themes`               | -                               | -                                                  | `200 OK` <br> `[{themeId, name, description, url}, ...]`                    |
-| 테마 단건 조회 | `GET /themes/{id}`          | -                               | -                                                  | `200 OK` <br> `{themeId, name, description, url}`                           |
-| 인기 테마 조회 | GET /themes/famous          | -                               | days - optional, date - optional, limit - optional | `200 OK` <br> `[{themeId, name, description, url}, ...]`                    |
+| 기능       | 메서드 / URL                | 요청 본문                           | 쿼리 파라미터 (전체 optional)                              | 응답                                                                          |
+|----------|--------------------------|---------------------------------|----------------------------------------------------|-----------------------------------------------------------------------------|
+| 예약 목록 조회 | `GET /reservations`      | -                               | -                                                  | `200 OK` <br> `[{reservationId, name, date, theme, time}, ...]`             |
+| 예약 단건 조회 | `GET /reservations/{id}` | -                               | -                                                  | `200 OK` <br> `{reservationId, name, date, theme, time}`                    |
+| 예약 추가    | `POST /reservations`     | `{name, themeId, date, timeId}` | -                                                  | `201 Created` <br> `{reservationId, name, theme: {...}, date, time: {...}}` |
+| 시간 조회    | `GET /times`             | -                               | -                                                  | `200 OK` <br> `[{timeId, startAt}, ...]`                                    |
+| 시간 조회    | `GET /times/available`   | -                               | `date`, `themeId`                                  | `200 OK` <br> `[{timeId, startAt}, ...]`                                    |
+| 테마 목록 조회 | `GET /themes`            | -                               | -                                                  | `200 OK` <br> `[{themeId, name, description, url}, ...]`                    |
+| 테마 단건 조회 | `GET /themes/{id}`       | -                               | -                                                  | `200 OK` <br> `{themeId, name, description, url}`                           |
+| 인기 테마 조회 | GET /themes/famous       | -                               | days - optional, date - optional, limit - optional | `200 OK` <br> `[{themeId, name, description, url}, ...]`                    |
 
 ### 어드민 API
 
-| 기능    | 메서드 / URL                   | 요청 본문                      | 쿼리 파라미터 | 응답                                                     |
-|-------|-----------------------------|----------------------------|---------|--------------------------------------------------------|
-| 시간 추가 | `POST /admin/times`         | `{startAt}`                | -       | `201 Created` <br> `{timeId, startAt}`                 |
-| 시간 삭제 | `DELETE /admin/times/{id}`  | -                          | -       | `200 OK`                                               |
-| 테마 생성 | `POST /admin/themes`        | `{name, description, url}` | -       | `201 Created` <br> `{themeId, name, description, url}` |
-| 테마 수정 | `PUT /admin/themes/{id}`    | `{name, description, url}` | -       | `200 OK` <br> `{themeId, name, description, url}`      |
-| 테마 삭제 | `DELETE /admin/themes/{id}` | -                          | -       | `200 OK`                                               |
+| 기능    | 메서드 / URL                        | 요청 본문                      | 쿼리 파라미터 | 응답                                                     |
+|-------|----------------------------------|----------------------------|---------|--------------------------------------------------------|
+| 예약 삭제 | `DELETE admin/reservations/{id}` | -                          | -       | `200 OK`                                               |
+| 시간 추가 | `POST /admin/times`              | `{startAt}`                | -       | `201 Created` <br> `{timeId, startAt}`                 |
+| 시간 삭제 | `DELETE /admin/times/{id}`       | -                          | -       | `200 OK`                                               |
+| 테마 생성 | `POST /admin/themes`             | `{name, description, url}` | -       | `201 Created` <br> `{themeId, name, description, url}` |
+| 테마 삭제 | `DELETE /admin/themes/{id}`      | -                          | -       | `200 OK`                                               |
