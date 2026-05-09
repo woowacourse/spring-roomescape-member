@@ -19,6 +19,7 @@ INSERT INTO reservation_time (start_at)
 VALUES ('10:00'), ('11:00'), ('12:00'), ('13:00'), ('14:00'), ('15:00');
 
 -- 3. 예약 데이터 (오늘 기준 최근 7일 이내로 동적 할당)
+-- 1, 2, 3, 4.
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES
     -- 1위: 공포의 병원 (5건) - 최근 1~5일 전 데이터

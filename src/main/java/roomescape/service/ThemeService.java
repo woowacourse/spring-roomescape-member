@@ -37,8 +37,11 @@ public class ThemeService {
         return ThemeResponseDTO.from(result);
     }
 
-    public List<Theme> findPopularThemes() {
-        return themeRepository.findPopularThemes();
+    public List<ThemeResponseDTO> findPopularThemes() {
+        return themeRepository.findPopularThemes()
+                .stream()
+                .map(ThemeResponseDTO::from)
+                .toList();
     }
 
     public void deleteTheme(Long id) {
