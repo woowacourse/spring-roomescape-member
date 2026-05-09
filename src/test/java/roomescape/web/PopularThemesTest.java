@@ -8,42 +8,27 @@ import static org.hamcrest.Matchers.not;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.support.DatabaseHelper;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Import(PopularThemesTest.TestConfig.class)
+@SpringWebTest
 public class PopularThemesTest {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    DatabaseHelper helper;
 
     @Autowired
     Clock clock;
 
     @BeforeEach
     void setup() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.execute("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+        helper.clear();
     }
 
     @DisplayName("직전 period 일 동안의 예약 수를 기준으로 상위 limit 개의 테마들을 조회한다.")
@@ -108,18 +93,5 @@ public class PopularThemesTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().statusCode(201);
-    }
-
-    @TestConfiguration
-    static class TestConfig {
-
-        @Primary
-        @Bean("fixedClock")
-        public Clock clock() {
-            return Clock.fixed(
-                    Instant.parse("2026-05-06T00:00:00Z"),
-                    ZoneId.of("Asia/Seoul")
-            );
-        }
     }
 }
