@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -16,6 +17,7 @@ import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -36,6 +38,7 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    @Transactional
     public Reservation addReservation(ReservationRequestDto requestDto) {
         ReservationTime time = reservationTimeRepository.findById(requestDto.timeId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
@@ -52,6 +55,7 @@ public class ReservationService {
         return reservationRepository.createReservation(reservation);
     }
 
+    @Transactional
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
     }
@@ -60,11 +64,13 @@ public class ReservationService {
         return reservationTimeRepository.findAll();
     }
 
+    @Transactional
     public ReservationTime addReservationTime(ReservationTimeRequestDto requestDto) {
         return reservationTimeRepository.createReservationTime(
             new ReservationTime(requestDto.startAt()));
     }
 
+    @Transactional
     public void deleteReservationTime(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
