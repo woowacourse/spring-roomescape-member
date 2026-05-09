@@ -24,6 +24,7 @@ import java.util.List;
 public class ReservationService {
 
     private static final int RESERVABLE_DAYS_RANGE = 14;
+
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
@@ -37,9 +38,7 @@ public class ReservationService {
     }
 
     public List<ReservationTimesWithStatus> getReservationTimeStatuses(final LocalDate date, final Long themeId) {
-        return reservationRepository.findReservationTimeStatusesByDateAndThemeId(date, themeId)
-                .stream()
-                .toList();
+        return reservationRepository.findReservationTimeStatusesByDateAndThemeId(date, themeId);
     }
 
     public ReservationResponse create(final ReservationCreateRequest data) {

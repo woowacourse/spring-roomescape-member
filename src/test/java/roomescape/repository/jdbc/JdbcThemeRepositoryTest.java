@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.jdbc;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,16 +16,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Sql("/clear.sql")
-class ThemeRepositoryTest {
+class JdbcThemeRepositoryTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    ThemeRepository themeRepository;
+    JdbcThemeRepository themeRepository;
 
     @BeforeEach
     void setUp() {
-        themeRepository = new ThemeRepository(jdbcTemplate);
+        themeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
 
     @Test

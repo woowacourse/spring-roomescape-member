@@ -1,163 +1,20 @@
 package roomescape.repository;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.repository.entity.ThemeEntity;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-@RequiredArgsConstructor
-public class ThemeRepository {
+public interface ThemeRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+    List<Theme> findAll();
 
-    private static long generatedIdFrom(final KeyHolder keyHolder) {
-        if (keyHolder.getKey() == null) {
-            throw new IllegalStateException("생성된 id를 가져오지 못했습니다.");
-        }
+    Optional<Theme> findById(Long themeId);
 
-        final long themeId = keyHolder.getKey().longValue();
-        return themeId;
-    }
+    Theme save(Theme themeWithoutId);
 
-    public List<Theme> findAll() {
-        final String sql = """
-                SELECT id, name, description, thumbnail_url
-                FROM theme
-                """;
+    boolean deleteById(Long themeId);
 
-        return jdbcTemplate.query(sql, this::mapToDomain).stream().toList();
-    }
-
-    public Optional<Theme> findById(final Long themeId) {
-        final String sql = """
-                SELECT id, name, description, thumbnail_url
-                FROM theme
-                WHERE id = ?
-                """;
-
-        try {
-            final Theme theme = jdbcTemplate.queryForObject(
-                    sql,
-                    this::mapToDomain,
-                    themeId
-            );
-
-            return Optional.of(theme);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    public Theme save(final Theme themeWithoutId) {
-        final ThemeEntity themeEntity = toEntity(themeWithoutId);
-
-        final long themeId = insertTheme(themeEntity);
-
-        return Theme.of(
-                themeId,
-                themeWithoutId.getName(),
-                themeWithoutId.getDescription(),
-                themeWithoutId.getThumbnailUrl()
-        );
-    }
-
-    public boolean deleteById(final Long themeId) {
-        final String sql = """
-                DELETE FROM theme
-                WHERE id = ?
-                """;
-
-        return jdbcTemplate.update(sql, themeId) > 0;
-    }
-
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate today) {
-        final String sql = """
-                SELECT
-                    t.id,
-                    t.name,
-                    t.description,
-                    t.thumbnail_url
-                FROM theme t
-                LEFT JOIN reservation r
-                    ON r.theme_id = t.id
-                    AND r.date >= ?
-                    AND r.date < ?
-                GROUP BY
-                    t.id,
-                    t.name,
-                    t.description,
-                    t.thumbnail_url
-                ORDER BY
-                    COUNT(r.id) DESC,
-                    t.name ASC
-                LIMIT 10;
-                """;
-
-        return jdbcTemplate.query(
-                        sql,
-                        this::mapToDomain,
-                        startDate,
-                        today
-                )
-                .stream()
-                .toList();
-    }
-
-    private long insertTheme(final ThemeEntity themeEntity) {
-        final String sql = """
-                INSERT INTO theme (name, description, thumbnail_url)
-                VALUES (?, ?, ?)
-                """;
-
-        final KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            final PreparedStatement preparedStatement = connection.prepareStatement(
-                    sql,
-                    Statement.RETURN_GENERATED_KEYS
-            );
-
-            preparedStatement.setString(1, themeEntity.name());
-            preparedStatement.setString(2, themeEntity.description());
-            preparedStatement.setString(3, themeEntity.thumbnailUrl());
-
-            return preparedStatement;
-        }, keyHolder);
-
-        return generatedIdFrom(keyHolder);
-    }
-
-    /**
-     * 엔티티 - 도메인 매핑 메서드
-     */
-    private Theme mapToDomain(final ResultSet resultSet, final int rowNum) throws SQLException {
-        return Theme.of(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail_url")
-        );
-    }
-
-    private ThemeEntity toEntity(final Theme theme) {
-        return new ThemeEntity(
-                theme.getId(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnailUrl()
-        );
-    }
+    List<Theme> findPopularThemes(LocalDate startDate, LocalDate today);
 }
