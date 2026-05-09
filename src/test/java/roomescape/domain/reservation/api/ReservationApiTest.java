@@ -21,7 +21,10 @@ class ReservationApiTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("reservations.size()", is(0));
+                .body("reservations.size()", is(0))
+                .body("totalCount", is(0))
+                .body("page", is(0))
+                .body("size", is(20));
     }
 
     @Test
@@ -69,6 +72,7 @@ class ReservationApiTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("reservations.size()", is(1))
+                .body("totalCount", is(1))
                 .body("reservations[0].name", is("티뉴"));
     }
 
@@ -100,7 +104,64 @@ class ReservationApiTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("reservations.size()", is(0));
+                .body("reservations.size()", is(0))
+                .body("totalCount", is(0));
+    }
+
+    @Test
+    void 페이지_크기보다_많은_예약이_있으면_size만큼만_반환된다() {
+        Integer timeId = createTime("10:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        for (int i = 1; i <= 5; i++) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("name", "사용자" + i);
+            params.put("date", "2026-08-0" + i);
+            params.put("timeId", timeId);
+            params.put("themeId", themeId);
+
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/reservations");
+        }
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?page=0&size=3")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(3))
+                .body("totalCount", is(5))
+                .body("page", is(0))
+                .body("size", is(3));
+    }
+
+    @Test
+    void 두번째_페이지_조회시_나머지_예약이_반환된다() {
+        Integer timeId = createTime("10:00");
+        Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+
+        for (int i = 1; i <= 5; i++) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("name", "사용자" + i);
+            params.put("date", "2026-08-0" + i);
+            params.put("timeId", timeId);
+            params.put("themeId", themeId);
+
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/reservations");
+        }
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?page=1&size=3")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(2))
+                .body("totalCount", is(5))
+                .body("page", is(1))
+                .body("size", is(3));
     }
 
     @Test

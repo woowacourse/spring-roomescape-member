@@ -58,6 +58,16 @@ public class ReservationJdbcRepository implements ReservationRepository {
         );
     };
 
+    public List<Reservation> findAll(int offset, int limit) {
+        String sql = SELECT_BASE + " ORDER BY r.date DESC, time_value ASC LIMIT ? OFFSET ?";
+        return jdbcTemplate.query(sql, reservationRowMapper, limit, offset);
+    }
+
+    public long count() {
+        Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Long.class);
+        return count != null ? count : 0L;
+    }
+
     public boolean existsByTimeId(Long timeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
@@ -68,21 +78,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
         String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
         return count != null && count > 0;
-    }
-
-    public List<Reservation> findAll() {
-        String sql = """
-                SELECT r.id as reservation_id, r.name, r.date,
-                       t.id as time_id, t.start_at as time_value,
-                       th.id as theme_id, th.name as theme_name,
-                       th.description as theme_description, th.thumbnail_image_url as theme_thumbnail
-                FROM reservation as r
-                INNER JOIN reservation_time as t ON r.time_id = t.id
-                INNER JOIN theme as th ON r.theme_id = th.id
-                ORDER BY r.date DESC, time_value ASC;
-                """;
-
-        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     public Reservation save(Reservation reservation) {
@@ -113,17 +108,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     public Optional<Reservation> findById(Long id) {
-        String sql = """
-                SELECT r.id as reservation_id, r.name, r.date,
-                       t.id as time_id, t.start_at as time_value,
-                       th.id as theme_id, th.name as theme_name,
-                       th.description as theme_description, th.thumbnail_image_url as theme_thumbnail
-                FROM reservation as r
-                INNER JOIN reservation_time as t ON r.time_id = t.id
-                INNER JOIN theme as th ON r.theme_id = th.id
-                WHERE r.id = ?;
-                """;
-
+        String sql = SELECT_BASE + " WHERE r.id = ?";
         List<Reservation> results = jdbcTemplate.query(sql, reservationRowMapper, id);
         return results.stream().findFirst();
     }

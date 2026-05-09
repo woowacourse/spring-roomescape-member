@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.domain.Reservation;
 import roomescape.domain.reservation.domain.Reservations;
+import roomescape.domain.reservation.dto.ReservationResponses;
 import roomescape.domain.reservation.repository.ReservationRepository;
 
 import java.time.LocalDate;
@@ -19,8 +20,10 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<Reservation> getReservations() {
-        return reservationRepository.findAll();
+    public ReservationResponses getReservationPage(int page, int size) {
+        List<Reservation> reservations = reservationRepository.findAll(page * size, size);
+        long totalCount = reservationRepository.count();
+        return ReservationResponses.from(reservations, totalCount, page, size);
     }
 
     public boolean hasReservationsByTimeId(Long timeId) {
