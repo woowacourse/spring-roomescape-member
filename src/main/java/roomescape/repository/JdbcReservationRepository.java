@@ -77,17 +77,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                                 r.theme_id = theme.id
                 WHERE r.id = ?
                 """;
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), reservationId));
-    }
 
-    @Override
-    public List<Long> findByThemeIdAndDate(long themeId, LocalDate date) {
-        String sql = """
-                        SELECT time_id
-                        FROM reservation 
-                        WHERE theme_id = ? and date = ?
-                """;
-        return jdbcTemplate.queryForList(sql, Long.class, themeId, date);
+        return jdbcTemplate.query(sql, rowMapper(), reservationId).stream().findFirst();
     }
 
     @Override

@@ -24,11 +24,6 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<Long> findByThemeIdAndDate(long themeId, LocalDate date) {
-        return List.of();
-    }
-
-    @Override
     public Reservation save(Reservation reservation) {
         long id = sequence++;
         Reservation savedReservation = new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),

@@ -53,10 +53,6 @@ public class TimeService {
         return getTimeOrElseThrow(timeId);
     }
 
-    public List<Long> findReserved(long themeId, LocalDate date) {
-        return reservationRepository.findByThemeIdAndDate(themeId, date);
-    }
-
     public List<ThemeSlot> findThemeSlotBy(long themeId, LocalDate date) {
         boolean isExist = themeSlotRepository.isExistBy(themeId, date);
         // 존재하면 해당 테마, 해당 날짜 데이터 조회후 반환

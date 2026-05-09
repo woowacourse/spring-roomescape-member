@@ -33,7 +33,7 @@ public class JdbcTimeRepository implements TimeRepository {
     @Override
     public Optional<Time> findById(long timeId) {
         String sql = "SELECT id, start_at FROM time where id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), timeId));
+        return jdbcTemplate.query(sql, rowMapper(), timeId).stream().findFirst();
     }
 
     @Override

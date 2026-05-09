@@ -33,7 +33,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(long id) {
         String sql = "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper(), id));
+        return jdbcTemplate.query(sql, rowMapper(), id).stream().findFirst();
     }
 
     @Override
