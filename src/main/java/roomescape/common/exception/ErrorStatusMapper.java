@@ -31,6 +31,7 @@ public class ErrorStatusMapper {
         statusByErrorCode.put(ErrorCode.THEME_ALREADY_HAS_ID, HttpStatus.BAD_REQUEST);
         statusByErrorCode.put(ErrorCode.THEME_NOT_FOUND, HttpStatus.NOT_FOUND);
         statusByErrorCode.put(ErrorCode.THEME_CREATE_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
+        statusByErrorCode.put(ErrorCode.THEME_HAS_RESERVATION, HttpStatus.BAD_REQUEST);
     }
 
     public static HttpStatus map(ErrorCode errorCode) {

@@ -20,6 +20,7 @@ public enum ErrorCode {
     THEME_ALREADY_HAS_ID("이미 id가 존재하는 테마입니다."),
     THEME_NOT_FOUND("존재하지 않는 테마입니다."),
     THEME_CREATE_FAILED("테마 생성에 실패했습니다."),
+    THEME_HAS_RESERVATION("예약이 있는 테마는 삭제할 수 없습니다."),
     RESERVATION_TIME_HAS_RESERVATION("예약이 있는 시간은 삭제할 수 없습니다.");
 
     private final String message;

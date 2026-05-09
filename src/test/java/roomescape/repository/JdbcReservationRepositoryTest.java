@@ -148,4 +148,22 @@ class JdbcReservationRepositoryTest {
         assertThat(exists).isTrue();
         assertThat(notExists).isFalse();
     }
+
+    @Test
+    @DisplayName("특정 테마 id를 가진 예약이 존재하는지 확인한다.")
+    public void existByThemeId() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Theme theme2 = themeRepository.save(new Theme("레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
+
+        // when
+        boolean exists = reservationRepository.existByThemeId(theme.getId());
+        boolean notExists = reservationRepository.existByThemeId(theme2.getId());
+
+        // then
+        assertThat(exists).isTrue();
+        assertThat(notExists).isFalse();
+    }
 }
