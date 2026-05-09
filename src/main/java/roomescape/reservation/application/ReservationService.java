@@ -34,6 +34,7 @@ public class ReservationService {
     }
 
     public ReservationResponse addReservation(ReservationRequest request) {
+        reservationValidator.validateNoDuplicate(request.date(), request.timeId(), request.themeId());
         ReservationTime time = findReservationTime(request.timeId());
         Theme theme = findTheme(request.themeId());
         return ReservationResponse.from(reservationRepository.save(ReservationRequest.toEntity(request, time, theme)));
