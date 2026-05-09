@@ -31,9 +31,8 @@ public class ReservationController {
     public ResponseEntity<Void> add(
             @RequestBody ReservationRequestDTO request) {
         ReservationResponseDTO saved = reservationService.addReservation(request);
-        ResponseEntity<Void> responseEntity = ResponseEntity.created(
+        return ResponseEntity.created(
                 URI.create("/reservations/" + saved.id())).build();
-        return responseEntity;
     }
 
     @GetMapping("/booked-times")

@@ -49,17 +49,17 @@ public class AdminController {
         return ResponseEntity.created(URI.create("/times/" + saved.id())).build();
     }
 
-    @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
-        reservationTimeService.deleteReservationTime(id);
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("/themes")
     public ResponseEntity<Void> add(
             @RequestBody ThemeRequestDTO request) {
         ThemeResponseDTO saved = themeService.addTheme(request);
         return ResponseEntity.created(URI.create("/theme/" + saved.id())).build();
+    }
+
+    @DeleteMapping("/times/{id}")
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
+        reservationTimeService.deleteReservationTime(id);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/themes/{id}")

@@ -24,7 +24,7 @@ class ThemeServiceTest {
     void 최근_1주_동안의_예약_상위_10개의_테마를_조회한다() {
         List<ThemeResponseDTO> popularThemes = themeService.getPopularThemes();
         assertThat(popularThemes)
-                .map(theme -> theme.id())
+                .map(ThemeResponseDTO::id)
                 .containsExactly(
                         1L, 2L, 3L, // 1순위: 테마의 예약 수 내림차순 정렬
                         6L, 5L, 4L, 8L, 7L, // 2순위: 예약 수가 같으면 테마 이름 오름차순 정렬

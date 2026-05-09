@@ -47,8 +47,7 @@ public class ReservationService {
                 reservationRequestDTO.date(), time, theme);
 
         Reservation savedReservation = reservationRepository.save(reservation);
-        ReservationResponseDTO response = ReservationResponseDTO.from(savedReservation);
-        return response;
+        return ReservationResponseDTO.from(savedReservation);
     }
 
     public List<ReservationTimeResponseDTO> findReservedTimes(LocalDate targetDate,
@@ -57,7 +56,7 @@ public class ReservationService {
                 .stream()
                 .filter(reservation -> reservation.getDate().equals(targetDate))
                 .filter(reservation -> reservation.getTheme().getId().equals(targetThemeId))
-                .map(reservation -> reservation.getTimeId())
+                .map(Reservation::getTimeId)
                 .toList();
 
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();

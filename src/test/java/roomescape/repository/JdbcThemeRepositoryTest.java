@@ -17,7 +17,7 @@ import roomescape.domain.Theme;
 class JdbcThemeRepositoryTest {
 
     @Autowired
-    ThemeRepository themeRespository;
+    ThemeRepository themeRepository;
 
     @DisplayName("테마를 저장한다")
     @Test
@@ -26,7 +26,7 @@ class JdbcThemeRepositoryTest {
         Theme theme = Theme.create("귀신찾기", "귀신을 찾는다", "example.com");
 
         // when
-        Theme saved = themeRespository.save(theme);
+        Theme saved = themeRepository.save(theme);
 
         // then
         assertThat(saved.getId()).isNotNull();
@@ -36,12 +36,12 @@ class JdbcThemeRepositoryTest {
     @Test
     void 테마를_id로_조회한다() {
         // given
-        Theme saved = themeRespository.save(
+        Theme saved = themeRepository.save(
                 Theme.create("귀신찾기", "귀신을 찾는다", "example.com")
         );
 
         // when
-        Optional<Theme> result = themeRespository.findById(saved.getId());
+        Optional<Theme> result = themeRepository.findById(saved.getId());
 
         // then
         assertThat(result)
@@ -55,15 +55,15 @@ class JdbcThemeRepositoryTest {
     @Test
     void 저장된_모든_테마를_조회한다() {
         // given
-        Theme savedHorror = themeRespository.save(
+        Theme savedHorror = themeRepository.save(
                 Theme.create("귀신찾기", "귀신을 찾는다", "example.com")
         );
-        Theme savedSuspect = themeRespository.save(
+        Theme savedSuspect = themeRepository.save(
                 Theme.create("추리", "추리한다", "example.com")
         );
 
         // when
-        List<Theme> foundThemes = themeRespository.findAll();
+        List<Theme> foundThemes = themeRepository.findAll();
 
         // then
         assertThat(foundThemes)
@@ -78,7 +78,7 @@ class JdbcThemeRepositoryTest {
     @Test
     @Sql("/data.sql")
     void 최근_1주_동안의_예약_상위_10개의_테마를_조회한다() {
-        List<Long> popularThemes = themeRespository.findPopularThemeIds();
+        List<Long> popularThemes = themeRepository.findPopularThemeIds();
         assertThat(popularThemes)
                 .containsExactly(
                         1L, 2L, 3L, // 1순위: 테마의 예약 수 내림차순 정렬
@@ -91,13 +91,13 @@ class JdbcThemeRepositoryTest {
     @Test
     void 테마를_삭제한다() {
         // given
-        Theme savedHorror = themeRespository.save(
+        Theme savedHorror = themeRepository.save(
                 Theme.create("귀신찾기", "귀신을 찾는다", "example.com")
         );
 
         // when
-        themeRespository.delete(savedHorror.getId());
-        Optional<Theme> result = themeRespository.findById(savedHorror.getId());
+        themeRepository.delete(savedHorror.getId());
+        Optional<Theme> result = themeRepository.findById(savedHorror.getId());
 
         // then
         assertThat(result).isNotPresent();
