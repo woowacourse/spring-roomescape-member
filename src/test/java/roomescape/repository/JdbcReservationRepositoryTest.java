@@ -62,7 +62,11 @@ class JdbcReservationRepositoryTest {
         Optional<Reservation> result = reservationRepository.findById(saved.getId());
 
         // then
-        assertThat(result.get()).isEqualTo(saved);
+        assertThat(result)
+                .isPresent()
+                .get()
+                .usingRecursiveComparison()
+                .isEqualTo(saved);
     }
 
     @DisplayName("저장된 모든 예약시간을 조회한다")

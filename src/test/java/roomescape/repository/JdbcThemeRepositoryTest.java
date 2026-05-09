@@ -46,7 +46,9 @@ class JdbcThemeRepositoryTest {
         Optional<Theme> result = themeRespository.findById(saved.getId());
 
         // then
-        assertThat(result.get())
+        assertThat(result)
+                .isPresent()
+                .get()
                 .usingRecursiveComparison()
                 .isEqualTo(saved);
     }
