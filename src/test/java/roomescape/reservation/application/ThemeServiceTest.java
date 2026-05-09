@@ -6,8 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.infra.ScheduleRepository;
 import roomescape.reservation.infra.ThemeRepository;
 
@@ -17,8 +15,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Transactional
-@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class ThemeServiceTest {
     @Mock
