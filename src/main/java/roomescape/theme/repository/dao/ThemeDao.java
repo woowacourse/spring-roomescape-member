@@ -2,7 +2,6 @@ package roomescape.theme.repository.dao;
 
 import java.util.List;
 import java.util.Optional;
-import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -25,9 +24,9 @@ public class ThemeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ThemeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
     }
