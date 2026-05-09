@@ -15,6 +15,7 @@ public class ThemeService {
     private static final long DEFAULT_DAYS = 7;
     private static final long DEFAULT_LIMIT = 10;
     private static final String THEME_DOES_NOT_EXISTS = "존재하지 않는 테마입니다";
+    private static final String THEME_ID_DOES_NOT_EXIST = "존재하지 않는 ID입니다.";
 
     private final ThemeRepository themeRepository;
 
@@ -39,6 +40,9 @@ public class ThemeService {
 
     @Transactional
     public void delete(long id) {
+        if (!themeRepository.existsById(id)) {
+            throw new IllegalArgumentException(THEME_ID_DOES_NOT_EXIST);
+        }
         themeRepository.deleteById(id);
     }
 
