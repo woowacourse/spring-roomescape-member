@@ -42,7 +42,7 @@ async function searchReservations() {
     reservations.forEach(reservation => {
         resultList.insertAdjacentHTML("beforeend", `
             <article class="reservation-card">
-                <img src="${reservation.theme.thumbnailUrl}" alt="${reservation.theme.name}">
+                <img src="${reservation.theme.thumbnailUrl || DEFAULT_THEME_URL}" alt="${reservation.theme.name}">
                 <div class="reservation-info">
                     <h3>${reservation.theme.name}</h3>
                     <p>예약자: ${reservation.name}</p>

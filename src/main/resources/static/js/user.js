@@ -2,6 +2,8 @@ let selectedDate = null;
 let selectedTheme = null;
 let selectedTime = null;
 
+const DEFAULT_THEME_URL = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80";
+
 document.addEventListener("DOMContentLoaded", async () => {
     await loadThemes();
     await loadPopularThemes();
@@ -39,7 +41,7 @@ async function loadPopularThemes() {
         article.className = "popular-theme-card";
 
         article.innerHTML = `
-            <img src="${theme.thumbnailUrl}" alt="${theme.name}">
+            <img src="${theme.thumbnailUrl || DEFAULT_THEME_URL}" alt="${theme.name}">
             <div class="popular-rank-badge">${index + 1}</div>
             <div class="popular-theme-content">
                 <h3>${theme.name}</h3>
@@ -122,7 +124,7 @@ async function loadThemes() {
         article.dataset.themeThumbnailUrl = theme.thumbnailUrl;
 
         article.innerHTML = `
-            <img src="${theme.thumbnailUrl}" alt="${theme.name}">
+            <img src="${theme.thumbnailUrl || DEFAULT_THEME_URL}" alt="${theme.name}">
             <div class="theme-card-content">
                 <h3>${theme.name}</h3>
                 <p>${theme.description}</p>
