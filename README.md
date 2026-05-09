@@ -162,8 +162,7 @@
 
 
 - **ReservationTimeController**
-- [ ] 중복된 `read()` 메서드 명 변경
-- [ ] `findAll()` 대신 `findAvailableTimes()`와 같은 메서드 명 변경
+- [x] 컨트롤러에서 어떤 행동을 할 지 명확히 드러나도록 중복된 메서드명 변경
 
 
 - **GlobalExceptionHandler**

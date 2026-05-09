@@ -25,7 +25,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/admin/times")
-    public List<ReservationTimeResponse> read() {
+    public List<ReservationTimeResponse> readAllTimes() {
         return reservationTimeService.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
@@ -33,7 +33,7 @@ public class ReservationTimeController {
 
     @PostMapping("/admin/times")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationTimeResponse create(@RequestBody ReservationTimeRequest reservationTimeRequest) {
+    public ReservationTimeResponse createTime(@RequestBody ReservationTimeRequest reservationTimeRequest) {
         ReservationTime time = reservationTimeRequest.toEntity();
         ReservationTime savedTime = reservationTimeService.save(time);
         return ReservationTimeResponse.from(savedTime);
@@ -41,7 +41,7 @@ public class ReservationTimeController {
 
     @DeleteMapping("/admin/times/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public void deleteTime(@PathVariable Long id) {
         reservationTimeService.deleteById(id);
     }
 }

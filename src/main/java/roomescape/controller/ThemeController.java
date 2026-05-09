@@ -28,7 +28,7 @@ public class ThemeController {
     }
 
     @GetMapping("/themes")
-    public List<ThemeResponse> read() {
+    public List<ThemeResponse> readAllTheme() {
         return themeService.findAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
@@ -49,7 +49,8 @@ public class ThemeController {
     }
 
     @GetMapping("/themes/{themeId}/reservation-times")
-    public List<ReservationTimeStatusResponse> read(@RequestParam LocalDate date, @PathVariable Long themeId) {
+    public List<ReservationTimeStatusResponse> findAvailableTimes(@RequestParam LocalDate date,
+                                                                  @PathVariable Long themeId) {
         return themeService.findReservationTimeByDateAndThemeId(date, themeId);
     }
 

@@ -25,7 +25,7 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public List<ReservationResponse> read() {
+    public List<ReservationResponse> findAllReservations() {
         return reservationService.findAll().stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -33,7 +33,7 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse create(@RequestBody ReservationRequest reservationRequest) {
+    public ReservationResponse createReservation(@RequestBody ReservationRequest reservationRequest) {
         Reservation reservation = reservationService.save(
                 reservationRequest.name(),
                 reservationRequest.date(),
@@ -45,7 +45,7 @@ public class ReservationController {
 
     @DeleteMapping("/admin/reservations/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public void deleteReservation(@PathVariable Long id) {
         reservationService.deleteById(id);
     }
 }
