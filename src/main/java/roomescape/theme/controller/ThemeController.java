@@ -35,5 +35,4 @@ public class ThemeController {
                 .map(ThemeResponse::from)
                 .toList();
     }
-
 }

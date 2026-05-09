@@ -13,6 +13,10 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
+    private Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
+    }
+
     private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
@@ -21,8 +25,16 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public static Reservation of(String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(name, date, time, theme);
+    }
+
     public static Reservation of(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         return new Reservation(id, name, date, time, theme);
+    }
+
+    public static Reservation toEntity(Reservation reservation, Long id) {
+        return new Reservation(id, reservation.name, reservation.date, reservation.time, reservation.theme);
     }
 
     public Long getId() {

@@ -36,7 +36,7 @@ class JdbcThemeRepositoryTest {
         String description = "테마 설명";
         String thumbnailUrl = "https://example.com/theme.png";
 
-        Theme theme = themeRepository.save(name, description, thumbnailUrl);
+        Theme theme = themeRepository.save(Theme.of(name, description, thumbnailUrl, Duration.ofHours(1)));
 
         assertThat(theme.getId()).isPositive();
         assertThat(theme.getName()).isEqualTo(name);
@@ -51,7 +51,7 @@ class JdbcThemeRepositoryTest {
         String description = "테마 설명";
         String thumbnailUrl = "https://example.com/theme.png";
 
-        Theme theme = themeRepository.save(name, description, thumbnailUrl);
+        Theme theme = themeRepository.save(Theme.of(name, description, thumbnailUrl, Duration.ofHours(1)));
 
         Theme foundTheme = themeRepository.findById(theme.getId())
                 .orElseThrow(() -> new ThemeNotFoundException(theme.getId()));
@@ -65,32 +65,38 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 모든_테마를_조회하는_테스트() {
-        Theme theme1 = themeRepository.save("테마1", "테마 설명1", "https://example.com/theme1.png");
-        Theme theme2 = themeRepository.save("테마2", "테마 설명2", "https://example.com/theme2.png");
+        Theme theme1 = Theme.of("테마1", "테마 설명1", "https://example.com/theme1.png", Duration.ofHours(0));
+        Theme savedTheme1 = themeRepository.save(theme1);
+        Theme theme2 = Theme.of("테마2", "테마 설명2", "https://example.com/theme2.png", Duration.ofHours(0));
+        Theme savedTheme2 = themeRepository.save(theme2);
 
         List<Theme> themes = themeRepository.findAll();
 
-        assertThat(themes).contains(theme1, theme2);
+        assertThat(themes).contains(savedTheme1, savedTheme2);
     }
 
     @Test
     void 테마를_삭제하는_테스트() {
-        Theme theme = themeRepository.save("테마", "테마 설명", "https://example.com/theme.png");
-        themeRepository.deleteById(theme.getId());
+        Theme theme = Theme.of("테마", "테마 설명", "https://example.com/theme.png", Duration.ofHours(0));
+        Theme savedTheme = themeRepository.save(theme);
+        themeRepository.deleteById(savedTheme.getId());
 
         List<Theme> themes = themeRepository.findAll();
-        assertThat(themes).doesNotContain(theme);
+        assertThat(themes).doesNotContain(savedTheme);
     }
 
     @Test
     void 테마를_삭제하면_이를_참조하는_예약도_삭제된다() {
-        ReservationTime reservationTime = reservationTimeRepository.save(LocalTime.of(11, 0));
-        Theme theme = themeRepository.save("테마", "테마 설명", "https://example.com/theme.png");
-        Reservation reservation = reservationRepository.save("밀란", LocalDate.of(2026, 5, 6), reservationTime, theme);
+        ReservationTime reservationTime = ReservationTime.of(LocalTime.of(11, 0));
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        Theme theme = Theme.of("테마", "테마 설명", "https://example.com/theme.png", Duration.ofHours(0));
+        Theme savedTheme = themeRepository.save(theme);
+        Reservation reservation = Reservation.of("밀란", LocalDate.of(2026, 5, 6), savedReservationTime, savedTheme);
+        Reservation savedReservation = reservationRepository.save(reservation);
 
-        themeRepository.deleteById(theme.getId());
+        themeRepository.deleteById(savedTheme.getId());
 
-        Optional<Reservation> foundReservation = reservationRepository.findById(reservation.getId());
+        Optional<Reservation> foundReservation = reservationRepository.findById(savedReservation.getId());
         assertThat(foundReservation).isEmpty();
     }
 

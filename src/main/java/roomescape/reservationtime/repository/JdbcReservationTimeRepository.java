@@ -29,7 +29,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime save(LocalTime startAt) {
+    public ReservationTime save(ReservationTime reservationTime) {
         String sql = """
                 MERGE INTO reservation_time (start_at)
                 KEY(start_at)
@@ -40,12 +40,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setTime(1, Time.valueOf(startAt));
+            ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
             return ps;
         }, keyHolder);
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return ReservationTime.of(id, startAt);
+        return ReservationTime.toEntity(reservationTime, id);
     }
 
     @Override

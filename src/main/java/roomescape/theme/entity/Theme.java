@@ -11,6 +11,10 @@ public class Theme {
     private final String thumbnailUrl;
     private final Duration runtime;
 
+    private Theme(String name, String description, String thumbnailUrl, Duration runtime) {
+        this(null, name, description, thumbnailUrl, runtime);
+    }
+
     private Theme(Long id, String name, String description, String thumbnailUrl, Duration runtime) {
         this.id = id;
         this.name = name;
@@ -19,8 +23,16 @@ public class Theme {
         this.runtime = runtime;
     }
 
+    public static Theme of(String name, String description, String thumbnailUrl, Duration runtime) {
+        return new Theme(name, description, thumbnailUrl, runtime);
+    }
+
     public static Theme of(Long id, String name, String description, String thumbnailUrl, Duration runtime) {
         return new Theme(id, name, description, thumbnailUrl, runtime);
+    }
+
+    public static Theme toEntity(Theme theme, Long id) {
+        return new Theme(id, theme.name, theme.description, theme.thumbnailUrl, theme.runtime);
     }
 
     public Long getId() {

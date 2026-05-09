@@ -35,7 +35,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
 
     @Override
-    public Theme save(String name, String description, String thumbnailUrl) {
+    public Theme save(Theme theme) {
         String sql = """
                 INSERT INTO theme (name, description, thumbnail_url, runtime)
                 VALUES (?, ?, ?, ?)
@@ -45,21 +45,15 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, name);
-            ps.setString(2, description);
-            ps.setString(3, thumbnailUrl);
+            ps.setString(1, theme.getName());
+            ps.setString(2, theme.getDescription());
+            ps.setString(3, theme.getThumbnailUrl());
             ps.setLong(4, RUNTIME);
             return ps;
         }, keyHolder);
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return Theme.of(
-                id,
-                name,
-                description,
-                thumbnailUrl,
-                Duration.ofHours(RUNTIME)
-        );
+        return Theme.toEntity(theme, id);
     }
 
     @Override
@@ -89,11 +83,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                     ON t.id = r.theme_id
                 WHERE r.date >= DATEADD('DAY', -?, CURRENT_DATE)
                 GROUP BY
-                    t.id,
-                    t.name,
-                    t.description,
-                    t.thumbnail_url,
-                    t.runtime
+                    t.id
                 HAVING COUNT(r.id) > 0
                 ORDER BY COUNT(r.id) DESC
                 LIMIT ?

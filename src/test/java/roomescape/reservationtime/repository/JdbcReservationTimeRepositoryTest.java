@@ -2,6 +2,7 @@ package roomescape.reservationtime.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -31,52 +32,60 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약_시간을_저장하는_테스트() {
         LocalTime startAt = LocalTime.of(11, 0);
-        ReservationTime reservationTime = reservationTimeRepository.save(startAt);
+        ReservationTime reservationTime = ReservationTime.of(startAt);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
-        assertThat(reservationTime.getId()).isPositive();
-        assertThat(reservationTime.getStartAt()).isEqualTo(startAt);
+        assertThat(savedReservationTime.getId()).isPositive();
+        assertThat(savedReservationTime.getStartAt()).isEqualTo(startAt);
     }
 
     @Test
     void 예약_시간을_조회하는_테스트() {
         LocalTime startAt = LocalTime.of(11, 0);
-        ReservationTime reservationTime = reservationTimeRepository.save(startAt);
+        ReservationTime reservationTime = ReservationTime.of(startAt);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
-        ReservationTime foundReservationTime = reservationTimeRepository.findById(reservationTime.getId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException(reservationTime.getId()));
+        ReservationTime foundReservationTime = reservationTimeRepository.findById(savedReservationTime.getId())
+                .orElseThrow(() -> new ReservationTimeNotFoundException(savedReservationTime.getId()));
 
-        assertThat(foundReservationTime.getId()).isEqualTo(reservationTime.getId());
+        assertThat(foundReservationTime.getId()).isEqualTo(savedReservationTime.getId());
         assertThat(foundReservationTime.getStartAt()).isEqualTo(startAt);
     }
 
     @Test
     void 모든_예약_시간을_조회하는_테스트() {
-        ReservationTime reservationTime1 = reservationTimeRepository.save(LocalTime.of(11, 0));
-        ReservationTime reservationTime2 = reservationTimeRepository.save(LocalTime.of(12, 0));
+        ReservationTime reservationTime1 = ReservationTime.of(LocalTime.of(11, 0));
+        ReservationTime savedReservationTime1 = reservationTimeRepository.save(reservationTime1);
+        ReservationTime reservationTime2 = ReservationTime.of(LocalTime.of(12, 0));
+        ReservationTime savedReservationTime2 = reservationTimeRepository.save(reservationTime2);
 
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
-        assertThat(reservationTimes).contains(reservationTime1, reservationTime2);
+        assertThat(reservationTimes).contains(savedReservationTime1, savedReservationTime2);
     }
 
     @Test
     void 예약_시간을_삭제하는_테스트() {
-        ReservationTime reservationTime = reservationTimeRepository.save(LocalTime.of(11, 0));
-        reservationTimeRepository.deleteById(reservationTime.getId());
+        ReservationTime reservationTime = ReservationTime.of(LocalTime.of(11, 0));
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        reservationTimeRepository.deleteById(savedReservationTime.getId());
 
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        assertThat(reservationTimes).doesNotContain(reservationTime);
+        assertThat(reservationTimes).doesNotContain(savedReservationTime);
     }
 
     @Test
     void 예약_시간을_삭제하면_이를_참조하는_예약도_삭제된다() {
-        ReservationTime reservationTime = reservationTimeRepository.save(LocalTime.of(11, 0));
-        Theme theme = themeRepository.save("테마", "테마 설명", "https://example.com/theme.png");
-        Reservation reservation = reservationRepository.save("밀란", LocalDate.of(2026, 5, 6), reservationTime, theme);
+        ReservationTime reservationTime = ReservationTime.of(LocalTime.of(11, 0));
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        Theme theme = Theme.of("테마", "테마 설명", "https://example.com/theme.png", Duration.ofHours(1));
+        Theme savedTheme = themeRepository.save(theme);
+        Reservation reservation = Reservation.of("밀란", LocalDate.of(2026, 5, 6), savedReservationTime, savedTheme);
+        Reservation savedReservation = reservationRepository.save(reservation);
 
-        reservationTimeRepository.deleteById(reservationTime.getId());
+        reservationTimeRepository.deleteById(savedReservationTime.getId());
 
-        Optional<Reservation> foundReservation = reservationRepository.findById(reservation.getId());
+        Optional<Reservation> foundReservation = reservationRepository.findById(savedReservation.getId());
         assertThat(foundReservation).isEmpty();
     }
 

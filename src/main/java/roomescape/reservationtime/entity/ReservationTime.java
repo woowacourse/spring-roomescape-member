@@ -13,8 +13,20 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
+    public ReservationTime(LocalTime startAt) {
+        this(null, startAt);
+    }
+
+    public static ReservationTime of(LocalTime startAt) {
+        return new ReservationTime(startAt);
+    }
+
     public static ReservationTime of(Long id, LocalTime startAt) {
         return new ReservationTime(id, startAt);
+    }
+
+    public static ReservationTime toEntity(ReservationTime reservationTime, Long id) {
+        return new ReservationTime(id, reservationTime.startAt);
     }
 
     public Long getId() {

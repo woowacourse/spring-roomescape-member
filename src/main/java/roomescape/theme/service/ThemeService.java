@@ -1,5 +1,6 @@
 package roomescape.theme.service;
 
+import java.time.Duration;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,8 @@ public class ThemeService {
 
     @Transactional
     public Theme save(ThemeRequest request) {
-        return themeRepository.save(request.name(), request.description(), request.thumbnailUrl());
+        Theme theme = Theme.of(request.name(), request.description(), request.thumbnailUrl(), Duration.ofHours(1));
+        return themeRepository.save(theme);
     }
 
     @Transactional(readOnly = true)

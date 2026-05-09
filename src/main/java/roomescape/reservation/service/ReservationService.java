@@ -35,11 +35,12 @@ public class ReservationService {
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
 
-        return reservationRepository.save(
+        Reservation reservation = Reservation.of(
                 request.name(),
                 request.date(),
                 reservationTime,
-                theme
+                theme);
+        return reservationRepository.save(reservation
         );
     }
 

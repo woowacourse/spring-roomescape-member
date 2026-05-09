@@ -38,7 +38,7 @@ class JdbcReservationRepositoryTest {
         Theme theme = themeRepository.findById(1L)
                 .orElseThrow(() -> new ThemeNotFoundException(1L));
 
-        Reservation reservation = reservationRepository.save(name, date, reservationTime, theme);
+        Reservation reservation = reservationRepository.save(Reservation.of(name, date, reservationTime, theme));
         assertThat(reservation.getId()).isPositive();
         assertThat(reservation.getName()).isEqualTo(name);
         assertThat(reservation.getDate()).isEqualTo(date);
@@ -55,7 +55,7 @@ class JdbcReservationRepositoryTest {
         Theme theme = themeRepository.findById(1L)
                 .orElseThrow(() -> new ThemeNotFoundException(1L));
 
-        Reservation reservation = reservationRepository.save(name, date, reservationTime, theme);
+        Reservation reservation = reservationRepository.save(Reservation.of(name, date, reservationTime, theme));
         List<Reservation> reservations = reservationRepository.findAll();
 
         assertThat(reservations).containsExactly(reservation);
@@ -70,7 +70,7 @@ class JdbcReservationRepositoryTest {
         Theme theme = themeRepository.findById(1L)
                 .orElseThrow(() -> new ThemeNotFoundException(1L));
 
-        reservationRepository.save(name, date, reservationTime, theme);
+        reservationRepository.save(Reservation.of(name, date, reservationTime, theme));
         List<Long> reservedTimeIds = reservationRepository.findReservedTimeIdsByDateAndThemeId(date, theme.getId());
 
         assertThat(reservedTimeIds).containsExactly(reservationTime.getId());
@@ -85,7 +85,7 @@ class JdbcReservationRepositoryTest {
         Theme theme = themeRepository.findById(1L)
                 .orElseThrow(() -> new ThemeNotFoundException(1L));
 
-        Reservation reservation = reservationRepository.save(name, date, reservationTime, theme);
+        Reservation reservation = reservationRepository.save(Reservation.of(name, date, reservationTime, theme));
         reservationRepository.deleteById(reservation.getId());
 
         List<Reservation> reservations = reservationRepository.findAll();

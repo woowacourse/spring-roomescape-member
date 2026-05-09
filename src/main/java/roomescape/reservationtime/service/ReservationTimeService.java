@@ -23,7 +23,8 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTime save(ReservationTimeRequest request) {
-        return reservationTimeRepository.save(request.startAt());
+        ReservationTime reservationTime = ReservationTime.of(request.startAt());
+        return reservationTimeRepository.save(reservationTime);
     }
 
     @Transactional(readOnly = true)

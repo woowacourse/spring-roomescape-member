@@ -4,12 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.reservation.entity.Reservation;
-import roomescape.reservationtime.entity.ReservationTime;
-import roomescape.theme.entity.Theme;
 
 public interface ReservationRepository {
 
-    Reservation save(String name, LocalDate date, ReservationTime reservationTime, Theme theme);
+    Reservation save(Reservation reservation);
 
     Optional<Reservation> findById(Long id);
 
