@@ -66,6 +66,51 @@ class ThemeApiTest {
     }
 
     @Test
+    void 인기_테마_조회_now_기준_윈도우_내_예약수로_정렬된다() {
+        Integer themeA = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer themeB = createTheme("추리", "단서를 찾아라", "https://example.com/mystery.jpg");
+        Integer time = createTime("10:00");
+
+        // 윈도우: now=2026-05-06, days=7 → [2026-04-29, 2026-05-05]
+        createReservation("user1", "2026-05-05", time, themeA);
+        createReservation("user2", "2026-05-04", time, themeA); // A: 2건
+        createReservation("user3", "2026-05-03", time, themeB); // B: 1건
+
+        // 윈도우 밖
+        createReservation("user4", "2026-05-06", time, themeB); // 오늘 = end 다음날
+        createReservation("user5", "2026-04-28", time, themeB); // start 직전
+
+        RestAssured.given().log().all()
+                .when().get("/themes/popular?now=2026-05-06&days=7")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2))
+                .body("[0].name", is("공포"))
+                .body("[1].name", is("추리"));
+    }
+
+    @Test
+    void 인기_테마_조회_윈도우_내_예약이_없으면_빈_결과() {
+        Integer theme = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
+        Integer time = createTime("10:00");
+        createReservation("user1", "2026-05-05", time, theme);
+
+        RestAssured.given().log().all()
+                .when().get("/themes/popular?now=2026-01-01&days=7")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
+
+    @Test
+    void 인기_테마_조회_now_미지정시_시스템_시각_기준_200() {
+        RestAssured.given().log().all()
+                .when().get("/themes/popular")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
     void 테마_추가_및_삭제() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "SF");
@@ -90,5 +135,48 @@ class ThemeApiTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
+    }
+
+    private Integer createTheme(String name, String description, String thumbnailImageUrl) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("description", description);
+        params.put("thumbnailImageUrl", thumbnailImageUrl);
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().get("id");
+    }
+
+    private Integer createTime(String startAt) {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", startAt);
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().get("id");
+    }
+
+    private void createReservation(String name, String date, Integer timeId, Integer themeId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("date", date);
+        params.put("timeId", timeId);
+        params.put("themeId", themeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(200);
     }
 }
