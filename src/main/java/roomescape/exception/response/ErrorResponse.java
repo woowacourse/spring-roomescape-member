@@ -11,6 +11,6 @@ public record ErrorResponse(
     }
 
     public static ErrorResponse of(String message, List<String> errors) {
-        return new ErrorResponse(message, null);
+        return new ErrorResponse(message, errors);
     }
 }

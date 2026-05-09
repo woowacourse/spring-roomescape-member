@@ -3,11 +3,11 @@ package roomescape.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.exception.exception.BadRequestException;
 import roomescape.exception.exception.DuplicateException;
 import roomescape.exception.exception.ForeignKeyConstraintException;
@@ -66,12 +66,12 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleHttpMessageNotReadable(
-            HttpMessageNotReadableException e
+            MethodArgumentTypeMismatchException e
     ) {
-        log.warn("HttpMessageNotReadableException 발생", e);
+        log.warn("MethodArgumentTypeMismatchException 발생", e);
 
         return ErrorResponse.of(
                 GlobalErrorCode.BAD_REQUEST.getMessage()
@@ -90,12 +90,12 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(NoHandlerFoundException.class)
+    @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNoHandlerFound(
-            NoHandlerFoundException e
+            NoResourceFoundException e
     ) {
-        log.warn("NoHandlerFoundException 발생", e);
+        log.warn("NoResourceFoundException 발생", e);
 
         return ErrorResponse.of(
                 GlobalErrorCode.NOT_FOUND.getMessage()
