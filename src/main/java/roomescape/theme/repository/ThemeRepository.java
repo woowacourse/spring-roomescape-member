@@ -90,8 +90,4 @@ public class ThemeRepository {
         }
     }
 
-    public int countByThemeId(long themeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, themeId);
-    }
 }

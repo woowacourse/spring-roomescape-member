@@ -97,8 +97,8 @@ public class ReservationRepository {
         }
     }
 
-    public List<Long> findReservedTimeIds(LocalDate date, long themeId) {
-        String sql = "SELECT DISTINCT time_id FROM reservation WHERE date = ? AND theme_id = ?";
-        return jdbcTemplate.queryForList(sql, Long.class, date, themeId);
+    public int countByThemeId(long themeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, themeId);
     }
 }
