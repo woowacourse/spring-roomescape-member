@@ -49,14 +49,15 @@ public class ThemeServiceImpl implements ThemeService {
 
     @Override
     public void deleteById(Long id) {
-        if(!themeRepository.deleteById(id)) {
+        if (!themeRepository.deleteById(id)) {
             throw new ThemeNotFoundException(id);
         }
     }
 
     @Override
     public List<Theme> getBestThemes() {
-        ThemeBestServiceDto themeBestServiceDto = new ThemeBestServiceDto(LocalDate.now(clock), dayCount, rankCount);
+        ThemeBestServiceDto themeBestServiceDto = new ThemeBestServiceDto(LocalDate.now(clock),
+                dayCount, rankCount);
         return themeRepository.findBestThemesByDate(themeBestServiceDto);
     }
 }
