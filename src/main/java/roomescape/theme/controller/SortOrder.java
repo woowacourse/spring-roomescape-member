@@ -1,4 +1,4 @@
-package roomescape.theme.repository;
+package roomescape.theme.controller;
 
 public enum SortOrder {
     ASC("ASC"),
@@ -18,7 +18,7 @@ public enum SortOrder {
         try {
             return SortOrder.valueOf(order.toUpperCase());
         } catch (IllegalArgumentException e) {
-            return DESC; // 기본값은 DESC
+            return DESC;
         }
     }
 }

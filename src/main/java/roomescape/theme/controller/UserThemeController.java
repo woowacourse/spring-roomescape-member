@@ -33,8 +33,8 @@ public class UserThemeController {
 
     @GetMapping("/rank")
     public ResponseEntity<List<ThemeResponse>> getRankedThemes(
-            @RequestParam(defaultValue = "reservationCount") String sort,
-            @RequestParam(defaultValue = "DESC") String order,
+            @RequestParam(defaultValue = "reservationCount") SortColumn sort,
+            @RequestParam(defaultValue = "DESC") SortOrder order,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> endDate,
             @RequestParam(defaultValue = "10") Long limit) {

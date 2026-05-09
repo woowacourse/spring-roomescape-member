@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.theme.controller.SortColumn;
+import roomescape.theme.controller.SortOrder;
 import roomescape.theme.domain.Theme;
 
 @Repository
@@ -55,11 +57,20 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public List<Theme> findRanked(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
-        SortColumn sortColumn = SortColumn.fromString(sort);
-        SortOrder sortOrder = SortOrder.fromString(order);
+    public List<Theme> findRanked(SortColumn sortColumn, SortOrder sortOrder, LocalDate startDate, LocalDate endDate, Long limit) {
         String sql = getReservationSortSql(sortColumn, sortOrder, limit);
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
+    }
+
+    public Optional<Theme> findById(long id) {
+        String sql = "SELECT * FROM themes WHERE id = ?";
+
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     private String getReservationSortSql(SortColumn sortColumn, SortOrder sortOrder, Long limit) {
@@ -78,16 +89,4 @@ public class ThemeRepository {
 
         return sql.toString();
     }
-
-    public Optional<Theme> findById(long id) {
-        String sql = "SELECT * FROM themes WHERE id = ?";
-
-        try {
-            Theme theme = jdbcTemplate.queryForObject(sql, rowMapper, id);
-            return Optional.ofNullable(theme);
-        } catch (EmptyResultDataAccessException exception) {
-            return Optional.empty();
-        }
-    }
-
 }

@@ -38,7 +38,7 @@ class UserReservationTimeServiceTest {
 
         when(reservationTimeRepository.findAll()).thenReturn(times);
 
-        List<ReservationTime> result = reservationTimeService.findReservationTimes();
+        List<ReservationTime> result = reservationTimeService.getReservationTimes();
 
         assertThat(result).hasSize(2);
         assertThat(result)
