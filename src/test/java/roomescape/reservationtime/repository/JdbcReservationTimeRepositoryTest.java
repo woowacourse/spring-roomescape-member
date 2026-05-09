@@ -41,7 +41,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_조회하는_테스트() {
-        LocalTime startAt = LocalTime.of(11, 0);
+        LocalTime startAt = LocalTime.of(11, 10);
         ReservationTime reservationTime = ReservationTime.of(startAt);
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
@@ -54,9 +54,9 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 모든_예약_시간을_조회하는_테스트() {
-        ReservationTime reservationTime1 = ReservationTime.of(LocalTime.of(11, 0));
+        ReservationTime reservationTime1 = ReservationTime.of(LocalTime.of(11, 20));
         ReservationTime savedReservationTime1 = reservationTimeRepository.save(reservationTime1);
-        ReservationTime reservationTime2 = ReservationTime.of(LocalTime.of(12, 0));
+        ReservationTime reservationTime2 = ReservationTime.of(LocalTime.of(12, 20));
         ReservationTime savedReservationTime2 = reservationTimeRepository.save(reservationTime2);
 
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
@@ -66,7 +66,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_삭제하는_테스트() {
-        ReservationTime reservationTime = ReservationTime.of(LocalTime.of(11, 0));
+        ReservationTime reservationTime = ReservationTime.of(LocalTime.of(11, 30));
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         reservationTimeRepository.deleteById(savedReservationTime.getId());
 
@@ -76,7 +76,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_삭제하면_이를_참조하는_예약도_삭제된다() {
-        ReservationTime reservationTime = ReservationTime.of(LocalTime.of(11, 0));
+        ReservationTime reservationTime = ReservationTime.of(LocalTime.of(11, 40));
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         Theme theme = Theme.of("테마", "테마 설명", "https://example.com/theme.png", Duration.ofHours(1));
         Theme savedTheme = themeRepository.save(theme);

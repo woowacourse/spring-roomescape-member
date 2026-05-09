@@ -1,15 +1,15 @@
 package roomescape.theme.repository;
 
-import java.sql.PreparedStatement;
 import java.time.Duration;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
@@ -20,9 +20,13 @@ public class JdbcThemeRepository implements ThemeRepository {
     // TODO: 요구사항에 따라 theme의 runtime은 고정한다.
     private static final Long RUNTIME = 1L;
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
-    public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcThemeRepository(JdbcTemplate jdbcTemplate, DataSource source) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(source)
+                .withTableName("THEME")
+                .usingGeneratedKeyColumns("id");
     }
 
     public static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
@@ -37,23 +41,12 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Theme save(Theme theme) {
-        String sql = """
-                INSERT INTO theme (name, description, thumbnail_url, runtime)
-                VALUES (?, ?, ?, ?)
-                """;
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDescription());
-            ps.setString(3, theme.getThumbnailUrl());
-            ps.setLong(4, RUNTIME);
-            return ps;
-        }, keyHolder);
-
-        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnail_url", theme.getThumbnailUrl())
+                .addValue("runtime", RUNTIME);
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return Theme.toEntity(theme, id);
     }
 

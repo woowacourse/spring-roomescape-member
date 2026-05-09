@@ -3,17 +3,17 @@ package roomescape.reservation.repository;
 import static roomescape.reservationtime.repository.JdbcReservationTimeRepository.RESERVATION_TIME_ROW_MAPPER;
 import static roomescape.theme.repository.JdbcThemeRepository.THEME_ROW_MAPPER;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.exception.ReservationDuplicatedException;
@@ -44,6 +44,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             """;
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) ->
             Reservation.of(
                     rs.getLong("reservation_id"),
@@ -53,33 +54,28 @@ public class JdbcReservationRepository implements ReservationRepository {
                     THEME_ROW_MAPPER.mapRow(rs, rowNum)
             );
 
-    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate, DataSource source) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(source)
+                .withTableName("RESERVATION")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Reservation save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
         ReservationTime time = reservation.getTime();
         Theme theme = reservation.getTheme();
-
         try {
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-                ps.setString(1, reservation.getName());
-                ps.setObject(2, reservation.getDate());
-                ps.setLong(3, time.getId());
-                ps.setLong(4, theme.getId());
-                return ps;
-            }, keyHolder);
+            SqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("name", reservation.getName())
+                    .addValue("date", reservation.getDate())
+                    .addValue("timeId", time.getId())
+                    .addValue("themeId", theme.getId());
+            Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+            return Reservation.toEntity(reservation, id);
         } catch (DuplicateKeyException e) {
             throw new ReservationDuplicatedException(reservation.getDate(), time.getId(), theme.getId());
         }
-
-        Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return Reservation.toEntity(reservation, id);
     }
 
     @Override
