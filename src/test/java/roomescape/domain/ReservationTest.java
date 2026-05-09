@@ -27,7 +27,6 @@ class ReservationTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {""})
     @DisplayName("이름이 빈값일 때 검증")
     void 이름이_빈값일_때(String name) {
         //given

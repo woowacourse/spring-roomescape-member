@@ -1,32 +1,32 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dao.ReservationDao;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationTimeStatusResponse;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ThemeServiceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
     @Autowired
     private ThemeService themeService;
+
     @Autowired
     private ReservationService reservationService;
+
     @Autowired
     private ReservationTimeService reservationTimeService;
 
@@ -56,7 +56,7 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 예약_가능한_시간_필터링(){
+    void 예약_가능한_시간_필터링() {
         LocalDate targetDate = LocalDate.of(2030, 5, 6);
 
         ReservationTime targetTime1 = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
