@@ -1,3 +1,29 @@
+# 실행 가이드
+### 요구 사항
+Java 21
+
+### 애플리케이션 실행
+```bash
+./gradlew bootRun
+```
+초기 샘플 데이터를 함께 넣어 실행하려면 local profile을 사용합니다.
+```bash
+./gradlew bootRun --args='--spring.profiles.active=local'
+```
+### 접속 경로
+- 메인 페이지: http://localhost:8080
+- 예약 페이지: http://localhost:8080/reservations
+- 관리자 페이지: http://localhost:8080/admin
+
+### 테스트 실행
+```bash
+./gradlew test
+```
+---
+
+# ERD
+![img.png](erd.png)
+
 # 📑 Roomescape API 명세서
 
 > **Base URL** `http://localhost:8080`  
