@@ -19,39 +19,39 @@
 
 예약 정보를 관리한다.
 
-| 필드     | 타입          | 설명 |
-|--------|-------------|-----|
-| `id`   | `Long`      | 예약 ID |
+| 필드     | 타입          | 설명     |
+|--------|-------------|--------|
+| `id`   | `Long`      | 예약 ID  |
 | `name` | `String`    | 예약자 이름 |
-| `date` | `LocalDate` | 예약 날짜 |
-| `time` | `LocalTime` | 예약 시간 |
+| `date` | `LocalDate` | 예약 날짜  |
+| `time` | `LocalTime` | 예약 시간  |
 
 #### ReservationTime
 
 예약 시간 정보를 관리한다.
 
-| 필드       | 타입        | 설명 |
-|----------|-----------|------|
-| `id`     | `Long`    | 시간 ID |
+| 필드        | 타입          | 설명    |
+|-----------|-------------|-------|
+| `id`      | `Long`      | 시간 ID |
 | `startAt` | `LocalTime` | 시작 시간 |
 
 #### Theme
 
 테마 정보를 관리한다.
 
-| 필드 | 타입 | 설명 |
-|---|---|---|
-| `id` | `Long` | 테마 ID |
-| `name` | `String` | 테마 이름 |
+| 필드            | 타입       | 설명    |
+|---------------|----------|-------|
+| `id`          | `Long`   | 테마 ID |
+| `name`        | `String` | 테마 이름 |
 | `description` | `String` | 테마 설명 |
 
 #### Holiday
 
 영업일이 아닌 날(휴일) 정보를 관리한다.
 
-| 필드 | 타입 | 설명 |
-|---|---|---|
-| `id` | `Long` | 휴일 ID |
+| 필드     | 타입          | 설명    |
+|--------|-------------|-------|
+| `id`   | `Long`      | 휴일 ID |
 | `date` | `LocalDate` | 휴일 날짜 |
 
 ---
@@ -70,22 +70,22 @@
 
 ## API 명세
 
-| 기능 | 메서드 / URL | 요청 본문 | 응답 |
-|------|-------------|-----------|------|
-| 예약 전체 조회 | `GET /reservations` | — | `[{id, name, date, time}, ...]` |
-| 예약 추가 | `POST /reservations` | `{name, date, timeId}` | `{id, name, date, time}` |
-| 예약 삭제 | `DELETE /reservations/{id}` | — | `204 No Content` |
-| 시간 전체 조회 | `GET /times` | — | `[{id, startAt}, ...]` |
-| 시간 추가 | `POST /times` | `{startAt}` | `{id, startAt}` |
-| 시간 삭제 | `DELETE /times/{id}` | — | `204 No Content` |
-| 테마 전체 조회 | `GET /themes` | — | `[{id, name, description}, ...]` |
-| 테마 추가 | `POST /themes` | `{name, description}` | `{id, name, description}` |
-| 테마 삭제 | `DELETE /themes/{id}` | — | `204 No Content` |
-| 사용 가능 날짜 | `GET /available-dates?month=YYYY-MM` | — | `["yyyy-MM-dd", ...]` |
-| 테마별 가능 시간 | `GET /themes/{themeId}/times?date=yyyy-MM-dd` | — | `[{id, startAt}, ...]` |
-| 사용자 예약 추가 | `POST /users/reservations` | `{name, date, themeId, timeId}` | `{id, name, date, time, theme}` |
-| 사용자 예약 취소 | `DELETE /users/reservations/{id}` | — | `204 No Content` |
-| 인기 테마 조회 | `GET /themes/best?date=yyyy-MM-dd` | — | `[{id, name}, ...]` |
+| 기능        | 메서드 / URL                                     | 요청 본문                           | 응답                               |
+|-----------|-----------------------------------------------|---------------------------------|----------------------------------|
+| 예약 전체 조회  | `GET /reservations`                           | —                               | `[{id, name, date, time}, ...]`  |
+| 예약 추가     | `POST /reservations`                          | `{name, date, timeId}`          | `{id, name, date, time}`         |
+| 예약 삭제     | `DELETE /reservations/{id}`                   | —                               | `204 No Content`                 |
+| 시간 전체 조회  | `GET /times`                                  | —                               | `[{id, startAt}, ...]`           |
+| 시간 추가     | `POST /times`                                 | `{startAt}`                     | `{id, startAt}`                  |
+| 시간 삭제     | `DELETE /times/{id}`                          | —                               | `204 No Content`                 |
+| 테마 전체 조회  | `GET /themes`                                 | —                               | `[{id, name, description}, ...]` |
+| 테마 추가     | `POST /themes`                                | `{name, description}`           | `{id, name, description}`        |
+| 테마 삭제     | `DELETE /themes/{id}`                         | —                               | `204 No Content`                 |
+| 사용 가능 날짜  | `GET /available-dates?month=YYYY-MM`          | —                               | `["yyyy-MM-dd", ...]`            |
+| 테마별 가능 시간 | `GET /themes/{themeId}/times?date=yyyy-MM-dd` | —                               | `[{id, startAt}, ...]`           |
+| 사용자 예약 추가 | `POST /users/reservations`                    | `{name, date, themeId, timeId}` | `{id, name, date, time, theme}`  |
+| 사용자 예약 취소 | `DELETE /users/reservations/{id}`             | —                               | `204 No Content`                 |
+| 인기 테마 조회  | `GET /themes/best?date=yyyy-MM-dd`            | —                               | `[{id, name}, ...]`              |
 
 ---
 
@@ -431,7 +431,6 @@ Content-Type: application/json
 - [x] 이름·설명으로 테마를 생성한다.
 - [x] 생성된 테마 목록을 조회한다.
 - [x] 테마 ID로 테마를 삭제한다.
-- [ ] 이름 없이 테마를 생성하는 경우, 400을 반환한다.
 - [x] 존재하지 않는 테마 ID로 삭제하는 경우, 404를 반환한다.
 
 ### ThemeTimeAPITest
@@ -439,16 +438,9 @@ Content-Type: application/json
 - [x] 날짜·테마 ID로 해당 테마의 예약 가능한 시간 목록을 조회한다.
 - [x] 이미 예약된 시간 슬롯은 목록에 포함되지 않는다.
 
-### AvailableDateAPITest
-
-- [ ] 사용 가능한 날짜 목록을 조회한다.
-- [ ] `month` 쿼리로 특정 월만 필터하여 조회한다.
-- [ ] 영업일이 아닌 날(휴일)은 `holiday` 테이블 기준으로 목록에서 제외한다.
-
 ### HolidayDBTest
 
 - [x] 영업일이 아닌 날(휴일) 정보를 저장하기 위한 `holiday` 테이블을 생성한다.
-- [ ] `holiday` 테이블 컬럼은 `id`, `date`를 가진다.
 - [x] `holiday` 데이터를 추가하고 조회한다.
 - [x] `holiday` 데이터를 삭제한다.
 
@@ -458,8 +450,6 @@ Content-Type: application/json
 - [x] 생성된 예약 응답에 시간·테마 정보가 포함된다.
 - [x] 예약 ID로 예약을 취소한다.
 - [x] 필수 값 누락으로 예약을 생성하는 경우, 400을 반환한다.
-- [ ] 존재하지 않는 테마·시간 ID로 예약을 생성하는 경우, 400을 반환한다.
-- [ ] 과거 날짜로 예약을 생성하는 경우, 400을 반환한다.
 - [x] 존재하지 않는 예약 ID로 취소하는 경우, 404를 반환한다.
 
 ### ThemeBestAPITest
