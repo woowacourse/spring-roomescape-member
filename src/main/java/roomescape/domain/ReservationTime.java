@@ -13,8 +13,6 @@ public class ReservationTime {
     private final LocalTime endAt;
 
     private ReservationTime(final Long id, final LocalTime startAt, final LocalTime endAt) {
-        validateStartAt(startAt);
-
         this.id = id;
         this.startAt = startAt;
         this.endAt = endAt;
@@ -42,11 +40,5 @@ public class ReservationTime {
                 startAt,
                 endAt
         );
-    }
-
-    private void validateStartAt(final LocalTime startAt) {
-        if (startAt == null) {
-            throw new IllegalArgumentException("예약 시작 시간을 입력해야 합니다.");
-        }
     }
 }
