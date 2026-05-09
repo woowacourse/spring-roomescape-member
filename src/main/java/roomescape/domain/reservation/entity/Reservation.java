@@ -1,6 +1,7 @@
 package roomescape.domain.reservation.entity;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import roomescape.domain.reservationtime.entity.ReservationTime;
 import roomescape.domain.theme.entity.Theme;
 
@@ -99,5 +100,22 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        if (this.id == null) {
+            return false;
+        }
+        Reservation reservation = (Reservation) other;
+        return Objects.equals(this.id, reservation.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
