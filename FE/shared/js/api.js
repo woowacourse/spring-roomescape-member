@@ -53,23 +53,11 @@ export const api = {
   },
 
   async getReservableTimes(date, themeId) {
-    const [times, reservations] = await Promise.all([
-      this.getTimes(),
-      themeId ? this.getReservations({ date, themeId }) : this.getReservations()
-    ]);
-
-    const reservedTimeIds = new Set(
-      reservations
-        .filter(reservation => reservation.date === date)
-        .filter(reservation => !themeId || String(reservation.theme?.id) === String(themeId))
-        .filter(reservation => reservation.isAvailable === undefined || reservation.isAvailable === false)
-        .map(reservation => String(reservation.time.id))
-    );
-
+    const times = await this.getTimes({ date, themeId });
     return times.map(time => ({
       timeId: time.id,
       startAt: time.startAt,
-      available: !reservedTimeIds.has(String(time.id))
+      available: !time.alreadyBooked
     }));
   },
 
@@ -96,8 +84,13 @@ export const api = {
   },
 
   // Times
-  async getTimes() {
-    const response = await fetch(`${BASE_URL}/times`);
+  async getTimes({ date, themeId } = {}) {
+    const query = new URLSearchParams();
+    if (date) query.set('date', date);
+    if (themeId) query.set('themeId', themeId);
+
+    const path = query.size > 0 ? `/times?${query}` : '/times';
+    const response = await fetch(`${BASE_URL}${path}`);
     return handleResponse(response);
   },
 
