@@ -3,12 +3,13 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Service
 public class ReservationService {
@@ -22,6 +23,7 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
+    @Transactional
     public Reservation save(String name, LocalDate date, long timeId, long themeId) {
         final ReservationTime time = reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
@@ -35,14 +37,17 @@ public class ReservationService {
         return new Reservation(id, name, date, null, time, theme);
     }
 
+    @Transactional
     public void delete(long id) {
         reservationDao.delete(id);
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> findAllByName(String username) {
         return reservationDao.findByName(username);
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> findAll() {
         return reservationDao.findAll();
     }
