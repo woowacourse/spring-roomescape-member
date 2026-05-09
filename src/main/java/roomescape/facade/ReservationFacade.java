@@ -18,7 +18,8 @@ import java.util.Set;
 @Component
 public class ReservationFacade {
 
-    private static final String ALREADY_EXISTS_DELETE_RESERVATION = "해당 시간과 테마를 사용 중인 예약이 존재하여 삭제할 수 없습니다.";
+    private static final String CANNOT_DELETE_TIME_IN_USE = "ID %d번 시간을 사용 중인 예약이 존재하여 시간을 삭제할 수 없습니다.";
+    private static final String CANNOT_DELETE_THEME_IN_USE = "ID %d번 테마를 사용 중인 예약이 존재하여 테마를 삭제할 수 없습니다.";
     private static final String ALREADY_EXISTS_ADD_RESERVATION = "해당 날짜와 시간, 테마에 이미 예약이 존재합니다.";
 
     private final ReservationService reservationService;
@@ -35,7 +36,7 @@ public class ReservationFacade {
     @Transactional
     public void deleteTime(Long id) {
         if (reservationService.hasReservationsByTimeId(id)) {
-            throw new IllegalArgumentException(ALREADY_EXISTS_DELETE_RESERVATION);
+            throw new IllegalArgumentException(String.format(CANNOT_DELETE_TIME_IN_USE, id));
         }
         reservationTimeService.deleteTime(id);
     }
@@ -43,7 +44,7 @@ public class ReservationFacade {
     @Transactional
     public void deleteTheme(Long id) {
         if (reservationService.hasReservationsByThemeId(id)) {
-            throw new IllegalArgumentException(ALREADY_EXISTS_DELETE_RESERVATION);
+            throw new IllegalArgumentException(String.format(CANNOT_DELETE_THEME_IN_USE, id));
         }
         themeService.deleteTheme(id);
     }
