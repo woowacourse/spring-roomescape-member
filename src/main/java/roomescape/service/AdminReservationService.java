@@ -16,13 +16,13 @@ import roomescape.service.exception.ReservationTimeNotFoundException;
 import roomescape.service.exception.ThemeNotFoundException;
 
 @Service
-public class ReservationService {
+public class AdminReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(
+    public AdminReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository,
             ThemeRepository themeRepository

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.controller.exception.InvalidRequestException;
+import roomescape.service.exception.PastReservationException;
 import roomescape.service.exception.ResourceConflictException;
 import roomescape.service.exception.ResourceNotFoundException;
 
@@ -15,6 +16,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidRequest(InvalidRequestException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(PastReservationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlePastReservation(PastReservationException e) {
         return new ErrorResponse(e.getMessage());
     }
 

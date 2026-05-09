@@ -47,7 +47,7 @@ class ReservationServiceTest {
     @Mock
     private ThemeRepository themeRepository;
     @InjectMocks
-    private ReservationService reservationService;
+    private AdminReservationService reservationService;
 
     @Test
     @DisplayName("같은 날짜+시간+테마에 이미 예약이 있으면 ReservationConflictException이 발생한다")
