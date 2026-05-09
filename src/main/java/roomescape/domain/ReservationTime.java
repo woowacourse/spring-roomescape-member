@@ -7,41 +7,46 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 public class ReservationTime {
-    private final ReservationTimeId id;
-    private final ReservationTimeStartAt startAt;
+    private final Long id;
+    private final LocalTime startAt;
 
     public ReservationTime(LocalTime startAt) {
         this(null, startAt);
     }
 
     public ReservationTime(Long id, LocalTime startAt) {
-        this(id == null ? null : new ReservationTimeId(id), new ReservationTimeStartAt(startAt));
-    }
-
-    private ReservationTime(ReservationTimeId id, ReservationTimeStartAt startAt) {
+        validateStartAt(startAt);
         this.id = id;
         this.startAt = startAt;
     }
 
     public ReservationTime withId(Long id) {
-        ReservationTimeId reservationTimeId = new ReservationTimeId(id);
-
+        validateId(id);
         if (this.id != null) {
             throw new DomainException(ErrorCode.RESERVATION_TIME_ALREADY_HAS_ID);
         }
 
-        return new ReservationTime(reservationTimeId, startAt);
+        return new ReservationTime(id, startAt);
+    }
+
+    private void validateId(Long id) {
+        if (id == null) {
+            throw new DomainException(ErrorCode.INVALID_RESERVATION_TIME_ID);
+        }
+    }
+
+    private void validateStartAt(LocalTime startAt) {
+        if (startAt == null) {
+            throw new DomainException(ErrorCode.INVALID_RESERVATION_TIME);
+        }
     }
 
     public Long getId() {
-        if (id == null) {
-            return null;
-        }
-        return id.value();
+        return id;
     }
 
     public LocalTime getStartAt() {
-        return startAt.value();
+        return startAt;
     }
 
     @Override

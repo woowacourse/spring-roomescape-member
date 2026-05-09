@@ -7,9 +7,9 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class Reservation {
-    private final ReservationId id;
-    private final ReservationName name;
-    private final ReservationDate date;
+    private final Long id;
+    private final String name;
+    private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
@@ -18,16 +18,10 @@ public class Reservation {
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(
-                id == null ? null : new ReservationId(id),
-                new ReservationName(name),
-                new ReservationDate(date),
-                requireTime(time),
-                requireTheme(theme)
-        );
-    }
-
-    private Reservation(ReservationId id, ReservationName name, ReservationDate date, ReservationTime time, Theme theme) {
+        validateName(name);
+        validateDate(date);
+        validateTime(time);
+        validateTheme(theme);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -36,42 +30,54 @@ public class Reservation {
     }
 
     public Reservation withId(Long id) {
-        ReservationId reservationId = new ReservationId(id);
-
+        validateId(id);
         if (this.id != null) {
             throw new DomainException(ErrorCode.RESERVATION_ALREADY_HAS_ID);
         }
 
-        return new Reservation(reservationId, name, date, time, theme);
+        return new Reservation(id, name, date, time, theme);
     }
 
-    private static ReservationTime requireTime(ReservationTime time) {
+    private void validateId(Long id) {
+        if (id == null) {
+            throw new DomainException(ErrorCode.INVALID_RESERVATION_ID);
+        }
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new DomainException(ErrorCode.INVALID_RESERVATION_NAME);
+        }
+    }
+
+    private void validateDate(LocalDate date) {
+        if (date == null) {
+            throw new DomainException(ErrorCode.INVALID_RESERVATION_DATE);
+        }
+    }
+
+    private void validateTime(ReservationTime time) {
         if (time == null) {
             throw new DomainException(ErrorCode.INVALID_RESERVATION_TIME);
         }
-        return time;
     }
 
-    private static Theme requireTheme(Theme theme) {
+    private void validateTheme(Theme theme) {
         if (theme == null) {
             throw new DomainException(ErrorCode.INVALID_THEME);
         }
-        return theme;
     }
 
     public Long getId() {
-        if (id == null) {
-            return null;
-        }
-        return id.value();
+        return id;
     }
 
     public String getName() {
-        return name.value();
+        return name;
     }
 
     public LocalDate getDate() {
-        return date.value();
+        return date;
     }
 
     public ReservationTime getTime() {
