@@ -20,13 +20,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
-import roomescape.controller.client.api.ThemeApiController;
-import roomescape.controller.client.api.dto.ThemeResponse;
-import roomescape.controller.client.api.dto.ThemeTimesResponse;
+import roomescape.web.dto.ThemeResponse;
+import roomescape.web.dto.ThemeTimesResponse;
 import roomescape.domain.fixture.ThemeFixture;
 import roomescape.service.ThemeService;
-import roomescape.service.result.ThemeResult;
-import roomescape.service.result.ThemeTimesResult;
+import roomescape.web.controller.client.ThemeApiController;
 
 @WebMvcTest(ThemeApiController.class)
 class ThemeApiControllerTest extends BaseControllerUnitTest {
@@ -42,7 +40,7 @@ class ThemeApiControllerTest extends BaseControllerUnitTest {
     @Test
     void 테마_시간대_조회_요청에_성공하면_정상_응답이_반환된다() {
         // given
-        ThemeTimesResult result = new ThemeTimesResult(1L, LocalTime.now(), true);
+        ThemeTimesResponse result = new ThemeTimesResponse(1L, LocalTime.now(), true);
         when(themeService.getThemeReservationStatus(anyLong(), any(LocalDate.class))).thenReturn(List.of(result));
 
         // when & then
@@ -54,7 +52,7 @@ class ThemeApiControllerTest extends BaseControllerUnitTest {
                 .extract().as(new TypeRef<>() {
                 });
 
-        assertThat(response).containsOnly(ThemeTimesResponse.from(result));
+        assertThat(response).containsOnly(result);
     }
 
     @ParameterizedTest
@@ -72,7 +70,7 @@ class ThemeApiControllerTest extends BaseControllerUnitTest {
     @Test
     void 테마_목록_조회_요청에_성공하면_정상_응답이_반환된다() {
         // given
-        ThemeResult result = ThemeResult.from(ThemeFixture.createThemeWithId());
+        ThemeResponse result = ThemeResponse.from(ThemeFixture.createThemeWithId());
         when(themeService.getAllActiveThemes()).thenReturn(List.of(result));
 
         // when & then
@@ -83,13 +81,13 @@ class ThemeApiControllerTest extends BaseControllerUnitTest {
                 .extract().as(new TypeRef<>() {
                 });
 
-        assertThat(response).containsOnly(ThemeResponse.from(result));
+        assertThat(response).containsOnly(result);
     }
 
     @Test
     void 인기_테마_목록_조회_요청에_성공하면_정상_응답이_반환된다() {
         // given
-        ThemeResult result = ThemeResult.from(ThemeFixture.createThemeWithId());
+        ThemeResponse result = ThemeResponse.from(ThemeFixture.createThemeWithId());
         when(themeService.getPopularThemes(any(LocalDate.class), any(LocalDate.class))).thenReturn(List.of(result));
 
         // when & then
@@ -102,7 +100,7 @@ class ThemeApiControllerTest extends BaseControllerUnitTest {
                 .extract().as(new TypeRef<>() {
                 });
 
-        assertThat(response).containsOnly(ThemeResponse.from(result));
+        assertThat(response).containsOnly(result);
     }
 
     @Test

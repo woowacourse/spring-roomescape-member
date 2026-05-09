@@ -1,4 +1,4 @@
-package roomescape.controller.admin.api;
+package roomescape.web.controller.admin;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.admin.api.dto.AdminReservationRequest;
-import roomescape.controller.admin.api.dto.AdminReservationResponse;
+import roomescape.web.dto.ReservationRequest;
+import roomescape.web.dto.ReservationResponse;
 import roomescape.service.ReservationService;
-import roomescape.service.result.ReservationResult;
 
 @RestController
 @RequestMapping("/api/admin/reservations")
@@ -28,12 +27,12 @@ public class AdminReservationApiController {
     private final ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<AdminReservationResponse> reserve(@Valid @RequestBody AdminReservationRequest request) {
-        ReservationResult result = reservationService.reserve(request.toCommand());
+    public ResponseEntity<ReservationResponse> reserve(@Valid @RequestBody ReservationRequest request) {
+        ReservationResponse response = reservationService.reserve(request);
 
-        URI location = URI.create("/api/admin/reservations/" + result.id());
+        URI location = URI.create("/api/admin/reservations/" + response.id());
 
-        return ResponseEntity.created(location).body(AdminReservationResponse.from(result));
+        return ResponseEntity.created(location).body(response);
     }
 
     @DeleteMapping("/{id}")
@@ -46,11 +45,7 @@ public class AdminReservationApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AdminReservationResponse>> getAllReservations() {
-        List<AdminReservationResponse> response = reservationService.getAllReservations()
-                .stream()
-                .map(AdminReservationResponse::from)
-                .toList();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
+        return ResponseEntity.ok(reservationService.getAllReservations());
     }
 }

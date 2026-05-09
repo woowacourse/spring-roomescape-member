@@ -1,4 +1,4 @@
-package roomescape.controller.client.api;
+package roomescape.web.controller.client;
 
 import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.client.api.dto.ThemeResponse;
-import roomescape.controller.client.api.dto.ThemeTimesResponse;
+import roomescape.web.dto.ThemeResponse;
+import roomescape.web.dto.ThemeTimesResponse;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -29,20 +29,12 @@ public class ThemeApiController {
             @Positive(message = "테마 조회 식별자는 양수여야 합니다.") Long id,
             @RequestParam LocalDate date
     ) {
-        List<ThemeTimesResponse> response = themeService.getThemeReservationStatus(id, date)
-                .stream()
-                .map(ThemeTimesResponse::from)
-                .toList();
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(themeService.getThemeReservationStatus(id, date));
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getAllThemes() {
-        List<ThemeResponse> response = themeService.getAllActiveThemes()
-                .stream()
-                .map(ThemeResponse::from)
-                .toList();
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(themeService.getAllActiveThemes());
     }
 
     @GetMapping("/popular")
@@ -50,10 +42,6 @@ public class ThemeApiController {
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate
     ) {
-        List<ThemeResponse> response = themeService.getPopularThemes(startDate, endDate)
-                .stream()
-                .map(ThemeResponse::from)
-                .toList();
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(themeService.getPopularThemes(startDate, endDate));
     }
 }

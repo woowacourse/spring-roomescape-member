@@ -18,10 +18,10 @@ import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.collection.MemoryReservationTimeRepository;
-import roomescape.service.command.ThemeRegisterCommand;
 import roomescape.service.fake.FakeThemeRepository;
-import roomescape.service.result.ThemeRegisterResult;
-import roomescape.service.result.ThemeTimesResult;
+import roomescape.web.dto.ThemeRequest;
+import roomescape.web.dto.ThemeResponse;
+import roomescape.web.dto.ThemeTimesResponse;
 
 class ThemeServiceTest {
 
@@ -49,18 +49,18 @@ class ThemeServiceTest {
     @Test
     void 새로운_테마를_정상적으로_등록한다() {
         // given: 관리자 권한과 등록 정보가 주어짐
-        ThemeRegisterCommand command = new ThemeRegisterCommand("공포테마", "무서운 테마입니다.", "http://image.png");
+        ThemeRequest request = new ThemeRequest("공포테마", "무서운 테마입니다.", "http://image.png");
 
         // when: 테마 등록 진행
-        ThemeRegisterResult result = themeService.register(command);
+        ThemeResponse response = themeService.register(request);
 
         // then: 등록된 정보가 입력값과 일치하며 ID가 발급됨
-        assertThat(result)
+        assertThat(response)
                 .extracting(
-                        ThemeRegisterResult::id,
-                        ThemeRegisterResult::name,
-                        ThemeRegisterResult::description,
-                        ThemeRegisterResult::thumbnailImageUrl
+                        ThemeResponse::id,
+                        ThemeResponse::name,
+                        ThemeResponse::description,
+                        ThemeResponse::thumbnailImageUrl
                 )
                 .containsExactly(1L, "공포테마", "무서운 테마입니다.", "http://image.png");
     }
@@ -68,12 +68,12 @@ class ThemeServiceTest {
     @Test
     void 이미_존재하는_이름으로_테마_등록을_시도하면_예외가_발생한다() {
         // given: '공포테마'가 이미 등록되어 있음
-        themeService.register(new ThemeRegisterCommand("공포테마", "설명", "http://image.png"));
+        themeService.register(new ThemeRequest("공포테마", "설명", "http://image.png"));
 
-        ThemeRegisterCommand duplicateCommand = new ThemeRegisterCommand("공포테마", "다른 설명", "http://image2.png");
+        ThemeRequest duplicateRequest = new ThemeRequest("공포테마", "다른 설명", "http://image2.png");
 
         // when & then: DuplicateEntityException 발생 확인
-        assertThatThrownBy(() -> themeService.register(duplicateCommand))
+        assertThatThrownBy(() -> themeService.register(duplicateRequest))
                 .isInstanceOf(DuplicateEntityException.class)
                 .hasMessageContaining("이미 존재하는 테마입니다. 테마 명: 공포테마");
     }
@@ -81,37 +81,38 @@ class ThemeServiceTest {
     @Test
     void 테마_식별자로_테마를_삭제_할_수_있다() {
         // given
-        ThemeRegisterCommand command = new ThemeRegisterCommand("공포테마", "설명", "http://image.png");
-        ThemeRegisterResult registerResult = themeService.register(command);
+        ThemeRequest request = new ThemeRequest("공포테마", "설명", "http://image.png");
+        ThemeResponse registerresponse = themeService.register(request);
 
         // when
-        themeService.remove(registerResult.id());
+        themeService.remove(registerresponse.id());
 
         // then: 같은 테마명으로 재등록 가능
-        assertThatCode(() -> themeService.register(command))
+        assertThatCode(() -> themeService.register(request))
                 .doesNotThrowAnyException();
     }
 
     @ParameterizedTest
     @MethodSource("provideReservationStatusScenarios")
-    void 테마별_예약_가능한_시간을_조회_시_시점에_따라_상태를_처리한다(LocalDate date, boolean expectedForEarlyTime, boolean expectedForLateTime) {
+    void 테마별_예약_가능한_시간을_조회_시_시점에_따라_상태를_처리한다(LocalDate date, boolean expectedForEarlyTime,
+                                             boolean expectedForLateTime) {
         // given
-        for (int hour = 10; hour <= 18; hour++) {
+        for (int hour = 0; hour <= 23; hour++) {
             reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(hour, 0)));
         }
         LocalTime nowTime = LocalTime.now();
 
         // when
-        List<ThemeTimesResult> result = themeService.getThemeReservationStatus(1L, date);
+        List<ThemeTimesResponse> response = themeService.getThemeReservationStatus(1L, date);
 
         // then
         // 1. 현재 시간보다 이른 시간대 검증
-        assertThat(result)
+        assertThat(response)
                 .filteredOn(time -> time.startAt().isBefore(nowTime))
                 .allSatisfy(time -> assertThat(time.isReservable()).isEqualTo(expectedForEarlyTime));
 
         // 2. 현재 시간보다 늦은 시간대 검증
-        assertThat(result)
+        assertThat(response)
                 .filteredOn(time -> time.startAt().isAfter(nowTime))
                 .allSatisfy(time -> assertThat(time.isReservable()).isEqualTo(expectedForLateTime));
     }

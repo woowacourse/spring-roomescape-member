@@ -7,12 +7,12 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.web.dto.ReservationTimeRequest;
+import roomescape.web.dto.ReservationTimeResponse;
 import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.collection.MemoryReservationTimeRepository;
-import roomescape.service.command.ReservationTimeCommand;
-import roomescape.service.result.ReservationTimeResult;
 
 class ReservationTimeServiceTest {
 
@@ -29,14 +29,14 @@ class ReservationTimeServiceTest {
     void 새로운_예약_시간을_정상적으로_등록한다() {
         // given: 새로운 예약 시간 정보가 주어짐
         LocalTime startAt = LocalTime.of(10, 0);
-        ReservationTimeCommand command = new ReservationTimeCommand(startAt);
+        ReservationTimeRequest request = new ReservationTimeRequest(startAt);
 
         // when: 시간을 등록함
-        ReservationTimeResult result = reservationTimeService.register(command);
+        ReservationTimeResponse response = reservationTimeService.register(request);
 
         // then: 새로운 ID를 발급해서 반환
-        assertThat(result)
-                .extracting(ReservationTimeResult::id, ReservationTimeResult::startAt)
+        assertThat(response)
+                .extracting(ReservationTimeResponse::id, ReservationTimeResponse::startAt)
                 .containsExactly(1L, startAt);
     }
 
@@ -46,10 +46,10 @@ class ReservationTimeServiceTest {
         LocalTime startAt = LocalTime.of(10, 0);
         reservationTimeRepository.save(new ReservationTime(startAt));
 
-        ReservationTimeCommand command = new ReservationTimeCommand(startAt);
+        ReservationTimeRequest request = new ReservationTimeRequest(startAt);
 
         // when & then: 중복된 시간 등록 시 DuplicateEntityException 발생
-        assertThatThrownBy(() -> reservationTimeService.register(command))
+        assertThatThrownBy(() -> reservationTimeService.register(request))
                 .isInstanceOf(DuplicateEntityException.class)
                 .hasMessageContaining("이미 등록된 예약 시간 입니다.");
     }
@@ -74,9 +74,9 @@ class ReservationTimeServiceTest {
         reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
 
         // when: 전체 조회를 요청함
-        List<ReservationTimeResult> results = reservationTimeService.getAllReservationTimes();
+        List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTimes();
 
         // then: 저장된 2개의 시간 정보가 반환됨
-        assertThat(results).hasSize(2);
+        assertThat(responses).hasSize(2);
     }
 }

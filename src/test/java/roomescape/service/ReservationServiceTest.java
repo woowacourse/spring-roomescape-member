@@ -8,6 +8,9 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.web.dto.ReservationRequest;
+import roomescape.web.dto.ReservationResponse;
+import roomescape.web.dto.ReservationTimeResponse;
 import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.EntityNotFoundException;
 import roomescape.domain.Reservation;
@@ -21,10 +24,7 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.collection.MemoryReservationRepository;
 import roomescape.repository.collection.MemoryReservationTimeRepository;
-import roomescape.service.command.ReservationCommand;
 import roomescape.service.fake.FakeThemeRepository;
-import roomescape.service.result.ReservationResult;
-import roomescape.service.result.ReservationTimeResult;
 
 class ReservationServiceTest {
 
@@ -38,7 +38,8 @@ class ReservationServiceTest {
         this.reservationRepository = new MemoryReservationRepository();
         this.reservationTimeRepository = new MemoryReservationTimeRepository();
         this.themeRepository = new FakeThemeRepository();
-        this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
+                themeRepository);
     }
 
     @Test
@@ -47,30 +48,30 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
         LocalDate reservationDate = LocalDate.now().plusDays(1);
-        ReservationCommand command = new ReservationCommand("이프", reservationDate, theme.getId(), time.getId());
+        ReservationRequest request = new ReservationRequest("이프", reservationDate, theme.getId(), time.getId());
 
         // when: 예약 진행
-        ReservationResult result = reservationService.reserve(command);
+        ReservationResponse response = reservationService.reserve(request);
 
         // then: 등록된 예약 정보가 입력값과 일치함
-        ReservationTimeResult timeResult = ReservationTimeResult.from(time);
-        assertThat(result)
+        ReservationTimeResponse timeResponse = ReservationTimeResponse.from(time);
+        assertThat(response)
                 .extracting(
-                        ReservationResult::id,
-                        ReservationResult::name,
-                        ReservationResult::date,
-                        ReservationResult::time
+                        ReservationResponse::id,
+                        ReservationResponse::name,
+                        ReservationResponse::date,
+                        ReservationResponse::time
                 )
-                .containsExactly(1L, "이프", reservationDate, timeResult);
+                .containsExactly(1L, "이프", reservationDate, timeResponse);
     }
 
     @Test
     void 존재하지_않는_테마_정보로_등록_했을_떄_예약하면_예외가_발생한다() {
         // given: 테마 ID가 등록되지 않음
-        ReservationCommand command = new ReservationCommand("이프", LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationRequest request = new ReservationRequest("이프", LocalDate.now().plusDays(1), 1L, 1L);
 
         // when & then: EntityNotFoundException 발생 확인
-        assertThatThrownBy(() -> reservationService.reserve(command))
+        assertThatThrownBy(() -> reservationService.reserve(request))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("존재하지 않는 테마 정보입니다.");
     }
@@ -78,11 +79,11 @@ class ReservationServiceTest {
     @Test
     void 존재하지_않는_시간_정보로_등록_했을_떄_예약하면_예외가_발생한다() {
         // given: 테마 ID는 등록되고 시간 ID가 등록되지 않음
-        ReservationCommand command = new ReservationCommand("이프", LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationRequest request = new ReservationRequest("이프", LocalDate.now().plusDays(1), 1L, 1L);
         themeRepository.save(ThemeFixture.createDefaultTheme());
 
         // when & then: EntityNotFoundException 발생 확인
-        assertThatThrownBy(() -> reservationService.reserve(command))
+        assertThatThrownBy(() -> reservationService.reserve(request))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("존재하지 않는 시간 정보입니다.");
     }
@@ -98,10 +99,10 @@ class ReservationServiceTest {
 
         LocalDate date = existingReservation.getDate();
 
-        ReservationCommand command = new ReservationCommand("새예약자", date, 1L, 1L);
+        ReservationRequest request = new ReservationRequest("새예약자", date, 1L, 1L);
 
         // when & then: DuplicateEntityException 발생 확인
-        assertThatThrownBy(() -> reservationService.reserve(command))
+        assertThatThrownBy(() -> reservationService.reserve(request))
                 .isInstanceOf(DuplicateEntityException.class)
                 .hasMessageContaining("이미 예약 된 날짜입니다.");
     }
@@ -113,10 +114,10 @@ class ReservationServiceTest {
         reservationRepository.save(ReservationFixture.createDefaultReservationWithName("바니"));
 
         // when: 전체 조회를 요청함
-        List<ReservationResult> results = reservationService.getAllReservations();
+        List<ReservationResponse> responses = reservationService.getAllReservations();
 
         // then: 2개의 결과가 반환됨
-        assertThat(results).hasSize(2);
+        assertThat(responses).hasSize(2);
     }
 
     @Test

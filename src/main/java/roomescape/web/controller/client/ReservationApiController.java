@@ -1,4 +1,4 @@
-package roomescape.controller.client.api;
+package roomescape.web.controller.client;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -8,10 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.client.api.dto.ReservationRequest;
-import roomescape.controller.client.api.dto.ReservationResponse;
+import roomescape.web.dto.ReservationRequest;
+import roomescape.web.dto.ReservationResponse;
 import roomescape.service.ReservationService;
-import roomescape.service.result.ReservationResult;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,10 +21,10 @@ public class ReservationApiController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> reserve(@Valid @RequestBody ReservationRequest request) {
-        ReservationResult result = reservationService.reserve(request.toCommand());
+        ReservationResponse response = reservationService.reserve(request);
 
-        URI location = URI.create("/api/reservations/" + result.id());
+        URI location = URI.create("/api/reservations/" + response.id());
 
-        return ResponseEntity.created(location).body(ReservationResponse.from(result));
+        return ResponseEntity.created(location).body(response);
     }
 }

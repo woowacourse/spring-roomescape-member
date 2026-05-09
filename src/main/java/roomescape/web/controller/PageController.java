@@ -1,4 +1,4 @@
-package roomescape.controller.client.web;
+package roomescape.web.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

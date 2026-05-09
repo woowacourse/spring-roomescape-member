@@ -1,4 +1,4 @@
-package roomescape.controller.admin.api;
+package roomescape.web.controller.admin;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.admin.api.dto.AdminThemeRequest;
-import roomescape.controller.admin.api.dto.AdminThemeResponse;
 import roomescape.service.ThemeService;
-import roomescape.service.result.ThemeRegisterResult;
+import roomescape.web.dto.ThemeRequest;
+import roomescape.web.dto.ThemeResponse;
 
 @RequestMapping("/api/admin/themes")
 @RestController
@@ -26,13 +25,13 @@ public class AdminThemeApiController {
     private final ThemeService themeService;
 
     @PostMapping
-    public ResponseEntity<AdminThemeResponse> register(@Valid @RequestBody AdminThemeRequest request) {
-        ThemeRegisterResult result = themeService.register(request.toCommand());
+    public ResponseEntity<ThemeResponse> register(@Valid @RequestBody ThemeRequest request) {
+        ThemeResponse response = themeService.register(request);
 
-        URI uri = URI.create("/api/admin/themes/" + result.id());
+        URI uri = URI.create("/api/admin/themes/" + response.id());
 
         return ResponseEntity.created(uri)
-                .body(AdminThemeResponse.from(result));
+                .body(response);
     }
 
     @DeleteMapping("/{id}")

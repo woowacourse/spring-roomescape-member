@@ -21,12 +21,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
-import roomescape.controller.admin.api.AdminThemeApiController;
-import roomescape.controller.admin.api.dto.AdminThemeRequest;
-import roomescape.controller.admin.api.dto.AdminThemeResponse;
 import roomescape.service.ThemeService;
-import roomescape.service.command.ThemeRegisterCommand;
-import roomescape.service.result.ThemeRegisterResult;
+import roomescape.web.controller.admin.AdminThemeApiController;
+import roomescape.web.dto.ThemeRequest;
+import roomescape.web.dto.ThemeResponse;
 
 @WebMvcTest(AdminThemeApiController.class)
 class AdminThemeApiControllerTest extends BaseControllerUnitTest {
@@ -42,15 +40,13 @@ class AdminThemeApiControllerTest extends BaseControllerUnitTest {
     @Test
     void 관리자가_테마_정보로_테마_추가_요청_시_성공한다() {
         // given
-        AdminThemeRequest body = new AdminThemeRequest("공포", "공포 방탈출입니다.", "http://image.com/image.png");
+        ThemeRequest body = new ThemeRequest("공포", "공포 방탈출입니다.", "http://image.com/image.png");
 
-        ThemeRegisterResult result = new ThemeRegisterResult(1L, "공포", "공포 방탈출입니다.", "http://image.com/image.png");
-        when(themeService.register(any(ThemeRegisterCommand.class))).thenReturn(result);
-
-        AdminThemeResponse expected = AdminThemeResponse.from(result);
+        ThemeResponse expected = new ThemeResponse(1L, "공포", "공포 방탈출입니다.", "http://image.com/image.png");
+        when(themeService.register(any(ThemeRequest.class))).thenReturn(expected);
 
         // when : admin 헤더를 포함해서 요청한다.
-        AdminThemeResponse response = RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+        ThemeResponse response = RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .body(body)
                 .when().post("/api/admin/themes")
                 .then().log().all()
@@ -65,7 +61,7 @@ class AdminThemeApiControllerTest extends BaseControllerUnitTest {
 
     @ParameterizedTest(name = "요청 정보가 {0} 일 때, 예외 메세지 \"{1}\"가 발생한다.")
     @MethodSource("roomescape.controller.admin.fixture.AdminThemeApiRequestFixture#themeFailRequestFixture")
-    void 관리자가_테마_추가_요청_시_형식_검증에_실패하면_예외가_발생한다(AdminThemeRequest body, String exceptionMessage) {
+    void 관리자가_테마_추가_요청_시_형식_검증에_실패하면_예외가_발생한다(ThemeRequest body, String exceptionMessage) {
         // given: 실패하는 request body가 주어짐
 
         // when & then: validation 위반으로 400 Bad Request가 발생한다.

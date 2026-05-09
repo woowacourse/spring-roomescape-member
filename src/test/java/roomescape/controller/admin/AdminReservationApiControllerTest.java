@@ -24,14 +24,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
-import roomescape.controller.admin.api.AdminReservationApiController;
-import roomescape.controller.admin.api.dto.AdminReservationRequest;
-import roomescape.controller.admin.api.dto.AdminReservationResponse;
 import roomescape.controller.admin.fixture.AdminReservationApiRequestFixture;
 import roomescape.service.ReservationService;
-import roomescape.service.command.ReservationCommand;
-import roomescape.service.result.ReservationResult;
-import roomescape.service.result.ReservationTimeResult;
+import roomescape.web.controller.admin.AdminReservationApiController;
+import roomescape.web.dto.ReservationRequest;
+import roomescape.web.dto.ReservationResponse;
+import roomescape.web.dto.ReservationTimeResponse;
 
 @WebMvcTest(AdminReservationApiController.class)
 class AdminReservationApiControllerTest extends BaseControllerUnitTest {
@@ -46,7 +44,7 @@ class AdminReservationApiControllerTest extends BaseControllerUnitTest {
 
     @ParameterizedTest(name = "요청 정보가 {0} 일 때, 예외 메세지 \"{1}\"가 발생한다.")
     @MethodSource("roomescape.controller.admin.fixture.AdminReservationApiRequestFixture#reserveFailRequestFixture")
-    void 예약_요청_시_형식_검증에_실패하면_예외가_발생한다(AdminReservationRequest body, String exceptionMessage) {
+    void 예약_요청_시_형식_검증에_실패하면_예외가_발생한다(ReservationRequest body, String exceptionMessage) {
         // given: 실패하는 request body가 주어짐
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
@@ -60,13 +58,14 @@ class AdminReservationApiControllerTest extends BaseControllerUnitTest {
     @Test
     void 예약_요청에_성공하면_201_Created_상태와_정상_응답이_반환된다() {
         // given
-        AdminReservationRequest body = AdminReservationApiRequestFixture.reserveSuccessRequestFixture();
-        ReservationTimeResult timeResult = new ReservationTimeResult(1L, LocalTime.now());
-        ReservationResult result = new ReservationResult(1L, "이프", LocalDate.now(), timeResult);
-        when(reservationService.reserve(any(ReservationCommand.class))).thenReturn(result);
+        ReservationRequest body = AdminReservationApiRequestFixture.reserveSuccessRequestFixture();
+        ReservationTimeResponse timeResponse = new ReservationTimeResponse(1L, LocalTime.now());
+
+        ReservationResponse expected = new ReservationResponse(1L, "이프", LocalDate.now(), timeResponse);
+        when(reservationService.reserve(any(ReservationRequest.class))).thenReturn(expected);
 
         // when & then
-        AdminReservationResponse response = RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+        ReservationResponse response = RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .body(body)
                 .when().post("/api/admin/reservations")
                 .then().log().all()
@@ -75,7 +74,7 @@ class AdminReservationApiControllerTest extends BaseControllerUnitTest {
                 .extract().as(new TypeRef<>() {
                 });
 
-        assertThat(response).isEqualTo(AdminReservationResponse.from(result));
+        assertThat(response).isEqualTo(expected);
     }
 
     @ParameterizedTest
@@ -102,14 +101,30 @@ class AdminReservationApiControllerTest extends BaseControllerUnitTest {
     @Test
     void 전체_예약_정보_조회_요청시_200OK와_예약_정보들을_응답한다() {
         // given
-        List<ReservationResult> result = List.of();
-        when(reservationService.getAllReservations()).thenReturn(result);
-        
+        ReservationTimeResponse time = new ReservationTimeResponse(1L, LocalTime.of(10, 0));
+        List<ReservationResponse> response = List.of(
+                new ReservationResponse(
+                        1L,
+                        "웨지",
+                        LocalDate.of(2026, 5, 9),
+                        time
+                ),
+
+                new ReservationResponse(
+                        2L,
+                        "바니",
+                        LocalDate.of(2026, 5, 10),
+                        time
+                )
+
+        );
+        when(reservationService.getAllReservations()).thenReturn(response);
+
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .when().get("/api/admin/reservations")
                 .then().log().all()
                 .status(HttpStatus.OK)
-                .body("size()", is(0));
+                .body("size()", is(2));
     }
 }
