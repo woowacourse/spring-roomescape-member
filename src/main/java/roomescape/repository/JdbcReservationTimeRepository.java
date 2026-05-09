@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -76,5 +77,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 )
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER, Date.valueOf(date), themeId);
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?",
+                Integer.class,
+                Time.valueOf(startAt)
+        );
+        return count != null && count > 0;
     }
 }

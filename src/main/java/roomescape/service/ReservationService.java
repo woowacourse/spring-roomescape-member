@@ -10,6 +10,7 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.ReservationCreateCommand;
 import roomescape.service.dto.ReservationResult;
+import roomescape.service.exception.ReservationConflictException;
 
 @Service
 public class ReservationService {
@@ -42,9 +43,22 @@ public class ReservationService {
         Theme theme = themeRepository.findById(command.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다: " + command.themeId()));
 
+        validateNoConflict(command);
+
         Reservation reservation = new Reservation(null, command.name(), command.date(), time, theme);
         Reservation saved = reservationRepository.save(reservation);
         return ReservationResult.from(saved);
+    }
+
+    private void validateNoConflict(ReservationCreateCommand command) {
+        boolean conflict = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                command.date(), command.timeId(), command.themeId());
+        if (conflict) {
+            throw new ReservationConflictException(
+                    "이미 예약된 시간입니다: %s, timeId=%d, themeId=%d"
+                            .formatted(command.date(), command.timeId(), command.themeId())
+            );
+        }
     }
 
     public void delete(Long id) {

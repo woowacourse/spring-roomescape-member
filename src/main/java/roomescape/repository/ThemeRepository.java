@@ -15,4 +15,6 @@ public interface ThemeRepository {
     void deleteById(Long id);
 
     List<PopularTheme> findPopular();
+
+    boolean existsByName(String name);
 }

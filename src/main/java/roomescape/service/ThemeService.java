@@ -3,18 +3,26 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.PopularThemeResult;
 import roomescape.service.dto.ThemeCreateCommand;
 import roomescape.service.dto.ThemeResult;
+import roomescape.service.exception.ThemeConflictException;
+import roomescape.service.exception.ThemeInUseException;
 
 @Service
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(
+            ThemeRepository themeRepository,
+            ReservationRepository reservationRepository
+    ) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<ThemeResult> findAll() {
@@ -24,6 +32,9 @@ public class ThemeService {
     }
 
     public ThemeResult create(ThemeCreateCommand command) {
+        if (themeRepository.existsByName(command.name())) {
+            throw new ThemeConflictException("이미 등록된 테마 이름입니다: " + command.name());
+        }
         Theme saved = themeRepository.save(
                 new Theme(null, command.name(), command.description(), command.thumbnailUrl())
         );
@@ -31,6 +42,10 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new ThemeInUseException(
+                    "예약이 존재하는 테마는 삭제할 수 없습니다: themeId=" + id);
+        }
         themeRepository.deleteById(id);
     }
 

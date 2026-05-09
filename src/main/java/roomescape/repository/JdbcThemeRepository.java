@@ -79,6 +79,16 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public boolean existsByName(String name) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM theme WHERE name = ?",
+                Integer.class,
+                name
+        );
+        return count != null && count > 0;
+    }
+
+    @Override
     public List<PopularTheme> findPopular() {
         String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail_url,
