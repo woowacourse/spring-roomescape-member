@@ -122,8 +122,8 @@ class ReservationTimeRepositoryTest {
         saveReservation(date, reservedTime16, theme);
 
         // when
-        List<ReservationTime> availableTimes = jdbcReservationTimeRepository.findAvailableByDateAndThemeId(
-                date.date(),
+        List<ReservationTime> availableTimes = jdbcReservationTimeRepository.findAvailableByDateIdAndThemeId(
+                date.id(),
                 theme.id()
         );
 

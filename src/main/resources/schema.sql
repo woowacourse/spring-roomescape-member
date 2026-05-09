@@ -26,12 +26,12 @@ CREATE TABLE IF NOT EXISTS reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     name     VARCHAR(255) NOT NULL,
-    date     DATE         NOT NULL,
-    start_at TIME         NOT NULL,
+    date_id  BIGINT       NOT NULL,
+    time_id  BIGINT       NOT NULL,
     theme_id BIGINT       NOT NULL,
     status   ENUM('RESERVED', 'CANCELED') NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (date) REFERENCES reservation_date (date),
-    FOREIGN KEY (start_at) REFERENCES reservation_time (start_at),
+    FOREIGN KEY (date_id) REFERENCES reservation_date (id),
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );

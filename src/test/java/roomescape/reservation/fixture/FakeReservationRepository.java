@@ -1,7 +1,5 @@
 package roomescape.reservation.fixture;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -48,22 +46,22 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId) {
+    public boolean existsByDateAndTimeAndThemeId(Long dateId, Long timeId, Long themeId) {
         return store.values().stream()
                 .anyMatch(reservation ->
-                        reservation.date().equals(date) &&
-                        reservation.time().equals(time) &&
+                        reservation.date().id().equals(dateId) &&
+                        reservation.time().id().equals(timeId) &&
                         reservation.theme().id().equals(themeId)
                 );
     }
 
     @Override
-    public boolean existsByNameAndDateAndTime(String name, LocalDate date, LocalTime time) {
+    public boolean existsByNameAndDateAndTime(String name, Long dateId, Long timeId) {
         return store.values().stream()
                 .anyMatch(reservation ->
                         reservation.name().equals(name) &&
-                        reservation.date().equals(date) &&
-                        reservation.time().equals(time)
+                        reservation.date().id().equals(dateId) &&
+                        reservation.time().id().equals(timeId)
                 );
     }
 

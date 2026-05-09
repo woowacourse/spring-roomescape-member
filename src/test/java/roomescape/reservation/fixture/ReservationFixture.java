@@ -15,7 +15,7 @@ public class ReservationFixture {
             ReservationTime time,
             Theme theme
     ) {
-        return Reservation.create(name, date.date(), time.startAt(), theme);
+        return Reservation.create(name, date, time, theme);
     }
 
     public static Reservation canceledReservation(
@@ -24,7 +24,7 @@ public class ReservationFixture {
             ReservationTime time,
             Theme theme
     ) {
-        Reservation reservation = Reservation.create(name, date.date(), time.startAt(), theme);
+        Reservation reservation = Reservation.create(name, date, time, theme);
         reservation.updateStatus(ReservationStatus.CANCELED);
         return reservation;
     }

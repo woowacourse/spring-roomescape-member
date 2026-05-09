@@ -2,8 +2,6 @@ package roomescape.reservation.service;
 
 import static roomescape.reservation.domain.ReservationStatus.CANCELED;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -48,10 +46,10 @@ public class ReservationService {
         ReservationDate reservationDate = getReservationDate(dto.dateId());
         Theme theme = getTheme(dto.themeId());
 
-        validateNotAlreadyBookedByOthers(reservationDate.date(), reservationTime.startAt(), theme);
+        validateNotAlreadyBookedByOthers(reservationDate.id(), reservationTime.id(), theme);
         validateUserHasNoReservationAtSameTime(dto.name(), reservationDate, reservationTime);
         return reservationRepository.save(
-                Reservation.create(dto.name(), reservationDate.date(), reservationTime.startAt(), theme)
+                Reservation.create(dto.name(), reservationDate, reservationTime, theme)
         );
     }
 
@@ -83,14 +81,14 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
     }
 
-    private void validateNotAlreadyBookedByOthers(LocalDate date, LocalTime time, Theme theme) {
-        if (reservationRepository.existsByDateAndTimeAndThemeId(date, time, theme.id())) {
+    private void validateNotAlreadyBookedByOthers(Long dateId, Long timeId, Theme theme) {
+        if (reservationRepository.existsByDateAndTimeAndThemeId(dateId, timeId, theme.id())) {
             throw new IllegalArgumentException("해당 날짜/시간/테마는 이미 예약되었습니다.");
         }
     }
 
     private void validateUserHasNoReservationAtSameTime(String name, ReservationDate date, ReservationTime time) {
-        if (reservationRepository.existsByNameAndDateAndTime(name, date.date(), time.startAt())) {
+        if (reservationRepository.existsByNameAndDateAndTime(name, date.id(), time.id())) {
             throw new IllegalArgumentException("동일한 날짜와 시간에 예약이 존재합니다.");
         }
     }

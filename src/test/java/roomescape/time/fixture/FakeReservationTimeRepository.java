@@ -1,6 +1,5 @@
 package roomescape.time.fixture;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +53,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, Long themeId) {
+    public List<ReservationTime> findAvailableByDateIdAndThemeId(Long dateId, Long themeId) {
         return List.of();
     }
 

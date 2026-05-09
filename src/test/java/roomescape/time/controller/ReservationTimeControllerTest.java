@@ -38,14 +38,12 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("사용자는 특정 날짜와 테마의 예약 가능한 시간을 조회한다.")
     void readAvailableTimes() {
-        String date = LocalDate.now().plusDays(1).toString();
-
+        Integer dateId = createReservationDate(LocalDate.now().plusDays(1).toString());
         Integer timeId = createReservationTime(startAt1);
-        createReservationDate(date);
         Integer themeId = createTheme(themeName);
 
         RestAssured.given().log().all()
-                .queryParam("date", date)
+                .queryParam("dateId", dateId)
                 .queryParam("themeId", themeId)
                 .when().get("/member/times")
                 .then().log().all()
@@ -58,16 +56,14 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("이미 예약된 시간은 예약 가능한 시간 목록에서 제외된다.")
     void readAvailableTimesExcludeReservedTime() {
-        String date = LocalDate.now().plusDays(1).toString();
-
+        Integer dateId = createReservationDate(LocalDate.now().plusDays(1).toString());
         Integer timeId = createReservationTime(startAt1);
         Integer availableTimeId = createReservationTime(startAt2);
-        Integer dateId = createReservationDate(date);
         Integer themeId = createTheme(themeName);
         createReservation(name, dateId, timeId, themeId);
 
         RestAssured.given().log().all()
-                .queryParam("date", date)
+                .queryParam("dateId", dateId)
                 .queryParam("themeId", themeId)
                 .when().get("/member/times")
                 .then().log().all()
@@ -80,13 +76,11 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("예약 시간이 없으면 빈 목록을 반환한다.")
     void readAvailableTimesEmpty() {
-        String date = LocalDate.now().plusDays(1).toString();
-        createReservationDate(date);
-
+        Integer dateId = createReservationDate(LocalDate.now().plusDays(1).toString());
         Integer themeId = createTheme(themeName);
 
         RestAssured.given().log().all()
-                .queryParam("date", date)
+                .queryParam("dateId", dateId)
                 .queryParam("themeId", themeId)
                 .when().get("/member/times")
                 .then().log().all()

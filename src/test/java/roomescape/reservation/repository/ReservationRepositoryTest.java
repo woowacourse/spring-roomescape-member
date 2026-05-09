@@ -6,7 +6,6 @@ import static roomescape.reservation.fixture.ReservationFixture.reservation;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -69,8 +68,8 @@ class ReservationRepositoryTest {
     void findAll() {
         // given
         List<Reservation> reservations = List.of(
-                Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme),
-                Reservation.create(name, reservationDate1.date(), reservationTime2.startAt(), theme)
+                Reservation.create(name, reservationDate1, reservationTime1, theme),
+                Reservation.create(name, reservationDate1, reservationTime2, theme)
         );
         saveAll(reservations);
 
@@ -87,12 +86,15 @@ class ReservationRepositoryTest {
     void findAllByName() {
         // given
         List<Reservation> reservations = saveAll(List.of(
-                Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme),
-                Reservation.create(name, reservationDate1.date(), reservationTime2.startAt(), theme),
-                Reservation.create(name, reservationDate2.date(), reservationTime1.startAt(), theme),
-                Reservation.create(name, reservationDate2.date(), reservationTime2.startAt(), theme))
+                Reservation.create(name, reservationDate1, reservationTime1, theme),
+                Reservation.create(name, reservationDate1, reservationTime2, theme),
+                Reservation.create(name, reservationDate2, reservationTime1, theme),
+                Reservation.create(name, reservationDate2, reservationTime2, theme))
         );
-        Collections.sort(reservations, Comparator.comparing(Reservation::date).thenComparing(Reservation::status));
+        reservations.sort(
+                Comparator.comparing((Reservation reservation) -> reservation.date().date())
+                        .thenComparing(reservation -> reservation.time().startAt())
+        );
 
         // when
         List<Reservation> actual = jdbcReservationRepository.findAllByNameOrderByDateAndTime(name);
@@ -122,12 +124,12 @@ class ReservationRepositoryTest {
     void exitsByDateAndTimeId() {
         // given
         save(reservation(name, reservationDate1, reservationTime1, theme));
-        LocalDate wrongDate = LocalDate.of(2000, 11, 4);
+        Long wrongDateId = reservationDate2.id();
 
         // when & then
-        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(reservationDate1.date(), reservationTime1.startAt(), theme.id()))
+        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(reservationDate1.id(), reservationTime1.id(), theme.id()))
                 .isTrue();
-        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(wrongDate, reservationTime1.startAt(), theme.id()))
+        assertThat(jdbcReservationRepository.existsByDateAndTimeAndThemeId(wrongDateId, reservationTime1.id(), theme.id()))
                 .isFalse();
     }
 

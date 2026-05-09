@@ -3,40 +3,43 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+
+import roomescape.date.domain.ReservationDate;
 import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
 
 public class Reservation {
     private Long id;
     private String name;
-    private LocalDate date;
-    private LocalTime time;
+    private ReservationDate date;
+    private ReservationTime time;
     private Theme theme;
     private ReservationStatus status;
 
-    private Reservation(Long id, String name, LocalDate date, LocalTime time, Theme theme, ReservationStatus status) {
-        validate(name, date, time, theme);
+    private Reservation(Long id, String name, ReservationDate reservationDate, ReservationTime time, Theme theme, ReservationStatus status) {
         this.id = id;
         this.name = name;
-        this.date = date;
+        this.date = reservationDate;
         this.time = time;
         this.theme = theme;
         this.status = status;
     }
 
-    public static Reservation create(String name, LocalDate date, LocalTime time, Theme theme) {
-        validate(name, date, time, theme);
-        validatePast(date, time);
-        return new Reservation(null, name, date, time, theme, ReservationStatus.RESERVED);
+    public static Reservation create(String name, ReservationDate reservationDate, ReservationTime time, Theme theme) {
+        validate(name, reservationDate, time, theme);
+        validatePast(reservationDate.date(), time.startAt());
+        return new Reservation(null, name, reservationDate, time, theme, ReservationStatus.RESERVED);
     }
 
-    public static Reservation load(Long id, String name, LocalDate date, LocalTime time, Theme theme, ReservationStatus status) {
+    public static Reservation load(Long id, String name, ReservationDate reservationDate, ReservationTime time, Theme theme, ReservationStatus status) {
+        validate(name, reservationDate, time, theme);
         validateId(id);
-        return new Reservation(id, name, date, time, theme, status);
+        return new Reservation(id, name, reservationDate, time, theme, status);
     }
 
-    private static void validate(String name, LocalDate date, LocalTime time, Theme theme) {
+    private static void validate(String name, ReservationDate reservationDate, ReservationTime time, Theme theme) {
         validateName(name);
-        validateDate(date);
+        validateDate(reservationDate);
         validateTime(time);
         validateTheme(theme);
     }
@@ -47,13 +50,13 @@ public class Reservation {
         }
     }
 
-    private static void validateDate(LocalDate date) {
+    private static void validateDate(ReservationDate date) {
         if (date == null) {
             throw new IllegalArgumentException("예약 날짜는 필수입니다.");
         }
     }
 
-    private static void validateTime(LocalTime time) {
+    private static void validateTime(ReservationTime time) {
         if (time == null) {
             throw new IllegalArgumentException("예약 시간은 필수입니다.");
         }
@@ -85,11 +88,11 @@ public class Reservation {
         return name;
     }
 
-    public LocalDate date() {
+    public ReservationDate date() {
         return date;
     }
 
-    public LocalTime time() {
+    public ReservationTime time() {
         return time;
     }
 

@@ -19,8 +19,8 @@ public record ReservationDetailDto(
         return new ReservationDetailDto(
                 reservation.id(),
                 reservation.name(),
-                reservation.date(),
-                reservation.time(),
+                reservation.date().date(),
+                reservation.time().startAt(),
                 ThemeDetailDto.from(reservation.theme()),
                 reservation.status()
         );

@@ -1,18 +1,19 @@
 package roomescape.reservation.repository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.date.domain.ReservationDate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
 import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -21,8 +22,14 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNumber) -> Reservation.load(
             resultSet.getLong("reservation_id"),
             resultSet.getString("name"),
-            resultSet.getDate("date").toLocalDate(),
-            resultSet.getTime("start_at").toLocalTime(),
+            ReservationDate.load(
+                    resultSet.getLong("date_id"),
+                    resultSet.getDate("date").toLocalDate()
+            ),
+            ReservationTime.load(
+                    resultSet.getLong("time_id"),
+                    resultSet.getTime("start_at").toLocalTime()
+            ),
             Theme.load(
                     resultSet.getLong("theme_id"),
                     resultSet.getString("theme_name"),
@@ -46,16 +53,20 @@ public class JdbcReservationRepository implements ReservationRepository {
                 SELECT
                     r.id AS reservation_id,
                     r.name,
-                    r.start_at, 
-                    r.date,
                     r.status,
-                    t.id AS theme_id,
-                    t.name AS theme_name,
-                    t.description,
-                    t.thumbnail_url,
-                    t.is_active
+                    d.id as date_id,
+                    d.date,
+                    t.id as time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description,
+                    th.thumbnail_url,
+                    th.is_active
                 FROM reservation r
-                INNER JOIN theme t ON r.theme_id = t.id
+                INNER JOIN reservation_date d ON r.date_id = d.id
+                INNER JOIN reservation_time t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
                 """;
 
         return jdbcTemplate.query(sql, reservationRowMapper);
@@ -67,17 +78,20 @@ public class JdbcReservationRepository implements ReservationRepository {
                 SELECT
                     r.id AS reservation_id,
                     r.name,
-                    r.start_at, 
-                    r.date,
                     r.status,
-                    t.id AS theme_id,
-                    t.name AS theme_name,
-                    t.description,
-                    t.thumbnail_url,
-                    t.is_active
+                    d.id as date_id,
+                    d.date,
+                    t.id as time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description,
+                    th.thumbnail_url,
+                    th.is_active
                 FROM reservation r
-                INNER JOIN theme t ON r.theme_id = t.id
-                WHERE r.id = :id
+                INNER JOIN reservation_date d ON r.date_id = d.id
+                INNER JOIN reservation_time t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
                 """;
         SqlParameterSource params = new MapSqlParameterSource("id", id);
 
@@ -90,19 +104,24 @@ public class JdbcReservationRepository implements ReservationRepository {
                 SELECT
                     r.id AS reservation_id,
                     r.name,
-                    r.start_at, 
-                    r.date,
                     r.status,
-                    t.id AS theme_id,
-                    t.name AS theme_name,
-                    t.description,
-                    t.thumbnail_url,
-                    t.is_active
+                    d.id AS date_id,
+                    d.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description,
+                    th.thumbnail_url,
+                    th.is_active
                 FROM reservation r
-                INNER JOIN theme t ON r.theme_id = t.id
+                INNER JOIN reservation_date d ON r.date_id = d.id
+                INNER JOIN reservation_time t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
                 WHERE r.name = :name
-                ORDER BY r.date ASC, r.start_at ASC
+                ORDER BY d.date ASC, t.start_at ASC
                 """;
+
         MapSqlParameterSource params = new MapSqlParameterSource("name", name);
 
         return jdbcTemplate.query(sql, params, reservationRowMapper);
@@ -112,8 +131,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.name())
-                .addValue("date", reservation.date())
-                .addValue("start_at", reservation.time())
+                .addValue("date_id", reservation.date().id())
+                .addValue("time_id", reservation.time().id())
                 .addValue("theme_id", reservation.theme().id())
                 .addValue("status", reservation.status().name());
         Long savedId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
@@ -128,11 +147,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId){
-        String sql = "SELECT COUNT(*) FROM reservation WHERE DATE = :date AND start_at = :start_at AND theme_id = :theme_id";
+    public boolean existsByDateAndTimeAndThemeId(Long dateId, Long timeId, Long themeId) {
+        String sql = """
+                SELECT COUNT(*) 
+                FROM reservation 
+                WHERE date_id = :date_id
+                    AND time_id = :time_id
+                    AND theme_id = :theme_id
+                """;
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("date", date)
-                .addValue("start_at", time)
+                .addValue("date_id", dateId)
+                .addValue("time_id", timeId)
                 .addValue("theme_id", themeId);
 
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
@@ -140,12 +165,18 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByNameAndDateAndTime(String name, LocalDate date, LocalTime time) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE name = :name AND date = :date AND start_at = :start_at";
+    public boolean existsByNameAndDateAndTime(String name, Long dateId, Long timeId) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM reservation 
+                WHERE name = :name 
+                  AND date_id = :date_id 
+                  AND time_id = :time_id
+                """;
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", name)
-                .addValue("date", date)
-                .addValue("start_at", time);
+                .addValue("date_id", dateId)
+                .addValue("time_id", timeId);
 
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;

@@ -1,6 +1,5 @@
 package roomescape.time.repository;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +18,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNum) -> ReservationTime.load(
+    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) -> ReservationTime.load(
             resultSet.getLong("id"),
             resultSet.getTime("start_at").toLocalTime()
     );
@@ -35,7 +34,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public List<ReservationTime> findAll() {
         String sql = "SELECT * FROM reservation_time";
 
-        return jdbcTemplate.query(sql, new MapSqlParameterSource(), RESERVATION_TIME_ROW_MAPPER);
+        return jdbcTemplate.query(sql, new MapSqlParameterSource(), reservationTimeRowMapper);
     }
 
     @Override
@@ -46,7 +45,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         try {
             return Optional.ofNullable(
-                    jdbcTemplate.queryForObject(sql, params, RESERVATION_TIME_ROW_MAPPER));
+                    jdbcTemplate.queryForObject(sql, params, reservationTimeRowMapper));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -76,21 +75,23 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAvailableByDateAndThemeId(LocalDate date, Long themeId) {
+    public List<ReservationTime> findAvailableByDateIdAndThemeId(Long dateId, Long themeId) {
         String sql = """
-                SELECT * FROM reservation_time
-                WHERE start_at NOT IN (
-                    SELECT start_at FROM reservation
-                    WHERE date = :date
-                    AND theme_id = :theme_id
-                    AND status = 'RESERVED'
-                )
-                """;
+            SELECT rt.*
+            FROM reservation_time rt
+            WHERE rt.id NOT IN (
+                SELECT r.time_id
+                FROM reservation r
+                WHERE r.date_id = :date_id
+                  AND r.theme_id = :theme_id
+                  AND r.status = 'RESERVED'
+            )
+            """;
 
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("date", date)
+                .addValue("date_id", dateId)
                 .addValue("theme_id", themeId);
 
-        return jdbcTemplate.query(sql, params, RESERVATION_TIME_ROW_MAPPER);
+        return jdbcTemplate.query(sql, params, reservationTimeRowMapper);
     }
 }
