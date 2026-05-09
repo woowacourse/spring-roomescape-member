@@ -13,6 +13,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.repository.FakeReservationDao;
 import roomescape.repository.FakeThemeDao;
+import roomescape.repository.FakeThemeSlotDao;
 import roomescape.repository.FakeTimeDao;
 
 class ReservationServiceTest {
@@ -24,9 +25,14 @@ class ReservationServiceTest {
     @BeforeEach
     void setUp() {
         FakeTimeDao fakeReservationTimeDao = new FakeTimeDao();
-        FakeReservationDao fakeReservationDao = new FakeReservationDao();
         FakeThemeDao fakeThemeDao = new FakeThemeDao();
-        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao, null);
+
+        reservationService = new ReservationService(
+                new FakeReservationDao(),
+                fakeReservationTimeDao,
+                fakeThemeDao,
+                new FakeThemeSlotDao()
+        );
         savedTime = fakeReservationTimeDao.save(Time.of(LocalTime.of(10, 0)));
         savedTheme = fakeThemeDao.save(new Theme("이름", "설명", "test.com"));
     }
