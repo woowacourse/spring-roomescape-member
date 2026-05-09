@@ -12,6 +12,20 @@ class NotNullValidatorTest {
     private final NotNullValidator notNullValidator = new NotNullValidator();
 
     @Test
+    void Null이_아닌값을_사용하면_검증_예외가_발생하지않는다() {
+        // given
+        Long validId = 1L;
+        UseNotNullDto validDto = new UseNotNullDto(validId);
+
+        // when
+        List<String> errors = notNullValidator.validate(validDto);
+
+        // then
+        Assertions.assertThat(errors)
+                .isEmpty();
+    }
+
+    @Test
     void NotNull이_붙은_필드가_Null이면_예외가_발생한다() {
         // given
         Long nullId = null;

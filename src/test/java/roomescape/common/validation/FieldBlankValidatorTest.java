@@ -12,6 +12,20 @@ class FieldBlankValidatorTest {
     private final FieldBlankValidator validator = new FieldBlankValidator();
 
     @Test
+    void 유효한_String값이_사용되면_검증예외가_발생하지않는다() {
+        // given
+        String validName = "송송";
+        UseNotBlankDto validDto = new UseNotBlankDto(validName);
+
+        // when
+        List<String> errors = validator.validate(validDto);
+
+        // then
+        Assertions.assertThat(errors)
+                .isEmpty();
+    }
+
+    @Test
     void NotBlank가_붙은_빌드가_비어있으면_예외가_발생한다() {
         // given
         String emptyName = " ";
