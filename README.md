@@ -25,13 +25,13 @@
 ## 관리자 API 명세서
 
 ### 1. 테마 추가
-| 항목 | 상세 내용                                                                                       |
-| :--- |:--------------------------------------------------------------------------------------------|
-| **URL** | `/admin/themes`                                                                             |
-| **HTTP Method** | `POST`                                                                                      |
-| **Request (Body)** | `{ "name": "테마명", "requiredTime" : "소요시간" }`                                                |
-| **Response** | `{ "id": 1 }`                                                                               |
-| **StatusCode** | `201 Created`                                                                               |
+| 항목 | 상세 내용                                        |
+| :--- |:---------------------------------------------|
+| **URL** | `/admin/themes`                              |
+| **HTTP Method** | `POST`                                       |
+| **Request (Body)** | `{ "name": "테마명", "requiredTime" : "소요시간" }` |
+| **Response** | 없음                                           |
+| **StatusCode** | `201 Created`                                |
 
 ### 2. 테마 삭제
 | 항목 | 상세 내용 |
@@ -61,13 +61,13 @@
 | **StatusCode** | `204 No Content` |
 
 ### 5. 관리자용 스케줄 생성
-| 항목 | 상세 내용 |
-| :--- | :--- |
-| **URL** | `/admin/schedules` |
-| **HTTP Method** | `POST` |
+| 항목 | 상세 내용                                                     |
+| :--- |:----------------------------------------------------------|
+| **URL** | `/admin/schedules`                                        |
+| **HTTP Method** | `POST`                                                    |
 | **Request (Body)** | `{ "themeId": 1, "date": "2026-05-10", "time": "10:00" }` |
-| **Response** | `{ "id": 1, "themeName": "테마명", "startAt": "2026-05-10T10:00:00", "endAt": "2026-05-10T12:00:00" }` |
-| **StatusCode** | `201 Created` |
+| **Response** | 없음                                                        |
+| **StatusCode** | `201 Created`                                             |
 
 ### 6. 관리자용 전체 스케줄 조회
 | 항목 | 상세 내용 |
@@ -107,7 +107,7 @@
 | **URL** | `/reservations`                  |
 | **HTTP Method** | `POST`                           |
 | **Request (Body)** | `{ "schedule": 1, "name":"이름" }` |
-| **Response** | `{ "id": 101 }`                  |
+| **Response** | 없음                               |
 | **StatusCode**  | `201 Created`                    |
 
 ### 4. 인기 테마 통계 조회
