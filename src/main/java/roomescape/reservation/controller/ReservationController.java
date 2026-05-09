@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.RequestReservation;
 import roomescape.reservation.dto.ResponseReservation;
-import roomescape.reservation.exception.DuplicateReservationException;
 import roomescape.reservation.service.ReservationService;
 
 import java.util.List;
@@ -30,7 +29,6 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @ExceptionHandler(DuplicateReservationException.class)
     @PostMapping
     public ResponseEntity<ResponseReservation> createReservation(@RequestBody RequestReservation request) {
         Reservation reservation = reservationService.createReservation(
