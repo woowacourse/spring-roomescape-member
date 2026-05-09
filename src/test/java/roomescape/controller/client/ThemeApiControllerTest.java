@@ -115,15 +115,4 @@ class ThemeApiControllerTest extends BaseControllerUnitTest {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(containsString("startDate 파라미터가 누락 되었습니다."));
     }
-
-    @Test
-    void 인기_테마_목록_조회_요청_시_종료일이_없으면_400_BAD_REQUEST() {
-        // when & then
-        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
-                .queryParam("startDate", "2026-05-06")
-                .when().get("/api/themes/popular")
-                .then().log().all()
-                .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("endDate 파라미터가 누락 되었습니다."));
-    }
 }

@@ -46,11 +46,8 @@ public class ThemeApiController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate
-    ) {
-        List<ThemeResponse> response = themeService.getPopularThemes(startDate, endDate)
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam LocalDate startDate) {
+        List<ThemeResponse> response = themeService.getPopularThemes(startDate, LocalDate.now())
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
