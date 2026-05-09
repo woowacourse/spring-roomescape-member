@@ -67,7 +67,7 @@ class ReservationDaoTest {
         reservationDao.save(new Reservation("맥스", date, reservationTime, theme));
 
         //when
-        boolean hasAlreadyReservation = reservationDao.existByDateAndTimeIAndThemeId(date, reservationTime.getId(),
+        boolean hasAlreadyReservation = reservationDao.hasDuplicateReservation(date, reservationTime.getId(),
                 theme.getId());
 
         //then

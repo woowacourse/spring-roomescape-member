@@ -89,7 +89,7 @@ public class ThemeDao {
     }
 
     public boolean existsByName(String name) {
-        String sql = "SELECT count(*) FROM theme WHERE name = ?";
+        String sql = "SELECT EXISTS(SELECT 1 FROM theme WHERE name = ?)";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name);
         return count != null && count > 0;
     }

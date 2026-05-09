@@ -29,7 +29,7 @@ public class ReservationService {
     }
 
     public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {
-        if (reservationDao.existByDateAndTimeIAndThemeId(date, timeId, themeId)) {
+        if (reservationDao.hasDuplicateReservation(date, timeId, themeId)) {
             throw new IllegalArgumentException("이미 존재하는 예약입니다.");
         }
         ReservationTime time = reservationTimeDao.findById(timeId);
@@ -52,7 +52,7 @@ public class ReservationService {
     }
 
     private void validateHasReservation(Long id) {
-        boolean hasReservation = reservationDao.existById(id);
+        boolean hasReservation = reservationDao.existsById(id);
         if (!hasReservation) {
             throw new IllegalArgumentException("존재하지 않는 예약이라 삭제할 수 없습니다.");
         }
