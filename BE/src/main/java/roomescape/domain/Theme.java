@@ -6,11 +6,11 @@ public record Theme(
         String description,
         String thumbnailUrl
 ) {
-    public static Theme createWithNullId(String name, String description, String thumbnailUrl) {
+    public static Theme create(String name, String description, String thumbnailUrl) {
         return new Theme(null, name, description, thumbnailUrl);
     }
 
-    public static Theme createWithId(Long id, String name, String description, String thumbnailUrl) {
+    public static Theme createRow(Long id, String name, String description, String thumbnailUrl) {
         return new Theme(id, name, description, thumbnailUrl);
     }
 
