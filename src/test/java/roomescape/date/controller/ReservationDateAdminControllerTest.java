@@ -34,7 +34,7 @@ class ReservationDateAdminControllerTest {
 
     @Test
     @DisplayName("예약 날짜 목록을 조회한다.")
-    void getReservationDates() {
+    void get_reservation_dates() {
         RestAssured.given().log().all()
                 .when().get("/admin/dates")
                 .then().log().all()
@@ -44,7 +44,7 @@ class ReservationDateAdminControllerTest {
 
     @Test
     @DisplayName("예약 날짜를 생성한다.")
-    void createReservationDate() {
+    void create_reservation_date() {
         Map<String, String> params = new HashMap<>();
         params.put("date", date);
 
@@ -65,7 +65,7 @@ class ReservationDateAdminControllerTest {
 
     @Test
     @DisplayName("예약 날짜를 삭제한다.")
-    void deleteReservationDate() {
+    void delete_reservation_date() {
         Map<String, String> params = new HashMap<>();
         params.put("date", date);
 
@@ -111,7 +111,7 @@ class ReservationDateAdminControllerTest {
 
     @Test
     @DisplayName("date가 없으면 예약 날짜 생성에 실패한다.")
-    void createReservationDateWithoutDate() {
+    void create_reservation_date_without_date() {
         Map<String, Object> params = new HashMap<>();
         params.put("date", null);
 

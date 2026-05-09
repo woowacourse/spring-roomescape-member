@@ -15,6 +15,8 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.HashMap;
 import java.util.Map;
 
+import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Sql(scripts = "classpath:truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -32,7 +34,7 @@ class ReservationTimeAdminControllerTest {
 
     @Test
     @DisplayName("관리자는 예약 시간 목록을 조회한다.")
-    void getReservationTimes() {
+    void get_reservation_times() {
         RestAssured.given().log().all()
                 .when().get("/admin/times")
                 .then().log().all()
@@ -42,8 +44,8 @@ class ReservationTimeAdminControllerTest {
 
     @Test
     @DisplayName("관리자는 예약 시간을 생성한다.")
-    void createReservationTime() {
-        Integer timeId = createTime(startAt);
+    void create_reservation_time() {
+        Integer timeId = createReservationTime(startAt);
 
         RestAssured.given().log().all()
                 .when().get("/admin/times")
@@ -56,8 +58,8 @@ class ReservationTimeAdminControllerTest {
 
     @Test
     @DisplayName("관리자는 예약 시간을 삭제한다.")
-    void deleteReservationTime() {
-        Integer timeId = createTime(startAt);
+    void delete_reservation_time() {
+        Integer timeId = createReservationTime(startAt);
 
         RestAssured.given().log().all()
                 .when().delete("/admin/times/" + timeId)
@@ -75,7 +77,7 @@ class ReservationTimeAdminControllerTest {
 
     @Test
     @DisplayName("startAt이 없으면 예약 시간 생성에 실패한다.")
-    void createReservationTimeWithoutStartAt() {
+    void create_reservation_time_without_start_at() {
         Map<String, Object> params = new HashMap<>();
         params.put("startAt", null);
 
@@ -87,17 +89,4 @@ class ReservationTimeAdminControllerTest {
                 .statusCode(400);
     }
 
-    private Integer createTime(String startAt) {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", startAt);
-
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/times")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .path("id");
-    }
 }

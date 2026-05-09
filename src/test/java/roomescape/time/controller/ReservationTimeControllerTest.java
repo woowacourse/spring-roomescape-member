@@ -1,7 +1,6 @@
 package roomescape.time.controller;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,10 +10,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
+import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
+import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
+import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -39,8 +40,8 @@ class ReservationTimeControllerTest {
     void readAvailableTimes() {
         String date = LocalDate.now().plusDays(1).toString();
 
-        Integer timeId = createTime(startAt1);
-        createDate(date);
+        Integer timeId = createReservationTime(startAt1);
+        createReservationDate(date);
         Integer themeId = createTheme(themeName);
 
         RestAssured.given().log().all()
@@ -59,12 +60,11 @@ class ReservationTimeControllerTest {
     void readAvailableTimesExcludeReservedTime() {
         String date = LocalDate.now().plusDays(1).toString();
 
-        Integer reservedTimeId = createTime(startAt1);
-        Integer availableTimeId = createTime(startAt2);
-        Integer dateId = createDate(date);
+        Integer timeId = createReservationTime(startAt1);
+        Integer availableTimeId = createReservationTime(startAt2);
+        Integer dateId = createReservationDate(date);
         Integer themeId = createTheme(themeName);
-
-        createReservation(name, dateId, reservedTimeId, themeId);
+        createReservation(name, dateId, timeId, themeId);
 
         RestAssured.given().log().all()
                 .queryParam("date", date)
@@ -81,73 +81,14 @@ class ReservationTimeControllerTest {
     @DisplayName("예약 시간이 없으면 빈 목록을 반환한다.")
     void readAvailableTimesEmpty() {
         String date = LocalDate.now().plusDays(1).toString();
+        createReservationDate(date);
 
-        createDate(date);
         Integer themeId = createTheme(themeName);
 
         RestAssured.given().log().all()
                 .queryParam("date", date)
                 .queryParam("themeId", themeId)
                 .when().get("/member/times")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    private Integer createTime(String startAt) {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", startAt);
-
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/times")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .path("id");
-    }
-
-    private Integer createDate(String date) {
-        Map<String, String> params = new HashMap<>();
-        params.put("date", date);
-
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/dates")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .path("id");
-    }
-
-    private Integer createTheme(String name) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("description", name + " 설명");
-        params.put("thumbnailUrl", name + " 썸네일");
-
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .path("id");
-    }
-
-    private void createReservation(String name, Integer dateId, Integer timeId, Integer themeId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("dateId", dateId);
-        params.put("timeId", timeId);
-        params.put("themeId", themeId);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/member/reservations")
                 .then().log().all()
                 .statusCode(200);
     }

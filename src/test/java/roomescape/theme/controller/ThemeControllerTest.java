@@ -1,6 +1,7 @@
 package roomescape.theme.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -21,8 +22,6 @@ class ThemeControllerTest {
 
     private final String activeThemeName = "활성 테마";
     private final String inactiveThemeName = "비활성 테마";
-    private final String description = "테마 설명";
-    private final String thumbnailUrl = "테마 썸네일";
 
     @LocalServerPort
     private int port;
@@ -34,7 +33,7 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("사용자는 활성화된 테마 목록만 조회한다.")
-    void getActiveThemes() {
+    void get_active_themes() {
         Integer activeThemeId = createTheme(activeThemeName);
         Integer inactiveThemeId = createTheme(inactiveThemeName);
 
@@ -50,7 +49,7 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("활성화된 테마가 없으면 빈 목록을 반환한다.")
-    void getActiveThemesEmpty() {
+    void get_active_themes_empty() {
         Integer themeId = createTheme(inactiveThemeName);
         updateThemeStatus(themeId, false);
 
@@ -59,22 +58,6 @@ class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
-    }
-
-    private Integer createTheme(String name) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("description", description);
-        params.put("thumbnailUrl", thumbnailUrl);
-
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .path("id");
     }
 
     private void updateThemeStatus(Integer themeId, boolean isActive) {

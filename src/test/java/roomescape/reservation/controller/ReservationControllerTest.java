@@ -4,9 +4,11 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +43,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("사용자는 예약을 생성한다.")
-    void createReservation() {
+    void create_reservation() {
         Integer dateId = createDate(date);
         Integer timeId = createTime(startAt);
         Integer themeId = createTheme(themeName);
@@ -57,7 +59,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("사용자는 자신의 이름으로 예약 목록을 조회한다.")
-    void getMyReservations() {
+    void get_my_reservations() {
         Integer dateId = createDate(date);
         Integer themeId = createTheme(themeName);
 
@@ -82,7 +84,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("사용자는 자신의 예약을 취소한다.")
-    void cancelReservation() {
+    void cancel_reservation() {
         Integer dateId = createDate(date);
         Integer timeId = createTime(startAt);
         Integer themeId = createTheme(themeName);
@@ -103,7 +105,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("예약이 없는 이름으로 조회하면 빈 목록을 반환한다.")
-    void getMyReservationsEmpty() {
+    void get_my_reservations_empty() {
         RestAssured.given().log().all()
                 .when().get("/member/reservations/" + reservationName)
                 .then().log().all()
@@ -113,7 +115,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("name이 없으면 예약 생성에 실패한다.")
-    void createReservationWithoutName() {
+    void create_reservation_without_name() {
         Integer dateId = createDate(date);
         Integer timeId = createTime(startAt);
         Integer themeId = createTheme(themeName);
@@ -134,7 +136,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("dateId가 없으면 예약 생성에 실패한다.")
-    void createReservationWithoutDateId() {
+    void create_reservation_without_date_id() {
         Integer timeId = createTime(startAt);
         Integer themeId = createTheme(themeName);
 
@@ -154,7 +156,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("timeId가 없으면 예약 생성에 실패한다.")
-    void createReservationWithoutTimeId() {
+    void create_reservation_without_time_id() {
         Integer dateId = createDate(date);
         Integer themeId = createTheme(themeName);
 
@@ -174,7 +176,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("themeId가 없으면 예약 생성에 실패한다.")
-    void createReservationWithoutThemeId() {
+    void create_reservation_without_theme_id() {
         Integer dateId = createDate(date);
         Integer timeId = createTime(startAt);
 

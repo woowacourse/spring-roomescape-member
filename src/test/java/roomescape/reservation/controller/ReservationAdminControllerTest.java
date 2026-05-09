@@ -39,7 +39,7 @@ class ReservationAdminControllerTest {
 
     @Test
     @DisplayName("관리자는 전체 예약 목록을 조회한다.")
-    void getReservations() {
+    void get_reservations() {
         RestAssured.given().log().all()
                 .when().get("/admin/reservations")
                 .then().log().all()
@@ -49,7 +49,7 @@ class ReservationAdminControllerTest {
 
     @Test
     @DisplayName("관리자는 예약을 생성한다.")
-    void createReservation() {
+    void create_reservation() {
         Integer dateId = createDate(date);
         Integer timeId = createTime(startAt);
         Integer themeId = createTheme(themeName);
@@ -65,7 +65,7 @@ class ReservationAdminControllerTest {
 
     @Test
     @DisplayName("관리자는 예약을 취소한다.")
-    void cancelReservation() {
+    void cancel_reservation() {
         Integer dateId = createDate(date);
         Integer timeId = createTime(startAt);
         Integer themeId = createTheme(themeName);
@@ -86,7 +86,7 @@ class ReservationAdminControllerTest {
 
     @Test
     @DisplayName("name이 없으면 예약 생성에 실패한다.")
-    void createReservationWithoutName() {
+    void create_reservation_without_name() {
         Integer dateId = createDate(date);
         Integer timeId = createTime(startAt);
         Integer themeId = createTheme(themeName);
@@ -107,7 +107,7 @@ class ReservationAdminControllerTest {
 
     @Test
     @DisplayName("dateId가 없으면 예약 생성에 실패한다.")
-    void createReservationWithoutDateId() {
+    void create_reservation_without_date_id() {
         Integer timeId = createTime(startAt);
         Integer themeId = createTheme(themeName);
 
@@ -127,7 +127,7 @@ class ReservationAdminControllerTest {
 
     @Test
     @DisplayName("timeId가 없으면 예약 생성에 실패한다.")
-    void createReservationWithoutTimeId() {
+    void create_reservation_without_time_id() {
         Integer dateId = createDate(date);
         Integer themeId = createTheme(themeName);
 
@@ -147,7 +147,7 @@ class ReservationAdminControllerTest {
 
     @Test
     @DisplayName("themeId가 없으면 예약 생성에 실패한다.")
-    void createReservationWithoutThemeId() {
+    void create_reservation_without_theme_id() {
         Integer dateId = createDate(date);
         Integer timeId = createTime(startAt);
 

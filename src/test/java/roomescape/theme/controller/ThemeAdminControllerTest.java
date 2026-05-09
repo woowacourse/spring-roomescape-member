@@ -1,6 +1,7 @@
 package roomescape.theme.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -36,7 +37,7 @@ class ThemeAdminControllerTest {
 
     @Test
     @DisplayName("관리자는 테마 목록을 조회한다.")
-    void getThemes() {
+    void get_themes() {
         RestAssured.given().log().all()
                 .when().get("/admin/themes")
                 .then().log().all()
@@ -46,8 +47,8 @@ class ThemeAdminControllerTest {
 
     @Test
     @DisplayName("관리자는 테마를 생성한다.")
-    void createTheme() {
-        createTheme(themeName, themeDescription, thumbnailUrl);
+    void create_theme() {
+        createTheme(themeName);
 
         RestAssured.given().log().all()
                 .when().get("/admin/themes")
@@ -58,8 +59,8 @@ class ThemeAdminControllerTest {
 
     @Test
     @DisplayName("관리자는 단일 테마를 조회한다.")
-    void getTheme() {
-        Integer themeId = createTheme(themeName, themeDescription, thumbnailUrl);
+    void get_theme() {
+        Integer themeId = createTheme(themeName);
 
         RestAssured.given().log().all()
                 .when().get("/admin/themes/" + themeId)
@@ -70,8 +71,8 @@ class ThemeAdminControllerTest {
 
     @Test
     @DisplayName("관리자는 테마 활성화 상태를 변경한다.")
-    void updateThemeStatus() {
-        Integer themeId = createTheme(themeName, themeDescription, thumbnailUrl);
+    void update_theme_status() {
+        Integer themeId = createTheme(themeName);
 
         Map<String, Boolean> params = new HashMap<>();
         params.put("isActive", true);
@@ -95,7 +96,7 @@ class ThemeAdminControllerTest {
 
     @Test
     @DisplayName("name이 비어 있으면 테마 생성에 실패한다.")
-    void createThemeWithoutName() {
+    void create_theme_without_name() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "");
         params.put("description", themeDescription);
@@ -111,7 +112,7 @@ class ThemeAdminControllerTest {
 
     @Test
     @DisplayName("description이 비어 있으면 테마 생성에 실패한다.")
-    void createThemeWithoutDescription() {
+    void create_theme_without_description() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", themeName);
         params.put("description", "");
@@ -127,7 +128,7 @@ class ThemeAdminControllerTest {
 
     @Test
     @DisplayName("thumbnailUrl이 없으면 테마 생성에 실패한다.")
-    void createThemeWithoutThumbnailUrl() {
+    void create_theme_without_thumbnail_url() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", themeName);
         params.put("description", themeDescription);
@@ -143,7 +144,7 @@ class ThemeAdminControllerTest {
 
     @Test
     @DisplayName("thumbnailUrl이 비어있어도 기본 썸네일 테마를 생성한다.")
-    void createThemeEmptyThumbnailUrl() {
+    void create_theme_empty_thumbnail_url() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", themeName);
         params.put("description", themeDescription);
@@ -156,22 +157,6 @@ class ThemeAdminControllerTest {
                 .then().log().all()
                 .body("thumbnailUrl", is(defaultThumbnailUrl))
                 .statusCode(200);
-    }
-
-    private Integer createTheme(String name, String description, String thumbnailUrl) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("description", description);
-        params.put("thumbnailUrl", thumbnailUrl);
-
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .path("id");
     }
 
 }
