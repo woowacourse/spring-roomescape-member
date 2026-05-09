@@ -7,32 +7,23 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import roomescape.domain.ReservationTime;
 
+@JdbcTest
 class ReservationTimeRepositoryTest {
 
-    private ReservationTimeRepository dao;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    private ReservationTimeRepository reservationTimeRepository;
 
     @BeforeEach
     void setup() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:reservation_time_dao_test;DB_CLOSE_DELAY=-1");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScript(new ClassPathResource("schema.sql"));
-        populator.execute(dataSource);
-
+        this.reservationTimeRepository = new ReservationTimeRepository(jdbcTemplate);
+        jdbcTemplate.update("DELETE FROM reservation;");
         jdbcTemplate.update("DELETE FROM reservation_time;");
-        this.dao = new ReservationTimeRepository(jdbcTemplate);
     }
 
     @Test
@@ -41,11 +32,11 @@ class ReservationTimeRepositoryTest {
         ReservationTime time = new ReservationTime(LocalTime.of(8, 0));
 
         // when
-        Long id = dao.insert(time);
+        Long id = reservationTimeRepository.insert(time);
 
         // then
-        List<ReservationTime> times = dao.findAll();
-        ReservationTime savedTime = dao.findBy(id).get();
+        List<ReservationTime> times = reservationTimeRepository.findAll();
+        ReservationTime savedTime = reservationTimeRepository.findBy(id).get();
         assertAll(
                 () -> assertThat(id).isNotNull(),
                 () -> assertThat(times).hasSize(1),
@@ -57,17 +48,17 @@ class ReservationTimeRepositoryTest {
         // given
         ReservationTime time1 = new ReservationTime(LocalTime.of(8, 0));
         ReservationTime time2 = new ReservationTime(LocalTime.of(21, 0));
-        Long id1 = dao.insert(time1);
-        Long id2 = dao.insert(time2);
+        Long id1 = reservationTimeRepository.insert(time1);
+        Long id2 = reservationTimeRepository.insert(time2);
 
         // when
-        int deletedCount = dao.delete(id1);
+        int deletedCount = reservationTimeRepository.delete(id1);
 
         // then
-        List<ReservationTime> times = dao.findAll();
+        List<ReservationTime> times = reservationTimeRepository.findAll();
         assertAll(
                 () -> assertThat(deletedCount).isEqualTo(1),
                 () -> assertThat(times).hasSize(1),
-                () -> assertThat(dao.findBy(id1)).isEmpty());
+                () -> assertThat(reservationTimeRepository.findBy(id1)).isEmpty());
     }
 }
