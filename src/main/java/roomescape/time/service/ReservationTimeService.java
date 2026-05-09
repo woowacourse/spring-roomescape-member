@@ -3,6 +3,7 @@ package roomescape.time.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
@@ -12,6 +13,7 @@ import roomescape.time.dto.request.ReservationTimeSaveDto;
 import roomescape.time.dto.response.ReservationTimeDetailDto;
 import roomescape.time.repository.ReservationTimeRepository;
 
+@Slf4j
 @Service
 public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
@@ -32,6 +34,7 @@ public class ReservationTimeService {
         LocalTime startAt = reservationTimeSaveDto.startAt();
         validateDuplicateTimeExist(startAt);
         Long id = reservationTimeRepository.save(ReservationTime.create(startAt));
+        log.info("Reservation time created: id={}, startAt={}", id, startAt);
         return new ReservationTimeDetailDto(id, startAt);
     }
 
@@ -46,6 +49,7 @@ public class ReservationTimeService {
         ReservationTime reservationTime = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
         reservationTimeRepository.delete(id);
+        log.info("Reservation time deleted: id={}, startAt={}", id, reservationTime.startAt());
         return ReservationTimeDetailDto.from(reservationTime);
     }
 

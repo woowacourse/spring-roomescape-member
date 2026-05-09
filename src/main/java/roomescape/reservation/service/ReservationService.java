@@ -6,6 +6,7 @@ import static roomescape.reservation.domain.ReservationStatus.RESERVED;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
@@ -22,6 +23,7 @@ import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
+@Slf4j
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
@@ -67,6 +69,7 @@ public class ReservationService {
         validateUserHasNoReservationAtSameTime(dto.name(), reservationDate, reservationTime);
         Long id = reservationRepository.save(
                 Reservation.create(dto.name(), reservationDate.date(), reservationTime.startAt(), theme));
+        log.info("Reservation created: name={}, date={}, time={}, theme={}", dto.name(), reservationDate.date(), reservationTime.startAt(), theme.name());
 
         return new ReservationResponse(
                 id,
@@ -95,6 +98,7 @@ public class ReservationService {
         Reservation reservation = getReservation(id);
         reservation.updateStatus(CANCELED);
         reservationRepository.updateStatus(reservation);
+        log.info("Reservation canceled: id={}, name={}, date={}, time={}, theme={}", reservation.id(), reservation.name(), reservation.date(), reservation.time(), reservation.theme().name());
         return ReservationResponse.from(reservation);
     }
 

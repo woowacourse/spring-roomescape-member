@@ -2,12 +2,14 @@ package roomescape.theme.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
+@Slf4j
 @Service
 public class ThemeService {
     private final ThemeRepository themeRepository;
@@ -43,7 +45,9 @@ public class ThemeService {
 
     @Transactional
     public Theme register(String name, String description, String thumbnailUrl) {
-        return themeRepository.save(Theme.create(name, description, thumbnailUrl));
+        Theme theme = themeRepository.save(Theme.create(name, description, thumbnailUrl));
+        log.info("Theme registered: id={}, name={}", theme.id(), theme.name());
+        return theme;
     }
 
     @Transactional
@@ -53,6 +57,7 @@ public class ThemeService {
         if (!themeRepository.updateStatus(theme)) {
             throw new IllegalArgumentException("해당 테마가 존재하지 않습니다.");
         }
+        log.info("Theme status updated: id={}, name={}, isActive={}", theme.id(), theme.name(), theme.isActive());
         return theme;
     }
 
