@@ -103,9 +103,9 @@ class JdbcReservationRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.save(
                 ReservationTime.create(LocalTime.parse("10:00")));
         Theme theme = themeRepository.save(Theme.create("귀신찾기", "귀신을 찾는다", "example.com"));
-        Reservation reservation = Reservation.create("루드비코", LocalDate.parse("2026-05-06"),
+        Reservation reservation = reservationRepository.save(Reservation.create("루드비코", LocalDate.parse("2026-05-06"),
                 reservationTime,
-                theme);
+                theme));
 
         // when
         reservationRepository.delete(reservation.getId());
