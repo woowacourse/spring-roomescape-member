@@ -1,19 +1,19 @@
 package roomescape.facade;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.reservationtime.domain.ReservationTime;
-import roomescape.domain.theme.domain.Theme;
 import roomescape.domain.reservation.dto.ReservationRequest;
-import roomescape.facade.ReservationFacade;
+import roomescape.domain.reservationtime.domain.ReservationTime;
 import roomescape.domain.reservationtime.service.ReservationTimeService;
+import roomescape.domain.theme.domain.Theme;
 import roomescape.domain.theme.service.ThemeService;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -52,6 +52,18 @@ class ReservationFacadeTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("테마")
                 .hasMessageContaining(String.valueOf(theme.getId()));
+    }
+
+    @Test
+    void 같은_날짜_시간_테마에_중복_예약시_예외가_발생한다() {
+        ReservationTime time = reservationTimeService.addTime(new ReservationTime(null, LocalTime.of(10, 0)));
+        Theme theme = themeService.addTheme(new Theme(null, "공포", "무서운 테마", "https://example.com/horror.jpg"));
+        ReservationRequest request = new ReservationRequest("브라운", LocalDate.of(2026, 8, 5), time.getId(), theme.getId());
+
+        reservationFacade.addReservation(request);
+
+        assertThatThrownBy(() -> reservationFacade.addReservation(request))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

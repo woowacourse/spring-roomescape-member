@@ -3,17 +3,17 @@ package roomescape.facade;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.domain.Reservation;
-import roomescape.domain.reservationtime.domain.ReservationTime;
-import roomescape.domain.theme.domain.Theme;
+import roomescape.domain.reservation.domain.Reservations;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.TimeWithStatusResponse;
 import roomescape.domain.reservation.service.ReservationService;
+import roomescape.domain.reservationtime.domain.ReservationTime;
 import roomescape.domain.reservationtime.service.ReservationTimeService;
+import roomescape.domain.theme.domain.Theme;
 import roomescape.domain.theme.service.ThemeService;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class ReservationFacade {
@@ -26,8 +26,11 @@ public class ReservationFacade {
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
 
-    public ReservationFacade(ReservationService reservationService, ReservationTimeService reservationTimeService,
-                             ThemeService themeService) {
+    public ReservationFacade(
+            ReservationService reservationService,
+            ReservationTimeService reservationTimeService,
+            ThemeService themeService
+    ) {
         this.reservationService = reservationService;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
@@ -54,25 +57,26 @@ public class ReservationFacade {
         ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
         Theme theme = themeService.findById(request.themeId());
 
-        if (reservationService.hasReservationsBy(request.date(), reservationTime.getId(),
-                theme.getId())) {
+        Reservations existing = reservationService.findOn(request.date(), theme.getId());
+        if (existing.isOccupied(reservationTime)) {
             throw new IllegalArgumentException(ALREADY_EXISTS_ADD_RESERVATION);
         }
-        return reservationService.addReservation(new Reservation(
+
+        return reservationService.addReservation(
+                new Reservation(
                         request.name(),
                         request.date(),
                         reservationTime,
                         theme
-                )
-        );
+                ));
     }
 
     public List<TimeWithStatusResponse> getTimesWithAvailability(LocalDate date, Long themeId) {
         List<ReservationTime> times = reservationTimeService.getReservationTimes();
-        Set<Long> reservedTimeIds = reservationService.findReservedTimeIdsByDateAndThemeId(date, themeId);
+        Reservations reservations = reservationService.findOn(date, themeId);
 
         return times.stream()
-                .map(time -> TimeWithStatusResponse.from(time, reservedTimeIds.contains(time.getId())))
+                .map(time -> TimeWithStatusResponse.from(time, reservations.isOccupied(time)))
                 .toList();
     }
 }

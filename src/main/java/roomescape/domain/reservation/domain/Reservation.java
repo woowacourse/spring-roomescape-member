@@ -4,6 +4,7 @@ import roomescape.domain.reservationtime.domain.ReservationTime;
 import roomescape.domain.theme.domain.Theme;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Reservation {
     private final Long id;
@@ -53,5 +54,17 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Reservation that = (Reservation) o;
+        return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName()) && Objects.equals(getDate(), that.getDate()) && Objects.equals(getTime(), that.getTime()) && Objects.equals(getTheme(), that.getTheme());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getDate(), getTime(), getTheme());
     }
 }

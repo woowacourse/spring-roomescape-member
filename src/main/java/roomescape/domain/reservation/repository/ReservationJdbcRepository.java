@@ -7,16 +7,15 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.domain.Reservation;
+import roomescape.domain.reservation.domain.Reservations;
 import roomescape.domain.reservationtime.domain.ReservationTime;
 import roomescape.domain.theme.domain.Theme;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 @Primary
@@ -27,6 +26,17 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public ReservationJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    private static final String SELECT_BASE = """
+            SELECT r.id as reservation_id, r.name, r.date,
+                   t.id as time_id, t.start_at as time_value,
+                   th.id as theme_id, th.name as theme_name,
+                   th.description as theme_description,
+                   th.thumbnail_image_url as theme_thumbnail
+            FROM reservation as r
+            INNER JOIN reservation_time as t ON r.time_id = t.id
+            INNER JOIN theme as th ON r.theme_id = th.id
+            """;
 
     private final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) -> {
         ReservationTime time = new ReservationTime(
@@ -48,7 +58,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
         );
     };
 
-
     public boolean existsByTimeId(Long timeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
@@ -58,22 +67,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public boolean existsByThemeId(Long themeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
-        return count != null && count > 0;
-    }
-
-    public boolean existsBy(LocalDate date, Long timeId, Long themeId) {
-        String sql = """
-                SELECT COUNT(*)
-                FROM reservation
-                WHERE date = ? AND time_id = ? AND theme_id = ?;
-                """;
-        Integer count = jdbcTemplate.queryForObject(
-                sql,
-                Integer.class,
-                date,
-                timeId,
-                themeId
-        );
         return count != null && count > 0;
     }
 
@@ -135,12 +128,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
         return results.stream().findFirst();
     }
 
-    public Set<Long> findReservedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
-        String sql = """
-                SELECT time_id
-                FROM reservation
-                WHERE date = ? AND theme_id = ?;
-                """;
-        return new HashSet<>(jdbcTemplate.queryForList(sql, Long.class, date, themeId));
+    public Reservations findOn(LocalDate date, Long themeId) {
+        String sql = SELECT_BASE + " WHERE r.date = ? AND r.theme_id = ?";
+        return new Reservations(jdbcTemplate.query(sql, reservationRowMapper, date, themeId));
     }
 }
