@@ -83,8 +83,13 @@ public class ReservationRepository {
         return jdbcTemplate.queryForObject(sql, reservationMapper, id);
     }
 
-    public int existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+    }
+
+    public boolean existsByTimeId(Long timeId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
 }
