@@ -33,8 +33,8 @@ public class ReservationDao {
         Theme theme = new Theme(
                 rs.getLong("theme_id"),
                 rs.getString("theme_name"),
-                rs.getString("description"),
-                rs.getString("thumbnail_image_url")
+                rs.getString("theme_description"),
+                rs.getString("theme_thumbnail")
         );
         return new Reservation(
                 rs.getLong("reservation_id"),
