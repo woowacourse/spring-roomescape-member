@@ -11,6 +11,9 @@ import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.ReservationCreateCommand;
 import roomescape.service.dto.ReservationResult;
 import roomescape.service.exception.ReservationConflictException;
+import roomescape.service.exception.ReservationNotFoundException;
+import roomescape.service.exception.ReservationTimeNotFoundException;
+import roomescape.service.exception.ThemeNotFoundException;
 
 @Service
 public class ReservationService {
@@ -38,10 +41,12 @@ public class ReservationService {
 
     public ReservationResult create(ReservationCreateCommand command) {
         ReservationTime time = reservationTimeRepository.findById(command.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다: " + command.timeId()));
+                .orElseThrow(() -> new ReservationTimeNotFoundException(
+                        "존재하지 않는 시간입니다: timeId=" + command.timeId()));
 
         Theme theme = themeRepository.findById(command.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다: " + command.themeId()));
+                .orElseThrow(() -> new ThemeNotFoundException(
+                        "존재하지 않는 테마입니다: themeId=" + command.themeId()));
 
         validateNoConflict(command);
 
@@ -62,6 +67,9 @@ public class ReservationService {
     }
 
     public void delete(Long id) {
+        if (!reservationRepository.existsById(id)) {
+            throw new ReservationNotFoundException("존재하지 않는 예약입니다: reservationId=" + id);
+        }
         reservationRepository.deleteById(id);
     }
 }

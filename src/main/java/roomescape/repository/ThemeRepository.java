@@ -17,4 +17,6 @@ public interface ThemeRepository {
     List<PopularTheme> findPopular();
 
     boolean existsByName(String name);
+
+    boolean existsById(Long id);
 }

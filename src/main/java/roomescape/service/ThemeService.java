@@ -10,6 +10,7 @@ import roomescape.service.dto.ThemeCreateCommand;
 import roomescape.service.dto.ThemeResult;
 import roomescape.service.exception.ThemeConflictException;
 import roomescape.service.exception.ThemeInUseException;
+import roomescape.service.exception.ThemeNotFoundException;
 
 @Service
 public class ThemeService {
@@ -42,6 +43,9 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
+        if (!themeRepository.existsById(id)) {
+            throw new ThemeNotFoundException("존재하지 않는 테마입니다: themeId=" + id);
+        }
         if (reservationRepository.existsByThemeId(id)) {
             throw new ThemeInUseException(
                     "예약이 존재하는 테마는 삭제할 수 없습니다: themeId=" + id);

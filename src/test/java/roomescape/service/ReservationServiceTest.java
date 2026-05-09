@@ -22,6 +22,9 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.ReservationCreateCommand;
 import roomescape.service.exception.ReservationConflictException;
+import roomescape.service.exception.ReservationNotFoundException;
+import roomescape.service.exception.ReservationTimeNotFoundException;
+import roomescape.service.exception.ThemeNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -72,5 +75,47 @@ class ReservationServiceTest {
         given(reservationRepository.save(any(Reservation.class))).willReturn(saved);
 
         assertDoesNotThrow(() -> reservationService.create(VALID_COMMAND));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 timeId로 예약을 생성하면 ReservationTimeNotFoundException이 발생한다")
+    void 존재하지_않는_timeId로_예약시_예외가_발생한다() {
+        given(reservationTimeRepository.findById(1L)).willReturn(Optional.empty());
+
+        assertThrows(
+                ReservationTimeNotFoundException.class,
+                () -> reservationService.create(VALID_COMMAND)
+        );
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 themeId로 예약을 생성하면 ThemeNotFoundException이 발생한다")
+    void 존재하지_않는_themeId로_예약시_예외가_발생한다() {
+        given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(VALID_TIME));
+        given(themeRepository.findById(1L)).willReturn(Optional.empty());
+
+        assertThrows(
+                ThemeNotFoundException.class,
+                () -> reservationService.create(VALID_COMMAND)
+        );
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약을 삭제하면 ReservationNotFoundException이 발생한다")
+    void 존재하지_않는_예약_삭제시_예외가_발생한다() {
+        given(reservationRepository.existsById(1L)).willReturn(false);
+
+        assertThrows(
+                ReservationNotFoundException.class,
+                () -> reservationService.delete(1L)
+        );
+    }
+
+    @Test
+    @DisplayName("존재하는 예약은 정상적으로 삭제된다")
+    void 존재하는_예약은_정상_삭제된다() {
+        given(reservationRepository.existsById(1L)).willReturn(true);
+
+        assertDoesNotThrow(() -> reservationService.delete(1L));
     }
 }
