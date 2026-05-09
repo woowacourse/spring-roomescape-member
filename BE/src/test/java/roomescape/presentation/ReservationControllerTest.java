@@ -134,9 +134,7 @@ class ReservationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].time.id").value(1))
-                .andExpect(jsonPath("$[0].isAvailable").value(true))
-                .andExpect(jsonPath("$[1].time.id").value(2))
-                .andExpect(jsonPath("$[1].isAvailable").value(false));
+                .andExpect(jsonPath("$[1].time.id").value(2));
 
         then(reservationService).should().getReservationsByDateAndTheme(date, 1L);
     }
