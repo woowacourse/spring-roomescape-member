@@ -1,6 +1,9 @@
 package roomescape.theme.service;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,6 +26,7 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.service.dto.ThemeBestServiceDto;
 import roomescape.theme.service.dto.ThemeSaveServiceDto;
 import roomescape.time.service.TimeService;
 
@@ -42,14 +46,17 @@ class ThemeServiceImplTest {
     private ReservationRepository reservationRepository;
 
     private ThemeServiceImpl themeService;
+    private Clock clock;
 
     @BeforeEach
     void setUp() {
+        clock = Clock.fixed(Instant.parse("2026-05-06T00:00:00Z"), ZoneId.of("Asia/Seoul"));
         themeService = new ThemeServiceImpl(
                 themeRepository,
                 timeService,
                 holidayRepository,
                 reservationRepository,
+                clock,
                 7,
                 10
         );
@@ -164,5 +171,23 @@ class ThemeServiceImplTest {
 
         assertThat(themeService.getAvailableTimes(1L, date))
                 .isEqualTo(allTimes);
+    }
+
+    @Test
+    void getBestThemes_주입받은_Clock의_날짜를_기준으로_조회한다() {
+        List<Theme> themes = List.of(new Theme("이름", "설명", "https://url").withId(1L));
+        when(themeRepository.findBestThemesByDate(any(ThemeBestServiceDto.class))).thenReturn(themes);
+
+        List<Theme> result = themeService.getBestThemes();
+
+        assertThat(result).isEqualTo(themes);
+
+        ArgumentCaptor<ThemeBestServiceDto> captor = ArgumentCaptor.forClass(ThemeBestServiceDto.class);
+        verify(themeRepository).findBestThemesByDate(captor.capture());
+
+        ThemeBestServiceDto dto = captor.getValue();
+        assertThat(dto.date()).isEqualTo(LocalDate.of(2026, 5, 6));
+        assertThat(dto.dayCount()).isEqualTo(7);
+        assertThat(dto.rankCount()).isEqualTo(10);
     }
 }

@@ -88,6 +88,7 @@ class JdbcThemeRepositoryTest {
         insertReservation("b_in", LocalDate.of(2026, 5, 6), timeId, theme2.getId());
 
         insertReservation("c_out", LocalDate.of(2026, 5, 2), timeId, theme3.getId());
+        insertReservation("c_today", LocalDate.of(2026, 5, 10), timeId, theme3.getId());
 
         // when
         List<Theme> bestThemes = jdbcThemeRepository.findBestThemesByDate(new ThemeBestServiceDto(date, dayCount, 10));

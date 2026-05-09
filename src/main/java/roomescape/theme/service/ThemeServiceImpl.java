@@ -1,5 +1,6 @@
 package roomescape.theme.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,7 @@ public class ThemeServiceImpl implements ThemeService {
     private final TimeService timeService;
     private final HolidayRepository holidayRepository;
     private final ReservationRepository reservationRepository;
+    private final Clock clock;
     private final int dayCount;
     private final int rankCount;
 
@@ -33,6 +35,7 @@ public class ThemeServiceImpl implements ThemeService {
             TimeService timeService,
             HolidayRepository holidayRepository,
             ReservationRepository reservationRepository,
+            Clock clock,
             @Value("${theme.dayCount:7}") int dayCount,
             @Value("${theme.rankCount:10}") int rankCount
     ) {
@@ -40,6 +43,7 @@ public class ThemeServiceImpl implements ThemeService {
         this.timeService = timeService;
         this.holidayRepository = holidayRepository;
         this.reservationRepository = reservationRepository;
+        this.clock = clock;
         this.dayCount = dayCount;
         this.rankCount = rankCount;
     }
@@ -93,7 +97,7 @@ public class ThemeServiceImpl implements ThemeService {
 
     @Override
     public List<Theme> getBestThemes() {
-        ThemeBestServiceDto themeBestServiceDto = new ThemeBestServiceDto(LocalDate.now(), dayCount, rankCount);
+        ThemeBestServiceDto themeBestServiceDto = new ThemeBestServiceDto(LocalDate.now(clock), dayCount, rankCount);
         return themeRepository.findBestThemesByDate(themeBestServiceDto);
     }
 }

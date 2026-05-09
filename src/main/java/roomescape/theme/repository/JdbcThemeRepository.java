@@ -84,6 +84,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     public List<Theme> findBestThemesByDate(ThemeBestServiceDto themeBestServiceDto) {
         LocalDate date = themeBestServiceDto.date();
         LocalDate startDate = date.minusDays(themeBestServiceDto.dayCount());
+        LocalDate endDate = date.minusDays(1);
         return jdbcTemplate.query(
                 """
                         SELECT t.id, t.name, t.description, t.image_url
@@ -96,7 +97,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                         """,
                 new ThemeRowMapper(),
                 startDate,
-                date,
+                endDate,
                 themeBestServiceDto.rankCount()
         );
     }
