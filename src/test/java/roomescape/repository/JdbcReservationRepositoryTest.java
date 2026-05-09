@@ -28,9 +28,9 @@ class JdbcReservationRepositoryTest {
     @Autowired
     JdbcThemeRepository themeRepository;
 
-    @DisplayName("예약시간을 저장한다")
+    @DisplayName("예약을 저장한다")
     @Test
-    void 예약시간을_저장하면_id를_부여한다() {
+    void 예약을_저장하면_id를_부여한다() {
         // given
         ReservationTime reservationTime = reservationTimeRepository.save(
                 new ReservationTime(LocalTime.parse("10:20:30")));
@@ -46,9 +46,9 @@ class JdbcReservationRepositoryTest {
         assertThat(saved.getId()).isNotNull();
     }
 
-    @DisplayName("예약시간을 id로 조회한다")
+    @DisplayName("예약을 id로 조회한다")
     @Test
-    void 예약시간을_id로_조회한다() {
+    void 예약을_id로_조회한다() {
         // given
         ReservationTime reservationTime = reservationTimeRepository.save(
                 new ReservationTime(LocalTime.parse("10:20:30")));
@@ -65,9 +65,9 @@ class JdbcReservationRepositoryTest {
         assertThat(result.get()).isEqualTo(saved);
     }
 
-    @DisplayName("저장된 모든 예약시간을 조회한다")
+    @DisplayName("저장된 모든 예약을 조회한다")
     @Test
-    void 저장된_모든_예약시간을_조회한다() {
+    void 저장된_모든_예약을_조회한다() {
         // given
         ReservationTime reservationTime1 = reservationTimeRepository.save(
                 new ReservationTime(LocalTime.parse("10:20:30")));
@@ -96,9 +96,9 @@ class JdbcReservationRepositoryTest {
                 );
     }
 
-    @DisplayName("id에 해당하는 예약시간을 삭제한다")
+    @DisplayName("id에 해당하는 예약을 삭제한다")
     @Test
-    void 예약시간을_삭제한다() {
+    void 예약을_삭제한다() {
         // given
         ReservationTime reservationTime = reservationTimeRepository.save(
                 new ReservationTime(LocalTime.parse("10:20:30")));
