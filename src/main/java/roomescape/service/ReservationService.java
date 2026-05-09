@@ -74,7 +74,7 @@ public class ReservationService {
 
         Reservation reservation = new Reservation(reservationReq.name(), reservationReq.date(), reservationTimeById, themeById);
         Long generatedId = reservationUpdatingDao.insert(reservation);
-        return ReservationResponse.from(new Reservation(generatedId, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme(), reservation.getCreatedAt()));
+        return ReservationResponse.from(reservation.reservationWithId(generatedId));
     }
 
     @Transactional
