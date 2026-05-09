@@ -35,6 +35,22 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
+        ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
+                .orElseThrow(
+                        () -> new RuntimeException("존재하지 않는 시간입니다."));
+        Theme theme = themeRepository.findById(reservationRequestDTO.themeId())
+                .orElseThrow(
+                        () -> new RuntimeException("존재하지 않는 테마입니다."));
+
+        Reservation reservation = Reservation.create(reservationRequestDTO.name(),
+                reservationRequestDTO.date(), time, theme);
+
+        Reservation savedReservation = reservationRepository.save(reservation);
+        ReservationResponseDTO response = ReservationResponseDTO.from(savedReservation);
+        return response;
+    }
+
     public List<ReservationTimeResponseDTO> findReservedTimes(LocalDate targetDate,
             Long targetThemeId) {
         List<Long> reservedTimesOfTargetThemeOnTargetDate = reservationRepository.findAll()
@@ -51,22 +67,6 @@ public class ReservationService {
                         reservationTime.getId()))
                 .map(ReservationTimeResponseDTO::from)
                 .toList();
-    }
-
-    public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
-        ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
-                .orElseThrow(
-                        () -> new RuntimeException("존재하지 않는 시간입니다."));
-        Theme theme = themeRepository.findById(reservationRequestDTO.themeId())
-                .orElseThrow(
-                        () -> new RuntimeException("존재하지 않는 테마입니다."));
-
-        Reservation reservation = Reservation.create(reservationRequestDTO.name(),
-                reservationRequestDTO.date(), time, theme);
-
-        Reservation savedReservation = reservationRepository.save(reservation);
-        ReservationResponseDTO response = ReservationResponseDTO.from(savedReservation);
-        return response;
     }
 
     public void deleteReservation(Long id) {
