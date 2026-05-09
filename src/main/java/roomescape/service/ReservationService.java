@@ -17,7 +17,6 @@ import roomescape.repository.ReservationUpdatingDao;
 import roomescape.repository.ThemeQueryingDao;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,18 +63,28 @@ public class ReservationService {
         Theme themeById = themeQueryingDao.findThemeById(reservationReq.themeId())
                 .orElseThrow(() -> new ThemeNotFoundException(reservationReq.themeId()));
 
+        if (reservationReq.date().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("현재보다 이전의 날짜는 예약할 수 없습니다.");
+        }
+
         Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(themeById.getId(), reservationReq.date(), reservationTimeById.getId());
         if (savedReservation.isPresent()) {
             throw new ReservationAlreadyExistException();
         }
-        LocalDateTime now = LocalDateTime.now();
-        Long generatedId = reservationUpdatingDao.insert(reservationReq, now);
-        return ReservationResponse.from(new Reservation(generatedId, reservationReq.name(), reservationReq.date(), reservationTimeById, themeById, now));
+
+        Reservation reservation = new Reservation(reservationReq.name(), reservationReq.date(), reservationTimeById, themeById);
+        Long generatedId = reservationUpdatingDao.insert(reservation);
+        return ReservationResponse.from(new Reservation(generatedId, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme(), reservation.getCreatedAt()));
     }
 
     @Transactional
     public void update(ReservationRequest newReservationReq, Long id) {
-        reservationUpdatingDao.update(id, newReservationReq);
+        ReservationTime reservationTime = reservationTimeQueryingDao.findReservationTimeById(newReservationReq.timeId())
+                .orElseThrow(() -> new ReservationTimeNotFoundException(newReservationReq.timeId()));
+        Theme theme = themeQueryingDao.findThemeById(newReservationReq.themeId())
+                .orElseThrow(() -> new ThemeNotFoundException(newReservationReq.themeId()));
+        Reservation reservation = new Reservation(newReservationReq.name(), newReservationReq.date(), reservationTime, theme);
+        reservationUpdatingDao.update(id, reservation);
     }
 
     @Transactional

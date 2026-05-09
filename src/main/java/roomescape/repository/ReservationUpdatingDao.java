@@ -4,10 +4,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.reservation.ReservationRequest;
+import roomescape.domain.reservation.Reservation;
 
 import java.sql.PreparedStatement;
-import java.time.LocalDateTime;
 
 @Repository
 public class ReservationUpdatingDao {
@@ -18,9 +17,9 @@ public class ReservationUpdatingDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void update(Long id, ReservationRequest reservationReq) {
+    public void update(Long id, Reservation reservation) {
         String sql = "update reservation SET name = ?, date = ?, time_id = ?, theme_id = ? where id = ?";
-        jdbcTemplate.update(sql, reservationReq.name(), reservationReq.date(), reservationReq.timeId(), reservationReq.themeId(), id);
+        jdbcTemplate.update(sql, reservation.getName(), reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId(), id);
     }
 
     public int delete(Long id) {
@@ -28,25 +27,20 @@ public class ReservationUpdatingDao {
         return jdbcTemplate.update(sql, id);
     }
 
-    public Long insert(ReservationRequest reservationReq, LocalDateTime now) {
+    public Long insert(Reservation reservation) {
         String sql = "insert into reservation(name, date, time_id, theme_id, created_at) values(?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    sql,
-                    new String[]{"id"}
-            );
-            ps.setString(1, reservationReq.name());
-            ps.setObject(2, reservationReq.date());
-            ps.setLong(3, reservationReq.timeId());
-            ps.setLong(4, reservationReq.themeId());
-            ps.setObject(5, now);
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, reservation.getName());
+            ps.setObject(2, reservation.getDate());
+            ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
+            ps.setObject(5, reservation.getCreatedAt());
             return ps;
         }, keyHolder);
 
-        Long id =  keyHolder.getKey().longValue();
-
-        return id;
+        return keyHolder.getKey().longValue();
     }
 }
