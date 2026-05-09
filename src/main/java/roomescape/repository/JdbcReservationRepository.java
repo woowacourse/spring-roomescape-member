@@ -86,6 +86,16 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """, id);
     }
 
+    @Override
+    public boolean existByTimeId(Long id) {
+        Integer count = jdbcTemplate.queryForObject("""
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE time_id = ?
+                """, Integer.class, id);
+        return count != null && count > 0;
+    }
+
     private int insert(Reservation reservation, KeyHolder keyHolder) {
         return jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(

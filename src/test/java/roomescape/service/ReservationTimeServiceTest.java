@@ -36,20 +36,6 @@ class ReservationTimeServiceTest {
     JdbcTemplate jdbcTemplate;
 
     @Test
-    @DisplayName("예약 시간을 생성한다.")
-    public void create_success() {
-        // given
-        LocalTime startAt = LocalTime.of(10, 0);
-
-        // when
-        ReservationTime reservationTime = reservationTimeService.create(startAt);
-
-        // then
-        assertThat(reservationTime.getId()).isNotNull();
-        assertThat(reservationTime.getStartAt()).isEqualTo(startAt);
-    }
-
-    @Test
     @DisplayName("이미 존재하는 예약 시간을 생성하면 예외가 발생한다.")
     public void create_fail() {
         // given
@@ -94,6 +80,20 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.findAvailableTimes(LocalDate.of(26,5,6), 37L))
                 .isInstanceOf(DomainException.class)
                 .hasMessage(ErrorCode.THEME_NOT_FOUND.message());
+    }
+
+    @Test
+    @DisplayName("이미 예약 정보가 존재하는 시간은 삭제할 수 없다.")
+    public void delete_fail() {
+        // given
+        ReservationTime reservationTime = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        insertReservation("브라운", LocalDate.of(2023, 8, 5), reservationTime, theme);
+
+        // when
+        assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(ErrorCode.RESERVATION_TIME_HAS_RESERVATION.message());
     }
 
     private ReservationTime insertReservationTime(LocalTime startAt) {

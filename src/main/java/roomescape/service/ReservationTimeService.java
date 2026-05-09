@@ -44,6 +44,10 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(Long id) {
+        if(reservationRepository.existByTimeId(id)) {
+            throw new DomainException(ErrorCode.RESERVATION_TIME_HAS_RESERVATION);
+        }
+
         reservationTimeRepository.deleteById(id);
     }
 

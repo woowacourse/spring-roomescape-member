@@ -120,7 +120,8 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    void 예약을_삭제한다() {
+    @DisplayName("예약을 삭제한다.")
+    void deleteById() {
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
         Reservation reservation = reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
@@ -128,5 +129,23 @@ class JdbcReservationRepositoryTest {
         reservationRepository.deleteById(reservation.getId());
 
         assertThat(reservationRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("특정 예약 시간 id를 가진 예약이 존재하는지 확인한다.")
+    public void existByTimeId() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime time2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
+
+        // when
+        boolean exists = reservationRepository.existByTimeId(time.getId());
+        boolean notExists = reservationRepository.existByTimeId(time2.getId());
+
+        // then
+        assertThat(exists).isTrue();
+        assertThat(notExists).isFalse();
     }
 }
