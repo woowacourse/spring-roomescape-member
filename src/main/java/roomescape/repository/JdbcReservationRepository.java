@@ -22,6 +22,29 @@ public class JdbcReservationRepository implements ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    private static RowMapper<Reservation> getReservationRowMapper() {
+        return (resultSet, rowNum) -> {
+            ReservationTime time = ReservationTime.of(
+                    resultSet.getLong("reservation_time_id"),
+                    LocalTime.parse(resultSet.getString("time_value"))
+            );
+
+            Theme theme = Theme.of(
+                    resultSet.getLong("reservation_theme_id"),
+                    resultSet.getString("reservation_theme_name"),
+                    resultSet.getString("reservation_theme_description"),
+                    resultSet.getString("reservation_theme_image_url")
+            );
+            return Reservation.of(
+                    resultSet.getLong("reservation_id"),
+                    resultSet.getString("name"),
+                    LocalDate.parse(resultSet.getString("date")),
+                    time,
+                    theme
+            );
+        };
+    }
+
     @Override
     public Reservation save(Reservation reservation) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -32,7 +55,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 new BeanPropertySqlParameterSource(reservation)
         ).longValue();
 
-        return new Reservation(
+        return Reservation.of(
                 generatedKey,
                 reservation.getName(),
                 reservation.getDate(),
@@ -104,28 +127,5 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = "select count(*) from reservation where time_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
         return count != null && count > 0;
-    }
-
-    private static RowMapper<Reservation> getReservationRowMapper() {
-        return (resultSet, rowNum) -> {
-            ReservationTime time = new ReservationTime(
-                    resultSet.getLong("reservation_time_id"),
-                    LocalTime.parse(resultSet.getString("time_value"))
-            );
-
-            Theme theme = new Theme(
-                    resultSet.getLong("reservation_theme_id"),
-                    resultSet.getString("reservation_theme_name"),
-                    resultSet.getString("reservation_theme_description"),
-                    resultSet.getString("reservation_theme_image_url")
-            );
-            return new Reservation(
-                    resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
-                    LocalDate.parse(resultSet.getString("date")),
-                    time,
-                    theme
-            );
-        };
     }
 }

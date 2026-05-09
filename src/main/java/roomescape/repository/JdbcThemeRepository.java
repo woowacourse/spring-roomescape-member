@@ -20,6 +20,15 @@ public class JdbcThemeRepository implements ThemeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    private static RowMapper<Theme> getThemeRowMapper() {
+        return (resultSet, rowNum) -> Theme.of(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("image_url")
+        );
+    }
+
     @Override
     public Theme save(Theme theme) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
@@ -30,7 +39,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 new BeanPropertySqlParameterSource(theme)
         ).longValue();
 
-        return new Theme(
+        return Theme.of(
                 generatedKey,
                 theme.getName(),
                 theme.getDescription(),
@@ -65,16 +74,16 @@ public class JdbcThemeRepository implements ThemeRepository {
     public List<Long> findPopularThemeIds() {
         List<Long> popularThemeIds = new LinkedList<>();
         String sql = """
-                SELECT t.id AS theme_id, t.name, COUNT(r.id) AS reservation_count
-                FROM theme AS t
-                LEFT JOIN reservation AS r
-                ON r.theme_id = t.id
-                AND r.date >= ?
-                AND r.date < ?
-                GROUP BY t.id
-                ORDER BY reservation_count DESC, t.name ASC
-                LIMIT 10
-            """;
+                    SELECT t.id AS theme_id, t.name, COUNT(r.id) AS reservation_count
+                    FROM theme AS t
+                    LEFT JOIN reservation AS r
+                    ON r.theme_id = t.id
+                    AND r.date >= ?
+                    AND r.date < ?
+                    GROUP BY t.id
+                    ORDER BY reservation_count DESC, t.name ASC
+                    LIMIT 10
+                """;
 
         LocalDate today = LocalDate.now();
         LocalDate beforeOneWeeks = today.minusWeeks(1);
@@ -91,15 +100,6 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public void delete(Long id) {
         jdbcTemplate.update("delete from theme where id=?", id);
-    }
-
-    private static RowMapper<Theme> getThemeRowMapper() {
-        return (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("image_url")
-        );
     }
 }
 

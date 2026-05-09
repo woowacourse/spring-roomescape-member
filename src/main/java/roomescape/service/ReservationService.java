@@ -35,7 +35,8 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    public List<ReservationTimeResponseDTO> findReservedTimes(LocalDate targetDate, Long targetThemeId) {
+    public List<ReservationTimeResponseDTO> findReservedTimes(LocalDate targetDate,
+            Long targetThemeId) {
         List<Long> reservedTimesOfTargetThemeOnTargetDate = reservationRepository.findAll()
                 .stream()
                 .filter(reservation -> reservation.getDate().equals(targetDate))
@@ -46,7 +47,8 @@ public class ReservationService {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         return reservationTimes.stream()
-                .filter(reservationTime -> reservedTimesOfTargetThemeOnTargetDate.contains(reservationTime.getId()))
+                .filter(reservationTime -> reservedTimesOfTargetThemeOnTargetDate.contains(
+                        reservationTime.getId()))
                 .map(ReservationTimeResponseDTO::from)
                 .toList();
     }
@@ -59,7 +61,7 @@ public class ReservationService {
                 .orElseThrow(
                         () -> new RuntimeException("존재하지 않는 테마입니다."));
 
-        Reservation reservation = new Reservation(reservationRequestDTO.name(),
+        Reservation reservation = Reservation.create(reservationRequestDTO.name(),
                 reservationRequestDTO.date(), time, theme);
 
         Reservation savedReservation = reservationRepository.save(reservation);

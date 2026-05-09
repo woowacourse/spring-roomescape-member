@@ -18,7 +18,7 @@ public class ThemeService {
     }
 
     public ThemeResponseDTO addTheme(ThemeRequestDTO request) {
-        Theme theme = new Theme(request.name(), request.description(), request.imageUrl());
+        Theme theme = Theme.create(request.name(), request.description(), request.imageUrl());
         Theme savedTheme = themeRepository.save(theme);
         return ThemeResponseDTO.from(savedTheme);
     }

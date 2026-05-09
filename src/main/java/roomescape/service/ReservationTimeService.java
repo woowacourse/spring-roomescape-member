@@ -29,7 +29,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResponseDTO addReservationTime(
             ReservationTimeRequestDTO reservationTimeRequest) {
-        ReservationTime reservationTime = new ReservationTime(
+        ReservationTime reservationTime = ReservationTime.create(
                 LocalTime.parse(reservationTimeRequest.startAt()));
 
         ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
@@ -42,7 +42,8 @@ public class ReservationTimeService {
                 .map(ReservationTimeResponseDTO::from).collect(Collectors.toList());
     }
 
-    public List<ReservationTimeResponseDTO> findReservedTimes(LocalDate targetDate, Long targetThemeId) {
+    public List<ReservationTimeResponseDTO> findReservedTimes(LocalDate targetDate,
+            Long targetThemeId) {
         List<Long> reservedTimesOfTargetThemeOnTargetDate = reservationRepository.findAll()
                 .stream()
                 .filter(reservation -> reservation.getDate().equals(targetDate))
@@ -53,7 +54,8 @@ public class ReservationTimeService {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         return reservationTimes.stream()
-                .filter(reservationTime -> reservedTimesOfTargetThemeOnTargetDate.contains(reservationTime.getId()))
+                .filter(reservationTime -> reservedTimesOfTargetThemeOnTargetDate.contains(
+                        reservationTime.getId()))
                 .map(ReservationTimeResponseDTO::from)
                 .toList();
     }

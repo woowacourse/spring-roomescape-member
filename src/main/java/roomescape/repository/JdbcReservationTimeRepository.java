@@ -28,7 +28,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 new BeanPropertySqlParameterSource(reservationTime)
         ).longValue();
 
-        return new ReservationTime(
+        return ReservationTime.of(
                 generatedKey,
                 reservationTime.getStartAt()
         );
@@ -40,7 +40,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> new ReservationTime(
+                (resultSet, rowNum) -> ReservationTime.of(
                         resultSet.getLong("id"),
                         LocalTime.parse(resultSet.getString("start_at"))
                 )
@@ -53,7 +53,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         List<ReservationTime> results = jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> new ReservationTime(
+                (resultSet, rowNum) -> ReservationTime.of(
                         resultSet.getLong("id"),
                         LocalTime.parse(resultSet.getString("start_at"))
                 ),
