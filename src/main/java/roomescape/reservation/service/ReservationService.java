@@ -8,55 +8,41 @@ import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.schedule.model.Schedule;
-import roomescape.schedule.repository.ScheduleRepository;
+import roomescape.schedule.service.ScheduleService;
 import roomescape.theme.model.Theme;
-import roomescape.theme.repository.ThemeRepository;
 import roomescape.user.model.User;
 import roomescape.user.model.Role;
-import roomescape.user.repository.UserRepository;
+import roomescape.user.service.UserService;
 
 import java.util.List;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.LocalDateTime;
 
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
 
+    private final UserService userService;
+    private final ScheduleService scheduleService;
     private final ReservationRepository reservationRepository;
-    private final ScheduleRepository scheduleRepository;
-    private final UserRepository userRepository;
-    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ScheduleRepository scheduleRepository, UserRepository userRepository, ThemeRepository themeRepository) {
+    public ReservationService(UserService userService, ScheduleService scheduleService, ReservationRepository reservationRepository) {
+        this.userService = userService;
+        this.scheduleService = scheduleService;
         this.reservationRepository = reservationRepository;
-        this.scheduleRepository = scheduleRepository;
-        this.userRepository = userRepository;
-        this.themeRepository = themeRepository;
     }
 
     @Transactional
     public ReservationIdResponse create(ReservationRequest request) {
-        User user = userRepository.findByName(request.name())
-                .orElseGet(() -> {
-                    User newUser = new User(request.name(), Role.USER);
-                    Long newUserId = userRepository.create(newUser);
-                    return new User(newUserId, request.name(), Role.USER);
-                });
+        User user = userService.findOrCreateByName(request.name());
 
-        Theme theme = themeRepository.findById(request.themeId());
+        Schedule schedule = scheduleService.CreateSchedule(
+                request.date(), request.time(), request.themeId()
+        );
 
-        LocalDateTime startAt = LocalDateTime.of(request.date(), request.time());
-
-        Schedule schedule = new Schedule(startAt, theme);
-        Long scheduleId = scheduleRepository.create(schedule);
-        Schedule savedSchedule = new Schedule(scheduleId, startAt, theme);
-
-        Reservation reservation = new Reservation(user, savedSchedule);
+        Reservation reservation = new Reservation(user, schedule);
         Long reservationId = reservationRepository.create(reservation);
-        Reservation savedReservation = new Reservation(reservationId, user, schedule);
-        return ReservationIdResponse.from(savedReservation);
+
+        return ReservationIdResponse.from(new Reservation(reservationId, user, schedule));
     }
 
     public ReservationsResponse findAll() {

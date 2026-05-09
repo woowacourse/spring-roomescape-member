@@ -25,4 +25,14 @@ public class UserService {
         Long id = userRepository.create(user);
         return UserResponse.from(new User(id, request.name(), DEFAULT));
     }
+
+    @Transactional
+    public User findOrCreateByName(String name) {
+        return userRepository.findByName(name)
+                .orElseGet(() -> {
+                    User newUser = new User(name, DEFAULT);
+                    Long newId = userRepository.create(newUser);
+                    return new User(newId, name, DEFAULT);
+                });
+    }
 }

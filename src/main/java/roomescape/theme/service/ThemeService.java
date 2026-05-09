@@ -38,4 +38,9 @@ public class ThemeService {
         List<PopularThemeResponse> responses = themeRepository.findPopularThemes(sort, limit, days);
         return PopularThemesResponse.from(responses);
     }
+
+    public Theme findById(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+    }
 }
