@@ -19,7 +19,7 @@ public class ReservationControllerTest {
     public void 전체_예약_조회_API() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("/reservations")
+                .when().get("admins/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(14));
@@ -29,7 +29,7 @@ public class ReservationControllerTest {
     public void 예약_삭제_API() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().delete("/reservations/1")
+                .when().delete("admins/reservations/1")
                 .then().log().all()
                 .statusCode(204);
     }
