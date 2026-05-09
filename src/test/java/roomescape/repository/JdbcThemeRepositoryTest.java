@@ -59,6 +59,18 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
+    @DisplayName("Theme 존재 여부를 조회한다.")
+    public void existsById() {
+        Theme theme = jdbcThemeRepository.save(new Theme("kim", "desc1", "thumb1"));
+
+        boolean exists = jdbcThemeRepository.existsById(theme.getId());
+        boolean notExists = jdbcThemeRepository.existsById(theme.getId() + 1);
+
+        assertThat(exists).isTrue();
+        assertThat(notExists).isFalse();
+    }
+
+    @Test
     @DisplayName("지정된 날짜 기간의 지정된 갯수 만큼의 테마정보를 예약 수를 순서대로 불러온다.")
     @Sql(scripts = "/popular-theme-data.sql")
     public void findTopThemesByReservationCount() {

@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeAvailability;
 import roomescape.domain.Theme;
 import roomescape.common.exception.DomainException;
 import roomescape.common.exception.ErrorCode;
@@ -20,9 +18,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
@@ -46,31 +42,6 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.create(startAt))
                 .isInstanceOf(DomainException.class)
                 .hasMessage(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS.message());
-    }
-
-    @Test
-    @DisplayName("특정 날짜 및 테마의 예약 가능한 시간들을 반환한다.")
-    public void findAvailableTimes_success() {
-        // given
-        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
-        ReservationTime time2 = insertReservationTime(LocalTime.of(12, 0));
-        Theme targetTheme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
-        Theme nonTargetTheme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
-
-        LocalDate targetDate = LocalDate.of(2023, 8, 5);
-        insertReservation("브라운", targetDate, time, targetTheme);
-        insertReservation("브라운", LocalDate.of(2024, 9, 10), time, targetTheme);
-        insertReservation("브라운", targetDate, time, nonTargetTheme);
-
-
-        // when
-        List<ReservationTimeAvailability> availableTimes = reservationTimeService.findAvailableTimes(targetDate, targetTheme.getId());
-
-        // then
-        assertThat(availableTimes).hasSize(2)
-                .extracting(ReservationTimeAvailability::getReservationTime,
-                        ReservationTimeAvailability::isAvailable)
-                .containsExactlyInAnyOrder(Tuple.tuple(time, false), Tuple.tuple(time2, true));
     }
 
     @Test

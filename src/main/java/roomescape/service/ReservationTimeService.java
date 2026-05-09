@@ -3,7 +3,6 @@ package roomescape.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeAvailability;
 import roomescape.common.exception.DomainException;
@@ -53,19 +52,10 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public List<ReservationTimeAvailability> findAvailableTimes(LocalDate date, Long themeId) {
-        themeRepository.findById(themeId)
-                .orElseThrow(() -> new DomainException(ErrorCode.THEME_NOT_FOUND));
+        if (!themeRepository.existsById(themeId)) {
+            throw new DomainException(ErrorCode.THEME_NOT_FOUND);
+        }
 
-        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
-
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-
-        return reservationTimes.stream()
-                .map(reservationTime -> reservations.stream()
-                        .noneMatch(reservation -> reservation.isSameTime(reservationTime))
-                        ? ReservationTimeAvailability.available(reservationTime)
-                        : ReservationTimeAvailability.unavailable(reservationTime)
-                )
-                .toList();
+        return reservationTimeRepository.findAvailableTimes(date, themeId);
     }
 }

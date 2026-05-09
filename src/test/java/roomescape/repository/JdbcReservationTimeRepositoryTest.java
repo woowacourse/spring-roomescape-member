@@ -1,11 +1,17 @@
 package roomescape.repository;
 
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeAvailability;
+import roomescape.domain.Theme;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JdbcReservationTimeRepositoryTest {
 
     private ReservationTimeRepository reservationTimeRepository;
+    private ReservationRepository reservationRepository;
+    private ThemeRepository themeRepository;
 
     @BeforeEach
     void setUp() {
@@ -31,6 +39,16 @@ class JdbcReservationTimeRepositoryTest {
         jdbcTemplate.execute("DROP TABLE IF EXISTS theme");
 
         jdbcTemplate.execute("""
+                CREATE TABLE theme (
+                    id          BIGINT       NOT NULL AUTO_INCREMENT,
+                    name        VARCHAR(255) NOT NULL,
+                    description VARCHAR(255) NOT NULL,
+                    thumbnail   VARCHAR(255) NOT NULL,
+                    PRIMARY KEY (id)
+                )
+                """);
+
+        jdbcTemplate.execute("""
                 CREATE TABLE reservation_time (
                     id       BIGINT NOT NULL AUTO_INCREMENT,
                     start_at TIME   NOT NULL,
@@ -39,7 +57,23 @@ class JdbcReservationTimeRepositoryTest {
                 )
                 """);
 
+        jdbcTemplate.execute("""
+                CREATE TABLE reservation (
+                    id       BIGINT       NOT NULL AUTO_INCREMENT,
+                    name     VARCHAR(255) NOT NULL,
+                    date     DATE         NOT NULL,
+                    time_id  BIGINT       NOT NULL,
+                    theme_id BIGINT       NOT NULL,
+                    PRIMARY KEY (id),
+                    UNIQUE (date, time_id, theme_id),
+                    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+                    FOREIGN KEY (theme_id) REFERENCES theme (id)
+                )
+                """);
+
         reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+        reservationRepository = new JdbcReservationRepository(jdbcTemplate);
+        themeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
 
 
@@ -81,5 +115,29 @@ class JdbcReservationTimeRepositoryTest {
         reservationTimeRepository.deleteById(reservationTime.getId());
 
         assertThat(reservationTimeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("이용 가능한 시간을 조회한다.")
+    public void findAvailableTimes() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime time2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
+        Theme targetTheme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Theme nonTargetTheme = themeRepository.save(new Theme("레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.", "https://example.com/theme.png"));
+
+        LocalDate targetDate = LocalDate.of(2023, 8, 5);
+        reservationRepository.save(new Reservation("브라운", targetDate, time, targetTheme));
+        reservationRepository.save(new Reservation("브라운", LocalDate.of(2024, 9, 10), time, targetTheme));
+        reservationRepository.save(new Reservation("브라운", targetDate, time, nonTargetTheme));
+
+        // when
+        List<ReservationTimeAvailability> availableTimes = reservationTimeRepository.findAvailableTimes(targetDate, targetTheme.getId());
+
+        // then
+        assertThat(availableTimes).hasSize(2)
+                .extracting(ReservationTimeAvailability::getReservationTime,
+                        ReservationTimeAvailability::isAvailable)
+                .containsExactly(Tuple.tuple(time, false), Tuple.tuple(time2, true));
     }
 }
