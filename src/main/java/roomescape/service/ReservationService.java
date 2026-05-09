@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -14,6 +15,7 @@ import roomescape.service.dto.ServiceReservationRequest;
 import roomescape.service.dto.ServiceReservationResponse;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
@@ -25,6 +27,7 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
+    @Transactional
     public ServiceReservationResponse create(ServiceReservationRequest requestDto) {
         ReservationTime reservationTime = reservationTimeDao.read(requestDto.timeId());
         Theme theme = themeDao.read(requestDto.themeId());
@@ -48,6 +51,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public void delete(Long id) {
         reservationDao.delete(id);
     }

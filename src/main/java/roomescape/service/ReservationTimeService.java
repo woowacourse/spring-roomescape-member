@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
@@ -11,6 +12,7 @@ import roomescape.service.dto.ServiceReservationTimeRequest;
 import roomescape.service.dto.ServiceReservationTimeResponse;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationTimeService {
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
@@ -20,6 +22,7 @@ public class ReservationTimeService {
         this.themeDao = themeDao;
     }
 
+    @Transactional
     public ServiceReservationTimeResponse create(ServiceReservationTimeRequest requestDto) {
         ReservationTime reservationTime = reservationTimeDao.create(requestDto.toEntity());
         return ServiceReservationTimeResponse.from(reservationTime);
@@ -48,6 +51,7 @@ public class ReservationTimeService {
                 }).toList();
     }
 
+    @Transactional
     public void delete(Long id) {
         reservationTimeDao.delete(id);
     }
