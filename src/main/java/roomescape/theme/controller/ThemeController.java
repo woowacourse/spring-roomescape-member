@@ -1,5 +1,6 @@
 package roomescape.theme.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,8 @@ import roomescape.theme.controller.dto.CreateThemeRequest;
 import roomescape.theme.controller.dto.ThemeRankResponse;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
+import roomescape.time.controller.dto.request.GetAvailableTimesRequest;
+import roomescape.time.controller.dto.response.ThemeReservationTimesResponse;
 
 @RestController
 @RequestMapping("/themes")
@@ -50,4 +53,13 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}/times")
+    public ResponseEntity<ThemeReservationTimesResponse> getAvailableTimes(
+            @PathVariable Long id,
+            @RequestParam LocalDate date,
+            @RequestParam(required = false) Boolean available
+    ) {
+        return ResponseEntity.ok(themeService.findAllAvailableTimes(
+                GetAvailableTimesRequest.of(id, date, available)));
+    }
 }

@@ -1,6 +1,8 @@
 package roomescape.theme.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,12 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.repository.dto.CreateThemeParams;
 import roomescape.theme.repository.dto.GetThemeRankingsInRecentDaysParams;
+import roomescape.time.controller.dto.request.GetAvailableTimesRequest;
+import roomescape.time.controller.dto.response.AvailableReservationTimeResponse;
+import roomescape.time.controller.dto.response.ThemeReservationTimesResponse;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.time.repository.dto.FindReservedTimeParams;
 
 @Service
 @Transactional(readOnly = true)
@@ -19,6 +27,7 @@ import roomescape.theme.repository.dto.GetThemeRankingsInRecentDaysParams;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
 
     @Transactional
     public ThemeResponse addTheme(CreateThemeRequest request) {
@@ -55,6 +64,29 @@ public class ThemeService {
                     return new ThemeRankResponse(rank, themeResponse);
                 })
                 .toList();
+    }
+
+    public ThemeReservationTimesResponse findAllAvailableTimes(GetAvailableTimesRequest request) {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        FindReservedTimeParams params = new FindReservedTimeParams(request.themeId(), request.date());
+
+        Set<Long> reservedTimeIds = new HashSet<>(reservationTimeRepository.findIdByCondition(params));
+
+        List<AvailableReservationTimeResponse> availableTimes = reservationTimes.stream()
+                .map(time -> createResponse(time, reservedTimeIds))
+                .filter(response -> isMatchCondition(request.available(), response.available()))
+                .toList();
+        ThemeResponse theme = ThemeResponse.from(themeRepository.findById(request.themeId()));
+        return ThemeReservationTimesResponse.from(theme, availableTimes);
+    }
+
+    private AvailableReservationTimeResponse createResponse(ReservationTime time, Set<Long> reservedIdSet) {
+        boolean isAvailable = !reservedIdSet.contains(time.getId());
+        return new AvailableReservationTimeResponse(time.getId(), time.getStartAt(), isAvailable);
+    }
+
+    private boolean isMatchCondition(Boolean requestAvailable, boolean isAvailable) {
+        return requestAvailable == null || requestAvailable.equals(isAvailable);
     }
 }
 

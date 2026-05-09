@@ -1,5 +1,6 @@
 package roomescape.api;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.contains;
 
@@ -139,5 +140,32 @@ class ThemeApiTest {
                 .statusCode(200)
                 .body("theme.name", contains("A 테마", "C 테마", "B 테마"))
                 .body("size()", is(3));
+    }
+
+    @Test
+    void 예약_가능_시간_조회() {
+        // given
+        ReservationTime ten = dataInitializer.initializeReservationTime(LocalTime.of(10, 0));
+        ReservationTime eleven = dataInitializer.initializeReservationTime(LocalTime.of(11, 0));
+        Theme theme = dataInitializer.initializeTheme("hello", "world", "/resources/image/...");
+
+        LocalDate date = LocalDate.now().plusDays(1);
+        dataInitializer.initializeReservation("라텔", date, ten.getId(), theme.getId());
+
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", date.toString());
+        params.put("timeId", ten.getId());
+        params.put("themeId", theme.getId());
+        params.put("available", true);
+
+        // when
+        RestAssured.given().log().all()
+                .queryParams(params)
+                .when().get("/themes/1/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("availableTimes.size()", is(1),
+                        "availableTimes[0].startAt", equalTo(eleven.getStartAt().toString()));
     }
 }
