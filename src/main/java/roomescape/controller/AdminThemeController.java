@@ -9,27 +9,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ThemeRequest;
-import roomescape.service.AdminThemeService;
+import roomescape.service.ThemeService;
 
 @RequestMapping("/admin/themes")
 @RestController
 public class AdminThemeController {
-    private final AdminThemeService adminThemeService;
+    private final ThemeService themeService;
 
-    public AdminThemeController(AdminThemeService adminThemeService) {
-        this.adminThemeService = adminThemeService;
+    public AdminThemeController(ThemeService themeService) {
+        this.themeService = themeService;
     }
 
     @PostMapping
     public ResponseEntity<Void> createTheme(@RequestBody ThemeRequest themeRequest) {
-        final long themeId = adminThemeService.save(themeRequest.name(), themeRequest.description(), themeRequest.thumbnailUrl());
+        final long themeId = themeService.save(themeRequest.name(), themeRequest.description(), themeRequest.thumbnailUrl());
         final URI location = URI.create("/themes/" + themeId);
         return ResponseEntity.created(location).build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
-        adminThemeService.delete(id);
+        themeService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

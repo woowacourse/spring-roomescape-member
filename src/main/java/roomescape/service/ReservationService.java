@@ -42,4 +42,8 @@ public class ReservationService {
     public List<Reservation> findAllByName(String username) {
         return reservationDao.findByName(username);
     }
+
+    public List<Reservation> findAll() {
+        return reservationDao.findAll();
+    }
 }

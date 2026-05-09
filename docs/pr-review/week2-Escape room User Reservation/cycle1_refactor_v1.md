@@ -36,7 +36,7 @@
   - `ReservationTimeDao.findById()`, `delete()`
   - `ThemeDao.findById()`
   - `ReservationController`, `ReservationTimeController`의 `@PathVariable Long id`
-- [ ] **17. `AdminReservationService` → `ReservationService`로 통합, `AdminThemeService` → `ThemeService`로 통합**
+- [x] **17. `AdminReservationService` → `ReservationService`로 통합, `AdminThemeService` → `ThemeService`로 통합**
 - [ ] **18. 컨트롤러 테스트 환경 개선**
   - `WebEnvironment.DEFINED_PORT` → `RANDOM_PORT`로 변경
   - `@LocalServerPort`로 포트 주입 후 `@BeforeEach`에서 `RestAssured.port = port` 설정
