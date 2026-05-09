@@ -1,7 +1,6 @@
 package roomescape.service.fake;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,7 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAllActiveThemes() {
-        return new ArrayList<>(themes.values());
+        return themes.values().stream().filter(Theme::isActive).toList();
     }
 
     @Override

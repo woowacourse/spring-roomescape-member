@@ -91,7 +91,7 @@ class ReservationServiceTest {
     void 같은_날짜와_같은_시간에_특정_테마로_예약을_시도하면_중복_예외가_발생한다() {
         // given: 1번 이미 10시 예약이 하나 존재함
         themeRepository.save(ThemeFixture.createDefaultTheme());
-        reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());
+        reservationTimeRepository.save(ReservationTimeFixture.createDefault());
 
         Reservation existingReservation = ReservationFixture.createDefaultReservationWithName("기존 예약자");
         reservationRepository.save(existingReservation);

@@ -15,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.TimeStatus;
 import roomescape.repository.ReservationRepository;
 
 class ReservationRepositoryTest extends BaseIntegrationTest {
@@ -23,7 +24,7 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     @Autowired
     private ReservationDataSource dataSource;
 
-    private ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+    private ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0), TimeStatus.ACTIVE);
     private Theme theme = new Theme(1L, "공포", "어마무시한 공포 테마", "https://theme.com/image.png", false);
 
     @BeforeEach

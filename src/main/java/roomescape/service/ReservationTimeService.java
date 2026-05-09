@@ -29,11 +29,15 @@ public class ReservationTimeService {
 
     @Transactional
     public void remove(long id) {
-        reservationTimeRepository.deleteById(id);
+        reservationTimeRepository.findById(id)
+                .ifPresent(time -> {
+                    time.deactivate();
+                    reservationTimeRepository.update(time);
+                });
     }
 
     public List<ReservationTimeResult> getAllReservationTimes() {
-        return reservationTimeRepository.findAll()
+        return reservationTimeRepository.findActiveTimes()
                 .stream()
                 .map(ReservationTimeResult::from)
                 .toList();

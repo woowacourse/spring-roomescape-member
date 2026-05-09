@@ -13,6 +13,7 @@ CREATE TABLE theme
 CREATE TABLE reservation_time (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     start_at TIME         NOT NULL,
+    status   VARCHAR(20)  NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT uk_reservation_time_start_at UNIQUE (start_at)
 );

@@ -27,7 +27,9 @@ class ReservationTimeTest {
         ReservationTime reservationTime = new ReservationTime(startAt);
 
         // then
-        assertThat(reservationTime.getStartAt()).isEqualTo(startAt);
+        assertThat(reservationTime)
+                .extracting(ReservationTime::getStartAt, ReservationTime::getStatus)
+                .containsExactly(startAt, TimeStatus.ACTIVE);
     }
 
     @Test
@@ -42,5 +44,29 @@ class ReservationTimeTest {
 
         // then
         assertThat(reservationDateTime).isEqualTo(LocalDateTime.of(reservationDate, startAt));
+    }
+
+    @Test
+    void 예약_시간을_비활성화_할_수_있다() {
+        // given
+        ReservationTime time = new ReservationTime(LocalTime.of(11, 0));
+
+        // when
+        time.deactivate();
+
+        // then
+        assertThat(time.getStatus()).isEqualTo(TimeStatus.INACTIVE);
+    }
+
+    @Test
+    void 비활성화된_예약_시간에_비활성화를_시도하면_예외가_발생한다() {
+        // given
+        ReservationTime time = new ReservationTime(LocalTime.of(11, 0));
+        time.deactivate();
+
+        // when
+        assertThatThrownBy(time::deactivate)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("이미 비활성화 된 시간 정보입니다.");
     }
 }

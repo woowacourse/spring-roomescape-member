@@ -14,20 +14,29 @@ public class ReservationTime {
 
     private final Long id;
     private final LocalTime startAt;
+    private TimeStatus status;
 
-    public ReservationTime(Long id, LocalTime startAt) {
+    public ReservationTime(Long id, LocalTime startAt, TimeStatus status) {
         if (startAt == null) {
             throw new IllegalArgumentException("추가 할 예약 시작 시간 정보가 누락되었습니다.");
         }
         this.id = id;
         this.startAt = startAt;
+        this.status = status;
     }
 
     public ReservationTime(LocalTime startAt) {
-        this(null, startAt);
+        this(null, startAt, TimeStatus.ACTIVE);
     }
 
     public LocalDateTime toReservationDateTime(LocalDate date) {
         return LocalDateTime.of(date, this.startAt);
+    }
+
+    public void deactivate() {
+        if (this.status == TimeStatus.INACTIVE) {
+            throw new IllegalArgumentException("이미 비활성화 된 시간 정보입니다.");
+        }
+        this.status = TimeStatus.INACTIVE;
     }
 }

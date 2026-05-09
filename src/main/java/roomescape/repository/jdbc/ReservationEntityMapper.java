@@ -4,13 +4,15 @@ import org.springframework.jdbc.core.RowMapper;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.TimeStatus;
 
 public final class ReservationEntityMapper {
 
     public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) -> {
         ReservationTime time = new ReservationTime(
                 rs.getLong("time_id"),
-                rs.getTime("time_start").toLocalTime()
+                rs.getTime("time_start").toLocalTime(),
+                TimeStatus.valueOf(rs.getString("time_status"))
         );
         Theme theme = new Theme(
                 rs.getLong("theme_id"),

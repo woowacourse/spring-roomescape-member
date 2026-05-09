@@ -14,7 +14,7 @@ import roomescape.domain.fixture.ThemeFixture;
 
 class ReservationTest {
 
-    private ReservationTime reservationTime = ReservationTimeFixture.createDefaultReservationTime();
+    private ReservationTime reservationTime = ReservationTimeFixture.createDefault();
     private Theme theme = ThemeFixture.createDefaultTheme();
 
     @Test

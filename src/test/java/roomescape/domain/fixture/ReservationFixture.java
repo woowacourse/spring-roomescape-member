@@ -16,14 +16,14 @@ public class ReservationFixture {
                 Arguments.of(
                         null,
                         ThemeFixture.createDefaultTheme(),
-                        ReservationTimeFixture.createDefaultReservationTime(),
+                        ReservationTimeFixture.createDefault(),
                         "예약 날짜 및 시간 정보는 비어있을 수 없습니다."
                 ),
                 // 테마 정보가 누락된 경우
                 Arguments.of(
                         LocalDate.now().plusDays(1),
                         null,
-                        ReservationTimeFixture.createDefaultReservationTime(),
+                        ReservationTimeFixture.createDefault(),
                         "테마 정보는 비어있을 수 없습니다."
                 ),
                 // 예약 시간 정보가 누락된 경우
@@ -37,7 +37,7 @@ public class ReservationFixture {
                 Arguments.of(
                         LocalDate.now().minusDays(1),
                         ThemeFixture.createDefaultTheme(),
-                        ReservationTimeFixture.createDefaultReservationTime(),
+                        ReservationTimeFixture.createDefault(),
                         "이전 날짜로 새로운 예약 정보를 생성할 수 없습니다."
                 ),
                 // 오늘과 날짜는 동일하지만 시간이 과거인 경우
@@ -53,7 +53,7 @@ public class ReservationFixture {
     public static Reservation createDefaultReservationWithName(String name) {
         LocalDate date = LocalDate.now().plusDays(1);
         Theme theme = ThemeFixture.createThemeWithId();
-        ReservationTime time = ReservationTimeFixture.createDefaultReservationTime();
+        ReservationTime time = ReservationTimeFixture.createDefault();
         return Reservation.createNew(name, date, theme, time);
     }
 }

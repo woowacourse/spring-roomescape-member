@@ -17,7 +17,9 @@ public interface ReservationTimeRepository {
 
     boolean existsByStartAt(LocalTime time);
 
-    List<ReservationTime> findAll();
+    List<ReservationTime> findActiveTimes();
 
     List<TimeSlotProjection> findTimesByThemeWithReservationStatus(long themeId, LocalDate date);
+
+    void update(ReservationTime time);
 }

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationTimeRepository;
@@ -22,6 +23,7 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
+    @Transactional
     public ThemeRegisterResult register(ThemeRegisterCommand command) {
         validateDuplicationName(command.name());
 
@@ -30,6 +32,7 @@ public class ThemeService {
         return ThemeRegisterResult.from(themeRepository.save(theme));
     }
 
+    @Transactional
     public void remove(long id) {
         themeRepository.findById(id)
                 .ifPresent(existingTheme -> {

@@ -64,7 +64,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.remove(id);
 
         // then: 전체 조회 시 해당 데이터가 존재하지 않음
-        assertThat(reservationTimeRepository.findAll()).isEmpty();
+        assertThat(reservationTimeRepository.findActiveTimes()).isEmpty();
     }
 
     @Test

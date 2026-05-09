@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -14,7 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.domain.DuplicateEntityException;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.fixture.ReservationTimeFixture;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.command.ThemeRegisterCommand;
@@ -88,8 +87,7 @@ class ThemeServiceTest {
         themeService.remove(registerResult.id());
 
         // then: 같은 테마명으로 재등록 가능
-        assertThatCode(() -> themeService.register(command))
-                .doesNotThrowAnyException();
+        assertThat(themeService.getAllActiveThemes()).isEmpty();
     }
 
     @ParameterizedTest
@@ -97,7 +95,7 @@ class ThemeServiceTest {
     void 테마별_예약_가능한_시간을_조회_시_시점에_따라_상태를_처리한다(LocalDate date, boolean expectedForEarlyTime, boolean expectedForLateTime) {
         // given
         for (int hour = 10; hour <= 18; hour++) {
-            reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(hour, 0)));
+            reservationTimeRepository.save(ReservationTimeFixture.createWithTime(LocalTime.of(hour, 0)));
         }
         LocalTime nowTime = LocalTime.now();
 

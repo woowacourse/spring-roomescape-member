@@ -57,7 +57,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         String sql = """
                 SELECT r.id AS res_id, r.name AS res_name, r.date AS res_date,
-                       rt.id AS time_id, rt.start_at AS time_start,
+                       rt.id AS time_id, rt.start_at AS time_start, rt.status AS time_status,
                        t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail_image_url, t.is_active
                 FROM reservation r
                 JOIN reservation_time rt ON r.time_id = rt.id

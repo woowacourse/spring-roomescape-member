@@ -16,6 +16,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.TimeStatus;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.dto.TimeSlotProjection;
 
@@ -28,15 +29,20 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
+        String sql = "INSERT INTO reservation_time (start_at, status) VALUES (?, ?)";
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
+            ps.setString(2, reservationTime.getStatus().toString());
             return ps;
         }, keyHolder);
 
-        return new ReservationTime(keyHolder.getKey().longValue(), reservationTime.getStartAt());
+        return new ReservationTime(
+                keyHolder.getKey().longValue(),
+                reservationTime.getStartAt(),
+                reservationTime.getStatus()
+        );
     }
 
     @Override
@@ -63,9 +69,9 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        String sql = "SELECT * FROM reservation_time";
-        return jdbcTemplate.query(sql, RESERVATION_TIME_MAPPER);
+    public List<ReservationTime> findActiveTimes() {
+        String sql = "SELECT * FROM reservation_time where status = ?";
+        return jdbcTemplate.query(sql, RESERVATION_TIME_MAPPER, TimeStatus.ACTIVE.toString());
     }
 
     @Override
@@ -84,5 +90,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 """;
 
         return jdbcTemplate.query(sql, TIME_SLOT_PROJECTION_MAPPER, themeId, date);
+    }
+
+    @Override
+    public void update(ReservationTime time) {
+        String sql = """
+                    UPDATE reservation_time
+                    SET start_at = ?, status = ?
+                    WHERE id = ?
+                """;
+        jdbcTemplate.update(sql, time.getStartAt(), time.getStatus());
     }
 }
