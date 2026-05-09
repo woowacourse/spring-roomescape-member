@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import java.util.List;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,12 +41,8 @@ public class ReservationTimeController {
 
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        try {
-            reservationFacade.deleteReservationTime(id);
-            return ResponseEntity.ok().build();
-        } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+        reservationFacade.deleteReservationTime(id);
+        return ResponseEntity.ok().build();
     }
 }
 
