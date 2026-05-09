@@ -29,5 +29,6 @@ CREATE TABLE reservation
     updated_at TIMESTAMP DEFAULT current_timestamp,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    CONSTRAINT uk_reservation_theme_date_time UNIQUE (theme_id, date, time_id)
 );

@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.Reservation;
@@ -16,7 +17,6 @@ import roomescape.repository.ReservationUpdatingDao;
 import roomescape.repository.ThemeQueryingDao;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,7 +64,13 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
 
-        Long generatedId = reservationUpdatingDao.insert(reservationReq);
+        Long generatedId;
+        try {
+            generatedId = reservationUpdatingDao.insert(reservationReq);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+        }
+
         Reservation findReservation = reservationQueryingDao.findReservationById(generatedId)
                 .orElseThrow(() -> new ReservationNotFoundException(generatedId));
 
