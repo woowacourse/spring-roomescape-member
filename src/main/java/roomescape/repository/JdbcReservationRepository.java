@@ -18,9 +18,13 @@ import roomescape.domain.Time;
 public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -88,9 +92,8 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        SimpleJdbcInsert insert = createInsert();
         Map<String, Object> params = createParams(reservation);
-        long reservationId = insert.executeAndReturnKey(params).longValue();
+        long reservationId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Reservation(
                 reservationId,
                 reservation.getName(),
@@ -98,12 +101,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 reservation.getTime(),
                 reservation.getTheme()
         );
-    }
-
-    private SimpleJdbcInsert createInsert() {
-        return new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
     }
 
     private Map<String, Object> createParams(Reservation reservation) {

@@ -18,16 +18,19 @@ import java.util.Map;
 public class JdbcThemeSlotRepository implements ThemeSlotRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcThemeSlotRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme_slot")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public ThemeSlot save(ThemeSlot themeSlot) {
-        SimpleJdbcInsert insert = createInsert();
         Map<String, Object> params = createParams(themeSlot);
-        long themeSlotId = insert.executeAndReturnKey(params).longValue();
+        long themeSlotId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return ThemeSlot.of(themeSlotId, themeSlot);
     }
 
@@ -35,9 +38,8 @@ public class JdbcThemeSlotRepository implements ThemeSlotRepository {
     public List<ThemeSlot> saveAll(List<ThemeSlot> themeSlots) {
         List<ThemeSlot> results = new ArrayList<>();
         for (ThemeSlot themeSlot : themeSlots) {
-            SimpleJdbcInsert insert = createInsert();
             Map<String, Object> params = createParams(themeSlot);
-            long themeSlotId = insert.executeAndReturnKey(params).longValue();
+            long themeSlotId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
             results.add(ThemeSlot.of(themeSlotId, themeSlot));
         }
         return results;
@@ -77,12 +79,6 @@ public class JdbcThemeSlotRepository implements ThemeSlotRepository {
                 AND ts.date = ?
                 """;
         return jdbcTemplate.query(sql, rowMapper(), themeId, date);
-    }
-
-    private SimpleJdbcInsert createInsert() {
-        return new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme_slot")
-                .usingGeneratedKeyColumns("id");
     }
 
     private Map<String, Object> createParams(ThemeSlot themeSlot) {

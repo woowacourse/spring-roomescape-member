@@ -15,9 +15,13 @@ import roomescape.domain.Time;
 public class JdbcTimeRepository implements TimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("time")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -34,9 +38,8 @@ public class JdbcTimeRepository implements TimeRepository {
 
     @Override
     public Time save(Time time) {
-        SimpleJdbcInsert insert = createInsert();
         Map<String, Object> params = createParams(time);
-        long reservationId = insert.executeAndReturnKey(params).longValue();
+        long reservationId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Time(reservationId, time.getStartAt());
     }
 
@@ -51,12 +54,6 @@ public class JdbcTimeRepository implements TimeRepository {
                 rs.getLong("id"),
                 rs.getObject("start_at", LocalTime.class)
         );
-    }
-
-    private SimpleJdbcInsert createInsert() {
-        return new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("time")
-                .usingGeneratedKeyColumns("id");
     }
 
     private Map<String, Object> createParams(Time time) {
