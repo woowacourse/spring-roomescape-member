@@ -14,7 +14,7 @@ public class SchedulesResponse {
 
     public static SchedulesResponse from(List<Schedule> schedules) {
         List<ScheduleResponse> responses = schedules.stream()
-                .map(ScheduleResponse::of)
+                .map(ScheduleResponse::from)
                 .toList();
 
         return new SchedulesResponse(responses);

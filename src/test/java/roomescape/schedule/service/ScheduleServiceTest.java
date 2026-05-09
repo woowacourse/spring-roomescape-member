@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.schedule.dto.AdminScheduleRequest;
 import roomescape.schedule.dto.ScheduleRequest;
 import roomescape.schedule.dto.ScheduleResponse;
 import roomescape.schedule.dto.SchedulesResponse;
@@ -74,19 +75,21 @@ class ScheduleServiceTest {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         LocalTime time = LocalTime.of(15, 0);
 
+        AdminScheduleRequest request = new AdminScheduleRequest(themeId, futureDate, time);
+
         // when
-        Schedule createdSchedule = scheduleService.CreateSchedule(futureDate, time, themeId);
+        ScheduleResponse response = scheduleService.createByAdmin(request);
 
         // then
-        assertThat(createdSchedule).isNotNull();
-        assertThat(createdSchedule.getId()).isNotNull();
-        assertThat(createdSchedule.getStartAt().toLocalDate()).isEqualTo(futureDate);
-        assertThat(createdSchedule.getStartAt().toLocalTime()).isEqualTo(time);
-        assertThat(createdSchedule.getTheme().getId()).isEqualTo(themeId);
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isNotNull();
+        assertThat(response.getStartAt().toLocalDate()).isEqualTo(futureDate);
+        assertThat(response.getStartAt().toLocalTime()).isEqualTo(time);
+        assertThat(response.getThemeName()).isEqualTo(theme.getName());
     }
 
     @Test
-    void 이미_예약된_시간과_겹치는_스케줄을_생성하면_예외가_발생한다() {
+    void 이미_있는_예약_시간과_겹치는_스케줄을_생성하면_예외가_발생한다() {
         // given
         Long themeId = 1L;
         jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url, required_time) VALUES (?, ?, ?, ?, ?)",
@@ -100,9 +103,11 @@ class ScheduleServiceTest {
 
         LocalTime overlappingTime = LocalTime.of(15, 0);
 
+        AdminScheduleRequest request = new AdminScheduleRequest(themeId, date, overlappingTime);
+
         // when & then
-        assertThatThrownBy(() -> scheduleService.CreateSchedule(date, overlappingTime, themeId))
+        assertThatThrownBy(() -> scheduleService.createByAdmin(request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("선택하신 시간은 다른 예약과 겹쳐서 예약할 수 없습니다.");
+                .hasMessage("선택하신 시간은 다른 예약 시간과 겹쳐서 추가할 수 없습니다.");
     }
 }

@@ -38,19 +38,48 @@ public class ScheduleRepositoryTest {
     }
 
     @Test
-    void 예약된_스케줄을_데이터베이스에서_정상적으로_조회한다() {
+    void 특정_날짜와_테마의_모든_스케줄을_조회한다() {
+        // given
         Long themeId = 1L;
         jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url, required_time) VALUES (?, ?, ?, ?, ?)",
                 themeId, theme.getName(), theme.getDescription(), theme.getImageUrl(), theme.getRequiredTime());
         jdbcTemplate.update("INSERT INTO schedule (theme_id, start_at, end_at) VALUES (?, ?, ?)",
                 themeId, schedule.getStartAt(), schedule.getEndAt());
 
-        List<Schedule> schedules = scheduleRepository.findAll(themeId, LocalDate.of(2026, 12, 10));
+        // when
+        List<Schedule> schedules = scheduleRepository.findAllByThemeIdAndDate(themeId, LocalDate.of(2026, 12, 10));
 
+        // then
         assertThat(schedules).isNotNull();
         assertThat(schedules.size()).isEqualTo(1);
         assertThat(schedules.getFirst().getStartAt()).isEqualTo(schedule.getStartAt());
         assertThat(schedules.getFirst().getEndAt()).isEqualTo(schedule.getEndAt());
         assertThat(schedules.getFirst().getTheme().getName()).isEqualTo(theme.getName());
+    }
+
+    @Test
+    void 특정_날짜와_테마의_예약_가능한_스케줄만_조회한다() {
+        // given
+        Long themeId = 1L;
+        Long userId = 1L;
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url, required_time) VALUES (?, ?, ?, ?, ?)",
+                themeId, "테마", "설명", "경로", LocalTime.of(2, 0));
+        jdbcTemplate.update("INSERT INTO \"USER\" (id, name, role) VALUES (?, ?, ?)",
+                userId, "유저", "USER");
+
+        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
+                1L, themeId, "2026-12-10 10:00:00", "2026-12-10 12:00:00");
+        jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)",
+                1L, userId);
+
+        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
+                2L, themeId, "2026-12-10 13:00:00", "2026-12-10 15:00:00");
+
+        // when
+        List<Schedule> availableSchedules = scheduleRepository.findAllAvailableByThemeAndDate(themeId, LocalDate.of(2026, 12, 10));
+
+        // then
+        assertThat(availableSchedules).hasSize(1);
+        assertThat(availableSchedules.getFirst().getId()).isEqualTo(2L);
     }
 }

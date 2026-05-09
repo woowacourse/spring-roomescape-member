@@ -9,13 +9,10 @@ import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.schedule.model.Schedule;
 import roomescape.schedule.service.ScheduleService;
-import roomescape.theme.model.Theme;
 import roomescape.user.model.User;
-import roomescape.user.model.Role;
 import roomescape.user.service.UserService;
 
 import java.util.List;
-import java.time.LocalDateTime;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,7 +22,7 @@ public class ReservationService {
     private final ScheduleService scheduleService;
     private final ReservationRepository reservationRepository;
 
-    public ReservationService(UserService userService, ScheduleService scheduleService, ReservationRepository reservationRepository) {
+    public ReservationService(UserService userService, ScheduleService scheduleService, ReservationRepository reservationRepository) { // 생성자 주입
         this.userService = userService;
         this.scheduleService = scheduleService;
         this.reservationRepository = reservationRepository;
@@ -34,16 +31,18 @@ public class ReservationService {
     @Transactional
     public ReservationIdResponse create(ReservationRequest request) {
         User user = userService.findOrCreateByName(request.name());
+        Schedule schedule = scheduleService.findById(request.scheduleId()); // ScheduleService를 통해 스케줄 조회
 
-        Schedule schedule = scheduleService.CreateSchedule(
-                request.date(), request.time(), request.themeId()
-        );
+        if (reservationRepository.existsByScheduleId(schedule.getId())) {
+            throw new IllegalArgumentException("이미 예약된 스케줄입니다.");
+        }
 
         Reservation reservation = new Reservation(user, schedule);
         Long reservationId = reservationRepository.create(reservation);
 
         return ReservationIdResponse.from(new Reservation(reservationId, user, schedule));
     }
+
 
     public ReservationsResponse findAll() {
         List<Reservation> responses = reservationRepository.findAll();

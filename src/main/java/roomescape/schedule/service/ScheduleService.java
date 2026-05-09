@@ -2,14 +2,15 @@ package roomescape.schedule.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.schedule.dto.AdminScheduleRequest;
 import roomescape.schedule.dto.ScheduleRequest;
+import roomescape.schedule.dto.ScheduleResponse;
 import roomescape.schedule.dto.SchedulesResponse;
 import roomescape.schedule.model.Schedule;
 import roomescape.schedule.repository.ScheduleRepository;
 import roomescape.theme.model.Theme;
 import roomescape.theme.service.ThemeService;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -27,30 +28,43 @@ public class ScheduleService {
     }
 
     public SchedulesResponse findAll(ScheduleRequest request) {
-        List<Schedule> schedules = scheduleRepository.findAll(request.themeId(), request.date());
+        List<Schedule> schedules = scheduleRepository.findAllAvailableByThemeAndDate(request.themeId(), request.date());
         return SchedulesResponse.from(schedules);
     }
 
-    @Transactional
-    public Schedule CreateSchedule(LocalDate date, LocalTime time, Long themeId) {
-        Theme theme = themeService.findById(themeId);
+    public List<ScheduleResponse> findAllAdmin() {
+        List<Schedule> schedules = scheduleRepository.findAll();
+        return schedules.stream()
+                .map(ScheduleResponse::from)
+                .toList();
+    }
 
-        LocalDateTime newStartAt = LocalDateTime.of(date, time);
+    public Schedule findById(Long id) {
+        return scheduleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 스케줄입니다."));
+    }
+
+    @Transactional
+    public ScheduleResponse createByAdmin(AdminScheduleRequest request) {
+        Theme theme = themeService.findById(request.themeId());
+
+        LocalDateTime newStartAt = LocalDateTime.of(request.date(), request.time());
         LocalTime requiredTime = theme.getRequiredTime();
         LocalDateTime newEndAt = newStartAt.plusHours(requiredTime.getHour())
                 .plusMinutes(requiredTime.getMinute());
 
-        List<Schedule> existingSchedules = scheduleRepository.findAll(themeId, date);
+        List<Schedule> existingSchedules = scheduleRepository.findAllByThemeIdAndDate(request.themeId(), request.date());
 
         for (Schedule existingSchedule : existingSchedules) {
             if (existingSchedule.getStartAt().isBefore(newEndAt) && existingSchedule.getEndAt().isAfter(newStartAt)) {
-                throw new IllegalArgumentException("선택하신 시간은 다른 예약과 겹쳐서 예약할 수 없습니다.");
+                throw new IllegalArgumentException("선택하신 시간은 다른 예약 시간과 겹쳐서 추가할 수 없습니다.");
             }
         }
 
         Schedule newSchedule = new Schedule(newStartAt, theme);
         Long newScheduleId = scheduleRepository.create(newSchedule);
+        Schedule savedSchedule = new Schedule(newScheduleId, newStartAt, theme);
 
-        return new Schedule(newScheduleId, newStartAt, theme);
+        return ScheduleResponse.from(savedSchedule);
     }
 }

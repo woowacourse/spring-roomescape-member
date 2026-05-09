@@ -67,10 +67,12 @@ class ReservationServiceTest {
     @Test
     void 새로운_예약을_생성한다() {
         // given
-        ReservationRequest request = new ReservationRequest(LocalDate.of(2026, 12, 10), LocalTime.of(18, 0), 1L, "user1");
+        ReservationRequest request = new ReservationRequest(2L, "user1");
 
+        // when
         ReservationIdResponse response = reservationService.create(request);
 
+        // then
         assertThat(response.getId()).isNotNull();
         assertThat(reservationService.findAll().getReservationsResponse()).hasSize(2);
     }

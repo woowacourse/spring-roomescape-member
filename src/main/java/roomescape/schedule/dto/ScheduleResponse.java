@@ -11,15 +11,14 @@ public class ScheduleResponse {
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
 
-
-    private ScheduleResponse(Long id, String themeName, LocalDateTime startAt, LocalDateTime endAt) {
+    public ScheduleResponse(Long id, String themeName, LocalDateTime startAt, LocalDateTime endAt) {
         this.id = id;
         this.themeName = themeName;
         this.startAt = startAt;
         this.endAt = endAt;
     }
 
-    public static ScheduleResponse of(Schedule schedule) {
+    public static ScheduleResponse from(Schedule schedule) {
         return new ScheduleResponse(
                 schedule.getId(),
                 schedule.getTheme().getName(),
