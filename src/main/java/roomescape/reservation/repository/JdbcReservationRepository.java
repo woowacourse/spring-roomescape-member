@@ -120,6 +120,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByTimeId(long timeId) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                timeId
+        ));
+    }
+
+    @Override
     public boolean existsByDateAndTimeId(final LocalDate date, final long timeId) {
         final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
 
@@ -130,5 +141,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 timeId
         ));
     }
+
 
 }

@@ -1,6 +1,5 @@
 package roomescape.exception;
 
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import roomescape.exception.exception.BadRequestException;
 import roomescape.exception.exception.DuplicateException;
+import roomescape.exception.exception.ForeignKeyConstraintException;
 import roomescape.exception.exception.InvalidException;
 import roomescape.exception.exception.NotFoundException;
 import roomescape.exception.response.ErrorResponse;
@@ -43,6 +43,15 @@ public class GlobalExceptionHandler {
             NotFoundException e
     ) {
         log.warn("NotFoundException 발생: {}", e.getMessage(), e);
+        return ErrorResponse.of(e.getMessage());
+    }
+
+    @ExceptionHandler(ForeignKeyConstraintException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleConstraintException(
+            ForeignKeyConstraintException e
+    ) {
+        log.warn("ForeignKeyConstraintException 발생: {}", e.getMessage(), e);
         return ErrorResponse.of(e.getMessage());
     }
 

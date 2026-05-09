@@ -5,7 +5,7 @@ import lombok.Getter;
 import roomescape.exception.GlobalErrorCode;
 
 @Getter
-public class InvalidException extends RuntimeException {
+public abstract class InvalidException extends RuntimeException {
 
     private final List<String> errors;
 
