@@ -12,7 +12,6 @@ import roomescape.domain.Theme;
 import roomescape.domain.vo.Description;
 import roomescape.domain.vo.Name;
 import roomescape.domain.vo.ThumbnailUrl;
-import roomescape.dto.request.PopularThemeRequestDto;
 import roomescape.dto.request.ThemeRequestDto;
 import roomescape.dto.response.ThemeResponseDto;
 
@@ -76,9 +75,10 @@ public class ThemeService {
         return themeDao.findAvailableTimesById(themeId, localDate);
     }
 
-    public List<ThemeResponseDto> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
-        return themeDao.findPopulars(popularThemeRequestDto).stream()
+    public List<ThemeResponseDto> findPopulars(int limit, int days, LocalDate date) {
+        return themeDao.findPopulars(limit, days, date).stream()
                 .map(ThemeResponseDto::from)
                 .toList();
     }
 }
+

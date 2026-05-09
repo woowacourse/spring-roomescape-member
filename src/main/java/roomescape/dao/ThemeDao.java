@@ -2,7 +2,6 @@ package roomescape.dao;
 
 import roomescape.dao.row.AvailableTimeRow;
 import roomescape.dao.row.ThemeRow;
-import roomescape.dto.request.PopularThemeRequestDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,5 +11,5 @@ public interface ThemeDao extends CommonDao<ThemeRow> {
 
     List<AvailableTimeRow> findAvailableTimesById(Long themeId, LocalDate localDate);
 
-    List<ThemeRow> findPopulars(PopularThemeRequestDto popularThemeRequestDto);
+    List<ThemeRow> findPopulars(int limit, int days, LocalDate date);
 }

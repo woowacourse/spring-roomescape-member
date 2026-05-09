@@ -10,7 +10,6 @@ import roomescape.dao.row.AvailableTimeRow;
 import roomescape.dao.row.ReservationRow;
 import roomescape.dao.row.ThemeRow;
 import roomescape.dao.row.TimeRow;
-import roomescape.dto.request.PopularThemeRequestDto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -112,13 +111,14 @@ class ThemeJdbcDaoTest {
     @Test
     void findPopulars() {
         int limit = 1;
+        int days = 7;
+        LocalDate now = LocalDate.now();
 
-        PopularThemeRequestDto popularThemeRequestDto = new PopularThemeRequestDto(limit, 7, LocalDate.now());
         ThemeRow popular = createThemeHandler(theme1);
         ThemeRow nonPopular = createThemeHandler(theme2);
 
         reservationDao.create(new ReservationRow("이름1", LocalDate.parse("2026-05-05"), time1, popular));
-        List<ThemeRow> populars = themeDao.findPopulars(popularThemeRequestDto);
+        List<ThemeRow> populars = themeDao.findPopulars(limit, days, now);
 
         assertThat(populars)
                 .hasSize(limit)

@@ -1,17 +1,15 @@
 package roomescape.controller.user;
 
 
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dao.row.AvailableTimeRow;
-import roomescape.domain.Theme;
-import roomescape.dto.request.PopularThemeRequestDto;
 import roomescape.dto.response.ThemeResponseDto;
 import roomescape.service.ThemeService;
 
@@ -45,10 +43,9 @@ public class ThemeController {
 
     @GetMapping("/populars")
     public ResponseEntity<List<ThemeResponseDto>> findPopulars(
-            @Valid @ModelAttribute PopularThemeRequestDto popularThemeRequestDto) {
-        return ResponseEntity.ok(themeService.findPopulars(popularThemeRequestDto)
-                .stream()
-                .map(ThemeResponseDto::from)
-                .toList());
+            @RequestParam(defaultValue = "10") @Min(1) @Max(15) int limit,
+            @RequestParam(defaultValue = "7")  @Min(1) @Max(10) int days,
+            @RequestParam(required = false) LocalDate date) {
+        return ResponseEntity.ok(themeService.findPopulars(limit, days, date));
     }
 }

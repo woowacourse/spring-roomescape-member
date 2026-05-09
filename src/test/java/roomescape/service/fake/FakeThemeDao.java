@@ -3,7 +3,6 @@ package roomescape.service.fake;
 import roomescape.dao.ThemeDao;
 import roomescape.dao.row.AvailableTimeRow;
 import roomescape.dao.row.ThemeRow;
-import roomescape.dto.request.PopularThemeRequestDto;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -64,7 +63,9 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public List<ThemeRow> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
+    public List<ThemeRow> findPopulars(int limit, int days, LocalDate date) {
         return List.of();
     }
+
+
 }

@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.row.AvailableTimeRow;
 import roomescape.dao.row.ThemeRow;
-import roomescape.dto.request.PopularThemeRequestDto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -137,7 +136,7 @@ public class ThemeJdbcDao implements ThemeDao {
     }
 
     @Override
-    public List<ThemeRow> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
+    public List<ThemeRow> findPopulars(int limit, int days, LocalDate date) {
         String sql = """
                     SELECT
                         th.id AS theme_id,
@@ -155,9 +154,9 @@ public class ThemeJdbcDao implements ThemeDao {
                     LIMIT :limit
                 """;
 
-        SqlParameterSource params = new MapSqlParameterSource("start_date", popularThemeRequestDto.date().minusDays(popularThemeRequestDto.days()))
-                .addValue("end_date", popularThemeRequestDto.date())
-                .addValue("limit", popularThemeRequestDto.limit());
+        SqlParameterSource params = new MapSqlParameterSource("start_date", date.minusDays(days))
+                .addValue("end_date", date)
+                .addValue("limit", limit);
 
         return jdbcTemplate.query(sql, params, THEME_ROW_MAPPER);
     }
