@@ -3,6 +3,7 @@ package roomescape.theme.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +11,67 @@ class ThemeTest {
     private final String name = "공포";
     private final String description = "테마 설명";
     private final String defaultThumbnailUrl = "DEFAULT_THUMBNAIL_URL";
+
+    @Test
+    @DisplayName("유효한 값으로 테마를 등록할 수 있다.")
+    void create_with_valid_field() {
+        // when & then
+        Assertions.assertThatCode(() -> Theme.create(name, description, defaultThumbnailUrl))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("유효한 값으로 테마를 등록하면 입력한 값을 그대로 유지한다.")
+    void create_compare_fields() {
+        // when
+        Theme theme = Theme.create(name, description, defaultThumbnailUrl);
+
+        // then
+        Assertions.assertThat(theme)
+                .returns(null, Theme::id)
+                .returns(name, Theme::name)
+                .returns(description, Theme::description)
+                .returns(false, Theme::isActive);
+    }
+
+    @Test
+    @DisplayName("DB로부터 유효한 값을 가져오면 테마를 생성할 수 있다.")
+    void load() {
+        // given
+        Long loadValidId = 1L;
+        boolean loadStatus = false;
+
+        // when
+        Assertions.assertThatCode(() -> Theme.load(loadValidId, name, description, description, loadStatus))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("DB에서 로드할 때, id가 null이면 예외가 발생한다.")
+    void load_null_id() {
+        // given
+        Long nullId = null;
+        boolean loadStatus = false;
+
+        // when
+        Assertions.assertThatThrownBy(() -> Theme.load(nullId, name, description, description, loadStatus))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("테마 ID는 필수입니다.");
+    }
+
+    @Test
+    @DisplayName("등록, 로드한 테마는 id와 활성화상태를 제외한 모든 필드가 일치한다.")
+    void creat_compare_load() {
+        // given
+        Theme createdTheme = Theme.create(name, description, description);
+        Theme loadedTheme = Theme.load(1L, name, description, description, true);
+
+        // when & then
+        Assertions.assertThat(createdTheme)
+                .usingRecursiveComparison()
+                .ignoringFields("id", "isActive")
+                .isEqualTo(loadedTheme);
+    }
 
     @Test
     @DisplayName("테마 이름이 null이면 예외가 발생한다.")
