@@ -114,7 +114,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return (resultSet, rowNum) -> {
             ReservationTime time = new ReservationTime(
                     resultSet.getLong("reservation_time_id"),
-                    LocalTime.parse(resultSet.getString("time_value"))
+                    resultSet.getObject("time_value", LocalTime.class)
             );
 
             Theme theme = new Theme(
@@ -126,7 +126,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             return new Reservation(
                     resultSet.getLong("reservation_id"),
                     resultSet.getString("name"),
-                    LocalDate.parse(resultSet.getString("date")),
+                    resultSet.getObject("date", LocalDate.class),
                     time,
                     theme
             );
