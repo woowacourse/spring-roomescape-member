@@ -33,11 +33,13 @@ class JdbcReservationRepositoryTest {
     void 예약을_저장하면_id를_부여한다() {
         // given
         ReservationTime reservationTime = reservationTimeRepository.save(
-                new ReservationTime(LocalTime.parse("10:20:30")));
-        Theme theme = themeRepository.save(new Theme("귀신찾기", "귀신을 찾는다", "example.com"));
-        Reservation reservation = new Reservation("루드비코", LocalDate.parse("2026-05-06"),
-                reservationTime,
-                theme);
+                ReservationTime.withoutId(LocalTime.parse("10:20:30"))
+        );
+        Theme theme = themeRepository.save(
+                Theme.withoutId("귀신찾기", "귀신을 찾는다", "example.com")
+        );
+        Reservation reservation =
+                Reservation.withoutId("루드비코", LocalDate.parse("2026-05-06"), reservationTime, theme);
 
         // when
         Reservation saved = reservationRepository.save(reservation);
@@ -51,11 +53,13 @@ class JdbcReservationRepositoryTest {
     void 예약을_id로_조회한다() {
         // given
         ReservationTime reservationTime = reservationTimeRepository.save(
-                new ReservationTime(LocalTime.parse("10:20:30")));
-        Theme theme = themeRepository.save(new Theme("귀신찾기", "귀신을 찾는다", "example.com"));
-        Reservation reservation = new Reservation("루드비코", LocalDate.parse("2026-05-06"),
-                reservationTime,
-                theme);
+                ReservationTime.withoutId(LocalTime.parse("10:20:30"))
+        );
+        Theme theme = themeRepository.save(
+                Theme.withoutId("귀신찾기", "귀신을 찾는다", "example.com")
+        );
+        Reservation reservation =
+                Reservation.withoutId("루드비코", LocalDate.parse("2026-05-06"), reservationTime, theme);
 
         // when
         Reservation saved = reservationRepository.save(reservation);
@@ -70,17 +74,19 @@ class JdbcReservationRepositoryTest {
     void 저장된_모든_예약을_조회한다() {
         // given
         ReservationTime reservationTime1 = reservationTimeRepository.save(
-                new ReservationTime(LocalTime.parse("10:20:30")));
-        Theme theme = themeRepository.save(new Theme("귀신찾기", "귀신을 찾는다", "example.com"));
-        Reservation rudevicoReservation = new Reservation("루드비코", LocalDate.parse("2026-05-06"),
-                reservationTime1,
-                theme);
+                ReservationTime.withoutId(LocalTime.parse("10:20:30"))
+        );
+        Theme theme = themeRepository.save(
+                Theme.withoutId("귀신찾기", "귀신을 찾는다", "example.com")
+        );
+        Reservation rudevicoReservation =
+                Reservation.withoutId("루드비코", LocalDate.parse("2026-05-06"), reservationTime1, theme);
 
         ReservationTime reservationTime2 = reservationTimeRepository.save(
-                new ReservationTime(LocalTime.parse("11:20:30")));
-        Reservation cocoReservation = new Reservation("코코", LocalDate.parse("2026-05-06"),
-                reservationTime2,
-                theme);
+                ReservationTime.withoutId(LocalTime.parse("11:20:30"))
+        );
+        Reservation cocoReservation =
+                Reservation.withoutId("코코", LocalDate.parse("2026-05-06"), reservationTime2, theme);
 
         // when
         Reservation savedRudevicoReservation = reservationRepository.save(rudevicoReservation);
@@ -101,11 +107,13 @@ class JdbcReservationRepositoryTest {
     void 예약을_삭제한다() {
         // given
         ReservationTime reservationTime = reservationTimeRepository.save(
-                new ReservationTime(LocalTime.parse("10:20:30")));
-        Theme theme = themeRepository.save(new Theme("귀신찾기", "귀신을 찾는다", "example.com"));
-        Reservation reservation = new Reservation("루드비코", LocalDate.parse("2026-05-06"),
-                reservationTime,
-                theme);
+                ReservationTime.withoutId(LocalTime.parse("10:20:30"))
+        );
+        Theme theme = themeRepository.save(
+                Theme.withoutId("귀신찾기", "귀신을 찾는다", "example.com")
+        );
+        Reservation reservation =
+                Reservation.withoutId("루드비코", LocalDate.parse("2026-05-06"), reservationTime, theme);
 
         // when
         reservationRepository.delete(reservation.getId());

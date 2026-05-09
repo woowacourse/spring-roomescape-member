@@ -27,7 +27,7 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponseDTO addReservationTime(ReservationTimeRequestDTO reservationTimeRequest) {
-        ReservationTime reservationTime = new ReservationTime(
+        ReservationTime reservationTime = ReservationTime.withoutId(
                 LocalTime.parse(reservationTimeRequest.startAt())
         );
 

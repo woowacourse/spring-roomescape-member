@@ -20,8 +20,8 @@ public class Theme {
         this.runningTime = DEFAULT_RUNNING_TIME;
     }
 
-    public Theme(String name, String description, String imageUrl) {
-        this(null, name, description, imageUrl);
+    public static Theme withoutId(String name, String description, String imageUrl) {
+        return new Theme(null, name, description, imageUrl);
     }
 
     public Long getId() {

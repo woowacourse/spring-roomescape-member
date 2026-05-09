@@ -25,7 +25,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약시간을_저장하면_id를_부여한다() {
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.parse("10:15:30"));
+        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.parse("10:15:30"));
 
         // when
         ReservationTime saved = jdbcReservationTimeRepository.save(reservationTime);
@@ -38,7 +38,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약시간을_id로_조회한다() {
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.parse("10:15:30"));
+        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.parse("10:15:30"));
         ReservationTime saved = jdbcReservationTimeRepository.save(reservationTime);
 
         // when
@@ -53,9 +53,11 @@ class JdbcReservationTimeRepositoryTest {
     void 저장된_모든_예약시간을_조회한다() {
         // given
         ReservationTime reservationTime1 = jdbcReservationTimeRepository.save(
-                new ReservationTime(LocalTime.parse("10:15:30")));
+                ReservationTime.withoutId(LocalTime.parse("10:15:30"))
+        );
         ReservationTime reservationTime2 = jdbcReservationTimeRepository.save(
-                new ReservationTime(LocalTime.parse("10:20:30")));
+                ReservationTime.withoutId(LocalTime.parse("10:20:30"))
+        );
 
         // when
         List<ReservationTime> found = jdbcReservationTimeRepository.findAll();
@@ -71,7 +73,8 @@ class JdbcReservationTimeRepositoryTest {
     void 예약시간을_삭제한다() {
         // given
         ReservationTime reservationTime = jdbcReservationTimeRepository.save(
-                new ReservationTime(LocalTime.parse("10:15:30")));
+                ReservationTime.withoutId(LocalTime.parse("10:15:30"))
+        );
 
         // when
         jdbcReservationTimeRepository.delete(reservationTime.getId());

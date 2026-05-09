@@ -41,7 +41,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(reservationRequestDTO.themeId())
                 .orElseThrow();
 
-        Reservation reservation = new Reservation(
+        Reservation reservation = Reservation.withoutId(
                 reservationRequestDTO.name(),
                 reservationRequestDTO.date(),
                 time,

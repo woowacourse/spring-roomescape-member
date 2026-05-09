@@ -24,7 +24,7 @@ class JdbcThemeRepositoryTest {
     @Test
     void 테마를_저장하면_id를_부여한다() {
         // given
-        Theme theme = new Theme("귀신찾기", "귀신을 찾는다", "example.com");
+        Theme theme = Theme.withoutId("귀신찾기", "귀신을 찾는다", "example.com");
 
         // when
         Theme saved = themeRespository.save(theme);
@@ -38,7 +38,7 @@ class JdbcThemeRepositoryTest {
     void 테마를_id로_조회한다() {
         // given
         Theme saved = themeRespository.save(
-                new Theme("귀신찾기", "귀신을 찾는다", "example.com")
+                Theme.withoutId("귀신찾기", "귀신을 찾는다", "example.com")
         );
 
         // when
@@ -53,10 +53,10 @@ class JdbcThemeRepositoryTest {
     void 저장된_모든_테마를_조회한다() {
         // given
         Theme savedHorror = themeRespository.save(
-                new Theme("귀신찾기", "귀신을 찾는다", "example.com")
+                Theme.withoutId("귀신찾기", "귀신을 찾는다", "example.com")
         );
         Theme savedSuspect = themeRespository.save(
-                new Theme("추리", "추리한다", "example.com")
+                Theme.withoutId("추리", "추리한다", "example.com")
         );
 
         // when
@@ -76,7 +76,7 @@ class JdbcThemeRepositoryTest {
     void 테마를_삭제한다() {
         // given
         Theme savedHorror = themeRespository.save(
-                new Theme("귀신찾기", "귀신을 찾는다", "example.com")
+                Theme.withoutId("귀신찾기", "귀신을 찾는다", "example.com")
         );
 
         // when
