@@ -32,6 +32,11 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public Reservation find(long reservationId) {
+        return reservationRepository.findById(reservationId).orElseThrow(
+                () -> new IllegalArgumentException(INVALID_RESERVATION_ID));
+    }
+    
     @Transactional
     public Reservation reserve(ReservationCreateRequest request) {
         ReservationTime reservationTime = reservationTimeService.find(request.getTimeId());

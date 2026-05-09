@@ -40,6 +40,14 @@ public class ReservationController {
                 .toList();
     }
 
+    @GetMapping("/reservations/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ReservationResponse find(@PathVariable long id) {
+        Reservation reservation = reservationService.find(id);
+
+        return ReservationResponse.toDto(reservation);
+    }
+
     @DeleteMapping("/admin/reservations/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long id) {
