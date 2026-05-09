@@ -1,5 +1,6 @@
 package roomescape.time.service;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -18,7 +19,8 @@ public class TimeServiceImpl implements TimeService {
 
   @Override
   public ReservationTime create(String startAt, String endAt) {
-    return timeRepository.save(startAt, endAt);
+    ReservationTime time = new ReservationTime(startAt, endAt);
+    return timeRepository.save(time.getStartAt(), time.getEndAt());
   }
 
   @Override
@@ -37,7 +39,8 @@ public class TimeServiceImpl implements TimeService {
     if (startAt == null || startAt.isBlank()) {
       throw new IllegalArgumentException("예약 시간은 필수입니다.");
     }
-    return timeRepository.findByStartAt(startAt)
+    LocalTime startTime = ReservationTime.parse(startAt);
+    return timeRepository.findByStartAt(startTime)
         .orElseThrow(() -> new IllegalArgumentException("예약 시간이 존재하지 않습니다. startAt=" + startAt));
   }
 

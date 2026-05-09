@@ -1,15 +1,26 @@
 package roomescape.time.domain;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
+
 public class ReservationTime {
     private final Long id;
-    private final String startAt;
-    private final String endAt;
+    private final LocalTime startAt;
+    private final LocalTime endAt;
 
     public ReservationTime(String startAt, String endAt) {
-        this(null, startAt, endAt);
+        this(null, parse(startAt), parse(endAt));
     }
 
     public ReservationTime(Long id, String startAt, String endAt) {
+        this(id, parse(startAt), parse(endAt));
+    }
+
+    public ReservationTime(LocalTime startAt, LocalTime endAt) {
+        this(null, startAt, endAt);
+    }
+
+    public ReservationTime(Long id, LocalTime startAt, LocalTime endAt) {
         this.id = id;
         this.startAt = startAt;
         this.endAt = endAt;
@@ -23,11 +34,19 @@ public class ReservationTime {
         return id;
     }
 
-    public String getStartAt() {
+    public LocalTime getStartAt() {
         return startAt;
     }
 
-    public String getEndAt() {
+    public LocalTime getEndAt() {
         return endAt;
+    }
+
+    public static LocalTime parse(String time) {
+        try {
+            return LocalTime.parse(time);
+        } catch (DateTimeParseException | NullPointerException e) {
+            throw new IllegalArgumentException("예약 시간 형식이 올바르지 않습니다. time=" + time);
+        }
     }
 }

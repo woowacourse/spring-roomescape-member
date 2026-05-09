@@ -2,6 +2,7 @@ package roomescape.time.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +35,7 @@ public class JdbcTimeRepository implements TimeRepository {
   }
 
   @Override
-  public ReservationTime save(String startAt, String endAt) {
+  public ReservationTime save(LocalTime startAt, LocalTime endAt) {
     Number id = timeInsert.executeAndReturnKey(
         new MapSqlParameterSource()
             .addValue("start_time", startAt)
@@ -56,7 +57,7 @@ public class JdbcTimeRepository implements TimeRepository {
   }
 
   @Override
-  public Optional<ReservationTime> findByStartAt(String startAt) {
+  public Optional<ReservationTime> findByStartAt(LocalTime startAt) {
     List<ReservationTime> results = jdbcTemplate.query(
         "SELECT id, start_time, end_time FROM reservation_time WHERE start_time = ?",
         new ReservationTimeRowMapper(),
@@ -89,8 +90,8 @@ public class JdbcTimeRepository implements TimeRepository {
     public ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
       return new ReservationTime(
           rs.getLong("id"),
-          rs.getString("start_time"),
-          rs.getString("end_time")
+          rs.getObject("start_time", LocalTime.class),
+          rs.getObject("end_time", LocalTime.class)
       );
     }
   }
