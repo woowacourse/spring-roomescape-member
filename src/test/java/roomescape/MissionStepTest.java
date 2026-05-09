@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -35,7 +36,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(HttpStatus.CREATED.value());
 
         RestAssured.given().log().all()
                 .when().get("/admin/times")
@@ -46,7 +47,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @Test
@@ -59,7 +60,7 @@ public class MissionStepTest {
                 .body(time)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(HttpStatus.CREATED.value())
                 .extract().path("id");
 
         Map<String, Object> theme = new HashMap<>();
@@ -85,7 +86,7 @@ public class MissionStepTest {
                 .body(reservation)
                 .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(HttpStatus.CREATED.value());
 
         RestAssured.given().log().all()
                 .when().get("/admin/reservations")
