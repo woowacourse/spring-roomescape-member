@@ -3,7 +3,6 @@ package roomescape.domain.reservation.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import javax.sql.DataSource;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -54,8 +53,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
                 FIND_ALL_RESERVATIONS_WITH_TIME_QUERY,
-                reservationWithTimeRowMapper()
-        );
+                reservationWithTimeRowMapper());
     }
 
     @Override
@@ -85,8 +83,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
         jdbcTemplate.update(
                 DELETE_RESERVATION_BY_ID_QUERY,
-                parameters
-        );
+                parameters);
     }
 
     private RowMapper<Reservation> reservationWithTimeRowMapper() {
@@ -97,13 +94,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
                         resultSet.getLong("theme_id"),
                         resultSet.getString("theme_name"),
                         resultSet.getString("theme_description"),
-                        resultSet.getString("theme_thumbnail_url")
-                ),
-                LocalDate.parse(resultSet.getString("date")),
+                        resultSet.getString("theme_thumbnail_url")),
+                resultSet.getObject("date", LocalDate.class),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
-                        LocalTime.parse(resultSet.getString("start_at"))
-                )
-        );
+                        resultSet.getObject("start_at", LocalTime.class)));
     }
 }

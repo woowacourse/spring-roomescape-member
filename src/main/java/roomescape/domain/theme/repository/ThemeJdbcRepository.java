@@ -1,6 +1,7 @@
 package roomescape.domain.theme.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -168,7 +169,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     private RowMapper<ThemeReservationTimeResponse> themeReservationTimeResponseRowMapper() {
         return (resultSet, rowNumber) -> new ThemeReservationTimeResponse(
                 resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime(),
+                resultSet.getObject("start_at", LocalTime.class),
                 resultSet.getBoolean("is_available")
         );
     }
