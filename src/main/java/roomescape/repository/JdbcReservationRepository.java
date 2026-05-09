@@ -22,7 +22,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final SimpleJdbcInsert simpleJdbcInsert;
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
-        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     private static RowMapper<Reservation> getReservationRowMapper() {
@@ -50,9 +52,6 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        simpleJdbcInsert.withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
-
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(
                 new BeanPropertySqlParameterSource(reservation))
                 .longValue();
@@ -118,7 +117,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                 params,
                 getReservationRowMapper()
         );
-        return results.stream().findFirst();
+        return results
+                .stream()
+                .findFirst();
     }
 
     @Override

@@ -24,7 +24,9 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
-        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     private static RowMapper<Theme> getThemeRowMapper() {
@@ -38,10 +40,6 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Theme save(Theme theme) {
-       simpleJdbcInsert
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
-
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(
                 new BeanPropertySqlParameterSource(theme)
         ).longValue();

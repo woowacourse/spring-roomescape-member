@@ -19,14 +19,13 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
-        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        simpleJdbcInsert.withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
-
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(
                 new BeanPropertySqlParameterSource(reservationTime)
         ).longValue();
