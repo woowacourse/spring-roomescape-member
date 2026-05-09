@@ -109,6 +109,20 @@ public class JdbcReservationRepository implements ReservationRepository {
         jdbcTemplate.update(sql, reservationId);
     }
 
+    @Override
+    public boolean isExistBy(Long themeId, LocalDate date, Long reservationTimeId) {
+        String sql = """
+                        SELECT EXISTS (
+                            SELECT 1
+                            FROM reservation 
+                            WHERE theme_id = ? 
+                            AND date = ?
+                            AND time_id = ? 
+                        ) 
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId, date, reservationTimeId));
+    }
+
     private RowMapper<Reservation> rowMapper() {
         return (rs, rowNum) -> new Reservation(
                 rs.getLong("r_id"),

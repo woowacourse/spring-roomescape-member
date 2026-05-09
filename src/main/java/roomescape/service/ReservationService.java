@@ -41,14 +41,19 @@ public class ReservationService {
 
     @Transactional
     public Reservation saveReservation(String name, LocalDate date, Long reservationTimeId, Long themeId) {
+        validateIsExistBy(date, reservationTimeId, themeId);
+
         Theme theme = getThemeOrElseThrow(themeId);
         Time time = getTimeOrElseThrow(reservationTimeId);
-
-        // TODO 해당 테마, 날짜, 시간의 예약이 있는지 검사
-
         Reservation reservation = reservationRepository.save(new Reservation(name, date, time, theme));
         themeSlotRepository.update(new ThemeSlot(theme, date, time, true));
         return reservation;
+    }
+
+    private void validateIsExistBy(LocalDate date, Long reservationTimeId, Long themeId) {
+        if (reservationRepository.isExistBy(themeId, date, reservationTimeId)) {
+            throw new IllegalArgumentException("해당 테마, 날짜, 시간에 예약이 존재합니다.");
+        }
     }
 
     public void removeReservation(long reservationId) {
