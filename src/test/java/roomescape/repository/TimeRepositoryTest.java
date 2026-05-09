@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.model.ReservationTime;
 
 @JdbcTest
-public class ReservationTimeRepositoryTest {
+public class TimeRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
