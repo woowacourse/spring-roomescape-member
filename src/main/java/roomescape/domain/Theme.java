@@ -27,7 +27,7 @@ public class Theme {
         );
     }
 
-    public static Theme restore(
+    public static Theme createWithId(
             final Long id,
             final String name,
             final String description,
@@ -41,7 +41,7 @@ public class Theme {
         );
     }
 
-    public Theme saved(final Long id) {
+    public Theme withId(final Long id) {
         return new Theme(
                 id,
                 name,

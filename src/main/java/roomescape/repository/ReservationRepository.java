@@ -50,7 +50,7 @@ public class ReservationRepository {
 
         final long newReservationId = insertReservation(entity);
 
-        return newReservation.saved(newReservationId);
+        return newReservation.withId(newReservationId);
     }
 
     public boolean deleteById(final Long reservationId) {
@@ -131,20 +131,20 @@ public class ReservationRepository {
             final ResultSet resultSet,
             final int rowNum
     ) throws SQLException {
-        final ReservationTime reservationTime = ReservationTime.restore(
+        final ReservationTime reservationTime = ReservationTime.createWithId(
                 resultSet.getLong("time_id"),
                 resultSet.getTime("time_start_at").toLocalTime(),
                 resultSet.getTime("time_end_at").toLocalTime()
         );
 
-        final Theme theme = Theme.restore(
+        final Theme theme = Theme.createWithId(
                 resultSet.getLong("theme_id"),
                 resultSet.getString("theme_name"),
                 resultSet.getString("theme_description"),
                 resultSet.getString("theme_thumbnail_url")
         );
 
-        return Reservation.restore(
+        return Reservation.createWithId(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("reservation_name"),
                 resultSet.getDate("reservation_date").toLocalDate(),

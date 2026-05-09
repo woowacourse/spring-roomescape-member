@@ -56,7 +56,7 @@ public class ReservationTimeRepository {
 
         final long newTimeId = insertReservationTime(reservationTimeEntity);
 
-        return newReservationTime.saved(newTimeId);
+        return newReservationTime.withId(newTimeId);
     }
 
     public boolean delete(final Long timeId) {
@@ -106,7 +106,7 @@ public class ReservationTimeRepository {
      * 엔티티 - 도메인 매핑 메서드
      */
     private ReservationTime mapToDomain(final ResultSet resultSet, final int rowNum) throws SQLException {
-        return ReservationTime.restore(
+        return ReservationTime.createWithId(
                 resultSet.getLong("id"),
                 resultSet.getTime("start_at").toLocalTime(),
                 resultSet.getTime("end_at").toLocalTime()

@@ -28,18 +28,21 @@ public class ReservationTime {
         );
     }
 
-    public ReservationTime saved(final Long id) {
+    public static ReservationTime createWithId(
+            final Long id,
+            final LocalTime startAt,
+            final LocalTime endAt
+    ) {
+        return new ReservationTime(id, startAt, endAt);
+    }
+
+    public ReservationTime withId(final Long id) {
         return new ReservationTime(
                 id,
                 startAt,
                 endAt
         );
     }
-
-    public static ReservationTime restore(final Long id, final LocalTime startAt, final LocalTime endAt) {
-        return new ReservationTime(id, startAt, endAt);
-    }
-
 
     private void validateStartAt(final LocalTime startAt) {
         if (startAt == null) {
