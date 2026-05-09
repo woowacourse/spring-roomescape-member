@@ -1,20 +1,19 @@
-package integration.reservation;
+package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import integration.BaseIntegrationTest;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.ReservationTime;
-import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.dto.TimeSlotProjection;
+import roomescape.service.BaseIntegrationTest;
 
 class ReservationTimeRepositoryTest extends BaseIntegrationTest {
 
@@ -24,8 +23,8 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
     @Autowired
     private ReservationTimeDataSource dataSource;
 
-    @AfterEach
-    void tearDown() {
+    @BeforeEach
+    void setUp() {
         dataSource.clearTable();
         dataSource.clearId();
     }

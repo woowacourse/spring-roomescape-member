@@ -1,4 +1,4 @@
-package integration;
+package roomescape.service;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -10,6 +10,6 @@ import roomescape.RoomescapeApplication;
         BaseIntegrationTest.class,
 })
 @ActiveProfiles("test")
-@ComponentScan(basePackages = "integration")
+@ComponentScan(basePackages = "service")
 public class BaseIntegrationTest {
 }

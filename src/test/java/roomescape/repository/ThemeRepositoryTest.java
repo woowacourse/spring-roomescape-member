@@ -1,10 +1,9 @@
-package integration.theme;
+package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import integration.BaseIntegrationTest;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.Theme;
-import roomescape.repository.ThemeRepository;
+import roomescape.service.BaseIntegrationTest;
 
 class ThemeRepositoryTest extends BaseIntegrationTest {
     @Autowired

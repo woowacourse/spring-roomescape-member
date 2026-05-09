@@ -1,20 +1,18 @@
-package integration.reservation;
+package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import integration.BaseIntegrationTest;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import roomescape.service.ReservationService;
+import roomescape.repository.ReservationDataSource;
 import roomescape.web.dto.ReservationRequest;
 
 class ReservationServiceIntTest extends BaseIntegrationTest {
@@ -26,14 +24,11 @@ class ReservationServiceIntTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        reservationDataSource.insertTheme("공포의 테마", "공포 테마", "https://image.com/image.png");
-        reservationDataSource.insertReservationTime(LocalTime.of(10, 0));
-    }
-
-    @AfterEach
-    void tearDown() {
         reservationDataSource.clearTable();
         reservationDataSource.clearId();
+
+        reservationDataSource.insertTheme("공포의 테마", "공포 테마", "https://image.com/image.png");
+        reservationDataSource.insertReservationTime(LocalTime.of(10, 0));
     }
 
     @Test

@@ -18,12 +18,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
-import roomescape.web.dto.ReservationRequest;
-import roomescape.web.dto.ReservationResponse;
-import roomescape.web.dto.ReservationTimeResponse;
 import roomescape.controller.client.fixture.ReservationApiRequestFixture;
 import roomescape.service.ReservationService;
 import roomescape.web.controller.client.ReservationApiController;
+import roomescape.web.dto.ReservationRequest;
+import roomescape.web.dto.ReservationResponse;
+import roomescape.web.dto.ReservationTimeResponse;
 
 @WebMvcTest(ReservationApiController.class)
 class ReservationApiControllerTest extends BaseControllerUnitTest {

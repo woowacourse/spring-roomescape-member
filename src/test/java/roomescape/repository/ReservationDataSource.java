@@ -1,12 +1,12 @@
-package integration.reservation;
+package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestComponent;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
-@TestComponent
+@Component
 public class ReservationDataSource {
 
     @Autowired

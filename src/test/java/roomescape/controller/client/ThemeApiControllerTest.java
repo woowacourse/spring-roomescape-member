@@ -20,11 +20,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
-import roomescape.web.dto.ThemeResponse;
-import roomescape.web.dto.ThemeTimesResponse;
 import roomescape.domain.fixture.ThemeFixture;
 import roomescape.service.ThemeService;
 import roomescape.web.controller.client.ThemeApiController;
+import roomescape.web.dto.ThemeResponse;
+import roomescape.web.dto.ThemeTimesResponse;
 
 @WebMvcTest(ThemeApiController.class)
 class ThemeApiControllerTest extends BaseControllerUnitTest {
