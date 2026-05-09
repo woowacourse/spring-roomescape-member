@@ -7,14 +7,19 @@ public class Reservation {
     private final Long id;
     private final String name;
     private final LocalDate date;
+    private final LocalDate createdAt;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, LocalDate createdAt, ReservationTime time, Theme theme) {
         validate(name, date, time, theme);
+        if (createdAt != null && date.isBefore(createdAt)) {
+            throw new IllegalArgumentException("과거 날짜로는 예약할 수 없습니다.");
+        }
         this.id = id;
         this.name = name;
         this.date = date;
+        this.createdAt = createdAt;
         this.time = time;
         this.theme = theme;
     }

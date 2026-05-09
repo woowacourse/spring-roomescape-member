@@ -20,6 +20,7 @@ public class ReservationDao {
             rs.getLong("reservation_id"),
             rs.getString("name"),
             rs.getDate("date").toLocalDate(),
+            null,
             new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
             new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"),
                     rs.getString("theme_thumbnail"))

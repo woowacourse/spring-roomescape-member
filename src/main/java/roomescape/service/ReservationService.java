@@ -27,14 +27,12 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
         final Theme theme = themeDao.findById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-        if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("과거 날짜로는 예약할 수 없습니다.");
-        }
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
+        new Reservation(null, name, date, LocalDate.now(), time, theme);
         final long id = reservationDao.save(name, date, timeId, themeId);
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, name, date, null, time, theme);
     }
 
     public void delete(long id) {

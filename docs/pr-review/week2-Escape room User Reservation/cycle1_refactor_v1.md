@@ -24,7 +24,7 @@
 - [x] **10. `ThemeDao.findById()`의 try-catch를 `query()` + `stream().findFirst()`로 대체**
 - [ ] **11. 미흡 테스트 추가**
 - [x] **12. `AdminThemeService`의 `delete`에 있는 불필요한 타입 캐스팅 제거**
-- [ ] **13. 과거 날짜 검증을 `Reservation` 도메인으로 이동 + `createdAt` 필드 추가**
+- [x] **13. 과거 날짜 검증을 `Reservation` 도메인으로 이동 + `createdAt` 필드 추가**
   - `createdAt`은 외부에서 주입받아 `LocalDate.now()` 직접 호출 방지
 - [ ] **14. 서비스 메서드에 트랜잭션 추가**
   - `@Transactional`: `ReservationService.save/delete`, `ReservationTimeService.save/delete`, `AdminThemeService.save/delete`
