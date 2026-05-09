@@ -11,6 +11,11 @@ public class ReservationController {
         return "reservation";
     }
 
+    @GetMapping("/my-reservations")
+    public String myReservationsPage() {
+        return "my-reservations";
+    }
+
     @GetMapping("/admin/reservation")
     public String adminReservationPage() {
         return "admin/reservation";

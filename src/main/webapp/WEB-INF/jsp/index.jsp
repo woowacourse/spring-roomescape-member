@@ -188,6 +188,9 @@
                     <li>
                         <a href="/reservation" class="menu-link">예약하기</a>
                     </li>
+                    <li>
+                        <a href="/my-reservations" class="menu-link">내 예약 목록</a>
+                    </li>
                 </ul>
             </div>
 

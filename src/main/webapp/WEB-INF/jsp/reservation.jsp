@@ -330,19 +330,12 @@
             </form>
         </div>
 
-        <div class="list-card">
-            <h2>내 예약 목록</h2>
-            <div id="reservationsList">
-                <div class="empty-state">로딩 중...</div>
-            </div>
-        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             loadTimes();
             loadThemes();
-            loadReservations();
         });
 
         function loadTimes() {
@@ -408,56 +401,6 @@
                 .catch(error => console.error('테마 목록 불러오기 실패:', error));
         }
 
-        function loadReservations() {
-            const container = document.getElementById('reservationsList');
-            const myName = localStorage.getItem('reservationName');
-
-            if (!myName) {
-                container.innerHTML = '<div class="empty-state">예약 내역이 없습니다.</div>';
-                return;
-            }
-
-            fetch(`/reservations/mine?name=${encodeURIComponent(myName)}`)
-                .then(res => res.json())
-                .then(reservations => {
-                    if (reservations.length === 0) {
-                        container.innerHTML = '<div class="empty-state">예약 내역이 없습니다.</div>';
-                        return;
-                    }
-
-                    container.innerHTML = `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>이름</th>
-                                    <th>날짜</th>
-                                    <th>시간</th>
-                                    <th>테마</th>
-                                    <th>관리</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${reservations.map(reservation => `
-                                    <tr>
-                                        <td>${reservation.name}</td>
-                                        <td>${reservation.date}</td>
-                                        <td>${reservation.time.startAt}</td>
-                                        <td>${reservation.theme.name}</td>
-                                        <td>
-                                            <button class="btn-delete" onclick="deleteReservation(${reservation.id})">취소</button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                })
-                .catch(error => {
-                    console.error('예약 목록 불러오기 실패:', error);
-                    container.innerHTML = '<div class="empty-state">예약 목록을 불러오는데 실패했습니다.</div>';
-                });
-        }
-
         document.getElementById('reservationForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -483,15 +426,12 @@
             .then(response => {
                 if (response.ok) {
                     return response.json().then(() => {
-                        // 예약한 이름을 localStorage에 저장
-                        localStorage.setItem('reservationName', reservationData.name);
                         alert('예약이 완료되었습니다!');
                         document.getElementById('reservationForm').reset();
                         document.querySelectorAll('.time-slot-btn').forEach(button => {
                             button.classList.remove('selected');
                             button.setAttribute('aria-pressed', 'false');
                         });
-                        loadReservations();
                     });
                 } else {
                     return response.json().then(error => {
@@ -505,27 +445,6 @@
             });
         });
 
-        function deleteReservation(id) {
-            if (!confirm('정말로 이 예약을 취소하시겠습니까?')) {
-                return;
-            }
-
-            fetch(`/reservations/${id}`, {
-                method: 'DELETE'
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('예약이 취소되었습니다.');
-                    loadReservations();
-                } else {
-                    alert('예약 취소에 실패했습니다.');
-                }
-            })
-            .catch(error => {
-                console.error('예약 취소 실패:', error);
-                alert('예약 취소 중 오류가 발생했습니다.');
-            });
-        }
     </script>
 </body>
 </html>
