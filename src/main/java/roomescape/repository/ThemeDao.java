@@ -63,12 +63,16 @@ public class ThemeDao {
 
     public List<PopularThemeResponse> findPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit) {
         String sql = """
-                select t.id, t.name, t.description, t.thumbnail_image_url, count(r.id) as reservation_count
-                from theme t
-                join reservation r on t.id = r.theme_id and r.date >= ? and r.date <= ?
-                group by t.id
-                order by reservation_count desc, t.id asc
-                limit ?
+                SELECT t.id, t.name, t.description, t.thumbnail_image_url, stats.reservation_count
+                FROM theme t
+                JOIN (
+                    SELECT theme_id, COUNT(id) AS reservation_count
+                    FROM reservation
+                    WHERE date >= ? AND date <= ?
+                    GROUP BY theme_id
+                ) stats ON t.id = stats.theme_id
+                ORDER BY stats.reservation_count DESC, t.id ASC
+                LIMIT ?
                 """;
 
         RowMapper<PopularThemeResponse> popularThemeRowMapper = (resultSet, rowNum) -> new PopularThemeResponse(

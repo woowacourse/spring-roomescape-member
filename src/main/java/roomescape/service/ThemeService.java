@@ -16,6 +16,8 @@ import roomescape.repository.ThemeDao;
 public class ThemeService {
 
     private static final Integer POPULAR_THEME_PERIOD_DAYS = 7;
+    private static final int MAX_POPULAR_THEMES_LIMIT = 10;
+    private static final int MIN_POPULAR_THEMES_LIMIT = 0;
 
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
@@ -54,6 +56,7 @@ public class ThemeService {
     }
 
     public List<PopularThemeResponse> getPopularThemes(Integer limit) {
+        limit = Math.clamp(limit, MIN_POPULAR_THEMES_LIMIT, MAX_POPULAR_THEMES_LIMIT);
         LocalDate today = LocalDate.now();
         LocalDate to = today.minusDays(1);
         LocalDate from = today.minusDays(POPULAR_THEME_PERIOD_DAYS);
