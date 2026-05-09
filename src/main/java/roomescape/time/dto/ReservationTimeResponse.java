@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import roomescape.time.ReservationTime;
 
 public record ReservationTimeResponse(
-        Long id,
+        long id,
         LocalTime startAt
 ) {
 
