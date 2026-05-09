@@ -1,8 +1,9 @@
 package roomescape.controller;
 
+import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.service.ReservationService;
@@ -31,11 +33,22 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> create(@Valid @RequestBody ReservationRequestDto requestDto) {
-        ReservationResponseDto responseDto = reservationService.create(requestDto);
-        return ResponseEntity.
-                status(HttpStatus.CREATED)
-                .body(responseDto);
+    public ResponseEntity<ReservationResponseDto> create(@Valid @RequestBody ReservationRequestDto request) {
+        ReservationResponseDto response = reservationService.create(request);
+
+        URI location = buildLocationUri(response);
+
+        return ResponseEntity.created(location)
+                .body(response);
+    }
+
+    @Nonnull
+    private static URI buildLocationUri(ReservationResponseDto response) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
     }
 
     @DeleteMapping("/{id}")

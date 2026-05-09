@@ -1,9 +1,10 @@
 package roomescape.controller;
 
+import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.dto.ReservationTimeAvailabilityResponseDto;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
@@ -28,11 +30,22 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponseDto> create(@Valid @RequestBody ReservationTimeRequestDto requestDto) {
-        ReservationTimeResponseDto responseDto = reservationTimeService.create(requestDto);
-        return ResponseEntity.
-                status(HttpStatus.CREATED)
-                .body(responseDto);
+    public ResponseEntity<ReservationTimeResponseDto> create(@Valid @RequestBody ReservationTimeRequestDto request) {
+        ReservationTimeResponseDto response = reservationTimeService.create(request);
+
+        URI location = buildLocationUri(response);
+
+        return ResponseEntity.created(location)
+                .body(response);
+    }
+
+    @Nonnull
+    private static URI buildLocationUri(ReservationTimeResponseDto responseDto) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(responseDto.id())
+                .toUri();
     }
 
     @GetMapping
