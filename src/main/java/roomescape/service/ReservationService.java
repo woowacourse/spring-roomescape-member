@@ -61,7 +61,7 @@ public class ReservationService {
 
         Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(themeById.getId(), reservationReq.getDate(), reservationTimeById.getId());
         if (savedReservation.isPresent()) {
-            return ReservationResponse.from(savedReservation.get());
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
 
         Long generatedId = reservationUpdatingDao.insert(reservationReq);
