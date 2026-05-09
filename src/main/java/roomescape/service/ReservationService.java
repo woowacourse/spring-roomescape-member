@@ -1,7 +1,10 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -40,7 +43,7 @@ public class ReservationService {
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
         List<ReservationTime> availableTimes = reservationTimeRepository
-            .findByDateAndThemeId(requestDto.date(), requestDto.themeId());
+            .findTimesByDateAndThemeId(requestDto.date(), requestDto.themeId());
         if (!availableTimes.contains(time)) {
             throw new IllegalArgumentException("해당 테마에서 이미 예약된 날짜입니다.");
         }
@@ -70,10 +73,23 @@ public class ReservationService {
         reservationTimeRepository.deleteById(id);
     }
 
-    public List<ReservationTime> getAvailableTimes(LocalDate date, Long themeId) {
+    public Map<ReservationTime, Boolean> getTimesWithAvailability(LocalDate date, Long themeId) {
+        Map<ReservationTime, Boolean> timesWithAvailability =  new HashMap<>();
+
         Theme theme = themeRepository.findById(themeId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        return reservationTimeRepository.findByDateAndThemeId(date, theme.getId());
+        List<ReservationTime> availableTimes = reservationTimeRepository.findTimesByDateAndThemeId(date, theme.getId());
+
+        for (ReservationTime time : reservationTimeRepository.findAll()) {
+            if (availableTimes.contains(time)) {
+                timesWithAvailability.put(time, true);
+                continue;
+            }
+
+            timesWithAvailability.put(time, false);
+        }
+
+        return timesWithAvailability;
     }
 }

@@ -3,6 +3,8 @@ package roomescape.controller;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,9 +74,7 @@ public class ReservationTimeController {
         @RequestParam("date") String date,
         @RequestParam("themeId") Long themeId
     ) {
-        List<ReservationTime> availableTimes = reservationService.getAvailableTimes(LocalDate.parse(date), themeId);
-        List<ReservationTime> allTimes = reservationService.getReservationTimes();
-
-        return AvailableReservationTimesResponseDto.of(availableTimes, allTimes);
+        Map<ReservationTime, Boolean> timesWithAvailability = reservationService.getTimesWithAvailability(LocalDate.parse(date), themeId);
+        return AvailableReservationTimesResponseDto.of(timesWithAvailability);
     }
 }
