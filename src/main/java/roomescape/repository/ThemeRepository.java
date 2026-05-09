@@ -126,7 +126,7 @@ public class ThemeRepository {
         return generatedIdFrom(keyHolder);
     }
 
-    private long generatedIdFrom(final KeyHolder keyHolder) {
+    private static long generatedIdFrom(final KeyHolder keyHolder) {
         final Number generatedKey = keyHolder.getKey();
 
         if (generatedKey == null) {
