@@ -32,7 +32,7 @@ public class UserReservationTimeService {
     public List<AvailableTime> getSchedules(LocalDate date, Long themeId) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAll();
 
-        List<Long> reservedTimeIds = reservationRepository.findReservedTimeIds(date, themeId);
+        List<Long> reservedTimeIds = reservationRepository.findByDateAndTheme(date, themeId);
         Set<Long> reservedIdSet = new HashSet<>(reservedTimeIds);
 
         return allTimes.stream()
