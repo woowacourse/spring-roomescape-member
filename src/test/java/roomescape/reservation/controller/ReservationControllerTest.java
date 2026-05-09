@@ -32,6 +32,7 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
+                .header("Location", containsString("/reservations/"))
                 .body("name", is("밀란"))
                 .body("date", is("2026-05-03"))
                 .body("time.id", is(1))
