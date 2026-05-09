@@ -1,61 +1,34 @@
 package roomescape.domain;
 
 import java.util.Objects;
+import java.util.UUID;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
 
 @Getter
 public class Theme {
 
-    private final Long id;
+    private final UUID id;
     private final String name;
     private final String description;
     private final String imageUrl;
 
-    private Theme(Long id, String name, String description, String imageUrl) {
+    public Theme(UUID id, String name, String description, String imageUrl) {
+        validateId(id);
         validateName(name);
         validateDescription(description);
         validateImageUrl(imageUrl);
+
         this.id = id;
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
     }
 
-    public static Theme create(
-            String name,
-            String description,
-            String imageUrl
-    ) {
-        return new Theme(
-                null,
-                name,
-                description,
-                imageUrl
-        );
-    }
-
-    public static Theme retrieve(
-            long id,
-            String name,
-            String description,
-            String imageUrl
-    ) {
-        return new Theme(
-                id,
-                name,
-                description,
-                imageUrl
-        );
-    }
-
-    public Theme with(long id) {
-        return new Theme(
-                id,
-                this.name,
-                this.description,
-                this.imageUrl
-        );
+    private void validateId(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("테마엔 식별자가 존재해야 합니다.");
+        }
     }
 
     private void validateName(String name) {
@@ -82,13 +55,11 @@ public class Theme {
             return false;
         }
         Theme theme = (Theme) o;
-        return Objects.equals(id, theme.id) && Objects.equals(name, theme.name)
-                && Objects.equals(description, theme.description) && Objects.equals(imageUrl,
-                theme.imageUrl);
+        return Objects.equals(id, theme.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, imageUrl);
+        return Objects.hashCode(id);
     }
 }

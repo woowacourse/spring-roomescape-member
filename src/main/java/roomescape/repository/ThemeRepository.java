@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,18 +25,18 @@ public class ThemeRepository {
     public ThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
+                .withTableName("theme");
     }
 
     public Theme persist(Theme theme) {
-        Number id = simpleJdbcInsert.executeAndReturnKey(Map.of(
+        simpleJdbcInsert.execute(Map.of(
+                "id", theme.getId().toString(),
                 "name", theme.getName(),
                 "description", theme.getDescription(),
                 "image_url", theme.getImageUrl()
         ));
 
-        return theme.with(id.longValue());
+        return theme;
     }
 
     public List<Theme> findAll() {
@@ -46,7 +47,7 @@ public class ThemeRepository {
         return jdbcTemplate.query(findSql, themeRowMapper());
     }
 
-    public Optional<Theme> findById(long id) {
+    public Optional<Theme> findById(UUID id) {
         try {
             String findSql = "SELECT id, name, description, image_url"
                     + " FROM theme"
@@ -55,7 +56,7 @@ public class ThemeRepository {
             Theme theme = jdbcTemplate.queryForObject(
                     findSql,
                     themeRowMapper(),
-                    id
+                    id.toString()
             );
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException exception) {
@@ -87,12 +88,12 @@ public class ThemeRepository {
         );
     }
 
-    public boolean delete(long themeId) {
+    public boolean delete(UUID themeId) {
         String deleteSql = "DELETE FROM theme"
                 + " WHERE id = ?";
 
         try {
-            int deletedRowCount = jdbcTemplate.update(deleteSql, themeId);
+            int deletedRowCount = jdbcTemplate.update(deleteSql, themeId.toString());
 
             return isDeleted(deletedRowCount);
         } catch (DataIntegrityViolationException exception) {
@@ -110,18 +111,18 @@ public class ThemeRepository {
 
     private RowMapper<Theme> themeRowMapper() {
         return (resultSet, rowNum) -> {
-            long id = resultSet.getLong("id");
+            UUID id = UUID.fromString(resultSet.getString("id"));
             String name = resultSet.getString("name");
             String description = resultSet.getString("description");
             String imageUrl = resultSet.getString("image_url");
 
-            return Theme.retrieve(id, name, description, imageUrl);
+            return new Theme(id, name, description, imageUrl);
         };
     }
 
     private RowMapper<ReservedTheme> reservedThemeRowMapper() {
         return (resultSet, rowNum) -> {
-            long id = resultSet.getLong("id");
+            UUID id = UUID.fromString(resultSet.getString("id"));
             String name = resultSet.getString("name");
             String description = resultSet.getString("description");
             String imageUrl = resultSet.getString("image_url");

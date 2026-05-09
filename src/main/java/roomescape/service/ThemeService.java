@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,9 @@ public class ThemeService {
     public Theme create(
             ThemeCreateCommand command
     ) {
-        Theme theme = Theme.create(
+        UUID id = UUID.randomUUID();
+        Theme theme = new Theme(
+                id,
                 command.name(),
                 command.description(),
                 command.imageUrl()
@@ -46,7 +49,7 @@ public class ThemeService {
     }
 
     @Transactional
-    public void delete(long themeId) {
+    public void delete(UUID themeId) {
         boolean deleted = themeRepository.delete(themeId);
 
         if (!deleted) {

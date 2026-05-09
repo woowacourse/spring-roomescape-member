@@ -1,9 +1,10 @@
 package roomescape.controller.dto;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record ReservationResponse(
-        long id,
+        UUID id,
         String name,
         LocalDate date,
         ReservationTimeResponse time,

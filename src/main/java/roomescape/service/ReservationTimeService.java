@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,8 @@ public class ReservationTimeService {
     public ReservationTime create(
             ReservationTimeCreateCommand command
     ) {
-        ReservationTime reservationTime = ReservationTime.create(command.startAt());
+        UUID id = UUID.randomUUID();
+        ReservationTime reservationTime = new ReservationTime(id, command.startAt());
 
         return repository.persist(reservationTime);
     }
@@ -34,14 +36,14 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public List<ReservationTime> findAvailableTimes(
-            long themeId,
+            UUID themeId,
             LocalDate date
     ) {
         return repository.findReservationAvailableTimes(themeId, date);
     }
 
     @Transactional
-    public void delete(long timeId) {
+    public void delete(UUID timeId) {
         boolean deleted = repository.delete(timeId);
 
         if (!deleted) {

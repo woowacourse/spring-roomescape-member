@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,7 @@ public class ThemeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
-            @PathVariable long id
+            @PathVariable UUID id
     ) {
         service.delete(id);
         return ResponseEntity.ok().build();

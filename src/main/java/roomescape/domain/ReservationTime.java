@@ -2,48 +2,27 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.Getter;
 
 @Getter
 public class ReservationTime {
 
-    private final Long id;
+    private final UUID id;
     private final LocalTime startAt;
 
-    private ReservationTime(
-            Long id,
-            LocalTime startAt
-    ) {
+    public ReservationTime(UUID id, LocalTime startAt) {
+        validateId(id);
         validateStartAt(startAt);
 
         this.id = id;
         this.startAt = startAt;
     }
 
-    public static ReservationTime create(
-            LocalTime startAt
-    ) {
-        return new ReservationTime(
-                null,
-                startAt
-        );
-    }
-
-    public static ReservationTime retrieve(
-            long id,
-            LocalTime startAt
-    ) {
-        return new ReservationTime(
-                id,
-                startAt
-        );
-    }
-
-    public ReservationTime with(long id) {
-        return new ReservationTime(
-                id,
-                this.startAt
-        );
+    private void validateId(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("예약 시간엔 식별자가 존재해야 합니다.");
+        }
     }
 
     private void validateStartAt(LocalTime startAt) {
@@ -58,11 +37,11 @@ public class ReservationTime {
             return false;
         }
         ReservationTime that = (ReservationTime) o;
-        return Objects.equals(id, that.id) && Objects.equals(startAt, that.startAt);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, startAt);
+        return Objects.hashCode(id);
     }
 }

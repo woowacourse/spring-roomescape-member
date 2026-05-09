@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -25,7 +26,8 @@ class ThemeRepositoryTest {
     private static boolean persistTestSuccessful = false;
     private static boolean findAllTestSuccessful = false;
 
-    private static final long NOT_EXIST_ID = 999;
+    private static final UUID NOT_EXIST_ID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
+
     private static final String DEFAULT_NAME = "name";
     private static final String DEFAULT_DESCRIPTION = "description";
     private static final String DEFAULT_IMAGE_URL = "imageUrl";
@@ -45,7 +47,9 @@ class ThemeRepositoryTest {
     @Test
     void 새로운_테마를_저장하고_저장된_테마를_반환한다() {
         // given
-        Theme transientTheme = Theme.create(
+        UUID id = UUID.fromString("22222222-2222-2222-2222-222222222201");
+        Theme transientTheme = new Theme(
+                id,
                 DEFAULT_NAME,
                 DEFAULT_DESCRIPTION,
                 DEFAULT_IMAGE_URL
@@ -71,7 +75,9 @@ class ThemeRepositoryTest {
         skipIfPersistTestFailed();
 
         // given
-        Theme transientTheme = Theme.create(
+        UUID id = UUID.fromString("22222222-2222-2222-2222-222222222202");
+        Theme transientTheme = new Theme(
+                id,
                 DEFAULT_NAME,
                 DEFAULT_DESCRIPTION,
                 DEFAULT_IMAGE_URL
@@ -102,7 +108,9 @@ class ThemeRepositoryTest {
             @Test
             void 테마를_ID_기준으로_조회한다() {
                 // given
-                Theme transientTheme = Theme.create(
+                UUID id = UUID.fromString("22222222-2222-2222-2222-222222222203");
+                Theme transientTheme = new Theme(
+                        id,
                         DEFAULT_NAME,
                         DEFAULT_DESCRIPTION,
                         DEFAULT_IMAGE_URL
@@ -132,7 +140,9 @@ class ThemeRepositoryTest {
             @Test
             void ID_기반으로_테마를_제거한다() {
                 // given
-                Theme transientTheme = Theme.create(
+                UUID id = UUID.fromString("22222222-2222-2222-2222-222222222204");
+                Theme transientTheme = new Theme(
+                        id,
                         DEFAULT_NAME,
                         DEFAULT_DESCRIPTION,
                         DEFAULT_IMAGE_URL
@@ -151,7 +161,9 @@ class ThemeRepositoryTest {
             @Test
             void 레코드가_제거됐다면_true를_반환한다() {
                 // given
-                Theme transientTheme = Theme.create(
+                UUID id = UUID.fromString("22222222-2222-2222-2222-222222222205");
+                Theme transientTheme = new Theme(
+                        id,
                         DEFAULT_NAME,
                         DEFAULT_DESCRIPTION,
                         DEFAULT_IMAGE_URL
@@ -176,12 +188,12 @@ class ThemeRepositoryTest {
 
     private RowMapper<Theme> themeRowMapper() {
         return (resultSet, rowNum) -> {
-            long id = resultSet.getLong("id");
+            UUID id = UUID.fromString(resultSet.getString("id"));
             String name = resultSet.getString("name");
             String description = resultSet.getString("description");
             String imageUrl = resultSet.getString("image_url");
 
-            return Theme.retrieve(id, name, description, imageUrl);
+            return new Theme(id, name, description, imageUrl);
         };
     }
 

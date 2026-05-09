@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,9 @@ public class ReservationService {
         ReservationTime time = findTimeById(command.timeId());
         Theme theme = findThemeById(command.themeId());
 
-        Reservation reservation = Reservation.create(
+        UUID reservationId = UUID.randomUUID();
+        Reservation reservation = new Reservation(
+                reservationId,
                 command.name(),
                 command.date(),
                 time,
@@ -46,7 +49,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public void delete(long reservationId) {
+    public void delete(UUID reservationId) {
         boolean deleted = reservationRepository.delete(reservationId);
 
         if (!deleted) {
@@ -57,7 +60,7 @@ public class ReservationService {
         }
     }
 
-    private ReservationTime findTimeById(long timeId) {
+    private ReservationTime findTimeById(UUID timeId) {
         return timeRepository.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "예약 시간을 조회할 수 없습니다.",
@@ -65,7 +68,7 @@ public class ReservationService {
                 ));
     }
 
-    private Theme findThemeById(long themeId) {
+    private Theme findThemeById(UUID themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "테마를 조회할 수 없습니다.",

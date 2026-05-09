@@ -1,7 +1,9 @@
 package roomescape.repository.dto;
 
+import java.util.UUID;
+
 public record ReservedTheme(
-        long id,
+        UUID id,
         String name,
         String description,
         String imageUrl,

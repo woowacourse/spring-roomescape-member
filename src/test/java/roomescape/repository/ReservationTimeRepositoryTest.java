@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -26,7 +27,8 @@ class ReservationTimeRepositoryTest {
     private static boolean persistTestSuccessful = false;
     private static boolean findAllTestSuccessful = false;
 
-    private static final long NOT_EXIST_ID = 999;
+    private static final UUID NOT_EXIST_ID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
+
     private static final LocalTime DEFAULT_START_AT = LocalTime.of(1, 1);
 
     @Autowired
@@ -44,7 +46,8 @@ class ReservationTimeRepositoryTest {
     @Test
     void 새로운_시간_정보를_저장하고_저장된_정보를_반환한다() {
         // given
-        ReservationTime transientTime = ReservationTime.create(DEFAULT_START_AT);
+        UUID id = UUID.fromString("11111111-1111-1111-1111-111111111101");
+        ReservationTime transientTime = new ReservationTime(id, DEFAULT_START_AT);
 
         // when
         ReservationTime persistedTime = timeRepository.persist(transientTime);
@@ -66,7 +69,8 @@ class ReservationTimeRepositoryTest {
         skipIfPersistTestFailed();
 
         // given
-        ReservationTime transientTime = ReservationTime.create(DEFAULT_START_AT);
+        UUID id = UUID.fromString("11111111-1111-1111-1111-111111111102");
+        ReservationTime transientTime = new ReservationTime(id, DEFAULT_START_AT);
         ReservationTime persistedTime = timeRepository.persist(transientTime);
 
         // when
@@ -93,7 +97,8 @@ class ReservationTimeRepositoryTest {
             @Test
             void 예약_시간을_ID_기준으로_조회한다() {
                 // given
-                ReservationTime transientTime = ReservationTime.create(DEFAULT_START_AT);
+                UUID id = UUID.fromString("11111111-1111-1111-1111-111111111103");
+                ReservationTime transientTime = new ReservationTime(id, DEFAULT_START_AT);
                 ReservationTime persistedTime = timeRepository.persist(transientTime);
 
                 // when
@@ -119,7 +124,8 @@ class ReservationTimeRepositoryTest {
             @Test
             void ID_기반으로_예약_시간을_제거한다() {
                 // given
-                ReservationTime transientTime = ReservationTime.create(DEFAULT_START_AT);
+                UUID id = UUID.fromString("11111111-1111-1111-1111-111111111104");
+                ReservationTime transientTime = new ReservationTime(id, DEFAULT_START_AT);
                 ReservationTime persistedTime = timeRepository.persist(transientTime);
 
                 // when
@@ -134,7 +140,8 @@ class ReservationTimeRepositoryTest {
             @Test
             void 레코드가_제거됐다면_true를_반환한다() {
                 // given
-                ReservationTime transientTime = ReservationTime.create(DEFAULT_START_AT);
+                UUID id = UUID.fromString("11111111-1111-1111-1111-111111111105");
+                ReservationTime transientTime = new ReservationTime(id, DEFAULT_START_AT);
                 ReservationTime persistedTime = timeRepository.persist(transientTime);
 
                 // when
@@ -155,10 +162,10 @@ class ReservationTimeRepositoryTest {
 
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
         return (resultSet, rowNum) -> {
-            long id = resultSet.getLong("id");
+            UUID id = UUID.fromString(resultSet.getString("id"));
             LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
 
-            return ReservationTime.retrieve(id, startAt);
+            return new ReservationTime(id, startAt);
         };
     }
 

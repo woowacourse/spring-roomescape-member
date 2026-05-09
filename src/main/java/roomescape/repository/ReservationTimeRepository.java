@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,16 +24,16 @@ public class ReservationTimeRepository {
     public ReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
+                .withTableName("reservation_time");
     }
 
     public ReservationTime persist(ReservationTime reservationTime) {
-        Number id = simpleJdbcInsert.executeAndReturnKey(Map.of(
+        simpleJdbcInsert.execute(Map.of(
+                "id", reservationTime.getId().toString(),
                 "start_at", reservationTime.getStartAt()
         ));
 
-        return reservationTime.with(id.longValue());
+        return reservationTime;
     }
 
     public List<ReservationTime> findAll() {
@@ -43,7 +44,7 @@ public class ReservationTimeRepository {
     }
 
     public List<ReservationTime> findReservationAvailableTimes(
-            long themeId,
+            UUID themeId,
             LocalDate date
     ) {
         String findSql = "SELECT rt.id, rt.start_at"
@@ -57,12 +58,12 @@ public class ReservationTimeRepository {
         return jdbcTemplate.query(
                 findSql,
                 reservationTimeRowMapper(),
-                themeId,
+                themeId.toString(),
                 date
         );
     }
 
-    public Optional<ReservationTime> findById(long id) {
+    public Optional<ReservationTime> findById(UUID id) {
         try {
             String findSql = "SELECT id, start_at"
                     + " FROM reservation_time"
@@ -71,7 +72,7 @@ public class ReservationTimeRepository {
             ReservationTime reservationTime = jdbcTemplate.queryForObject(
                     findSql,
                     reservationTimeRowMapper(),
-                    id
+                    id.toString()
             );
             return Optional.ofNullable(reservationTime);
         } catch (EmptyResultDataAccessException exception) {
@@ -79,12 +80,12 @@ public class ReservationTimeRepository {
         }
     }
 
-    public boolean delete(long timeId) {
+    public boolean delete(UUID timeId) {
         String deleteSql = "DELETE FROM reservation_time"
                 + " WHERE id = ?";
 
         try {
-            int deletedRowCount = jdbcTemplate.update(deleteSql, timeId);
+            int deletedRowCount = jdbcTemplate.update(deleteSql, timeId.toString());
 
             return isDeleted(deletedRowCount);
         } catch (DataIntegrityViolationException exception) {
@@ -102,10 +103,10 @@ public class ReservationTimeRepository {
 
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
         return (resultSet, rowNum) -> {
-            long id = resultSet.getLong("id");
+            UUID id = UUID.fromString(resultSet.getString("id"));
             LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
 
-            return ReservationTime.retrieve(id, startAt);
+            return new ReservationTime(id, startAt);
         };
     }
 }

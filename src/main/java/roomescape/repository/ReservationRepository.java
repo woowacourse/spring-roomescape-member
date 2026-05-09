@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -23,19 +24,19 @@ public class ReservationRepository {
     ) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
+                .withTableName("reservation");
     }
 
     public Reservation persist(Reservation reservation) {
-        Number id = simpleJdbcInsert.executeAndReturnKey(Map.of(
+        simpleJdbcInsert.execute(Map.of(
+                "id", reservation.getId().toString(),
                 "name", reservation.getName(),
                 "date", reservation.getDate(),
-                "time_id", reservation.getTimeId(),
-                "theme_id", reservation.getThemeId()
+                "time_id", reservation.getTimeId().toString(),
+                "theme_id", reservation.getThemeId().toString()
         ));
 
-        return reservation.with(id.longValue());
+        return reservation;
     }
 
     public List<Reservation> findAll() {
@@ -55,11 +56,11 @@ public class ReservationRepository {
         return jdbcTemplate.query(findSql, reservationRowMapper());
     }
 
-    public boolean delete(long reservationId) {
+    public boolean delete(UUID reservationId) {
         String deleteSql = "DELETE FROM reservation"
                 + " WHERE id = ?";
 
-        int deletedRowCount = jdbcTemplate.update(deleteSql, reservationId);
+        int deletedRowCount = jdbcTemplate.update(deleteSql, reservationId.toString());
 
         return isDeleted(deletedRowCount);
     }
@@ -70,20 +71,20 @@ public class ReservationRepository {
 
     private RowMapper<Reservation> reservationRowMapper() {
         return (resultSet, rowNum) -> {
-            long timeId = resultSet.getLong("time_id");
+            UUID timeId = UUID.fromString(resultSet.getString("time_id"));
             LocalTime startAt = resultSet.getObject("time_start_at", LocalTime.class);
 
-            long themeId = resultSet.getLong("theme_id");
+            UUID themeId = UUID.fromString(resultSet.getString("theme_id"));
             String themeName = resultSet.getString("theme_name");
             String description = resultSet.getString("theme_description");
             String imageUrl = resultSet.getString("theme_image_url");
 
-            return Reservation.retrieve(
-                    resultSet.getLong("reservation_id"),
+            return new Reservation(
+                    UUID.fromString(resultSet.getString("reservation_id")),
                     resultSet.getString("member_name"),
                     resultSet.getObject("reservation_date", LocalDate.class),
-                    ReservationTime.retrieve(timeId, startAt),
-                    Theme.retrieve(themeId, themeName, description, imageUrl)
+                    new ReservationTime(timeId, startAt),
+                    new Theme(themeId, themeName, description, imageUrl)
             );
         };
     }

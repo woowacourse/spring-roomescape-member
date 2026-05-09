@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,7 +52,7 @@ public class ReservationTimeController {
 
     @GetMapping("/available-times")
     public ResponseEntity<List<ReservationTimeResponse>> findAvailableTimes(
-            @RequestParam long themeId,
+            @RequestParam UUID themeId,
             @RequestParam LocalDate date
     ) {
         List<ReservationTimeResponse> responses = service.findAvailableTimes(themeId, date)
@@ -64,7 +65,7 @@ public class ReservationTimeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
-            @PathVariable long id
+            @PathVariable UUID id
     ) {
         service.delete(id);
 

@@ -2,25 +2,27 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
 
 @Getter
 public class Reservation {
 
-    private final Long id;
+    private final UUID id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(
-            Long id,
+    public Reservation(
+            UUID id,
             String name,
             LocalDate date,
             ReservationTime time,
             Theme theme
     ) {
+        validateId(id);
         validateName(name);
         validateDate(date);
         validateTime(time);
@@ -33,45 +35,10 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation create(
-            String name,
-            LocalDate date,
-            ReservationTime time,
-            Theme theme
-    ) {
-        return new Reservation(
-                null,
-                name,
-                date,
-                time,
-                theme
-        );
-    }
-
-    public static Reservation retrieve(
-            long id,
-            String name,
-            LocalDate date,
-            ReservationTime time,
-            Theme theme
-    ) {
-        return new Reservation(
-                id,
-                name,
-                date,
-                time,
-                theme
-        );
-    }
-
-    public Reservation with(long id) {
-        return new Reservation(
-                id,
-                this.name,
-                this.date,
-                this.time,
-                this.theme
-        );
+    private void validateId(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("예약엔 식별자가 존재해야 합니다.");
+        }
     }
 
     private void validateName(String name) {
@@ -98,11 +65,11 @@ public class Reservation {
         }
     }
 
-    public Long getTimeId() {
+    public UUID getTimeId() {
         return time.getId();
     }
 
-    public Long getThemeId() {
+    public UUID getThemeId() {
         return theme.getId();
     }
 
@@ -112,12 +79,11 @@ public class Reservation {
             return false;
         }
         Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
-                && Objects.equals(date, that.date) && Objects.equals(time, that.time);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, date, time);
+        return Objects.hashCode(id);
     }
 }
