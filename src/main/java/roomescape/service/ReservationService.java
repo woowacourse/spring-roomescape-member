@@ -49,7 +49,7 @@ public class ReservationService {
 
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservationRequest.date(),
                 reservationRequest.timeId(),
-                reservationRequest.themeId()) > 0) {
+                reservationRequest.themeId())) {
             throw new IllegalArgumentException("이미 존재하는 예약입니다.");
         }
 
