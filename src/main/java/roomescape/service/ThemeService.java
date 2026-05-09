@@ -20,8 +20,8 @@ public class ThemeService {
     }
 
     public Theme saveTheme(String name, String description, String thumbnailUrl) {
-        Theme time = new Theme(name, description, thumbnailUrl);
-        return themeRepository.save(time);
+        Theme theme = new Theme(name, description, thumbnailUrl);
+        return themeRepository.save(theme);
     }
 
     public void removeTheme(long timeId) {
