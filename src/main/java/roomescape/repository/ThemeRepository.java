@@ -13,7 +13,7 @@ public interface ThemeRepository {
 
     void update(Theme theme);
 
-    Optional<Theme> findById(long id);
+    Optional<Theme> findById(Long id);
 
     List<Theme> findAllActiveThemes();
 

@@ -40,12 +40,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 
     @Override
-    public Optional<ReservationTime> findById(long id) {
+    public Optional<ReservationTime> findById(Long id) {
         try {
             String sql = "SELECT * FROM reservation_time WHERE id = ?";
             ReservationTime time = jdbcTemplate.queryForObject(sql, RESERVATION_TIME_MAPPER, id);
@@ -69,7 +69,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<TimeSlotProjection> findTimesByThemeWithReservationStatus(long themeId, LocalDate date) {
+    public List<TimeSlotProjection> findTimesByThemeWithReservationStatus(Long themeId, LocalDate date) {
         String sql = """
                         SELECT
                             rt.id AS time_id,

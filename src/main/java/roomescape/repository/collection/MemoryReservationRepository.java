@@ -27,12 +27,12 @@ public class MemoryReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         reservations.removeIf(reservation -> reservation.getId().equals(id));
     }
 
     @Override
-    public boolean existByDateAndTimeId(LocalDate date, long timeId) {
+    public boolean existByDateAndTimeId(LocalDate date, Long timeId) {
         return reservations.stream()
                 .anyMatch(reservation -> reservation.getDate().equals(date) &&
                         reservation.getTime().getId().equals(timeId));

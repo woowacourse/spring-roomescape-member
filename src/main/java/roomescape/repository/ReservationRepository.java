@@ -8,9 +8,9 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    void delete(long id);
+    void delete(Long id);
 
-    boolean existByDateAndTimeId(LocalDate date, long timeId);
+    boolean existByDateAndTimeId(LocalDate date, Long timeId);
 
     List<Reservation> findAll();
 }

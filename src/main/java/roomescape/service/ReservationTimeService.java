@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import static java.util.Objects.requireNonNull;
-
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +20,10 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse register(ReservationTimeRequest request) {
-        requireNonNull(request, "예약 시간 정보가 필요합니다.");
+        LocalTime startAt = request.startAt();
 
-        validateAlreadyTime(request.startAt());
-        ReservationTime reservationTime = new ReservationTime(request.startAt());
+        validateDuplicateTime(startAt);
+        ReservationTime reservationTime = new ReservationTime(startAt);
 
         return ReservationTimeResponse.from(reservationTimeRepository.save(reservationTime));
     }
@@ -42,7 +40,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    private void validateAlreadyTime(LocalTime startAt) {
+    private void validateDuplicateTime(LocalTime startAt) {
         if (reservationTimeRepository.existsByStartAt(startAt)) {
             throw new DuplicateEntityException("이미 등록된 예약 시간 입니다. %s", startAt);
         }

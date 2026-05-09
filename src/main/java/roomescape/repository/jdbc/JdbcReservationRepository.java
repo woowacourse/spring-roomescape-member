@@ -42,12 +42,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
     @Override
-    public boolean existByDateAndTimeId(LocalDate date, long timeId) {
+    public boolean existByDateAndTimeId(LocalDate date, Long timeId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
         Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
         return Boolean.TRUE.equals(result);

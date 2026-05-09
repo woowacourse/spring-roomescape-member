@@ -66,7 +66,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Optional<Theme> findById(long id) {
+    public Optional<Theme> findById(Long id) {
         try {
             String sql = "SELECT * FROM theme WHERE id = ?";
             Theme theme = jdbcTemplate.queryForObject(sql, THEME_MAPPER, id);

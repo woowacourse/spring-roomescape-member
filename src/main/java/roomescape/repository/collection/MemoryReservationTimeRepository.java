@@ -31,12 +31,12 @@ public class MemoryReservationTimeRepository implements ReservationTimeRepositor
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         reservationTimes.removeIf(time -> time.getId().equals(id));
     }
 
     @Override
-    public Optional<ReservationTime> findById(long id) {
+    public Optional<ReservationTime> findById(Long id) {
         return reservationTimes.stream()
                 .filter(time -> time.getId().equals(id))
                 .findFirst();
@@ -54,7 +54,7 @@ public class MemoryReservationTimeRepository implements ReservationTimeRepositor
     }
 
     @Override
-    public List<TimeSlotProjection> findTimesByThemeWithReservationStatus(long themeId, LocalDate date) {
+    public List<TimeSlotProjection> findTimesByThemeWithReservationStatus(Long themeId, LocalDate date) {
         return reservationTimes.stream()
                 .map(time -> new TimeSlotProjection(time.getId(), time.getStartAt(), true))
                 .toList();

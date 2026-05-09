@@ -35,7 +35,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Optional<Theme> findById(long id) {
+    public Optional<Theme> findById(Long id) {
         return Optional.ofNullable(themes.get(id));
     }
 
