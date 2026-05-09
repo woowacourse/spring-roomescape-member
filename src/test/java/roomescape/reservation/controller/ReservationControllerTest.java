@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.exception.DuplicateReservationException;
 import roomescape.reservation.service.ReservationService;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -93,5 +94,23 @@ class ReservationControllerTest {
         mockMvc.perform(delete("/reservations/1"))
                 .andExpect(status().isNoContent());
         verify(reservationService, times(1)).deleteReservation(any());
+    }
+
+    @Test
+    void 중복_예약_요청_시_DuplicateReservationException이_발생하면_400을_반환한다() throws Exception {
+        when(reservationService.createReservation(any(), any(), any(), any()))
+                .thenThrow(new DuplicateReservationException("이미 예약된 시간입니다."));
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                              {
+                                "name": "어셔",
+                                "date": "2026-05-10",
+                                "timeId": 1,
+                                "themeId": 1
+                              }
+                            """))
+                .andExpect(status().isBadRequest());
     }
 }
