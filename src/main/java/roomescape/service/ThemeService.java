@@ -38,7 +38,7 @@ public class ThemeService {
         boolean hasTheme = reservationRepository.existsByThemeId(id);
 
         if(hasTheme) {
-            throw new DataReferencedException(ErrorMessage.CANNOT_DELETE_RESERVATION_THEME_IN_USE);
+            throw new DataReferencedException(ErrorMessage.CANNOT_DELETE_THEME_IN_USE);
         }
 
         try {

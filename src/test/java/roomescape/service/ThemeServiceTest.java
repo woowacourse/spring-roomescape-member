@@ -105,7 +105,7 @@ public class ThemeServiceTest {
 
         assertThatThrownBy(() -> themeService.deleteTheme(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
-                .hasMessage(ErrorMessage.CANNOT_DELETE_RESERVATION_THEME_IN_USE.getMessage());
+                .hasMessage(ErrorMessage.CANNOT_DELETE_THEME_IN_USE.getMessage());
     }
 
     @Test
