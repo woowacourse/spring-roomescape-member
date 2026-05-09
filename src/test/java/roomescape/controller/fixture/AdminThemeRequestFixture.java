@@ -1,10 +1,10 @@
-package roomescape.controller.admin.fixture;
+package roomescape.controller.fixture;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.params.provider.Arguments;
 import roomescape.web.dto.ThemeRequest;
 
-public class AdminThemeApiRequestFixture {
+public class AdminThemeRequestFixture {
 
     public static Stream<Arguments> themeFailRequestFixture() {
         return Stream.of(

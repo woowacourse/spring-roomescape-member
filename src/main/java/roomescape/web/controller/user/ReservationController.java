@@ -1,4 +1,4 @@
-package roomescape.web.controller.client;
+package roomescape.web.controller.user;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.service.ReservationService;
 import roomescape.web.dto.ReservationRequest;
 import roomescape.web.dto.ReservationResponse;
-import roomescape.service.ReservationService;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/reservations")
-public class ReservationApiController {
+@RequiredArgsConstructor
+public class ReservationController {
 
     private final ReservationService reservationService;
 

@@ -1,11 +1,11 @@
-package roomescape.controller.admin.fixture;
+package roomescape.controller.fixture;
 
 import java.time.LocalTime;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.provider.Arguments;
 import roomescape.web.dto.ReservationTimeRequest;
 
-public class AdminReservationTimeApiRequestFixture {
+public class ReservationTimeRequestFixture {
 
     public static Stream<Arguments> registerFailRequestFixture() {
         return Stream.of(

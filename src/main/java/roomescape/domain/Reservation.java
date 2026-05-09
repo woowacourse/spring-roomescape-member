@@ -30,7 +30,7 @@ public class Reservation {
         LocalDateTime reservationDateTime = time.toReservationDateTime(date);
 
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("이전 날짜로 예약할 수 없습니다.");
+            throw new IllegalArgumentException("현재보다 이전 날짜로 예약할 수 없습니다.");
         }
 
         return reservation;

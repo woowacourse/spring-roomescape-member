@@ -22,14 +22,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
-import roomescape.controller.admin.fixture.AdminReservationTimeApiRequestFixture;
+import roomescape.controller.fixture.ReservationTimeRequestFixture;
 import roomescape.service.ReservationTimeService;
-import roomescape.web.controller.admin.AdminReservationTimeApiController;
+import roomescape.web.controller.admin.AdminReservationTimeController;
 import roomescape.web.dto.ReservationTimeRequest;
 import roomescape.web.dto.ReservationTimeResponse;
+import roomescape.web.dto.ReservationTimeResponses;
 
-@WebMvcTest(AdminReservationTimeApiController.class)
-class AdminReservationTimeApiControllerTest extends BaseControllerUnitTest {
+@WebMvcTest(AdminReservationTimeController.class)
+class AdminReservationTimeControllerTest extends BaseControllerUnitTest {
 
     @MockitoBean
     private ReservationTimeService reservationTimeService;
@@ -40,7 +41,7 @@ class AdminReservationTimeApiControllerTest extends BaseControllerUnitTest {
     }
 
     @ParameterizedTest(name = "요청 정보가 {0} 일 때, 예외 메세지 \"{1}\"가 발생한다.")
-    @MethodSource("roomescape.controller.admin.fixture.AdminReservationTimeApiRequestFixture#registerFailRequestFixture")
+    @MethodSource("roomescape.controller.fixture.ReservationTimeRequestFixture#registerFailRequestFixture")
     void 시간_등록_요청_시_형식_검증에_실패하면_예외가_발생한다(ReservationTimeRequest request, String exceptionMessage) {
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .body(request)
@@ -53,9 +54,9 @@ class AdminReservationTimeApiControllerTest extends BaseControllerUnitTest {
     @Test
     void 시간_등록에_성공하면_201_Created_상태와_정상_응답이_반환된다() {
         // given
-        ReservationTimeRequest request = AdminReservationTimeApiRequestFixture.registerSuccessRequestFixture();
-        ReservationTimeResponse expected = new ReservationTimeResponse(1L, request.startAt());
+        ReservationTimeRequest request = ReservationTimeRequestFixture.registerSuccessRequestFixture();
 
+        ReservationTimeResponse expected = new ReservationTimeResponse(1L, request.startAt());
         when(reservationTimeService.register(any(ReservationTimeRequest.class))).thenReturn(expected);
 
         // when & then
@@ -95,16 +96,22 @@ class AdminReservationTimeApiControllerTest extends BaseControllerUnitTest {
     @Test
     void 전체_시간_조회_요청시_200OK와_시간_정보들을_응답한다() {
         // given
-        List<ReservationTimeResponse> expected = List.of(new ReservationTimeResponse(1L, LocalTime.of(10, 0)));
-        when(reservationTimeService.getAllReservationTimes()).thenReturn(expected);
+        ReservationTimeResponses expected = new ReservationTimeResponses(
+                List.of(
+                        new ReservationTimeResponse(1L, LocalTime.of(10, 0)),
+                        new ReservationTimeResponse(2L, LocalTime.of(11, 0))
+                )
+        );
+        when(reservationTimeService.getAllReservationTimes()).thenReturn(expected.responses());
 
         // when & then
-        List<ReservationTimeResponse> response = RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+        ReservationTimeResponses response = RestAssuredMockMvc.given().spec(adminSpec()).log().all()
                 .when().get("/api/admin/times")
                 .then().log().all()
                 .status(HttpStatus.OK)
                 .extract().as(new TypeRef<>() {
                 });
+
         assertThat(response).isEqualTo(expected);
     }
 }

@@ -16,11 +16,11 @@ import roomescape.service.ThemeService;
 import roomescape.web.dto.ThemeRequest;
 import roomescape.web.dto.ThemeResponse;
 
-@RequestMapping("/api/admin/themes")
 @RestController
-@RequiredArgsConstructor
+@RequestMapping("/api/admin/themes")
 @Validated
-public class AdminThemeApiController {
+@RequiredArgsConstructor
+public class AdminThemeController {
 
     private final ThemeService themeService;
 
@@ -40,6 +40,7 @@ public class AdminThemeApiController {
             @Positive(message = "테마 삭제 식별자는 양수여야 합니다.") Long id
     ) {
         themeService.remove(id);
+
         return ResponseEntity.noContent().build();
     }
 }

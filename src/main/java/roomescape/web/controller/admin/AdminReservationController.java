@@ -3,7 +3,6 @@ package roomescape.web.controller.admin;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.net.URI;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,40 +13,42 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.service.ReservationTimeService;
-import roomescape.web.dto.ReservationTimeRequest;
-import roomescape.web.dto.ReservationTimeResponse;
+import roomescape.service.ReservationService;
+import roomescape.web.dto.ReservationRequest;
+import roomescape.web.dto.ReservationResponse;
+import roomescape.web.dto.ReservationResponses;
 
 @RestController
-@RequestMapping("/api/admin/times")
+@RequestMapping("/api/admin/reservations")
 @Validated
 @RequiredArgsConstructor
-public class AdminReservationTimeApiController {
+public class AdminReservationController {
 
-    private final ReservationTimeService reservationTimeService;
+    private final ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> register(
-            @Valid @RequestBody ReservationTimeRequest request
-    ) {
-        ReservationTimeResponse response = reservationTimeService.register(request);
+    public ResponseEntity<ReservationResponse> reserve(@Valid @RequestBody ReservationRequest request) {
+        ReservationResponse response = reservationService.reserve(request);
 
-        URI location = URI.create("/api/admin/times/" + response.id());
+        URI location = URI.create("/api/admin/reservations/" + response.id());
 
         return ResponseEntity.created(location).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> remove(
+    public ResponseEntity<Void> cancel(
             @PathVariable
-            @Positive(message = "예약 시간 제거 식별자는 양수여야 합니다.") Long id
+            @Positive(message = "예약 취소 식별자는 양수여야 합니다.") Long id
     ) {
-        reservationTimeService.remove(id);
+        reservationService.cancel(id);
+
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getAllTimes() {
-        return ResponseEntity.ok(reservationTimeService.getAllReservationTimes());
+    public ResponseEntity<ReservationResponses> getAllReservations() {
+        ReservationResponses response = new ReservationResponses(reservationService.getAllReservations());
+
+        return ResponseEntity.ok(response);
     }
 }

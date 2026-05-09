@@ -38,14 +38,14 @@ public class ReservationFixture {
                         LocalDate.now().minusDays(1),
                         ThemeFixture.createDefaultTheme(),
                         ReservationTimeFixture.createDefaultReservationTime(),
-                        "이전 날짜로 예약할 수 없습니다."
+                        "현재보다 이전 날짜로 예약할 수 없습니다."
                 ),
                 // 오늘과 날짜는 동일하지만 시간이 과거인 경우
                 Arguments.of(
                         LocalDate.now(),
                         ThemeFixture.createDefaultTheme(),
                         new ReservationTime(LocalTime.now().minusHours(1)),
-                        "이전 날짜로 예약할 수 없습니다."
+                        "현재보다 이전 날짜로 예약할 수 없습니다."
                 )
         );
     }

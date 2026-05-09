@@ -7,7 +7,6 @@ public record TimeSlotProjection(
         LocalTime startAt,
         Boolean isReservable
 ) {
-
     public TimeSlotProjection disabled() {
         return new TimeSlotProjection(id, startAt, false);
     }

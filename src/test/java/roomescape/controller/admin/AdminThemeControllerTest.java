@@ -22,12 +22,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
 import roomescape.service.ThemeService;
-import roomescape.web.controller.admin.AdminThemeApiController;
+import roomescape.web.controller.admin.AdminThemeController;
 import roomescape.web.dto.ThemeRequest;
 import roomescape.web.dto.ThemeResponse;
 
-@WebMvcTest(AdminThemeApiController.class)
-class AdminThemeApiControllerTest extends BaseControllerUnitTest {
+@WebMvcTest(AdminThemeController.class)
+class AdminThemeControllerTest extends BaseControllerUnitTest {
 
     @MockitoBean
     private ThemeService themeService;
@@ -40,14 +40,14 @@ class AdminThemeApiControllerTest extends BaseControllerUnitTest {
     @Test
     void 관리자가_테마_정보로_테마_추가_요청_시_성공한다() {
         // given
-        ThemeRequest body = new ThemeRequest("공포", "공포 방탈출입니다.", "http://image.com/image.png");
+        ThemeRequest request = new ThemeRequest("공포", "공포 방탈출입니다.", "http://image.com/image.png");
 
         ThemeResponse expected = new ThemeResponse(1L, "공포", "공포 방탈출입니다.", "http://image.com/image.png");
         when(themeService.register(any(ThemeRequest.class))).thenReturn(expected);
 
         // when : admin 헤더를 포함해서 요청한다.
         ThemeResponse response = RestAssuredMockMvc.given().spec(adminSpec()).log().all()
-                .body(body)
+                .body(request)
                 .when().post("/api/admin/themes")
                 .then().log().all()
                 .status(HttpStatus.CREATED)
@@ -60,7 +60,7 @@ class AdminThemeApiControllerTest extends BaseControllerUnitTest {
     }
 
     @ParameterizedTest(name = "요청 정보가 {0} 일 때, 예외 메세지 \"{1}\"가 발생한다.")
-    @MethodSource("roomescape.controller.admin.fixture.AdminThemeApiRequestFixture#themeFailRequestFixture")
+    @MethodSource("roomescape.controller.fixture.AdminThemeRequestFixture#themeFailRequestFixture")
     void 관리자가_테마_추가_요청_시_형식_검증에_실패하면_예외가_발생한다(ThemeRequest body, String exceptionMessage) {
         // given: 실패하는 request body가 주어짐
 

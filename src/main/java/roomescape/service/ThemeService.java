@@ -25,7 +25,7 @@ public class ThemeService {
 
     @Transactional
     public ThemeResponse register(ThemeRequest request) {
-        validateDuplicationName(request.name());
+        validateDuplicateName(request.name());
 
         Theme theme = new Theme(request.name(), request.description(), request.thumbnailImageUrl());
         return ThemeResponse.from(themeRepository.save(theme));
@@ -71,7 +71,7 @@ public class ThemeService {
         return ThemeTimesResponse.from(projection);
     }
 
-    private void validateDuplicationName(String name) {
+    private void validateDuplicateName(String name) {
         if (themeRepository.isActiveByName(name)) {
             throw new DuplicateEntityException("이미 존재하는 테마입니다. 테마 명: %s", name);
         }
