@@ -10,8 +10,10 @@ import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.domain.exception.ThemeNotFoundException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeRepository;
+import roomescape.time.domain.exception.ReservationTimeNotFoundException;
 
 @Service
 @Transactional
@@ -32,13 +34,23 @@ public class ReservationService {
     }
 
     public ReservationResponse addReservation(ReservationRequest request) {
-        ReservationTime time = timeRepository.getById(request.timeId());
-        Theme theme = themeRepository.getById(request.themeId());
+        ReservationTime time = findReservationTime(request.timeId());
+        Theme theme = findTheme(request.themeId());
         return ReservationResponse.from(reservationRepository.save(ReservationRequest.toEntity(request, time, theme)));
     }
 
     public void cancelReservation(Long id) {
         reservationValidator.validateDeletable(id);
         reservationRepository.deleteById(id);
+    }
+
+    private ReservationTime findReservationTime(Long id) {
+        return timeRepository.findById(id)
+                .orElseThrow(() -> new ReservationTimeNotFoundException("존재하지 않는 시간ID 입니다."));
+    }
+
+    private Theme findTheme(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new ThemeNotFoundException("존재하지 않는 테마입니다."));
     }
 }

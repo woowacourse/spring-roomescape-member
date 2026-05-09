@@ -10,6 +10,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.domain.exception.ThemeNotFoundException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeRepository;
 import roomescape.time.domain.exception.ReservationTimeInUseException;
@@ -53,7 +54,7 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public AvailableReservationTimeResponse getAvailableReservationTime(AvailableReservationTimeRequest request) {
-        Theme theme = themeRepository.getById(request.themeId());
+        Theme theme = findTheme(request.themeId());
         List<Reservation> reservations = reservationRepository.findByThemeAndDate(
                 request.themeId(), request.date());
         List<ReservationTime> allTimes = reservationTimeRepository.findAll();
@@ -64,5 +65,10 @@ public class ReservationTimeService {
                 .filter(time -> !reservedTimes.contains(time))
                 .toList();
         return AvailableReservationTimeResponse.from(theme, availableTime);
+    }
+
+    private Theme findTheme(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new ThemeNotFoundException("존재하지 않는 테마입니다."));
     }
 }
