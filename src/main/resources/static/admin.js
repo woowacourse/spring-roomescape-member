@@ -116,7 +116,7 @@ async function deleteTime(id) {
 async function loadThemes() {
   const tbody = $('admin-themes-tbody');
   tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted)">불러오는 중...</td></tr>`;
-  const data = await api.get('/themes/popular');
+  const data = await api.get('/themes');
   if (!data.length) {
     tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted)">등록된 테마가 없습니다.</td></tr>`;
     return;
