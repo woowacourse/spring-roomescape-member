@@ -17,7 +17,7 @@ async function searchReservations() {
         return;
     }
 
-    const response = await fetch(`/member/reservations/${encodeURIComponent(name)}`);
+    const response = await fetch(`/reservations/${encodeURIComponent(name)}`);
 
     if (!response.ok) {
         alert("예약 내역을 불러오지 못했습니다.");
@@ -42,7 +42,7 @@ async function searchReservations() {
     reservations.forEach(reservation => {
         resultList.insertAdjacentHTML("beforeend", `
             <article class="reservation-card">
-                <img src="${reservation.theme.thumbnailUrl || DEFAULT_THEME_URL}" alt="${reservation.theme.name}">
+                <img src="${reservation.theme.thumbnailUrl || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80'}" alt="${reservation.theme.name}">
                 <div class="reservation-info">
                     <h3>${reservation.theme.name}</h3>
                     <p>예약자: ${reservation.name}</p>
@@ -63,7 +63,7 @@ async function cancelReservation(id, name) {
         return;
     }
 
-    const response = await fetch(`/member/reservations/${id}`, {
+    const response = await fetch(`/reservations/${id}`, {
         method: "PATCH"
     });
 
@@ -78,23 +78,16 @@ async function cancelReservation(id, name) {
 }
 
 function formatDate(value) {
-    if (!value) {
-        return "";
-    }
-
+    if (!value) return "";
     const date = new Date(value);
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
-
     return `${year}년 ${month}월 ${day}일`;
 }
 
 function formatTime(value) {
-    if (!value) {
-        return "";
-    }
-
+    if (!value) return "";
     const parts = value.split(":");
     return `${parts[0]}:${parts[1]}`;
 }

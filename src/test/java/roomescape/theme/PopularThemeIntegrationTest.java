@@ -31,7 +31,7 @@ class PopularThemeIntegrationTest {
     @DisplayName("인기 테마를 예약 수 기준 내림차순으로 조회한다.")
     void getPopularThemes() {
         List<ThemeDetailDto> themes = RestAssured.given().log().all()
-                .when().get("/member/themes/popular?top=10")
+                .when().get("/themes/popular?top=10")
                 .then().log().all()
                 .statusCode(200)
                 .extract()

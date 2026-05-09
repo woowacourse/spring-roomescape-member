@@ -51,7 +51,7 @@ class AvailableTimeIntegrationTest {
         LocalDate date = LocalDate.now().plusDays(1);
 
         List<?> beforeTimes = RestAssured.given().log().all()
-                .when().get("/member/times?date=" + date + "&themeId=1")
+                .when().get("/times?date=" + date + "&themeId=1")
                 .then().log().all()
                 .statusCode(200)
                 .extract()
@@ -68,12 +68,12 @@ class AvailableTimeIntegrationTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/member/reservations")
+                .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
 
         List<?> afterTimes = RestAssured.given().log().all()
-                .when().get("/member/times?date=" + date + "&themeId=1")
+                .when().get("/times?date=" + date + "&themeId=1")
                 .then().log().all()
                 .statusCode(200)
                 .extract()

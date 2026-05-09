@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function loadPopularThemes() {
     const popularThemeList = document.getElementById("popular-theme-list");
 
-    const response = await fetch("/member/themes/popular?top=10");
+    const response = await fetch("/themes/popular?top=10");
 
     if (!response.ok) {
         popularThemeList.innerHTML = `
@@ -60,7 +60,7 @@ async function loadPopularThemes() {
 }
 
 async function loadDates() {
-    const response = await fetch("/member/dates");
+    const response = await fetch("/dates");
 
     if (!response.ok) {
         alert("날짜 목록을 불러오지 못했습니다.");
@@ -96,7 +96,7 @@ async function loadDates() {
 }
 
 async function loadThemes() {
-    const response = await fetch("/member/themes");
+    const response = await fetch("/themes");
 
     if (!response.ok) {
         alert("테마 목록을 불러오지 못했습니다.");
@@ -172,7 +172,7 @@ function goBackToSelectStep() {
 }
 
 async function loadAvailableTimes() {
-    const response = await fetch(`/member/times?date=${selectedDate}&themeId=${selectedTheme.id}`);
+    const response = await fetch(`/times?date=${selectedDate}&themeId=${selectedTheme.id}`);
 
     if (!response.ok) {
         alert("예약 가능 시간을 불러오지 못했습니다.");
@@ -226,7 +226,7 @@ async function createReservation() {
         themeId: selectedTheme.id
     };
 
-    const response = await fetch("/member/reservations", {
+    const response = await fetch("/reservations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody)

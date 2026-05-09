@@ -67,7 +67,7 @@ class MissionStepTest {
                 "브라운", "2099-01-01", "15:40", 1, "RESERVED");
 
         List<Reservation> reservations = RestAssured.given().log().all()
-                .when().get("/member/reservations/" + reservationName)
+                .when().get("/reservations/" + reservationName)
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", Reservation.class);
@@ -132,12 +132,12 @@ class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().post("/member/reservations")
+                .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/member/reservations/" + reservationName)
+                .when().get("/reservations/" + reservationName)
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
