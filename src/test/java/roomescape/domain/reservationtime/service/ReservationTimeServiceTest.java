@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.service;
+package roomescape.domain.reservationtime.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,11 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.repository.ReservationTimeRepository;
-import roomescape.domain.reservation.request.ReservationTimeCreateRequest;
-import roomescape.domain.reservation.response.ReservationTimeResponse;
-import roomescape.domain.reservation.response.ReservationTimesResponse;
+import roomescape.domain.reservationtime.entity.ReservationTime;
+import roomescape.domain.reservationtime.repository.ReservationTimeRepository;
+import roomescape.domain.reservationtime.request.ReservationTimeCreateRequest;
+import roomescape.domain.reservationtime.response.ReservationTimeResponse;
+import roomescape.domain.reservationtime.response.ReservationTimesResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {

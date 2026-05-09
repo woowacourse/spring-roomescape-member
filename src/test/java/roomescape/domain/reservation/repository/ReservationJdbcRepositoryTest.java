@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.reservation.entity.Reservation;
-import roomescape.domain.reservation.entity.ReservationTime;
+import roomescape.domain.reservationtime.entity.ReservationTime;
 import roomescape.domain.theme.entity.Theme;
 
 @JdbcTest

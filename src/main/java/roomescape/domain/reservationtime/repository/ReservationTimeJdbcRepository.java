@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.repository;
+package roomescape.domain.reservationtime.repository;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.reservation.entity.ReservationTime;
+import roomescape.domain.reservationtime.entity.ReservationTime;
 
 @Repository
 public class ReservationTimeJdbcRepository implements ReservationTimeRepository {

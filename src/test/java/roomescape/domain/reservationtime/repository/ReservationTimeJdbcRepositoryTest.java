@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.repository;
+package roomescape.domain.reservationtime.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,7 +16,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import roomescape.domain.reservation.entity.ReservationTime;
+import roomescape.domain.reservationtime.entity.ReservationTime;
 
 @JdbcTest
 class ReservationTimeJdbcRepositoryTest {

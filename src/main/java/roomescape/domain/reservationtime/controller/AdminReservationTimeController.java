@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.controller;
+package roomescape.domain.reservationtime.controller;
 
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.reservation.request.ReservationTimeCreateRequest;
-import roomescape.domain.reservation.response.ReservationTimeResponse;
-import roomescape.domain.reservation.service.ReservationTimeService;
+import roomescape.domain.reservationtime.request.ReservationTimeCreateRequest;
+import roomescape.domain.reservationtime.response.ReservationTimeResponse;
+import roomescape.domain.reservationtime.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/admin/times")
