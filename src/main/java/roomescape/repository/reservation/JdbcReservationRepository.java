@@ -1,5 +1,6 @@
 package roomescape.repository.reservation;
 
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -17,6 +18,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -60,9 +62,12 @@ public class JdbcReservationRepository implements ReservationRepository {
             return ps;
         }, keyHolder);
 
-        // TODO: getKey null 방지를 위한 try-catch + 생성되지 않은 경우에 대한 예외 처리
-        long key = keyHolder.getKey().longValue();
-        return reservation.withId(key);
+        Number key = keyHolder.getKey();
+        long generatedId = Optional.ofNullable(key)
+                .map(Number::longValue)
+                .orElseThrow(() -> new DataRetrievalFailureException("예약 저장 후 생성된 ID를 가져오는 데 실패했습니다."));
+
+        return reservation.withId(generatedId);
     }
 
     @Override
@@ -135,7 +140,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 timeId
         );
 
-        // TODO: count 가 null 인 경우 검증 * 변수명 개선
-        return count != 0;
+        return count != null && count != 0;
     }
 }

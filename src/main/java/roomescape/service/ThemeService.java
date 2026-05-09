@@ -1,9 +1,13 @@
 package roomescape.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
+import roomescape.dto.theme.PopularThemeResponseDto;
 import roomescape.dto.theme.ThemeRequestDto;
 import roomescape.repository.theme.ThemeRepository;
 
@@ -31,7 +35,14 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public List<Theme> findWeekPopularThemesOrderByRank(final int limit) {
-        return themeRepository.findWeekPopularThemesOrderByRank(limit);
+    public Map<Theme, Integer> findWeekPopularThemesOrderByRank(final int limit) {
+        List<Theme> themes = themeRepository.findWeekPopularThemesOrderByRank(limit);
+        Map<Theme, Integer> themesWithRank = new HashMap<>();
+
+        for (int i = 0; i < themes.size(); i++) {
+            themesWithRank.put(themes.get(i), i + 1);
+        }
+
+        return themesWithRank;
     }
 }

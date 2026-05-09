@@ -15,13 +15,12 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    // TODO: 도메인 전체적으로 인자값 검증
     public Reservation(Long id, MemberName memberName, ReservationDate date, ReservationTime time, Theme theme) {
         this.id = id;
-        this.memberName = memberName;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+        this.memberName = Objects.requireNonNull(memberName);
+        this.date = Objects.requireNonNull(date);
+        this.time = Objects.requireNonNull(time);
+        this.theme = Objects.requireNonNull(theme);
     }
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {

@@ -71,7 +71,6 @@ public class ThemeController {
     public PopularThemesResponseDto findWeekPopularThemesOrderByRank(
         @RequestParam("limit") final int limit
     ) {
-        List<Theme> themes = themeService.findWeekPopularThemesOrderByRank(limit);
-        return PopularThemesResponseDto.from(themes);
+        return PopularThemesResponseDto.from(themeService.findWeekPopularThemesOrderByRank(limit));
     }
 }

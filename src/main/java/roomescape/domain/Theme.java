@@ -13,9 +13,9 @@ public class Theme {
 
     public Theme(Long id, ThemeName name, String description, ThemeImageUrl imageUrl) {
         this.id = id;
-        this.name = name;
+        this.name = Objects.requireNonNull(name);
         this.description = description;
-        this.imageUrl = imageUrl;
+        this.imageUrl = Objects.requireNonNull(imageUrl);
     }
 
     public Theme(String name, String description, String imageUrl) {

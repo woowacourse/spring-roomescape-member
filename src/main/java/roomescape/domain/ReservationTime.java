@@ -1,8 +1,11 @@
 package roomescape.domain;
 
+import org.springframework.dao.DataRetrievalFailureException;
+
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class ReservationTime {
@@ -12,10 +15,9 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
-    // TODO: 도메인 전체적으로 인자값 검증
     public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
-        this.startAt = startAt;
+        this.startAt = Objects.requireNonNull(startAt, "시작 시간은 필수입니다.");
     }
 
     public ReservationTime(Long id, String startAt) {
@@ -51,7 +53,6 @@ public class ReservationTime {
         }
     }
 
-    // TODO: Long(내부검증필요) vs long(외부검증필요)
     public ReservationTime withId(Long id) {
         return new ReservationTime(id, this.startAt);
     }
@@ -68,4 +69,5 @@ public class ReservationTime {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
 }

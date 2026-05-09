@@ -87,7 +87,7 @@ class ReservationTimeControllerTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
-    
+
     @Test
     void 모든_시간을_조회한다() {
         // given
