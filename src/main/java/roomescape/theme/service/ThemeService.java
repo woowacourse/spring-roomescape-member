@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.annotation.ReadOnlyTransactional;
 import roomescape.theme.controller.dto.CreateThemeRequest;
 import roomescape.theme.controller.dto.ThemeRankResponse;
 import roomescape.theme.controller.dto.ThemeResponse;
@@ -22,14 +22,12 @@ import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.time.repository.dto.FindReservedTimeParams;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    @Transactional
     public ThemeResponse addTheme(CreateThemeRequest request) {
         CreateThemeParams params = new CreateThemeParams(
                 request.name(),
@@ -47,7 +45,6 @@ public class ThemeService {
                 .toList();
     }
 
-    @Transactional
     public void removeRegisteredTheme(Long id) {
         themeRepository.deleteById(id);
     }
@@ -66,6 +63,7 @@ public class ThemeService {
                 .toList();
     }
 
+    @ReadOnlyTransactional
     public ThemeReservationTimesResponse findAllAvailableTimes(GetAvailableTimesRequest request) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         FindReservedTimeParams params = new FindReservedTimeParams(request.themeId(), request.date());
