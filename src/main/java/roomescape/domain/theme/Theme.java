@@ -7,9 +7,6 @@ public class Theme {
     private String description;
     private String url;
 
-    public Theme() {
-    }
-
     public Theme(Long id, String name, String description, String url) {
         this.id = id;
         this.name = name;

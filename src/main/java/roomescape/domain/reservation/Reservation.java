@@ -15,9 +15,6 @@ public class Reservation {
     private Theme theme;
     private LocalDateTime createdAt;
 
-    public Reservation() {
-    }
-
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
