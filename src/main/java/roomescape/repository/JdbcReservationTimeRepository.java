@@ -72,7 +72,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTimeAvailability> findAvailableTimes(LocalDate date, Long themeId) {
+    public List<ReservationTimeAvailability> findAllByDateAndThemeIdWithAvailability(LocalDate date, Long themeId) {
         String sql = """
                  SELECT rt.id AS id,
                         rt.start_at AS start_at,

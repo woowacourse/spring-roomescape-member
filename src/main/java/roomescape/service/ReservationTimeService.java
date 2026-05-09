@@ -56,6 +56,6 @@ public class ReservationTimeService {
             throw new DomainException(ErrorCode.THEME_NOT_FOUND);
         }
 
-        return reservationTimeRepository.findAvailableTimes(date, themeId);
+        return reservationTimeRepository.findAllByDateAndThemeIdWithAvailability(date, themeId);
     }
 }

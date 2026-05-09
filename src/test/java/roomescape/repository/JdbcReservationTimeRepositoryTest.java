@@ -74,7 +74,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("이용 가능한 시간을 조회한다.")
-    public void findAvailableTimes() {
+    public void findAllByDateAndThemeIdWithAvailability() {
         // given
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         ReservationTime time2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
@@ -87,7 +87,7 @@ class JdbcReservationTimeRepositoryTest {
         reservationRepository.save(new Reservation("브라운", targetDate, time, nonTargetTheme));
 
         // when
-        List<ReservationTimeAvailability> availableTimes = reservationTimeRepository.findAvailableTimes(targetDate, targetTheme.getId());
+        List<ReservationTimeAvailability> availableTimes = reservationTimeRepository.findAllByDateAndThemeIdWithAvailability(targetDate, targetTheme.getId());
 
         // then
         assertThat(availableTimes).hasSize(2)
