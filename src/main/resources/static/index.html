@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>RoomEscape — 방탈출 예약</title>
+    <meta content="방탈출 테마 선택 및 예약 페이지" name="description">
+    <link href="style.css" rel="stylesheet">
+    <style>
+        /* User page specific */
+        .user-layout {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 0 36px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .top-nav-logo {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #5b7fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .top-nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .user-main {
+            flex: 1;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            width: 100%;
+        }
+
+        /* Steps */
+        .steps {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 36px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            position: relative;
+        }
+
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: calc(100% - 120px);
+            height: 2px;
+            background: var(--border);
+            left: 130px;
+        }
+
+        .step.done::after {
+            background: var(--accent);
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            border: 2px solid var(--border);
+            color: var(--text-muted);
+            background: var(--bg-secondary);
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-num {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 16px rgba(91, 127, 255, 0.4);
+        }
+
+        .step.done .step-num {
+            background: var(--success);
+            border-color: var(--success);
+            color: #0d0f1a;
+        }
+
+        .step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .step.active .step-label {
+            color: var(--accent);
+        }
+
+        .step.done .step-label {
+            color: var(--success);
+        }
+
+        /* Section panels */
+        .section-panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section-panel.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Summary box */
+        .booking-summary {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .summary-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .summary-key {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-val {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .summary-val.empty {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        /* Popular section */
+        .popular-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="user-layout">
+
+    <!-- Top Nav -->
+    <nav class="top-nav">
+        <div class="top-nav-logo">🔐 RoomEscape</div>
+        <div class="top-nav-links">
+            <a class="btn btn-ghost btn-sm" href="/admin/reservation.html">🛠 관리자</a>
+        </div>
+    </nav>
+
+    <main class="user-main">
+
+        <!-- Hero -->
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px;">
+                방탈출 예약
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 16px;">
+                테마를 선택하고 날짜와 시간을 골라 예약하세요.
+            </p>
+        </div>
+
+        <!-- Steps indicator -->
+        <div class="steps" id="steps">
+            <div class="step active" id="step-1">
+                <div class="step-num">1</div>
+                <span class="step-label">테마 선택</span>
+            </div>
+            <div class="step" id="step-2">
+                <div class="step-num">2</div>
+                <span class="step-label">날짜 · 시간</span>
+            </div>
+            <div class="step" id="step-3">
+                <div class="step-num">3</div>
+                <span class="step-label">예약 완료</span>
+            </div>
+        </div>
+
+        <!-- Booking summary bar -->
+        <div class="booking-summary" id="booking-summary">
+            <div class="summary-item">
+                <div class="summary-key">테마</div>
+                <div class="summary-val empty" id="sum-theme">–</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-key">날짜</div>
+                <div class="summary-val empty" id="sum-date">–</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-key">시간</div>
+                <div class="summary-val empty" id="sum-time">–</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-key">예약자</div>
+                <div class="summary-val empty" id="sum-name">–</div>
+            </div>
+        </div>
+
+        <!-- ── STEP 1: Theme selection ── -->
+        <div class="section-panel visible" id="panel-1">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🎭 테마를 선택하세요</span>
+                    <button class="btn btn-ghost btn-sm" onclick="loadThemes()">🔄</button>
+                </div>
+                <div class="theme-grid" id="theme-grid">
+                    <div class="empty-state">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular themes -->
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">
+                    <span class="card-title">🏆 이번 주 인기 테마</span>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <input id="pop-limit" max="20" min="1" style="width:60px;" type="number" value="5">
+                        <button class="btn btn-primary btn-sm" onclick="loadPopular()">조회</button>
+                    </div>
+                </div>
+                <div id="popular-section">
+                    <div class="empty-state"><p>조회 버튼을 눌러 확인하세요.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── STEP 2: Date & Time ── -->
+        <div class="section-panel" id="panel-2">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">📅 날짜와 시간을 선택하세요</span>
+                    <button class="btn btn-ghost btn-sm" onclick="goToStep(1)">← 뒤로</button>
+                </div>
+                <div style="display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 24px;">
+                    <div class="form-group" style="flex: 1; min-width: 180px;">
+                        <label for="book-date">날짜</label>
+                        <input id="book-date" onchange="loadAvailableTimes()" type="date">
+                    </div>
+                </div>
+                <div id="time-slot-container">
+                    <div class="empty-state"><p>날짜를 선택하면 예약 가능한 시간이 표시됩니다.</p></div>
+                </div>
+                <div id="step2-next" style="margin-top: 20px;" style="display:none;">
+                </div>
+            </div>
+        </div>
+
+        <!-- ── STEP 3: Confirm ── -->
+        <div class="section-panel" id="panel-3">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">✅ 예약 정보 확인</span>
+                    <button class="btn btn-ghost btn-sm" onclick="goToStep(2)">← 뒤로</button>
+                </div>
+
+                <!-- Confirm summary -->
+                <div id="confirm-summary"
+                     style="margin-bottom: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="book-user-id">사용자 ID</label>
+                    <input id="book-user-id" placeholder="1" style="max-width: 300px;" type="number" min="1">
+                </div>
+
+                <button class="btn btn-primary btn-full" onclick="submitReservation()" style="max-width: 300px;">
+                    🎟 예약 확정
+                </button>
+            </div>
+        </div>
+
+
+    </main>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+    // ── State ─────────────────────────────────────────
+    const state = {
+        selectedTheme: null,
+        selectedDate: null,
+        selectedTime: null,
+    };
+
+    // ── Utils ─────────────────────────────────────────
+    function toast(msg, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+        el.className = `toast toast-${type}`;
+        el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+        container.appendChild(el);
+        setTimeout(() => el.remove(), 3200);
+    }
+
+    async function api(method, url, body) {
+        const opts = {method, headers: {'Content-Type': 'application/json'}};
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(url, opts);
+        if (!res.ok) {
+            const text = await res.text().catch(() => '');
+            throw new Error(text || `HTTP ${res.status}`);
+        }
+        const ct = res.headers.get('Content-Type') || '';
+        return ct.includes('json') ? res.json() : null;
+    }
+
+    function updateSummary() {
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (val) {
+                el.textContent = val;
+                el.classList.remove('empty');
+            } else {
+                el.textContent = '–';
+                el.classList.add('empty');
+            }
+        };
+        setVal('sum-theme', state.selectedTheme?.name);
+        setVal('sum-date', state.selectedDate);
+        setVal('sum-time', state.selectedTime?.startAt);
+        setVal('sum-name', document.getElementById('book-user-id')?.value ? `User #${document.getElementById('book-user-id').value}` : null);
+    }
+
+    // ── Step navigation ────────────────────────────────
+    function goToStep(n) {
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById(`panel-${i}`).classList.toggle('visible', i === n);
+            const step = document.getElementById(`step-${i}`);
+            step.classList.toggle('active', i === n);
+            step.classList.toggle('done', i < n);
+        }
+        updateSummary();
+    }
+
+    // ── Theme ─────────────────────────────────────────
+    async function loadThemes() {
+        const grid = document.getElementById('theme-grid');
+        grid.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
+        try {
+            const themes = await api('GET', '/themes');
+            if (!themes.length) {
+                grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🎭</div><p>등록된 테마가 없습니다.</p></div>`;
+                return;
+            }
+            grid.innerHTML = themes.map(t => `
+        <div class="theme-card" id="theme-card-${t.id}" onclick="selectTheme(${JSON.stringify(t).replace(/"/g, '&quot;')})">
+          <div class="theme-thumbnail">
+            ${t.thumbnailImageUrl
+                ? `<img src="${t.thumbnailImageUrl}" alt="${t.name}" onerror="this.parentNode.innerHTML='🎭'">`
+                : '🎭'}
+          </div>
+          <div class="theme-card-body">
+            <div class="theme-card-name">${t.name}</div>
+            <div class="theme-card-desc">${t.description || '설명 없음'}</div>
+          </div>
+        </div>
+      `).join('');
+        } catch (e) {
+            grid.innerHTML = `<div class="empty-state"><p style="color:var(--danger)">로드 실패: ${e.message}</p></div>`;
+        }
+    }
+
+    function selectTheme(theme) {
+        state.selectedTheme = theme;
+        document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+        const card = document.getElementById(`theme-card-${theme.id}`);
+        if (card) card.classList.add('selected');
+        updateSummary();
+        // Small delay for visual feedback
+        setTimeout(() => goToStep(2), 300);
+        const dateInput = document.getElementById('book-date');
+        if (dateInput.value) loadAvailableTimes();
+    }
+
+    // ── Popular ────────────────────────────────────────
+    async function loadPopular() {
+        const limit = document.getElementById('pop-limit').value || 5;
+        const container = document.getElementById('popular-section');
+        container.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
+        try {
+            const data = await api('GET', `/themes/popular?limit=${limit}`);
+            if (!data.length) {
+                container.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><p>데이터가 없습니다.</p></div>`;
+                return;
+            }
+            const medals = ['🥇', '🥈', '🥉'];
+            container.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px;">
+        ${data.map((t, i) => `
+          <div style="display:flex;align-items:center;gap:14px;padding:12px;border-radius:var(--radius-sm);background:var(--bg-input);cursor:pointer;transition:background 0.15s;"
+               onclick="selectTheme(${JSON.stringify(t).replace(/"/g, '&quot;')})"
+               onmouseenter="this.style.background='var(--bg-card-hover)'"
+               onmouseleave="this.style.background='var(--bg-input)'"
+          >
+            <span style="font-size:20px;width:28px;text-align:center;">${medals[i] || `${i + 1}`}</span>
+            ${t.thumbnailImageUrl
+                ? `<img src="${t.thumbnailImageUrl}" alt="${t.name}" style="width:44px;height:36px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'">`
+                : `<div style="width:44px;height:36px;background:var(--bg-card);border-radius:6px;display:flex;align-items:center;justify-content:center;">🎭</div>`}
+            <div style="flex:1;">
+              <div style="font-weight:600;font-size:14px;">${t.name}</div>
+              <div style="font-size:12px;color:var(--text-secondary);">${t.description || ''}</div>
+            </div>
+            <span class="badge badge-yellow">🔖 ${t.reservedCount}건</span>
+          </div>
+        `).join('')}
+      </div>`;
+        } catch (e) {
+            container.innerHTML = `<div class="empty-state"><p style="color:var(--danger)">조회 실패: ${e.message}</p></div>`;
+        }
+    }
+
+    // ── Time slots ────────────────────────────────────
+    async function loadAvailableTimes() {
+        const date = document.getElementById('book-date').value;
+        state.selectedDate = date;
+        state.selectedTime = null;
+        updateSummary();
+        const container = document.getElementById('time-slot-container');
+
+        if (!state.selectedTheme || !date) {
+            container.innerHTML = `<div class="empty-state"><p>테마와 날짜를 선택해주세요.</p></div>`;
+            return;
+        }
+
+        container.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
+        try {
+            const data = await api('GET', `/themes/${state.selectedTheme.id}/times?date=${date}`);
+            if (!data.length) {
+                container.innerHTML = `<div class="empty-state"><div class="empty-icon">⏰</div><p>가용 시간이 없습니다.</p></div>`;
+                return;
+            }
+            container.innerHTML = `<div class="time-grid">
+        ${data.map(t => `
+          <div class="time-slot ${t.isReserved ? 'reserved' : 'available'}"
+               ${!t.isReserved ? `onclick="selectTime({id:${t.id},startAt:'${t.startAt}'})"` : ''}
+               id="ts-${t.id}">
+            <div>${t.startAt}</div>
+            <div class="time-slot-label">${t.isReserved ? '예약됨' : '선택 가능'}</div>
+          </div>
+        `).join('')}
+      </div>`;
+        } catch (e) {
+            container.innerHTML = `<div class="empty-state"><p style="color:var(--danger)">조회 실패: ${e.message}</p></div>`;
+        }
+    }
+
+    function selectTime(time) {
+        state.selectedTime = time;
+        document.querySelectorAll('.time-slot.available').forEach(el => el.classList.remove('selected'));
+        const slot = document.getElementById(`ts-${time.id}`);
+        if (slot) slot.classList.add('selected');
+        updateSummary();
+        setTimeout(() => goToStep(3), 300);
+        buildConfirmSummary();
+    }
+
+    function buildConfirmSummary() {
+        const t = state.selectedTheme;
+        const container = document.getElementById('confirm-summary');
+        container.innerHTML = `
+      <div style="background:var(--bg-input);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:4px;">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">테마</div>
+        <div style="font-size:16px;font-weight:700;">${t?.name ?? '–'}</div>
+        <div style="font-size:12px;color:var(--text-secondary);">${t?.description ?? ''}</div>
+      </div>
+      <div style="background:var(--bg-input);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:4px;">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">일정</div>
+        <div style="font-size:16px;font-weight:700;">${state.selectedDate ?? '–'}</div>
+        <div style="font-size:12px;color:var(--text-secondary);">⏰ ${state.selectedTime?.startAt ?? '–'}</div>
+      </div>
+    `;
+    }
+
+    // ── Reservation CRUD ──────────────────────────────
+    async function submitReservation() {
+        const userId = Number(document.getElementById('book-user-id').value);
+        if (!userId) {
+            toast('사용자 ID를 입력해주세요.', 'error');
+            return;
+        }
+        if (!state.selectedTheme || !state.selectedDate || !state.selectedTime) {
+            toast('테마, 날짜, 시간을 모두 선택해주세요.', 'error');
+            return;
+        }
+
+        try {
+            await api('POST', '/reservations', {
+                userId,
+                date: state.selectedDate,
+                themeId: state.selectedTheme.id,
+                timeId: state.selectedTime.id,
+            });
+            toast(`🎉 "${state.selectedTheme.name}" 예약이 완료되었습니다!`, 'success');
+            // Reset
+            state.selectedTheme = null;
+            state.selectedDate = null;
+            state.selectedTime = null;
+            document.getElementById('book-user-id').value = '';
+            updateSummary();
+            goToStep(1);
+            await loadThemes();
+        } catch (e) {
+            toast(`예약 실패: ${e.message}`, 'error');
+        }
+    }
+
+
+    // ── Init ─────────────────────────────────────────
+    document.getElementById('book-user-id').addEventListener('input', updateSummary);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadThemes();
+        document.getElementById('book-date').value = new Date().toISOString().split('T')[0];
+    });
+</script>
+</body>
+</html>

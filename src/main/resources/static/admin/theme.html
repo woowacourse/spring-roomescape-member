@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>테마 관리 — RoomEscape Admin</title>
+    <meta content="방탈출 테마 관리 - 관리자" name="description">
+    <link href="../style.css" rel="stylesheet">
+    <style>
+        .popular-rank {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #facc15, #f97316);
+            color: #0d0f1a;
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+            color: #0d0f1a;
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #b45309, #92400e);
+            color: #fff;
+        }
+
+        .rank-other {
+            background: var(--bg-input);
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-text">🔐 RoomEscape</div>
+            <div class="logo-sub">Admin Panel</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">관리</div>
+            <a class="nav-item" href="reservation.html">
+                <span class="icon">📋</span> 예약 관리
+            </a>
+            <a class="nav-item" href="time.html">
+                <span class="icon">🕐</span> 시간 관리
+            </a>
+            <a class="nav-item active" href="theme.html">
+                <span class="icon">🎭</span> 테마 관리
+            </a>
+        </div>
+        <div class="sidebar-section" style="margin-top: auto;">
+            <div class="sidebar-section-label">사용자</div>
+            <a class="nav-item" href="../index.html">
+                <span class="icon">🏠</span> 사용자 페이지
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+        <div class="page-header">
+            <h1 class="page-title">테마 관리</h1>
+            <p class="page-subtitle">방탈출 테마를 생성, 조회, 삭제합니다.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card red">
+                <div class="stat-value" id="theme-count">–</div>
+                <div class="stat-label">등록된 테마</div>
+            </div>
+        </div>
+
+        <!-- Add Theme -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">새 테마 추가</span>
+                <button class="btn btn-ghost btn-sm" onclick="toggleForm('add-form')">펼치기 / 접기</button>
+            </div>
+            <div id="add-form">
+                <div class="form-grid form-grid-3" style="margin-bottom: 14px;">
+                    <div class="form-group">
+                        <label for="theme-name">테마 이름</label>
+                        <input id="theme-name" placeholder="공포의 저택" type="text">
+                    </div>
+                    <div class="form-group">
+                        <label for="theme-desc">설명</label>
+                        <input id="theme-desc" placeholder="어두운 저택에서 탈출하라" type="text">
+                    </div>
+                    <div class="form-group">
+                        <label for="theme-img">썸네일 URL</label>
+                        <input id="theme-img" placeholder="https://example.com/image.jpg" type="url">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="createTheme()">
+                    <span>➕</span> 테마 추가
+                </button>
+            </div>
+        </div>
+
+        <!-- Theme List Table -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">테마 목록</span>
+                <button class="btn btn-ghost btn-sm" onclick="loadThemes()">🔄 새로고침</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>썸네일</th>
+                        <th>이름</th>
+                        <th>설명</th>
+                        <th>액션</th>
+                    </tr>
+                    </thead>
+                    <tbody id="theme-table-body">
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <div class="spinner"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Popular Themes -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">🏆 인기 테마 (최근 1주)</span>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div class="form-group" style="flex-direction: row; align-items: center; gap: 8px; margin: 0;">
+                        <label for="popular-limit" style="white-space: nowrap; margin: 0;">개수</label>
+                        <input id="popular-limit" max="20" min="1" style="width: 70px;" type="number" value="5">
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="loadPopular()">조회</button>
+                </div>
+            </div>
+            <div id="popular-list">
+                <div class="empty-state"><p>조회 버튼을 눌러 인기 테마를 확인하세요.</p></div>
+            </div>
+        </div>
+
+        <!-- Available Times by Theme & Date -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📅 테마별 가용 시간 조회</span>
+            </div>
+            <div style="display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px;">
+                <div class="form-group" style="flex: 1; min-width: 160px;">
+                    <label for="check-theme">테마</label>
+                    <select id="check-theme">
+                        <option value="">테마 선택</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 160px;">
+                    <label for="check-date">날짜</label>
+                    <input id="check-date" type="date">
+                </div>
+                <button class="btn btn-primary" onclick="checkTimes()">조회</button>
+            </div>
+            <div id="time-slots">
+                <div class="empty-state"><p>테마와 날짜를 선택 후 조회하세요.</p></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+    function toast(msg, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+        el.className = `toast toast-${type}`;
+        el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+        container.appendChild(el);
+        setTimeout(() => el.remove(), 3200);
+    }
+
+    async function api(method, url, body) {
+        const opts = {method, headers: {'Content-Type': 'application/json'}};
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(url, opts);
+        if (!res.ok) {
+            const text = await res.text().catch(() => '');
+            throw new Error(text || `HTTP ${res.status}`);
+        }
+        const ct = res.headers.get('Content-Type') || '';
+        return ct.includes('json') ? res.json() : null;
+    }
+
+    function toggleForm(id) {
+        const el = document.getElementById(id);
+        el.style.display = el.style.display === 'none' ? '' : 'none';
+    }
+
+    // ── Load Themes ────────────────────────────────────
+    async function loadThemes() {
+        try {
+            const data = await api('GET', '/admin/themes');
+            document.getElementById('theme-count').textContent = data.length;
+
+            // Update dropdown for time check
+            const sel = document.getElementById('check-theme');
+            sel.innerHTML = '<option value="">테마 선택</option>' +
+                data.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+
+            const tbody = document.getElementById('theme-table-body');
+            if (!data.length) {
+                tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎭</div><p>등록된 테마가 없습니다.</p></div></td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.map(t => `
+        <tr>
+          <td><span class="badge badge-gray">#${t.id}</span></td>
+          <td>
+            ${t.thumbnailImageUrl
+                ? `<img src="${t.thumbnailImageUrl}" alt="${t.name}" style="width:56px;height:40px;object-fit:cover;border-radius:6px;border:1px solid var(--border);" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                 <div style="display:none;width:56px;height:40px;background:var(--bg-input);border-radius:6px;align-items:center;justify-content:center;font-size:20px;">🎭</div>`
+                : `<div style="width:56px;height:40px;background:var(--bg-input);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;">🎭</div>`}
+          </td>
+          <td><strong>${t.name}</strong></td>
+          <td style="color: var(--text-secondary); max-width: 280px;">
+            <span title="${t.description}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              ${t.description || '–'}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteTheme(${t.id}, '${t.name}')">
+              🗑 삭제
+            </button>
+          </td>
+        </tr>
+      `).join('');
+        } catch (e) {
+            toast(`테마 조회 실패: ${e.message}`, 'error');
+        }
+    }
+
+    // ── Popular ────────────────────────────────────────
+    async function loadPopular() {
+        const limit = document.getElementById('popular-limit').value || 5;
+        const container = document.getElementById('popular-list');
+        container.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
+        try {
+            const data = await api('GET', `/admin/themes/popular?limit=${limit}`);
+            if (!data.length) {
+                container.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><p>데이터가 없습니다.</p></div>`;
+                return;
+            }
+            container.innerHTML = `
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>순위</th><th>썸네일</th><th>이름</th><th>설명</th><th>예약 수</th></tr></thead>
+            <tbody>
+              ${data.map((t, i) => `
+                <tr>
+                  <td>
+                    <span class="popular-rank ${i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other'}">
+                      ${i + 1}
+                    </span>
+                  </td>
+                  <td>
+                    ${t.thumbnailImageUrl
+                ? `<img src="${t.thumbnailImageUrl}" alt="${t.name}" style="width:56px;height:40px;object-fit:cover;border-radius:6px;border:1px solid var(--border);" onerror="this.style.display='none'">`
+                : `<div style="width:56px;height:40px;background:var(--bg-input);border-radius:6px;display:flex;align-items:center;justify-content:center;">🎭</div>`}
+                  </td>
+                  <td><strong>${t.name}</strong></td>
+                  <td style="color: var(--text-secondary);">${t.description || '–'}</td>
+                  <td><span class="badge badge-yellow">🔖 ${t.reservedCount}건</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>`;
+        } catch (e) {
+            container.innerHTML = `<div class="empty-state"><p style="color:var(--danger)">조회 실패: ${e.message}</p></div>`;
+        }
+    }
+
+    // ── Time Check ────────────────────────────────────
+    async function checkTimes() {
+        const themeId = document.getElementById('check-theme').value;
+        const date = document.getElementById('check-date').value;
+        if (!themeId || !date) {
+            toast('테마와 날짜를 선택해주세요.', 'error');
+            return;
+        }
+
+        const container = document.getElementById('time-slots');
+        container.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
+        try {
+            const data = await api('GET', `/admin/themes/${themeId}/times?date=${date}`);
+            if (!data.length) {
+                container.innerHTML = `<div class="empty-state"><div class="empty-icon">⏰</div><p>등록된 시간이 없습니다.</p></div>`;
+                return;
+            }
+            container.innerHTML = `<div class="time-grid">
+        ${data.map(t => `
+          <div class="time-slot ${t.isReserved ? 'reserved' : 'available'}">
+            <div>${t.startAt}</div>
+            <div class="time-slot-label">${t.isReserved ? '예약됨' : '예약 가능'}</div>
+          </div>
+        `).join('')}
+      </div>`;
+        } catch (e) {
+            container.innerHTML = `<div class="empty-state"><p style="color:var(--danger)">조회 실패: ${e.message}</p></div>`;
+        }
+    }
+
+    // ── CRUD ─────────────────────────────────────────
+    async function createTheme() {
+        const name = document.getElementById('theme-name').value.trim();
+        const description = document.getElementById('theme-desc').value.trim();
+        const thumbnailImageUrl = document.getElementById('theme-img').value.trim();
+        if (!name) {
+            toast('테마 이름을 입력해주세요.', 'error');
+            return;
+        }
+        try {
+            await api('POST', '/admin/themes', {name, description, thumbnailImageUrl});
+            toast(`"${name}" 테마가 추가되었습니다.`, 'success');
+            document.getElementById('theme-name').value = '';
+            document.getElementById('theme-desc').value = '';
+            document.getElementById('theme-img').value = '';
+            await loadThemes();
+        } catch (e) {
+            toast(`추가 실패: ${e.message}`, 'error');
+        }
+    }
+
+    async function deleteTheme(id, name) {
+        if (!confirm(`테마 "${name}"을 삭제할까요?`)) return;
+        try {
+            await api('DELETE', `/admin/themes/${id}`);
+            toast(`"${name}" 테마가 삭제되었습니다.`, 'success');
+            await loadThemes();
+        } catch (e) {
+            toast(`삭제 실패: ${e.message}`, 'error');
+        }
+    }
+
+    // ── Init ─────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        loadThemes();
+        document.getElementById('check-date').value = new Date().toISOString().split('T')[0];
+    });
+</script>
+</body>
+</html>
