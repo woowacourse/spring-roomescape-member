@@ -43,14 +43,15 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAll() {
-        String sql = "SELECT * FROM theme";
-        return jdbcTemplate.query(sql, themeRowMapper);
+    public List<Theme> findAll(int page, int size) {
+        String sql = "SELECT id, name, description, thumbnail FROM theme LIMIT ? OFFSET  ?";
+        int offset = page * size;
+        return jdbcTemplate.query(sql, themeRowMapper, size, offset);
     }
 
     @Override
     public Optional<Theme> findById(long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         List<Theme> themes = jdbcTemplate.query(sql, themeRowMapper, id);
         return themes.stream().findFirst();
     }

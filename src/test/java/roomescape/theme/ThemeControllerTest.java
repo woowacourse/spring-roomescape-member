@@ -26,7 +26,9 @@ class ThemeControllerTest {
 
     @Test
     void 테마_조회() throws Exception {
-        given(themeService.read())
+        int page = 0;
+        int size = 10;
+        given(themeService.read(page, size))
                 .willReturn(List.of(
                         new ThemeResponse(1L, "공포의 방",
                                 "심장 약한 사람은 들어오지 마세요.",

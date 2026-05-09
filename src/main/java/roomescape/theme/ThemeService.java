@@ -32,8 +32,8 @@ public class ThemeService {
         return ThemeResponse.from(saved);
     }
 
-    public List<ThemeResponse> read() {
-        return themeRepository.findAll().stream()
+    public List<ThemeResponse> read(int page, int size) {
+        return themeRepository.findAll(page, size).stream()
                 .map(ThemeResponse::from)
                 .toList();
     }

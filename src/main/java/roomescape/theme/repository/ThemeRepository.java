@@ -9,7 +9,7 @@ public interface ThemeRepository {
 
     Theme save(Theme theme);
 
-    List<Theme> findAll();
+    List<Theme> findAll(int page, int size);
 
     Optional<Theme> findById(long id);
 
