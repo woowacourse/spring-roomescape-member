@@ -36,7 +36,7 @@ class ThemeJdbcTemplateRepositoryTest {
     @DisplayName("테마를 잘 저장한다")
     void save_success() {
         // given
-        Theme theme = Theme.createWithNullId(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme theme = Theme.create(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
 
         // when
         Theme savedTheme = themeRepository.save(theme);
@@ -52,7 +52,7 @@ class ThemeJdbcTemplateRepositoryTest {
     @DisplayName("아이디를 기반으로 테마를 찾는다")
     void findById_success() {
         // given
-        Theme theme = Theme.createWithNullId(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme theme = Theme.create(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
         Theme savedTheme = themeRepository.save(theme);
 
         // when
@@ -77,8 +77,8 @@ class ThemeJdbcTemplateRepositoryTest {
     @DisplayName("모든 테마를 가져온다")
     void findAll_success() {
         // given
-        Theme theme1 = Theme.createWithNullId(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
-        Theme theme2 = Theme.createWithNullId(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme theme1 = Theme.create(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme theme2 = Theme.create(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
         themeRepository.save(theme1);
         themeRepository.save(theme2);
 
@@ -103,7 +103,7 @@ class ThemeJdbcTemplateRepositoryTest {
     @DisplayName("아이디를 기반으로 테마를 삭제한다")
     void deleteById_success() {
         // given
-        Theme theme = Theme.createWithNullId(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
+        Theme theme = Theme.create(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
         Theme savedTheme = themeRepository.save(theme);
 
         // when
@@ -132,10 +132,10 @@ class ThemeJdbcTemplateRepositoryTest {
     void findTopNByPeriod_success() {
         // given
         Theme theme1 = themeRepository.save(
-                Theme.createWithNullId("인기 테마", "설명1", "thumb1")
+                Theme.create("인기 테마", "설명1", "thumb1")
         );
         Theme theme2 = themeRepository.save(
-                Theme.createWithNullId("덜 인기 테마", "설명2", "thumb2")
+                Theme.create("덜 인기 테마", "설명2", "thumb2")
         );
 
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 1L, "10:00");

@@ -16,7 +16,7 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         if (reservation.id() == null) {
-            Reservation saved = Reservation.createWithId(
+            Reservation saved = Reservation.createRow(
                     sequence++,
                     reservation.name(),
                     reservation.date(),

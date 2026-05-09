@@ -63,7 +63,7 @@ public class ThemeController {
             @RequestParam String sortBy,
             @RequestParam LocalDate from,
             @RequestParam LocalDate to,
-            @RequestParam(required = false, defaultValue = "10L") Long limit
+            @RequestParam(required = false, defaultValue = "10") Long limit
     ) {
         List<ThemeResponse> response = (service.findTopNByPeriod(from, to, sortBy, limit)).stream()
                 .map(ThemeResponse::from)

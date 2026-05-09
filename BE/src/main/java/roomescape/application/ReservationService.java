@@ -39,7 +39,7 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationTimeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new ThemeException(ErrorCode.THEME_NOT_FOUND));
-        Reservation reservation = Reservation.createWithNullId(
+        Reservation reservation = Reservation.create(
                 name,
                 date,
                 time,

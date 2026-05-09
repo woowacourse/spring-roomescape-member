@@ -20,7 +20,7 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public Theme save(Theme theme) {
         if (theme.id() == null) {
-            Theme saved = Theme.createWithId(++sequence, theme.name(), theme.description(), theme.thumbnailUrl());
+            Theme saved = Theme.createRow(++sequence, theme.name(), theme.description(), theme.thumbnailUrl());
             store.put(saved.id(), saved);
             return saved;
         }

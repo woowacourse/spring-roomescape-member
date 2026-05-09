@@ -29,14 +29,14 @@ public class ReservationTimeJdbcTemplateRepository implements ReservationTimeRep
                 "start_at", reservation.startAt()
         );
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return ReservationTime.createWithId(id, reservation.startAt());
+        return ReservationTime.createRow(id, reservation.startAt());
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         List<ReservationTime> reservationTime = jdbcTemplate.query(sql,
-                (rs, rowNum) -> ReservationTime.createWithId(
+                (rs, rowNum) -> ReservationTime.createRow(
                         rs.getLong("id"),
                         rs.getTime("start_at").toLocalTime()
                 ),
@@ -50,7 +50,7 @@ public class ReservationTimeJdbcTemplateRepository implements ReservationTimeRep
     public List<ReservationTime> findAll() {
         String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql,
-                (rs, rowNum) -> ReservationTime.createWithId(
+                (rs, rowNum) -> ReservationTime.createRow(
                         rs.getLong("id"),
                         rs.getTime("start_at").toLocalTime()
                 ));

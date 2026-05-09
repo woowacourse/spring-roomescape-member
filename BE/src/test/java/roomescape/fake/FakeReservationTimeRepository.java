@@ -15,7 +15,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
         if (reservationTime.id() == null) {
-            ReservationTime saved = ReservationTime.createWithId(
+            ReservationTime saved = ReservationTime.createRow(
                     sequence++,
                     reservationTime.startAt()
             );

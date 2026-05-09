@@ -58,7 +58,7 @@ class ThemeControllerTest {
     @DisplayName("POST /themes - 테마 저장 요청을 서비스에 전달하고 201 응답을 반환한다.")
     void addNewTheme_success() throws Exception {
         // given
-        Theme theme = Theme.createWithId(1L, "테마", "테마 설명", "https://image");
+        Theme theme = Theme.createRow(1L, "테마", "테마 설명", "https://image");
         given(themeService.save("테마", "테마 설명", "https://image")).willReturn(theme);
 
         Map<String, Object> body = new HashMap<>();
@@ -87,7 +87,7 @@ class ThemeControllerTest {
     void readThemes_no_params_success() throws Exception {
         // given
         given(themeService.findAll()).willReturn(
-                List.of(Theme.createWithId(1L, "기본 테마", "설명", "https://image"))
+                List.of(Theme.createRow(1L, "기본 테마", "설명", "https://image"))
         );
 
         // when & then
@@ -108,10 +108,10 @@ class ThemeControllerTest {
         // given
         LocalDate from = LocalDate.of(2026, 5, 1);
         LocalDate to = LocalDate.of(2026, 5, 31);
-        given(themeService.findTopNByPeriod(from, to, "POPULAR", 2L)).willReturn(
+        given(themeService.findTopNByPeriod(from, to, "popular", 2L)).willReturn(
                 List.of(
-                        Theme.createWithId(1L, "테마1", "설명1", "URL1"),
-                        Theme.createWithId(2L, "테마2", "설명2", "URL2")
+                        Theme.createRow(1L, "테마1", "설명1", "URL1"),
+                        Theme.createRow(2L, "테마2", "설명2", "URL2")
                 )
         );
 
@@ -126,7 +126,8 @@ class ThemeControllerTest {
                 .andExpect(jsonPath("$[0].name").value("테마1"))
                 .andExpect(jsonPath("$[1].name").value("테마2"));
 
-        then(themeService).should().findTopNByPeriod(from, to, "POPULAR", 2L);
+        then(themeService).should().findTopNByPeriod(from, to, "popular", 2L);
+
     }
 
     @Test

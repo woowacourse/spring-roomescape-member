@@ -20,7 +20,7 @@ public class ThemeService {
     }
 
     public Theme save(String name, String description, String thumbnailUrl) {
-        return themeRepository.save(Theme.createWithNullId(name, description, thumbnailUrl));
+        return themeRepository.save(Theme.create(name, description, thumbnailUrl));
     }
 
     public Optional<Theme> findById(Long id) {

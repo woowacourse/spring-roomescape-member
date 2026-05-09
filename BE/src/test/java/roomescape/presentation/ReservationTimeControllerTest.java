@@ -59,7 +59,7 @@ class ReservationTimeControllerTest {
     void createReservationTimes_success() throws Exception {
         // given
         LocalTime startAt = LocalTime.of(10, 0);
-        given(reservationTimeService.saveTime(startAt)).willReturn(ReservationTime.createWithId(1L, startAt));
+        given(reservationTimeService.saveTime(startAt)).willReturn(ReservationTime.createRow(1L, startAt));
 
         Map<String, Object> body = new HashMap<>();
         body.put("startAt", "10:00");
@@ -82,7 +82,7 @@ class ReservationTimeControllerTest {
     void readReservationTimes_success() throws Exception {
         // given
         given(reservationTimeService.getTimes()).willReturn(
-                List.of(ReservationTime.createWithId(1L, LocalTime.of(10, 0)))
+                List.of(ReservationTime.createRow(1L, LocalTime.of(10, 0)))
         );
 
         // when & then

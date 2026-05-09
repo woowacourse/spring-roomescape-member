@@ -27,7 +27,7 @@ class ReservationTimeJdbcTemplateRepositoryTest {
     @DisplayName("시간 저장을 잘 한다")
     void save_success() {
         //given
-        ReservationTime testReservationTime = ReservationTime.createWithNullId(
+        ReservationTime testReservationTime = ReservationTime.create(
                 LocalTime.now()
         );
 
@@ -42,8 +42,8 @@ class ReservationTimeJdbcTemplateRepositoryTest {
     @DisplayName("id에 맞는 시간이 존재하면 id 로 잘 찾아온다.")
     void findById_success() {
         //given
-        ReservationTime time1 = ReservationTime.createWithNullId(LocalTime.of(12, 0));
-        ReservationTime time2 = ReservationTime.createWithNullId(LocalTime.of(13, 0));
+        ReservationTime time1 = ReservationTime.create(LocalTime.of(12, 0));
+        ReservationTime time2 = ReservationTime.create(LocalTime.of(13, 0));
         timeRepository.save(time1);
         ReservationTime saved2 = timeRepository.save(time2);
 
@@ -72,9 +72,9 @@ class ReservationTimeJdbcTemplateRepositoryTest {
     @DisplayName("저장되어 있는 모든 시간을 잘 가져온다")
     void findAll_success() {
         //given
-        ReservationTime time1 = ReservationTime.createWithNullId(LocalTime.of(11, 0));
-        ReservationTime time2 = ReservationTime.createWithNullId(LocalTime.of(12, 0));
-        ReservationTime time3 = ReservationTime.createWithNullId(LocalTime.of(13, 0));
+        ReservationTime time1 = ReservationTime.create(LocalTime.of(11, 0));
+        ReservationTime time2 = ReservationTime.create(LocalTime.of(12, 0));
+        ReservationTime time3 = ReservationTime.create(LocalTime.of(13, 0));
 
         timeRepository.save(time1);
         timeRepository.save(time2);
@@ -91,7 +91,7 @@ class ReservationTimeJdbcTemplateRepositoryTest {
     @DisplayName("삭제를 id 기반으로 잘 한다")
     void deleteById_success() {
         //given
-        ReservationTime time = ReservationTime.createWithNullId(LocalTime.of(11, 0));
+        ReservationTime time = ReservationTime.create(LocalTime.of(11, 0));
         ReservationTime saved = timeRepository.save(time);
 
         //when

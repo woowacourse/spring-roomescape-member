@@ -90,7 +90,7 @@ class ReservationTimeServiceTest {
         // given
         LocalTime testStartAt = LocalTime.now();
         ReservationTime savedReservationTime = reservationTimeService.saveTime(testStartAt);
-        reservationRepository.save(Reservation.createWithNullId("테스터", LocalDate.now(), savedReservationTime, null));
+        reservationRepository.save(Reservation.create("테스터", LocalDate.now(), savedReservationTime, null));
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteTime(savedReservationTime.id()))

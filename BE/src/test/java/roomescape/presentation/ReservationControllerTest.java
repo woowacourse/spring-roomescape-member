@@ -59,9 +59,9 @@ class ReservationControllerTest {
 
     private Reservation sampleReservation(Long id, String name, LocalDate date, Long timeId, String startAt,
                                           Long themeId, String themeName) {
-        ReservationTime time = ReservationTime.createWithId(timeId, LocalTime.parse(startAt));
-        Theme theme = Theme.createWithId(themeId, themeName, "설명", "https://thumbnail.com");
-        return Reservation.createWithId(id, name, date, time, theme);
+        ReservationTime time = ReservationTime.createRow(timeId, LocalTime.parse(startAt));
+        Theme theme = Theme.createRow(themeId, themeName, "설명", "https://thumbnail.com");
+        return Reservation.createRow(id, name, date, time, theme);
     }
 
     @Test

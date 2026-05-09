@@ -73,19 +73,19 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
         """;
 
     private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> {
-        ReservationTime time = ReservationTime.createWithId(
+        ReservationTime time = ReservationTime.createRow(
                 rs.getLong("time_id"),
                 rs.getTime("start_at").toLocalTime()
         );
 
-        Theme theme = Theme.createWithId(
+        Theme theme = Theme.createRow(
                 rs.getLong("theme_id"),
                 rs.getString("theme_name"),
                 rs.getString("theme_description"),
                 rs.getString("thumbnail_url")
         );
 
-        return Reservation.createWithId(
+        return Reservation.createRow(
                 rs.getLong("id"),
                 rs.getString("reservation_name"),
                 rs.getDate("date").toLocalDate(),

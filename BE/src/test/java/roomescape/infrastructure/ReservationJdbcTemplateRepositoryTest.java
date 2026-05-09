@@ -48,19 +48,19 @@ class ReservationJdbcTemplateRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        savedTime1 = timeRepository.save(ReservationTime.createWithNullId(LocalTime.of(1, 0)));
-        savedTime2 = timeRepository.save(ReservationTime.createWithNullId(LocalTime.of(2, 0)));
+        savedTime1 = timeRepository.save(ReservationTime.create(LocalTime.of(1, 0)));
+        savedTime2 = timeRepository.save(ReservationTime.create(LocalTime.of(2, 0)));
         savedTheme1 = themeRepository.save(
-                Theme.createWithNullId("테스트 테마1", "테스트 테마 설명1", "https://good.com/thumb-nail/1"));
+                Theme.create("테스트 테마1", "테스트 테마 설명1", "https://good.com/thumb-nail/1"));
         savedTheme2 = themeRepository.save(
-                Theme.createWithNullId("테스트 테마2", "테스트 테마 설명2", "https://good.com/thumb-nail/2"));
+                Theme.create("테스트 테마2", "테스트 테마 설명2", "https://good.com/thumb-nail/2"));
     }
 
     @Test
     @DisplayName("예약을 저장하면 생성된 ID를 포함한 예약 객체를 반환한다.")
     void save_success() {
         // given
-        Reservation reservation = Reservation.createWithNullId(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1);
+        Reservation reservation = Reservation.create(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1);
 
         // when
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -74,8 +74,8 @@ class ReservationJdbcTemplateRepositoryTest {
     @DisplayName("전체 예약 목록을 조회한다.")
     void findByDateAndThemeId_findAll_when_both_null() {
         // given
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "2", DATE_TOMORROW, savedTime2, savedTheme2));
+        reservationRepository.save(Reservation.create(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
+        reservationRepository.save(Reservation.create(TEST_NAME + "2", DATE_TOMORROW, savedTime2, savedTheme2));
 
         // when
         List<Reservation> result = reservationRepository.findAll();
@@ -88,9 +88,9 @@ class ReservationJdbcTemplateRepositoryTest {
     @DisplayName("date만 있으면 해당 날짜의 예약만 조회한다.")
     void findByDateAndThemeId_filter_by_date_only() {
         // given
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "2", DATE_TODAY, savedTime2, savedTheme2));
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "3", DATE_TOMORROW, savedTime1, savedTheme1));
+        reservationRepository.save(Reservation.create(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
+        reservationRepository.save(Reservation.create(TEST_NAME + "2", DATE_TODAY, savedTime2, savedTheme2));
+        reservationRepository.save(Reservation.create(TEST_NAME + "3", DATE_TOMORROW, savedTime1, savedTheme1));
 
         // when
         List<Reservation> result = reservationRepository.findByDateAndThemeId(DATE_TODAY, null);
@@ -104,9 +104,9 @@ class ReservationJdbcTemplateRepositoryTest {
     @DisplayName("themeId만 있으면 해당 테마의 예약만 조회한다.")
     void findByDateAndThemeId_filter_by_theme_only() {
         // given
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "2", DATE_TOMORROW, savedTime2, savedTheme1));
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "3", DATE_TODAY, savedTime1, savedTheme2));
+        reservationRepository.save(Reservation.create(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
+        reservationRepository.save(Reservation.create(TEST_NAME + "2", DATE_TOMORROW, savedTime2, savedTheme1));
+        reservationRepository.save(Reservation.create(TEST_NAME + "3", DATE_TODAY, savedTime1, savedTheme2));
 
         // when
         List<Reservation> result = reservationRepository.findByDateAndThemeId(null, savedTheme1.id());
@@ -120,9 +120,9 @@ class ReservationJdbcTemplateRepositoryTest {
     @DisplayName("date, themeId 모두 있으면 두 조건 모두 일치하는 예약만 조회한다.")
     void findByDateAndThemeId_filter_by_date_and_theme() {
         // given
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "2", DATE_TODAY, savedTime2, savedTheme2));
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME + "3", DATE_TOMORROW, savedTime1, savedTheme1));
+        reservationRepository.save(Reservation.create(TEST_NAME + "1", DATE_TODAY, savedTime1, savedTheme1));
+        reservationRepository.save(Reservation.create(TEST_NAME + "2", DATE_TODAY, savedTime2, savedTheme2));
+        reservationRepository.save(Reservation.create(TEST_NAME + "3", DATE_TOMORROW, savedTime1, savedTheme1));
 
         // when
         List<Reservation> result = reservationRepository.findByDateAndThemeId(DATE_TODAY, savedTheme1.id());
@@ -138,7 +138,7 @@ class ReservationJdbcTemplateRepositoryTest {
     @DisplayName("일치하는 예약이 없으면 빈 목록을 반환한다.")
     void findByDateAndThemeId_returns_empty_when_no_match() {
         // given
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1));
+        reservationRepository.save(Reservation.create(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1));
 
         // when
         List<Reservation> result = reservationRepository.findByDateAndThemeId(DATE_TOMORROW, savedTheme2.id());
@@ -151,7 +151,7 @@ class ReservationJdbcTemplateRepositoryTest {
     @DisplayName("특정 시간 ID를 참조하는 예약이 존재하는지 확인한다.")
     void existsByReservationTimeId_success() {
         // given
-        reservationRepository.save(Reservation.createWithNullId(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1));
+        reservationRepository.save(Reservation.create(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1));
 
         // when
         boolean exists = reservationRepository.existsByReservationTimeId(savedTime1.id());
@@ -167,7 +167,7 @@ class ReservationJdbcTemplateRepositoryTest {
     void deleteById_success() {
         // given
         Reservation saved = reservationRepository.save(
-                Reservation.createWithNullId("삭제대상", DATE_TODAY, savedTime1, savedTheme1)
+                Reservation.create("삭제대상", DATE_TODAY, savedTime1, savedTheme1)
         );
 
         // when
