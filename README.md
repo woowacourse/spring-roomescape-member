@@ -148,7 +148,7 @@
 
 
 - **ThemeDao**
-- [ ] 테스트 필요성 인식 및 작성
+- [x] 테스트 필요성 인식 및 작성
 
 
 - **ReservationTimeDao**
