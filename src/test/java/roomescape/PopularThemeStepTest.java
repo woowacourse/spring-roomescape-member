@@ -17,17 +17,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 
 
 /*
  * 미션2 사이클1 - 인기 테마 조회 API 요구사항 테스트.
- *
+ * IntegrationTest 상속으로 매 테스트 빈 DB 보장.
  * 시간 의존성을 풀기 위해 @TestConfiguration으로 고정 Clock을 주입.
  * 각 테스트가 @BeforeEach에서 자기 데이터(테마 + 예약)를 직접 준비.
  *
@@ -37,9 +35,7 @@ import org.springframework.test.annotation.DirtiesContext;
  *  3) 예약 건수 내림차순 정렬
  *  4) 최대 10개
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class PopularThemeStepTest {
+public class PopularThemeStepTest extends IntegrationTest {
 
     private static final LocalDate TODAY = LocalDate.of(2026, 5, 9);
 

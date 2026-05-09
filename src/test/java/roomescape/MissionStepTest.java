@@ -13,19 +13,16 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.AdminReservationController;
 
 
 /*
  * 미션 1 요구사항 테스트.
+ * IntegrationTest를 상속받아 매 테스트 시작 시,
  * 빈 DB 상태에서 시작하여 각 테스트가 자기 데이터를 직접 준비한다.
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class MissionStepTest {
+public class MissionStepTest extends IntegrationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

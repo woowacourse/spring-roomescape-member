@@ -15,14 +15,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 
 /*
  * 미션2 사이클1 - 사용자 예약 API 요구사항 테스트.
  *
- * 각 테스트가 자기 데이터(시간 1개, 테마 2개)를 @BeforeEach에서 직접 준비.
+ * IntegrationTest 상속으로 매 테스트 빈 DB 보장.
+ * setUp에서 각 테스트가 자기 데이터(시간 1개, 테마 2개)를 @BeforeEach에서 직접 준비.
  * 미래 날짜를 사용하므로 시계 통제는 불필요.
  *
  * 검증 시나리오:
@@ -32,9 +31,7 @@ import org.springframework.test.annotation.DirtiesContext;
  * 4) 같은 (날짜, 시간)이라도 테마B에는 여전히 예약 가능
  */
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class UserReservationStepTest {
+public class UserReservationStepTest extends IntegrationTest {
 
     private static final String FUTURE_DATE = "2050-12-31";
     @Autowired
