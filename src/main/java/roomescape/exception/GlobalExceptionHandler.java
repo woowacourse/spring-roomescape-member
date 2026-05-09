@@ -1,0 +1,31 @@
+package roomescape.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.controller.exception.InvalidRequestException;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(InvalidRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidRequest(InvalidRequestException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNotReadable(HttpMessageNotReadableException e) {
+        Throwable cause = e.getCause();
+        while (cause != null) {
+            if (cause instanceof InvalidRequestException invalid) {
+                return new ErrorResponse(invalid.getMessage());
+            }
+            cause = cause.getCause();
+        }
+        return new ErrorResponse("요청 본문 형식이 올바르지 않습니다");
+    }
+}
