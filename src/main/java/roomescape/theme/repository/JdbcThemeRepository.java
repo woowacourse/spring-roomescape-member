@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -59,8 +60,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, description, thumbnail_url, runtime FROM theme WHERE id = ?";
-        List<Theme> result = jdbcTemplate.query(sql, themeRowMapper, id);
-        return result.stream().findFirst();
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

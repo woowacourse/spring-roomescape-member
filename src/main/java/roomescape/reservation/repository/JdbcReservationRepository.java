@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -93,9 +94,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Optional<Reservation> findById(Long id) {
         String sql = SELECT_RESERVATION_WITH_TIME + "WHERE r.id = ?";
 
-        List<Reservation> result = jdbcTemplate.query(sql, reservationRowMapper, id);
-
-        return result.stream().findFirst();
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -129,5 +133,4 @@ public class JdbcReservationRepository implements ReservationRepository {
             throw new ReservationNotFoundException(id);
         }
     }
-
 }
