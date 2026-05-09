@@ -50,7 +50,7 @@
         const sd = localYmd(start);
         const ed = localYmd(end);
         rangeEl.textContent = `집계 구간(게임 날짜): ${sd} ~ ${ed}`;
-        const url = `/themes/most-reserved-themes?limit=10&startDate=${sd}&endDate=${ed}`;
+        const url = `/themes/most-reserved?limit=10&startDate=${sd}&endDate=${ed}`;
         err.style.display = 'none';
         try {
             const res = await fetch(url);

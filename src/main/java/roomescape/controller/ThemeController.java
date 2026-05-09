@@ -60,7 +60,7 @@ public class ThemeController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/most-reserved-themes")
+    @GetMapping("/most-reserved")
     public ResponseEntity<List<ReservedTheme>> findMostReserved(
             @RequestParam int limit,
             @RequestParam LocalDate startDate,

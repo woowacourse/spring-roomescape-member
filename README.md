@@ -26,7 +26,7 @@
 | `GET` | `/themes` | 테마 목록 조회 |
 | `POST` | `/themes` | 테마 등록 |
 | `DELETE` | `/themes/{id}` | 테마 삭제 |
-| `GET` | `/themes/most-reserved-themes` | 인기 테마 조회 |
+| `GET` | `/themes/most-reserved` | 인기 테마 조회 |
 
 ---
 
