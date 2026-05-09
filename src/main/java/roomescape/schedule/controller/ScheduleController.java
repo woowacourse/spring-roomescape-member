@@ -23,10 +23,10 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ResponseEntity<SchedulesResponse> findAll(
+    public ResponseEntity<SchedulesResponse> findAvailableSchedules(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             @RequestParam Long themeId) {
-        SchedulesResponse responses = scheduleService.findAll(new ScheduleRequest(date, themeId));
+        SchedulesResponse responses = scheduleService.findAvailableSchedules(new ScheduleRequest(date, themeId));
         return ResponseEntity.ok(responses);
     }
 }

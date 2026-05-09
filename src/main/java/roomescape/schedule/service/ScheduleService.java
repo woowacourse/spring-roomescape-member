@@ -27,12 +27,12 @@ public class ScheduleService {
         this.themeService = themeService;
     }
 
-    public SchedulesResponse findAll(ScheduleRequest request) {
+    public SchedulesResponse findAvailableSchedules(ScheduleRequest request) {
         List<Schedule> schedules = scheduleRepository.findAllAvailableByThemeAndDate(request.themeId(), request.date());
         return SchedulesResponse.from(schedules);
     }
 
-    public List<ScheduleResponse> findAllAdmin() {
+    public List<ScheduleResponse> findAll() {
         List<Schedule> schedules = scheduleRepository.findAll();
         return schedules.stream()
                 .map(ScheduleResponse::from)

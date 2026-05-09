@@ -31,7 +31,7 @@ public class AdminScheduleController {
 
     @GetMapping
     public ResponseEntity<List<ScheduleResponse>> findAllSchedules() {
-        List<ScheduleResponse> responses = scheduleService.findAllAdmin();
+        List<ScheduleResponse> responses = scheduleService.findAll();
         return ResponseEntity.ok(responses);
     }
 }
