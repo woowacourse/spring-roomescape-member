@@ -41,26 +41,26 @@ ALTER TABLE reservation
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES
     -- 테마1: 1개
-    ('예약자1', '2026-05-01', 1, 1),
+    ('예약자1', DATEADD('DAY', -1, CURRENT_DATE), 1, 1),
 
     -- 테마2: 2개
-    ('예약자2', '2026-05-01', 1, 2),
-    ('예약자3', '2026-05-01', 2, 2),
+    ('예약자2', DATEADD('DAY', -1, CURRENT_DATE), 1, 2),
+    ('예약자3', DATEADD('DAY', -1, CURRENT_DATE), 2, 2),
 
     -- 테마3: 3개
-    ('예약자4', '2026-05-01', 1, 3),
-    ('예약자5', '2026-05-01', 2, 3),
-    ('예약자6', '2026-05-01', 3, 3),
+    ('예약자4', DATEADD('DAY', -1, CURRENT_DATE), 1, 3),
+    ('예약자5', DATEADD('DAY', -1, CURRENT_DATE), 2, 3),
+    ('예약자6', DATEADD('DAY', -1, CURRENT_DATE), 3, 3),
 
     -- 테마4: 4개
-    ('예약자7', '2026-05-01', 1, 4),
-    ('예약자8', '2026-05-01', 2, 4),
-    ('예약자9', '2026-05-01', 3, 4),
-    ('예약자10', '2026-05-02', 1, 4),
+    ('예약자7', DATEADD('DAY', -1, CURRENT_DATE), 1, 4),
+    ('예약자8', DATEADD('DAY', -1, CURRENT_DATE), 2, 4),
+    ('예약자9', DATEADD('DAY', -1, CURRENT_DATE), 3, 4),
+    ('예약자10', CURRENT_DATE, 1, 4),
 
     -- 테마5: 5개
-    ('예약자11', '2026-05-01', 1, 5),
-    ('예약자12', '2026-05-01', 2, 5),
-    ('예약자13', '2026-05-01', 3, 5),
-    ('예약자14', '2026-05-02', 1, 5),
-    ('예약자15', '2026-05-02', 2, 5);
+    ('예약자11', DATEADD('DAY', -1, CURRENT_DATE), 1, 5),
+    ('예약자12', DATEADD('DAY', -1, CURRENT_DATE), 2, 5),
+    ('예약자13', DATEADD('DAY', -1, CURRENT_DATE), 3, 5),
+    ('예약자14', CURRENT_DATE, 1, 5),
+    ('예약자15', CURRENT_DATE, 2, 5);
