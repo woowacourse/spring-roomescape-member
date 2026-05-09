@@ -3,6 +3,7 @@ package roomescape.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
+import roomescape.common.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.request.ThemeCreateRequest;
 import roomescape.service.dto.response.ThemeResponse;
@@ -35,7 +36,7 @@ public class ThemeService {
         boolean deleted = themeRepository.deleteById(themeId);
 
         if (!deleted) {
-            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+            throw new NotFoundException("존재하지 않는 테마입니다.");
         }
     }
 

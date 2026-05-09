@@ -100,4 +100,13 @@ class ThemeControllerTest {
                 new ThemeResponse(12L, "사라진 열차", "한밤중 흔적 없이 사라진 열차의 비밀을 추적하는 추리 테마", "https://example.com/images/missing-train.jpg")
         );
     }
+
+    @Test
+    @Sql("/clear.sql")
+    void 존재하지_않는_테마를_삭제하면_404를_응답한다() {
+        RestAssured.given().log().all()
+                .when().delete("/themes/999")
+                .then().log().all()
+                .statusCode(404);
+    }
 }

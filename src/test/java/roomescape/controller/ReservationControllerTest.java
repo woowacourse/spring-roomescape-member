@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -107,6 +109,61 @@ class ReservationControllerTest {
         List<ReservationTimesWithStatus> timeStatusesAfterReservation = getReservationTimeStatusResponses();
         assertThat(timeStatusesAfterReservation.size()).isEqualTo(5);
         assertThat(countReservableTimes(timeStatusesAfterReservation)).isEqualTo(4);
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 존재하지_않는_예약_시간으로_예약하면_404를_응답한다() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "브라운",
+                        "date", "2026-05-05",
+                        "timeId", 999,
+                        "themeId", 1
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 존재하지_않는_테마로_예약하면_404를_응답한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "브라운",
+                        "date", "2026-05-05",
+                        "timeId", 1,
+                        "themeId", 999
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 예약자_이름이_비어있으면_400을_응답한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "",
+                        "date", "2026-05-05",
+                        "timeId", 1,
+                        "themeId", 1
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 
     private static List<ReservationTimesWithStatus> getReservationTimeStatusResponses() {
