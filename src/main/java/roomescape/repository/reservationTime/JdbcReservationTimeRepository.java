@@ -14,7 +14,6 @@ import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 
 @Repository
-//@Profile("web")
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
     private static final String TABLE_NAME = "reservation_time";
 

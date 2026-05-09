@@ -16,7 +16,6 @@ import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
 
 @Repository
-//@Profile("web")
 public class JdbcReservationRepository implements ReservationRepository {
     private static final String TABLE_NAME = "reservation";
 
