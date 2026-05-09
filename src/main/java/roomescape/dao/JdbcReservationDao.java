@@ -24,7 +24,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Reservation create(Reservation reservationWithoutId, ReservationTime reservationTime, Theme theme) {
+    public Reservation create(Reservation reservationWithoutId) {
         String sql = "INSERT INTO `reservation`(`name`, `date`, `time_id`, `theme_id`) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -32,8 +32,8 @@ public class JdbcReservationDao implements ReservationDao {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, reservationWithoutId.getName());
             preparedStatement.setDate(2, Date.valueOf(reservationWithoutId.getDate()));
-            preparedStatement.setLong(3, reservationTime.getId());
-            preparedStatement.setLong(4, theme.getId());
+            preparedStatement.setLong(3, reservationWithoutId.getTime().getId());
+            preparedStatement.setLong(4, reservationWithoutId.getTheme().getId());
 
             return preparedStatement;
         }, keyHolder);

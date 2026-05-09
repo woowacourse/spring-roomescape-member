@@ -36,7 +36,7 @@ public class ReservationService {
         }
 
         Reservation reservationWithoutId = requestDto.toEntity(reservationTime, theme);
-        Reservation reservation = reservationDao.create(reservationWithoutId, reservationTime, theme);
+        Reservation reservation = reservationDao.create(reservationWithoutId);
 
         return ReservationResponseDto.from(reservation);
     }
