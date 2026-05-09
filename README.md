@@ -156,7 +156,7 @@
 
 
 - **ReservationDao**
-- [ ] 예약자 이름 정렬 취소(하나밖에 없기 때문에)
+- [x] 예약자 이름 정렬 취소(이미 정렬 완료)
 - [ ] count대신 exist사용
 - [ ] `existByDateAndTimeIAndThemeId` 메서드명 변경
 
