@@ -57,7 +57,11 @@ public class DummyController {
         throw new RuntimeException();
     }
 
-    @GetMapping("/api/admin")
+    @GetMapping("/api/admin/test")
     public void accessCheck() {
+    }
+
+    @GetMapping("/api/client")
+    public void accessClient() {
     }
 }

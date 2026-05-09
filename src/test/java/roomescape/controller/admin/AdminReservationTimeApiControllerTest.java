@@ -43,7 +43,7 @@ class AdminReservationTimeApiControllerTest extends BaseControllerUnitTest {
     @ParameterizedTest(name = "요청 정보가 {0} 일 때, 예외 메세지 \"{1}\"가 발생한다.")
     @MethodSource("roomescape.controller.admin.fixture.AdminReservationTimeApiRequestFixture#registerFailRequestFixture")
     void 시간_등록_요청_시_형식_검증에_실패하면_예외가_발생한다(ReservationTimeCommand body, String exceptionMessage) {
-        RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .body(body)
                 .when().post("/api/admin/times")
                 .then().log().all()
@@ -59,7 +59,7 @@ class AdminReservationTimeApiControllerTest extends BaseControllerUnitTest {
         when(reservationTimeService.register(any(ReservationTimeCommand.class))).thenReturn(result);
 
         // when & then
-        AdminReservationTimeResponse response = RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+        AdminReservationTimeResponse response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .body(body)
                 .when().post("/api/admin/times")
                 .then().log().all()
@@ -73,7 +73,7 @@ class AdminReservationTimeApiControllerTest extends BaseControllerUnitTest {
     @ValueSource(ints = {0, -1})
     void 시간_삭제를_요청하는_식별자가_양수가_아니라면_예외가_발생한다(int timeId) {
         // when & then
-        RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .when().delete("/api/admin/times/" + timeId)
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
@@ -83,7 +83,7 @@ class AdminReservationTimeApiControllerTest extends BaseControllerUnitTest {
     @Test
     void 정상적인_ID로_시간_삭제_요청시_204_응답을_한다() {
         // when & then
-        RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .when().delete("/api/admin/times/1")
                 .then().log().all()
                 .status(HttpStatus.NO_CONTENT);
@@ -98,7 +98,7 @@ class AdminReservationTimeApiControllerTest extends BaseControllerUnitTest {
         List<AdminReservationTimeResponse> expected = result.stream().map(AdminReservationTimeResponse::from).toList();
 
         // when & then
-        List<AdminReservationTimeResponse> response = RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+        List<AdminReservationTimeResponse> response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .when().get("/api/admin/times")
                 .then().log().all()
                 .status(HttpStatus.OK)

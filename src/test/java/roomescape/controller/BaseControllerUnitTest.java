@@ -13,13 +13,6 @@ public abstract class BaseControllerUnitTest {
 
     }
 
-    protected MockMvcRequestSpecification adminSpec() {
-        return new MockMvcRequestSpecBuilder()
-                .setContentType(ContentType.JSON)
-                .addHeader("role", "ADMIN")
-                .build();
-    }
-
     protected MockMvcRequestSpecification defaultSpec() {
         return new MockMvcRequestSpecBuilder()
                 .setContentType(ContentType.JSON)

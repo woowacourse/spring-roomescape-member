@@ -8,7 +8,7 @@ import roomescape.RoomescapeApplication;
 @SpringBootTest(classes = {
         RoomescapeApplication.class,
         BaseIntegrationTest.class,
-})
+}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @ComponentScan(basePackages = "integration")
 public class BaseIntegrationTest {
