@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRequest;
 import roomescape.domain.reservationtime.ReservationTimeResponse;
-import roomescape.exception.ReservationNotFoundException;
+import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;
 
@@ -52,7 +52,7 @@ public class ReservationTimeService {
         int delete = reservationTimeUpdatingDao.delete(id);
 
         if (delete == 0) {
-            throw new ReservationNotFoundException(id);
+            throw new ReservationTimeNotFoundException(id);
         }
     }
 }
