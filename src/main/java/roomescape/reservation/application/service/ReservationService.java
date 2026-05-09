@@ -50,7 +50,6 @@ public class ReservationService {
         return reservationRepository.delete(id);
     }
 
-    // TODO: 이거 도메인에서 검증하는게 맞겠다!
     private void validateReservationDateTime(LocalDate date, LocalTime startAt, LocalDateTime currentDateTime) {
         LocalDateTime triedDateTime = LocalDateTime.of(date, startAt);
 
