@@ -66,7 +66,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
+    public Optional<Reservation> findById(long id) {
         String sql = "SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id, " +
                 "c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail " +
                 "FROM reservation r " +
@@ -89,7 +89,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByThemeAndDate(Long themeId, LocalDate date) {
+    public List<Reservation> findByThemeAndDate(long themeId, LocalDate date) {
         String sql = "SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id, " +
                 "c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail " +
                 "FROM reservation r " +
@@ -101,13 +101,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     @Override
-    public boolean existsByTimeId(Long timeId) {
+    public boolean existsByTimeId(long timeId) {
         String sql = "SELECT EXISTS (SELECT * FROM reservation WHERE time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }

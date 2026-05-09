@@ -10,13 +10,13 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    Optional<Reservation> findById(Long id);
+    Optional<Reservation> findById(long id);
 
     List<Reservation> findByUserName(String name);
 
-    List<Reservation> findByThemeAndDate(Long themeId, LocalDate date);
+    List<Reservation> findByThemeAndDate(long themeId, LocalDate date);
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
-    boolean existsByTimeId(Long timeId);
+    boolean existsByTimeId(long timeId);
 }

@@ -28,7 +28,7 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 테마와_날짜로_예약_목록_조회() {
-        Long themeId = 2L;
+        long themeId = 2L;
         LocalDate date = LocalDate.of(2026, 05, 10);
 
         List<Reservation> reservations = reservationRepository.findByThemeAndDate(themeId, date);
