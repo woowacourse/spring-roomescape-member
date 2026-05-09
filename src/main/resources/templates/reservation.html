@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방탈출 예약</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0d0d0f;
+            --surface: #16161a;
+            --surface-2: #1e1e24;
+            --border: rgba(255,255,255,0.07);
+            --border-hover: rgba(255,255,255,0.15);
+            --accent: #c8a96e;
+            --accent-dim: rgba(200,169,110,0.12);
+            --text-primary: #f0ece4;
+            --text-secondary: #8a8680;
+            --text-muted: #4a4845;
+            --danger: #e05252;
+            --success: #4caf7d;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-primary);
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 300;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        /* 헤더 */
+        header {
+            padding: 2.5rem 3rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .header-title {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--text-primary);
+        }
+
+        .header-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        /* 메인 레이아웃 */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem 6rem;
+        }
+
+        /* 스텝 인디케이터 */
+        .steps {
+            display: flex;
+            gap: 0;
+            margin-bottom: 3rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: var(--bg);
+            padding: 1.25rem 2rem;
+            margin-left: -2rem;
+            margin-right: -2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            right: 14px;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-dot {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+
+        .step.done .step-dot {
+            border-color: var(--success);
+            background: rgba(76,175,125,0.12);
+            color: var(--success);
+        }
+
+        .step-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .step.active .step-label { color: var(--accent); }
+        .step.done .step-label { color: var(--success); }
+
+        /* 섹션 */
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        /* 테마 선택 */
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .theme-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: var(--surface);
+        }
+
+        .theme-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .theme-card.selected {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+
+        .theme-card-img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: contain;
+            display: block;
+            background: var(--surface-2);
+        }
+
+        .theme-card-img-placeholder {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: var(--surface-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .theme-card-body {
+            padding: 0.75rem 1rem;
+        }
+
+        .theme-card-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .theme-card-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* 날짜 선택 */
+        input[type="date"] {
+            appearance: none;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.9rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            max-width: 280px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        input[type="date"]:hover { border-color: var(--border-hover); }
+        input[type="date"]:focus { outline: none; border-color: var(--accent); }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.6);
+            cursor: pointer;
+        }
+
+        /* 시간 슬롯 */
+        .time-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .time-slot {
+            padding: 0.6rem 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: var(--surface);
+            transition: all 0.2s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .time-slot:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .time-slot.selected {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+
+        .time-slot.unavailable {
+            border-color: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .time-slot.unavailable:hover {
+            border-color: var(--border);
+            color: var(--text-muted);
+            background: transparent;
+        }
+
+        /* 플레이스홀더 메시지 */
+        .placeholder-msg {
+            padding: 2rem;
+            text-align: center;
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* 예약 확정 섹션 */
+        .booking-form {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem;
+        }
+
+        .booking-summary {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0;
+        }
+
+        .summary-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .summary-value {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+
+        .summary-value.accent { color: var(--accent); }
+
+        input[type="text"] {
+            width: 100%;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.9rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]::placeholder { color: var(--text-muted); }
+        input[type="text"]:focus { outline: none; border-color: var(--accent); }
+
+        .btn-reserve {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--accent);
+            color: #1a1400;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-reserve:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-reserve:active { transform: translateY(0); }
+        .btn-reserve:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+        /* 로딩 */
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+            padding: 1rem;
+        }
+
+        .loading-dots span {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            animation: dot 1.2s ease-in-out infinite;
+        }
+
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dot {
+            0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+            40% { opacity: 1; transform: scale(1); }
+        }
+
+        /* 구분선 */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 2rem 0;
+        }
+
+        /* 토스트 */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.9rem 1.25rem;
+            font-size: 0.82rem;
+            color: var(--text-primary);
+            transform: translateY(8px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { border-color: var(--success); color: var(--success); }
+        .toast.error { border-color: var(--danger); color: var(--danger); }
+
+        @media (max-width: 600px) {
+            header { padding: 1.5rem; }
+            main { padding: 2rem 1rem 4rem; }
+            .theme-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/" style="display:flex; align-items:baseline; gap:1rem; text-decoration:none;">
+        <span class="header-title">방탈출 예약</span>
+        <span class="header-sub">Escape Room Reservation</span>
+    </a>
+</header>
+
+<main>
+
+    <!-- 스텝 인디케이터 -->
+    <div class="steps" id="step-indicator">
+        <div class="step active" id="step-1">
+            <div class="step-dot">1</div>
+            <span class="step-label">테마</span>
+        </div>
+        <div class="step" id="step-2">
+            <div class="step-dot">2</div>
+            <span class="step-label">날짜</span>
+        </div>
+        <div class="step" id="step-3">
+            <div class="step-dot">3</div>
+            <span class="step-label">시간</span>
+        </div>
+        <div class="step" id="step-4">
+            <div class="step-dot">4</div>
+            <span class="step-label">확정</span>
+        </div>
+    </div>
+
+    <!-- 1. 테마 선택 -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-num">1</div>
+            <span class="section-title">테마 선택</span>
+        </div>
+        <div class="theme-grid" id="theme-grid">
+            <div class="loading-dots">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 2. 날짜 선택 -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-num">2</div>
+            <span class="section-title">날짜 선택</span>
+        </div>
+        <input type="date" id="date-select">
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 3. 예약 가능 시간 -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-num">3</div>
+            <span class="section-title">예약 가능 시간</span>
+        </div>
+        <div id="time-container">
+            <div class="placeholder-msg">테마와 날짜를 선택하면 예약 가능한 시간이 표시됩니다</div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 4. 예약 확정 -->
+    <div class="section" id="booking-section" style="display: none;">
+        <div class="section-header">
+            <div class="section-num">4</div>
+            <span class="section-title">예약 확정</span>
+        </div>
+        <div class="booking-form">
+            <div class="booking-summary" id="booking-summary"></div>
+            <input type="text" id="user-name" placeholder="예약자 성함을 입력하세요">
+            <button class="btn-reserve" onclick="makeReservation()" id="btn-reserve">예약하기</button>
+        </div>
+    </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    let allThemes = [];
+    let selectedThemeId = null;
+    let selectedTimeId = null;
+    let selectedTimeLabel = null;
+
+    const themeGrid = document.getElementById('theme-grid');
+    const dateSelect = document.getElementById('date-select');
+    const timeContainer = document.getElementById('time-container');
+    const bookingSection = document.getElementById('booking-section');
+
+    // 오늘 날짜를 min으로 설정
+    const today = new Date().toISOString().split('T')[0];
+    dateSelect.min = today;
+
+    // 페이지 로드 시 테마 목록 불러오기
+    window.onload = function () {
+        fetch('/themes')
+            .then(res => res.json())
+            .then(themes => {
+                allThemes = themes;
+                renderThemes(themes);
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const themeIdFromUrl = urlParams.get('themeId');
+                if (themeIdFromUrl) {
+                    selectTheme(parseInt(themeIdFromUrl));
+                }
+            })
+            .catch(() => {
+                // 로컬 테스트용 더미 데이터
+                const dummy = [
+                    { id: 1, name: '저주받은 저택', description: '오래된 저택에 숨겨진 비밀을 밝혀라', thumbnail: '' },
+                    { id: 2, name: '우주 정거장', description: '고장난 우주선에서 지구로 귀환하라', thumbnail: '' },
+                    { id: 3, name: '마법사의 서재', description: '잃어버린 마법서를 찾아라', thumbnail: '' },
+                    { id: 4, name: '탐정 사무소', description: '24시간 안에 범인을 잡아라', thumbnail: '' },
+                ];
+                allThemes = dummy;
+                renderThemes(dummy);
+            });
+    };
+
+    function renderThemes(themes) {
+        themeGrid.innerHTML = '';
+        const emojis = ['👻', '🚀', '🧙', '🔍', '🏴‍☠️', '🎭'];
+        themes.forEach((t, i) => {
+            const card = document.createElement('div');
+            card.className = 'theme-card';
+            card.dataset.id = t.id;
+            card.innerHTML = `
+                ${t.thumbnail
+                ? `<img class="theme-card-img" src="${t.thumbnail}" alt="${t.name}" onerror="this.parentElement.querySelector('.theme-card-img-placeholder').style.display='flex'; this.style.display='none';">`
+                : ''}
+                <div class="theme-card-img-placeholder" style="display:${t.thumbnail ? 'none' : 'flex'}">${emojis[i % emojis.length]}</div>
+                <div class="theme-card-body">
+                    <div class="theme-card-name">${t.name}</div>
+                    <div class="theme-card-desc">${t.description || ''}</div>
+                </div>
+            `;
+            card.onclick = () => selectTheme(t.id);
+            themeGrid.appendChild(card);
+        });
+    }
+
+    function selectTheme(themeId) {
+        selectedThemeId = themeId;
+        document.querySelectorAll('.theme-card').forEach(c => {
+            c.classList.toggle('selected', parseInt(c.dataset.id) === themeId);
+        });
+        updateStepIndicator();
+        fetchAvailableTimes();
+    }
+
+    dateSelect.onchange = function () {
+        updateStepIndicator();
+        fetchAvailableTimes();
+    };
+
+    function fetchAvailableTimes() {
+        const date = dateSelect.value;
+        if (!selectedThemeId || !date) return;
+
+        timeContainer.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+        selectedTimeId = null;
+        bookingSection.style.display = 'none';
+        updateStepIndicator();
+
+        fetch(`/themes/${selectedThemeId}/times?date=${date}`)
+            .then(res => res.json())
+            .then(times => renderTimes(times))
+            .catch(() => {
+                // 더미 데이터
+                renderTimes([
+                    { id: 1, startAt: '10:00' },
+                    { id: 2, startAt: '12:00' },
+                    { id: 3, startAt: '14:00' },
+                    { id: 4, startAt: '16:00' },
+                    { id: 5, startAt: '18:00' },
+                ]);
+            });
+    }
+
+    function renderTimes(times) {
+        timeContainer.innerHTML = '';
+        if (times.length === 0) {
+            timeContainer.innerHTML = '<div class="placeholder-msg">선택하신 날짜에 예약 가능한 시간이 없습니다</div>';
+            return;
+        }
+        const grid = document.createElement('div');
+        grid.className = 'time-grid';
+        times.forEach(item => {
+            // AvailableTimeDto: { time: { id, startAt }, available }
+            // flat 구조: { id, startAt } 둘 다 대응
+            const id = item.time ? item.time.id : item.id;
+            const rawStartAt = item.time ? item.time.startAt : item.startAt;
+            const startAt = rawStartAt ? rawStartAt.slice(0, 5) : rawStartAt;
+            const available = item.available !== undefined ? item.available : true;
+
+            const slot = document.createElement('div');
+            slot.className = 'time-slot' + (available ? '' : ' unavailable');
+            slot.textContent = startAt;
+
+            if (available) {
+                slot.onclick = () => selectTime(id, startAt, slot);
+            } else {
+                slot.title = '이미 예약된 시간입니다';
+            }
+            grid.appendChild(slot);
+        });
+        timeContainer.appendChild(grid);
+        updateStepIndicator();
+    }
+
+    function selectTime(timeId, timeLabel, element) {
+        selectedTimeId = timeId;
+        selectedTimeLabel = timeLabel;
+        document.querySelectorAll('.time-slot').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+        showBookingSection();
+        updateStepIndicator();
+    }
+
+    function showBookingSection() {
+        const theme = allThemes.find(t => t.id == selectedThemeId);
+        const summary = document.getElementById('booking-summary');
+        summary.innerHTML = `
+            <div class="summary-row">
+                <span class="summary-label">테마</span>
+                <span class="summary-value">${theme ? theme.name : ''}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">날짜</span>
+                <span class="summary-value">${dateSelect.value}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">시간</span>
+                <span class="summary-value accent">${selectedTimeLabel}</span>
+            </div>
+        `;
+        bookingSection.style.display = 'block';
+        bookingSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function makeReservation() {
+        const name = document.getElementById('user-name').value.trim();
+        if (!name) {
+            showToast('성함을 입력해주세요', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('btn-reserve');
+        btn.disabled = true;
+        btn.textContent = '예약 중...';
+
+        const body = {
+            themeId: parseInt(selectedThemeId),
+            date: dateSelect.value,
+            timeId: selectedTimeId,
+            name: name
+        };
+
+        fetch('/reservations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        })
+            .then(res => {
+                if (res.ok) {
+                    showToast('예약이 완료되었습니다', 'success');
+                    setTimeout(() => window.location.href = '/', 1500);
+                } else {
+                    throw new Error();
+                }
+            })
+            .catch(() => {
+                showToast('예약 중 오류가 발생했습니다', 'error');
+                btn.disabled = false;
+                btn.textContent = '예약하기';
+            });
+    }
+
+    function updateStepIndicator() {
+        const steps = ['step-1', 'step-2', 'step-3', 'step-4'];
+        const done = [
+            !!selectedThemeId,
+            !!dateSelect.value,
+            !!selectedTimeId,
+            false
+        ];
+
+        let activeIndex = 0;
+        for (let i = 0; i < done.length; i++) {
+            if (done[i]) activeIndex = i + 1;
+        }
+
+        steps.forEach((id, i) => {
+            const el = document.getElementById(id);
+            el.classList.remove('active', 'done');
+            if (i < activeIndex) el.classList.add('done');
+            else if (i === activeIndex) el.classList.add('active');
+        });
+    }
+
+    function showToast(msg, type = '') {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = `toast ${type} show`;
+        setTimeout(() => toast.className = 'toast', 2800);
+    }
+</script>
+</body>
+</html>
