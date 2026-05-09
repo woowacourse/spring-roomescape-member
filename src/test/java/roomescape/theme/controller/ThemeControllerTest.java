@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import roomescape.availability.service.AvailabilityService;
 import roomescape.time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
@@ -30,6 +31,9 @@ class ThemeControllerTest {
 
     @MockitoBean
     private ThemeService themeService;
+
+    @MockitoBean
+    private AvailabilityService availabilityService;
 
     @Test
     void getAll() throws Exception {
@@ -92,7 +96,7 @@ class ThemeControllerTest {
                 new ReservationTime(1L, "10:00", "12:00"),
                 new ReservationTime(2L, "12:00", "14:00")
         );
-        Mockito.when(themeService.getAvailableTimes(themeId, date)).thenReturn(times);
+        Mockito.when(availabilityService.getAvailableTimes(themeId, date)).thenReturn(times);
 
         mockMvc.perform(get("/themes/{themeId}/times", themeId)
                         .queryParam("date", "2026-05-06")

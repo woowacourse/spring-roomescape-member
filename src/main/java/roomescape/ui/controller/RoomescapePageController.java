@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import roomescape.availability.service.AvailabilityService;
 import roomescape.holiday.controller.dto.HolidayResponseDto;
 import roomescape.holiday.exception.HolidayNotFoundException;
 import roomescape.holiday.service.HolidayService;
@@ -40,17 +41,20 @@ public class RoomescapePageController {
     private final ThemeService themeService;
     private final TimeService timeService;
     private final HolidayService holidayService;
+    private final AvailabilityService availabilityService;
 
     public RoomescapePageController(
             ReservationService reservationService,
             ThemeService themeService,
             TimeService timeService,
-            HolidayService holidayService
+            HolidayService holidayService,
+            AvailabilityService availabilityService
     ) {
         this.reservationService = reservationService;
         this.themeService = themeService;
         this.timeService = timeService;
         this.holidayService = holidayService;
+        this.availabilityService = availabilityService;
     }
 
     @GetMapping({"/", "/dashboard"})
@@ -209,7 +213,7 @@ public class RoomescapePageController {
             return List.of();
         }
         try {
-            return themeService.getAvailableTimes(availableThemeId, availableDate)
+            return availabilityService.getAvailableTimes(availableThemeId, availableDate)
                     .stream()
                     .map(ThemeAvailableTimeResponseDto::from)
                     .toList();

@@ -2,47 +2,31 @@ package roomescape.theme.service;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import roomescape.holiday.repository.HolidayRepository;
-import roomescape.time.domain.ReservationTime;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.ThemeBestServiceDto;
 import roomescape.theme.service.dto.ThemeSaveServiceDto;
-import roomescape.time.service.TimeService;
 
 @Service
 public class ThemeServiceImpl implements ThemeService {
 
     private final ThemeRepository themeRepository;
-    private final TimeService timeService;
-    private final HolidayRepository holidayRepository;
-    private final ReservationRepository reservationRepository;
     private final Clock clock;
     private final int dayCount;
     private final int rankCount;
 
     public ThemeServiceImpl(
             ThemeRepository themeRepository,
-            TimeService timeService,
-            HolidayRepository holidayRepository,
-            ReservationRepository reservationRepository,
             Clock clock,
             @Value("${theme.dayCount:7}") int dayCount,
             @Value("${theme.rankCount:10}") int rankCount
     ) {
         this.themeRepository = themeRepository;
-        this.timeService = timeService;
-        this.holidayRepository = holidayRepository;
-        this.reservationRepository = reservationRepository;
         this.clock = clock;
         this.dayCount = dayCount;
         this.rankCount = rankCount;
@@ -67,31 +51,6 @@ public class ThemeServiceImpl implements ThemeService {
     public void deleteById(Long id) {
         if(!themeRepository.deleteById(id)) {
             throw new ThemeNotFoundException(id);
-        }
-    }
-
-    @Override
-    public List<ReservationTime> getAvailableTimes(Long themeId, LocalDate date) {
-        validateThemeExists(themeId);
-
-        if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
-        }
-
-        if (holidayRepository.existsByDate(date)) {
-            return List.of();
-        }
-
-        Set<Long> reservedTimeIds = new HashSet<>(reservationRepository.findTimeIdsByThemeIdAndDate(themeId, date));
-        return timeService.findAll()
-                .stream()
-                .filter(time -> !reservedTimeIds.contains(time.getId()))
-                .collect(Collectors.toList());
-    }
-
-    private void validateThemeExists(Long themeId) {
-        if (themeId == null || !themeRepository.existsById(themeId)) {
-            throw new ThemeNotFoundException(themeId);
         }
     }
 

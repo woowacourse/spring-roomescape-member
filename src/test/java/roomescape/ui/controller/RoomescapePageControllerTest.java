@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import roomescape.availability.service.AvailabilityService;
 import roomescape.holiday.domain.Holiday;
 import roomescape.holiday.exception.HolidayNotFoundException;
 import roomescape.holiday.service.HolidayService;
@@ -49,6 +50,9 @@ class RoomescapePageControllerTest {
     @MockitoBean
     private HolidayService holidayService;
 
+    @MockitoBean
+    private AvailabilityService availabilityService;
+
     private void stubDashboardData() {
         Mockito.when(reservationService.getAll()).thenReturn(List.of(
                 new Reservation("브라운", LocalDate.of(2026, 5, 6), new ReservationTime(1L, "10:00", "11:00"), 1L)
@@ -67,7 +71,7 @@ class RoomescapePageControllerTest {
         Mockito.when(holidayService.getAll()).thenReturn(List.of(
                 new Holiday(1L, LocalDate.of(2026, 5, 7))
         ));
-        Mockito.when(themeService.getAvailableTimes(1L, LocalDate.of(2026, 5, 6))).thenReturn(List.of(
+        Mockito.when(availabilityService.getAvailableTimes(1L, LocalDate.of(2026, 5, 6))).thenReturn(List.of(
                 new ReservationTime(1L, "10:00", "11:00")
         ));
     }

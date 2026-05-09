@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.availability.service.AvailabilityService;
 import roomescape.theme.controller.dto.ThemeAvailableTimeResponseDto;
 import roomescape.theme.controller.dto.ThemeResponseDto;
 import roomescape.theme.controller.dto.ThemeSaveRequestDto;
@@ -21,9 +22,11 @@ import roomescape.theme.service.ThemeService;
 @RestController
 public class ThemeController {
     private final ThemeService themeService;
+    private final AvailabilityService availabilityService;
     
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(ThemeService themeService, AvailabilityService availabilityService) {
         this.themeService = themeService;
+        this.availabilityService = availabilityService;
     }
     
     @GetMapping("/themes")
@@ -47,7 +50,7 @@ public class ThemeController {
             @PathVariable Long themeId,
             @RequestParam LocalDate date
     ) {
-        List<ThemeAvailableTimeResponseDto> body = themeService.getAvailableTimes(themeId, date).stream()
+        List<ThemeAvailableTimeResponseDto> body = availabilityService.getAvailableTimes(themeId, date).stream()
                 .map(ThemeAvailableTimeResponseDto::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(body);
