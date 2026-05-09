@@ -8,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -20,10 +21,14 @@ public class JdbcThemeRepository implements ThemeRepository {
     // TODO: 요구사항에 따라 theme의 runtime은 고정한다.
     private static final Long RUNTIME = 1L;
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public JdbcThemeRepository(JdbcTemplate jdbcTemplate, DataSource source) {
+    public JdbcThemeRepository(JdbcTemplate jdbcTemplate,
+                               NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                               DataSource source) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(source)
                 .withTableName("THEME")
                 .usingGeneratedKeyColumns("id");
@@ -52,9 +57,11 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT id, name, description, thumbnail_url, runtime FROM theme WHERE id = ?";
+        String sql = "SELECT id, name, description, thumbnail_url, runtime FROM theme WHERE id = :id";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
         try {
-            Theme theme = jdbcTemplate.queryForObject(sql, THEME_ROW_MAPPER, id);
+            Theme theme = namedParameterJdbcTemplate.queryForObject(sql, params, THEME_ROW_MAPPER);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -79,22 +86,27 @@ public class JdbcThemeRepository implements ThemeRepository {
                 FROM theme t
                 LEFT JOIN reservation r
                     ON t.id = r.theme_id
-                WHERE r.date >= DATEADD('DAY', -?, CURRENT_DATE)
+                WHERE r.date >= DATEADD('DAY', -:days, CURRENT_DATE)
                 GROUP BY
                     t.id
                 HAVING COUNT(r.id) > 0
                 ORDER BY COUNT(r.id) DESC
-                LIMIT ?
+                LIMIT :limit
                 """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("days", days)
+                .addValue("limit", limit);
 
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, days, limit);
+        return namedParameterJdbcTemplate.query(sql, params, THEME_ROW_MAPPER);
     }
 
     @Override
     public void deleteById(Long id) {
-        String sql = "DELETE FROM theme WHERE id = ?";
+        String sql = "DELETE FROM theme WHERE id = :id";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
 
-        int affectedRows = jdbcTemplate.update(sql, id);
+        int affectedRows = namedParameterJdbcTemplate.update(sql, params);
         if (affectedRows == 0) {
             throw new ThemeNotFoundException(id);
         }
