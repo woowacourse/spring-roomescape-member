@@ -173,6 +173,49 @@
 <script>
     let selectedTimeId = null;
 
+    function extractTimeList(payload) {
+        if (Array.isArray(payload)) return payload;
+        if (Array.isArray(payload?.times)) return payload.times;
+        if (Array.isArray(payload?.availableTimes)) return payload.availableTimes;
+        if (Array.isArray(payload?.data)) return payload.data;
+        return null;
+    }
+
+    function getTimeId(time) {
+        return time.id ?? time.timeId;
+    }
+
+    function getTimeLabel(time) {
+        return time.startAt ?? time.start_at ?? time.time ?? time.startTime ?? '';
+    }
+
+    async function fetchAvailableTimes(themeId, date) {
+        const urls = [
+            `/times?${new URLSearchParams({ themeId, date }).toString()}`,
+            `/times/${themeId}?${new URLSearchParams({ date }).toString()}`,
+            `/themes/${themeId}/times?${new URLSearchParams({ date }).toString()}`
+        ];
+
+        for (const url of urls) {
+            try {
+                const res = await fetch(url);
+                if (!res.ok) {
+                    continue;
+                }
+
+                const payload = await res.json();
+                const times = extractTimeList(payload);
+                if (times) {
+                    return times;
+                }
+            } catch (e) {
+                // try the next known API shape
+            }
+        }
+
+        throw new Error('failed to load available times');
+    }
+
     function showSection(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -262,8 +305,8 @@
         }
 
         try {
-            const res = await fetch(`/times/${themeId}?date=${date}`);
-            const times = await res.json();
+            const times = await fetchAvailableTimes(themeId, date);
+
             if (times.length === 0) {
                 container.innerHTML = '<p class="empty">예약 가능한 시간이 없습니다</p>';
                 return;
@@ -273,8 +316,8 @@
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'time-slot';
-                btn.textContent = time.startAt;
-                btn.onclick = () => selectTime(time.id, btn);
+                btn.textContent = getTimeLabel(time);
+                btn.onclick = () => selectTime(getTimeId(time), btn);
                 container.appendChild(btn);
             });
         } catch (e) {
