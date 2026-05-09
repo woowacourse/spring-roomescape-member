@@ -39,7 +39,7 @@ public class ThemeService {
         Theme theme = new Theme(name, description, thumbnail);
         Long id = themeRepository.insert(theme);
         return themeRepository.findBy(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마입니다."));
     }
 
     @Transactional

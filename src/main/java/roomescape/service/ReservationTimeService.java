@@ -30,7 +30,7 @@ public class ReservationTimeService {
     public ReservationTime create(LocalTime startAt) {
         Long id = reservationTimeRepository.insert(new ReservationTime(startAt));
         return reservationTimeRepository.findBy(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간입니다."));
     }
 
     @Transactional

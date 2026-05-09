@@ -39,7 +39,7 @@ public class ReservationService {
         Reservation reservation = new Reservation(name, date, time, theme);
         Long id = reservationRepository.insert(reservation);
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 ID입니다."));
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 ID입니다."));
     }
 
     private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
@@ -58,11 +58,11 @@ public class ReservationService {
 
     private ReservationTime findReservationTime(Long timeId) {
         return reservationTimeRepository.findBy(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간입니다."));
     }
 
     private Theme findTheme(Long themeId) {
         return themeRepository.findBy(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마입니다."));
     }
 }
