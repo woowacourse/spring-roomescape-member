@@ -60,6 +60,24 @@
 | **Response** | 없음 |
 | **StatusCode** | `204 No Content` |
 
+### 5. 관리자용 스케줄 생성
+| 항목 | 상세 내용 |
+| :--- | :--- |
+| **URL** | `/admin/schedules` |
+| **HTTP Method** | `POST` |
+| **Request (Body)** | `{ "themeId": 1, "date": "2026-05-10", "time": "10:00" }` |
+| **Response** | `{ "id": 1, "themeName": "테마명", "startAt": "2026-05-10T10:00:00", "endAt": "2026-05-10T12:00:00" }` |
+| **StatusCode** | `201 Created` |
+
+### 6. 관리자용 전체 스케줄 조회
+| 항목 | 상세 내용 |
+| :--- | :--- |
+| **URL** | `/admin/schedules` |
+| **HTTP Method** | `GET` |
+| **Request** | 없음 |
+| **Response** | `[ { "id": 1, "themeName": "테마명", "startAt": "...", "endAt": "..." }, ... ]` |
+| **StatusCode** | `200 OK` |
+
 ## 사용자 API 명세서
 
 ### 1. 테마 목록 조회
@@ -84,13 +102,13 @@
 
 ### 3. 예약 생성
 
-| 항목 | 상세 내용                                                    |
-| :--- |:---------------------------------------------------------|
-| **URL** | `/reservations`                                          |
-| **HTTP Method** | `POST`                                                   |
-| **Request (Body)** | `{ "date":"날짜", "time":"시간", "themeId":1, "name":"이름" }` |
-| **Response** | `{ "id": 101 }`                                          |
-| **StatusCode**  | `201 Created`                                            |
+| 항목 | 상세 내용                            |
+| :--- |:---------------------------------|
+| **URL** | `/reservations`                  |
+| **HTTP Method** | `POST`                           |
+| **Request (Body)** | `{ "schedule": 1, "name":"이름" }` |
+| **Response** | `{ "id": 101 }`                  |
+| **StatusCode**  | `201 Created`                    |
 
 ### 4. 인기 테마 통계 조회
 
