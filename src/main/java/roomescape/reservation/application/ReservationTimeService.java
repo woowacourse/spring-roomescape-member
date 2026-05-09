@@ -40,6 +40,12 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(Long id) {
+        // TODO: 사이클2 요구사항에서 검증로직 추가 예정
+        /**
+         * 1. reservation time id 존재 유무 검증
+         * 2. 예약에서 참조되어 있는 경우 검증
+         * 3. 스케줄에서 참조되어 있는 경우 검증
+         */
         reservationTimeRepository.deleteById(id);
     }
 
