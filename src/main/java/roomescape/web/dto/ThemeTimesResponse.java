@@ -12,4 +12,9 @@ public record ThemeTimesResponse(
         return new ThemeTimesResponse(timeSlotProjection.id(), timeSlotProjection.startAt(),
                 timeSlotProjection.isReservable());
     }
+
+    public static ThemeTimesResponse of(TimeSlotProjection timeSlotProjection, boolean isReservable) {
+        return new ThemeTimesResponse(timeSlotProjection.id(), timeSlotProjection.startAt(),
+                isReservable);
+    }
 }
