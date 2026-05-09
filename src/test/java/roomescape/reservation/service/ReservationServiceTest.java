@@ -70,10 +70,10 @@ class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest(2L, "user1");
 
         // when
-        ReservationIdResponse response = reservationService.create(request);
+        Long createdId = reservationService.create(request);
 
         // then
-        assertThat(response.getId()).isNotNull();
+        assertThat(createdId).isNotNull();
         assertThat(reservationService.findAll().getReservationsResponse()).hasSize(2);
     }
 

@@ -29,7 +29,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationIdResponse create(ReservationRequest request) {
+    public Long create(ReservationRequest request) {
         User user = userService.findOrCreateByName(request.name());
         Schedule schedule = scheduleService.findById(request.scheduleId()); // ScheduleService를 통해 스케줄 조회
 
@@ -38,9 +38,7 @@ public class ReservationService {
         }
 
         Reservation reservation = new Reservation(user, schedule);
-        Long reservationId = reservationRepository.create(reservation);
-
-        return ReservationIdResponse.from(new Reservation(reservationId, user, schedule));
+        return reservationRepository.create(reservation);
     }
 
 
