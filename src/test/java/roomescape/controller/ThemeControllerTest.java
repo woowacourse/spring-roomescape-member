@@ -26,6 +26,7 @@ import roomescape.dto.ResourceIdResponseDto;
 import roomescape.dto.theme.PopularThemesResponseDto;
 import roomescape.dto.theme.ThemeRequestDto;
 import roomescape.dto.theme.ThemeResponseDto;
+import roomescape.dto.theme.ThemesResponseDto;
 import roomescape.service.ThemeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -49,9 +50,9 @@ class ThemeControllerTest {
     void 모든_테마를_조회한다() {
         // given
         List<Theme> themes = List.of(THEME.withId(1L), THEME.withId(2L), THEME.withId(3L));
-        List<ThemeResponseDto> dtos = themes.stream()
+        ThemesResponseDto expected = new ThemesResponseDto(themes.stream()
             .map(ThemeResponseDto::from)
-            .toList();
+            .toList());
 
         when(themeService.getThemes())
             .thenReturn(themes);
@@ -66,10 +67,9 @@ class ThemeControllerTest {
             .then()
             .statusCode(HttpStatus.OK.value());
 
-        List<ThemeResponseDto> responseDtos = response.as(new TypeRef<>() {
-        });
-        assertThat(responseDtos).hasSize(3);
-        assertThat(responseDtos).containsExactlyElementsOf(dtos);
+        ThemesResponseDto responseDto = response.as(ThemesResponseDto.class);
+        assertThat(responseDto.themes()).hasSize(3);
+        assertThat(responseDto).isEqualTo(expected);
     }
 
     @Test

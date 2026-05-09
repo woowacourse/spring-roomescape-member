@@ -85,6 +85,8 @@ class ReservationTimeControllerTest {
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
+    // TODO: 시간 전체 조회 테스트 추가
+
     @Test
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
         // given

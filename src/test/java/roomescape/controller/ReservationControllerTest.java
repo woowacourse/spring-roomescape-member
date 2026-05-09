@@ -13,11 +13,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.vo.ReservationDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.dto.reservation.ReservationsResponseDto;
 import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
@@ -89,9 +89,9 @@ class ReservationControllerTest {
     void 모든_예약을_조회한다() {
         // given
         List<Reservation> reservations = List.of(RESERVATION.withId(1L), RESERVATION.withId(2L), RESERVATION.withId(3L));
-        List<ReservationResponseDto> dtos = reservations.stream()
+        ReservationsResponseDto expected = new ReservationsResponseDto(reservations.stream()
                 .map(ReservationResponseDto::from)
-                .toList();
+                .toList());
 
         when(reservationService.getReservations())
                 .thenReturn(reservations);
@@ -106,10 +106,9 @@ class ReservationControllerTest {
                 .then()
                 .statusCode(HttpStatus.OK.value());
 
-        List<ReservationResponseDto> responseDtos = response.as(new TypeRef<>() {
-        });
-        assertThat(responseDtos).hasSize(3);
-        assertThat(responseDtos).containsExactlyElementsOf(dtos);
+        ReservationsResponseDto responseDto = response.as(ReservationsResponseDto.class);
+        assertThat(responseDto.reservations()).hasSize(3);
+        assertThat(responseDto).isEqualTo(expected);
     }
 
     private ReservationRequestDto requestDtoFrom(Reservation reservation) {
