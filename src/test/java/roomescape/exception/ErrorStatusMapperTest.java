@@ -19,6 +19,7 @@ class ErrorStatusMapperTest {
         assertThat(errorStatusMapper.map(ErrorCode.INVALID_RESERVATION_TIME)).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(errorStatusMapper.map(ErrorCode.INVALID_RESERVATION_TIME_ID)).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(errorStatusMapper.map(ErrorCode.RESERVATION_ALREADY_HAS_ID)).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(errorStatusMapper.map(ErrorCode.RESERVATION_ALREADY_EXISTS)).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(errorStatusMapper.map(ErrorCode.RESERVATION_TIME_ALREADY_HAS_ID)).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(errorStatusMapper.map(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS)).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(errorStatusMapper.map(ErrorCode.INVALID_THEME_ID)).isEqualTo(HttpStatus.BAD_REQUEST);

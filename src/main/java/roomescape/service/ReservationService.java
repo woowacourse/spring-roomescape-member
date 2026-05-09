@@ -35,7 +35,19 @@ public class ReservationService {
                 .orElseThrow(() -> new DomainException(ErrorCode.THEME_NOT_FOUND));
 
         Reservation reservation = new Reservation(name, date, time, theme);
+        validateNotDuplicated(reservation);
+
         return reservationRepository.save(reservation);
+    }
+
+    private void validateNotDuplicated(Reservation reservation) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId()
+        )) {
+            throw new DomainException(ErrorCode.RESERVATION_ALREADY_EXISTS);
+        }
     }
 
     @Transactional
