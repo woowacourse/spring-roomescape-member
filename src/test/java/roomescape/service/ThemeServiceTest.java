@@ -11,6 +11,7 @@ import roomescape.dao.row.ReservationRow;
 import roomescape.dao.row.ThemeRow;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequestDto;
+import roomescape.dto.response.ThemeResponseDto;
 import roomescape.service.fake.FakeReservationDao;
 import roomescape.service.fake.FakeThemeDao;
 
@@ -32,8 +33,8 @@ public class ThemeServiceTest {
         reservationDao = new FakeReservationDao();
         themeService = new ThemeService(themeDao, reservationDao);
 
-        requestDto1 = new ThemeRequestDto("테마1", "url", "설명길이제한때문에");
-        requestDto2 = new ThemeRequestDto("테마2", "url", "설명길이제한때문에");
+        requestDto1 = new ThemeRequestDto("테마1", "https://test1.com", "설명길이제한때문에");
+        requestDto2 = new ThemeRequestDto("테마2", "https://test2.com", "설명길이제한때문에");
     }
 
     @Test
@@ -42,11 +43,6 @@ public class ThemeServiceTest {
         assertThatThrownBy(() -> themeService.create(requestDto1))
                 .isInstanceOf(ConflictException.class);
     }
-
-    private Theme insertHandler(ThemeRequestDto requestDto1) {
-        return themeService.create(requestDto1);
-    }
-
 
     @Test
     void 조회하려는_id가_존재하지_않으면_예외_처리한다() {
@@ -69,13 +65,21 @@ public class ThemeServiceTest {
 
         @Test
         void 예약_id가_존재하면_예외를_반환한다() {
-            Theme savedTheme = themeService.create(requestDto1);
-            reservationDao.create(new ReservationRow("달수", LocalDate.now(), null, ThemeRow.from(savedTheme)));
-            Long themeId = savedTheme.getId();
+            ThemeResponseDto savedTheme = themeService.create(requestDto1);
+            reservationDao.create(new ReservationRow(
+                    "달수",
+                    LocalDate.now(),
+                    null,
+                    new ThemeRow(savedTheme.id(), savedTheme.name(), savedTheme.thumbnailUrl(), savedTheme.description())));
+
+            Long themeId = savedTheme.id();
 
             assertThatThrownBy(() -> themeService.delete(themeId))
                     .isInstanceOf(ConflictException.class);
         }
     }
 
+    private ThemeResponseDto insertHandler(ThemeRequestDto requestDto1) {
+        return themeService.create(requestDto1);
+    }
 }

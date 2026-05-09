@@ -9,9 +9,12 @@ import roomescape.dao.ThemeDao;
 import roomescape.dao.row.AvailableTimeRow;
 import roomescape.dao.row.ThemeRow;
 import roomescape.domain.Theme;
+import roomescape.domain.vo.Description;
 import roomescape.domain.vo.Name;
+import roomescape.domain.vo.ThumbnailUrl;
 import roomescape.dto.request.PopularThemeRequestDto;
 import roomescape.dto.request.ThemeRequestDto;
+import roomescape.dto.response.ThemeResponseDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,49 +30,55 @@ public class ThemeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<Theme> findAll() {
+    public List<ThemeResponseDto> findAll() {
         return themeDao.findAll().stream()
-                .map(ThemeRow::toDomain)
+                .map(ThemeResponseDto::from)
                 .toList();
     }
 
-
-    public Theme findById(Long id) {
+    public ThemeResponseDto findById(Long id) {
         return themeDao.findById(id)
-                .map(ThemeRow::toDomain)
+                .map(ThemeResponseDto::from)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
     }
 
     @Transactional
-    public Theme create(ThemeRequestDto themeRequest) {
+    public ThemeResponseDto create(ThemeRequestDto themeRequest) {
         Name name = new Name(themeRequest.name());
-        if (themeDao.existsByName(name.getValue())) {
+
+        if (themeDao.existsByName(name.value())) {
             throw new ConflictException("이미 존재하는 테마 이름입니다.");
         }
 
-        Theme theme = new Theme(name, themeRequest.thumbnailUrl(), themeRequest.description());
-        return themeDao.create(ThemeRow.from(theme)).toDomain();
+        Theme theme = Theme.create(
+                name,
+                new ThumbnailUrl(themeRequest.thumbnailUrl()),
+                new Description(themeRequest.description()));
+
+        ThemeRow saved = themeDao.create(ThemeRow.from(theme));
+        return ThemeResponseDto.from(saved);
     }
 
     @Transactional
     public void delete(Long id) {
-        Theme theme = themeDao.findById(id)
-                .map(ThemeRow::toDomain)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
-        if (reservationDao.existsByThemeId(theme.getId())) {
+        if (themeDao.findById(id).isEmpty()) {
+            throw new NotFoundException("존재하지 않는 테마입니다.");
+        }
+
+        if (reservationDao.existsByThemeId(id)) {
             throw new ConflictException("예약이 존재하여 테마를 삭제할 수 없습니다.");
         }
 
-        themeDao.delete(theme.getId());
+        themeDao.delete(id);
     }
 
     public List<AvailableTimeRow> findAvailableTimesById(Long themeId, LocalDate localDate) {
         return themeDao.findAvailableTimesById(themeId, localDate);
     }
 
-    public List<Theme> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
+    public List<ThemeResponseDto> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
         return themeDao.findPopulars(popularThemeRequestDto).stream()
-                .map(ThemeRow::toDomain)
+                .map(ThemeResponseDto::from)
                 .toList();
     }
 }

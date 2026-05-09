@@ -1,24 +1,33 @@
 package roomescape.domain;
 
+import roomescape.domain.vo.Description;
 import roomescape.domain.vo.Name;
+import roomescape.domain.vo.ThumbnailUrl;
 
 import java.util.Objects;
 
 public class Theme {
     private final Long id;
     private final Name name;
-    private final String thumbnailUrl;
-    private final String description;
+    private final ThumbnailUrl thumbnailUrl;
+    private final Description description;
 
-    public Theme(Long id, Name name, String thumbnailUrl, String description) {
+    public Theme(Long id, Name name, ThumbnailUrl thumbnailUrl, Description description) {
+        validateNotNull(name, thumbnailUrl, description);
         this.id = id;
         this.name = name;
         this.thumbnailUrl = thumbnailUrl;
         this.description = description;
     }
 
-    public Theme(Name name, String thumbnailUrl, String description) {
-        this(null, name, thumbnailUrl, description);
+    public static Theme create(Name name, ThumbnailUrl thumbnailUrl, Description description) {
+        return new Theme(null, name, thumbnailUrl, description);
+    }
+
+    private static void validateNotNull(Name name, ThumbnailUrl thumbnailUrl, Description description) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(thumbnailUrl);
+        Objects.requireNonNull(description);
     }
 
     @Override
@@ -43,11 +52,11 @@ public class Theme {
         return name;
     }
 
-    public String getThumbnailUrl() {
+    public ThumbnailUrl getThumbnailUrl() {
         return thumbnailUrl;
     }
 
-    public String getDescription() {
+    public Description getDescription() {
         return description;
     }
 }

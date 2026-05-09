@@ -27,22 +27,17 @@ public class AdminThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponseDto> create(@Valid @RequestBody ThemeRequestDto themeRequest) {
-        Theme theme = themeService.create(themeRequest);
-        return ResponseEntity.ok(ThemeResponseDto.from(theme));
+        return ResponseEntity.ok(themeService.create(themeRequest));
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponseDto>> findAll() {
-        List<Theme> themes = themeService.findAll();
-        return ResponseEntity.ok(themes.stream()
-                .map(ThemeResponseDto::from)
-                .toList());
+        return ResponseEntity.ok(themeService.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ThemeResponseDto> findById(@PathVariable Long id) {
-        Theme themeById = themeService.findById(id);
-        return ResponseEntity.ok(ThemeResponseDto.from(themeById));
+        return ResponseEntity.ok(themeService.findById(id));
     }
 
     @DeleteMapping("/{id}")

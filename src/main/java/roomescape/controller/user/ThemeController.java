@@ -29,16 +29,12 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponseDto>> findAll() {
-        List<Theme> themes = themeService.findAll();
-        return ResponseEntity.ok(themes.stream()
-                .map(ThemeResponseDto::from)
-                .toList());
+        return ResponseEntity.ok(themeService.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ThemeResponseDto> findById(@PathVariable Long id) {
-        Theme themeById = themeService.findById(id);
-        return ResponseEntity.ok(ThemeResponseDto.from(themeById));
+        return ResponseEntity.ok(themeService.findById(id));
     }
 
     @GetMapping("/{themeId}/times")
