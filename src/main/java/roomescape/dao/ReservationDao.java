@@ -88,7 +88,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
-    public Long save(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -101,7 +101,14 @@ public class ReservationDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        long id = keyHolder.getKey().longValue();
+        return new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
     }
 
     public void deleteById(Long id) {

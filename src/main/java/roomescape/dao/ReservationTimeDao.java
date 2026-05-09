@@ -28,7 +28,7 @@ public class ReservationTimeDao {
         return jdbcTemplate.query("SELECT id, start_at FROM reservation_time ORDER BY start_at;", timeRowMapper);
     }
 
-    public Long save(ReservationTime time) {
+    public ReservationTime save(ReservationTime time) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -38,7 +38,8 @@ public class ReservationTimeDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        long id = keyHolder.getKey().longValue();
+        return new ReservationTime(id, time.getStartAt());
     }
 
     public void deleteById(Long id) {

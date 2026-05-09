@@ -26,8 +26,7 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTime addTime(ReservationTime time) {
-        Long id = timeRepository.save(time);
-        return findById(id);
+        return timeRepository.save(time);
     }
 
     @Transactional

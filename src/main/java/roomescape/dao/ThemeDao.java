@@ -33,7 +33,7 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
-    public Long save(Theme theme) {
+    public Theme save(Theme theme) {
         String sql = "INSERT INTO theme (name, description, thumbnail_image_url) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -45,7 +45,8 @@ public class ThemeDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        long id = keyHolder.getKey().longValue();
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnailImageUrl());
     }
 
     public void deleteById(Long id) {

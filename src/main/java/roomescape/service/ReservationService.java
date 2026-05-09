@@ -29,9 +29,7 @@ public class ReservationService {
 
     @Transactional
     public Reservation addReservation(Reservation reservation) {
-        Long id = reservationRepository.save(reservation);
-
-        return findById(id);
+        return reservationRepository.save(reservation);
     }
 
     @Transactional

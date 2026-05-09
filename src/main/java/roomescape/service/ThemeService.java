@@ -24,8 +24,7 @@ public class ThemeService {
 
     @Transactional
     public Theme addTheme(Theme theme) {
-        Long id = themeRepository.save(theme);
-        return findById(id);
+        return themeRepository.save(theme);
     }
 
     @Transactional

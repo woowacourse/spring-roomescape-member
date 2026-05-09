@@ -22,7 +22,7 @@ public class ReservationRepository {
         return reservationDao.findAll();
     }
 
-    public Long save(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         return reservationDao.save(reservation);
     }
 

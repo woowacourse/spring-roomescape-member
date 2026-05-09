@@ -21,7 +21,7 @@ public class ThemeRepository {
         return themeDao.findAll();
     }
 
-    public Long save(Theme theme) {
+    public Theme save(Theme theme) {
         return themeDao.save(theme);
     }
 

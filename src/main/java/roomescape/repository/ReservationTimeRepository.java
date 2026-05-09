@@ -20,7 +20,7 @@ public class ReservationTimeRepository {
         return timeDao.findAll();
     }
 
-    public Long save(ReservationTime time) {
+    public ReservationTime save(ReservationTime time) {
         return timeDao.save(time);
     }
 
