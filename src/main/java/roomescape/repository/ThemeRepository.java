@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.repository.entity.ThemeEntity;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -53,9 +52,7 @@ public class ThemeRepository {
     }
 
     public Theme save(final Theme themeWithoutId) {
-        final ThemeEntity themeEntity = toEntity(themeWithoutId);
-
-        final long themeId = insertTheme(themeEntity);
+        final long themeId = insertTheme(themeWithoutId);
 
         return themeWithoutId.withId(themeId);
     }
@@ -102,7 +99,7 @@ public class ThemeRepository {
                 .toList();
     }
 
-    private long insertTheme(final ThemeEntity themeEntity) {
+    private long insertTheme(final Theme theme) {
         final String sql = """
                 INSERT INTO theme (name, description, thumbnail_url)
                 VALUES (?, ?, ?)
@@ -116,9 +113,9 @@ public class ThemeRepository {
                     Statement.RETURN_GENERATED_KEYS
             );
 
-            preparedStatement.setString(1, themeEntity.name());
-            preparedStatement.setString(2, themeEntity.description());
-            preparedStatement.setString(3, themeEntity.thumbnailUrl());
+            preparedStatement.setString(1, theme.getName());
+            preparedStatement.setString(2, theme.getDescription());
+            preparedStatement.setString(3, theme.getThumbnailUrl());
 
             return preparedStatement;
         }, keyHolder);
@@ -137,7 +134,7 @@ public class ThemeRepository {
     }
 
     /**
-     * 엔티티 - 도메인 매핑 메서드
+     * ResultSet - Domain 매핑 메서드
      */
     private Theme mapToDomain(final ResultSet resultSet, final int rowNum) throws SQLException {
         return Theme.createWithId(
@@ -145,15 +142,6 @@ public class ThemeRepository {
                 resultSet.getString("name"),
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail_url")
-        );
-    }
-
-    private ThemeEntity toEntity(final Theme theme) {
-        return new ThemeEntity(
-                theme.getId(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnailUrl()
         );
     }
 }

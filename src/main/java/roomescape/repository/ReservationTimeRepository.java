@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.repository.entity.ReservationTimeEntity;
 
 import java.sql.*;
 import java.util.List;
@@ -52,9 +51,7 @@ public class ReservationTimeRepository {
     }
 
     public ReservationTime save(final ReservationTime newReservationTime) {
-        final ReservationTimeEntity reservationTimeEntity = toEntity(newReservationTime);
-
-        final long newTimeId = insertReservationTime(reservationTimeEntity);
+        final long newTimeId = insertReservationTime(newReservationTime);
 
         return newReservationTime.withId(newTimeId);
     }
@@ -69,7 +66,7 @@ public class ReservationTimeRepository {
     }
 
 
-    private long insertReservationTime(final ReservationTimeEntity reservationTimeEntity) {
+    private long insertReservationTime(final ReservationTime reservationTime) {
         final String sql = """
                 INSERT INTO reservation_time (start_at, end_at)
                 VALUES (?, ?)
@@ -83,8 +80,8 @@ public class ReservationTimeRepository {
                     Statement.RETURN_GENERATED_KEYS
             );
 
-            preparedStatement.setTime(1, reservationTimeEntity.startAt());
-            preparedStatement.setTime(2, reservationTimeEntity.endAt());
+            preparedStatement.setTime(1, Time.valueOf(reservationTime.getStartAt()));
+            preparedStatement.setTime(2, Time.valueOf(reservationTime.getEndAt()));
 
             return preparedStatement;
         }, keyHolder);
@@ -103,21 +100,13 @@ public class ReservationTimeRepository {
     }
 
     /**
-     * 엔티티 - 도메인 매핑 메서드
+     * ResultSet - Domain 매핑 메서드
      */
     private ReservationTime mapToDomain(final ResultSet resultSet, final int rowNum) throws SQLException {
         return ReservationTime.createWithId(
                 resultSet.getLong("id"),
                 resultSet.getTime("start_at").toLocalTime(),
                 resultSet.getTime("end_at").toLocalTime()
-        );
-    }
-
-    private ReservationTimeEntity toEntity(final ReservationTime reservationTime) {
-        return new ReservationTimeEntity(
-                reservationTime.getId(),
-                Time.valueOf(reservationTime.getStartAt()),
-                Time.valueOf(reservationTime.getEndAt())
         );
     }
 }

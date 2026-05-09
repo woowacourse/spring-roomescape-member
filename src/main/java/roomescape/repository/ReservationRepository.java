@@ -9,7 +9,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.dto.ReservationTimesWithStatus;
-import roomescape.repository.entity.ReservationEntity;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -46,9 +45,7 @@ public class ReservationRepository {
     }
 
     public Reservation save(final Reservation newReservation) {
-        final ReservationEntity entity = toEntity(newReservation);
-
-        final long newReservationId = insertReservation(entity);
+        final long newReservationId = insertReservation(newReservation);
 
         return newReservation.withId(newReservationId);
     }
@@ -89,7 +86,7 @@ public class ReservationRepository {
     }
 
 
-    private long insertReservation(final ReservationEntity reservationEntity) {
+    private long insertReservation(final Reservation reservation) {
         final String sql = """
                 INSERT INTO reservation (name, date, time_id, theme_id)
                 VALUES (?, ?, ?, ?)
@@ -103,10 +100,10 @@ public class ReservationRepository {
                     Statement.RETURN_GENERATED_KEYS
             );
 
-            preparedStatement.setString(1, reservationEntity.name());
-            preparedStatement.setDate(2, reservationEntity.date());
-            preparedStatement.setLong(3, reservationEntity.timeId());
-            preparedStatement.setLong(4, reservationEntity.themeId());
+            preparedStatement.setString(1, reservation.getName());
+            preparedStatement.setDate(2, Date.valueOf(reservation.getDate()));
+            preparedStatement.setLong(3, reservation.getTime().getId());
+            preparedStatement.setLong(4, reservation.getTheme().getId());
 
             return preparedStatement;
         }, keyHolder);
@@ -125,12 +122,9 @@ public class ReservationRepository {
     }
 
     /**
-     * 엔티티 - 도메인 매핑 메서드
+     * ResultSet - Domain 매핑 메서드
      */
-    private Reservation mapToDomain(
-            final ResultSet resultSet,
-            final int rowNum
-    ) throws SQLException {
+    private Reservation mapToDomain(final ResultSet resultSet, final int rowNum) throws SQLException {
         final ReservationTime reservationTime = ReservationTime.createWithId(
                 resultSet.getLong("time_id"),
                 resultSet.getTime("time_start_at").toLocalTime(),
@@ -153,19 +147,8 @@ public class ReservationRepository {
         );
     }
 
-    private ReservationEntity toEntity(final Reservation reservation) {
-        return new ReservationEntity(
-                reservation.getId(),
-                reservation.getName(),
-                Date.valueOf(reservation.getDate()),
-                reservation.getTime().getId(),
-                reservation.getTheme().getId()
-        );
-    }
-
-
     /**
-     * dto 매핑 메서드
+     * ResultSet - DTO 매핑 메서드
      */
     private ReservationTimesWithStatus mapToTimesWithStatus(final ResultSet resultSet, final int rowNum) throws SQLException {
         return new ReservationTimesWithStatus(
