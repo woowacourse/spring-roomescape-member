@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.time.controller;
 
 import java.util.HashMap;
 import java.util.Map;
