@@ -113,6 +113,36 @@ class ReservationControllerTest {
 
     @Test
     @Sql("/clear.sql")
+    void 예약을_추가하고_삭제한다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "브라운",
+                        "date", "2026-08-05",
+                        "timeId", 1,
+                        "themeId", 1
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        assertThat(count).isEqualTo(1);
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(204);
+
+        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        assertThat(countAfterDelete).isEqualTo(0);
+    }
+
+    @Test
+    @Sql("/clear.sql")
     void 존재하지_않는_예약_시간으로_예약하면_404를_응답한다() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
 
