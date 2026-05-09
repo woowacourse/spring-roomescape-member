@@ -43,7 +43,6 @@ public class ReservationService {
         // TODO 해당 테마, 날짜, 시간의 예약이 있는지 검사
 
         ThemeSlot themeSlot = new ThemeSlot(theme, date, time, true);
-        // TODO 예약이 생성되면서 테마 슬롯의 해당 테마, 날짜, 시간의 예약 여부를 토글 업데이트 예약됨으로 변경
         themeSlotRepository.update(themeSlot);
         Reservation transientReservation = new Reservation(name, date, time, theme);
         return reservationRepository.save(transientReservation);

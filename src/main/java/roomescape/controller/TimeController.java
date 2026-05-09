@@ -2,6 +2,8 @@ package roomescape.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +29,7 @@ public class TimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TimeResponse>> times() {
+    public ResponseEntity<List<TimeResponse>> getTimes() {
         return ResponseEntity.ok(convertToTimeResponses(timeService.allTimes()));
     }
 
@@ -39,13 +41,13 @@ public class TimeController {
     @PostMapping
     public ResponseEntity<TimeResponse> createTime(@RequestBody TimeRequest timeRequest) {
         Time time = timeService.saveTime(timeRequest.startAt());
-        return ResponseEntity.ok(TimeResponse.from(time));
+        return ResponseEntity.status(HttpStatus.CREATED).body(TimeResponse.from(time));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable long id) {
         timeService.removeTime(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     private List<TimeResponse> convertToTimeResponses(List<Time> reservationTimes) {
@@ -59,5 +61,4 @@ public class TimeController {
                 .map(TimeResponse::from)
                 .toList();
     }
-
 }
