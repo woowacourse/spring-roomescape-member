@@ -98,7 +98,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
         return (resultSet, rowNumber) -> new ReservationTime(
                 resultSet.getLong("id"),
-                LocalTime.parse(resultSet.getString("start_at"))
+                resultSet.getObject("start_at", LocalTime.class)
         );
     }
 }
