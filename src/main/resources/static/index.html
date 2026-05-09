@@ -317,8 +317,8 @@
                 </div>
 
                 <div class="form-group" style="margin-bottom: 20px;">
-                    <label for="book-name">예약자 이름</label>
-                    <input id="book-name" placeholder="홍길동" style="max-width: 300px;" type="text">
+                    <label for="book-user-id">사용자 ID</label>
+                    <input id="book-user-id" placeholder="1" style="max-width: 300px;" type="number" min="1">
                 </div>
 
                 <button class="btn btn-primary btn-full" onclick="submitReservation()" style="max-width: 300px;">
@@ -378,7 +378,7 @@
         setVal('sum-theme', state.selectedTheme?.name);
         setVal('sum-date', state.selectedDate);
         setVal('sum-time', state.selectedTime?.startAt);
-        setVal('sum-name', document.getElementById('book-name')?.value || null);
+        setVal('sum-name', document.getElementById('book-user-id')?.value ? `User #${document.getElementById('book-user-id').value}` : null);
     }
 
     // ── Step navigation ────────────────────────────────
@@ -532,9 +532,9 @@
 
     // ── Reservation CRUD ──────────────────────────────
     async function submitReservation() {
-        const name = document.getElementById('book-name').value.trim();
-        if (!name) {
-            toast('예약자 이름을 입력해주세요.', 'error');
+        const userId = Number(document.getElementById('book-user-id').value);
+        if (!userId) {
+            toast('사용자 ID를 입력해주세요.', 'error');
             return;
         }
         if (!state.selectedTheme || !state.selectedDate || !state.selectedTime) {
@@ -544,7 +544,7 @@
 
         try {
             await api('POST', '/reservations', {
-                name,
+                userId,
                 date: state.selectedDate,
                 themeId: state.selectedTheme.id,
                 timeId: state.selectedTime.id,
@@ -554,7 +554,7 @@
             state.selectedTheme = null;
             state.selectedDate = null;
             state.selectedTime = null;
-            document.getElementById('book-name').value = '';
+            document.getElementById('book-user-id').value = '';
             updateSummary();
             goToStep(1);
             await loadThemes();
@@ -565,7 +565,7 @@
 
 
     // ── Init ─────────────────────────────────────────
-    document.getElementById('book-name').addEventListener('input', updateSummary);
+    document.getElementById('book-user-id').addEventListener('input', updateSummary);
     document.addEventListener('DOMContentLoaded', () => {
         loadThemes();
         document.getElementById('book-date').value = new Date().toISOString().split('T')[0];

@@ -60,8 +60,8 @@
             <div id="add-form">
                 <div class="form-grid form-grid-2" style="margin-bottom: 14px;">
                     <div class="form-group">
-                        <label for="res-name">예약자 이름</label>
-                        <input id="res-name" placeholder="홍길동" type="text">
+                        <label for="res-user-id">사용자 ID</label>
+                        <input id="res-user-id" placeholder="1" type="number" min="1">
                     </div>
                     <div class="form-group">
                         <label for="res-date">날짜</label>
@@ -222,25 +222,25 @@
 
     // ── CRUD ─────────────────────────────────────────
     async function createReservation() {
-        const name = document.getElementById('res-name').value.trim();
+        const userId = Number(document.getElementById('res-user-id').value);
         const date = document.getElementById('res-date').value;
         const themeId = document.getElementById('res-theme').value;
         const timeId = document.getElementById('res-time').value;
 
-        if (!name || !date || !themeId || !timeId) {
+        if (!userId || !date || !themeId || !timeId) {
             toast('모든 필드를 입력해주세요.', 'error');
             return;
         }
 
         try {
             await api('POST', '/admin/reservations', {
-                name,
+                userId,
                 date,
                 themeId: Number(themeId),
                 timeId: Number(timeId),
             });
             toast('예약이 추가되었습니다.', 'success');
-            document.getElementById('res-name').value = '';
+            document.getElementById('res-user-id').value = '';
             document.getElementById('res-date').value = '';
             document.getElementById('res-theme').value = '';
             document.getElementById('res-time').innerHTML = '<option value="">시간 선택</option>';
