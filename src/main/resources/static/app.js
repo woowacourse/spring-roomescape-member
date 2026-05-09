@@ -137,48 +137,20 @@ document.getElementById('search-schedule-btn').addEventListener('click', () => {
             const scheduleList = document.getElementById('schedule-list');
             scheduleList.innerHTML = ''; // 이전 검색 결과가 있다면 초기화
 
-            // 요구사항에 맞춰 10시부터 20시까지의 시간 배열 생성
-            const allHours = [];
-            for (let i = 10; i <= 20; i++) {
-                const hour = i < 10 ? `0${i}:00` : `${i}:00`;
-                allHours.push(hour);
+            // 🚨 백엔드에서 이미 '예약 가능한' 스케줄만 필터링해서 줬으므로, 그대로 그립니다!
+            if (schedules.length === 0) {
+                scheduleList.innerHTML = '<li class="empty-message">예약 가능한 시간이 없습니다.</li>';
+                return;
             }
 
-            // --- 💡 중복 시간 확인 로직 시작 💡 ---
-            // API에서 받아온 스케줄의 시작/종료 시간을 Date 객체로 변환해두면 비교가 편합니다.
-            const reservedSlots = schedules.map(s => ({
-                start: new Date(s.startAt.replace(' ', 'T')),
-                end: new Date(s.endAt.replace(' ', 'T'))
-            }));
-
-            // 생성한 모든 시간대(allHours)를 화면에 그립니다.
-            allHours.forEach(time => {
-                const [hour, minute] = time.split(':');
-                const currentDate = document.getElementById('date-input').value;
-                // 각 시간 슬롯을 Date 객체로 만듭니다.
-                const slotDateTime = new Date(`${currentDate}T${hour}:${minute}:00`);
-
-                // 이 시간 슬롯이 기존 예약에 의해 막혔는지 확인합니다.
-                // 조건: slotDateTime이 기존 예약의 [start, end) 시간 사이에 포함되는가?
-                const isBlocked = reservedSlots.some(slot =>
-                    slotDateTime >= slot.start && slotDateTime < slot.end
-                );
-
+            schedules.forEach(schedule => {
                 const li = document.createElement('li');
-
-                if (isBlocked) {
-                    // 예약이 겹쳐서 막힌 시간 (클릭 불가)
-                    li.style.backgroundColor = '#e2e8f0';
-                    li.style.color = '#94a3b8';
-                    li.innerHTML = `<label style="cursor: not-allowed;"><input type="radio" name="schedule" disabled> <del>${time}</del> - 예약 마감 🔴</label>`;
-                } else {
-                    // 예약 가능한 시간! (클릭 가능)
-                    li.innerHTML = `<label><input type="radio" name="schedule" value="${time}"> <strong>${time}</strong> - 예약 가능 🟢</label>`;
-                }
-
+                // 🚨 공백(' ') 대신 'T'를 기준으로 쪼개서 시간을 추출합니다.
+                const time = schedule.startAt.split('T')[1].substring(0, 5); // "HH:mm" 형식으로 추출
+                // 🚨 이제 value에 schedule.id를 넣습니다!
+                li.innerHTML = `<label><input type="radio" name="schedule" value="${schedule.id}"> <strong>${time}</strong> - 예약 가능 🟢</label>`;
                 scheduleList.appendChild(li);
             });
-            // --- 중복 시간 확인 로직 끝 ---
         })
         .catch(error => console.error(error));
 });
@@ -195,18 +167,12 @@ document.getElementById('reserve-btn').addEventListener('click', () => {
         return;
     }
 
-    const selectedTime = selectedScheduleRadio.value; // 예: "10:00"
-    const selectedThemeCard = document.querySelector('.theme-card.selected');
-    const themeId = selectedThemeCard ? selectedThemeCard.dataset.themeId : null;
-
-    const date = document.getElementById('date-input').value;
+    // 🚨 이제 선택된 라디오 버튼의 value는 scheduleId입니다!
+    const scheduleId = selectedScheduleRadio.value;
 
     // 서버로 보낼 데이터 객체 (백엔드 DTO와 모양을 맞춰야 합니다)
     const reservationData = {
-        // 🚨 예약 전이라 scheduleId가 없으므로, 생성에 필요한 모든 정보를 보냅니다.
-        date: date,
-        time: selectedTime,
-        themeId: parseInt(themeId),
+        scheduleId: parseInt(scheduleId), // 🚨 scheduleId를 보냅니다.
         name: currentUser // 처음에 로그인할 때 저장해둔 이름을 사용합니다.
     };
 

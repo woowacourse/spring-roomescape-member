@@ -8,6 +8,36 @@ INSERT IGNORE INTO theme (id, name, description, image_url, required_time) VALUE
 INSERT IGNORE INTO theme (id, name, description, image_url, required_time) VALUES (4, '스릴러', '심장이 쫄깃한 스릴러 테마', 'https://i.pinimg.com/736x/be/c9/d6/bec9d6c70028d43f8a4c00330c51c516.jpg', '02:00:00');
 INSERT IGNORE INTO theme (id, name, description, image_url, required_time) VALUES (5, '스토리', '탄탄한 세계관의 스토리 테마', 'https://i.pinimg.com/1200x/78/85/b7/7885b7216437601598a21bca10751bec.jpg', '02:00:00');
 
+-- =================================================================================================
+-- ✅ [테스트 데이터] 오늘과 내일 예약 가능한 스케줄 미리 추가 (각 테마별 3개씩)
+-- H2의 DATEADD, CURRENT_DATE 함수를 사용하여 서버 실행 시점을 기준으로 동적 데이터를 생성합니다.
+-- 이렇게 하면 리뷰어가 언제 테스트하든 항상 유효한 미래의 스케줄이 존재하게 됩니다.
+-- =================================================================================================
+
+-- --- 오늘 스케줄 ---
+-- 테마 1 (공포)
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (1, FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 10:00:00'), FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 12:00:00'));
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (1, FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 13:00:00'), FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 15:00:00'));
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (1, FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 16:00:00'), FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 18:00:00'));
+-- 테마 2 (로맨스)
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (2, FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 10:00:00'), FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 12:00:00'));
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (2, FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 14:00:00'), FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 16:00:00'));
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (2, FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 18:00:00'), FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 20:00:00'));
+-- 테마 3 (감성)
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (3, FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 11:00:00'), FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 13:00:00'));
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (3, FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 15:00:00'), FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 17:00:00'));
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (3, FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 19:00:00'), FORMATDATETIME(CURRENT_DATE, 'yyyy-MM-dd 21:00:00'));
+
+-- --- 내일 스케줄 ---
+-- 테마 4 (스릴러)
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (4, FORMATDATETIME(DATEADD(DAY, 1, CURRENT_DATE), 'yyyy-MM-dd 10:00:00'), FORMATDATETIME(DATEADD(DAY, 1, CURRENT_DATE), 'yyyy-MM-dd 12:00:00'));
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (4, FORMATDATETIME(DATEADD(DAY, 1, CURRENT_DATE), 'yyyy-MM-dd 13:00:00'), FORMATDATETIME(DATEADD(DAY, 1, CURRENT_DATE), 'yyyy-MM-dd 15:00:00'));
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (4, FORMATDATETIME(DATEADD(DAY, 1, CURRENT_DATE), 'yyyy-MM-dd 16:00:00'), FORMATDATETIME(DATEADD(DAY, 1, CURRENT_DATE), 'yyyy-MM-dd 18:00:00'));
+-- 테마 5 (스토리)
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (5, FORMATDATETIME(DATEADD(DAY, 1, CURRENT_DATE), 'yyyy-MM-dd 10:00:00'), FORMATDATETIME(DATEADD(DAY, 1, CURRENT_DATE), 'yyyy-MM-dd 12:00:00'));
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (5, FORMATDATETIME(DATEADD(DAY, 1, CURRENT_DATE), 'yyyy-MM-dd 14:00:00'), FORMATDATETIME(DATEADD(DAY, 1, CURRENT_DATE), 'yyyy-MM-dd 16:00:00'));
+INSERT IGNORE INTO schedule (theme_id, start_at, end_at) VALUES (5, FORMATDATETIME(DATEADD(DAY, 1, CURRENT_DATE), 'yyyy-MM-dd 18:00:00'), FORMATDATETIME(DATEADD(DAY, 1, CURRENT_DATE), 'yyyy-MM-dd 20:00:00'));
+
 INSERT IGNORE INTO schedule (id, theme_id, start_at, end_at) VALUES (1, 1, FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd 10:00:00'), FORMATDATETIME(DATEADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd 12:00:00'));
 INSERT IGNORE INTO schedule (id, theme_id, start_at, end_at) VALUES (2, 1, FORMATDATETIME(DATEADD(DAY, -2, CURRENT_DATE), 'yyyy-MM-dd 13:00:00'), FORMATDATETIME(DATEADD(DAY, -2, CURRENT_DATE), 'yyyy-MM-dd 15:00:00'));
 INSERT IGNORE INTO schedule (id, theme_id, start_at, end_at) VALUES (3, 1, FORMATDATETIME(DATEADD(DAY, -3, CURRENT_DATE), 'yyyy-MM-dd 16:00:00'), FORMATDATETIME(DATEADD(DAY, -3, CURRENT_DATE), 'yyyy-MM-dd 18:00:00'));
