@@ -34,7 +34,7 @@ public class ThemeController {
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> readThemes() {
         List<Theme> themes = themeService.getThemes();
-        return ResponseEntity.ok().body(themes.stream()
+        return ResponseEntity.ok(themes.stream()
                 .map(ThemeResponse::from)
                 .toList());
     }
@@ -47,7 +47,7 @@ public class ThemeController {
             @Parameter(description = "테마 ID", example = "1") @PathVariable Long id,
             @Parameter(description = "조회할 날짜 (yyyy-MM-dd)", example = "2025-08-05") @RequestParam LocalDate date) {
         List<ThemeReservationTimeResponse> themeTimes = themeService.getThemeTimes(id, date);
-        return ResponseEntity.ok().body(themeTimes);
+        return ResponseEntity.ok(themeTimes);
     }
 
     @Operation(summary = "인기 테마 조회",
@@ -57,6 +57,6 @@ public class ThemeController {
     public ResponseEntity<List<PopularThemeResponse>> readPopularThemes(
             @Parameter(description = "조회할 최대 테마 수", example = "10") @RequestParam Integer limit) {
         List<PopularThemeResponse> popularThemes = themeService.getPopularThemes(limit);
-        return ResponseEntity.ok().body(popularThemes);
+        return ResponseEntity.ok(popularThemes);
     }
 }
