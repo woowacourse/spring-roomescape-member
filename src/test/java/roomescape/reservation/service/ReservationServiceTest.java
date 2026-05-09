@@ -5,26 +5,31 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.date.domain.ReservationDate;
-import roomescape.date.fixture.FakeReservationDateRepository;
+import roomescape.date.repository.JdbcReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.dto.response.ReservationResponse;
-import roomescape.reservation.repository.FakeReservationRepository;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.fixture.FakeThemeRepository;
+import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.FakeReservationTimeRepository;
+import roomescape.time.repository.JdbcReservationTimeRepository;
 
+@JdbcTest
 class ReservationServiceTest {
 
     private final String name = "한다";
@@ -35,19 +40,22 @@ class ReservationServiceTest {
     private Theme theme1;
     private Theme theme2;
 
-    private FakeReservationRepository reservationRepository;
-    private FakeReservationTimeRepository reservationTimeRepository;
-    private FakeReservationDateRepository reservationDateRepository;
-    private FakeThemeRepository themeRepository;
+    private JdbcReservationRepository reservationRepository;
+    private JdbcReservationTimeRepository reservationTimeRepository;
+    private JdbcReservationDateRepository reservationDateRepository;
+    private JdbcThemeRepository themeRepository;
 
     private ReservationService reservationService;
 
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
     @BeforeEach
     void setup() {
-        reservationRepository = new FakeReservationRepository();
-        reservationTimeRepository = new FakeReservationTimeRepository();
-        reservationDateRepository = new FakeReservationDateRepository();
-        themeRepository = new FakeThemeRepository();
+        reservationRepository = new JdbcReservationRepository(jdbcTemplate);
+        reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+        reservationDateRepository = new JdbcReservationDateRepository(jdbcTemplate);
+        themeRepository = new JdbcThemeRepository(jdbcTemplate);
 
         this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
                 reservationDateRepository, themeRepository);
@@ -73,7 +81,7 @@ class ReservationServiceTest {
         //given & when
         List<Reservation> reservations = List.of(Reservation.create("한다", reservationDate1.date(), reservationTime1.startAt(), theme1),
                 Reservation.create("송송", reservationDate2.date(), reservationTime1.startAt(), theme2));
-        reservationRepository.saveAll(reservations);
+        saveAll(reservations);
         List<ReservationResponse> reservationsResponse = reservationService.readAll();
 
         //then
@@ -85,14 +93,13 @@ class ReservationServiceTest {
     @DisplayName("나의 예약들을 조회하면 날짜/시간 오름차순으로 정렬해 모두 조회한다.")
     void readAllByName() {
         // given
-        List<ReservationResponse> reservationDtoList = reservationRepository.saveAll(
+        List<ReservationResponse> reservationDtoList = saveAll(
                         List.of(Reservation.create(name, reservationDate1.date(), reservationTime1.startAt(), theme1),
                                 Reservation.create(name, reservationDate1.date(), reservationTime2.startAt(), theme1),
                                 Reservation.create(name, reservationDate2.date(), reservationTime1.startAt(), theme1),
                                 Reservation.create(name, reservationDate2.date(), reservationTime2.startAt(), theme1))
                 ).stream()
-                .map(ReservationResponse::from)
-                .sorted(Comparator.comparing(ReservationResponse::date).thenComparing(ReservationResponse::status))
+                .sorted(Comparator.comparing(ReservationResponse::date).thenComparing(ReservationResponse::time))
                 .toList();
 
         // when
@@ -155,5 +162,16 @@ class ReservationServiceTest {
         // then
         Assertions.assertThat(actual.status())
                 .isEqualTo(canceled);
+    }
+
+    private List<ReservationResponse> saveAll(List<Reservation> reservations) {
+        List<ReservationResponse> savedReservations = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            Long savedId = reservationRepository.save(reservation);
+            Reservation saved = Reservation.load(savedId, reservation.name(), reservation.date(),
+                    reservation.time(), reservation.theme(), reservation.status());
+            savedReservations.add(ReservationResponse.from(saved));
+        }
+        return savedReservations;
     }
 }

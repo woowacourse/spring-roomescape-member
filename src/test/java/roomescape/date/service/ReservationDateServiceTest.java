@@ -10,18 +10,25 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.date.domain.ReservationDate;
-import roomescape.date.fixture.FakeReservationDateRepository;
+import roomescape.date.repository.JdbcReservationDateRepository;
 
+@JdbcTest
 class ReservationDateServiceTest {
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2099, 1, 1);
 
-    private FakeReservationDateRepository reservationDateRepository;
+    private JdbcReservationDateRepository reservationDateRepository;
     private ReservationDateService reservationDateService;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        reservationDateRepository = new FakeReservationDateRepository();
+        reservationDateRepository = new JdbcReservationDateRepository(jdbcTemplate);
         reservationDateService = new ReservationDateService(reservationDateRepository);
     }
 
@@ -71,18 +78,13 @@ class ReservationDateServiceTest {
 
     @Test
     @DisplayName("오늘 이후 예약 날짜 데이터를 조회할 수 있다.")
-    void readDatesAfterToday(){
+    void readDatesAfterToday() {
         // given
         LocalDate pastDate = LocalDate.of(2000, 1, 1);
-        List<ReservationDate> reservationDates = List.of(
-                ReservationDate.load(1L, pastDate),
-                ReservationDate.load(2L, DEFAULT_DATE),
-                ReservationDate.load(3L, DEFAULT_DATE.plusDays(1)));
-        saveAll(reservationDates);
-        List<ReservationDate> expected = List.of(
-                ReservationDate.load(2L, DEFAULT_DATE),
-                ReservationDate.load(3L, DEFAULT_DATE.plusDays(1))
-        );
+
+        reservationDateRepository.save(ReservationDate.load(1L, pastDate));
+        ReservationDate future1 = reservationDateRepository.save(ReservationDate.create(DEFAULT_DATE));
+        ReservationDate future2 = reservationDateRepository.save(ReservationDate.create(DEFAULT_DATE.plusDays(1)));
 
         // when
         List<ReservationDate> actual = reservationDateService.readDatesAfterToday();
@@ -90,7 +92,7 @@ class ReservationDateServiceTest {
         // then
         assertThat(actual)
                 .usingRecursiveComparison()
-                .isEqualTo(expected);
+                .isEqualTo(List.of(future1, future2));
     }
 
     @Test

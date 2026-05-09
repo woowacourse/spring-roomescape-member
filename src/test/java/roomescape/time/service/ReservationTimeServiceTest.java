@@ -9,18 +9,25 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.time.dto.request.ReservationTimeSaveDto;
 import roomescape.time.dto.response.ReservationTimeDetailDto;
-import roomescape.time.repository.FakeReservationTimeRepository;
+import roomescape.time.repository.JdbcReservationTimeRepository;
 
+@JdbcTest
 class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
 
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
     @BeforeEach
     void setup() {
-        FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+        JdbcReservationTimeRepository reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
         this.reservationTimeService = new ReservationTimeService(reservationTimeRepository);
 
         reservationTimeService.create(new ReservationTimeSaveDto(LocalTime.of(15, 40)));

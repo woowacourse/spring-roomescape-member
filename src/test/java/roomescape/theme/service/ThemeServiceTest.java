@@ -11,19 +11,26 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.fixture.FakeThemeRepository;
+import roomescape.theme.repository.JdbcThemeRepository;
 
+@JdbcTest
 class ThemeServiceTest {
     private static final String DEFAULT_DESCRIPTION = "테마 설명";
     private static final String DEFAULT_THUMBNAIL_URL = "테마 썸네일";
 
     private ThemeService themeService;
-    private FakeThemeRepository themeRepository;
+    private JdbcThemeRepository themeRepository;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setup() {
-        this.themeRepository = new FakeThemeRepository();
+        this.themeRepository = new JdbcThemeRepository(jdbcTemplate);
         this.themeService = new ThemeService(themeRepository);
     }
 
@@ -36,7 +43,7 @@ class ThemeServiceTest {
                 Theme.create("테마2", "테마2 설명", "테마2 썸네일"),
                 Theme.create("테마3", "테마3 설명", "테마3 썸네일")
         );
-        themeRepository.saveAll(themes);
+        saveAll(themes);
 
         // when
         List<Theme> actual = themeService.readThemes();
