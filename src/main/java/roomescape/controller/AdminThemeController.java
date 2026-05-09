@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,7 +23,7 @@ public class AdminThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponseDto> create(@RequestBody ThemeRequestDto requestDto) {
+    public ResponseEntity<ThemeResponseDto> create(@RequestBody @Valid ThemeRequestDto requestDto) {
         ThemeResponseDto responseDto = themeService.create(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
