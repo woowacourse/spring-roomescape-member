@@ -29,7 +29,8 @@ class UserReservationSavePolicyTest {
         ReservationSaveCommand command = new ReservationSaveCommand("브라운", FIXED_TODAY.minusDays(1), 1L, 1L);
 
         assertThatThrownBy(() -> policy.validate(command))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지난 날짜는 예약할 수 없습니다.");
     }
 
     @Test
