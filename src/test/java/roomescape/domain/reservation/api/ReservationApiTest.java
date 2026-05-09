@@ -98,7 +98,7 @@ class ReservationApiTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + reservationId)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")

@@ -56,6 +56,6 @@ public class ReservationTimeController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationFacade.deleteTime(id);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

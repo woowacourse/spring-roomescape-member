@@ -149,7 +149,7 @@ class ThemeApiTest {
         RestAssured.given().log().all()
                 .when().delete("/themes/" + id)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/themes")

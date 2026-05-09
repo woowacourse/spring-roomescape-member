@@ -48,7 +48,7 @@ public class ThemeController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationFacade.deleteTheme(id);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/popular")
