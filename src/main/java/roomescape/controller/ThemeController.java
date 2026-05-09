@@ -57,9 +57,10 @@ public class ThemeController {
         return themeService.findAvailableTime(id, date);
     }
 
-    @GetMapping("/popular")
-    public List<ThemeResponse> getPopularThemes() {
-        return themeService.findWeeklyTopTen().stream()
+    @GetMapping("/weekly-top")
+    public List<ThemeResponse> getWeeklyTopThemes() {
+        return themeService.findWeeklyTop()
+                .stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
