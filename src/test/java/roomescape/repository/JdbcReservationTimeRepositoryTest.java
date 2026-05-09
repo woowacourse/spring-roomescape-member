@@ -8,18 +8,16 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import roomescape.domain.ReservationTime;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Transactional
+@JdbcTest
+@Import({JdbcReservationTimeRepository.class})
 class JdbcReservationTimeRepositoryTest {
 
     @Autowired
-    JdbcReservationTimeRepository jdbcReservationTimeRepository;
+    ReservationTimeRepository reservationTimeRepository;
 
     @DisplayName("예약시간을 저장한다")
     @Test
@@ -28,7 +26,7 @@ class JdbcReservationTimeRepositoryTest {
         ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.parse("10:15:30"));
 
         // when
-        ReservationTime saved = jdbcReservationTimeRepository.save(reservationTime);
+        ReservationTime saved = reservationTimeRepository.save(reservationTime);
 
         // then
         assertThat(saved.getId()).isNotNull();
@@ -39,10 +37,10 @@ class JdbcReservationTimeRepositoryTest {
     void 예약시간을_id로_조회한다() {
         // given
         ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.parse("10:15:30"));
-        ReservationTime saved = jdbcReservationTimeRepository.save(reservationTime);
+        ReservationTime saved = reservationTimeRepository.save(reservationTime);
 
         // when
-        Optional<ReservationTime> result = jdbcReservationTimeRepository.findById(saved.getId());
+        Optional<ReservationTime> result = reservationTimeRepository.findById(saved.getId());
 
         // then
         assertThat(result.get()).isEqualTo(saved);
@@ -52,15 +50,15 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 저장된_모든_예약시간을_조회한다() {
         // given
-        ReservationTime reservationTime1 = jdbcReservationTimeRepository.save(
+        ReservationTime reservationTime1 = reservationTimeRepository.save(
                 ReservationTime.withoutId(LocalTime.parse("10:15:30"))
         );
-        ReservationTime reservationTime2 = jdbcReservationTimeRepository.save(
+        ReservationTime reservationTime2 = reservationTimeRepository.save(
                 ReservationTime.withoutId(LocalTime.parse("10:20:30"))
         );
 
         // when
-        List<ReservationTime> found = jdbcReservationTimeRepository.findAll();
+        List<ReservationTime> found = reservationTimeRepository.findAll();
 
         // then
         assertThat(found)
@@ -72,13 +70,13 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약시간을_삭제한다() {
         // given
-        ReservationTime reservationTime = jdbcReservationTimeRepository.save(
+        ReservationTime reservationTime = reservationTimeRepository.save(
                 ReservationTime.withoutId(LocalTime.parse("10:15:30"))
         );
 
         // when
-        jdbcReservationTimeRepository.delete(reservationTime.getId());
-        Optional<ReservationTime> result = jdbcReservationTimeRepository.findById(
+        reservationTimeRepository.delete(reservationTime.getId());
+        Optional<ReservationTime> result = reservationTimeRepository.findById(
                 reservationTime.getId()
         );
 
