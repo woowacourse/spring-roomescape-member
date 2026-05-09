@@ -1,5 +1,6 @@
 package roomescape.theme.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import roomescape.time.service.ReservationTimeService;
 import java.time.LocalDate;
 import java.util.List;
 
+@Tag(name = "사용자 테마 API", description = "테마 조회 및 테마의 예약 가능한 시간 조회 관련 API")
 @RestController
 @RequestMapping("/themes")
 public class UserThemeController {

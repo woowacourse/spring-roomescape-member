@@ -1,5 +1,6 @@
 package roomescape.time.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import roomescape.time.service.ReservationTimeService;
 import java.net.URI;
 import java.util.List;
 
+@Tag(name = "관리자 예약 시간 API", description = "예약 시간 생성 및 삭제 관련 API")
 @RestController
 @RequestMapping("/admin/times")
 public class AdminReservationTimeController {

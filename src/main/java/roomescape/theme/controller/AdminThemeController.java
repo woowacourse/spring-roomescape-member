@@ -1,5 +1,6 @@
 package roomescape.theme.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import roomescape.theme.service.ThemeService;
 import java.net.URI;
 import java.util.List;
 
+@Tag(name = "관리자 테마 API", description = "테마 생성, 삭제 및 수정 관련 API")
 @RestController
 @RequestMapping("/admin/themes")
 public class AdminThemeController {
