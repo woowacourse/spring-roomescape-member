@@ -1,5 +1,6 @@
 package roomescape.domain.theme.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,7 +24,7 @@ public class AdminThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeCreateRequest request) {
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody @Valid ThemeCreateRequest request) {
         ThemeResponse theme = themeService.saveTheme(request);
         return ResponseEntity.created(URI.create("/themes/" + theme.id()))
                 .body(theme);

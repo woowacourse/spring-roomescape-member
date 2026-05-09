@@ -18,12 +18,6 @@ public class Reservation {
     private final ReservationTime time;
 
     private Reservation(Long id, String username, Theme theme, LocalDate date, ReservationTime time) {
-        validateId(id);
-        validateUsername(username);
-        validateTheme(theme);
-        validateDate(date);
-        validateTime(time);
-
         this.id = id;
         this.username = username;
         this.theme = theme;
@@ -44,42 +38,10 @@ public class Reservation {
         this.id = id;
     }
 
-    private void validateId(Long id) {
+    private void validateAssignableId(Long id) {
         if (id != null && id <= 0) {
             throw new IllegalArgumentException("id는 양수여야 합니다.");
         }
-    }
-
-    private void validateUsername(String username) {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("username은 비어 있을 수 없습니다.");
-        }
-    }
-
-    private void validateTheme(Theme theme) {
-        if (theme == null) {
-            throw new IllegalArgumentException("theme은 null일 수 없습니다.");
-        }
-    }
-
-    private void validateDate(LocalDate date) {
-        if (date == null) {
-            throw new IllegalArgumentException("date는 null일 수 없습니다.");
-        }
-    }
-
-    private void validateTime(ReservationTime time) {
-        if (time == null) {
-            throw new IllegalArgumentException("time은 null일 수 없습니다.");
-        }
-    }
-
-    private void validateAssignableId(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("id는 null일 수 없습니다.");
-        }
-
-        validateId(id);
 
         if (this.id != null) {
             throw new IllegalStateException("이미 id가 할당된 예약입니다.");
