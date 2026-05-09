@@ -71,17 +71,17 @@ class RoomescapeApplicationTest {
     }
 
     @Test
-    void themeId_없이_사용_시간_조회시_500을_반환한다() {
+    void themeId_없이_사용_시간_조회시_400을_반환한다() {
         RestAssured.given()
                 .when().get("/times/available?date=" + AVAILABLE_DATE)
-                .then().statusCode(500);
+                .then().statusCode(400);
     }
 
     @Test
-    void date_없이_가용_시간_조회시_500을_반환한다() {
+    void date_없이_가용_시간_조회시_400을_반환한다() {
         RestAssured.given()
                 .when().get("/times/available?themeId=1")
-                .then().statusCode(500);
+                .then().statusCode(400);
     }
 
     private int availableCount(String date, long themeId) {

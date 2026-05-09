@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanInstantiationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,7 +16,7 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(DataAccessException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String dataAccessExceptionHandle(DataAccessException e) {
         log.error("데이터베이스 관련 오류가 발생했습니다", e);
         return DATABASE_ERROR;
@@ -33,5 +34,12 @@ public class GlobalExceptionHandler {
     public String exceptionHandle(Exception e) {
         log.error("서버 내부 오류입니다.", e);
         return UNEXPECTED_ERROR;
+    }
+
+    @ExceptionHandler(BeanInstantiationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleBinding(BeanInstantiationException e) {
+        log.error("빈 초기화중 문제가 발생했습니다.", e);
+        return e.getMessage();
     }
 }
