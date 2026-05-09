@@ -6,54 +6,68 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 /*
  * 미션2 사이클1 - 사용자 예약 API 요구사항 테스트.
- * data.sql 시드 데이터(시간 6개, 테마 13개, 예약 25건)를 토대로 정상 흐름을 검증한다.
+ *
+ * 각 테스트가 자기 데이터(시간 1개, 테마 2개)를 @BeforeEach에서 직접 준비.
+ * 미래 날짜를 사용하므로 시계 통제는 불필요.
  *
  * 검증 시나리오:
- * 1) 미래 날짜 + 시드 테마의 가능 시간 조회 → 시드의 6개 시간 모두 보임
- * 2) 그중 하나로 예약 생성
- * 3) 같은 (날짜, 테마)로 다시 조회 → 5개 (방금 예약한 시간 빠짐)
- * 4) 같은 (날짜, 시간)이라도 다른 테마에는 여전히 예약 가능
+ * 1) 미래 날짜 + 테마A의 가능 시간 조회 → 1개
+ * 2) 그 시간으로 예약 생성
+ * 3) 같은 (날짜, 테마A) 조회 → 0개 (예약된 시간이 빠짐)
+ * 4) 같은 (날짜, 시간)이라도 테마B에는 여전히 예약 가능
  */
 
-/**
- *
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserReservationStepTest {
 
     private static final String FUTURE_DATE = "2050-12-31";
-    private static final long SEED_THEME_ISLAND = 1L;   // data.sql: 무인도 탈출
-    private static final long SEED_THEME_CITY = 2L;     // data.sql: 도시 탈출
-    private static final long SEED_TIME_10 = 1L;        // data.sql: 10:00
-    private static final int SEED_TIME_COUNT = 6;       // data.sql: 시간  6개
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private Long timeId;
+    private Long themeIdA;
+    private Long themeIdB;
+
+    @BeforeEach
+    void setUp() {
+        timeId = insertTime(LocalTime.of(10, 0));
+        themeIdA = insertTheme("테마A", "설명A", "https://example.com/a.jpg");
+        themeIdB = insertTheme("테마B", "설명B", "https://example.com/b.jpg");
+    }
+
 
     @Test
     @DisplayName("사용자 예약 정상 흐름: 가능 시간 조회 → 예약 → 다시 조회 시 해당 시간이 빠진다")
     void 사용자_예약_정상_흐름() {
-        // 1) 미래 날짜 + 시드 테마의 가능 시간 조회 → 6개 (시드 시간 전부)
+        // 1) 미래 날짜 + 테마A의 가능 시간 조회 → 1개
         RestAssured.given().log().all()
-                .when().get("/user/themes/" + SEED_THEME_ISLAND + "/available-times?date=" + FUTURE_DATE)
+                .when().get("/user/themes/" + themeIdA + "/available-times?date=" + FUTURE_DATE)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(SEED_TIME_COUNT));
+                .body("size()", is(1));
 
         // 2) 10:00 으로 예약 생성
         Map<String, Object> reservationBody = new HashMap<>();
         reservationBody.put("name", "브라운");
         reservationBody.put("date", FUTURE_DATE);
-        reservationBody.put("timeId", SEED_TIME_10);
-        reservationBody.put("themeId", SEED_THEME_ISLAND);
+        reservationBody.put("timeId", timeId);
+        reservationBody.put("themeId", themeIdA);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -63,50 +77,70 @@ public class UserReservationStepTest {
                 .statusCode(201)
                 .body("name", is("브라운"))
                 .body("date", is(FUTURE_DATE))
-                .body("time.id", is((int) SEED_TIME_10))
-                .body("theme.id", is((int) SEED_THEME_ISLAND));
+                .body("time.id", is(timeId.intValue()))
+                .body("theme.id", is(themeIdA.intValue()));
 
-        // 3) 다시 조회 → 5개 (10:00이 빠져 있어야 함)
+        // 3) 다시 조회 → 0개 (10:00이 빠져 있어야 함)
         ExtractableResponse<Response> afterReservation = RestAssured.given().log().all()
-                .when().get("/user/themes/" + SEED_THEME_ISLAND + "/available-times?date=" + FUTURE_DATE)
+                .when().get("/user/themes/" + themeIdA + "/available-times?date=" + FUTURE_DATE)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(SEED_TIME_COUNT - 1))
+                .body("size()", is(0))
                 .extract();
 
         // 빠진 시간이 정확히 10:00(id=1)인지 확인
         List<Integer> remainingIds = afterReservation.jsonPath().getList("id");
-        assert !remainingIds.contains((int) SEED_TIME_10);
+        assert !remainingIds.contains(timeId.intValue());
     }
 
     @Test
     @DisplayName("같은_시간_다른_테마는_각각_예약_가능")
     void 같은_시간_다른_테마는_각각_예약_가능() {
-        // 무인도 테마에 10:00 예약
+        // 테마A에 10:00 예약
         Map<String, Object> first = new HashMap<>();
         first.put("name", "브라운");
         first.put("date", FUTURE_DATE);
-        first.put("timeId", SEED_TIME_10);
-        first.put("themeId", SEED_THEME_ISLAND);
+        first.put("timeId", timeId);
+        first.put("themeId", themeIdA);
         RestAssured.given().contentType(ContentType.JSON).body(first)
                 .when().post("/user/reservations")
                 .then().statusCode(201);
 
-        // 도시 테마의 같은 날짜 가능 시간 조회 → 10:00 여전히 보여야 함
+        // 테마B의 같은 날짜 가능 시간 조회 → 10:00 여전히 보여야 함
         RestAssured.given().log().all()
-                .when().get("/user/themes/" + SEED_THEME_CITY + "/available-times?date=" + FUTURE_DATE)
+                .when().get("/user/themes/" + themeIdB + "/available-times?date=" + FUTURE_DATE)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(SEED_TIME_COUNT));
+                .body("size()", is(1));
 
         // 그리고 실제로 같은 (날짜, 시간)에 다른 테마로 예약 가능
         Map<String, Object> second = new HashMap<>();
         second.put("name", "콘");
         second.put("date", FUTURE_DATE);
-        second.put("timeId", SEED_TIME_10);
-        second.put("themeId", SEED_THEME_CITY);
+        second.put("timeId", timeId);
+        second.put("themeId", themeIdB);
         RestAssured.given().contentType(ContentType.JSON).body(second)
                 .when().post("/user/reservations")
                 .then().statusCode(201);
     }
+
+
+    private Long insertTime(LocalTime startAt) {
+        jdbcTemplate.update(
+                "INSERT INTO reservation_time (start_at) VALUES (?)",
+                Time.valueOf(startAt));
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM reservation_time WHERE start_at = ?",
+                Long.class, Time.valueOf(startAt));
+    }
+
+    private Long insertTheme(String name, String description, String thumbnailUrl) {
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
+                name, description, thumbnailUrl);
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM theme WHERE name = ?",
+                Long.class, name);
+    }
+
 }
