@@ -72,9 +72,9 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         // when & then
         Long otherTimeId = 99L;
         LocalDate otherDate = date.plusDays(1);
-        assertThat(reservationRepository.existByDateAndTimeId(date, 1L)).isTrue();
-        assertThat(reservationRepository.existByDateAndTimeId(date, otherTimeId)).isFalse();
-        assertThat(reservationRepository.existByDateAndTimeId(otherDate, 1L)).isFalse();
+        assertThat(reservationRepository.existByDateAndThemeIdAndTimeId(date, 1L, 1L)).isTrue();
+        assertThat(reservationRepository.existByDateAndThemeIdAndTimeId(date, 1L, otherTimeId)).isFalse();
+        assertThat(reservationRepository.existByDateAndThemeIdAndTimeId(otherDate, 1L, 1L)).isFalse();
     }
 
     @Test

@@ -52,7 +52,7 @@ public class ReservationFixture {
 
     public static Reservation createDefaultReservationWithName(String name) {
         LocalDate date = LocalDate.now().plusDays(1);
-        Theme theme = ThemeFixture.createDefaultTheme();
+        Theme theme = ThemeFixture.createThemeWithId();
         ReservationTime time = ReservationTimeFixture.createDefaultReservationTime();
         return Reservation.reserve(name, date, theme, time);
     }

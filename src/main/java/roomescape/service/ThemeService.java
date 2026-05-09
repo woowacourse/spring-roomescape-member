@@ -23,7 +23,7 @@ public class ThemeService {
     private final ReservationTimeRepository reservationTimeRepository;
 
     public ThemeRegisterResult register(ThemeRegisterCommand command) {
-        validateDuplicationName(command);
+        validateDuplicationName(command.name());
 
         Theme theme = new Theme(command.name(), command.description(), command.thumbnailImageUrl());
 
@@ -68,9 +68,9 @@ public class ThemeService {
         return ThemeTimesResult.from(projection);
     }
 
-    private void validateDuplicationName(ThemeRegisterCommand command) {
-        if (themeRepository.isActiveByName(command.name())) {
-            throw new DuplicateEntityException("이미 존재하는 테마입니다. 테마 명: %s", command.name());
+    private void validateDuplicationName(String name) {
+        if (themeRepository.isActiveByName(name)) {
+            throw new DuplicateEntityException("이미 존재하는 테마입니다. 테마 명: %s", name);
         }
     }
 }

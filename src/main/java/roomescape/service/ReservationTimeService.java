@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import static java.util.Objects.requireNonNull;
-
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +20,6 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResult register(ReservationTimeCommand command) {
-        requireNonNull(command, "예약 시간 정보가 필요합니다.");
-
         validateAlreadyTime(command.startAt());
         ReservationTime reservationTime = new ReservationTime(command.startAt());
         ReservationTime saved = reservationTimeRepository.save(reservationTime);

@@ -26,8 +26,8 @@ public class ReservationService {
 
     @Transactional
     public ReservationResult reserve(ReservationCommand command) {
-        Theme theme = findThemeWithThrow(command);
-        ReservationTime time = findTimeWithThrow(command);
+        Theme theme = findThemeWithThrow(command.themeId());
+        ReservationTime time = findTimeWithThrow(command.timeId());
         validateAlreadyReservation(command, time);
 
         Reservation reservation = Reservation.reserve(command.name(), command.date(), theme, time);
@@ -49,18 +49,18 @@ public class ReservationService {
     }
 
     private void validateAlreadyReservation(ReservationCommand command, ReservationTime time) {
-        if (reservationRepository.existByDateAndTimeId(command.date(), command.timeId())) {
+        if (reservationRepository.existByDateAndThemeIdAndTimeId(command.date(), command.themeId(), command.timeId())) {
             throw new DuplicateEntityException("이미 예약 된 날짜입니다. (%s-%s)", command.date(), time.getStartAt());
         }
     }
 
-    private Theme findThemeWithThrow(ReservationCommand command) {
-        return themeRepository.findById(command.themeId())
+    private Theme findThemeWithThrow(Long themeId) {
+        return themeRepository.findById(themeId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마 정보입니다."));
     }
 
-    private ReservationTime findTimeWithThrow(ReservationCommand command) {
-        return reservationTimeRepository.findById(command.timeId())
+    private ReservationTime findTimeWithThrow(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간 정보입니다."));
     }
 }
