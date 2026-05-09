@@ -2,6 +2,7 @@ package roomescape.reservation.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.infra.ReservationRepository;
 import roomescape.reservation.infra.ReservationTimeRepository;
@@ -16,10 +17,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
+    @Transactional
     public ReservationTimeSaveResponse save(ReservationTimeSaveRequest body) {
         ReservationTime reservationTime = reservationTimeRepository.save(body.startAt());
 
@@ -35,6 +38,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    @Transactional
     public void delete(Long id) {
         reservationTimeRepository.deleteById(id);
     }

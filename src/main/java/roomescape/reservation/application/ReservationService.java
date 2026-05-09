@@ -2,6 +2,7 @@ package roomescape.reservation.application;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -16,11 +17,13 @@ import roomescape.reservation.presentation.dto.response.dto.TimeInformation;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
+    @Transactional
     public ReservationSaveResponse save(ReservationSaveRequest body) {
         ReservationTime time = reservationTimeRepository.findById(body.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID를 갖는 시간대는 존재하지 않습니다."));
@@ -46,6 +49,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public void delete(Long id) {
         reservationRepository.deleteById(id);
     }
