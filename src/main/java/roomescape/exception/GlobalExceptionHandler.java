@@ -19,11 +19,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseDto> handleValidException(MethodArgumentNotValidException exception) {
-        log.warn("Valid Error: ", exception);
+    public ResponseEntity<ErrorResponseDto> handleRequestValidException(MethodArgumentNotValidException exception) {
+        log.warn("Request Valid Error: ", exception);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponseDto(HttpStatus.BAD_REQUEST, exception.getFieldError().getDefaultMessage()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDto> handleDomainValidException(IllegalArgumentException exception) {
+        log.warn("Domain Valid Error: ", exception);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDto(HttpStatus.BAD_REQUEST, exception.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
