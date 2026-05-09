@@ -12,6 +12,7 @@ import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.request.ReservationCreateRequest;
 import roomescape.service.dto.response.ReservationOptionResponse;
 import roomescape.service.dto.response.ReservationResponse;
+import roomescape.service.dto.response.ReservationTimeResponse;
 import roomescape.service.dto.response.ReservationTimeStatusResponse;
 import roomescape.service.dto.response.ThemeResponse;
 
@@ -33,14 +34,18 @@ public class ReservationService {
     public List<ReservationResponse> getReservations() {
         return reservationRepository.findAll()
                 .stream()
-                .map(ReservationResponse::from)
+                .map(ReservationService::mapDomainToDto)
                 .toList();
     }
 
     public List<ReservationTimeStatusResponse> getReservationTimeStatuses(final LocalDate date, final Long themeId) {
         return reservationRepository.findReservationTimeStatusesByDateAndThemeId(date, themeId)
                 .stream()
-                .map(ReservationTimeStatusResponse::from)
+                .map(reservationTimesWithStatus -> new ReservationTimeStatusResponse(
+                        reservationTimesWithStatus.id(),
+                        reservationTimesWithStatus.startAt(),
+                        reservationTimesWithStatus.reserved()
+                ))
                 .toList();
     }
 
@@ -62,7 +67,7 @@ public class ReservationService {
 
         final Reservation savedReservation = reservationRepository.save(reservation);
 
-        return ReservationResponse.from(savedReservation);
+        return mapDomainToDto(savedReservation);
     }
 
     public void delete(final Long reservationId) {
@@ -79,9 +84,35 @@ public class ReservationService {
 
         List<ThemeResponse> themes = themeRepository.findAll()
                 .stream()
-                .map(ThemeResponse::from)
+                .map(theme -> new ThemeResponse(
+                        theme.getId(),
+                        theme.getName(),
+                        theme.getDescription(),
+                        theme.getThumbnailUrl()
+                ))
                 .toList();
 
         return new ReservationOptionResponse(dates, themes);
+    }
+
+    private static ReservationResponse mapDomainToDto(final Reservation reservation) {
+        final ReservationTime reservationTime = reservation.getTime();
+        final Theme theme = reservation.getTheme();
+
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
+                new ReservationTimeResponse(
+                        reservationTime.getId(),
+                        reservationTime.getStartAt()
+                ),
+                new ThemeResponse(
+                        theme.getId(),
+                        theme.getName(),
+                        theme.getDescription(),
+                        theme.getThumbnailUrl()
+                )
+        );
     }
 }
