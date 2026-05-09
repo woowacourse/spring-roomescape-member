@@ -44,7 +44,7 @@ public class ReservationTimeController {
         }
         createTimeRequest.validate();
         CreateTimeResponse response = reservationTimeService.createReservationTime(createTimeRequest);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/admin/times/{id}")
@@ -53,7 +53,7 @@ public class ReservationTimeController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         reservationTimeService.deleteReservationTime(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/times")
