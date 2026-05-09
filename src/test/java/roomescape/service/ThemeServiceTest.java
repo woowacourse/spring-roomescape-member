@@ -13,6 +13,7 @@ import roomescape.dto.theme.ThemeRequestDto;
 import roomescape.repository.theme.ThemeRepository;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -78,10 +79,10 @@ class ThemeServiceTest {
             .thenReturn(tenPopularThemesOrderByRank);
 
         // when
-        List<Theme> themes = themeService.findWeekPopularThemesOrderByRank(10);
+        Map<Theme, Integer> themes = themeService.findWeekPopularThemesOrderByRank(10);
 
         // then
-        assertThat(themes).containsExactlyElementsOf(tenPopularThemesOrderByRank);
+        assertThat(themes.keySet()).containsExactlyElementsOf(tenPopularThemesOrderByRank);
     }
 
     private List<Theme> createTenThemes() {

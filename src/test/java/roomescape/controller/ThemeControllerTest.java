@@ -9,7 +9,10 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -75,7 +78,7 @@ class ThemeControllerTest {
     @Test
     void 최근_1주일간_예약이_많은_테마_상위_10개를_조회할_수_있다() {
         // given
-        List<Theme> tenPopularThemesOrderByRank = createTenThemes();
+        Map<Theme, Integer> tenPopularThemesOrderByRank = createTenThemes();
         PopularThemesResponseDto expectedResponse = PopularThemesResponseDto.from(tenPopularThemesOrderByRank);
 
         when(themeService.findWeekPopularThemesOrderByRank(10))
@@ -174,12 +177,15 @@ class ThemeControllerTest {
         }
     }
 
-    private List<Theme> createTenThemes() {
-        List<Theme> themes = new ArrayList<>();
+    private Map<Theme, Integer> createTenThemes() {
+        Map<Theme, Integer> themesWithRank = new HashMap<>();
+
         for (int i = 0; i < 10; i++) {
-            themes.add(new Theme((long) i, new ThemeName("테마" + i), "테마" + i, ThemeImageUrl.defaultImageUrl()));
+            Theme theme = new Theme((long) i, new ThemeName("테마" + i), "설명" + i, ThemeImageUrl.defaultImageUrl());
+            themesWithRank.put(theme, i);
         }
-        return themes;
+
+        return themesWithRank;
     }
 
     private ThemeRequestDto themeRequestDtoFrom(Theme theme) {
