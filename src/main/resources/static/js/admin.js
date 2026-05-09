@@ -72,9 +72,10 @@ function initTimeSelectBox() {
     minuteSelect.value = "00";
 }
 
-// 날짜 관리
+// 날짜 관리 → 휴무일 관리로 변경
+
 async function loadDates() {
-    const response = await fetch("/admin/dates");
+    const response = await fetch("/admin/closed-dates");
     const dates = await response.json();
 
     const tbody = document.getElementById("date-table-body");
@@ -105,29 +106,26 @@ async function createDate() {
         return;
     }
 
-    await fetch("/admin/dates", {
+    if (new Date(date) < new Date(new Date().toDateString())) {
+        alert("과거 날짜는 휴무일로 등록할 수 없습니다.");
+        return;
+    }
+
+    await fetch("/admin/closed-dates", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date })
     });
 
     dateInput.value = "";
     selectedDateText.textContent = "날짜를 선택하세요";
-
     await loadDates();
 }
 
 async function deleteDate(id) {
-    if (!confirm("해당 날짜를 삭제하시겠습니까?")) {
-        return;
-    }
+    if (!confirm("해당 휴무일을 삭제하시겠습니까?")) return;
 
-    await fetch(`/admin/dates/${id}`, {
-        method: "DELETE"
-    });
-
+    await fetch(`/admin/closed-dates/${id}`, { method: "DELETE" });
     await loadDates();
 }
 

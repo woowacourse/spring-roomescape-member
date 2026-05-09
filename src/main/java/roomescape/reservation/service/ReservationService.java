@@ -9,10 +9,9 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.closeddate.repository.ClosedDateRepository;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
-import roomescape.date.domain.ReservationDate;
-import roomescape.date.repository.ReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.dto.response.ReservationResponse;
@@ -28,17 +27,19 @@ import roomescape.time.repository.ReservationTimeRepository;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationDateRepository reservationDateRepository;
+    private final ClosedDateRepository closedDateRepository;
     private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
-                              ReservationDateRepository reservationDateRepository, ThemeRepository themeRepository) {
+                              ClosedDateRepository closedDateRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
-        this.reservationDateRepository = reservationDateRepository;
+        this.closedDateRepository = closedDateRepository;
         this.themeRepository = themeRepository;
     }
+
 
     @Transactional(readOnly = true)
     public List<ReservationResponse> readAll() {
@@ -59,22 +60,25 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
 
-        ReservationDate reservationDate = reservationDateRepository.findById(dto.dateId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 날짜입니다."));
-
         Theme theme = themeRepository.findById(dto.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 테마가 존재하지 않습니다."));
 
-        validateNotAlreadyBookedByOthers(reservationDate.date(), reservationTime.startAt(), theme);
-        validateUserHasNoReservationAtSameTime(dto.name(), reservationDate, reservationTime);
+        if (closedDateRepository.existsByDate(dto.date())) {
+            throw new IllegalArgumentException("예약 불가능한 날짜입니다.");
+        }
+
+        validateNotAlreadyBookedByOthers(dto.date(), reservationTime.startAt(), theme);
+        validateUserHasNoReservationAtSameTime(dto.name(), dto.date(), reservationTime);
+
         Long id = reservationRepository.save(
-                Reservation.create(dto.name(), reservationDate.date(), reservationTime.startAt(), theme));
-        log.info("Reservation created: name={}, date={}, time={}, theme={}", dto.name(), reservationDate.date(), reservationTime.startAt(), theme.name());
+                Reservation.create(dto.name(), dto.date(), reservationTime.startAt(), theme));
+
+        log.info("Reservation created: name={}, date={}", dto.name(), dto.date());
 
         return new ReservationResponse(
                 id,
                 dto.name(),
-                reservationDate.date(),
+                dto.date(),
                 reservationTime.startAt(),
                 ThemeDetailDto.from(theme),
                 RESERVED
@@ -87,8 +91,8 @@ public class ReservationService {
         }
     }
 
-    private void validateUserHasNoReservationAtSameTime(String name, ReservationDate date, ReservationTime time) {
-        if (reservationRepository.existsByNameAndDateAndTime(name, date.date(), time.startAt())) {
+    private void validateUserHasNoReservationAtSameTime(String name, LocalDate date, ReservationTime time) {
+        if (reservationRepository.existsByNameAndDateAndTime(name, date, time.startAt())) {
             throw new ConflictException("동일한 날짜와 시간에 예약이 존재합니다.");
         }
     }

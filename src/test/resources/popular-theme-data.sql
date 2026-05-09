@@ -2,22 +2,15 @@ SET REFERENTIAL_INTEGRITY FALSE;
 
 TRUNCATE TABLE reservation RESTART IDENTITY;
 TRUNCATE TABLE reservation_time RESTART IDENTITY;
-TRUNCATE TABLE reservation_date RESTART IDENTITY;
+TRUNCATE TABLE closed_date RESTART IDENTITY;
 TRUNCATE TABLE theme RESTART IDENTITY;
 
 SET REFERENTIAL_INTEGRITY TRUE;
-    
+
 -- 예약 시간 등록
 INSERT INTO reservation_time (start_at) VALUES ('10:00');
 INSERT INTO reservation_time (start_at) VALUES ('12:00');
 INSERT INTO reservation_time (start_at) VALUES ('14:00');
-
--- 예약 날짜 등록 (오늘 기준 최근 7일 이내)
-INSERT INTO reservation_date (date) VALUES (DATEADD('DAY', -1, CURRENT_DATE));
-INSERT INTO reservation_date (date) VALUES (DATEADD('DAY', -2, CURRENT_DATE));
-INSERT INTO reservation_date (date) VALUES (DATEADD('DAY', -3, CURRENT_DATE));
-INSERT INTO reservation_date (date) VALUES (DATEADD('DAY', -4, CURRENT_DATE));
-INSERT INTO reservation_date (date) VALUES (DATEADD('DAY', -5, CURRENT_DATE));
 
 -- 테마 등록
 INSERT INTO theme (name, description, thumbnail_url, is_active) VALUES ('공포', '공포 테마 설명', 'https://horror.jpg', true);

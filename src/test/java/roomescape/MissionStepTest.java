@@ -8,6 +8,7 @@ import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +61,6 @@ class MissionStepTest {
     void DB_조회_API_전환() {
         String reservationName = "브라운";
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-        jdbcTemplate.update("INSERT INTO reservation_date (date) VALUES (?)", "2099-01-01");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "테마1", "테마1 설명",
                 "테마1 썸네일");
         jdbcTemplate.update("INSERT INTO reservation (name, date, start_at, theme_id, status) VALUES (?, ?, ?, ?, ?)",
@@ -100,7 +100,6 @@ class MissionStepTest {
                 .then().log().all()
                 .statusCode(200);
     }
-
     @Test
     void 예약과_시간_연결() {
         Map<String, String> time = new HashMap<>();
@@ -123,19 +122,10 @@ class MissionStepTest {
                 .then().log().all()
                 .statusCode(201);
 
-        Map<String, Object> date = new HashMap<>();
-        date.put("date", "2099-01-01");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(date)
-                .when().post("/admin/dates")
-                .then().log().all()
-                .statusCode(201);
-
         Map<String, Object> reservation = new HashMap<>();
         String reservationName = "브라운";
         reservation.put("name", reservationName);
-        reservation.put("dateId", 1);
+        reservation.put("date", LocalDate.now().plusWeeks(1).toString());  // dateId → date
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 

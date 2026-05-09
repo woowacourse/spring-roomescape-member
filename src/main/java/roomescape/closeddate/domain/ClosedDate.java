@@ -1,26 +1,26 @@
-package roomescape.date.domain;
+package roomescape.closeddate.domain;
 
 import java.time.LocalDate;
 
-public class ReservationDate {
+public class ClosedDate {
     private Long id;
     private LocalDate date;
 
-    private ReservationDate(Long id, LocalDate date) {
+    private ClosedDate(Long id, LocalDate date) {
         validateDate(date);
         this.id = id;
         this.date = date;
     }
 
-    public static ReservationDate create(LocalDate date) {
-        ReservationDate reservationDate = new ReservationDate(null, date);
+    public static ClosedDate create(LocalDate date) {
+        ClosedDate reservationDate = new ClosedDate(null, date);
         validatePast(date);
         return reservationDate;
     }
 
-    public static ReservationDate load(Long id, LocalDate date) {
+    public static ClosedDate load(Long id, LocalDate date) {
         validateId(id);
-        return new ReservationDate(id, date);
+        return new ClosedDate(id, date);
     }
 
     public Long id() {
@@ -33,13 +33,13 @@ public class ReservationDate {
 
     private static void validateId(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("예약날짜 ID는 필수입니다.");
+            throw new IllegalArgumentException("휴일 날짜 ID는 필수입니다.");
         }
     }
 
     private static void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+            throw new IllegalArgumentException("휴일 날짜는 필수입니다.");
         }
     }
 

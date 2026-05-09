@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import roomescape.date.domain.ReservationDate;
-import roomescape.date.repository.JdbcReservationDateRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -24,7 +22,6 @@ import roomescape.time.domain.ReservationTime;
 @JdbcTest
 class ReservationTimeRepositoryTest {
     private JdbcReservationTimeRepository jdbcReservationTimeRepository;
-    private JdbcReservationDateRepository jdbcReservationDateRepository;
     private JdbcThemeRepository jdbcThemeRepository;
     private JdbcReservationRepository jdbcReservationRepository;
 
@@ -34,7 +31,6 @@ class ReservationTimeRepositoryTest {
     @BeforeEach
     void setup() {
         jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
-        jdbcReservationDateRepository = new JdbcReservationDateRepository(jdbcTemplate);
         jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
         jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate);
     }
@@ -120,22 +116,22 @@ class ReservationTimeRepositoryTest {
     }
 
     @Test
-    @DisplayName("예약 가능한 시간을 조회한다. ")
+    @DisplayName("예약 가능한 시간을 조회한다.")
     void findAvailableTimes() {
         // given
         ReservationTime time1 = savedTime(ReservationTime.create(LocalTime.of(12, 0)));
         ReservationTime time2 = savedTime(ReservationTime.create(LocalTime.of(13, 0)));
         ReservationTime time3 = savedTime(ReservationTime.create(LocalTime.of(14, 0)));
-        ReservationDate date1 = jdbcReservationDateRepository.save(ReservationDate.create(LocalDate.of(2099, 10, 10)));
+        LocalDate date = LocalDate.of(2099, 10, 10);
         Theme theme1 = Theme.create("테마1", "테마 설명", "테마 썸네일");
         theme1.updateStatus(true);
         Theme theme2 = jdbcThemeRepository.save(theme1);
-        jdbcReservationRepository.save(Reservation.create("한다", date1.date(), time1.startAt(), theme2));
-        jdbcReservationRepository.save(Reservation.create("한다", date1.date(), time2.startAt(), theme2));
+        jdbcReservationRepository.save(Reservation.create("한다", date, time1.startAt(), theme2));
+        jdbcReservationRepository.save(Reservation.create("한다", date, time2.startAt(), theme2));
 
         // when
         List<ReservationTime> availableTimes = jdbcReservationTimeRepository.findAvailableByDateAndThemeId(
-                date1.date(), theme2.id());
+                date, theme2.id());
 
         // then
         assertThat(availableTimes)

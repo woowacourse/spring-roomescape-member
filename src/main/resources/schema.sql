@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS reservation_time
     PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS reservation_date
+CREATE TABLE IF NOT EXISTS closed_date
 (
     id   BIGINT NOT NULL AUTO_INCREMENT,
     date DATE   NOT NULL UNIQUE,

@@ -2,7 +2,7 @@ let selectedDate = null;
 let selectedTheme = null;
 let selectedTime = null;
 
-const DEFAULT_THEME_URL = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80";
+const DEFAULT_THUMBNAIL_URL = 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80';
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadThemes();
@@ -41,7 +41,7 @@ async function loadPopularThemes() {
         article.className = "popular-theme-card";
 
         article.innerHTML = `
-            <img src="${theme.thumbnailUrl || DEFAULT_THEME_URL}" alt="${theme.name}">
+            <img src="${theme.thumbnailUrl || DEFAULT_THUMBNAIL_URL}" alt="${theme.name}">
             <div class="popular-rank-badge">${index + 1}</div>
             <div class="popular-theme-content">
                 <h3>${theme.name}</h3>
@@ -51,12 +51,8 @@ async function loadPopularThemes() {
 
         article.addEventListener("click", () => {
             selectTheme(theme);
-
             const themeSection = document.getElementById("theme-select-section");
-            themeSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
+            themeSection.scrollIntoView({ behavior: "smooth", block: "start" });
         });
 
         popularThemeList.appendChild(article);
@@ -72,12 +68,11 @@ async function loadDates() {
     }
 
     const dates = await response.json();
-
     const dateList = document.getElementById("date-list");
     dateList.innerHTML = "";
 
-    dates.forEach(date => {
-        const localDate = new Date(date.date);
+    dates.forEach(dateDto => {
+        const localDate = new Date(dateDto.date);
         const month = localDate.toLocaleString("en-US", { month: "short" }).toUpperCase();
         const day = localDate.getDate();
 
@@ -92,9 +87,8 @@ async function loadDates() {
         button.addEventListener("click", () => {
             document.querySelectorAll(".date-card")
                 .forEach(item => item.classList.remove("selected"));
-
             button.classList.add("selected");
-            selectedDate = date;
+            selectedDate = dateDto.date;
         });
 
         dateList.appendChild(button);
@@ -110,7 +104,6 @@ async function loadThemes() {
     }
 
     const themes = await response.json();
-
     const themeList = document.getElementById("theme-list");
     themeList.innerHTML = "";
 
@@ -124,7 +117,7 @@ async function loadThemes() {
         article.dataset.themeThumbnailUrl = theme.thumbnailUrl;
 
         article.innerHTML = `
-            <img src="${theme.thumbnailUrl || DEFAULT_THEME_URL}" alt="${theme.name}">
+            <img src="${theme.thumbnailUrl || DEFAULT_THUMBNAIL_URL}" alt="${theme.name}">
             <div class="theme-card-content">
                 <h3>${theme.name}</h3>
                 <p>${theme.description}</p>
@@ -145,12 +138,10 @@ function selectTheme(theme) {
     document.querySelectorAll(".theme-card")
         .forEach(card => {
             const cardThemeId = Number(card.dataset.themeId);
-
             if (cardThemeId === Number(theme.id)) {
                 card.classList.add("selected");
                 return;
             }
-
             card.classList.remove("selected");
         });
 }
@@ -181,7 +172,7 @@ function goBackToSelectStep() {
 }
 
 async function loadAvailableTimes() {
-    const response = await fetch(`/member/times?date=${selectedDate.date}&themeId=${selectedTheme.id}`);
+    const response = await fetch(`/member/times?date=${selectedDate}&themeId=${selectedTheme.id}`);
 
     if (!response.ok) {
         alert("예약 가능 시간을 불러오지 못했습니다.");
@@ -189,7 +180,6 @@ async function loadAvailableTimes() {
     }
 
     const times = await response.json();
-
     const timeList = document.getElementById("time-list");
     timeList.innerHTML = "";
     selectedTime = null;
@@ -208,7 +198,6 @@ async function loadAvailableTimes() {
         button.addEventListener("click", () => {
             document.querySelectorAll(".time-button")
                 .forEach(item => item.classList.remove("selected"));
-
             button.classList.add("selected");
             selectedTime = time;
         });
@@ -232,16 +221,14 @@ async function createReservation() {
 
     const requestBody = {
         name: name,
-        dateId: selectedDate.id,
+        date: selectedDate,
         timeId: selectedTime.id,
         themeId: selectedTheme.id
     };
 
     const response = await fetch("/member/reservations", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody)
     });
 
@@ -255,10 +242,7 @@ async function createReservation() {
 }
 
 function formatTime(value) {
-    if (!value) {
-        return "";
-    }
-
+    if (!value) return "";
     const parts = value.split(":");
     return `${parts[0]}:${parts[1]}`;
 }
