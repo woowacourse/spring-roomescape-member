@@ -1,46 +1,53 @@
 package roomescape.dao;
 
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Time;
+import roomescape.dao.row.TimeRow;
+
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class TimeJdbcDao implements TimeDao {
-    public static final RowMapper<Time> ROW_MAPPER = (resultSet, rowNum) -> new Time(
+    private static final RowMapper<TimeRow> ROW_MAPPER = (resultSet, rowNum) -> new TimeRow(
             resultSet.getLong("time_id"),
             LocalTime.parse(resultSet.getString("start_at"))
     );
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert timeInsert;
+
 
     public TimeJdbcDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.timeInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
+                .withTableName("times")
+                .usingGeneratedKeyColumns("id")
+                .usingColumns("start_at");
     }
 
     @Override
-    public List<Time> findAll() {
+    public List<TimeRow> findAll() {
         String sql = """
                 SELECT
                     id AS time_id,
-                    start_at
+                    start_at AS time_start_at
                 FROM times
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
-    public Optional<Time> findById(Long id) {
+    public Optional<TimeRow> findById(Long id) {
         String sql = """
                 SELECT
                     id AS time_id,
-                    start_at
+                    start_at AS time_start_at
                 FROM times
                 WHERE id = :id
                 """;
@@ -52,15 +59,11 @@ public class TimeJdbcDao implements TimeDao {
     }
 
     @Override
-    public Time insert(Time time) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
-                .withTableName("times")
-                .usingGeneratedKeyColumns("id");
+    public TimeRow create(TimeRow time) {
+        SqlParameterSource params = new MapSqlParameterSource("start_at", time.startAt());
 
-        SqlParameterSource params = new MapSqlParameterSource("start_at", time.getStartAt());
-
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return new Time(id, time.getStartAt());
+        Long id = timeInsert.executeAndReturnKey(params).longValue();
+        return new TimeRow(id, time.startAt());
     }
 
     @Override
@@ -79,7 +82,8 @@ public class TimeJdbcDao implements TimeDao {
     public boolean existsByStartAt(LocalTime startAt) {
         String sql = """
                 SELECT EXISTS(
-                    SELECT 1 FROM times WHERE start_at = :start_at
+                    SELECT 1 FROM times
+                    WHERE start_at = :start_at
                 )
                 """;
         SqlParameterSource params = new MapSqlParameterSource("start_at", startAt);

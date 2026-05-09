@@ -8,7 +8,7 @@ public interface CommonDao<T> {
 
     Optional<T> findById(Long id);
 
-    T insert(T t);
+    T create(T t);
 
     int delete(Long id);
 }

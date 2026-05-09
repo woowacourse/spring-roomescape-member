@@ -1,23 +1,23 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.dao.row.ThemeRow;
+import roomescape.dao.row.TimeRow;
 import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
-import roomescape.domain.Time;
-import roomescape.domain.vo.Name;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.service.fake.FakeReservationDao;
 import roomescape.service.fake.FakeThemeDao;
 import roomescape.service.fake.FakeTimeDao;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationServiceTest {
 
@@ -36,16 +36,16 @@ class ReservationServiceTest {
         themeDao = new FakeThemeDao();
         reservationService = new ReservationService(reservationDao, timeDao, themeDao);
 
-        Time time1 = timeDao.insert(new Time(LocalTime.of(13, 0)));
-        Time time2 = timeDao.insert(new Time(LocalTime.of(14, 0)));
+        TimeRow time1 = timeDao.create(new TimeRow(LocalTime.of(13, 0)));
+        TimeRow time2 = timeDao.create(new TimeRow(LocalTime.of(14, 0)));
 
-        Theme theme1 = themeDao.insert(new Theme(new Name("방탈출 이름1"), "http://thumbnail_url", "방탈출을 할 수 있다."));
-        Theme theme2 = themeDao.insert(new Theme(new Name("방탈출 이름2"), "http://thumbnail_url", "방탈출을 할 수 있다."));
+        ThemeRow theme1 = themeDao.create(new ThemeRow("방탈출 이름1", "http://thumbnail_url", "방탈출을 할 수 있다."));
+        ThemeRow theme2 = themeDao.create(new ThemeRow("방탈출 이름2", "http://thumbnail_url", "방탈출을 할 수 있다."));
 
         requestDto1 = new ReservationRequestDto(
-                "유저1", LocalDate.of(2026, 5, 3), time1.getId(), theme1.getId());
+                "유저1", LocalDate.of(2026, 5, 3), time1.id(), theme1.id());
         requestDto2 = new ReservationRequestDto(
-                "유저2", LocalDate.of(2026, 5, 3), time2.getId(), theme2.getId());
+                "유저2", LocalDate.of(2026, 5, 3), time2.id(), theme2.id());
     }
 
     @Test
@@ -99,9 +99,9 @@ class ReservationServiceTest {
         @Test
         void 테마_날짜_시간_동일한_예약이면_예외를_반환한다() {
             Reservation saved = createDtoHandler(requestDto1);
-
             assertThatThrownBy(() -> reservationService.create(requestDto1))
                     .isInstanceOf(ConflictException.class);
         }
     }
+
 }

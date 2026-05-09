@@ -1,16 +1,16 @@
 package roomescape.dao;
 
+import roomescape.dao.row.AvailableTimeRow;
+import roomescape.dao.row.ThemeRow;
+import roomescape.dto.request.PopularThemeRequestDto;
+
 import java.time.LocalDate;
 import java.util.List;
-import roomescape.domain.Theme;
-import roomescape.domain.vo.Name;
-import roomescape.dto.request.PopularThemeRequestDto;
-import roomescape.dto.response.AvailableTimeResponseDto;
 
-public interface ThemeDao extends CommonDao<Theme> {
-    boolean existsByName(Name name);
+public interface ThemeDao extends CommonDao<ThemeRow> {
+    boolean existsByName(String name);
 
-    List<AvailableTimeResponseDto> findAvailableTimesById(Long themeId, LocalDate localDate);
+    List<AvailableTimeRow> findAvailableTimesById(Long themeId, LocalDate localDate);
 
-    List<Theme> findPopulars(PopularThemeRequestDto popularThemeRequestDto);
+    List<ThemeRow> findPopulars(PopularThemeRequestDto popularThemeRequestDto);
 }

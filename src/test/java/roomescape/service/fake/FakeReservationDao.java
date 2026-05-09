@@ -1,27 +1,28 @@
 package roomescape.service.fake;
 
+import roomescape.dao.ReservationDao;
+import roomescape.dao.row.ReservationRow;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import roomescape.dao.ReservationDao;
-import roomescape.domain.Reservation;
 
 public class FakeReservationDao implements ReservationDao {
 
-    private final Map<Long, Reservation> store = new HashMap<>();
+    private final Map<Long, ReservationRow> store = new HashMap<>();
     private long sequence = 0L;
 
 
     @Override
-    public List<Reservation> findAll() {
+    public List<ReservationRow> findAll() {
         return store.values().stream().toList();
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
-        Reservation reservation = store.get(id);
+    public Optional<ReservationRow> findById(Long id) {
+        ReservationRow reservation = store.get(id);
 
         if (reservation == null) {
             return Optional.empty();
@@ -31,14 +32,14 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Reservation insert(Reservation reservation) {
+    public ReservationRow create(ReservationRow reservation) {
         Long id = ++sequence;
-        Reservation newReservation = new Reservation(
+        ReservationRow newReservation = new ReservationRow(
                 id,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTime(),
-                reservation.getTheme());
+                reservation.name(),
+                reservation.date(),
+                reservation.timeRow(),
+                reservation.themeRow());
 
         store.put(id, newReservation);
         return newReservation;
@@ -47,7 +48,7 @@ public class FakeReservationDao implements ReservationDao {
 
     @Override
     public int delete(Long id) {
-        Reservation remove = store.remove(id);
+        ReservationRow remove = store.remove(id);
 
         if (remove == null) {
             return 0;
@@ -60,22 +61,22 @@ public class FakeReservationDao implements ReservationDao {
         return store.values()
                 .stream()
                 .anyMatch(reservation ->
-                        reservation.getTheme().getId().equals(themeId)
-                                && reservation.getTime().getId().equals(timeId)
-                                && reservation.getDate().equals(date));
+                        reservation.themeRow().id().equals(themeId)
+                                && reservation.timeRow().id().equals(timeId)
+                                && reservation.date().equals(date));
     }
 
     @Override
     public boolean existsByThemeId(Long themeId) {
         return store.values()
                 .stream()
-                .anyMatch(reservation -> reservation.getTheme().getId().equals(themeId));
+                .anyMatch(reservation -> reservation.themeRow().id().equals(themeId));
     }
 
     @Override
     public boolean existsByTimeId(Long timeId) {
         return store.values()
                 .stream()
-                .anyMatch(reservation -> reservation.getTime().getId().equals(timeId));
+                .anyMatch(reservation -> reservation.timeRow().id().equals(timeId));
     }
 }

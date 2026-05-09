@@ -1,9 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,11 +7,17 @@ import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.TimeDao;
-import roomescape.domain.Reservation;
+import roomescape.dao.row.ReservationRow;
+import roomescape.dao.row.TimeRow;
 import roomescape.domain.Time;
 import roomescape.dto.request.TimeRequestDto;
 import roomescape.service.fake.FakeReservationDao;
 import roomescape.service.fake.FakeTimeDao;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TimeServiceTest {
 
@@ -65,7 +67,7 @@ class TimeServiceTest {
         @Test
         void 예약이_존재하면_삭제할_수_없다() {
             Time savedTime = timeService.create(timeRequestDto1);
-            reservationDao.insert(new Reservation("달수", LocalDate.now(), savedTime, null));
+            reservationDao.create(new ReservationRow("달수", LocalDate.now(), TimeRow.from(savedTime), null));
 
             assertThatThrownBy(() -> timeService.delete(savedTime.getId()))
                     .isInstanceOf(ConflictException.class);

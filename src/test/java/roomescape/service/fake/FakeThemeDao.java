@@ -1,32 +1,32 @@
 package roomescape.service.fake;
 
+import roomescape.dao.ThemeDao;
+import roomescape.dao.row.AvailableTimeRow;
+import roomescape.dao.row.ThemeRow;
+import roomescape.dto.request.PopularThemeRequestDto;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import roomescape.dao.ThemeDao;
-import roomescape.domain.Theme;
-import roomescape.domain.vo.Name;
-import roomescape.dto.request.PopularThemeRequestDto;
-import roomescape.dto.response.AvailableTimeResponseDto;
 
 public class FakeThemeDao implements ThemeDao {
-    private final Map<Long, Theme> store = new HashMap<>();
+    private final Map<Long, ThemeRow> store = new HashMap<>();
 
     private long sequence = 0L;
 
 
     @Override
-    public List<Theme> findAll() {
+    public List<ThemeRow> findAll() {
         return store.values()
                 .stream()
                 .toList();
     }
 
     @Override
-    public Optional<Theme> findById(Long id) {
-        Theme theme = store.get(id);
+    public Optional<ThemeRow> findById(Long id) {
+        ThemeRow theme = store.get(id);
 
         if (theme == null) {
             return Optional.empty();
@@ -35,16 +35,16 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public Theme insert(Theme theme) {
+    public ThemeRow create(ThemeRow theme) {
         Long id = ++sequence;
-        Theme newTheme = new Theme(id, theme.getName(), theme.getThumbnailUrl(), theme.getDescription());
+        ThemeRow newTheme = new ThemeRow(id, theme.name(), theme.thumbnailUrl(), theme.description());
         store.put(id, newTheme);
         return newTheme;
     }
 
     @Override
     public int delete(Long id) {
-        Theme remove = store.remove(id);
+        ThemeRow remove = store.remove(id);
         if (remove == null) {
             return 0;
         }
@@ -52,19 +52,19 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public boolean existsByName(Name name) {
+    public boolean existsByName(String name) {
         return store.values()
                 .stream()
-                .anyMatch(theme -> theme.getName().equals(name));
+                .anyMatch(theme -> theme.name().equals(name));
     }
 
     @Override
-    public List<AvailableTimeResponseDto> findAvailableTimesById(Long themeId, LocalDate localDate) {
+    public List<AvailableTimeRow> findAvailableTimesById(Long themeId, LocalDate localDate) {
         return List.of();
     }
 
     @Override
-    public List<Theme> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
+    public List<ThemeRow> findPopulars(PopularThemeRequestDto popularThemeRequestDto) {
         return List.of();
     }
 }

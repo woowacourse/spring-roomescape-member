@@ -1,9 +1,10 @@
 package roomescape.dao;
 
 
-import java.time.LocalTime;
-import roomescape.domain.Time;
+import roomescape.dao.row.TimeRow;
 
-public interface TimeDao extends CommonDao<Time> {
+import java.time.LocalTime;
+
+public interface TimeDao extends CommonDao<TimeRow> {
     boolean existsByStartAt(LocalTime startAt);
 }

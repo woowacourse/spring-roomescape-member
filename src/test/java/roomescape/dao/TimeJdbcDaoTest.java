@@ -1,17 +1,18 @@
 package roomescape.dao;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.domain.Time;
+import roomescape.dao.row.TimeRow;
+
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Import(TimeJdbcDao.class)
@@ -21,59 +22,59 @@ class TimeJdbcDaoTest {
     @Autowired
     private TimeDao timeDao;
 
-    private Time time1;
-    private Time time2;
+    private TimeRow time1;
+    private TimeRow time2;
 
     @BeforeEach
     void setUp() {
-        time1 = new Time(LocalTime.of(11, 0));
-        time2 = new Time(LocalTime.of(11, 24));
+        time1 = new TimeRow(LocalTime.of(11, 0));
+        time2 = new TimeRow(LocalTime.of(11, 24));
     }
 
     @Test
     void findById() {
-        Time saved = insertTimeHandler(time1);
-        assertThat(timeDao.findById(saved.getId()))
+        TimeRow saved = createTimeHandler(time1);
+        assertThat(timeDao.findById(saved.id()))
                 .isPresent()
                 .get().isEqualTo(saved);
     }
 
     @Test
     void findAll() {
-        List<Time> saved = insertTimesHandler(time1, time2);
-        List<Time> find = timeDao.findAll();
+        List<TimeRow> saved = createTimesHandler(time1, time2);
+        List<TimeRow> find = timeDao.findAll();
 
         assertThat(find).hasSize(saved.size())
                 .containsAll(saved);
     }
 
     @Test
-    void insert() {
-        assertThat(timeDao.insert(time1)).isNotNull();
+    void create() {
+        assertThat(timeDao.create(time1)).isNotNull();
     }
 
     @Test
     void delete() {
-        Time saved = insertTimeHandler(time1);
-        assertThat(timeDao.delete(saved.getId())).isEqualTo(DELETED);
-    }
-
-    private Time insertTimeHandler(Time time) {
-        return timeDao.insert(time);
-    }
-
-    private List<Time> insertTimesHandler(Time... times) {
-        return Arrays.stream(times)
-                .map(this::insertTimeHandler)
-                .toList();
+        TimeRow saved = createTimeHandler(time1);
+        assertThat(timeDao.delete(saved.id())).isEqualTo(DELETED);
     }
 
     @Test
     void existsByStartAt() {
-        Time saved = insertTimeHandler(time1);
-        Time notExists = time2;
+        TimeRow saved = createTimeHandler(time1);
+        TimeRow notExists = time2;
 
-        assertThat(timeDao.existsByStartAt(saved.getStartAt())).isTrue();
-        assertThat(timeDao.existsByStartAt(notExists.getStartAt())).isFalse();
+        assertThat(timeDao.existsByStartAt(saved.startAt())).isTrue();
+        assertThat(timeDao.existsByStartAt(notExists.startAt())).isFalse();
+    }
+
+    private TimeRow createTimeHandler(TimeRow time) {
+        return timeDao.create(time);
+    }
+
+    private List<TimeRow> createTimesHandler(TimeRow... times) {
+        return Arrays.stream(times)
+                .map(this::createTimeHandler)
+                .toList();
     }
 }

@@ -1,8 +1,9 @@
 package roomescape.common.exception.handler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import java.time.LocalTime;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalTime;
 
 @Component
 public class LocalTimeHandler implements FormatHandler {

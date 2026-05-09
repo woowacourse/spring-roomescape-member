@@ -1,23 +1,23 @@
 package roomescape.dao;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
-import roomescape.domain.Time;
-import roomescape.domain.vo.Name;
+import roomescape.dao.row.AvailableTimeRow;
+import roomescape.dao.row.ReservationRow;
+import roomescape.dao.row.ThemeRow;
+import roomescape.dao.row.TimeRow;
 import roomescape.dto.request.PopularThemeRequestDto;
-import roomescape.dto.response.AvailableTimeResponseDto;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Import({
@@ -36,25 +36,25 @@ class ThemeJdbcDaoTest {
     @Autowired
     private TimeDao timeDao;
 
-    private Theme theme1;
-    private Theme theme2;
+    private ThemeRow theme1;
+    private ThemeRow theme2;
 
-    private Time time1;
-    private Time time2;
+    private TimeRow time1;
+    private TimeRow time2;
 
     @BeforeEach
     void setUp() {
-        time1 = timeDao.insert(new Time(LocalTime.parse("10:00")));
-        time2 = timeDao.insert(new Time(LocalTime.parse("12:00")));
+        time1 = timeDao.create(new TimeRow(LocalTime.parse("10:00")));
+        time2 = timeDao.create(new TimeRow(LocalTime.parse("12:00")));
 
-        theme1 = new Theme(new Name("방 이름"), "url", "설명");
-        theme2 = new Theme(new Name("두번째 방이름"), "url2", "설명2");
+        theme1 = new ThemeRow("방 이름", "url", "설명");
+        theme2 = new ThemeRow("두번째 방이름", "url2", "설명2");
     }
 
     @Test
     void findAll() {
-        List<Theme> saved = insertThemesHandler(theme1, theme2);
-        List<Theme> find = themeDao.findAll();
+        List<ThemeRow> saved = insertThemesHandler(theme1, theme2);
+        List<ThemeRow> find = themeDao.findAll();
 
         assertThat(find).hasSize(saved.size())
                 .containsAll(saved);
@@ -62,59 +62,49 @@ class ThemeJdbcDaoTest {
 
     @Test
     void findById() {
-        Theme saved = insertThemeHandler(theme1);
+        ThemeRow saved = createThemeHandler(theme1);
 
-        assertThat(themeDao.findById(saved.getId()))
+        assertThat(themeDao.findById(saved.id()))
                 .isPresent()
                 .get().isEqualTo(saved);
     }
 
     @Test
-    void insert() {
-        Theme saved = insertThemeHandler(theme1);
+    void create() {
+        ThemeRow saved = createThemeHandler(theme1);
         assertThat(saved).isNotNull();
     }
 
     @Test
     void delete() {
-        Theme saved = insertThemeHandler(theme1);
-        assertThat(themeDao.delete(saved.getId())).isEqualTo(DELETED);
-    }
-
-
-    private List<Theme> insertThemesHandler(Theme... themes) {
-        return Arrays.stream(themes)
-                .map(this::insertThemeHandler)
-                .toList();
-    }
-
-    private Theme insertThemeHandler(Theme theme) {
-        return themeDao.insert(theme);
+        ThemeRow saved = createThemeHandler(theme1);
+        assertThat(themeDao.delete(saved.id())).isEqualTo(DELETED);
     }
 
     @Test
     void existsByName() {
-        Theme saved = insertThemeHandler(theme1);
-        Theme notExists = theme2;
-        assertThat(themeDao.existsByName(saved.getName())).isTrue();
-        assertThat(themeDao.existsByName(notExists.getName())).isFalse();
+        ThemeRow saved = createThemeHandler(theme1);
+        ThemeRow notExists = theme2;
+
+        assertThat(themeDao.existsByName(saved.name())).isTrue();
+        assertThat(themeDao.existsByName(notExists.name())).isFalse();
     }
 
     @Test
     void findAvailableTimesById() {
-        Theme saved = insertThemeHandler(theme1);
-        Reservation reservaton = new Reservation("이름1", LocalDate.parse("2026-05-05"), time1, saved);
+        ThemeRow saved = createThemeHandler(theme1);
+        ReservationRow reservaton = new ReservationRow("이름1", LocalDate.parse("2026-05-05"), time1, saved);
 
-        reservationDao.insert(reservaton);
+        reservationDao.create(reservaton);
 
-        Long themeId = saved.getId();
+        Long themeId = saved.id();
         LocalDate localDate = LocalDate.of(2026, 5, 5);
 
-        List<AvailableTimeResponseDto> expected = List.of(
-                new AvailableTimeResponseDto(time2.getId(), time2.getStartAt(), false),
-                new AvailableTimeResponseDto(time1.getId(), time1.getStartAt(), true));
+        List<AvailableTimeRow> expected = List.of(
+                new AvailableTimeRow(time2.id(), time2.startAt(), false),
+                new AvailableTimeRow(time1.id(), time1.startAt(), true));
 
-        List<AvailableTimeResponseDto> availableTimesById = themeDao.findAvailableTimesById(themeId, localDate);
+        List<AvailableTimeRow> availableTimesById = themeDao.findAvailableTimesById(themeId, localDate);
 
         assertThat(availableTimesById).containsAll(expected);
     }
@@ -124,14 +114,25 @@ class ThemeJdbcDaoTest {
         int limit = 1;
 
         PopularThemeRequestDto popularThemeRequestDto = new PopularThemeRequestDto(limit, 7, LocalDate.now());
-        Theme popular = insertThemeHandler(theme1);
-        Theme nonPopular = insertThemeHandler(theme2);
+        ThemeRow popular = createThemeHandler(theme1);
+        ThemeRow nonPopular = createThemeHandler(theme2);
 
-        reservationDao.insert(new Reservation("이름1", LocalDate.parse("2026-05-05"), time1, popular));
-        List<Theme> populars = themeDao.findPopulars(popularThemeRequestDto);
+        reservationDao.create(new ReservationRow("이름1", LocalDate.parse("2026-05-05"), time1, popular));
+        List<ThemeRow> populars = themeDao.findPopulars(popularThemeRequestDto);
 
         assertThat(populars)
                 .hasSize(limit)
                 .contains(popular);
     }
+
+    private List<ThemeRow> insertThemesHandler(ThemeRow... themes) {
+        return Arrays.stream(themes)
+                .map(this::createThemeHandler)
+                .toList();
+    }
+
+    private ThemeRow createThemeHandler(ThemeRow theme) {
+        return themeDao.create(theme);
+    }
+
 }

@@ -1,7 +1,6 @@
 package roomescape.controller.admin;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +13,8 @@ import roomescape.domain.Time;
 import roomescape.dto.request.TimeRequestDto;
 import roomescape.dto.response.TimeResponseDto;
 import roomescape.service.TimeService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/times")

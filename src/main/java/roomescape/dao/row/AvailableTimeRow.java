@@ -1,8 +1,8 @@
-package roomescape.dto.response;
+package roomescape.dao.row;
 
 import java.time.LocalTime;
 
-public record AvailableTimeResponseDto(
+public record AvailableTimeRow(
         Long id,
         LocalTime startAt,
         boolean alreadyBooked

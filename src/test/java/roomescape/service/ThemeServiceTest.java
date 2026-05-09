@@ -1,8 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,11 +7,16 @@ import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.Reservation;
+import roomescape.dao.row.ReservationRow;
+import roomescape.dao.row.ThemeRow;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequestDto;
 import roomescape.service.fake.FakeReservationDao;
 import roomescape.service.fake.FakeThemeDao;
+
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ThemeServiceTest {
     private ThemeService themeService;
@@ -68,7 +70,7 @@ public class ThemeServiceTest {
         @Test
         void 예약_id가_존재하면_예외를_반환한다() {
             Theme savedTheme = themeService.create(requestDto1);
-            reservationDao.insert(new Reservation("달수", LocalDate.now(), null, savedTheme));
+            reservationDao.create(new ReservationRow("달수", LocalDate.now(), null, ThemeRow.from(savedTheme)));
             Long themeId = savedTheme.getId();
 
             assertThatThrownBy(() -> themeService.delete(themeId))
