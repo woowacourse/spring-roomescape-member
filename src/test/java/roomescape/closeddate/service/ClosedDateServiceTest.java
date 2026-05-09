@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.closeddate.domain.ClosedDate;
 import roomescape.closeddate.repository.JdbcClosedDateRepository;
+import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 
 @JdbcTest
@@ -82,6 +83,18 @@ class ClosedDateServiceTest {
         assertThat(registered)
                 .usingRecursiveComparison()
                 .isEqualTo(closedDateRepository.findById(registered.id()).get());
+    }
+
+    @Test
+    @DisplayName("이미 등록된 휴무일을 다시 등록하면 예외가 발생한다.")
+    void register_duplicate_date() {
+        // given
+        closedDateService.register(DEFAULT_DATE);
+
+        // when & then
+        assertThatThrownBy(() -> closedDateService.register(DEFAULT_DATE))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("이미 등록된 휴무일입니다.");
     }
 
     @Test

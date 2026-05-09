@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.closeddate.domain.ClosedDate;
 import roomescape.closeddate.repository.ClosedDateRepository;
+import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 
 @Slf4j
@@ -26,6 +27,9 @@ public class ClosedDateService {
 
     @Transactional
     public ClosedDate register(LocalDate date) {
+        if (closedDateRepository.existsByDate(date)) {
+            throw new ConflictException("이미 등록된 휴무일입니다.");
+        }
         log.info("Closed date registered: date={}", date);
         return closedDateRepository.save(ClosedDate.create(date));
     }
