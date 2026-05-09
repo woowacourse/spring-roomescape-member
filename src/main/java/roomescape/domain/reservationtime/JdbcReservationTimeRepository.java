@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.support.exception.InternalServerException;
+import roomescape.support.exception.RoomescapeErrorCode;
 
 @Repository
 @RequiredArgsConstructor
@@ -66,7 +68,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     private long extractId(KeyHolder keyHolder) {
         if (keyHolder.getKey() == null) {
-            throw new IllegalStateException("생성 키를 조회할 수 없습니다.");
+            throw new InternalServerException(RoomescapeErrorCode.INVALID_GENERATED_KEY);
         }
         return keyHolder.getKey().longValue();
     }

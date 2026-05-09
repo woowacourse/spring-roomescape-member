@@ -13,9 +13,9 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
+import roomescape.support.exception.NotFoundException;
 import roomescape.support.exception.ReservationDateErrorCode;
 import roomescape.support.exception.ReservationTimeErrorCode;
-import roomescape.support.exception.RoomescapeException;
 import roomescape.support.exception.ThemeErrorCode;
 
 @Slf4j
@@ -30,11 +30,11 @@ public class ReservationService {
 
     public CreateReservationResponse createReservation(CreateReservationRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-            .orElseThrow(() -> new RoomescapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_EXIST));
+            .orElseThrow(() -> new NotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_EXIST));
         ReservationDate reservationDate = reservationDateRepository.findById(request.dateId())
-            .orElseThrow(() -> new RoomescapeException(ReservationDateErrorCode.RESERVATION_DATE_NOT_EXIST));
+            .orElseThrow(() -> new NotFoundException(ReservationDateErrorCode.RESERVATION_DATE_NOT_EXIST));
         Theme theme = themeRepository.findById(request.themeId())
-            .orElseThrow(() -> new RoomescapeException(ThemeErrorCode.THEME_NOT_EXIST));
+            .orElseThrow(() -> new NotFoundException(ThemeErrorCode.THEME_NOT_EXIST));
         Reservation savedReservation = reservationRepository.save(request.toEntity(reservationDate, reservationTime, theme));
         return CreateReservationResponse.from(savedReservation);
     }

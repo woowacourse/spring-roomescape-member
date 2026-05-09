@@ -9,8 +9,8 @@ import roomescape.domain.reservationdate.dto.AdminReservationDateResponse;
 import roomescape.domain.reservationdate.dto.CreateReservationDateRequest;
 import roomescape.domain.reservationdate.dto.CreateReservationDateResponse;
 import roomescape.domain.reservationdate.dto.ReservationDateResponse;
+import roomescape.support.exception.ConflictException;
 import roomescape.support.exception.ReservationDateErrorCode;
-import roomescape.support.exception.RoomescapeException;
 
 @Slf4j
 @Service
@@ -33,7 +33,7 @@ public class ReservationDateService {
 
     public void deleteReservationDate(Long id) {
         if (reservationRepository.countByReservationDateId(id) > 0) {
-            throw new RoomescapeException(ReservationDateErrorCode.RESERVATION_DATE_IN_USE);
+            throw new ConflictException(ReservationDateErrorCode.RESERVATION_DATE_IN_USE);
         }
         int deletedCount = reservationDateRepository.deleteById(id);
         if (deletedCount == 0) {

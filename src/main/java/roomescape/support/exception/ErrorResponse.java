@@ -1,5 +1,6 @@
 package roomescape.support.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public record ErrorResponse(
@@ -7,9 +8,9 @@ public record ErrorResponse(
     String message
 ) {
 
-    public static ResponseEntity<ErrorResponse> of(ErrorCode errorCode) {
-        return ResponseEntity.status(errorCode.getHttpStatus()).
-            body(new ErrorResponse(errorCode.getCode(), errorCode.getMessage()));
+    public static ResponseEntity<ErrorResponse> of(HttpStatus httpStatus, ErrorCode errorCode) {
+        return ResponseEntity.status(httpStatus)
+            .body(new ErrorResponse(errorCode.getCode(), errorCode.getMessage()));
     }
 
 }

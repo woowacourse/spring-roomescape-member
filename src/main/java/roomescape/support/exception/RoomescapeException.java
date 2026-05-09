@@ -3,7 +3,7 @@ package roomescape.support.exception;
 import lombok.Getter;
 
 @Getter
-public class RoomescapeException extends RuntimeException {
+public abstract class RoomescapeException extends RuntimeException {
 
     private final ErrorCode errorCode;
 

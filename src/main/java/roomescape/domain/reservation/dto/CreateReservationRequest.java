@@ -4,9 +4,9 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
+import roomescape.support.exception.BadRequestException;
 import roomescape.support.exception.ReservationErrorCode;
 import roomescape.support.exception.ReservationTimeErrorCode;
-import roomescape.support.exception.RoomescapeException;
 import roomescape.support.exception.ThemeErrorCode;
 
 public record CreateReservationRequest(
@@ -18,16 +18,16 @@ public record CreateReservationRequest(
 
     public void validate() {
         if (name == null || name.isBlank()) {
-            throw new RoomescapeException(ReservationErrorCode.INVALID_RESERVATION_NAME);
+            throw new BadRequestException(ReservationErrorCode.INVALID_RESERVATION_NAME);
         }
         if (dateId == null) {
-            throw new RoomescapeException(ReservationErrorCode.INVALID_RESERVATION_DATE);
+            throw new BadRequestException(ReservationErrorCode.INVALID_RESERVATION_DATE);
         }
         if (timeId == null) {
-            throw new RoomescapeException(ReservationTimeErrorCode.INVALID_RESERVATION_TIME);
+            throw new BadRequestException(ReservationTimeErrorCode.INVALID_RESERVATION_TIME);
         }
         if (themeId == null) {
-            throw new RoomescapeException(ThemeErrorCode.INVALID_THEME);
+            throw new BadRequestException(ThemeErrorCode.INVALID_THEME);
         }
     }
 
