@@ -4,9 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
         token: localStorage.getItem(TOKEN_KEY) || ""
     };
 
-    const tokenInput = document.getElementById("admin-token");
-    const tokenForm = document.getElementById("admin-token-form");
-    const tokenMessage = document.getElementById("token-message");
     const themesList = document.getElementById("themes-list");
     const datesList = document.getElementById("dates-list");
     const timesList = document.getElementById("times-list");
@@ -20,8 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const adminModal = document.getElementById("admin-modal");
     const adminModalMessage = document.getElementById("admin-modal-message");
     const adminModalClosers = document.querySelectorAll("[data-admin-modal-close]");
-
-    tokenInput.value = state.token;
 
     function openModal(message) {
         adminModalMessage.textContent = message;
@@ -188,18 +183,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    tokenForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        state.token = tokenInput.value.trim();
-        localStorage.setItem(TOKEN_KEY, state.token);
-        setMessage(tokenMessage, "토큰을 저장했습니다.", "success");
-        try {
-            await refreshAll();
-        } catch (error) {
-            setMessage(tokenMessage, error.message, "error");
-        }
-    });
-
     tabButtons.forEach((button) => {
         button.addEventListener("click", () => {
             const target = button.dataset.tabTarget;
@@ -301,8 +284,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (state.token) {
         refreshAll().catch((error) => {
-            setMessage(tokenMessage, error.message, "error");
-            openModal(error.message);
+            alert(error.message);
+            window.location.href = "/";
         });
+    } else {
+        alert("관리자 토큰이 필요합니다.");
+        window.location.href = "/";
     }
 });

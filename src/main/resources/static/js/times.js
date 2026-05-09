@@ -22,6 +22,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const showTimesButton = document.getElementById("show-times-button");
     const resetSelectionButton = document.getElementById("reset-selection-button");
     const statusStrip = document.getElementById("status-strip");
+    const adminLoginButton = document.getElementById("admin-login-button");
+
+    adminLoginButton.addEventListener("click", () => {
+        const token = window.prompt("관리자 토큰을 입력하세요.");
+        if (token) {
+            localStorage.setItem("roomescape-admin-token", token);
+            window.location.href = "/admin";
+        }
+    });
 
     modalTriggers.forEach((trigger) => {
         trigger.addEventListener("click", () => {

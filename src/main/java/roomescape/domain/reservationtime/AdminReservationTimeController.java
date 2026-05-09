@@ -23,35 +23,24 @@ import roomescape.domain.reservationtime.dto.TimeCreationResponse;
 public class AdminReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
-    private final AdminRequestValidator validator;
 
     @GetMapping("/admin/times")
-    public ResponseEntity<List<ReservationTimeResponse>> getAllReservationTime(HttpServletRequest request) {
-        if (validator.isUnauthorized(request)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<List<ReservationTimeResponse>> getAllReservationTime() {
         List<ReservationTimeResponse> response = reservationTimeService.getAllReservationTime();
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/admin/times")
     public ResponseEntity<TimeCreationResponse> createReservationTime(
-        HttpServletRequest httpServletRequest,
         @RequestBody TimeCreationRequest createTimeRequest
     ) {
-        if (validator.isUnauthorized(httpServletRequest)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         createTimeRequest.validate();
         TimeCreationResponse response = reservationTimeService.createReservationTime(createTimeRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/admin/times/{id}")
-    public ResponseEntity<Void> deleteReservationTime(HttpServletRequest request, @PathVariable Long id) {
-        if (validator.isUnauthorized(request)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

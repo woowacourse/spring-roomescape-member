@@ -21,37 +21,25 @@ import roomescape.domain.reservationdate.dto.ReservationDateCreationRequest;
 public class AdminReservationDateController {
 
     private final ReservationDateService reservationDateService;
-    private final AdminRequestValidator validator;
 
     @GetMapping("/admin/reservation-dates")
     public ResponseEntity<List<AdminReservationDateResponse>> getAllReservationDateForAdmin(
-        HttpServletRequest request
     ) {
-        if (validator.isUnauthorized(request)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         List<AdminReservationDateResponse> response = reservationDateService.getAllReservationDateForAdmin();
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/admin/reservation-dates")
     public ResponseEntity<CreateReservationDateResponse> createReservationDate(
-        HttpServletRequest httpServletRequest,
         @RequestBody ReservationDateCreationRequest createReservationDateRequest
     ) {
-        if (validator.isUnauthorized(httpServletRequest)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         CreateReservationDateResponse response = reservationDateService
             .createReservationDate(createReservationDateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/admin/reservation-dates/{id}")
-    public ResponseEntity<Void> deleteReservationDate(@PathVariable Long id, HttpServletRequest request) {
-        if (validator.isUnauthorized(request)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<Void> deleteReservationDate(@PathVariable Long id) {
         reservationDateService.deleteReservationDate(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
