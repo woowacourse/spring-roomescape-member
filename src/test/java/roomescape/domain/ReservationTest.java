@@ -57,4 +57,29 @@ class ReservationTest {
         assertThatThrownBy(() -> new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), null, theme))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void id가_같으면_같은_예약() {
+        Reservation a = new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), time, theme);
+        Reservation b = new Reservation(1L, "다른이름", LocalDate.of(2024, 1, 1), time, theme);
+
+        assertThat(a).isEqualTo(b);
+    }
+
+    @Test
+    void id가_없으면_필드로_비교() {
+        LocalDate date = LocalDate.of(2023, 8, 5);
+        Reservation a = new Reservation(null, "브라운", date, time, theme);
+        Reservation b = new Reservation(null, "브라운", date, time, theme);
+
+        assertThat(a).isEqualTo(b);
+    }
+
+    @Test
+    void id가_없고_필드가_다르면_다른_예약() {
+        Reservation a = new Reservation(null, "브라운", LocalDate.of(2023, 8, 5), time, theme);
+        Reservation b = new Reservation(null, "다른이름", LocalDate.of(2023, 8, 5), time, theme);
+
+        assertThat(a).isNotEqualTo(b);
+    }
 }
