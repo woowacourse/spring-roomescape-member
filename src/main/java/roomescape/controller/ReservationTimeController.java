@@ -26,7 +26,7 @@ public class ReservationTimeController {
     @ApiResponse(responseCode = "200", description = "예약 시간 목록 조회 성공")
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> readTimes() {
-        return ResponseEntity.ok().body(reservationTimeService.getReservationTimes().stream()
+        return ResponseEntity.ok(reservationTimeService.getReservationTimes().stream()
                 .map(ReservationTimeResponse::from)
                 .toList());
     }
