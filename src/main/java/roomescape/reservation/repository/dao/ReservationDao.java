@@ -32,7 +32,7 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<ReservationEntity> selectAll() {
+    public List<ReservationEntity> findAll() {
         String sql = "select * from reservation;";
         return jdbcTemplate.query(sql, reservationRowMapper);
     }

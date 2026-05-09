@@ -22,7 +22,7 @@ public class ReservationRepository {
     private final ThemeDao themeDao;
 
     public List<Reservation> findAll() {
-        return reservationDao.selectAll().stream()
+        return reservationDao.findAll().stream()
                 .map(reservation ->
                         ReservationMapper.toReservation(reservation,
                                 reservationTimeDao.getById(reservation.getTimeId()),

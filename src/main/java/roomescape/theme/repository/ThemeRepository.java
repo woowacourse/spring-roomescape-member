@@ -17,7 +17,7 @@ public class ThemeRepository {
     private final ThemeDao themeDao;
 
     public List<Theme> findAll() {
-        return themeDao.selectAll().stream()
+        return themeDao.findAll().stream()
                 .map(ThemeMapper::toTheme)
                 .toList();
     }
@@ -37,7 +37,7 @@ public class ThemeRepository {
     }
 
     public Theme findById(Long id) {
-        ThemeEntity themeEntity = themeDao.selectById(id)
+        ThemeEntity themeEntity = themeDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         return ThemeMapper.toTheme(themeEntity);
     }

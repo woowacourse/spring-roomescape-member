@@ -32,7 +32,7 @@ public class ThemeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<ThemeEntity> selectAll() {
+    public List<ThemeEntity> findAll() {
         String sql = "select * from theme where is_deleted = ?;";
         return jdbcTemplate.query(sql, themeEntityRowMapper, false);
     }
@@ -52,7 +52,7 @@ public class ThemeDao {
         return jdbcTemplate.update(sql, id);
     }
 
-    public Optional<ThemeEntity> selectById(Long id) {
+    public Optional<ThemeEntity> findById(Long id) {
         String sql = "select * from theme where id = ? AND is_deleted = FALSE;";
         return jdbcTemplate.query(sql, themeEntityRowMapper, id)
                 .stream()

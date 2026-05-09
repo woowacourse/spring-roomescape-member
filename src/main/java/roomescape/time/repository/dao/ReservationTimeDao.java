@@ -39,7 +39,7 @@ public class ReservationTimeDao {
         return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
-    public Optional<ReservationTimeEntity> selectById(Long id) {
+    public Optional<ReservationTimeEntity> findById(Long id) {
         String sql = "select * from reservation_time where id = ?;";
         return jdbcTemplate.query(sql, reservationTimeRowMapper, id)
                 .stream()
@@ -51,7 +51,7 @@ public class ReservationTimeDao {
         return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
     }
     
-    public List<ReservationTimeEntity> selectAll() {
+    public List<ReservationTimeEntity> findAll() {
         String sql = "select * from reservation_time;";
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
@@ -61,7 +61,7 @@ public class ReservationTimeDao {
         return jdbcTemplate.update(sql, id);
     }
 
-    public List<Long> selectReservedTimeIds(Long themeId, LocalDate date) {
+    public List<Long> findReservedTimeIds(Long themeId, LocalDate date) {
         String sql = "select time_id " +
                 "from reservation " +
                 "where theme_id = ? and date = ?;";

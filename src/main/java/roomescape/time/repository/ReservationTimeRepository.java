@@ -22,7 +22,7 @@ public class ReservationTimeRepository {
     }
 
     public List<ReservationTime> findAll() {
-        return reservationTimeDao.selectAll().stream()
+        return reservationTimeDao.findAll().stream()
                 .map(ReservationTimeMapper::toReservationTime)
                 .toList();
     }
@@ -36,13 +36,13 @@ public class ReservationTimeRepository {
     }
 
     public ReservationTime findById(Long id) {
-         ReservationTimeEntity reservationTimeEntity = reservationTimeDao.selectById(id)
+         ReservationTimeEntity reservationTimeEntity = reservationTimeDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
          return ReservationTimeMapper.toReservationTime(reservationTimeEntity);
     }
 
     public List<Long> findIdByCondition(FindReservedTimeParams params) {
-        return reservationTimeDao.selectReservedTimeIds(params.themeId(), params.date());
+        return reservationTimeDao.findReservedTimeIds(params.themeId(), params.date());
     }
 }
