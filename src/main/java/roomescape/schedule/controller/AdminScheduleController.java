@@ -24,9 +24,9 @@ public class AdminScheduleController {
     }
 
     @PostMapping
-    public ResponseEntity<ScheduleResponse> createSchedule(@RequestBody AdminScheduleRequest request) {
-        ScheduleResponse response = scheduleService.createByAdmin(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<Void> createSchedule(@RequestBody AdminScheduleRequest request) {
+        Long id = scheduleService.createByAdmin(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping

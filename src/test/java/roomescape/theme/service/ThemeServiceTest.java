@@ -38,24 +38,21 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 새로운_테마를_생성하고_쩡상적으로_응답을_반환한다() {
+    void 새로운_테마를_생성하고_ID를_반환한다() {
         ThemeRequest request = new ThemeRequest("공포 테마", "무서워", "무서워", LocalTime.of(2, 0));
 
-        ThemeResponse response = themeService.create(request);
+        Long createdId = themeService.create(request);
 
-        assertThat(response).isNotNull();
-        assertThat(response.getId()).isNotNull();
-        assertThat(response.getName()).isEqualTo("공포 테마");
-        assertThat(response.getDescription()).isEqualTo("무서워");
-        assertThat(response.getImageUrl()).isEqualTo("무서워");
+        assertThat(createdId).isNotNull();
+        assertThat(createdId).isGreaterThan(0L);
     }
 
     @Test
     void 테마를_정상적으로_삭제한다() {
         ThemeRequest request = new ThemeRequest("코믹 테마", "웃겨", "웃겨", LocalTime.of(2, 0));
-        ThemeResponse response = themeService.create(request);
+        Long themeId = themeService.create(request);
 
-        assertDoesNotThrow(() -> themeService.delete(response.getId()));
+        assertDoesNotThrow(() -> themeService.delete(themeId));
     }
 
     @Test
@@ -79,17 +76,17 @@ class ThemeServiceTest {
     void 최근_일주일간_예약이_많은_순서대로_인기_테마를_조회한다() {
         jdbcTemplate.update("INSERT INTO \"USER\" (id, name, role) VALUES (?, ?, ?)", 1L, "user1", "USER");
 
-        ThemeResponse theme1 = themeService.create(new ThemeRequest("테마1", "설명1", "경로1", LocalTime.of(2, 0)));
-        ThemeResponse theme2 = themeService.create(new ThemeRequest("테마2", "설명2", "경로2", LocalTime.of(2, 0)));
+        Long theme1Id = themeService.create(new ThemeRequest("테마1", "설명1", "경로1", LocalTime.of(2, 0)));
+        Long theme2Id = themeService.create(new ThemeRequest("테마2", "설명2", "경로2", LocalTime.of(2, 0)));
 
         LocalDateTime yesterday = LocalDate.now().minusDays(1).atTime(10, 0);
 
         jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
-                1L, theme1.getId(), yesterday, yesterday.plusHours(2));
+                1L, theme1Id, yesterday, yesterday.plusHours(2));
         jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
-                2L, theme1.getId(), yesterday.plusHours(3), yesterday.plusHours(5));
+                2L, theme1Id, yesterday.plusHours(3), yesterday.plusHours(5));
         jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
-                3L, theme2.getId(), yesterday, yesterday.plusHours(2));
+                3L, theme2Id, yesterday, yesterday.plusHours(2));
 
         jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 1L, 1L);
         jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 2L, 1L);

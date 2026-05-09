@@ -1,6 +1,7 @@
 package roomescape.schedule.service;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,7 +46,8 @@ class ScheduleServiceTest {
     }
 
     @Test
-    void 데이터베이스에_저장된_모든_스케줄을_조회한다() {
+    @DisplayName("특정 날짜와 테마의 예약 가능한 스케줄만 조회한다.")
+    void findAvailableSchedules() {
         Long themeId = 1L;
         jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url, required_time) VALUES (?, ?, ?, ?, ?)",
                 themeId, theme.getName(), theme.getDescription(), theme.getImageUrl(), theme.getRequiredTime());
@@ -53,16 +55,18 @@ class ScheduleServiceTest {
                 1L, themeId, schedule1.getStartAt(), schedule1.getEndAt());
         jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
                 2L, themeId, schedule2.getStartAt(), schedule2.getEndAt());
+        // 1번 스케줄은 예약된 상태로 만듭니다.
+        jdbcTemplate.update("INSERT INTO \"USER\" (id, name, role) VALUES (?, ?, ?)", 1L, "test", "USER");
+        jdbcTemplate.update("INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)", 1L, 1L);
 
         ScheduleRequest request = new ScheduleRequest(LocalDate.of(2026, 12, 10), themeId);
 
-        SchedulesResponse responses = scheduleService.findAll(request);
+        SchedulesResponse responses = scheduleService.findAvailableSchedules(request);
         List<ScheduleResponse> responseList = responses.getScheduleResponses(); 
 
         assertThat(responseList).isNotNull();
-        assertThat(responseList).hasSize(2);
-        assertThat(responseList.get(0).getStartAt()).isEqualTo(schedule1.getStartAt());
-        assertThat(responseList.get(1).getStartAt()).isEqualTo(schedule2.getStartAt());
+        assertThat(responseList).hasSize(1);
+        assertThat(responseList.getFirst().getStartAt()).isEqualTo(schedule2.getStartAt());
     }
 
     @Test
@@ -78,14 +82,14 @@ class ScheduleServiceTest {
         AdminScheduleRequest request = new AdminScheduleRequest(themeId, futureDate, time);
 
         // when
-        ScheduleResponse response = scheduleService.createByAdmin(request);
+        Long createdId = scheduleService.createByAdmin(request);
 
         // then
-        assertThat(response).isNotNull();
-        assertThat(response.getId()).isNotNull();
-        assertThat(response.getStartAt().toLocalDate()).isEqualTo(futureDate);
-        assertThat(response.getStartAt().toLocalTime()).isEqualTo(time);
-        assertThat(response.getThemeName()).isEqualTo(theme.getName());
+        assertThat(createdId).isNotNull();
+
+        // 생성된 스케줄을 DB에서 직접 확인하여 검증
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM schedule WHERE id = ?", Integer.class, createdId);
+        assertThat(count).isEqualTo(1);
     }
 
     @Test

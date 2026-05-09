@@ -45,7 +45,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ScheduleResponse createByAdmin(AdminScheduleRequest request) {
+    public Long createByAdmin(AdminScheduleRequest request) {
         Theme theme = themeService.findById(request.themeId());
 
         LocalDateTime newStartAt = LocalDateTime.of(request.date(), request.time());
@@ -62,9 +62,6 @@ public class ScheduleService {
         }
 
         Schedule newSchedule = new Schedule(newStartAt, theme);
-        Long newScheduleId = scheduleRepository.create(newSchedule);
-        Schedule savedSchedule = new Schedule(newScheduleId, newStartAt, theme);
-
-        return ScheduleResponse.from(savedSchedule);
+        return scheduleRepository.create(newSchedule);
     }
 }
