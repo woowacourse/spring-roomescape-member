@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>예약하기 - 방탈출</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="container py-5">
+    <h2 class="fw-bold mb-4">예약하기</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+
+            <!-- 1단계: 날짜 + 테마 선택 -->
+            <h5 class="mb-3">1단계. 날짜와 테마를 선택하세요</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">날짜</label>
+                    <input type="date" id="date" class="form-control" onchange="onSelectionChange()">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">테마</label>
+                    <select id="themeId" class="form-select" onchange="onSelectionChange()">
+                        <option value="">테마를 선택하세요</option>
+                    </select>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- 2단계: 시간 선택 -->
+            <div id="time-section" class="d-none mb-4">
+                <h5 class="mb-3">2단계. 시간을 선택하세요</h5>
+                <div id="no-times-msg" class="alert alert-warning d-none">
+                    아직 예약 가능한 시간이 없습니다. 관리자에게 문의해주세요.
+                </div>
+                <div id="all-full-msg" class="alert alert-danger d-none">
+                    예약이 꽉 찼습니다.
+                </div>
+                <div id="time-buttons" class="d-flex flex-wrap gap-2"></div>
+                <p id="time-legend" class="text-muted small mt-2 d-none">
+                    <span class="badge bg-primary me-1">시간</span> 예약 가능
+                    &nbsp;
+                    <span class="badge bg-secondary me-1">시간</span> 예약 불가
+                </p>
+                <input type="hidden" id="selectedTimeId">
+            </div>
+
+            <hr id="name-divider" class="d-none">
+
+            <!-- 3단계: 이름 입력 -->
+            <div id="name-section" class="d-none mb-3">
+                <h5 class="mb-3">3단계. 예약자 이름을 입력하세요</h5>
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">이름</label>
+                        <input type="text" id="name" class="form-control" placeholder="이름을 입력하세요">
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100" onclick="reserve()">예약 완료</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 알림 -->
+            <div id="success-alert" class="alert alert-success d-none mt-3" role="alert">
+                ✅ 예약이 완료되었습니다!
+            </div>
+            <div id="error-alert" class="alert alert-danger d-none mt-3" role="alert"></div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    async function loadThemes() {
+        const res = await fetch('/themes');
+        const themes = await res.json();
+        const sel = document.getElementById('themeId');
+        themes.forEach(t => {
+            sel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+        });
+
+        const params = new URLSearchParams(location.search);
+        const preselectedThemeId = params.get('themeId');
+        if (preselectedThemeId) {
+            sel.value = preselectedThemeId;
+            onSelectionChange();
+        }
+    }
+
+    async function onSelectionChange() {
+        const date = document.getElementById('date').value;
+        const themeId = document.getElementById('themeId').value;
+        if (!date || !themeId) return;
+
+        const res = await fetch(`/times/available?date=${date}&themeId=${themeId}`);
+        const data = await res.json();
+
+        const container = document.getElementById('time-buttons');
+        container.innerHTML = '';
+        document.getElementById('selectedTimeId').value = '';
+        document.getElementById('name-section').classList.add('d-none');
+        document.getElementById('name-divider').classList.add('d-none');
+        document.getElementById('no-times-msg').classList.add('d-none');
+        document.getElementById('all-full-msg').classList.add('d-none');
+        document.getElementById('time-legend').classList.add('d-none');
+
+        if (data.times.length === 0) {
+            document.getElementById('no-times-msg').classList.remove('d-none');
+            document.getElementById('time-section').classList.remove('d-none');
+            hideAlerts();
+            return;
+        }
+
+        const allFull = data.times.every(t => !t.available);
+        if (allFull) {
+            document.getElementById('all-full-msg').classList.remove('d-none');
+        }
+
+        data.times.forEach(t => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = t.StartAt;
+
+            if (t.available) {
+                btn.className = 'btn btn-outline-primary';
+                btn.onclick = () => selectTime(t.id, btn);
+            } else {
+                btn.className = 'btn btn-outline-secondary';
+                btn.disabled = true;
+            }
+            container.appendChild(btn);
+        });
+
+        document.getElementById('time-legend').classList.remove('d-none');
+        document.getElementById('time-section').classList.remove('d-none');
+        hideAlerts();
+    }
+
+    function selectTime(timeId, btn) {
+        document.querySelectorAll('#time-buttons button').forEach(b => {
+            b.classList.remove('btn-primary', 'active');
+            if (!b.disabled) b.classList.add('btn-outline-primary');
+        });
+        btn.classList.remove('btn-outline-primary');
+        btn.classList.add('btn-primary', 'active');
+
+        document.getElementById('selectedTimeId').value = timeId;
+        document.getElementById('name-section').classList.remove('d-none');
+        document.getElementById('name-divider').classList.remove('d-none');
+    }
+
+    async function reserve() {
+        const name = document.getElementById('name').value.trim();
+        const date = document.getElementById('date').value;
+        const timeId = Number(document.getElementById('selectedTimeId').value);
+        const themeId = Number(document.getElementById('themeId').value);
+
+        if (!name) {
+            showError('이름을 입력해주세요.');
+            return;
+        }
+
+        const res = await fetch('/reservations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, date, timeId, themeId })
+        });
+
+        if (res.ok) {
+            showSuccess();
+            document.getElementById('name').value = '';
+            document.getElementById('selectedTimeId').value = '';
+            document.getElementById('name-section').classList.add('d-none');
+            document.getElementById('name-divider').classList.add('d-none');
+            await onSelectionChange(); // 시간 목록 갱신 (방금 예약한 시간 비활성화)
+        } else {
+            const err = await res.json();
+            showError(Array.isArray(err.message) ? err.message.join(', ') : err.message);
+        }
+    }
+
+    function showSuccess() {
+        document.getElementById('success-alert').classList.remove('d-none');
+        document.getElementById('error-alert').classList.add('d-none');
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('error-alert');
+        el.textContent = msg;
+        el.classList.remove('d-none');
+        document.getElementById('success-alert').classList.add('d-none');
+    }
+
+    function hideAlerts() {
+        document.getElementById('success-alert').classList.add('d-none');
+        document.getElementById('error-alert').classList.add('d-none');
+    }
+
+    loadThemes();
+</script>
+</body>
+</html>
