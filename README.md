@@ -166,7 +166,7 @@
 
 
 - **GlobalExceptionHandler**
-- [ ] `EmptyResultDataAccessException` 대체할 예외 찾기(너무 구체적이기 때문에)
+- [x] `EmptyResultDataAccessException` 대체할 예외 찾기(너무 구체적이기 때문에)
 
 ## ERD
 

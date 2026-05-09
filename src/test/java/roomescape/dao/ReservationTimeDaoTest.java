@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -43,5 +44,16 @@ class ReservationTimeDaoTest {
         assertThat(times).hasSize(2);
         assertThat(times.get(0).getStartAt()).isEqualTo(LocalTime.parse("10:00"));
         assertThat(times.get(1).getStartAt()).isEqualTo(LocalTime.parse("12:00"));
+    }
+
+    @Test
+    void 시간ID_조회_실패() {
+        //given
+        ReservationTime reservationTime = new ReservationTime(LocalTime.parse("10:00"));
+
+        //when & then
+        assertThatThrownBy(() -> reservationTimeDao.findById(3L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("[ERROR]");
     }
 }

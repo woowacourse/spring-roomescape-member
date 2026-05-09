@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -78,5 +79,16 @@ class ThemeDaoTest {
         assertThat(result).hasSize(2);
         assertThat(result.get(0).theme().getName()).isEqualTo("공포");
         assertThat(result.get(1).theme().getName()).isEqualTo("병원");
+    }
+
+    @Test
+    void 테마_ID_조회_실패() {
+        //given
+        Theme theme = new Theme("공포", "무서움", "https://roomescape.com");
+
+        //when & then
+        assertThatThrownBy(() -> themeDao.findById(theme.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("[ERROR]");
     }
 }

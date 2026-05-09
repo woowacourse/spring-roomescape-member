@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -22,11 +23,15 @@ public class ReservationTimeDao {
 
     public ReservationTime findById(Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql,
-                (resultSet, rowNum) -> new ReservationTime(
-                        resultSet.getLong("id"),
-                        LocalTime.parse(resultSet.getString("start_at"))
-                ), id);
+        try {
+            return jdbcTemplate.queryForObject(sql,
+                    (resultSet, rowNum) -> new ReservationTime(
+                            resultSet.getLong("id"),
+                            LocalTime.parse(resultSet.getString("start_at"))
+                    ), id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 존재하지 않는 시간입니다.");
+        }
     }
 
     public List<ReservationTime> findAll() {
