@@ -23,15 +23,6 @@ public class ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static long generatedIdFrom(final KeyHolder keyHolder) {
-        if (keyHolder.getKey() == null) {
-            throw new IllegalStateException("생성된 id를 가져오지 못했습니다.");
-        }
-
-        final long themeId = keyHolder.getKey().longValue();
-        return themeId;
-    }
-
     public List<Theme> findAll() {
         final String sql = """
                 SELECT id, name, description, thumbnail_url
@@ -133,6 +124,16 @@ public class ThemeRepository {
         }, keyHolder);
 
         return generatedIdFrom(keyHolder);
+    }
+
+    private long generatedIdFrom(final KeyHolder keyHolder) {
+        final Number generatedKey = keyHolder.getKey();
+
+        if (generatedKey == null) {
+            throw new IllegalStateException("생성된 id를 가져오지 못했습니다.");
+        }
+
+        return generatedKey.longValue();
     }
 
     /**

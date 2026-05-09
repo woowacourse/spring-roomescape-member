@@ -93,13 +93,14 @@ public class ReservationTimeRepository {
     }
 
     private long generatedIdFrom(final KeyHolder keyHolder) {
-        if (keyHolder.getKey() == null) {
+        final Number generatedKey = keyHolder.getKey();
+
+        if (generatedKey == null) {
             throw new IllegalStateException("생성된 id를 가져오지 못했습니다.");
         }
 
-        return keyHolder.getKey().longValue();
+        return generatedKey.longValue();
     }
-
 
     /**
      * 엔티티 - 도메인 매핑 메서드
