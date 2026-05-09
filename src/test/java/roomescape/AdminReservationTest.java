@@ -31,11 +31,12 @@ public class AdminReservationTest {
 
     @Test
     void 관리자_예약_추가_및_삭제() {
+        insertUser(1L, "브라운", "brown@test.com");
         insertTheme(1L, "테마명");
         insertReservationTime(1L, "10:00");
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("userId", 1);
         params.put("date", "2023-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
@@ -57,6 +58,10 @@ public class AdminReservationTest {
 
         assertThat(jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class))
                 .isEqualTo(0);
+    }
+
+    private void insertUser(Long id, String name, String email) {
+        jdbcTemplate.update("INSERT INTO users(id, name, email) VALUES (?, ?, ?)", id, name, email);
     }
 
     private void insertTheme(Long id, String name) {

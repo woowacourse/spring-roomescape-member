@@ -26,7 +26,7 @@ public class AdminReservationTimeTest {
     @Test
     void 관리자_시간_추가_및_삭제() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "10:00:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

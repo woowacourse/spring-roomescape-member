@@ -21,6 +21,7 @@ public class ReservationFlowTest {
 
     @Test
     void 예약_생성_후_해당_시간이_예약됨으로_변경된다() {
+        insertUser(1L, "브라운", "brown@test.com");
         insertTheme(1L, "테마명");
         insertReservationTime(1L, "10:00:00");
 
@@ -31,7 +32,7 @@ public class ReservationFlowTest {
                 .body("[0].isReserved", equalTo(false));
 
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
+        params.put("userId", 1);
         params.put("date", "2026-05-06");
         params.put("timeId", 1);
         params.put("themeId", 1);
@@ -47,6 +48,10 @@ public class ReservationFlowTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("[0].isReserved", equalTo(true));
+    }
+
+    private void insertUser(Long id, String name, String email) {
+        jdbcTemplate.update("INSERT INTO users(id, name, email) VALUES (?, ?, ?)", id, name, email);
     }
 
     private void insertTheme(Long id, String name) {

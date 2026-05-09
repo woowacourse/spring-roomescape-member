@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS reservation;
 DROP TABLE IF EXISTS reservation_time;
 DROP TABLE IF EXISTS theme;
-DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE users
 (
