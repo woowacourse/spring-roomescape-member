@@ -66,7 +66,8 @@ class ReservationServiceTest {
 
     @Test
     void 새로운_예약을_생성한다() {
-        ReservationRequest request = new ReservationRequest(LocalDate.of(2026, 12, 10), LocalTime.of(15, 0), 1L, "user1");
+        // given
+        ReservationRequest request = new ReservationRequest(LocalDate.of(2026, 12, 10), LocalTime.of(18, 0), 1L, "user1");
 
         ReservationIdResponse response = reservationService.create(request);
 

@@ -18,6 +18,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -61,5 +62,47 @@ class ScheduleServiceTest {
         assertThat(responseList).hasSize(2);
         assertThat(responseList.get(0).getStartAt()).isEqualTo(schedule1.getStartAt());
         assertThat(responseList.get(1).getStartAt()).isEqualTo(schedule2.getStartAt());
+    }
+
+    @Test
+    void 새로운_스케줄을_성공적으로_생성한다() {
+        // given
+        Long themeId = 1L;
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url, required_time) VALUES (?, ?, ?, ?, ?)",
+                themeId, theme.getName(), theme.getDescription(), theme.getImageUrl(), theme.getRequiredTime());
+
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+        LocalTime time = LocalTime.of(15, 0);
+
+        // when
+        Schedule createdSchedule = scheduleService.CreateSchedule(futureDate, time, themeId);
+
+        // then
+        assertThat(createdSchedule).isNotNull();
+        assertThat(createdSchedule.getId()).isNotNull();
+        assertThat(createdSchedule.getStartAt().toLocalDate()).isEqualTo(futureDate);
+        assertThat(createdSchedule.getStartAt().toLocalTime()).isEqualTo(time);
+        assertThat(createdSchedule.getTheme().getId()).isEqualTo(themeId);
+    }
+
+    @Test
+    void 이미_예약된_시간과_겹치는_스케줄을_생성하면_예외가_발생한다() {
+        // given
+        Long themeId = 1L;
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url, required_time) VALUES (?, ?, ?, ?, ?)",
+                themeId, theme.getName(), theme.getDescription(), theme.getImageUrl(), theme.getRequiredTime());
+
+        LocalDate date = LocalDate.now().plusDays(1);
+        LocalDateTime existingStartAt = LocalDateTime.of(date, LocalTime.of(14, 0));
+        LocalDateTime existingEndAt = existingStartAt.plusHours(2);
+        jdbcTemplate.update("INSERT INTO schedule (theme_id, start_at, end_at) VALUES (?, ?, ?)",
+                themeId, existingStartAt, existingEndAt);
+
+        LocalTime overlappingTime = LocalTime.of(15, 0);
+
+        // when & then
+        assertThatThrownBy(() -> scheduleService.CreateSchedule(date, overlappingTime, themeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("선택하신 시간은 다른 예약과 겹쳐서 예약할 수 없습니다.");
     }
 }
