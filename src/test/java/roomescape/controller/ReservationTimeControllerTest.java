@@ -8,7 +8,11 @@ import static org.mockito.Mockito.when;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -86,16 +90,18 @@ class ReservationTimeControllerTest {
         // given
         ReservationTime availableTime = new ReservationTime(1L, "12:30");
         ReservationTime impossibleTime = new ReservationTime(2L, "14:30");
-        List<ReservationTime> allTimes = List.of(availableTime, impossibleTime);
-        List<ReservationTime> availableTimes = List.of(availableTime);
-        AvailableReservationTimesResponseDto expected = AvailableReservationTimesResponseDto.of(availableTimes,
-            allTimes);
 
-        when(reservationService.getAvailableTimes(any(), anyLong()))
-            .thenReturn(List.of(availableTime));
+        Map<ReservationTime, Boolean> timesWithAvailability = new HashMap<ReservationTime, Boolean>(){
+            {
+                put(availableTime, true);
+                put(impossibleTime, false);
+            }
+        };
 
-        when(reservationService.getReservationTimes())
-            .thenReturn(List.of(availableTime, impossibleTime));
+        AvailableReservationTimesResponseDto expected = AvailableReservationTimesResponseDto.of(timesWithAvailability);
+
+        when(reservationService.getTimesWithAvailability(any(), anyLong()))
+            .thenReturn(timesWithAvailability);
 
         // when
         Response response = RestAssured

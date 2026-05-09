@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,24 +55,24 @@ class ReservationServiceTest {
     @Test
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
         // given
-        ReservationTime availableTime1 = new ReservationTime(1L, "12:30");
-        ReservationTime availableTime2 = new ReservationTime(2L, "14:30");
+        ReservationTime availableTime = new ReservationTime(1L, "12:30");
+        ReservationTime impossibleTime = new ReservationTime(2L, "14:30");
 
         when(themeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_THEME));
-        when(timeRepository.findByDateAndThemeId(any(), anyLong()))
-            .thenReturn(List.of(availableTime1, availableTime2));
+        when(timeRepository.findTimesByDateAndThemeId(any(), anyLong()))
+            .thenReturn(List.of(availableTime));
+        when(timeRepository.findAll())
+                .thenReturn(List.of(availableTime, impossibleTime));
 
         // when
-        List<ReservationTime> availableTimes = reservationService
-            .getAvailableTimes(RESERVATION.getDateValue(), RESERVATION.getThemeId());
+        Map<ReservationTime, Boolean> timesWithAvailability = reservationService
+            .getTimesWithAvailability(RESERVATION.getDateValue(), RESERVATION.getThemeId());
 
         // then
-        assertThat(availableTimes).hasSize(2);
-        assertThat(availableTimes).extracting(ReservationTime::getId)
-            .anySatisfy(id -> assertThat(id).isEqualTo(1L))
-            .anySatisfy(id -> assertThat(id).isEqualTo(2L));
-
+        assertThat(timesWithAvailability).hasSize(2);
+        assertThat(timesWithAvailability.get(availableTime)).isTrue();
+        assertThat(timesWithAvailability.get(impossibleTime)).isFalse();
     }
 
     @Test
@@ -82,7 +83,7 @@ class ReservationServiceTest {
         when(themeRepository.findById(SAVED_THEME.getId()))
             .thenReturn(Optional.of(SAVED_THEME));
 
-        when(timeRepository.findByDateAndThemeId(any(), anyLong()))
+        when(timeRepository.findTimesByDateAndThemeId(any(), anyLong()))
             .thenReturn(List.of());
 
         // when & then
@@ -103,7 +104,7 @@ class ReservationServiceTest {
         when(themeRepository.findById(otherTheme.getId()))
             .thenReturn(Optional.of(otherTheme));
 
-        when(timeRepository.findByDateAndThemeId(any(LocalDate.class), eq(otherTheme.getId())))
+        when(timeRepository.findTimesByDateAndThemeId(any(LocalDate.class), eq(otherTheme.getId())))
             .thenReturn(List.of(SAVED_TIME));
 
         // when & then
