@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -60,18 +61,11 @@ public class ThemeService {
 
     public List<TimeAvailabilityDto> findAvailableTime(Long themeId, LocalDate date) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
-        List<Reservation> reservations = reservationRepository.findReservationsByThemeAndDate(themeId, date);
+        Reservations reservations = new Reservations(
+                reservationRepository.findReservationsByThemeAndDate(themeId, date));
 
         return times.stream()
-                .map(time -> new TimeAvailabilityDto(
-                        time,
-                        isAvailable(time, reservations)
-                ))
+                .map(time -> new TimeAvailabilityDto(time, reservations.isAvailable(time)))
                 .toList();
-    }
-
-    private boolean isAvailable(ReservationTime time, List<Reservation> reservations) {
-        return reservations.stream()
-                .noneMatch(reservation -> time.equals(reservation.getTime()));
     }
 }
