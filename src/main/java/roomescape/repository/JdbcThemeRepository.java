@@ -92,11 +92,11 @@ public class JdbcThemeRepository implements ThemeRepository {
                        COUNT(r.id) AS reservation_count
                 FROM theme t
                 INNER JOIN reservation r ON t.id = r.theme_id
-                WHERE r.date >= DATEADD('DAY', -7, CURRENT_DATE)
-                  AND r.date <  CURRENT_DATE
+                WHERE r.date >= ?
+                  AND r.date <  ?
                 GROUP BY t.id, t.name, t.description, t.thumbnail_url
                 ORDER BY reservation_count DESC
-                LIMIT 10
+                LIMIT ?
                 """;
         return jdbcTemplate.query(sql, POPULAR_ROW_MAPPER,
                 Date.valueOf(from), Date.valueOf(to), limit);
