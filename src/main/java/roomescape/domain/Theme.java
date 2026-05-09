@@ -26,7 +26,7 @@ public class Theme {
         );
     }
 
-    public static Theme restore(
+    public static Theme of(
             final Long id,
             final String name,
             final String description,
@@ -35,15 +35,6 @@ public class Theme {
         return new Theme(
                 id,
                 Name.from(name),
-                description,
-                thumbnailUrl
-        );
-    }
-
-    public Theme saved(final Long id) {
-        return new Theme(
-                id,
-                name,
                 description,
                 thumbnailUrl
         );

@@ -27,15 +27,7 @@ public class ReservationTime {
         );
     }
 
-    public ReservationTime saved(final Long id) {
-        return new ReservationTime(
-                id,
-                startAt,
-                endAt
-        );
-    }
-
-    public static ReservationTime restore(final Long id, final LocalTime startAt, final LocalTime endAt) {
+    public static ReservationTime of(final Long id, final LocalTime startAt, final LocalTime endAt) {
         return new ReservationTime(id, startAt, endAt);
     }
 

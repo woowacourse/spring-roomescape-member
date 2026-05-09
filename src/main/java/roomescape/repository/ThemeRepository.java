@@ -66,7 +66,12 @@ public class ThemeRepository {
 
         final long themeId = insertTheme(themeEntity);
 
-        return themeWithoutId.saved(themeId);
+        return Theme.of(
+                themeId,
+                themeWithoutId.getName(),
+                themeWithoutId.getDescription(),
+                themeWithoutId.getThumbnailUrl()
+        );
     }
 
     public boolean deleteById(final Long themeId) {
@@ -139,7 +144,7 @@ public class ThemeRepository {
      * 엔티티 - 도메인 매핑 메서드
      */
     private Theme mapToDomain(final ResultSet resultSet, final int rowNum) throws SQLException {
-        return Theme.restore(
+        return Theme.of(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),

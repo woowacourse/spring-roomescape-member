@@ -46,11 +46,17 @@ public class ReservationRepository {
     }
 
     public Reservation save(final Reservation newReservation) {
-        final ReservationEntity entity = toEntity(newReservation);
+        final ReservationEntity reservationEntity = toEntity(newReservation);
 
-        final long newReservationId = insertReservation(entity);
+        final long newReservationId = insertReservation(reservationEntity);
 
-        return newReservation.saved(newReservationId);
+        return Reservation.of(
+                newReservationId,
+                newReservation.getCustomerName(),
+                newReservation.getDate(),
+                newReservation.getTime(),
+                newReservation.getTheme()
+        );
     }
 
     public boolean deleteById(final Long reservationId) {
@@ -130,20 +136,20 @@ public class ReservationRepository {
             final ResultSet resultSet,
             final int rowNum
     ) throws SQLException {
-        final ReservationTime reservationTime = ReservationTime.restore(
+        final ReservationTime reservationTime = ReservationTime.of(
                 resultSet.getLong("time_id"),
                 resultSet.getTime("time_start_at").toLocalTime(),
                 resultSet.getTime("time_end_at").toLocalTime()
         );
 
-        final Theme theme = Theme.restore(
+        final Theme theme = Theme.of(
                 resultSet.getLong("theme_id"),
                 resultSet.getString("theme_name"),
                 resultSet.getString("theme_description"),
                 resultSet.getString("theme_thumbnail_url")
         );
 
-        return Reservation.restore(
+        return Reservation.of(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("reservation_name"),
                 resultSet.getDate("reservation_date").toLocalDate(),

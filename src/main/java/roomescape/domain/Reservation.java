@@ -34,17 +34,7 @@ public class Reservation {
         );
     }
 
-    public Reservation saved(final Long id) {
-        return new Reservation(
-                id,
-                customerName,
-                date,
-                time,
-                theme
-        );
-    }
-
-    public static Reservation restore(
+    public static Reservation of(
             final Long id,
             final String name,
             final LocalDate date,
