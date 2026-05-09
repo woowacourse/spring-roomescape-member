@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeRequestDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.service.dto.ServiceThemeRequest;
+import roomescape.service.dto.ServiceThemeResponse;
 
 @Service
 public class ThemeService {
@@ -17,14 +17,14 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
-    public ThemeResponseDto create(ThemeRequestDto requestDto) {
+    public ServiceThemeResponse create(ServiceThemeRequest requestDto) {
         Theme theme = requestDto.toEntity();
-        return ThemeResponseDto.from(themeDao.create(theme));
+        return ServiceThemeResponse.from(themeDao.create(theme));
     }
 
-    public List<ThemeResponseDto> readAll() {
+    public List<ServiceThemeResponse> readAll() {
         return themeDao.readAll().stream()
-                .map(ThemeResponseDto::from)
+                .map(ServiceThemeResponse::from)
                 .toList();
     }
 
@@ -32,9 +32,9 @@ public class ThemeService {
         themeDao.delete(id);
     }
 
-    public List<ThemeResponseDto> readRanking(LocalDate startDate, LocalDate endDate) {
+    public List<ServiceThemeResponse> readRanking(LocalDate startDate, LocalDate endDate) {
         return themeDao.readRanking(startDate, endDate, RANKING_LIMIT).stream()
-                .map(ThemeResponseDto::from)
+                .map(ServiceThemeResponse::from)
                 .toList();
     }
 }

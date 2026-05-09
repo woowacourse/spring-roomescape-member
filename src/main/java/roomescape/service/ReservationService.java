@@ -8,10 +8,10 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationRequestDto;
-import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
+import roomescape.service.dto.ServiceReservationRequest;
+import roomescape.service.dto.ServiceReservationResponse;
 
 @Service
 public class ReservationService {
@@ -25,7 +25,7 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public ReservationResponseDto create(ReservationRequestDto requestDto) {
+    public ServiceReservationResponse create(ServiceReservationRequest requestDto) {
         ReservationTime reservationTime = reservationTimeDao.read(requestDto.timeId());
         Theme theme = themeDao.read(requestDto.themeId());
 
@@ -38,13 +38,13 @@ public class ReservationService {
         Reservation reservationWithoutId = requestDto.toEntity(reservationTime, theme);
         Reservation reservation = reservationDao.create(reservationWithoutId);
 
-        return ReservationResponseDto.from(reservation);
+        return ServiceReservationResponse.from(reservation);
     }
 
-    public List<ReservationResponseDto> readAll() {
+    public List<ServiceReservationResponse> readAll() {
         List<Reservation> reservations = reservationDao.readAll();
         return reservations.stream()
-                .map(ReservationResponseDto::from)
+                .map(ServiceReservationResponse::from)
                 .toList();
     }
 

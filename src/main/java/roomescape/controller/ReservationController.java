@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.ReservationRequestDto;
-import roomescape.dto.ReservationResponseDto;
+import roomescape.controller.dto.ControllerReservationRequest;
+import roomescape.controller.dto.ControllerReservationResponse;
 import roomescape.service.ReservationService;
+import roomescape.service.dto.ServiceReservationResponse;
 
 @RestController
 @RequestMapping(value = "/reservations")
@@ -25,17 +26,23 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> readAll() {
-        List<ReservationResponseDto> responseDtos = reservationService.readAll();
-        return ResponseEntity.ok(responseDtos);
+    public ResponseEntity<List<ControllerReservationResponse>> readAll() {
+        List<ServiceReservationResponse> serviceResponses = reservationService.readAll();
+        List<ControllerReservationResponse> controllerResponse = serviceResponses.stream()
+                .map(ControllerReservationResponse::from)
+                .toList();
+        return ResponseEntity.ok(controllerResponse);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> create(@Valid @RequestBody ReservationRequestDto requestDto) {
-        ReservationResponseDto responseDto = reservationService.create(requestDto);
+    public ResponseEntity<ControllerReservationResponse> create(
+            @Valid @RequestBody ControllerReservationRequest requestDto) {
+        ServiceReservationResponse serviceResponse = reservationService.create(
+                requestDto.toServiceReservationRequest());
+        ControllerReservationResponse controllerResponse = ControllerReservationResponse.from(serviceResponse);
         return ResponseEntity.
                 status(HttpStatus.CREATED)
-                .body(responseDto);
+                .body(controllerResponse);
     }
 
     @DeleteMapping("/{id}")

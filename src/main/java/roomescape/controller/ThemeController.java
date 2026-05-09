@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.controller.dto.ControllerThemeResponse;
 import roomescape.service.ThemeService;
+import roomescape.service.dto.ServiceThemeResponse;
 
 @RestController
 @RequestMapping("/themes")
@@ -20,17 +21,23 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponseDto>> readAll() {
-        List<ThemeResponseDto> themeResponseDtos = themeService.readAll();
-        return ResponseEntity.ok(themeResponseDtos);
+    public ResponseEntity<List<ControllerThemeResponse>> readAll() {
+        List<ServiceThemeResponse> serviceResponses = themeService.readAll();
+        List<ControllerThemeResponse> controllerResponses = serviceResponses.stream()
+                .map(ControllerThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok(controllerResponses);
     }
 
     @GetMapping("/ranking")
-    public ResponseEntity<List<ThemeResponseDto>> readRanking(
+    public ResponseEntity<List<ControllerThemeResponse>> readRanking(
             @RequestParam("start-date") LocalDate startDate,
             @RequestParam("end-date") LocalDate endDate
     ) {
-        List<ThemeResponseDto> responseDtos = themeService.readRanking(startDate, endDate);
-        return ResponseEntity.ok(responseDtos);
+        List<ServiceThemeResponse> serviceResponses = themeService.readRanking(startDate, endDate);
+        List<ControllerThemeResponse> controllerResponses = serviceResponses.stream()
+                .map(ControllerThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok(controllerResponses);
     }
 }

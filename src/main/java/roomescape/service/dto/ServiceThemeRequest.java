@@ -1,9 +1,9 @@
-package roomescape.dto;
+package roomescape.service.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import roomescape.domain.Theme;
 
-public record ThemeRequestDto(
+public record ServiceThemeRequest(
         @NotBlank(message = "[ERROR] 이름은 비어 있을 수 없습니다.")
         String name,
 

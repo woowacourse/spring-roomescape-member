@@ -16,11 +16,11 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationRequestDto;
-import roomescape.dto.ReservationResponseDto;
-import roomescape.dto.ReservationTimeResponseDto;
-import roomescape.dto.ThemeResponseDto;
 import roomescape.exception.CustomException;
+import roomescape.service.dto.ServiceReservationRequest;
+import roomescape.service.dto.ServiceReservationResponse;
+import roomescape.service.dto.ServiceReservationTimeResponse;
+import roomescape.service.dto.ServiceThemeResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -38,7 +38,8 @@ public class ReservationServiceTest {
     @Test
     void notExistReservationTimeExceptionTest() {
         themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
-        ReservationRequestDto requestDto = new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L);
+        ServiceReservationRequest requestDto = new ServiceReservationRequest("fizz", LocalDate.of(2026, 5, 2), 1L,
+                1L);
         assertThatThrownBy(() -> reservationService.create(requestDto))
                 .hasMessage("[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다.")
                 .isInstanceOf(CustomException.class);
@@ -47,7 +48,8 @@ public class ReservationServiceTest {
     @Test
     void notExistThemeExceptionTest() {
         reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
-        ReservationRequestDto requestDto = new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L);
+        ServiceReservationRequest requestDto = new ServiceReservationRequest("fizz", LocalDate.of(2026, 5, 2), 1L,
+                1L);
         assertThatThrownBy(() -> reservationService.create(requestDto))
                 .hasMessage("[ERROR] 해당 ID의 테마를 찾을 수 없습니다.")
                 .isInstanceOf(CustomException.class);
@@ -58,7 +60,8 @@ public class ReservationServiceTest {
         reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
         themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
 
-        ReservationRequestDto requestDto = new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L);
+        ServiceReservationRequest requestDto = new ServiceReservationRequest("fizz", LocalDate.of(2026, 5, 2), 1L,
+                1L);
         reservationService.create(requestDto);
 
         assertThatThrownBy(() -> reservationService.create(requestDto))
@@ -69,38 +72,41 @@ public class ReservationServiceTest {
     @Test
     void createTest() {
         ReservationTime reservationTime = reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
-        ReservationTimeResponseDto reservationTimeResponseDto = ReservationTimeResponseDto.from(reservationTime);
+        ServiceReservationTimeResponse serviceReservationTimeResponse = ServiceReservationTimeResponse.from(
+                reservationTime);
         Theme theme = themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
-        ThemeResponseDto themeResponseDto = ThemeResponseDto.from(theme);
+        ServiceThemeResponse serviceThemeResponse = ServiceThemeResponse.from(theme);
 
-        ReservationResponseDto responseDto = reservationService.create(
-                new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
+        ServiceReservationResponse responseDto = reservationService.create(
+                new ServiceReservationRequest("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
 
         assertThat(responseDto).isEqualTo(
-                new ReservationResponseDto(1L, "fizz", LocalDate.of(2026, 5, 2), reservationTimeResponseDto,
-                        themeResponseDto));
+                new ServiceReservationResponse(1L, "fizz", LocalDate.of(2026, 5, 2),
+                        serviceReservationTimeResponse,
+                        serviceThemeResponse));
     }
 
     @Test
     void readAllTest() {
         ReservationTime reservationTime = reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
-        ReservationTimeResponseDto reservationTimeResponseDto = ReservationTimeResponseDto.from(reservationTime);
+        ServiceReservationTimeResponse serviceReservationTimeResponse = ServiceReservationTimeResponse.from(
+                reservationTime);
         Theme theme = themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
-        ThemeResponseDto themeResponseDto = ThemeResponseDto.from(theme);
+        ServiceThemeResponse serviceThemeResponse = ServiceThemeResponse.from(theme);
 
-        reservationService.create(new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
-        reservationService.create(new ReservationRequestDto("fizz2", LocalDate.of(2026, 5, 4), 1L, 1L));
+        reservationService.create(new ServiceReservationRequest("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
+        reservationService.create(new ServiceReservationRequest("fizz2", LocalDate.of(2026, 5, 4), 1L, 1L));
 
-        List<ReservationResponseDto> responseDtos = reservationService.readAll();
+        List<ServiceReservationResponse> responseDtos = reservationService.readAll();
 
         assertThat(responseDtos.getFirst()).isEqualTo(
-                new ReservationResponseDto(responseDtos.getFirst().id(), "fizz", LocalDate.of(2026, 5, 2),
-                        reservationTimeResponseDto,
-                        themeResponseDto));
+                new ServiceReservationResponse(responseDtos.getFirst().id(), "fizz", LocalDate.of(2026, 5, 2),
+                        serviceReservationTimeResponse,
+                        serviceThemeResponse));
         assertThat(responseDtos.get(1)).isEqualTo(
-                new ReservationResponseDto(responseDtos.get(1).id(), "fizz2", LocalDate.of(2026, 5, 4),
-                        reservationTimeResponseDto,
-                        themeResponseDto));
+                new ServiceReservationResponse(responseDtos.get(1).id(), "fizz2", LocalDate.of(2026, 5, 4),
+                        serviceReservationTimeResponse,
+                        serviceThemeResponse));
     }
 
     @Test
@@ -108,10 +114,10 @@ public class ReservationServiceTest {
         reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
         themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
 
-        reservationService.create(new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
+        reservationService.create(new ServiceReservationRequest("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
         reservationService.delete(1L);
 
-        List<ReservationResponseDto> responseDtos = reservationService.readAll();
+        List<ServiceReservationResponse> responseDtos = reservationService.readAll();
 
         assertThat(responseDtos.size()).isEqualTo(0);
     }

@@ -12,9 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.ReservationTimeAvailabilityResponseDto;
-import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.service.dto.ServiceReservationTimeAvailabilityResponse;
+import roomescape.service.dto.ServiceReservationTimeRequest;
+import roomescape.service.dto.ServiceReservationTimeResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -25,27 +25,27 @@ public class ReservationTimeServiceTest {
 
     @Test
     void createTest() {
-        ReservationTimeResponseDto responseDto = reservationTimeService.create(
-                new ReservationTimeRequestDto(LocalTime.of(10, 0)));
+        ServiceReservationTimeResponse responseDto = reservationTimeService.create(
+                new ServiceReservationTimeRequest(LocalTime.of(10, 0)));
 
-        assertThat(responseDto).isEqualTo(new ReservationTimeResponseDto(1L, LocalTime.of(10, 0)));
+        assertThat(responseDto).isEqualTo(new ServiceReservationTimeResponse(1L, LocalTime.of(10, 0)));
     }
 
     @Test
     void readAllTest() {
-        reservationTimeService.create(new ReservationTimeRequestDto(LocalTime.of(10, 0)));
-        reservationTimeService.create(new ReservationTimeRequestDto(LocalTime.of(11, 0)));
+        reservationTimeService.create(new ServiceReservationTimeRequest(LocalTime.of(10, 0)));
+        reservationTimeService.create(new ServiceReservationTimeRequest(LocalTime.of(11, 0)));
 
-        List<ReservationTimeResponseDto> responseDtos = reservationTimeService.readAll();
+        List<ServiceReservationTimeResponse> responseDtos = reservationTimeService.readAll();
 
-        assertThat(responseDtos.getFirst()).isEqualTo(new ReservationTimeResponseDto(1L, LocalTime.of(10, 0)));
-        assertThat(responseDtos.get(1)).isEqualTo(new ReservationTimeResponseDto(2L, LocalTime.of(11, 0)));
+        assertThat(responseDtos.getFirst()).isEqualTo(new ServiceReservationTimeResponse(1L, LocalTime.of(10, 0)));
+        assertThat(responseDtos.get(1)).isEqualTo(new ServiceReservationTimeResponse(2L, LocalTime.of(11, 0)));
     }
 
     @Test
     @Sql(scripts = "/available-time-test-data.sql")
     void readAvailabilityByDateAndThemeTest() {
-        List<ReservationTimeAvailabilityResponseDto> responseDtos = reservationTimeService.readAvailabilityByDateAndTheme(
+        List<ServiceReservationTimeAvailabilityResponse> responseDtos = reservationTimeService.readAvailabilityByDateAndTheme(
                 LocalDate.of(2026, 5, 1), 1L);
 
         assertThat(responseDtos.getFirst().available()).isFalse();
@@ -54,10 +54,10 @@ public class ReservationTimeServiceTest {
 
     @Test
     void deleteTest() {
-        reservationTimeService.create(new ReservationTimeRequestDto(LocalTime.of(10, 0)));
+        reservationTimeService.create(new ServiceReservationTimeRequest(LocalTime.of(10, 0)));
         reservationTimeService.delete(1L);
 
-        List<ReservationTimeResponseDto> responseDtos = reservationTimeService.readAll();
+        List<ServiceReservationTimeResponse> responseDtos = reservationTimeService.readAll();
 
         assertThat(responseDtos.size()).isEqualTo(0);
     }

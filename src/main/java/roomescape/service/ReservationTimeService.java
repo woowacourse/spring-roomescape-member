@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeAvailabilityResponseDto;
-import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.service.dto.ServiceReservationTimeAvailabilityResponse;
+import roomescape.service.dto.ServiceReservationTimeRequest;
+import roomescape.service.dto.ServiceReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {
@@ -20,19 +20,19 @@ public class ReservationTimeService {
         this.themeDao = themeDao;
     }
 
-    public ReservationTimeResponseDto create(ReservationTimeRequestDto requestDto) {
+    public ServiceReservationTimeResponse create(ServiceReservationTimeRequest requestDto) {
         ReservationTime reservationTime = reservationTimeDao.create(requestDto.toEntity());
-        return ReservationTimeResponseDto.from(reservationTime);
+        return ServiceReservationTimeResponse.from(reservationTime);
     }
 
-    public List<ReservationTimeResponseDto> readAll() {
+    public List<ServiceReservationTimeResponse> readAll() {
         List<ReservationTime> reservationTimes = reservationTimeDao.readAll();
         return reservationTimes.stream()
-                .map(ReservationTimeResponseDto::from)
+                .map(ServiceReservationTimeResponse::from)
                 .toList();
     }
 
-    public List<ReservationTimeAvailabilityResponseDto> readAvailabilityByDateAndTheme(
+    public List<ServiceReservationTimeAvailabilityResponse> readAvailabilityByDateAndTheme(
             LocalDate date, Long themeId) {
         themeDao.read(themeId);
 
@@ -42,9 +42,9 @@ public class ReservationTimeService {
         return allReservationTimes.stream()
                 .map(reservationTime -> {
                     if (reservedTimeIdByDateAndTheme.contains(reservationTime.getId())) {
-                        return ReservationTimeAvailabilityResponseDto.from(reservationTime, false);
+                        return ServiceReservationTimeAvailabilityResponse.from(reservationTime, false);
                     }
-                    return ReservationTimeAvailabilityResponseDto.from(reservationTime, true);
+                    return ServiceReservationTimeAvailabilityResponse.from(reservationTime, true);
                 }).toList();
     }
 
