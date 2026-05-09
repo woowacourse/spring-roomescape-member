@@ -1,8 +1,6 @@
 package roomescape.domain.reservation;
 
-import java.time.LocalDate;
 import java.util.List;
-import roomescape.domain.theme.Theme;
 
 public interface ReservationRepository {
 
@@ -17,8 +15,6 @@ public interface ReservationRepository {
     int countByReservationDateId(Long dateId);
 
     List<Long> findReservedTimes(Long themeId, Long dateId);
-
-    List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate today);
 
     int countByThemeId(Long id);
 }

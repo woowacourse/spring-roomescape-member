@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.theme.dto.ThemeRankResponse;
 import roomescape.support.exception.RoomescapeErrorCode;
 import roomescape.support.exception.RoomescapeException;
 
@@ -23,6 +22,17 @@ public class JdbcThemeRepository implements ThemeRepository {
     private static final String FIND_BY_ID_SQL = "select id, name, content, url from theme where id = ?";
     private static final String INSERT_SQL = "insert into theme(name, content, url) values (?, ?, ?)";
     private static final String DELETE_BY_ID_SQL = "delete from theme where id = ?";
+    private static final String FIND_POPULAR_THEMES_SQL =
+        """
+            select th.id, th.name, th.content, th.url
+            from theme th
+            join reservation r on th.id = r.theme_id
+            join reservation_date rd on r.date_id = rd.id
+            where rd.date between ? and ?
+            group by th.id
+            order by count(r.id) desc, th.id asc
+            limit ?
+            """;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -59,6 +69,11 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public int deleteById(Long id) {
         return jdbcTemplate.update(DELETE_BY_ID_SQL, id);
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate endDay) {
+        return jdbcTemplate.query(FIND_POPULAR_THEMES_SQL, themeRowMapper(), startDay, endDay, rankLimit);
     }
 
     private RowMapper<Theme> themeRowMapper() {

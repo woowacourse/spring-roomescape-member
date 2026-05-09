@@ -52,21 +52,6 @@ public class JdbcReservationRepository implements ReservationRepository {
             where theme_id = ? and date_id = ?
             """;
 
-    private static final String FIND_POPULAR_THEME_SQL =
-        """
-            select
-                th.id,
-                th.name,
-                th.content,
-                th.url
-            from reservation r
-            join reservation_date rd on r.date_id = rd.id
-            join theme th on r.theme_id = th.id
-            where rd.date between ? and ?
-            group by th.id, th.name, th.content, th.url
-            order by count(r.id) desc, th.id asc
-            limit ?
-            """;
     private static final String COUNT_BY_THEME_ID_SQL =
         """
             select count(*)
@@ -132,11 +117,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate endDay) {
-        return jdbcTemplate.query(FIND_POPULAR_THEME_SQL, popularThemeRowMapper(), startDay, endDay, rankLimit);
-    }
-
-    @Override
     public int countByThemeId(Long themeId) {
         Integer count = jdbcTemplate.queryForObject(COUNT_BY_THEME_ID_SQL, Integer.class, themeId);
         if (count == null) {
@@ -167,15 +147,6 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private RowMapper<Long> reservationTimeIdRowMapper() {
         return (rs, rowNum) -> rs.getLong("time_id");
-    }
-
-    private RowMapper<Theme> popularThemeRowMapper() {
-        return (rs, rowNum) -> Theme.of(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("content"),
-            rs.getString("url")
-        );
     }
 
     private long extractId(KeyHolder keyHolder) {
