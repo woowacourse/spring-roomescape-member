@@ -178,6 +178,18 @@ public class AdminThemeTest {
         assertThat(themeIds).doesNotContain(13, 14, 15);
     }
 
+    @Test
+    @Sql("classpath:data.sql")
+    void 인기_테마_limit_초과_요청_시_최대_10개만_반환() {
+        List<Integer> themes = RestAssured.given().log().all()
+                .when().get("/admin/themes/popular?limit=20")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList("id");
+
+        assertThat(themes).hasSizeLessThanOrEqualTo(10);
+    }
+
     private void insertTheme() {
         jdbcTemplate.execute(
                 "INSERT INTO theme(name, description, thumbnail_image_url) VALUES ('테마명', '테마설명', 'https://thumbnail.url')");
