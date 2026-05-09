@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.dto.CreateReservationRequest;
@@ -36,6 +37,17 @@ public class AdminReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> readReservations() {
         return ResponseEntity.ok(reservationService.getReservations().stream()
+                .map(ReservationResponse::from)
+                .toList());
+    }
+
+    @Operation(summary = "내 예약 목록 조회", description = "사용자 ID에 해당하는 예약 목록을 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "내 예약 목록 조회 성공")
+    @GetMapping("/my")
+    public ResponseEntity<List<ReservationResponse>> readMyReservations(
+            @Parameter(description = "사용자 ID", example = "1")
+            @RequestParam Long userId) {
+        return ResponseEntity.ok(reservationService.getMyReservations(userId).stream()
                 .map(ReservationResponse::from)
                 .toList());
     }

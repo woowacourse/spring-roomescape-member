@@ -47,7 +47,7 @@ public class ReservationTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/1?userId=1")
                 .then().log().all()
                 .statusCode(200);
 
@@ -81,7 +81,7 @@ public class ReservationTest {
                 .isEqualTo(1);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/1?userId=1")
                 .then().log().all()
                 .statusCode(200);
 
@@ -135,6 +135,21 @@ public class ReservationTest {
                 .then().log().all()
                 .statusCode(400)
                 .body(equalTo("해당 날짜·시간·테마에 이미 예약이 존재합니다."));
+    }
+
+    @Test
+    void 타인의_예약_삭제_시_403_반환() {
+        insertUser(1L, "홍길동", "hong@test.com");
+        insertUser(2L, "브라운", "brown@test.com");
+        insertTheme(1L, "테마명");
+        insertReservationTime(1L, "10:00:00");
+        insertReservation(1L, 1L, "2026-05-06", 1L);
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1?userId=2")
+                .then().log().all()
+                .statusCode(403)
+                .body(equalTo("본인의 예약만 삭제할 수 있습니다."));
     }
 
     private void insertUser(Long id, String name, String email) {

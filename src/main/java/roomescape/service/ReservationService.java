@@ -11,19 +11,21 @@ import roomescape.repository.ReservationTimeDao;
 public class ReservationService {
 
     private final ReservationDao reservationDao;
-    private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+    public ReservationService(ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
-        this.reservationTimeDao = reservationTimeDao;
     }
 
     public List<Reservation> getReservations() {
         return reservationDao.findAll();
     }
 
-    public Reservation getReservation(Long id){
+    public Reservation getReservation(Long id) {
         return reservationDao.findById(id);
+    }
+
+    public List<Reservation> getMyReservations(Long userId) {
+        return reservationDao.findAllByUserId(userId);
     }
 
     public Reservation createReservation(CreateReservationRequest request) {
@@ -39,6 +41,14 @@ public class ReservationService {
         if (isDuplicate) {
             throw new IllegalStateException("해당 날짜·시간·테마에 이미 예약이 존재합니다.");
         }
+    }
+
+    public void deleteMyReservation(Long reservationId, Long userId) {
+        Reservation reservation = reservationDao.findById(reservationId);
+        if (!reservation.getUser().getId().equals(userId)) {
+            throw new SecurityException("본인의 예약만 삭제할 수 있습니다.");
+        }
+        reservationDao.deleteById(reservationId);
     }
 
     public void deleteReservation(Long id) {
