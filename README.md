@@ -152,7 +152,7 @@
 
 
 - **ReservationTimeDao**
-- [ ] `findAll()` 로직 테스트 작성
+- [x] `findAll()` 로직 테스트 작성
 
 
 - **ReservationDao**
