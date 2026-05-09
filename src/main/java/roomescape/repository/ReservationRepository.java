@@ -9,9 +9,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ThemeResponse;
-import roomescape.dto.TimeResponse;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -56,26 +53,22 @@ public class ReservationRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    public Reservation save(ReservationRequest reservationRequest, TimeResponse timeResponse,
-                            ThemeResponse themeResponse) {
+    public Reservation save(String name, LocalDate date, Long timeId, Long themeId, ReservationTime reservationTime,
+                            Theme theme) {
         String sql = "INSERT INTO reservation(username, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservationRequest.name());
-            ps.setObject(2, reservationRequest.date());
-            ps.setLong(3, reservationRequest.timeId());
-            ps.setLong(4, reservationRequest.themeId());
+            ps.setString(1, name);
+            ps.setObject(2, date);
+            ps.setLong(3, timeId);
+            ps.setLong(4, themeId);
             return ps;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
 
-        ReservationTime reservationTime = new ReservationTime(timeResponse.id(), timeResponse.startAt());
-        Theme theme = new Theme(themeResponse.id(), themeResponse.name(), themeResponse.description(),
-                themeResponse.url());
-
-        return new Reservation(id, reservationRequest.name(), reservationRequest.date(),
+        return new Reservation(id, name, date,
                 reservationTime, theme);
     }
 

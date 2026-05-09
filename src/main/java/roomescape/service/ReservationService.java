@@ -6,23 +6,25 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ThemeResponse;
-import roomescape.dto.TimeResponse;
 import roomescape.model.Reservation;
+import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ThemeRepository;
+import roomescape.repository.TimeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final TimeService timeService;
-    private final ThemeService themeService;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeService timeService,
-                              ThemeService themeService) {
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
-        this.timeService = timeService;
-        this.themeService = themeService;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> read() {
@@ -42,8 +44,8 @@ public class ReservationService {
     }
 
     public ReservationResponse register(ReservationRequest reservationRequest) {
-        TimeResponse timeResponse = timeService.readById(reservationRequest.timeId());
-        ThemeResponse themeResponse = themeService.readById(reservationRequest.themeId());
+        ReservationTime reservationTime = timeRepository.findById(reservationRequest.timeId());
+        Theme theme = themeRepository.findById(reservationRequest.themeId());
 
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservationRequest.date(),
                 reservationRequest.timeId(),
@@ -51,7 +53,9 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 존재하는 예약입니다.");
         }
 
-        Reservation reservation = reservationRepository.save(reservationRequest, timeResponse, themeResponse);
+        Reservation reservation = reservationRepository.save(reservationRequest.name(), reservationRequest.date(),
+                reservationRequest.timeId(),
+                reservationRequest.themeId(), reservationTime, theme);
         return ReservationResponse.from(reservation);
     }
 

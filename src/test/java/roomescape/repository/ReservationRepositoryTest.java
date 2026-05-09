@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dto.ReservationRequest;
-import roomescape.dto.ThemeResponse;
-import roomescape.dto.TimeResponse;
 import roomescape.model.Reservation;
+import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 
 @JdbcTest
 public class ReservationRepositoryTest {
@@ -47,19 +47,20 @@ public class ReservationRepositoryTest {
     void 예약을_생성할_수_있다() {
         // given
         ReservationRequest reservationRequest = new ReservationRequest("포비", LocalDate.of(2026, 5, 5), 1L, 1L);
-        TimeResponse timeResponse = new TimeResponse(1L, LocalTime.of(10, 0));
-        ThemeResponse themeResponse = new ThemeResponse(1L, "붉은 요람",
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        Theme theme = new Theme(1L, "붉은 요람",
                 "10년 전 의문의 화재로 폐쇄된 안개마을 영아원. 그곳에서 들려오는 울음소리의 정체를 밝혀야 합니다.", "https://escape.com/images/red-cradle.png");
 
         // when
-        Reservation reservation = reservationRepository.save(reservationRequest, timeResponse, themeResponse);
+        Reservation reservation = reservationRepository.save(reservationRequest.name(), reservationRequest.date(),
+                reservationRequest.timeId(), reservationRequest.themeId(), reservationTime, theme);
 
         // then
         Assertions.assertEquals(15, reservationRepository.findAll().size());
         Assertions.assertEquals(15L, reservation.getId());
         Assertions.assertEquals(reservationRequest.name(), reservation.getName());
         Assertions.assertEquals(reservationRequest.date(), reservation.getDate());
-        Assertions.assertEquals(timeResponse, TimeResponse.from(reservation.getTime()));
-        Assertions.assertEquals(themeResponse, ThemeResponse.from(reservation.getTheme()));
+        Assertions.assertEquals(reservationTime.getId(), reservation.getTime().getId());
+        Assertions.assertEquals(theme.getId(), reservation.getTheme().getId());
     }
 }
