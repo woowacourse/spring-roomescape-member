@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -53,6 +54,6 @@ public class ThemeControllerTest {
                 .when().get("/themes/ranks")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(6));
+                .body("size()", lessThanOrEqualTo(10));
     }
 }

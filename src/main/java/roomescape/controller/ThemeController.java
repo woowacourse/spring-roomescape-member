@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,7 +40,7 @@ public class ThemeController {
 
     @GetMapping("/ranks")
     public ResponseEntity<List<ThemeResponse>> readRanks() {
-        List<ThemeResponse> themeResponses = themeService.readRanks();
+        List<ThemeResponse> themeResponses = themeService.readRanks(LocalDate.now());
         return ResponseEntity.ok().body(themeResponses);
     }
 

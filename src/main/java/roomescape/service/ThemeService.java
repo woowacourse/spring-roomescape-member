@@ -42,11 +42,11 @@ public class ThemeService {
                 .collect(Collectors.toList());
     }
 
-    public List<ThemeResponse> readRanks() {
-        LocalDate currentDay = LocalDate.now().minusDays(1);
-        LocalDate lastWeekDay = currentDay.minusWeeks(1);
-        List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(currentDay.toString(),
-                lastWeekDay.toString(),
+    public List<ThemeResponse> readRanks(LocalDate today) {
+        LocalDate endDate = today.minusDays(1);
+        LocalDate startDate = today.minusDays(7);
+        List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(endDate.toString(),
+                startDate.toString(),
                 RANKS_LIMIT_COUNT);
         return themes.stream()
                 .map(ThemeResponse::from)
