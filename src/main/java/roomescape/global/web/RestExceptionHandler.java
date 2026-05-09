@@ -13,9 +13,9 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import roomescape.domain.DuplicateEntityException;
-import roomescape.domain.EntityNotFoundException;
-import roomescape.global.auth.ForbiddenException;
+import roomescape.global.exception.DuplicateEntityException;
+import roomescape.global.exception.EntityNotFoundException;
+import roomescape.global.exception.ForbiddenException;
 
 @RestControllerAdvice
 @Slf4j

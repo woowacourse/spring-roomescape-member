@@ -5,14 +5,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.web.dto.ThemeRequest;
-import roomescape.web.dto.ThemeResponse;
-import roomescape.web.dto.ThemeTimesResponse;
-import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.Theme;
+import roomescape.global.exception.DuplicateEntityException;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.dto.TimeSlotProjection;
+import roomescape.web.dto.ThemeRequest;
+import roomescape.web.dto.ThemeResponse;
+import roomescape.web.dto.ThemeTimesResponse;
 
 @Service
 @RequiredArgsConstructor

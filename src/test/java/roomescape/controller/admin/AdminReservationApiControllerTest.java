@@ -95,7 +95,7 @@ class AdminReservationApiControllerTest extends BaseControllerUnitTest {
                 .when().delete("/api/admin/reservations/1")
                 .then().log().all()
                 .status(HttpStatus.NO_CONTENT);
-        verify(reservationService, times(1)).cancelReservation(anyLong());
+        verify(reservationService, times(1)).cancel(anyLong());
     }
 
     @Test

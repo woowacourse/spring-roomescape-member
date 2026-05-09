@@ -5,16 +5,16 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.web.dto.ReservationRequest;
-import roomescape.web.dto.ReservationResponse;
-import roomescape.domain.DuplicateEntityException;
-import roomescape.domain.EntityNotFoundException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.global.exception.DuplicateEntityException;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.web.dto.ReservationRequest;
+import roomescape.web.dto.ReservationResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,13 +31,13 @@ public class ReservationService {
         ReservationTime time = findTimeWithThrow(request.timeId());
         validateAlreadyReservation(request.date(), request.timeId(), time);
 
-        Reservation reservation = Reservation.reserve(request.name(), request.date(), theme, time);
+        Reservation reservation = Reservation.of(request.name(), request.date(), theme, time);
 
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
 
     @Transactional
-    public void cancelReservation(Long id) {
+    public void cancel(Long id) {
         reservationRepository.delete(id);
     }
 

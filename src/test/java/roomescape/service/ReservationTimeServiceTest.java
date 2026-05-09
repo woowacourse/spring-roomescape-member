@@ -7,12 +7,12 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.web.dto.ReservationTimeRequest;
-import roomescape.web.dto.ReservationTimeResponse;
-import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.ReservationTime;
+import roomescape.global.exception.DuplicateEntityException;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.collection.MemoryReservationTimeRepository;
+import roomescape.web.dto.ReservationTimeRequest;
+import roomescape.web.dto.ReservationTimeResponse;
 
 class ReservationTimeServiceTest {
 

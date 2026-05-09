@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.global.auth.ForbiddenException;
+import roomescape.global.exception.ForbiddenException;
 
 @Component
 @RequiredArgsConstructor

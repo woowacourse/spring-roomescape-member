@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.service.ReservationService;
 import roomescape.web.dto.ReservationRequest;
 import roomescape.web.dto.ReservationResponse;
-import roomescape.service.ReservationService;
 
 @RestController
 @RequestMapping("/api/admin/reservations")
@@ -40,7 +40,7 @@ public class AdminReservationApiController {
             @PathVariable
             @Positive(message = "예약 취소 식별자는 양수여야 합니다.") Long id
     ) {
-        reservationService.cancelReservation(id);
+        reservationService.cancel(id);
         return ResponseEntity.noContent().build();
     }
 

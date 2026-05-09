@@ -7,11 +7,11 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.ReservationTime;
+import roomescape.global.exception.DuplicateEntityException;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.web.dto.ReservationTimeRequest;
 import roomescape.web.dto.ReservationTimeResponse;
-import roomescape.domain.DuplicateEntityException;
-import roomescape.domain.ReservationTime;
-import roomescape.repository.ReservationTimeRepository;
 
 @Service
 @Transactional(readOnly = true)

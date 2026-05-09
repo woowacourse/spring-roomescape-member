@@ -8,23 +8,23 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.web.dto.ReservationRequest;
-import roomescape.web.dto.ReservationResponse;
-import roomescape.web.dto.ReservationTimeResponse;
-import roomescape.domain.DuplicateEntityException;
-import roomescape.domain.EntityNotFoundException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.fixture.ReservationFixture;
 import roomescape.domain.fixture.ReservationTimeFixture;
 import roomescape.domain.fixture.ThemeFixture;
+import roomescape.global.exception.DuplicateEntityException;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.collection.MemoryReservationRepository;
 import roomescape.repository.collection.MemoryReservationTimeRepository;
 import roomescape.service.fake.FakeThemeRepository;
+import roomescape.web.dto.ReservationRequest;
+import roomescape.web.dto.ReservationResponse;
+import roomescape.web.dto.ReservationTimeResponse;
 
 class ReservationServiceTest {
 
@@ -126,7 +126,7 @@ class ReservationServiceTest {
         Reservation saved = reservationRepository.save(ReservationFixture.createDefaultReservationWithName("웨지"));
 
         // when: 삭제 요청
-        reservationService.cancelReservation(saved.getId());
+        reservationService.cancel(saved.getId());
 
         // then: 조회 시 목록이 비어있음
         assertThat(reservationService.getAllReservations()).isEmpty();

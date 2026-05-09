@@ -54,6 +54,6 @@ public class ReservationFixture {
         LocalDate date = LocalDate.now().plusDays(1);
         Theme theme = ThemeFixture.createDefaultTheme();
         ReservationTime time = ReservationTimeFixture.createDefaultReservationTime();
-        return Reservation.reserve(name, date, theme, time);
+        return Reservation.of(name, date, theme, time);
     }
 }

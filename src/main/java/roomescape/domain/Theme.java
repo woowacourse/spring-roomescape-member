@@ -16,7 +16,7 @@ public class Theme {
     private boolean isActive;
 
     public Theme(Long id, String name, String description, String thumbnailImageUrl, boolean isActive) {
-        validateTheme(name, description, thumbnailImageUrl);
+        validate(name, description, thumbnailImageUrl);
         this.id = id;
         this.name = name;
         this.description = description;
@@ -28,22 +28,19 @@ public class Theme {
         this(null, name, description, thumbnailImageUrl, true);
     }
 
-    private static void validateTheme(String name, String description, String thumbnailImageUrl) {
+    private static void validate(String name, String description, String thumbnailImageUrl) {
         validateName(name);
         validateDescription(description);
         validateThumbnailImageUrl(thumbnailImageUrl);
     }
 
     private static void validateThumbnailImageUrl(String thumbnailImageUrl) {
-        if (isInvalidImageUrl(thumbnailImageUrl)) {
-            throw new IllegalArgumentException("올바른 이미지 주소 형식이 아닙니다.");
-        }
-    }
-
-    private static boolean isInvalidImageUrl(String thumbnailImageUrl) {
         try {
             URI uri = URI.create(thumbnailImageUrl);
-            return uri.getScheme() == null || !uri.getScheme().startsWith("http");
+
+            if (uri.getScheme() == null || !uri.getScheme().startsWith("http")) {
+                throw new IllegalArgumentException("올바른 이미지 주소 형식이 아닙니다.");
+            }
         } catch (Exception e) {
             throw new IllegalArgumentException("올바른 이미지 주소 형식이 아닙니다.");
         }
