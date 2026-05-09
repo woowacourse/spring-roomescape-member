@@ -112,12 +112,12 @@ class ReservationServiceTest {
     @Test
     void 동일한테마_동일한시간대에_예약이_존재할_때_예약_시_예외를_반환한다() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        when(reservationTimeRepository.findById(1L))
+        when(reservationTimeRepository.findById(any()))
                 .thenReturn(Optional.of(time));
         Theme theme = new Theme(1L, "공포", "무서운 테마", "image");
         when(themeRepository.findById(1L))
                 .thenReturn(theme);
-        when(reservationRepository.existsByTimeIdAndThemeId(1L, 1L))
+        when(reservationRepository.existsByTimeIdAndThemeId(LocalDate.of(2026, 5, 9), 1L, 1L))
                 .thenReturn(true);
 
         assertThatThrownBy(() -> reservationService.createReservation(

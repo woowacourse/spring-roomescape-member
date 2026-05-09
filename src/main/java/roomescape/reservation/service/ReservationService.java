@@ -38,7 +38,7 @@ public class ReservationService {
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new InvalidReservationTimeException(timeId));
         Theme theme = themeRepository.findById(themeId);
-        if (reservationRepository.existsByTimeIdAndThemeId(timeId, themeId)) {
+        if (reservationRepository.existsByTimeIdAndThemeId(date, timeId, themeId)) {
             throw new DuplicateReservationException("이미 존재하는 예약입니다.");
         }
         Reservation reservation = new Reservation(null, name, date, time, theme);

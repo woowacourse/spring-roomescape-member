@@ -91,9 +91,9 @@ public class ReservationRepository {
         };
     }
 
-    public boolean existsByTimeIdAndThemeId(Long timeId, Long themeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ? AND theme_id = ?";
-        Integer row = jdbcTemplate.queryForObject(sql, Integer.class, timeId, themeId);
+    public boolean existsByTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ? AND theme_id = ? AND date = ?";
+        Integer row = jdbcTemplate.queryForObject(sql, Integer.class, timeId, themeId, date);
         return row != null && row > 0;
     }
 }

@@ -99,7 +99,7 @@ class ReservationRepositoryTest {
                 null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
 
         // when
-        boolean result = reservationRepository.existsByTimeIdAndThemeId(time.getId(), theme.getId());
+        boolean result = reservationRepository.existsByTimeIdAndThemeId(LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
 
         // then
         assertThat(result).isTrue();
@@ -107,7 +107,7 @@ class ReservationRepositoryTest {
     @Test
     void 동일한테마_동일한시간대에_예약이_존재하지_않으면_false를_반환한다() {
         // when
-        boolean result = reservationRepository.existsByTimeIdAndThemeId(time.getId(), theme.getId());
+        boolean result = reservationRepository.existsByTimeIdAndThemeId(LocalDate.of(2026, 5, 10), time.getId(), theme.getId());
 
         // then
         assertThat(result).isFalse();
