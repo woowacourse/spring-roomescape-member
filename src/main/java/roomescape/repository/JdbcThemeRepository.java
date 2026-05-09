@@ -1,6 +1,8 @@
 package roomescape.repository;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -84,7 +86,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<PopularThemeProjection> findPopular() {
+    public List<PopularThemeProjection> findPopularBetween(LocalDate from, LocalDate to, int limit) {
         String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail_url,
                        COUNT(r.id) AS reservation_count
@@ -96,7 +98,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                 ORDER BY reservation_count DESC
                 LIMIT 10
                 """;
-        return jdbcTemplate.query(sql, POPULAR_ROW_MAPPER);
+        return jdbcTemplate.query(sql, POPULAR_ROW_MAPPER,
+                Date.valueOf(from), Date.valueOf(to), limit);
     }
 
 }
