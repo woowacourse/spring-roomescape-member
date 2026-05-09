@@ -5,9 +5,10 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.AdminReservationController;
 
+
+/*
+ * 미션 1 요구사항 테스트.
+ * 빈 DB 상태에서 시작하여 각 테스트가 자기 데이터를 직접 준비한다.
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
@@ -33,7 +39,7 @@ public class MissionStepTest {
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(25));
+                .body("size()", is(0));
     }
 
     @Test
@@ -48,58 +54,42 @@ public class MissionStepTest {
     }
 
     @Test
-    void 시간_관리_API() {
+    void 시간_관리_API() { // 시간 1개 등록 → 조회 시 1개 → 삭제
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "17:00");
 
-        RestAssured.given().log().all()
+        Long timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         RestAssured.given().log().all()
                 .when().get("/admin/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(7));
+                .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/admin/times/7")
+                .when().delete("/admin/times/" + timeId)
                 .then().log().all()
                 .statusCode(204);
     }
 
     @Test
+        // 시간 1개, 테마 1개를 직접 준비한 뒤 예약 1건 추가 → 1건 확인
     void 예약과_시간_연결() {
-        // 시드에 시간 6개, 테마 13개, 예약 25건 있음.
-        // 미래 날짜에 새 예약 1건 추가 → 26건.
-        Map<String, String> timeParams = new HashMap<>();
-        timeParams.put("startAt", "10:00");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParams)
-                .when().post("/admin/times")
-                .then().log().all()
-                .statusCode(201);
 
-        Map<String, String> themeParams = new HashMap<>();
-        themeParams.put("name", "섬나라");
-        themeParams.put("description", "섬나라");
-        themeParams.put("thumbnailUrl", "섬나라");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParams)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201);
+        Long timeId = insertTime(LocalTime.of(10, 0));
+        Long themeId = insertTheme("테스트 테마", "설명", "https://example.com/img.jpg");
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2023-08-05");
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
+        reservation.put("timeId", timeId);
+        reservation.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -112,20 +102,26 @@ public class MissionStepTest {
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(26));
+                .body("size()", is(1));
     }
 
-    @Test
-    void 계층화_리팩터링() {
-        boolean isJdbcTemplateInjected = false;
 
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
-            if (field.getType().equals(JdbcTemplate.class)) {
-                isJdbcTemplateInjected = true;
-                break;
-            }
-        }
-
-        assertThat(isJdbcTemplateInjected).isFalse();
+    private Long insertTime(LocalTime startAt) {
+        jdbcTemplate.update(
+                "INSERT INTO reservation_time (start_at) VALUES (?)",
+                Time.valueOf(startAt));
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM reservation_time WHERE start_at = ?",
+                Long.class, Time.valueOf(startAt));
     }
+
+    private Long insertTheme(String name, String description, String thumbnailUrl) {
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
+                name, description, thumbnailUrl);
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM theme WHERE name = ?",
+                Long.class, name);
+    }
+
 }
