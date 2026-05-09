@@ -10,7 +10,7 @@ class CreateReservationRequestTest {
     @Test
     void 이름이_null이면_예외가_발생한다() {
         // given
-        CreateReservationRequest request = new CreateReservationRequest(
+        ReservationCreationRequest request = new ReservationCreationRequest(
             null,
             1L,
             1L,
@@ -26,7 +26,7 @@ class CreateReservationRequestTest {
     @Test
     void 이름이_공백이면_예외가_발생한다() {
         // given
-        CreateReservationRequest request = new CreateReservationRequest(
+        ReservationCreationRequest request = new ReservationCreationRequest(
             "   ",
             1L,
             1L,
@@ -42,7 +42,7 @@ class CreateReservationRequestTest {
     @Test
     void 날짜가_null이면_예외가_발생한다() {
         // given
-        CreateReservationRequest request = new CreateReservationRequest(
+        ReservationCreationRequest request = new ReservationCreationRequest(
             "보예",
             null,
             1L,
@@ -58,7 +58,7 @@ class CreateReservationRequestTest {
     @Test
     void 시간_id가_null이면_예외가_발생한다() {
         // given
-        CreateReservationRequest request = new CreateReservationRequest(
+        ReservationCreationRequest request = new ReservationCreationRequest(
             "보예",
             1L,
             null,
@@ -74,7 +74,7 @@ class CreateReservationRequestTest {
     @Test
     void 테마_id가_null이면_예외가_발생한다() {
         // given
-        CreateReservationRequest request = new CreateReservationRequest(
+        ReservationCreationRequest request = new ReservationCreationRequest(
             "보예",
             1L,
             1L,

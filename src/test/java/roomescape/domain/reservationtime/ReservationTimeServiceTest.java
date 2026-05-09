@@ -4,17 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
-import roomescape.domain.reservationtime.dto.CreateTimeRequest;
-import roomescape.domain.reservationtime.dto.CreateTimeResponse;
+import roomescape.domain.reservationtime.dto.TimeCreationRequest;
+import roomescape.domain.reservationtime.dto.TimeCreationResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
-import roomescape.domain.theme.Theme;
 import roomescape.support.exception.RoomescapeException;
 
 class ReservationTimeServiceTest {
@@ -30,8 +28,8 @@ class ReservationTimeServiceTest {
         );
 
         // when
-        CreateTimeResponse response = reservationTimeService.createReservationTime(
-            new CreateTimeRequest(LocalTime.of(10, 0))
+        TimeCreationResponse response = reservationTimeService.createReservationTime(
+            new TimeCreationRequest(LocalTime.of(10, 0))
         );
 
         // then

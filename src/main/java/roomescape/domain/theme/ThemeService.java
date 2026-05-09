@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.theme.dto.AdminThemeResponse;
-import roomescape.domain.theme.dto.CreateThemeRequest;
-import roomescape.domain.theme.dto.CreateThemeResponse;
+import roomescape.domain.theme.dto.ThemeCreationRequest;
+import roomescape.domain.theme.dto.ThemeCreationResponse;
 import roomescape.domain.theme.dto.ThemeRankResponse;
 import roomescape.domain.theme.dto.ThemeResponse;
 import roomescape.support.exception.RoomescapeException;
@@ -32,9 +32,9 @@ public class ThemeService {
             .toList();
     }
 
-    public CreateThemeResponse createTheme(CreateThemeRequest request) {
+    public ThemeCreationResponse createTheme(ThemeCreationRequest request) {
         Theme theme = themeRepository.save(request.toEntity());
-        return CreateThemeResponse.from(theme);
+        return ThemeCreationResponse.from(theme);
     }
 
     public void deleteTheme(Long id) {

@@ -5,7 +5,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.support.exception.ReservationTimeErrorCode;
 import roomescape.support.exception.RoomescapeException;
 
-public record CreateTimeRequest(
+public record TimeCreationRequest(
     LocalTime startAt
 ) {
 

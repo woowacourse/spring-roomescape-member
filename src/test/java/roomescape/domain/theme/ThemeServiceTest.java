@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.theme.dto.AdminThemeResponse;
-import roomescape.domain.theme.dto.CreateThemeRequest;
-import roomescape.domain.theme.dto.CreateThemeResponse;
+import roomescape.domain.theme.dto.ThemeCreationRequest;
+import roomescape.domain.theme.dto.ThemeCreationResponse;
 import roomescape.domain.theme.dto.ThemeResponse;
 
 class ThemeServiceTest {
@@ -70,8 +70,8 @@ class ThemeServiceTest {
         ThemeService themeService = new ThemeService(themeRepository, reservationRepository);
 
         // when
-        CreateThemeResponse response = themeService.createTheme(
-            new CreateThemeRequest("미스터리", "이게 뭘까? 바로바로 추리 테마", "theme/mystery")
+        ThemeCreationResponse response = themeService.createTheme(
+            new ThemeCreationRequest("미스터리", "이게 뭘까? 바로바로 추리 테마", "theme/mystery")
         );
 
         // then

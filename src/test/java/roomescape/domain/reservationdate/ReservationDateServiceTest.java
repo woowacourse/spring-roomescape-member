@@ -11,9 +11,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservationdate.dto.AdminReservationDateResponse;
-import roomescape.domain.reservationdate.dto.CreateReservationDateRequest;
+import roomescape.domain.reservationdate.dto.ReservationDateCreationRequest;
 import roomescape.domain.reservationdate.dto.CreateReservationDateResponse;
-import roomescape.domain.theme.Theme;
 import roomescape.support.exception.RoomescapeException;
 
 class ReservationDateServiceTest {
@@ -30,7 +29,7 @@ class ReservationDateServiceTest {
 
         // when
         CreateReservationDateResponse response = reservationDateService.createReservationDate(
-            new CreateReservationDateRequest(LocalDate.of(2026, 5, 4))
+            new ReservationDateCreationRequest(LocalDate.of(2026, 5, 4))
         );
 
         // then

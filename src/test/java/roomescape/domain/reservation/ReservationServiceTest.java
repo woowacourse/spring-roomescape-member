@@ -9,8 +9,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.reservation.dto.CreateReservationRequest;
-import roomescape.domain.reservation.dto.CreateReservationResponse;
+import roomescape.domain.reservation.dto.ReservationCreationRequest;
+import roomescape.domain.reservation.dto.ReservationCreationResponse;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationdate.ReservationDateRepository;
@@ -41,7 +41,7 @@ class ReservationServiceTest {
             reservationDateRepository,
             themeRepository
         );
-        CreateReservationRequest request = new CreateReservationRequest(
+        ReservationCreationRequest request = new ReservationCreationRequest(
             "보예",
             2L,
             1L,
@@ -49,7 +49,7 @@ class ReservationServiceTest {
         );
 
         // when
-        CreateReservationResponse response = reservationService.createReservation(request);
+        ReservationCreationResponse response = reservationService.createReservation(request);
 
         // then
         assertSoftly(softly -> {
@@ -72,7 +72,7 @@ class ReservationServiceTest {
             new FakeReservationDateRepository(),
             new FakeThemeRepository()
         );
-        CreateReservationRequest request = new CreateReservationRequest(
+        ReservationCreationRequest request = new ReservationCreationRequest(
             "보예",
             1L,
             1L,
@@ -98,7 +98,7 @@ class ReservationServiceTest {
             reservationDateRepository,
             new FakeThemeRepository()
         );
-        CreateReservationRequest request = new CreateReservationRequest(
+        ReservationCreationRequest request = new ReservationCreationRequest(
             "보예",
             2L,
             1L,

@@ -2,7 +2,7 @@ package roomescape.domain.theme.dto;
 
 import roomescape.domain.theme.Theme;
 
-public record CreateThemeRequest(
+public record ThemeCreationRequest(
     String name,
     String content,
     String url

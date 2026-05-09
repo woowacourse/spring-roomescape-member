@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.ReservationRepository;
-import roomescape.domain.reservationtime.dto.CreateTimeRequest;
-import roomescape.domain.reservationtime.dto.CreateTimeResponse;
+import roomescape.domain.reservationtime.dto.TimeCreationRequest;
+import roomescape.domain.reservationtime.dto.TimeCreationResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeAvailabilityResponse;
 import roomescape.domain.reservationtime.dto.ReservationTimeResponse;
 import roomescape.support.exception.ReservationTimeErrorCode;
@@ -22,9 +22,9 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public CreateTimeResponse createReservationTime(CreateTimeRequest request) {
+    public TimeCreationResponse createReservationTime(TimeCreationRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.save(request.toEntity());
-        return CreateTimeResponse.from(reservationTime);
+        return TimeCreationResponse.from(reservationTime);
     }
 
     public List<ReservationTimeResponse> getAllReservationTime() {

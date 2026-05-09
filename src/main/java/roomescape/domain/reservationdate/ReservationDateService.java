@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservationdate.dto.AdminReservationDateResponse;
-import roomescape.domain.reservationdate.dto.CreateReservationDateRequest;
+import roomescape.domain.reservationdate.dto.ReservationDateCreationRequest;
 import roomescape.domain.reservationdate.dto.CreateReservationDateResponse;
 import roomescape.domain.reservationdate.dto.ReservationDateResponse;
 import roomescape.support.exception.ReservationDateErrorCode;
@@ -26,7 +26,7 @@ public class ReservationDateService {
             .toList();
     }
 
-    public CreateReservationDateResponse createReservationDate(CreateReservationDateRequest request) {
+    public CreateReservationDateResponse createReservationDate(ReservationDateCreationRequest request) {
         ReservationDate reservationDate = reservationDateRepository.save(request.toEntity());
         return CreateReservationDateResponse.from(reservationDate);
     }

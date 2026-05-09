@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.admin.AdminRequestValidator;
 import roomescape.domain.theme.dto.AdminThemeResponse;
-import roomescape.domain.theme.dto.CreateThemeRequest;
-import roomescape.domain.theme.dto.CreateThemeResponse;
+import roomescape.domain.theme.dto.ThemeCreationRequest;
+import roomescape.domain.theme.dto.ThemeCreationResponse;
 import roomescape.domain.theme.dto.ThemeRankResponse;
 import roomescape.domain.theme.dto.ThemeResponse;
 
@@ -35,12 +35,12 @@ public class ThemeController {
     }
 
     @PostMapping("/admin/themes")
-    public ResponseEntity<CreateThemeResponse> createTheme(@RequestBody CreateThemeRequest createThemeRequest,
+    public ResponseEntity<ThemeCreationResponse> createTheme(@RequestBody ThemeCreationRequest createThemeRequest,
         HttpServletRequest httpServletRequest) {
         if (validator.isUnauthorized(httpServletRequest)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        CreateThemeResponse response = themeService.createTheme(createThemeRequest);
+        ThemeCreationResponse response = themeService.createTheme(createThemeRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

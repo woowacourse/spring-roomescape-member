@@ -4,8 +4,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import roomescape.domain.reservation.dto.CreateReservationRequest;
-import roomescape.domain.reservation.dto.CreateReservationResponse;
+import roomescape.domain.reservation.dto.ReservationCreationRequest;
+import roomescape.domain.reservation.dto.ReservationCreationResponse;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationdate.ReservationDateRepository;
@@ -28,7 +28,7 @@ public class ReservationService {
     private final ReservationDateRepository reservationDateRepository;
     private final ThemeRepository themeRepository;
 
-    public CreateReservationResponse createReservation(CreateReservationRequest request) {
+    public ReservationCreationResponse createReservation(ReservationCreationRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
             .orElseThrow(() -> new RoomescapeException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_EXIST));
         ReservationDate reservationDate = reservationDateRepository.findById(request.dateId())
@@ -36,7 +36,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(request.themeId())
             .orElseThrow(() -> new RoomescapeException(ThemeErrorCode.THEME_NOT_EXIST));
         Reservation savedReservation = reservationRepository.save(request.toEntity(reservationDate, reservationTime, theme));
-        return CreateReservationResponse.from(savedReservation);
+        return ReservationCreationResponse.from(savedReservation);
     }
 
     public List<ReservationResponse> getAllReservations() {

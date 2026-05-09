@@ -9,7 +9,7 @@ import roomescape.support.exception.ReservationTimeErrorCode;
 import roomescape.support.exception.RoomescapeException;
 import roomescape.support.exception.ThemeErrorCode;
 
-public record CreateReservationRequest(
+public record ReservationCreationRequest(
     String name,
     Long dateId,
     Long timeId,
