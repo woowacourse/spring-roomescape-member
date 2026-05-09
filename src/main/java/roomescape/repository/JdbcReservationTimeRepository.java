@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.DataClassRowMapper;
@@ -77,10 +76,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> new ReservationTime(
-                        resultSet.getLong("id"),
-                        resultSet.getObject("start_at", LocalTime.class)
-                ),
+                getReservationTimeRowMapper(),
                 selectedDate, themeId
         );
     }

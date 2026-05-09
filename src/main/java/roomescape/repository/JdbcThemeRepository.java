@@ -79,12 +79,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         LocalDate beforeOneWeeks = today.minusWeeks(1);
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("image_url")
-                ),
+                getThemeRowMapper(),
                 beforeOneWeeks, today
         );
     }
