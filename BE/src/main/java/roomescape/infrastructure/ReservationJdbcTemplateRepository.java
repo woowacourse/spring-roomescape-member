@@ -9,6 +9,7 @@ import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.Reservation;
@@ -32,8 +33,8 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
             FROM reservation r
             JOIN reservation_time rt ON r.time_id = rt.id
             JOIN theme t ON r.theme_id = t.id
-            WHERE (? IS NULL OR r.date = ?)
-              AND (? IS NULL OR r.theme_id = ?)
+            WHERE (:date IS NULL OR r.date = :date)
+              AND (:themeId IS NULL OR r.theme_id = :themeId)
             ORDER BY r.id
             """;
     private static final String FIND_BY_ID_QUERY = """
@@ -117,10 +118,12 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
     }
 
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationJdbcTemplateRepository(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
@@ -178,7 +181,10 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
 
     @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
-        return jdbcTemplate.query(FIND_BY_DATE_AND_THEME_ID_QUERY, ROW_MAPPER, date, date, themeId, themeId);
+        Map<String, Object> params = new java.util.HashMap<>();
+        params.put("date", date);
+        params.put("themeId", themeId);
+        return namedParameterJdbcTemplate.query(FIND_BY_DATE_AND_THEME_ID_QUERY, params, ROW_MAPPER);
     }
 
     @Override
