@@ -6,9 +6,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.theme.doamin.Theme;
 
 class ReservationTest {
 

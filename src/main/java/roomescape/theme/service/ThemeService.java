@@ -1,0 +1,38 @@
+package roomescape.theme.service;
+
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import roomescape.reservation.controller.dto.AvailableReservationTimeResponse;
+import roomescape.theme.controller.dto.ThemeResponse;
+import roomescape.theme.repository.ThemeDao;
+
+@Service
+public class ThemeService {
+    private final ThemeDao themeDao;
+
+    public ThemeService(ThemeDao themeDao) {
+        this.themeDao = themeDao;
+    }
+
+
+    public List<ThemeResponse> getPopularThemes(int size) {
+        LocalDate today = LocalDate.now();
+        LocalDate endDate = today.minusDays(1);
+        LocalDate startDate = today.minusDays(8);
+
+        return themeDao.findPopularThemes(size, startDate, endDate).stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
+    public List<ThemeResponse> getAllThemes() {
+        return themeDao.findAll().stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
+    public List<AvailableReservationTimeResponse> getAvailableTimeResponses(Long themId, String date) {
+        return themeDao.findAvailableTimeById(themId, date);
+    }
+}
