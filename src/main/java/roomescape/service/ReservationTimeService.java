@@ -39,7 +39,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest reservationTimeReq) {
         Long generatedId = reservationTimeUpdatingDao.insert(reservationTimeReq);
-        return ReservationTimeResponse.from(new ReservationTime(generatedId, reservationTimeReq.getStartAt()));
+        return ReservationTimeResponse.from(new ReservationTime(generatedId, reservationTimeReq.startAt()));
     }
 
     @Transactional

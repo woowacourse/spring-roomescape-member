@@ -26,7 +26,7 @@ public class ThemeService {
     @Transactional
     public ThemeResponse create(ThemeRequest themeRequest) {
         Long id = themeUpdatingDao.insert(themeRequest);
-        return ThemeResponse.from(new Theme(id, themeRequest.getName(), themeRequest.getDescription(), themeRequest.getUrl()));
+        return ThemeResponse.from(new Theme(id, themeRequest.name(), themeRequest.description(), themeRequest.url()));
     }
 
     public List<ThemeResponse> findAll() {

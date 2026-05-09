@@ -6,7 +6,6 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRequest;
 import roomescape.domain.reservation.ReservationResponse;
 import roomescape.domain.reservationtime.ReservationTime;
-import roomescape.domain.reservationtime.ReservationTimeResponse;
 import roomescape.domain.theme.Theme;
 import roomescape.exception.ReservationAlreadyExistException;
 import roomescape.exception.ReservationNotFoundException;
@@ -60,21 +59,18 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse create(ReservationRequest reservationReq) {
-        ReservationTime reservationTimeById = reservationTimeQueryingDao.findReservationTimeById(reservationReq.getTimeId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException(reservationReq.getTimeId()));
-        Theme themeById = themeQueryingDao.findThemeById(reservationReq.getThemeId())
-                .orElseThrow(() -> new ThemeNotFoundException(reservationReq.getThemeId()));
+        ReservationTime reservationTimeById = reservationTimeQueryingDao.findReservationTimeById(reservationReq.timeId())
+                .orElseThrow(() -> new ReservationTimeNotFoundException(reservationReq.timeId()));
+        Theme themeById = themeQueryingDao.findThemeById(reservationReq.themeId())
+                .orElseThrow(() -> new ThemeNotFoundException(reservationReq.themeId()));
 
-        if (reservationReq.getDate().isBefore(LocalDate.now()))
-            throw new IllegalArgumentException("현재보다 이전의 날짜는 예약할 수 없습니다.");
-
-        Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(themeById.getId(), reservationReq.getDate(), reservationTimeById.getId());
+        Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(themeById.getId(), reservationReq.date(), reservationTimeById.getId());
         if (savedReservation.isPresent()) {
             throw new ReservationAlreadyExistException();
         }
         LocalDateTime now = LocalDateTime.now();
         Long generatedId = reservationUpdatingDao.insert(reservationReq, now);
-        return ReservationResponse.from(new Reservation(generatedId, reservationReq.getName(), reservationReq.getDate(), reservationTimeById, themeById, now));
+        return ReservationResponse.from(new Reservation(generatedId, reservationReq.name(), reservationReq.date(), reservationTimeById, themeById, now));
     }
 
     @Transactional

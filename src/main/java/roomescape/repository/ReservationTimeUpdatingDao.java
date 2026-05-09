@@ -18,7 +18,7 @@ public class ReservationTimeUpdatingDao {
 
     public void save(Long id, ReservationTimeRequest reservationTimeReq) {
         String sql = "update reservation_time SET start_at = ? where id = ?";
-        jdbcTemplate.update(sql, reservationTimeReq.getStartAt(), id);
+        jdbcTemplate.update(sql, reservationTimeReq.startAt(), id);
     }
 
     public int delete(Long id) {
@@ -32,7 +32,7 @@ public class ReservationTimeUpdatingDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setObject(1, reservationTimeReq.getStartAt().toString());
+            ps.setObject(1, reservationTimeReq.startAt().toString());
             return ps;
         }, keyHolder);
 

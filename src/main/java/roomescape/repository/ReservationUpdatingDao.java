@@ -20,7 +20,7 @@ public class ReservationUpdatingDao {
 
     public void update(Long id, ReservationRequest reservationReq) {
         String sql = "update reservation SET name = ?, date = ?, time_id = ?, theme_id = ? where id = ?";
-        jdbcTemplate.update(sql, reservationReq.getName(), reservationReq.getDate(), reservationReq.getTimeId(), reservationReq.getThemeId(), id);
+        jdbcTemplate.update(sql, reservationReq.name(), reservationReq.date(), reservationReq.timeId(), reservationReq.themeId(), id);
     }
 
     public int delete(Long id) {
@@ -37,10 +37,10 @@ public class ReservationUpdatingDao {
                     sql,
                     new String[]{"id"}
             );
-            ps.setString(1, reservationReq.getName());
-            ps.setObject(2, reservationReq.getDate());
-            ps.setLong(3, reservationReq.getTimeId());
-            ps.setLong(4, reservationReq.getThemeId());
+            ps.setString(1, reservationReq.name());
+            ps.setObject(2, reservationReq.date());
+            ps.setLong(3, reservationReq.timeId());
+            ps.setLong(4, reservationReq.themeId());
             ps.setObject(5, now);
             return ps;
         }, keyHolder);

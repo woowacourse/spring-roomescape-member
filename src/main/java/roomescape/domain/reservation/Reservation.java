@@ -19,6 +19,7 @@ public class Reservation {
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt) {
+        validateFutureDate(createdAt);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -49,5 +50,11 @@ public class Reservation {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    private static void validateFutureDate(LocalDateTime futureDate) {
+        if (futureDate.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
+        }
     }
 }

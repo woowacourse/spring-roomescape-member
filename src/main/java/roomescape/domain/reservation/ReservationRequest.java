@@ -2,33 +2,36 @@ package roomescape.domain.reservation;
 
 import java.time.LocalDate;
 
-public class ReservationRequest {
+public record ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
 
-    private final String name;
-    private final LocalDate date;
-    private final Long timeId;
-    private final Long themeId;
-
-    public ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
-        this.name = name;
-        this.date = date;
-        this.timeId = timeId;
-        this.themeId = themeId;
+    public ReservationRequest {
+        validateName(name);
+        validateDate(date);
+        validateTimeId(timeId);
+        validateThemeId(themeId);
     }
 
-    public String getName() {
-        return name;
+    private static void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("이름은 필수입니다.");
+        }
     }
 
-    public LocalDate getDate() {
-        return date;
+    private static void validateDate(LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("날짜는 필수입니다.");
+        }
     }
 
-    public Long getTimeId() {
-        return timeId;
+    private static void validateTimeId(Long timeId) {
+        if (timeId == null) {
+            throw new IllegalArgumentException("시간은 필수입니다.");
+        }
     }
 
-    public Long getThemeId() {
-        return themeId;
+    private static void validateThemeId(Long themeId) {
+        if (themeId == null) {
+            throw new IllegalArgumentException("테마는 필수입니다.");
+        }
     }
 }
