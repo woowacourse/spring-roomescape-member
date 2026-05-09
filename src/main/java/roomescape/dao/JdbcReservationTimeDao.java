@@ -67,7 +67,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public List<Long> bookedTimeIdByDateAndTheme(LocalDate date, Long themeId) {
+    public List<Long> reservedTimeIdByDateAndTheme(LocalDate date, Long themeId) {
         String sql = "SELECT t.id as time_id "
                 + "FROM `reservation_time` t "
                 + "INNER JOIN `reservation` r ON r.time_id = t.id "

@@ -37,11 +37,11 @@ public class ReservationTimeService {
         themeDao.read(themeId);
 
         List<ReservationTime> allReservationTimes = reservationTimeDao.readAll();
-        List<Long> bookedTimeIdByDateAndTheme = reservationTimeDao.bookedTimeIdByDateAndTheme(date, themeId);
+        List<Long> reservedTimeIdByDateAndTheme = reservationTimeDao.reservedTimeIdByDateAndTheme(date, themeId);
 
         return allReservationTimes.stream()
                 .map(reservationTime -> {
-                    if (bookedTimeIdByDateAndTheme.contains(reservationTime.getId())) {
+                    if (reservedTimeIdByDateAndTheme.contains(reservationTime.getId())) {
                         return ReservationTimeAvailabilityResponseDto.from(reservationTime, false);
                     }
                     return ReservationTimeAvailabilityResponseDto.from(reservationTime, true);
