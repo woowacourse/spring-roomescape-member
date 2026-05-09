@@ -1,6 +1,6 @@
 package roomescape.presentation.dto;
 
-import roomescape.entity.Reservation;
+import roomescape.domain.Reservation;
 
 public record AvailableReservationResponse(
         String name,

@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.entity.Theme;
-import roomescape.entity.ThemeRepository;
-import roomescape.entity.ThemeSortType;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
+import roomescape.domain.ThemeSortType;
 
 @Service
 @Transactional(readOnly = true)

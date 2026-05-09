@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import roomescape.entity.Theme;
-import roomescape.entity.ThemeRepository;
-import roomescape.entity.ThemeSortType;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
+import roomescape.domain.ThemeSortType;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ThemeException;
 

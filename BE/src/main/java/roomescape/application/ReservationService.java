@@ -4,15 +4,15 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.entity.Theme;
-import roomescape.entity.ThemeRepository;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ReservationException;
 import roomescape.global.exception.customException.ReservationTimeException;
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationTime;
-import roomescape.entity.ReservationRepository;
-import roomescape.entity.ReservationTimeRepository;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTimeRepository;
 import roomescape.global.exception.customException.ThemeException;
 
 @Service

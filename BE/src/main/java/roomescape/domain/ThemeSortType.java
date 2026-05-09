@@ -1,4 +1,4 @@
-package roomescape.entity;
+package roomescape.domain;
 
 public enum ThemeSortType {
     POPULAR("COUNT(r.id) DESC");

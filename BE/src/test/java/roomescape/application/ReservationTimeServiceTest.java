@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationTime;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.global.exception.customException.ReservationTimeException;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
-import roomescape.entity.ReservationRepository;
-import roomescape.entity.ReservationTimeRepository;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTimeRepository;
 
 class ReservationTimeServiceTest {
 

@@ -8,17 +8,17 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.entity.Reservation;
-import roomescape.entity.Theme;
-import roomescape.entity.ThemeRepository;
+import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.fake.FakeThemeRepository;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ReservationTimeException;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
-import roomescape.entity.ReservationTime;
-import roomescape.entity.ReservationRepository;
-import roomescape.entity.ReservationTimeRepository;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTimeRepository;
 import roomescape.presentation.dto.ReservationRequest;
 
 class ReservationServiceTest {

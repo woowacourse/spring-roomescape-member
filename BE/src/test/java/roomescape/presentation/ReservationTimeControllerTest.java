@@ -27,7 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.application.ReservationTimeService;
-import roomescape.entity.ReservationTime;
+import roomescape.domain.ReservationTime;
 import roomescape.global.auth.AdminInterceptor;
 
 @WebMvcTest(ReservationTimeController.class)

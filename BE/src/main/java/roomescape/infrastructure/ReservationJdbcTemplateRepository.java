@@ -9,10 +9,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationRepository;
-import roomescape.entity.ReservationTime;
-import roomescape.entity.Theme;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationJdbcTemplateRepository implements ReservationRepository {

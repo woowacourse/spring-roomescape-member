@@ -27,8 +27,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.application.ThemeService;
-import roomescape.entity.Theme;
-import roomescape.entity.ThemeSortType;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeSortType;
 import roomescape.global.auth.AdminInterceptor;
 
 @WebMvcTest(ThemeController.class)

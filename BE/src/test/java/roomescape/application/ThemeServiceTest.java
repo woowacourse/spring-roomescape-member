@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.entity.Theme;
-import roomescape.entity.ThemeRepository;
-import roomescape.entity.ThemeSortType;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
+import roomescape.domain.ThemeSortType;
 import roomescape.fake.FakeThemeRepository;
 
 class ThemeServiceTest {
