@@ -34,7 +34,7 @@ public class ThemeApiTest {
         RestAssured.given().log().all()
                 .queryParam("period", 7)
                 .queryParam("limit", 2)
-                .when().get("/theme/popular")
+                .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2))
