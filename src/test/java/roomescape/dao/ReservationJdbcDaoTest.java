@@ -91,6 +91,16 @@ class ReservationJdbcDaoTest {
                 notExists.timeRow().id(), notExists.date())).isFalse();
     }
 
+    @Test
+    void existsById(){
+        ReservationRow saved = createReservationHandler(reservaton1);
+        ReservationRow notExists = reservaton2;
+
+        assertThat(reservationDao.existsById(saved.id())).isTrue();
+
+        assertThat(reservationDao.existsById(notExists.id())).isFalse();
+    }
+
     private List<ReservationRow> createReservationsHandler(ReservationRow... reservations) {
         return Arrays.stream(reservations)
                 .map(this::createReservationHandler)

@@ -58,6 +58,11 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
+    public boolean existsById(Long id) {
+        return store.get(id) != null;
+    }
+
+    @Override
     public List<AvailableTimeRow> findAvailableTimesById(Long themeId, LocalDate localDate) {
         return List.of();
     }

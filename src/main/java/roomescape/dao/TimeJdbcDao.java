@@ -79,6 +79,19 @@ public class TimeJdbcDao implements TimeDao {
     }
 
     @Override
+    public boolean existsById(Long id) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 FROM times t
+                    WHERE t.id = :id
+                )
+                """;
+        SqlParameterSource params = new MapSqlParameterSource("id", id);
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, params, Boolean.class));
+    }
+
+    @Override
     public boolean existsByStartAt(LocalTime startAt) {
         String sql = """
                 SELECT EXISTS(

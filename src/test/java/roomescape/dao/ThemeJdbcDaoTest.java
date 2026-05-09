@@ -10,6 +10,7 @@ import roomescape.dao.row.AvailableTimeRow;
 import roomescape.dao.row.ReservationRow;
 import roomescape.dao.row.ThemeRow;
 import roomescape.dao.row.TimeRow;
+import roomescape.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -123,6 +124,15 @@ class ThemeJdbcDaoTest {
         assertThat(populars)
                 .hasSize(limit)
                 .contains(popular);
+    }
+
+    @Test
+    void existsById() {
+        ThemeRow saved = createThemeHandler(theme1);
+        Long notExists = 2L;
+
+        assertThat(themeDao.existsById(saved.id())).isTrue();
+        assertThat(themeDao.existsById(notExists)).isFalse();
     }
 
     private List<ThemeRow> insertThemesHandler(ThemeRow... themes) {

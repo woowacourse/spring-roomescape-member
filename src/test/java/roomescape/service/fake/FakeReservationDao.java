@@ -57,6 +57,11 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
+    public boolean existsById(Long id) {
+        return store.get(id) != null;
+    }
+
+    @Override
     public boolean existsByThemeIdAndTimeIdAndDate(Long themeId, Long timeId, LocalDate date) {
         return store.values()
                 .stream()

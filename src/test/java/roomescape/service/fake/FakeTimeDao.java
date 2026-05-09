@@ -55,4 +55,9 @@ public class FakeTimeDao implements TimeDao {
                 .stream()
                 .anyMatch(theme -> theme.startAt().equals(startAt));
     }
+
+    @Override
+    public boolean existsById(Long id) {
+        return store.get(id) != null;
+    }
 }

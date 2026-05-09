@@ -11,6 +11,7 @@ import roomescape.dao.row.ReservationRow;
 import roomescape.dao.row.TimeRow;
 import roomescape.domain.Time;
 import roomescape.dto.request.TimeRequestDto;
+import roomescape.dto.response.TimeResponseDto;
 import roomescape.service.fake.FakeReservationDao;
 import roomescape.service.fake.FakeTimeDao;
 
@@ -66,10 +67,10 @@ class TimeServiceTest {
 
         @Test
         void 예약이_존재하면_삭제할_수_없다() {
-            Time savedTime = timeService.create(timeRequestDto1);
-            reservationDao.create(new ReservationRow("달수", LocalDate.now(), TimeRow.from(savedTime), null));
+            TimeResponseDto savedTime = timeService.create(timeRequestDto1);
+            reservationDao.create(new ReservationRow("달수", LocalDate.now(), new TimeRow(savedTime.id(), savedTime.startAt()), null));
 
-            assertThatThrownBy(() -> timeService.delete(savedTime.getId()))
+            assertThatThrownBy(() -> timeService.delete(savedTime.id()))
                     .isInstanceOf(ConflictException.class);
         }
     }

@@ -68,6 +68,15 @@ class TimeJdbcDaoTest {
         assertThat(timeDao.existsByStartAt(notExists.startAt())).isFalse();
     }
 
+    @Test
+    void existsById() {
+        TimeRow saved = createTimeHandler(time1);
+        Long notExists = 2L;
+
+        assertThat(timeDao.existsById(saved.id())).isTrue();
+        assertThat(timeDao.existsById(notExists)).isFalse();
+    }
+
     private TimeRow createTimeHandler(TimeRow time) {
         return timeDao.create(time);
     }
