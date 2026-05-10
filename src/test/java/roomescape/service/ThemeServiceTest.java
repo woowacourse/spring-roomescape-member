@@ -4,19 +4,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.service.dto.ServiceThemeRequest;
 import roomescape.service.dto.ServiceThemeResponse;
+import roomescape.support.DatabaseCleanUp;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ThemeServiceTest {
+
+    @Autowired
+    private DatabaseCleanUp databaseCleanUp;
 
     @Autowired
     private ThemeService themeService;
@@ -100,5 +102,10 @@ public class ThemeServiceTest {
         assertThat(responseDtos.get(7).id()).isEqualTo(8);
         assertThat(responseDtos.get(8).id()).isEqualTo(9);
         assertThat(responseDtos.get(9).id()).isEqualTo(10);
+    }
+
+    @AfterEach
+    void afterEach() {
+        databaseCleanUp.execute();
     }
 }

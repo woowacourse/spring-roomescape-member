@@ -1,17 +1,20 @@
 package roomescape.acceptance;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.acceptance.step.ReservationSteps;
 import roomescape.acceptance.step.ReservationTimeSteps;
 import roomescape.acceptance.step.ThemeSteps;
+import roomescape.support.DatabaseCleanUp;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationTimeAcceptanceTest {
+
+    @Autowired
+    private DatabaseCleanUp databaseCleanUp;
 
     @Test
     void reservationTimeApiSuccessTest() {
@@ -41,5 +44,10 @@ public class ReservationTimeAcceptanceTest {
 
         // 9. 전체 시간 조회 사이즈로 시간 삭제 확인
         ReservationTimeSteps.checkAllReservationTimeSize(0);
+    }
+
+    @AfterEach
+    void afterEach() {
+        databaseCleanUp.execute();
     }
 }

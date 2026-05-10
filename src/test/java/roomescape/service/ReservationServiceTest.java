@@ -6,12 +6,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
@@ -21,10 +20,13 @@ import roomescape.service.dto.ServiceReservationRequest;
 import roomescape.service.dto.ServiceReservationResponse;
 import roomescape.service.dto.ServiceReservationTimeResponse;
 import roomescape.service.dto.ServiceThemeResponse;
+import roomescape.support.DatabaseCleanUp;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationServiceTest {
+
+    @Autowired
+    private DatabaseCleanUp databaseCleanUp;
 
     @Autowired
     private ReservationService reservationService;
@@ -120,5 +122,11 @@ public class ReservationServiceTest {
         List<ServiceReservationResponse> responseDtos = reservationService.readAll();
 
         assertThat(responseDtos.size()).isEqualTo(0);
+    }
+
+
+    @AfterEach
+    void afterEach() {
+        databaseCleanUp.execute();
     }
 }

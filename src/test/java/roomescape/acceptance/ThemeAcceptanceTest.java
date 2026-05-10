@@ -1,17 +1,21 @@
 package roomescape.acceptance;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.acceptance.step.ReservationSteps;
 import roomescape.acceptance.step.ReservationTimeSteps;
 import roomescape.acceptance.step.ThemeSteps;
+import roomescape.support.DatabaseCleanUp;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ThemeAcceptanceTest {
+
+    @Autowired
+    private DatabaseCleanUp databaseCleanUp;
+
     @Test
     void reservationTimeApiSuccessTest() {
         // 1. 테마 추가
@@ -37,5 +41,10 @@ public class ThemeAcceptanceTest {
 
         // 7. 전체 테마 조회 사이즈로 테마 삭제 확인
         ThemeSteps.checkAllThemeSize(0);
+    }
+
+    @AfterEach
+    void afterEach() {
+        databaseCleanUp.execute();
     }
 }

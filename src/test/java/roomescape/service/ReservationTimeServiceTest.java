@@ -5,20 +5,22 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.service.dto.ServiceReservationTimeAvailabilityResponse;
 import roomescape.service.dto.ServiceReservationTimeRequest;
 import roomescape.service.dto.ServiceReservationTimeResponse;
+import roomescape.support.DatabaseCleanUp;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationTimeServiceTest {
+
+    @Autowired
+    private DatabaseCleanUp databaseCleanUp;
 
     @Autowired
     private ReservationTimeService reservationTimeService;
@@ -60,5 +62,10 @@ public class ReservationTimeServiceTest {
         List<ServiceReservationTimeResponse> responseDtos = reservationTimeService.readAll();
 
         assertThat(responseDtos.size()).isEqualTo(0);
+    }
+
+    @AfterEach
+    void afterEach() {
+        databaseCleanUp.execute();
     }
 }
