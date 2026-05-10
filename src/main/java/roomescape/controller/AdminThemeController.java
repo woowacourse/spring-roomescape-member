@@ -25,7 +25,7 @@ public class AdminThemeController {
     @PostMapping
     public ResponseEntity<Void> createTheme(@RequestBody CreateThemeRequest createThemeRequest) {
         Theme createdTheme = themeService.createTheme(createThemeRequest);
-        URI location = URI.create("/admin/themes/" + createdTheme.getId());
+        URI location = URI.create("/themes/" + createdTheme.getId());
         return ResponseEntity.created(location).build();
     }
 
