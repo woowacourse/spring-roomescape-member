@@ -12,7 +12,10 @@ import roomescape.theme.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationTimeService {
@@ -58,14 +61,16 @@ public class ReservationTimeService {
         validateThemeExists(themeId);
 
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        Set<ReservationTime> reservedTimes = reservations.stream()
+                .map(Reservation::getTime)
+                .collect(Collectors.toCollection(HashSet::new));
 
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         return reservationTimes.stream()
                 .map(reservationTime -> new ReservationTimeAvailability(
                         reservationTime,
-                        reservations.stream()
-                                .noneMatch(reservation -> reservation.isSameTime(reservationTime))
+                        !reservedTimes.contains(reservationTime)
                 ))
                 .toList();
     }
