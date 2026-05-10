@@ -1,4 +1,4 @@
-package roomescape.reservationtime.controller;
+package roomescape.reservationtime;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.everyItem;
