@@ -12,6 +12,7 @@ import roomescape.admin.theme.dto.AdminThemeRequest;
 import roomescape.admin.theme.dto.AdminThemeResponse;
 
 import java.util.List;
+import roomescape.admin.theme.dto.AdminThemesResponse;
 
 @RestController
 public class AdminThemeController {
@@ -31,8 +32,8 @@ public class AdminThemeController {
     }
 
     @GetMapping("/admin/themes")
-    public ResponseEntity<List<AdminThemeResponse>> getThemes() {
-        List<AdminThemeResponse> responses = adminThemeService.getAllThemes();
+    public ResponseEntity<AdminThemesResponse> getThemes() {
+        AdminThemesResponse responses = adminThemeService.getAllThemes();
         return ResponseEntity.ok(responses);
     }
 

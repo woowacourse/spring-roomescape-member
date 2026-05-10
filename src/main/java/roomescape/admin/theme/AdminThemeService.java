@@ -3,6 +3,7 @@ package roomescape.admin.theme;
 import org.springframework.stereotype.Service;
 import roomescape.admin.theme.dto.AdminThemeRequest;
 import roomescape.admin.theme.dto.AdminThemeResponse;
+import roomescape.admin.theme.dto.AdminThemesResponse;
 import roomescape.user.reservation.ReservationRepository;
 
 import java.util.List;
@@ -40,12 +41,10 @@ public class AdminThemeService {
         }
     }
 
-    public List<AdminThemeResponse> getAllThemes() {
+    public AdminThemesResponse getAllThemes() {
         List<Theme> themes = adminThemeRepository.findAll();
 
-        return themes.stream()
-            .map(AdminThemeResponse::from)
-            .toList();
+        return AdminThemesResponse.from(themes);
     }
 
     public void deleteTheme(Long id) {
