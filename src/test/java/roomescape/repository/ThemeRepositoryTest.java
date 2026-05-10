@@ -30,7 +30,7 @@ public class ThemeRepositoryTest {
         ThemeRequest themeRequest = new ThemeRequest("테스트 테마", "테스트 테마입니다", "url.com");
 
         // when
-        Theme newTheme = themeRepository.save(themeRequest);
+        Theme newTheme = themeRepository.save(themeRequest.name(), themeRequest.description(), themeRequest.url());
 
         // then
         Assertions.assertEquals(18L, newTheme.getId());

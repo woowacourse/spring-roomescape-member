@@ -22,7 +22,7 @@ public class ThemeService {
     }
 
     public ThemeResponse register(ThemeRequest themeRequest) {
-        Theme theme = themeRepository.save(themeRequest);
+        Theme theme = themeRepository.save(themeRequest.name(), themeRequest.description(), themeRequest.url());
         return ThemeResponse.from(theme);
     }
 
