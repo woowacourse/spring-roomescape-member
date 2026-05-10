@@ -121,4 +121,26 @@ class AdminReservationControllerTest extends BaseControllerUnitTest {
 
         assertThat(response).isEqualTo(expected);
     }
+
+    @Test
+    void 전체_예약_정보_조회_요청시_페이지가_없으면_400_BAD_REQUEST() {
+        // when & then
+        RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+                .queryParam("size", "10")
+                .when().get("/api/admin/reservations")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("page 파라미터가 누락 되었습니다."));
+    }
+
+    @Test
+    void 전체_예약_정보_조회_요청시_조회_개수가_없으면_400_BAD_REQUEST() {
+        // when & then
+        RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+                .queryParam("page", "0")
+                .when().get("/api/admin/reservations")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("size 파라미터가 누락 되었습니다."));
+    }
 }

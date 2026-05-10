@@ -93,6 +93,26 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
+    void 활성화된_테마만_페이징_조건에_맞게_조회한다() {
+        // given
+        Theme first = themeRepository.save(new Theme("바니의 집", "바니의 집입니다", "http://image.png/image.com"));
+        Theme second = themeRepository.save(new Theme("이프의 집", "이프의 집입니다", "http://image.png/image.com"));
+        Theme inactive = themeRepository.save(new Theme("아루의 집", "아루의 집입니다", "http://image.png/image.com"));
+        inactive.deactivate();
+        themeRepository.update(inactive);
+
+        // when
+        List<Theme> themes = themeRepository.findAllActiveThemesByPaging(1, 1);
+
+        // then
+        assertThat(themes).hasSize(1).extracting(Theme::getId)
+                .containsExactly(second.getId());
+
+        assertThat(themes).extracting(Theme::getId)
+                .doesNotContain(inactive.getId(), first.getId());
+    }
+
+    @Test
     void 예약이_많은_순서대로_상위_10개의_테마를_조회한다() {
         // given: 15개 테마가 존재
         dataSource.insertThemesByCount(15);
@@ -105,7 +125,8 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
 
         // when
         LocalDate now = LocalDate.now();
-        List<Theme> popularThemes = themeRepository.findTopThemesByReservationCount(now.minusDays(7), now.plusDays(1), 10);
+        List<Theme> popularThemes = themeRepository.findTopThemesByReservationCount(now.minusDays(7), now.plusDays(1),
+                10);
 
         // then
         assertThat(popularThemes).hasSize(10);

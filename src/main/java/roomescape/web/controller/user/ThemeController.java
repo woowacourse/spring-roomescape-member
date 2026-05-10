@@ -36,7 +36,9 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<ThemeResponses> getAllThemesByPaging(
+            @RequestParam
             @PositiveOrZero(message = "페이지 번호는 0 이상이어야 합니다.") int page,
+            @RequestParam
             @Positive(message = "조회 개수는 양수여야 합니다.") int size
     ) {
         ThemeResponses response = new ThemeResponses(themeService.getAllActiveThemesByPaging(page, size));

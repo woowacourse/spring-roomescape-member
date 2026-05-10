@@ -97,4 +97,21 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         // then
         assertThat(reservations).hasSize(3);
     }
+
+    @Test
+    void 예약_목록을_최신_등록순으로_페이징_조회한다() {
+        // given
+        dataSource.insertReservation("첫번째", LocalDate.now().minusDays(2), 1L, 1L);
+        dataSource.insertReservation("두번째", LocalDate.now().minusDays(1), 1L, 1L);
+        dataSource.insertReservation("세번째", LocalDate.now(), 1L, 1L);
+
+        // when
+        List<Reservation> reservations = reservationRepository.findAllByPaging(1, 1);
+
+        // then
+        assertThat(reservations)
+                .hasSize(1)
+                .extracting(Reservation::getName)
+                .containsExactly("두번째");
+    }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationTimeService;
 import roomescape.web.dto.ReservationTimeRequest;
@@ -50,7 +51,9 @@ public class AdminReservationTimeController {
 
     @GetMapping
     public ResponseEntity<ReservationTimeResponses> getAllTimes(
+            @RequestParam
             @PositiveOrZero(message = "페이지 번호는 0 이상이어야 합니다.") int page,
+            @RequestParam
             @Positive(message = "조회 개수는 양수여야 합니다.") int size
     ) {
         ReservationTimeResponses response = new ReservationTimeResponses(

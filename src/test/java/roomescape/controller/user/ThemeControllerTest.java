@@ -74,6 +74,16 @@ class ThemeControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
+    void 테마_시간대_조회_요청_시_날짜가_없으면_400_BAD_REQUEST() {
+        // when & then
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .when().get("/api/themes/1")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("date 파라미터가 누락 되었습니다."));
+    }
+
+    @Test
     void 테마_목록_조회_요청에_성공하면_정상_응답이_반환된다() {
         // given
         ThemeResponses expected = new ThemeResponses(
@@ -96,6 +106,28 @@ class ThemeControllerTest extends BaseControllerUnitTest {
                 });
 
         assertThat(response).isEqualTo(expected);
+    }
+
+    @Test
+    void 테마_목록_조회_요청_시_페이지가_없으면_400_BAD_REQUEST() {
+        // when & then
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .queryParam("size", "1")
+                .when().get("/api/themes")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("page 파라미터가 누락 되었습니다."));
+    }
+
+    @Test
+    void 테마_목록_조회_요청_시_조회_개수가_없으면_400_BAD_REQUEST() {
+        // when & then
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .queryParam("page", "0")
+                .when().get("/api/themes")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("size 파라미터가 누락 되었습니다."));
     }
 
     @Test
@@ -144,5 +176,17 @@ class ThemeControllerTest extends BaseControllerUnitTest {
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body(containsString("endDate 파라미터가 누락 되었습니다."));
+    }
+
+    @Test
+    void 인기_테마_목록_조회_요청_시_조회_개수가_없으면_400_BAD_REQUEST() {
+        // when & then
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .queryParam("startDate", "2026-05-06")
+                .queryParam("endDate", "2026-05-09")
+                .when().get("/api/themes/popular")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("limit 파라미터가 누락 되었습니다."));
     }
 }
