@@ -17,6 +17,7 @@ public class Reservation {
 
     private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
+        validateNotNull(date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -33,8 +34,17 @@ public class Reservation {
     }
 
     private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidReservationException("이름은 비어있을 수 없습니다.");
+        }
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new InvalidReservationException("이름의 길이는 " + MAX_NAME_LENGTH + "를 넘을 수 없습니다.");
+            throw new InvalidReservationException("이름의 길이는 " + MAX_NAME_LENGTH + "자를 넘을 수 없습니다.");
+        }
+    }
+
+    private void validateNotNull(LocalDate date, ReservationTime time, Theme theme) {
+        if (date == null || time == null || theme == null) {
+            throw new InvalidReservationException("예약 날짜, 시간, 테마는 필수입니다.");
         }
     }
 }
