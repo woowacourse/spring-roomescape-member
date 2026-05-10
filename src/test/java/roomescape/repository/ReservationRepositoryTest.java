@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import roomescape.domain.Duration;
 import roomescape.domain.Reservation;
 import roomescape.test.util.TestDatabaseUtils;
 
@@ -116,7 +117,7 @@ class ReservationRepositoryTest {
     }
 
     @Nested
-    class 예약_정보를_제거한다 {
+    class 저장_조회_의존_테스트 {
 
         @BeforeEach
         void skipIfDependentTestFailed() {
@@ -125,52 +126,141 @@ class ReservationRepositoryTest {
         }
 
         @Test
-        void ID_기반으로_예약을_제거한다() {
-            // given=
-            Reservation reservation = new Reservation(
-                    DEFAULT_RESERVATION_ID,
-                    DEFAULT_RESERVATION_NAME,
-                    DEFAULT_RESERVATION_DATE,
-                    DEFAULT_TIME_ID,
-                    DEFAULT_THEME_ID
-            );
-
-            Reservation persistedReservation = reservationRepository.persist(reservation);
-
-            // when
-            reservationRepository.delete(persistedReservation.id());
-
-            // then
-            List<Reservation> reservations = reservationRepository.findAll();
-
-            assertThat(reservations).hasSize(0);
-        }
-
-        @Test
-        void 레코드가_제거됐다면_true를_반환한다() {
+        void 기간_내_예약_정보를_조회한다() {
             // given
-            Reservation reservation = new Reservation(
-                    DEFAULT_RESERVATION_ID,
-                    DEFAULT_RESERVATION_NAME,
-                    DEFAULT_RESERVATION_DATE,
+            LocalDate startDate = LocalDate.of(2000, 1, 1);
+            LocalDate endDate = LocalDate.of(3000, 1, 1);
+
+            Reservation outOfDurationReservation = new Reservation(
+                    UUID.randomUUID(),
+                    "outReservationName",
+                    LocalDate.of(1000, 1, 1),
                     DEFAULT_TIME_ID,
                     DEFAULT_THEME_ID
             );
+            reservationRepository.persist(outOfDurationReservation);
 
-            Reservation persistedReservation = reservationRepository.persist(reservation);
+            Reservation withinDurationReservation = new Reservation(
+                    UUID.randomUUID(),
+                    "withinReservationName",
+                    LocalDate.of(2500, 1, 1),
+                    DEFAULT_TIME_ID,
+                    DEFAULT_THEME_ID
+            );
+            Reservation expectedReservation = reservationRepository.persist(withinDurationReservation);
 
             // when
-            boolean deleted = reservationRepository.delete(persistedReservation.id());
+            List<Reservation> foundReservations = reservationRepository.findBetweenDuration(
+                    new Duration(startDate, endDate)
+            );
 
             // then
-            assertThat(deleted).isTrue();
+            assertThat(foundReservations).containsExactly(expectedReservation);
         }
 
-        @Test
-        void 아무_레코드도_제거되지_않았다면_false를_반환한다() {
-            boolean deleted = reservationRepository.delete(NOT_EXIST_ID);
+        @Nested
+        class 날짜와_테마_식별자를_기반으로_예약_정보를_조회한다 {
 
-            assertThat(deleted).isFalse();
+            @Test
+            void 일치하는_예약을_반환한다() {
+                // given
+                LocalDate targetDate = LocalDate.of(2000, 1, 1);
+
+                Reservation sameDateReservation = new Reservation(
+                        DEFAULT_RESERVATION_ID,
+                        DEFAULT_RESERVATION_NAME,
+                        targetDate,
+                        DEFAULT_TIME_ID,
+                        DEFAULT_THEME_ID
+                );
+                Reservation persistedReservation = reservationRepository.persist(sameDateReservation);
+
+                // when
+                List<Reservation> foundReservations = reservationRepository.findByDateAndThemeId(
+                        targetDate,
+                        DEFAULT_THEME_ID
+                );
+
+                // then
+                assertThat(foundReservations).containsExactly(persistedReservation);
+            }
+
+            @Test
+            void 일치하는_예약이_없다면_빈_리스트를_반환한다() {
+                // given
+                LocalDate targetDate = LocalDate.of(2000, 1, 1);
+
+                Reservation differentDateReservation = new Reservation(
+                        DEFAULT_RESERVATION_ID,
+                        DEFAULT_RESERVATION_NAME,
+                        LocalDate.of(1000, 1, 1),
+                        DEFAULT_TIME_ID,
+                        DEFAULT_THEME_ID
+                );
+                reservationRepository.persist(differentDateReservation);
+
+                // when
+                List<Reservation> foundReservations = reservationRepository.findByDateAndThemeId(
+                        targetDate,
+                        DEFAULT_THEME_ID
+                );
+
+                // then
+                assertThat(foundReservations).isEmpty();
+            }
+        }
+
+        @Nested
+        class 예약_정보를_제거한다 {
+
+            @Test
+            void ID_기반으로_예약을_제거한다() {
+                // given
+                Reservation reservation = new Reservation(
+                        DEFAULT_RESERVATION_ID,
+                        DEFAULT_RESERVATION_NAME,
+                        DEFAULT_RESERVATION_DATE,
+                        DEFAULT_TIME_ID,
+                        DEFAULT_THEME_ID
+                );
+
+                Reservation persistedReservation = reservationRepository.persist(reservation);
+
+                // when
+                reservationRepository.delete(persistedReservation.id());
+
+                // then
+                List<Reservation> reservations = reservationRepository.findAll();
+
+                assertThat(reservations).hasSize(0);
+            }
+
+            @Test
+            void 레코드가_제거됐다면_true를_반환한다() {
+                // given
+                Reservation reservation = new Reservation(
+                        DEFAULT_RESERVATION_ID,
+                        DEFAULT_RESERVATION_NAME,
+                        DEFAULT_RESERVATION_DATE,
+                        DEFAULT_TIME_ID,
+                        DEFAULT_THEME_ID
+                );
+
+                Reservation persistedReservation = reservationRepository.persist(reservation);
+
+                // when
+                boolean deleted = reservationRepository.delete(persistedReservation.id());
+
+                // then
+                assertThat(deleted).isTrue();
+            }
+
+            @Test
+            void 아무_레코드도_제거되지_않았다면_false를_반환한다() {
+                boolean deleted = reservationRepository.delete(NOT_EXIST_ID);
+
+                assertThat(deleted).isFalse();
+            }
         }
     }
 
