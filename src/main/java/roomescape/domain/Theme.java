@@ -4,7 +4,6 @@ import java.util.Objects;
 
 public record Theme(Long id, String name, String description, String thumbnailUrl) {
 
-
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Theme theme)) return false;
