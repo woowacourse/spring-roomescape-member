@@ -3,7 +3,6 @@ package roomescape.repository;
 import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,15 +16,14 @@ import roomescape.model.ReservationTime;
 public class TimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public TimeRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<ReservationTime> timeRowMapper = (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
             rs.getObject("start_at", LocalTime.class)
     );
+
+    public TimeRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public List<ReservationTime> findAll() {
         String sql = "select * from reservation_time";
@@ -63,9 +61,9 @@ public class TimeRepository {
 
     public Optional<ReservationTime> findById(Long id) {
         String sql = "select * from reservation_time where id = ?";
-        try{
-            return  Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
-        }catch(EmptyResultDataAccessException e){
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }

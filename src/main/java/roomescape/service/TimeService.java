@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
@@ -34,7 +33,7 @@ public class TimeService {
 
     public void removeById(Long id) {
         int deleteCnt = timeRepository.deleteById(id);
-        if(deleteCnt == 0) {
+        if (deleteCnt == 0) {
             throw new IllegalArgumentException("존재하지 않는 시간의 ID 입니다.");
         }
     }

@@ -4,9 +4,6 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,11 +17,6 @@ import roomescape.model.Theme;
 public class ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public ReservationRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<Reservation> reservationMapper = (rs, rowNum) -> new Reservation(
             rs.getLong("id"),
             rs.getString("username"),
@@ -40,6 +32,10 @@ public class ReservationRepository {
                     rs.getString("url")
             )
     );
+
+    public ReservationRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public List<Reservation> findAll() {
         String selectSql =

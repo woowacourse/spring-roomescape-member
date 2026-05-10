@@ -2,7 +2,6 @@ package roomescape.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -49,9 +48,9 @@ public class ThemeRepository {
 
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM THEME WHERE ID = ?";
-        try{
+        try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, themeRowMapper, id));
-        } catch(EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
