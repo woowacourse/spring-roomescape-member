@@ -7,16 +7,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.AvailableReservationTimeResponse;
-import roomescape.controller.dto.ReservationTimeRequest;
 import roomescape.controller.dto.AvailableReservationTimesQuery;
+import roomescape.controller.dto.AvailableReservationTimesResponse;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.controller.dto.ThemeResponse;
-import roomescape.controller.dto.AvailableReservationTimesResponse;
 import roomescape.domain.ReservationTime;
 import roomescape.global.exception.DuplicateReservationTimeException;
 import roomescape.global.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.CreateReservationTimeCommand;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,11 +27,12 @@ public class ReservationTimeService {
     private final ThemeRepository themeRepository;
 
     @Transactional
-    public ReservationTimeResponse createReservationTime(ReservationTimeRequest request) {
-        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
+    public ReservationTimeResponse createReservationTime(CreateReservationTimeCommand command) {
+        if (reservationTimeRepository.existsByStartAt(command.startAt())) {
             throw new DuplicateReservationTimeException();
         }
-        ReservationTime savedReservationTime = reservationTimeRepository.save(ReservationTime.createNew(request.startAt()));
+        ReservationTime savedReservationTime = reservationTimeRepository.save(
+                ReservationTime.createNew(command.startAt()));
 
         return ReservationTimeResponse.from(savedReservationTime);
     }

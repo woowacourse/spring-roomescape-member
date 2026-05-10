@@ -37,14 +37,14 @@ public class ReservationTimeController {
             @RequestParam LocalDate date,
             @RequestParam(required = false) Boolean available
     ) {
-        return ResponseEntity.ok(reservationTimeService.getAvailableReservationTimes(AvailableReservationTimesQuery.of(themeId, date, available)));
+        return ResponseEntity.ok(reservationTimeService.getAvailableReservationTimes(
+                AvailableReservationTimesQuery.of(themeId, date, available)));
     }
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @RequestBody ReservationTimeRequest request) {
-        ReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(
-                request);
+        ReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(request.toCommand());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(reservationTime);
     }
