@@ -26,23 +26,39 @@ window.api = (function () {
 
     async function toError(res) {
         let message = '';
-        try {
-            message = await res.text();
-        } catch (_) { /* ignore */
-        }
+        try { message = await res.text(); } catch (_) {}
         const err = new Error(message || ('HTTP ' + res.status));
         err.status = res.status;
         return err;
     }
 
+    async function fetchAllPages(basePath, size = 100) {
+        const all = [];
+        let page = 0;
+        while (true) {
+            const items = await getJson(`${basePath}?page=${page}&size=${size}`);
+            all.push(...items);
+            if (items.length < size) break;
+            page++;
+        }
+        return all;
+    }
+
     return {
-        listThemes: () => getJson('/api/themes'),
+        listThemes: (page = 0, size = 10) =>
+            getJson(`/api/themes?page=${page}&size=${size}`),
+        listAllThemes: () => fetchAllPages('/api/themes'),
         popularThemes: () => getJson('/api/themes/popular'),
-        listReservations: (userName) => getJson(userName ? '/api/reservations?user_name=' + encodeURIComponent(userName) : '/api/reservations'),
+        listReservations: (userName, page = 0, size = 10) =>
+            getJson(userName
+                ? '/api/reservations?user_name=' + encodeURIComponent(userName)
+                : `/api/reservations?page=${page}&size=${size}`),
+
         createReservation: (payload) => postJson('/api/reservations', payload),
         deleteReservation: (id) => del('/api/reservations/' + id),
         listTimes: () => getJson('/api/times'),
-        availableTimes: (themeId, date) => getJson('/api/times/available?theme_id=' + encodeURIComponent(themeId) + '&date=' + encodeURIComponent(date)),
+        availableTimes: (themeId, date) =>
+            getJson('/api/times/available?theme_id=' + encodeURIComponent(themeId) + '&date=' + encodeURIComponent(date)),
         createTheme: (payload) => postJson('/api/admin/themes', payload),
         deleteTheme: (id) => del('/api/admin/themes/' + id),
         createTime: (payload) => postJson('/api/admin/times', payload),

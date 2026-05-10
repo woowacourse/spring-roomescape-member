@@ -32,6 +32,8 @@
 
         function renderLedger(items) {
             ledgerCount.textContent = items.length;
+            const metaEl = document.getElementById('ledger-count-meta');
+            if (metaEl) metaEl.textContent = items.length;
             if (items.length === 0) {
                 ledgerTable.style.display = 'none';
                 ledgerEmpty.style.display = 'block';

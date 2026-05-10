@@ -28,7 +28,7 @@
         }
 
         try {
-            const themes = await api.listThemes();
+            const themes = await api.listAllThemes();
             const theme = themes.find(t => String(t.id) === String(themeId));
             if (!theme) {
                 modal.alert({title: '없는 사건', message: '해당 사건을 찾을 수 없습니다.'});
