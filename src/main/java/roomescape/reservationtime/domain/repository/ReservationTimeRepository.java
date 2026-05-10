@@ -15,7 +15,5 @@ public interface ReservationTimeRepository {
 
     Integer delete(Long id);
 
-    List<AvailableReservationTime> findByThemeAndDate(Long themeId, LocalDate date);
-
     Boolean existsByStartAt(LocalTime startAt);
 }
