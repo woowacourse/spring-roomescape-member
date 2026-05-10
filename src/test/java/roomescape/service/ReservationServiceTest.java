@@ -11,12 +11,15 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.NotFoundException;
 import roomescape.policy.ReservationSavePolicy;
+import roomescape.policy.UserReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +36,8 @@ class ReservationServiceTest {
 
     private static final long TIME_ID = 1L;
     private static final long THEME_ID = 1L;
+    private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 5, 8);
+    private static final ZoneId ZONE = ZoneId.of("Asia/Seoul");
 
     @Mock
     private ReservationRepository reservationRepository;
@@ -43,25 +48,25 @@ class ReservationServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
-    @Mock
     private ReservationSavePolicy policy;
 
     private ReservationService reservationService;
 
     @BeforeEach
     void setUp() {
-        reservationService = new ReservationService(
+        this.reservationService = new ReservationService(
                 reservationRepository,
                 reservationTimeRepository,
                 themeRepository);
+        this.policy = new UserReservationSavePolicy(Clock.fixed(FIXED_TODAY.atStartOfDay(ZONE).toInstant(), ZONE));
     }
 
     @Test
     void 예약을_저장하면_id가_채워진_도메인을_반환한다() {
         ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
         Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 3), TIME_ID, THEME_ID);
-        Reservation persisted = new Reservation(99L, "브라운", LocalDate.of(2026, 5, 3), time, theme);
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 10), TIME_ID, THEME_ID);
+        Reservation persisted = new Reservation(99L, "브라운", LocalDate.of(2026, 5, 10), time, theme);
 
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
@@ -71,14 +76,14 @@ class ReservationServiceTest {
 
         assertThat(saved.id()).isEqualTo(99L);
         assertThat(saved.name()).isEqualTo("브라운");
-        assertThat(saved.date()).isEqualTo(LocalDate.of(2026, 5, 3));
+        assertThat(saved.date()).isEqualTo(LocalDate.of(2026, 5, 10));
         assertThat(saved.time().id()).isEqualTo(TIME_ID);
         assertThat(saved.theme().id()).isEqualTo(THEME_ID);
     }
 
     @Test
     void 존재하지_않는_시간으로_저장하면_예외가_발생한다() {
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 3), TIME_ID, THEME_ID);
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 10), TIME_ID, THEME_ID);
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, policy))
@@ -88,7 +93,7 @@ class ReservationServiceTest {
     @Test
     void 존재하지_않는_테마로_저장하면_예외가_발생한다() {
         ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 3), TIME_ID, THEME_ID);
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 10), TIME_ID, THEME_ID);
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.empty());
 
@@ -101,7 +106,7 @@ class ReservationServiceTest {
         ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
         Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
         List<Reservation> stored = List.of(
-                new Reservation(1L, "브라운", LocalDate.of(2026, 5, 3), time, theme),
+                new Reservation(1L, "브라운", LocalDate.of(2026, 5, 10), time, theme),
                 new Reservation(2L, "조이", LocalDate.of(2026, 5, 4), time, theme));
         given(reservationRepository.findAllReservations()).willReturn(stored);
 
