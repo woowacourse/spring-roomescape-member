@@ -60,6 +60,7 @@ public class ScheduleRepository {
                 WHERE s.theme_id = ?
                   AND s.start_at >= ? 
                   AND s.start_at < ?
+                  AND r.id IS NULL
                 """;
 
         LocalDateTime startOfDay = date.atStartOfDay();
