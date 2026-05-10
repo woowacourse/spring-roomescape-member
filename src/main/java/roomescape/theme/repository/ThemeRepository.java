@@ -6,7 +6,7 @@ import roomescape.theme.entity.Theme;
 
 public interface ThemeRepository {
 
-    Theme save(String name, String description, String thumbnailUrl);
+    Theme save(Theme theme);
 
     Optional<Theme> findById(Long id);
 

@@ -18,7 +18,14 @@ public class ThemeService {
 
     @Transactional
     public Theme save(ThemeRequest request) {
-        return themeRepository.save(request.name(), request.description(), request.thumbnailUrl());
+        Theme theme = Theme.create(
+                request.name(),
+                request.description(),
+                request.thumbnailUrl(),
+                Theme.RUNTIME
+        );
+
+        return themeRepository.save(theme);
     }
 
     @Transactional(readOnly = true)

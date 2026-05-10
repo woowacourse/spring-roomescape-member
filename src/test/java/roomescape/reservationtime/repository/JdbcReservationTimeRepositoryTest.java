@@ -71,7 +71,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약_시간을_삭제하면_이를_참조하는_예약도_삭제된다() {
         ReservationTime reservationTime = reservationTimeRepository.save(LocalTime.of(11, 0));
-        Theme theme = themeRepository.save("테마", "테마 설명", "https://example.com/theme.png");
+        Theme theme = themeRepository.save(Theme.create("테마", "테마 설명", "https://example.com/theme.png", Theme.RUNTIME));
         Reservation reservation = Reservation.create(
                 "밀란",
                 LocalDate.of(2026, 5, 6),

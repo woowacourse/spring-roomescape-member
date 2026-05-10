@@ -5,6 +5,9 @@ import java.util.Objects;
 
 public class Theme {
 
+    // TODO: 요구사항에 따라 theme의 runtime은 고정한다.
+    public static final Duration RUNTIME = Duration.ofMinutes(60);
+
     private final Long id;
     private final String name;
     private final String description;
@@ -17,6 +20,10 @@ public class Theme {
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
         this.runtime = runtime;
+    }
+
+    public static Theme create(String name, String description, String thumbnailUrl, Duration runtime) {
+        return new Theme(null, name, description, thumbnailUrl, runtime);
     }
 
     public static Theme of(Long id, String name, String description, String thumbnailUrl, Duration runtime) {
@@ -45,11 +52,14 @@ public class Theme {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
         Theme theme = (Theme) o;
-        return Objects.equals(id, theme.id);
+        return id != null && Objects.equals(id, theme.id);
     }
 
     @Override

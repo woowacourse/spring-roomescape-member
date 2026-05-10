@@ -16,8 +16,6 @@ import roomescape.theme.exception.ThemeNotFoundException;
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
-    // TODO: 요구사항에 따라 theme의 runtime은 고정한다.
-    private static final Long RUNTIME = 1L;
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
@@ -30,12 +28,12 @@ public class JdbcThemeRepository implements ThemeRepository {
                     rs.getString("name"),
                     rs.getString("description"),
                     rs.getString("thumbnail_url"),
-                    Duration.ofHours(rs.getLong("runtime"))
+                    Duration.ofMinutes(rs.getLong("runtime"))
             );
 
 
     @Override
-    public Theme save(String name, String description, String thumbnailUrl) {
+    public Theme save(Theme theme) {
         String sql = """
                 INSERT INTO theme (name, description, thumbnail_url, runtime)
                 VALUES (?, ?, ?, ?)
@@ -45,20 +43,20 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, name);
-            ps.setString(2, description);
-            ps.setString(3, thumbnailUrl);
-            ps.setLong(4, RUNTIME);
+            ps.setString(1, theme.getName());
+            ps.setString(2, theme.getDescription());
+            ps.setString(3, theme.getThumbnailUrl());
+            ps.setLong(4, theme.getRuntime().toMinutes());
             return ps;
         }, keyHolder);
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return Theme.of(
                 id,
-                name,
-                description,
-                thumbnailUrl,
-                Duration.ofHours(RUNTIME)
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnailUrl(),
+                theme.getRuntime()
         );
     }
 
