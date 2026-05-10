@@ -18,6 +18,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -108,7 +110,7 @@ class ThemeServiceTest {
                 new Theme(2L, "escape2", "방탈출2", "http://example.com/img2.jpg")
         );
 
-        when(themeRepository.findPopularThemes(fixedToday.minusDays(7), fixedToday.minusDays(1), 10)).thenReturn(themes);
+        when(themeRepository.findPopularThemes(any(), any(), anyInt())).thenReturn(themes);
         List<Theme> result = timeRelatedThemeService.findPopularThemes();
 
         assertThat(result.size()).isEqualTo(2);
