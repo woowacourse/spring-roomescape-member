@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Admin · Roomescape</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="/styles.css" rel="stylesheet" />
+</head>
+<body>
+<main class="page">
+  <header class="hero">
+    <p class="eyebrow">// Roomescape · Admin Console</p>
+    <h1>관리자 콘솔</h1>
+    <p>예약·시간·테마를 관리한다. 운영 중단·노쇼 처리·전화 예약 같은 모든 백오피스 액션은 여기서.</p>
+    <p><a class="admin-link" href="/">↩ 사용자 페이지로</a></p>
+  </header>
+
+  <section class="panel">
+    <h2>관리 영역</h2>
+    <p class="panel-sub">아래 카드를 눌러 들어가.</p>
+    <div class="hub-grid">
+      <a class="hub-card" href="/admin/reservation">
+        <p class="hub-tag">// reservation</p>
+        <h3>예약 관리</h3>
+        <p>전체/필터 조회 · 단건 추가 · 단건 삭제 · 일괄 삭제</p>
+      </a>
+      <a class="hub-card" href="/admin/time">
+        <p class="hub-tag">// time</p>
+        <h3>시간 관리</h3>
+        <p>예약 가능한 시간 슬롯 추가 · 삭제</p>
+      </a>
+      <a class="hub-card" href="/admin/theme">
+        <p class="hub-tag">// theme</p>
+        <h3>테마 관리</h3>
+        <p>테마 카탈로그 추가 · 삭제</p>
+      </a>
+    </div>
+  </section>
+</main>
+</body>
+</html>
