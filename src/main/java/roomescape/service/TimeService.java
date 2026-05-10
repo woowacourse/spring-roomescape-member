@@ -39,7 +39,7 @@ public class TimeService {
     }
 
     public TimeResponse register(TimeRequest timeRequest) {
-        if (timeRepository.existsByStartAt(timeRequest.startAt()) > 0) {
+        if (timeRepository.existsByStartAt(timeRequest.startAt())) {
             throw new IllegalArgumentException("이미 존재하는 시간입니다.");
         }
 

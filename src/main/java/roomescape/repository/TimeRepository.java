@@ -68,8 +68,8 @@ public class TimeRepository {
         }
     }
 
-    public int existsByStartAt(LocalTime startAt) {
+    public boolean existsByStartAt(LocalTime startAt) {
         String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, startAt);
+        return jdbcTemplate.queryForObject(sql, Integer.class, startAt) > 0;
     }
 }

@@ -70,8 +70,8 @@ public class ReservationRepository {
                 reservation.getTime(), reservation.getTheme());
     }
 
-    public int existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
+        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId) > 0;
     }
 }
