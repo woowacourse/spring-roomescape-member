@@ -13,6 +13,7 @@ import roomescape.theme.repository.ThemeRepository;
 public class ThemeService {
 
     private static final int POPULAR_STATISTICS_DAYS = 7;
+    private static final int PREVIOUS_DAYS = 1;
 
     private final ThemeRepository themeRepository;
 
@@ -33,7 +34,7 @@ public class ThemeService {
     }
 
     public List<Theme> readPopularThemes(int top) {
-        LocalDate endDate = LocalDate.now();
+        LocalDate endDate = LocalDate.now().minusDays(PREVIOUS_DAYS);
         LocalDate startDate = endDate.minusDays(POPULAR_STATISTICS_DAYS);
         return themeRepository.findPopularThemes(startDate, endDate, top);
     }

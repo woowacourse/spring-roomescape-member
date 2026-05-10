@@ -98,7 +98,7 @@ public class JdbcThemeRepository implements ThemeRepository{
             WHERE t.is_active = true
               AND r.status = 'RESERVED'
               AND r.date >= :startDate
-              AND r.date < :endDate
+              AND r.date <= :endDate
             GROUP BY t.id, t.name, t.description, t.thumbnail_url, t.is_active
             ORDER BY reservation_count DESC
             LIMIT :limit
