@@ -200,6 +200,12 @@ button:disabled {
   border: 1px solid #e5e7eb;
 }
 
+.list li.empty-message {
+  color: #6b7280;
+  font-style: italic;
+  cursor: default;
+}
+
 /* 인기 순위 리스트 */
 .popular-ranking {
   counter-reset: my-counter;

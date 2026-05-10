@@ -26,6 +26,14 @@ async function api(path, options = {}) {
 function renderThemeList(themes) {
   const list = document.getElementById("theme-list");
   list.innerHTML = "";
+  if (!themes.length) {
+    const li = document.createElement("li");
+    li.textContent = "선택한 날짜에 예약 가능한 테마가 없습니다.";
+    li.className = "empty-message";
+    list.appendChild(li);
+    return;
+  }
+
   themes.forEach((theme) => {
     const li = document.createElement("li");
     li.innerHTML = `
