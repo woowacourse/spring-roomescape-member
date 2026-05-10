@@ -94,9 +94,23 @@ class JdbcThemeRepositoryTest {
     public void deleteById() {
         Theme theme = jdbcThemeRepository.save(new Theme("kim", "desc1", "thumb1"));
 
-        jdbcThemeRepository.deleteById(theme.getId());
+        boolean deleted = jdbcThemeRepository.deleteById(theme.getId());
 
+        assertThat(deleted).isTrue();
         assertThat(jdbcThemeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 Theme는 삭제되지 않는다.")
+    public void deleteById_fail() {
+        // given
+        Long id = 1L;
+
+        // when
+        boolean deleted = jdbcThemeRepository.deleteById(id);
+
+        // then
+        assertThat(deleted).isFalse();
     }
 
 }

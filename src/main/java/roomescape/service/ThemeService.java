@@ -47,6 +47,8 @@ public class ThemeService {
             throw new DomainException(ErrorCode.THEME_HAS_RESERVATION);
         }
 
-        themeRepository.deleteById(id);
+        if (!themeRepository.deleteById(id)) {
+            throw new DomainException(ErrorCode.THEME_NOT_FOUND);
+        }
     }
 }

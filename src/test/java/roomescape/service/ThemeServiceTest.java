@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ThemeServiceTest {
 
     @Autowired
-    ReservationTimeService reservationTimeService;
+    ThemeService themeService;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -40,9 +40,21 @@ class ThemeServiceTest {
         insertReservation("브라운", LocalDate.of(2023, 8, 5), reservationTime, theme);
 
         // when
-        assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
+        assertThatThrownBy(() -> themeService.delete(theme.getId()))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.RESERVATION_TIME_HAS_RESERVATION.message());
+                .hasMessage(ErrorCode.THEME_HAS_RESERVATION.message());
+    }
+
+    @Test
+    @DisplayName("해당 테마가 존재하지 않으면 삭제할 수 없기 때문에 예외가 발생한다.")
+    public void delete_fail2() {
+        // given
+        Long id = 1L;
+
+        // when, then
+        assertThatThrownBy(() -> themeService.delete(id))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(ErrorCode.THEME_NOT_FOUND.message());
     }
 
     private Reservation insertReservation(String name, LocalDate date, ReservationTime time, Theme theme) {

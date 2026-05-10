@@ -88,11 +88,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
-        jdbcTemplate.update("""
+    public boolean deleteById(Long id) {
+        int rowCount = jdbcTemplate.update("""
                 DELETE FROM theme
                 WHERE id = ?
                 """, id);
+        return rowCount > 0;
     }
 
     private int insert(Theme theme, KeyHolder keyHolder) {
