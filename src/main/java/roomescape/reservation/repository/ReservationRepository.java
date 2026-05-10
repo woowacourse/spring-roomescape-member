@@ -3,6 +3,7 @@ package roomescape.reservation.repository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.mapper.ReservationMapper;
 import roomescape.reservation.repository.dao.ReservationDao;
@@ -14,6 +15,7 @@ import roomescape.time.repository.dao.ReservationTimeDao;
 import roomescape.time.repository.entity.ReservationTimeEntity;
 
 @Repository
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReservationRepository {
 
@@ -30,6 +32,7 @@ public class ReservationRepository {
                 ).toList();
     }
 
+    @Transactional
     public Reservation save(CreateReservationParams params) {
         Long id = reservationDao.insert(params.name(), params.date(), params.timeId(), params.themeId());
         ReservationEntity reservationEntity = new ReservationEntity(id, params.name(), params.date(), params.timeId(), params.themeId());
@@ -38,6 +41,7 @@ public class ReservationRepository {
         return ReservationMapper.toReservation(reservationEntity, reservationTimeEntity, themeEntity);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         int deletedCount = reservationDao.deleteById(id);
 

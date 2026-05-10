@@ -5,10 +5,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.global.annotation.ReadOnlyTransactional;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.dto.CreateReservationParams;
 import roomescape.theme.domain.Theme;
@@ -18,6 +17,7 @@ import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.time.repository.dto.FindReservedTimeParams;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReservationService {
 
@@ -25,7 +25,6 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    @ReadOnlyTransactional
     public List<ReservationResponse> findAllReservations() {
         return reservationRepository.findAll().stream()
                 .map(ReservationResponse::from)
@@ -53,6 +52,7 @@ public class ReservationService {
         }
     }
 
+    @Transactional
     public void cancelReservation(Long id) {
         reservationRepository.deleteById(id);
     }

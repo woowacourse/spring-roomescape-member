@@ -3,6 +3,7 @@ package roomescape.theme.repository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.mapper.ThemeMapper;
 import roomescape.theme.repository.dao.ThemeDao;
@@ -11,6 +12,7 @@ import roomescape.theme.repository.entity.ThemeEntity;
 import roomescape.theme.repository.dto.GetThemeRankingsInRecentDaysParams;
 
 @Repository
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ThemeRepository {
 
@@ -22,12 +24,14 @@ public class ThemeRepository {
                 .toList();
     }
 
+    @Transactional
     public Theme save(CreateThemeParams params) {
         Long id = themeDao.insert(params.name(), params.description(), params.imageURl());
         ThemeEntity themeEntity = new ThemeEntity(id, params.name(), params.description(), params.imageURl(), false);
         return ThemeMapper.toTheme(themeEntity);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         int deletedCount = themeDao.deleteById(id);
 
