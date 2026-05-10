@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.time.Time;
+import roomescape.time.ReservationTime;
 import roomescape.time.TimeDao;
 
 @Service
@@ -23,20 +23,25 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation add(String name, LocalDate date, Long timeId, Long themeId) {
-        Time time = timeDao.selectById(timeId);
-        Reservation reservation = new Reservation(name, date, time, themeId);
+    public Reservation add(String name, Long themeId, LocalDate date, Long timeId) {
+        ReservationTime time = timeDao.selectById(timeId);
+        List<Reservation> reservedList = reservationDao.selectByThemeIdAndDate(themeId, date);
 
-        boolean isAvailable = reservationDao.isAvailable(themeId, date, timeId);
-
-        if (!isAvailable) {
-            throw new IllegalArgumentException("[ERROR] 예약할 수 없습니다.");
+        for (Reservation reserved : reservedList) {
+            validateReserved(timeId, reserved.getTime());
         }
 
-        return reservationDao.insert(reservation);
+        Reservation newReservation = new Reservation(name, themeId, date, time);
+        return reservationDao.insert(newReservation);
     }
 
     public void delete(Long id) {
         reservationDao.delete(id);
+    }
+
+    private void validateReserved(Long timeId, ReservationTime reservedTime) {
+        if (timeId.equals(reservedTime.getId())) {
+            throw new IllegalArgumentException("[ERROR] 예약할 수 없습니다.");
+        }
     }
 }
