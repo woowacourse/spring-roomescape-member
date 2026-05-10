@@ -118,4 +118,34 @@ class JdbcReservationTimeRepositoryTest {
         assertThat(foundReservation).isEmpty();
     }
 
+    @Test
+    void 특정_날짜와_테마에_예약_가능한_시간을_조회하는_테스트() {
+        LocalDate date = LocalDate.of(2026, 5, 6);
+
+        ReservationTime reservationTime1 = reservationTimeRepository.save(
+                ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime reservationTime2 = reservationTimeRepository.save(
+                ReservationTime.create(LocalTime.of(13, 0)));
+        ReservationTime reservationTime3 = reservationTimeRepository.save(
+                ReservationTime.create(LocalTime.of(16, 0)));
+
+        Theme theme = themeRepository.save(
+                Theme.create("테마", "테마 설명", "https://example.com/theme.png", Theme.RUNTIME));
+
+        Reservation reservation = Reservation.create(
+                "밀란",
+                date,
+                reservationTime1,
+                theme
+        );
+        reservationRepository.save(reservation);
+
+        List<ReservationTime> availableTimes =
+                reservationTimeRepository.findAvailableTimesByDateAndThemeId(date, theme.getId());
+
+        assertThat(availableTimes)
+                .extracting(ReservationTime::getId)
+                .containsExactly(reservationTime2.getId(), reservationTime3.getId());
+    }
+
 }

@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.payload.ReservationTimeRequest;
@@ -14,12 +13,9 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
-                                  ReservationRepository reservationRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
-        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
@@ -35,13 +31,7 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public List<ReservationTime> findAvailableReservationTimes(LocalDate date, Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        List<Long> reservedTimeIdsByDateAndThemeId =
-                reservationRepository.findReservedTimeIdsByDateAndThemeId(date, themeId);
-
-        return reservationTimes.stream()
-                .filter(reservationTime -> !reservedTimeIdsByDateAndThemeId.contains(reservationTime.getId()))
-                .toList();
+        return reservationTimeRepository.findAvailableTimesByDateAndThemeId(date, themeId);
     }
 
     @Transactional
