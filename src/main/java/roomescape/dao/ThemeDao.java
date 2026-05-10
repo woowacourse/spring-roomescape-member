@@ -58,7 +58,7 @@ public class ThemeDao {
                            COUNT(r.id) AS reservation_count
                            FROM theme t
                            INNER JOIN reservation r ON t.id = r.theme_id
-                           WHERE r.date BETWEEN DATEADD('DAY', -7, CURRENT_DATE) AND CURRENT_DATE
+                           WHERE r.date BETWEEN DATEADD('DAY', -7, CURRENT_DATE) AND DATEADD('DAY',-1,CURRENT_DATE)
                            GROUP BY t.id, t.name
                            ORDER BY reservation_count DESC
                            LIMIT ?;
