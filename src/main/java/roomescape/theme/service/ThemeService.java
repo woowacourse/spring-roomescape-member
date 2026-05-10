@@ -16,11 +16,11 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ThemeResponse> getTopThemes() {
+    public List<ThemeResponse> getTopThemes(int limit) {
         LocalDate startDate = LocalDate.now().minusDays(7);
         LocalDate endDate = LocalDate.now();
 
-        List<Long> themeIds = themeRepository.findThemeIdTop10(startDate, endDate);
+        List<Long> themeIds = themeRepository.findTopThemeIds(startDate, endDate, limit);
         return themeRepository.findAllByIds(themeIds).stream()
                 .map(ThemeResponse::of)
                 .collect(Collectors.toList());

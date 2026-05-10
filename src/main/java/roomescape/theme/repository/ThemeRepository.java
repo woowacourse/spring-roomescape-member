@@ -56,16 +56,16 @@ public class ThemeRepository {
         jdbcTemplate.update(query, id);
     }
 
-    public List<Long> findThemeIdTop10(LocalDate startDate, LocalDate endDate) {
+    public List<Long> findTopThemeIds(LocalDate startDate, LocalDate endDate, int limit) {
         String query = """
             SELECT r.theme_id
             FROM reservation r
             WHERE r.date BETWEEN ? AND ?
             GROUP BY r.theme_id
             ORDER BY COUNT(r.id) DESC
-            LIMIT 10
+            LIMIT ?
             """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> rs.getLong("theme_id"), startDate, endDate);
+        return jdbcTemplate.query(query, (rs, rowNum) -> rs.getLong("theme_id"), startDate, endDate, limit);
     }
 
     public List<Theme> findAllByIds(List<Long> ids) {

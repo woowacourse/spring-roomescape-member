@@ -1,5 +1,5 @@
 const RESERVATION_API = '/reservations';
-const THEME_API = '/themes/top';
+const THEME_API = '/themes/top?limit=10';
 
 const state = {
   date: null,
