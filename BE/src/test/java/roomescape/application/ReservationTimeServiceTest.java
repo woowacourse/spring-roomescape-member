@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,10 +38,13 @@ class ReservationTimeServiceTest {
         // given
         LocalTime testStartAt = LocalTime.now();
 
-        // when & then
-        Assertions.assertDoesNotThrow(
-                () -> reservationTimeService.saveTime(testStartAt)
-        );
+        // when
+        ReservationTime reservationTime = reservationTimeService.saveTime(testStartAt);
+
+        // then
+        assertThat(reservationTime.getId()).isNotNull();
+        assertThat(reservationTime.getStartAt()).isEqualTo(testStartAt);
+        assertThat(reservationTimeRepository.findById(reservationTime.getId())).contains(reservationTime);
     }
 
     @Test
@@ -52,19 +54,23 @@ class ReservationTimeServiceTest {
         LocalTime testStartAt = LocalTime.now();
         reservationTimeService.saveTime(testStartAt);
 
-        // when & then
-        Assertions.assertDoesNotThrow(
-                () -> reservationTimeService.getTimes()
-        );
+        // when
+        List<ReservationTime> reservationTimes = reservationTimeService.getTimes();
+
+        // then
+        assertThat(reservationTimes)
+                .extracting(ReservationTime::getStartAt)
+                .containsExactly(testStartAt);
     }
 
     @Test
     @DisplayName("예약 시간이 없으도 오류를 발생시키지 않음")
     void getTimesWhenEmpty() {
-        // when & then
-        Assertions.assertDoesNotThrow(
-                () -> reservationTimeService.getTimes()
-        );
+        // when
+        List<ReservationTime> reservationTimes = reservationTimeService.getTimes();
+
+        // then
+        assertThat(reservationTimes).isEmpty();
     }
 
     @Test
@@ -93,18 +99,21 @@ class ReservationTimeServiceTest {
         LocalTime testStartAt = LocalTime.now();
         ReservationTime saved = reservationTimeService.saveTime(testStartAt);
 
-        Assertions.assertDoesNotThrow(
-                () -> reservationTimeService.deleteTime(saved.getId())
-        );
+        // when
+        reservationTimeService.deleteTime(saved.getId());
+
+        // then
+        assertThat(reservationTimeRepository.findById(saved.getId())).isEmpty();
     }
 
     @Test
     @DisplayName("존재하지 않는 예약 시간을 삭제해도 예외가 발생하지 않는다")
     void deleteNotFoundTime() {
-        // when & then
-        Assertions.assertDoesNotThrow(
-                () -> reservationTimeService.deleteTime(999L)
-        );
+        // when
+        reservationTimeService.deleteTime(999L);
+
+        // then
+        assertThat(reservationTimeRepository.findAll()).isEmpty();
     }
 
     @Test
@@ -118,5 +127,6 @@ class ReservationTimeServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteTime(savedReservationTime.getId()))
                 .isInstanceOf(BusinessException.class);
+        assertThat(reservationTimeRepository.findById(savedReservationTime.getId())).contains(savedReservationTime);
     }
 }

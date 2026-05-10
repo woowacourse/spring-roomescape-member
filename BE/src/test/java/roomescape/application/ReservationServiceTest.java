@@ -1,6 +1,6 @@
 package roomescape.application;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -22,13 +22,16 @@ import roomescape.presentation.dto.ReservationRequest;
 
 class ReservationServiceTest {
 
-    private final ReservationRepository reservationRepository = new FakeReservationRepository();;
-    private final ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-    private final ThemeRepository themeRepository = new FakeThemeRepository();
+    private ReservationRepository reservationRepository;
+    private ReservationTimeRepository reservationTimeRepository;
+    private ThemeRepository themeRepository;
     private ReservationService reservationService;
 
     @BeforeEach
     void setUp() {
+        reservationRepository = new FakeReservationRepository();
+        reservationTimeRepository = new FakeReservationTimeRepository();
+        themeRepository = new FakeThemeRepository();
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
@@ -45,13 +48,21 @@ class ReservationServiceTest {
                 savedTheme.getId()
         );
 
-        // when & then
-        assertThatCode(() -> reservationService.saveReservation(
+        // when
+        Reservation reservation = reservationService.saveReservation(
                 request.name(),
                 request.date(),
                 request.timeId(),
                 request.themeId()
-        )).doesNotThrowAnyException();
+        );
+
+        // then
+        assertThat(reservation.getId()).isNotNull();
+        assertThat(reservation.getName()).isEqualTo(request.name());
+        assertThat(reservation.getDate()).isEqualTo(request.date());
+        assertThat(reservation.getTime()).isEqualTo(savedTime);
+        assertThat(reservation.getTheme()).isEqualTo(savedTheme);
+        assertThat(reservationRepository.findById(reservation.getId())).contains(reservation);
     }
 
     @Test
@@ -59,13 +70,13 @@ class ReservationServiceTest {
     void saveReservation_fail_with_not_found_time() {
         // given
         Long notExistTimeId = 999L;
-        Long notExistThemeId = 999L;
+        Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
 
         ReservationRequest request = new ReservationRequest(
                 "흑곰",
                 LocalDate.now(),
                 notExistTimeId,
-                notExistThemeId
+                savedTheme.getId()
         );
 
         // when & then
@@ -77,6 +88,7 @@ class ReservationServiceTest {
                 request.themeId()
             )
         ).isInstanceOf(BusinessException.class);
+        assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @Test
@@ -84,13 +96,13 @@ class ReservationServiceTest {
     //메서드명-성공 혹은 실패 - (이유)
     void saveReservation_fail_with_not_found_theme() {
         // given
-        Long notExistTimeId = 999L;
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
         Long notExistThemeId = 999L;
 
         ReservationRequest request = new ReservationRequest(
                 "흑곰",
                 LocalDate.now(),
-                notExistTimeId,
+                savedTime.getId(),
                 notExistThemeId
         );
 
@@ -103,6 +115,7 @@ class ReservationServiceTest {
                         request.themeId()
                 )
         ).isInstanceOf(BusinessException.class);
+        assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @Test
@@ -118,27 +131,32 @@ class ReservationServiceTest {
                 savedTheme
         ));
 
-        // when & then
-        assertThatCode(() -> reservationService.getReservations())
-                .doesNotThrowAnyException();
+        // when
+        var reservations = reservationService.getReservations();
+
+        // then
+        assertThat(reservations).containsExactly(savedReservation);
     }
 
     @Test
     @DisplayName("날짜와 테마를 기반으로 예약을 조회한다")
     void getReservations_success_with_date_and_theme() {
         // given
+        LocalDate date = LocalDate.now();
         ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
         Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
         Reservation savedReservation = reservationRepository.save(Reservation.create(
                 "인직",
-                LocalDate.now(),
+                date,
                 savedTime,
                 savedTheme
         ));
 
-        // when & then
-        assertThatCode(() -> reservationService.getReservationsByDateAndTheme(LocalDate.now(), savedTheme.getId()))
-                .doesNotThrowAnyException();
+        // when
+        var reservations = reservationService.getReservationsByDateAndTheme(date, savedTheme.getId());
+
+        // then
+        assertThat(reservations).containsExactly(savedReservation);
     }
 
     @Test
@@ -154,8 +172,10 @@ class ReservationServiceTest {
                 savedTheme
         ));
 
-        // when & then
-        assertThatCode(() -> reservationService.deleteReservation(savedReservation.getId()))
-                .doesNotThrowAnyException();
+        // when
+        reservationService.deleteReservation(savedReservation.getId());
+
+        // then
+        assertThat(reservationRepository.findById(savedReservation.getId())).isEmpty();
     }
 }
