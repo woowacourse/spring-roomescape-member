@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -13,6 +14,7 @@ import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
 
 @Service
+@Transactional
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -29,6 +31,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> getReservations() {
         return reservationRepository.findAll();
     }
@@ -53,6 +56,7 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationTime> getReservationTimes() {
         return reservationTimeRepository.findAll();
     }
@@ -70,6 +74,7 @@ public class ReservationService {
         reservationTimeRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationTime> getAvailableTimes(LocalDate date, final long themeId) {
         Theme theme = themeRepository.findById(themeId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
