@@ -2,8 +2,6 @@ package roomescape.domain.vo;
 
 import roomescape.common.exception.DomainException;
 
-import java.util.Objects;
-
 public record Name(String value) {
     public Name {
         if (value.isBlank()) {

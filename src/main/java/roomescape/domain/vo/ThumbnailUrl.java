@@ -2,14 +2,13 @@ package roomescape.domain.vo;
 
 import roomescape.common.exception.DomainException;
 
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 public record ThumbnailUrl(String value) {
     private static final Pattern URL_PATTERN = Pattern.compile("^https?://.+");
 
     public ThumbnailUrl {
-        if(value.isBlank()) {
+        if (value.isBlank()) {
             throw new DomainException("URL은 공백일 수 없습니다");
         }
 

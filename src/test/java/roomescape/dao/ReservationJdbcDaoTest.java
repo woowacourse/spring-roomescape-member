@@ -92,7 +92,7 @@ class ReservationJdbcDaoTest {
     }
 
     @Test
-    void existsById(){
+    void existsById() {
         ReservationRow saved = createReservationHandler(reservaton1);
         ReservationRow notExists = reservaton2;
 

@@ -12,7 +12,6 @@ import java.time.LocalTime;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ReservationTest {
     private final Name name = new Name("브라운");

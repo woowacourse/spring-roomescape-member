@@ -12,6 +12,7 @@ public record ThemeResponseDto(
     public static ThemeResponseDto from(ThemeRow row) {
         return new ThemeResponseDto(row.id(), row.name(), row.thumbnailUrl(), row.description());
     }
+
     public static ThemeResponseDto from(Theme theme) {
         return new ThemeResponseDto(
                 theme.getId(),

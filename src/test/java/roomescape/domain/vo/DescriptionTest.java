@@ -1,11 +1,9 @@
 package roomescape.domain.vo;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.DomainException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class DescriptionTest {
     @Test

@@ -3,8 +3,6 @@ package roomescape.domain.vo;
 
 import roomescape.common.exception.DomainException;
 
-import java.util.Objects;
-
 public record Description(String value) {
     public Description {
         if (value.isBlank()) {

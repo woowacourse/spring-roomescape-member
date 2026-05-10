@@ -10,7 +10,6 @@ import roomescape.dao.row.AvailableTimeRow;
 import roomescape.dao.row.ReservationRow;
 import roomescape.dao.row.ThemeRow;
 import roomescape.dao.row.TimeRow;
-import roomescape.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

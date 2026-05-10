@@ -44,7 +44,7 @@ public class ThemeController {
     @GetMapping("/populars")
     public ResponseEntity<List<ThemeResponseDto>> findPopulars(
             @RequestParam(defaultValue = "10") @Min(1) @Max(15) int limit,
-            @RequestParam(defaultValue = "7")  @Min(1) @Max(10) int days,
+            @RequestParam(defaultValue = "7") @Min(1) @Max(10) int days,
             @RequestParam(required = false) LocalDate date) {
         return ResponseEntity.ok(themeService.findPopulars(limit, days, date));
     }

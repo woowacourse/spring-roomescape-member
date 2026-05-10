@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
@@ -12,7 +11,6 @@ import roomescape.dao.ThemeDao;
 import roomescape.dao.TimeDao;
 import roomescape.dao.row.ThemeRow;
 import roomescape.dao.row.TimeRow;
-import roomescape.domain.Reservation;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.service.fake.FakeReservationDao;
@@ -79,6 +77,10 @@ class ReservationServiceTest {
                 .isInstanceOf(NotFoundException.class);
     }
 
+    private ReservationResponseDto createDtoHandler(ReservationRequestDto requestDto) {
+        return reservationService.create(requestDto);
+    }
+
     @Nested
     @DisplayName("예약을 생성할때: ")
     class Create {
@@ -113,9 +115,5 @@ class ReservationServiceTest {
             assertThatThrownBy(() -> reservationService.create(requestDto1))
                     .isInstanceOf(ConflictException.class);
         }
-    }
-
-    private ReservationResponseDto createDtoHandler(ReservationRequestDto requestDto) {
-        return reservationService.create(requestDto);
     }
 }

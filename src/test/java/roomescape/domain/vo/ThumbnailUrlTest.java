@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import roomescape.common.exception.DomainException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ThumbnailUrlTest {
     @Test

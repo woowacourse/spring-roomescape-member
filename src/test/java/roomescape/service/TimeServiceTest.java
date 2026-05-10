@@ -9,7 +9,6 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.TimeDao;
 import roomescape.dao.row.ReservationRow;
 import roomescape.dao.row.TimeRow;
-import roomescape.domain.Time;
 import roomescape.dto.request.TimeRequestDto;
 import roomescape.dto.response.TimeResponseDto;
 import roomescape.service.fake.FakeReservationDao;

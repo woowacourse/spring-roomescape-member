@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-import org.springframework.cglib.core.Local;
 import roomescape.common.exception.DomainException;
 import roomescape.domain.vo.Name;
 

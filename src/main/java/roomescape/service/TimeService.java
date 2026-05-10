@@ -50,7 +50,7 @@ public class TimeService {
 
     @Transactional
     public void delete(Long id) {
-        if(!timeDao.existsById(id)){
+        if (!timeDao.existsById(id)) {
             throw new NotFoundException("존재하지 않는 시간입니다.");
         }
 

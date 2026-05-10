@@ -9,7 +9,6 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dao.row.ReservationRow;
 import roomescape.dao.row.ThemeRow;
-import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequestDto;
 import roomescape.dto.response.ThemeResponseDto;
 import roomescape.service.fake.FakeReservationDao;
@@ -52,6 +51,10 @@ public class ThemeServiceTest {
                 .isInstanceOf(NotFoundException.class);
     }
 
+    private ThemeResponseDto insertHandler(ThemeRequestDto requestDto1) {
+        return themeService.create(requestDto1);
+    }
+
     @Nested
     class 삭제할_때 {
 
@@ -77,9 +80,5 @@ public class ThemeServiceTest {
             assertThatThrownBy(() -> themeService.delete(themeId))
                     .isInstanceOf(ConflictException.class);
         }
-    }
-
-    private ThemeResponseDto insertHandler(ThemeRequestDto requestDto1) {
-        return themeService.create(requestDto1);
     }
 }
