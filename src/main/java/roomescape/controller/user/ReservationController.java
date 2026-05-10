@@ -26,6 +26,4 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);
     }
-
-
 }

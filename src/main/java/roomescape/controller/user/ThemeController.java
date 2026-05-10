@@ -30,5 +30,4 @@ public class ThemeController {
         List<ThemeResponse> themeResponses = themeService.readRanks(LocalDate.now());
         return ResponseEntity.ok().body(themeResponses);
     }
-
 }

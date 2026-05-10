@@ -25,5 +25,4 @@ public class TimeController {
         List<TimeResponse> reservationTimes = timeService.readAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(reservationTimes);
     }
-
 }
