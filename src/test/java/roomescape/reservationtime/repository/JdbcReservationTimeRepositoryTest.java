@@ -31,7 +31,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약_시간을_저장하는_테스트() {
         LocalTime startAt = LocalTime.of(11, 0);
-        ReservationTime reservationTime = reservationTimeRepository.save(startAt);
+        ReservationTime reservationTime = reservationTimeRepository.save(ReservationTime.create(startAt));
 
         assertThat(reservationTime.getId()).isPositive();
         assertThat(reservationTime.getStartAt()).isEqualTo(startAt);
@@ -40,7 +40,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약_시간을_조회하는_테스트() {
         LocalTime startAt = LocalTime.of(11, 0);
-        ReservationTime reservationTime = reservationTimeRepository.save(startAt);
+        ReservationTime reservationTime = reservationTimeRepository.save(ReservationTime.create(startAt));
 
         ReservationTime foundReservationTime = reservationTimeRepository.findById(reservationTime.getId())
                 .orElseThrow(() -> new ReservationTimeNotFoundException(reservationTime.getId()));
@@ -51,8 +51,10 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 모든_예약_시간을_조회하는_테스트() {
-        ReservationTime reservationTime1 = reservationTimeRepository.save(LocalTime.of(11, 0));
-        ReservationTime reservationTime2 = reservationTimeRepository.save(LocalTime.of(12, 0));
+        ReservationTime reservationTime1 = reservationTimeRepository.save(
+                ReservationTime.create((LocalTime.of(11, 0))));
+        ReservationTime reservationTime2 = reservationTimeRepository.save(
+                ReservationTime.create((LocalTime.of(12, 0))));
 
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
@@ -61,7 +63,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_삭제하는_테스트() {
-        ReservationTime reservationTime = reservationTimeRepository.save(LocalTime.of(11, 0));
+        ReservationTime reservationTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
         reservationTimeRepository.deleteById(reservationTime.getId());
 
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
@@ -70,7 +72,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_삭제하면_이를_참조하는_예약도_삭제된다() {
-        ReservationTime reservationTime = reservationTimeRepository.save(LocalTime.of(11, 0));
+        ReservationTime reservationTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
         Theme theme = themeRepository.save(Theme.create("테마", "테마 설명", "https://example.com/theme.png", Theme.RUNTIME));
         Reservation reservation = Reservation.create(
                 "밀란",

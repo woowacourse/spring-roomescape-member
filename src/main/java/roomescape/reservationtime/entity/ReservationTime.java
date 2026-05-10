@@ -13,6 +13,10 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
+    public static ReservationTime create(LocalTime startAt) {
+        return new ReservationTime(null, startAt);
+    }
+
     public static ReservationTime of(Long id, LocalTime startAt) {
         return new ReservationTime(id, startAt);
     }
@@ -27,15 +31,20 @@ public class ReservationTime {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
         ReservationTime that = (ReservationTime) o;
-        return Objects.equals(id, that.id);
+        return id != null && Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
 }
+

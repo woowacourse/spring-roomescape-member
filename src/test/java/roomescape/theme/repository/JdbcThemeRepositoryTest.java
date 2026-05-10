@@ -92,7 +92,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_삭제하면_이를_참조하는_예약도_삭제된다() {
-        ReservationTime reservationTime = reservationTimeRepository.save(LocalTime.of(11, 0));
+        ReservationTime reservationTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
 
         Theme theme = Theme.create("테마", "테마 설명", "https://example.com/theme.png", Theme.RUNTIME);
         Theme savedTheme = themeRepository.save(theme);
