@@ -2,7 +2,7 @@ package roomescape.domain.theme.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
-import roomescape.domain.reservationtime.entity.ReservationTime;
+import roomescape.domain.theme.repository.ThemeReservationTimeResult;
 
 public record ThemeReservationTimeResponse(
         Long id,
@@ -11,11 +11,11 @@ public record ThemeReservationTimeResponse(
         Boolean isAvailable
 ) {
 
-    public static ThemeReservationTimeResponse from(ReservationTime time, boolean isAvailable) {
+    public static ThemeReservationTimeResponse from(ThemeReservationTimeResult timeResult) {
         return new ThemeReservationTimeResponse(
-                time.getId(),
-                time.getStartAt(),
-                isAvailable
+                timeResult.id(),
+                timeResult.startAt(),
+                timeResult.isAvailable()
         );
     }
 }

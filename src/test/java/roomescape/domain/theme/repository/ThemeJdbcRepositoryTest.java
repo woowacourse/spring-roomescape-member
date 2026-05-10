@@ -86,14 +86,14 @@ class ThemeJdbcRepositoryTest {
 
     @Test
     @DisplayName("특정 날짜의 테마별 예약 가능 시간을 조회한다.")
-    void findAllThemeReservationTimesByThemeIdAndDateTest() {
+    void findAllReservationTimesByThemeIdAndDateTest() {
         // given
         long themeId = 1L;
         LocalDate date = LocalDate.of(2026, 5, 6);
 
         // when
         List<ThemeReservationTimeResponse> result = themeRepository
-                .findAllThemeReservationTimesByThemeIdAndDate(themeId, date);
+                .findAllReservationTimesByThemeIdAndDate(themeId, date);
 
         // then
         assertThat(result).hasSize(6);
