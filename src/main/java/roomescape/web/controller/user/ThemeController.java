@@ -23,7 +23,7 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/times")
     public ResponseEntity<ThemeTimeResponses> getThemeReservationStatus(
             @PathVariable
             @Positive(message = "테마 조회 식별자는 양수여야 합니다.") Long id,
