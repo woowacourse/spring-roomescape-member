@@ -12,17 +12,15 @@ document.getElementById('login-btn').addEventListener('click', () => {
         return;
     }
 
-    // 이름이 '루크'인 경우 어드민 페이지로 리다이렉트
-    if (nameInput === '루크') {
-        alert('관리자님 환영합니다. 관리자 페이지로 이동합니다.');
-        window.location.href = '/admin.html'; // 어드민용 HTML을 따로 만드셔야 합니다!
-        return;
-    }
-
     // 일반 사용자일 경우
     currentUser = nameInput;
     document.getElementById('login-section').classList.add('hidden');
     document.getElementById('reservation-section').classList.remove('hidden');
+
+    // 💡 관리자일 경우, 관리자 페이지로 가는 버튼을 보여줍니다.
+    if (currentUser === '루크') {
+        document.getElementById('admin-page-btn').classList.remove('hidden');
+    }
 
     loadThemes(); // 일반 유저 화면이 뜨면 테마를 불러옵니다.
     loadPopularThemes(); // 인기 테마 통계도 함께 불러옵니다.
@@ -39,6 +37,11 @@ document.getElementById('login-name').addEventListener('keyup', (event) => {
     if (event.key === 'Enter') {
         document.getElementById('login-btn').click();
     }
+});
+
+// 관리자 페이지 버튼 클릭 이벤트
+document.getElementById('admin-page-btn').addEventListener('click', () => {
+    window.location.href = '/admin.html';
 });
 
 // =================================================================================================

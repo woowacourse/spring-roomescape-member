@@ -15,13 +15,17 @@
         <div class="form-group">
             <label for="login-name">이름을 입력하세요</label>
             <input type="text" id="login-name" placeholder="예: 루크, 소낙눈, 포비">
+            <p class="login-guide">Tip: '루크'로 로그인 시 관리자 기능이 활성화됩니다.</p>
         </div>
         <button id="login-btn" class="primary-btn">시작하기</button>
     </div>
 
     <!-- 예약 섹션 (처음에는 숨겨둠) -->
     <div id="reservation-section" class="container hidden">
-        <h1>방탈출 예약하기 🗝️</h1>
+        <div class="reservation-header">
+            <h1>방탈출 예약하기 🗝️</h1>
+            <button id="admin-page-btn" class="admin-btn hidden">관리자 페이지</button>
+        </div>
 
         <!-- 인기 테마 통계 영역 -->
         <section style="background-color: #fffbeb; padding: 15px; border-radius: 8px; margin-bottom: 25px;">

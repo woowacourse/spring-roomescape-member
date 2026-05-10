@@ -140,6 +140,35 @@ hr {
     font-style: italic;
 }
 
+.login-guide {
+    font-size: 0.8rem;
+    color: #95a5a6;
+    margin: 5px 0 0 0;
+    text-align: center;
+}
+
+.reservation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.reservation-header h1 {
+    margin: 0;
+}
+
+.admin-btn {
+    width: auto;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    background-color: #7f8c8d;
+}
+
+.admin-btn:hover {
+    background-color: #95a5a6;
+}
+
 .hidden {
     display: none !important;
 }
