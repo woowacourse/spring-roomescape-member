@@ -29,8 +29,8 @@ public class ReservationTimeRepository {
 
     public ReservationTime persist(ReservationTime reservationTime) {
         simpleJdbcInsert.execute(Map.of(
-                "id", reservationTime.getId().toString(),
-                "start_at", reservationTime.getStartAt()
+                "id", reservationTime.id().toString(),
+                "start_at", reservationTime.startAt()
         ));
 
         return reservationTime;

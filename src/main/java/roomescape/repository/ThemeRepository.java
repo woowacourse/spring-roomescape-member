@@ -30,10 +30,10 @@ public class ThemeRepository {
 
     public Theme persist(Theme theme) {
         simpleJdbcInsert.execute(Map.of(
-                "id", theme.getId().toString(),
-                "name", theme.getName(),
-                "description", theme.getDescription(),
-                "image_url", theme.getImageUrl()
+                "id", theme.id().toString(),
+                "name", theme.name(),
+                "description", theme.description(),
+                "image_url", theme.imageUrl()
         ));
 
         return theme;

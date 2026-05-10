@@ -27,6 +27,7 @@ class ReservationTimeRepositoryTest {
     private static boolean persistTestSuccessful = false;
     private static boolean findAllTestSuccessful = false;
 
+    private static final UUID DEFAULT_ID = UUID.fromString("11111111-1111-1111-1111-111111111101");
     private static final UUID NOT_EXIST_ID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
 
     private static final LocalTime DEFAULT_START_AT = LocalTime.of(1, 1);
@@ -46,8 +47,7 @@ class ReservationTimeRepositoryTest {
     @Test
     void 새로운_시간_정보를_저장하고_저장된_정보를_반환한다() {
         // given
-        UUID id = UUID.fromString("11111111-1111-1111-1111-111111111101");
-        ReservationTime transientTime = new ReservationTime(id, DEFAULT_START_AT);
+        ReservationTime transientTime = new ReservationTime(DEFAULT_ID, DEFAULT_START_AT);
 
         // when
         ReservationTime persistedTime = timeRepository.persist(transientTime);
@@ -69,8 +69,7 @@ class ReservationTimeRepositoryTest {
         skipIfPersistTestFailed();
 
         // given
-        UUID id = UUID.fromString("11111111-1111-1111-1111-111111111102");
-        ReservationTime transientTime = new ReservationTime(id, DEFAULT_START_AT);
+        ReservationTime transientTime = new ReservationTime(DEFAULT_ID, DEFAULT_START_AT);
         ReservationTime persistedTime = timeRepository.persist(transientTime);
 
         // when
@@ -95,14 +94,13 @@ class ReservationTimeRepositoryTest {
         class 예약_시간을_ID_기준으로_조회한다 {
 
             @Test
-            void 예약_시간을_ID_기준으로_조회한다() {
+            void 예약_시간을_조회한다() {
                 // given
-                UUID id = UUID.fromString("11111111-1111-1111-1111-111111111103");
-                ReservationTime transientTime = new ReservationTime(id, DEFAULT_START_AT);
+                ReservationTime transientTime = new ReservationTime(DEFAULT_ID, DEFAULT_START_AT);
                 ReservationTime persistedTime = timeRepository.persist(transientTime);
 
                 // when
-                Optional<ReservationTime> foundTime = timeRepository.findById(persistedTime.getId());
+                Optional<ReservationTime> foundTime = timeRepository.findById(persistedTime.id());
 
                 // then
                 assertThat(foundTime).hasValue(persistedTime);
@@ -124,12 +122,11 @@ class ReservationTimeRepositoryTest {
             @Test
             void ID_기반으로_예약_시간을_제거한다() {
                 // given
-                UUID id = UUID.fromString("11111111-1111-1111-1111-111111111104");
-                ReservationTime transientTime = new ReservationTime(id, DEFAULT_START_AT);
+                ReservationTime transientTime = new ReservationTime(DEFAULT_ID, DEFAULT_START_AT);
                 ReservationTime persistedTime = timeRepository.persist(transientTime);
 
                 // when
-                timeRepository.delete(persistedTime.getId());
+                timeRepository.delete(persistedTime.id());
 
                 // then
                 List<ReservationTime> foundTimes = timeRepository.findAll();
@@ -140,12 +137,11 @@ class ReservationTimeRepositoryTest {
             @Test
             void 레코드가_제거됐다면_true를_반환한다() {
                 // given
-                UUID id = UUID.fromString("11111111-1111-1111-1111-111111111105");
-                ReservationTime transientTime = new ReservationTime(id, DEFAULT_START_AT);
+                ReservationTime transientTime = new ReservationTime(DEFAULT_ID, DEFAULT_START_AT);
                 ReservationTime persistedTime = timeRepository.persist(transientTime);
 
                 // when
-                boolean deleted = timeRepository.delete(persistedTime.getId());
+                boolean deleted = timeRepository.delete(persistedTime.id());
 
                 // then
                 assertThat(deleted).isTrue();

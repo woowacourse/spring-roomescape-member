@@ -3,20 +3,15 @@ package roomescape.domain;
 import java.time.LocalTime;
 import java.util.Objects;
 import java.util.UUID;
-import lombok.Getter;
 
-@Getter
-public class ReservationTime {
+public record ReservationTime(
+        UUID id,
+        LocalTime startAt
+) {
 
-    private final UUID id;
-    private final LocalTime startAt;
-
-    public ReservationTime(UUID id, LocalTime startAt) {
+    public ReservationTime {
         validateId(id);
         validateStartAt(startAt);
-
-        this.id = id;
-        this.startAt = startAt;
     }
 
     private void validateId(UUID id) {

@@ -20,8 +20,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 import roomescape.test.util.TestDatabaseUtils;
 
 @JdbcTest
@@ -31,20 +29,18 @@ class ReservationRepositoryTest {
     private static boolean persistTestSuccessful = false;
     private static boolean findAllTestSuccessful = false;
 
+    private static final UUID DEFAULT_RESERVATION_ID = UUID.fromString("33333333-3333-3333-3333-333333333301");
     private static final UUID NOT_EXIST_ID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
+    private static final String DEFAULT_RESERVATION_NAME = "name";
+    private static final LocalDate DEFAULT_RESERVATION_DATE = LocalDate.of(2025, 1, 1);
 
-    private static final UUID SAMPLE_TIME_ID = UUID.fromString("11111111-1111-1111-1111-111111111101");
-    private static final UUID SAMPLE_THEME_ID = UUID.fromString("22222222-2222-2222-2222-222222222201");
+    private static final UUID DEFAULT_TIME_ID = UUID.fromString("11111111-1111-1111-1111-111111111101");
+    private static final LocalTime DEFAULT_TIME_START_AT = LocalTime.of(1, 1);
 
-    private static final String DEFAULT_NAME = "name";
-    private static final LocalDate DEFAULT_DATE = LocalDate.of(2025, 1, 1);
-    private static final LocalTime DEFAULT_START_AT = LocalTime.of(1, 1);
-    private static final Theme DEFAULT_THEME = new Theme(
-            SAMPLE_THEME_ID,
-            "themeName",
-            "themeDescription",
-            "themeUrl"
-    );
+    private static final UUID DEFAULT_THEME_ID = UUID.fromString("22222222-2222-2222-2222-222222222201");
+    private static final String DEFAULT_THEME_NAME = "themeName";
+    private static final String DEFAULT_THEME_DESCRIPTION = "themeDescription";
+    private static final String DEFAULT_THEME_URL = "themeUrl";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -55,40 +51,37 @@ class ReservationRepositoryTest {
     void setUp() {
         TestDatabaseUtils.clearTables(jdbcTemplate);
         this.reservationRepository = new ReservationRepository(jdbcTemplate);
+
+        persistTime(
+                DEFAULT_TIME_ID,
+                DEFAULT_TIME_START_AT
+        );
+        persistTheme(
+                DEFAULT_THEME_ID,
+                DEFAULT_THEME_NAME,
+                DEFAULT_THEME_DESCRIPTION,
+                DEFAULT_THEME_URL
+        );
     }
 
     @Order(1)
     @Test
     void 새로운_예약_정보를_저장하고_저장한_정보를_반환한다() {
         // given
-        ReservationTime time = persistTime(SAMPLE_TIME_ID, DEFAULT_START_AT);
-        Theme theme = persistTheme(DEFAULT_THEME);
-        UUID reservationId = UUID.fromString("33333333-3333-3333-3333-333333333301");
-
         Reservation transientReservation = new Reservation(
-                reservationId,
-                DEFAULT_NAME,
-                DEFAULT_DATE,
-                time,
-                theme
+                DEFAULT_RESERVATION_ID,
+                DEFAULT_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
+                DEFAULT_TIME_ID,
+                DEFAULT_THEME_ID
         );
 
         // when
         Reservation persistedReservation = reservationRepository.persist(transientReservation);
 
         // then
-        String selectSql = "SELECT r.id AS reservation_id,"
-                + " r.name AS member_name,"
-                + " r.date AS reservation_date,"
-                + " r.time_id,"
-                + " r.theme_id,"
-                + " rt.start_at AS time_start_at,"
-                + " t.name AS theme_name,"
-                + " t.description AS theme_description,"
-                + " t.image_url AS theme_image_url"
-                + " FROM reservation r"
-                + " INNER JOIN reservation_time rt ON r.time_id = rt.id"
-                + " INNER JOIN theme t ON r.theme_id = t.id";
+        String selectSql = "SELECT id, name, date, time_id, theme_id"
+                + " FROM reservation r";
         List<Reservation> foundReservations = jdbcTemplate.query(selectSql, reservationRowMapper());
 
         assertThat(foundReservations).hasSize(1);
@@ -103,16 +96,12 @@ class ReservationRepositoryTest {
         skipIfPersistTestFailed();
 
         // given
-        ReservationTime time = persistTime(SAMPLE_TIME_ID, DEFAULT_START_AT);
-        Theme theme = persistTheme(DEFAULT_THEME);
-        UUID reservationId = UUID.fromString("33333333-3333-3333-3333-333333333302");
-
         Reservation reservation = new Reservation(
-                reservationId,
-                DEFAULT_NAME,
-                DEFAULT_DATE,
-                time,
-                theme
+                DEFAULT_RESERVATION_ID,
+                DEFAULT_RESERVATION_NAME,
+                DEFAULT_RESERVATION_DATE,
+                DEFAULT_TIME_ID,
+                DEFAULT_THEME_ID
         );
 
         Reservation persistedReservation = reservationRepository.persist(reservation);
@@ -137,23 +126,19 @@ class ReservationRepositoryTest {
 
         @Test
         void ID_기반으로_예약을_제거한다() {
-            // given
-            ReservationTime time = persistTime(SAMPLE_TIME_ID, DEFAULT_START_AT);
-            Theme theme = persistTheme(DEFAULT_THEME);
-            UUID reservationId = UUID.fromString("33333333-3333-3333-3333-333333333303");
-
+            // given=
             Reservation reservation = new Reservation(
-                    reservationId,
-                    DEFAULT_NAME,
-                    DEFAULT_DATE,
-                    time,
-                    theme
+                    DEFAULT_RESERVATION_ID,
+                    DEFAULT_RESERVATION_NAME,
+                    DEFAULT_RESERVATION_DATE,
+                    DEFAULT_TIME_ID,
+                    DEFAULT_THEME_ID
             );
 
             Reservation persistedReservation = reservationRepository.persist(reservation);
 
             // when
-            reservationRepository.delete(persistedReservation.getId());
+            reservationRepository.delete(persistedReservation.id());
 
             // then
             List<Reservation> reservations = reservationRepository.findAll();
@@ -164,22 +149,18 @@ class ReservationRepositoryTest {
         @Test
         void 레코드가_제거됐다면_true를_반환한다() {
             // given
-            ReservationTime time = persistTime(SAMPLE_TIME_ID, DEFAULT_START_AT);
-            Theme theme = persistTheme(DEFAULT_THEME);
-            UUID reservationId = UUID.fromString("33333333-3333-3333-3333-333333333304");
-
             Reservation reservation = new Reservation(
-                    reservationId,
-                    DEFAULT_NAME,
-                    DEFAULT_DATE,
-                    time,
-                    theme
+                    DEFAULT_RESERVATION_ID,
+                    DEFAULT_RESERVATION_NAME,
+                    DEFAULT_RESERVATION_DATE,
+                    DEFAULT_TIME_ID,
+                    DEFAULT_THEME_ID
             );
 
             Reservation persistedReservation = reservationRepository.persist(reservation);
 
             // when
-            boolean deleted = reservationRepository.delete(persistedReservation.getId());
+            boolean deleted = reservationRepository.delete(persistedReservation.id());
 
             // then
             assertThat(deleted).isTrue();
@@ -193,48 +174,41 @@ class ReservationRepositoryTest {
         }
     }
 
-    private ReservationTime persistTime(UUID id, LocalTime startAt) {
+    private void persistTime(UUID id, LocalTime startAt) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time");
+
         simpleJdbcInsert.execute(Map.of(
                 "id", id.toString(),
                 "start_at", startAt
         ));
-
-        return new ReservationTime(id, startAt);
     }
 
-    private Theme persistTheme(Theme theme) {
+    private void persistTheme(
+            UUID id,
+            String name,
+            String description,
+            String imageUrl
+    ) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme");
-        simpleJdbcInsert.execute(Map.of(
-                "id", theme.getId().toString(),
-                "name", theme.getName(),
-                "description", theme.getDescription(),
-                "image_url", theme.getImageUrl()
-        ));
 
-        return theme;
+        simpleJdbcInsert.execute(Map.of(
+                "id", id.toString(),
+                "name", name,
+                "description", description,
+                "image_url", imageUrl
+        ));
     }
 
     private RowMapper<Reservation> reservationRowMapper() {
-        return (resultSet, rowNum) -> {
-            UUID timeId = UUID.fromString(resultSet.getString("time_id"));
-            LocalTime startAt = resultSet.getObject("time_start_at", LocalTime.class);
-
-            UUID themeId = UUID.fromString(resultSet.getString("theme_id"));
-            String themeName = resultSet.getString("theme_name");
-            String description = resultSet.getString("theme_description");
-            String imageUrl = resultSet.getString("theme_image_url");
-
-            return new Reservation(
-                    UUID.fromString(resultSet.getString("reservation_id")),
-                    resultSet.getString("member_name"),
-                    resultSet.getObject("reservation_date", LocalDate.class),
-                    new ReservationTime(timeId, startAt),
-                    new Theme(themeId, themeName, description, imageUrl)
-            );
-        };
+        return (resultSet, rowNum) -> new Reservation(
+                UUID.fromString(resultSet.getString("id")),
+                resultSet.getString("name"),
+                resultSet.getObject("date", LocalDate.class),
+                UUID.fromString(resultSet.getString("time_id")),
+                UUID.fromString(resultSet.getString("theme_id"))
+        );
     }
 
     private static void skipIfPersistTestFailed() {

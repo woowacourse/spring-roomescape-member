@@ -2,27 +2,20 @@ package roomescape.domain;
 
 import java.util.Objects;
 import java.util.UUID;
-import lombok.Getter;
 import org.springframework.util.StringUtils;
 
-@Getter
-public class Theme {
+public record Theme(
+        UUID id,
+        String name,
+        String description,
+        String imageUrl
+) {
 
-    private final UUID id;
-    private final String name;
-    private final String description;
-    private final String imageUrl;
-
-    public Theme(UUID id, String name, String description, String imageUrl) {
+    public Theme {
         validateId(id);
         validateName(name);
         validateDescription(description);
         validateImageUrl(imageUrl);
-
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.imageUrl = imageUrl;
     }
 
     private void validateId(UUID id) {

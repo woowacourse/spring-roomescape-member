@@ -3,36 +3,22 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
-import lombok.Getter;
 import org.springframework.util.StringUtils;
 
-@Getter
-public class Reservation {
+public record Reservation(
+        UUID id,
+        String name,
+        LocalDate date,
+        UUID timeId,
+        UUID themeId
+) {
 
-    private final UUID id;
-    private final String name;
-    private final LocalDate date;
-    private final ReservationTime time;
-    private final Theme theme;
-
-    public Reservation(
-            UUID id,
-            String name,
-            LocalDate date,
-            ReservationTime time,
-            Theme theme
-    ) {
+    public Reservation {
         validateId(id);
         validateName(name);
         validateDate(date);
-        validateTime(time);
-        validateTheme(theme);
-
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+        validateTime(timeId);
+        validateTheme(themeId);
     }
 
     private void validateId(UUID id) {
@@ -53,24 +39,16 @@ public class Reservation {
         }
     }
 
-    private void validateTime(ReservationTime time) {
-        if (time == null) {
+    private void validateTime(UUID timeId) {
+        if (timeId == null) {
             throw new IllegalArgumentException("예약엔 시간이 존재해야 합니다.");
         }
     }
 
-    private void validateTheme(Theme theme) {
-        if (theme == null) {
+    private void validateTheme(UUID themeId) {
+        if (themeId == null) {
             throw new IllegalArgumentException("예약엔 테마가 존재해야 합니다.");
         }
-    }
-
-    public UUID getTimeId() {
-        return time.getId();
-    }
-
-    public UUID getThemeId() {
-        return theme.getId();
     }
 
     @Override

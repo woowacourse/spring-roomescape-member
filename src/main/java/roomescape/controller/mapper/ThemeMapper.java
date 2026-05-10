@@ -23,10 +23,10 @@ public class ThemeMapper {
             Theme theme
     ) {
         return new ThemeResponse(
-                theme.getId(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getImageUrl()
+                theme.id(),
+                theme.name(),
+                theme.description(),
+                theme.imageUrl()
         );
     }
 }

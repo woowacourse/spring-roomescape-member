@@ -26,6 +26,7 @@ class ThemeRepositoryTest {
     private static boolean persistTestSuccessful = false;
     private static boolean findAllTestSuccessful = false;
 
+    private static final UUID DEFAULT_ID = UUID.fromString("22222222-2222-2222-2222-222222222201");
     private static final UUID NOT_EXIST_ID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
 
     private static final String DEFAULT_NAME = "name";
@@ -47,9 +48,8 @@ class ThemeRepositoryTest {
     @Test
     void 새로운_테마를_저장하고_저장된_테마를_반환한다() {
         // given
-        UUID id = UUID.fromString("22222222-2222-2222-2222-222222222201");
         Theme transientTheme = new Theme(
-                id,
+                DEFAULT_ID,
                 DEFAULT_NAME,
                 DEFAULT_DESCRIPTION,
                 DEFAULT_IMAGE_URL
@@ -75,9 +75,8 @@ class ThemeRepositoryTest {
         skipIfPersistTestFailed();
 
         // given
-        UUID id = UUID.fromString("22222222-2222-2222-2222-222222222202");
         Theme transientTheme = new Theme(
-                id,
+                DEFAULT_ID,
                 DEFAULT_NAME,
                 DEFAULT_DESCRIPTION,
                 DEFAULT_IMAGE_URL
@@ -106,11 +105,10 @@ class ThemeRepositoryTest {
         class 테마를_ID_기준으로_조회한다 {
 
             @Test
-            void 테마를_ID_기준으로_조회한다() {
+            void 테마를_조회한다() {
                 // given
-                UUID id = UUID.fromString("22222222-2222-2222-2222-222222222203");
                 Theme transientTheme = new Theme(
-                        id,
+                        DEFAULT_ID,
                         DEFAULT_NAME,
                         DEFAULT_DESCRIPTION,
                         DEFAULT_IMAGE_URL
@@ -118,7 +116,7 @@ class ThemeRepositoryTest {
                 Theme persistedTheme = themeRepository.persist(transientTheme);
 
                 // when
-                Optional<Theme> foundTheme = themeRepository.findById(persistedTheme.getId());
+                Optional<Theme> foundTheme = themeRepository.findById(persistedTheme.id());
 
                 // then
                 assertThat(foundTheme).hasValue(persistedTheme);
@@ -140,9 +138,8 @@ class ThemeRepositoryTest {
             @Test
             void ID_기반으로_테마를_제거한다() {
                 // given
-                UUID id = UUID.fromString("22222222-2222-2222-2222-222222222204");
                 Theme transientTheme = new Theme(
-                        id,
+                        DEFAULT_ID,
                         DEFAULT_NAME,
                         DEFAULT_DESCRIPTION,
                         DEFAULT_IMAGE_URL
@@ -150,7 +147,7 @@ class ThemeRepositoryTest {
                 Theme persistedTheme = themeRepository.persist(transientTheme);
 
                 // when
-                themeRepository.delete(persistedTheme.getId());
+                themeRepository.delete(persistedTheme.id());
 
                 // then
                 List<Theme> foundThemes = themeRepository.findAll();
@@ -161,9 +158,8 @@ class ThemeRepositoryTest {
             @Test
             void 레코드가_제거됐다면_true를_반환한다() {
                 // given
-                UUID id = UUID.fromString("22222222-2222-2222-2222-222222222205");
                 Theme transientTheme = new Theme(
-                        id,
+                        DEFAULT_ID,
                         DEFAULT_NAME,
                         DEFAULT_DESCRIPTION,
                         DEFAULT_IMAGE_URL
@@ -171,7 +167,7 @@ class ThemeRepositoryTest {
                 Theme persistedTheme = themeRepository.persist(transientTheme);
 
                 // when
-                boolean deleted = themeRepository.delete(persistedTheme.getId());
+                boolean deleted = themeRepository.delete(persistedTheme.id());
 
                 // then
                 assertThat(deleted).isTrue();

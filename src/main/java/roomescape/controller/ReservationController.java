@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationCreateRequest;
-import roomescape.controller.dto.ReservationResponse;
+import roomescape.controller.dto.ReservationDetailResponse;
+import roomescape.controller.dto.ReservationSummaryResponse;
 import roomescape.controller.mapper.ReservationMapper;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
@@ -27,22 +28,22 @@ public class ReservationController {
     private final ReservationMapper mapper;
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(
+    public ResponseEntity<ReservationSummaryResponse> create(
             @RequestBody ReservationCreateRequest createRequest
     ) {
         ReservationCreateCommand createCommand = mapper.mapToCommand(createRequest);
         Reservation createdReservation = service.create(createCommand);
 
-        ReservationResponse response = mapper.mapToResponse(createdReservation);
+        ReservationSummaryResponse response = mapper.mapToSummaryResponse(createdReservation);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findAll() {
-        List<ReservationResponse> responses = service.findAll()
+    public ResponseEntity<List<ReservationDetailResponse>> findAll() {
+        List<ReservationDetailResponse> responses = service.findAllIncludeDetail()
                 .stream()
-                .map(mapper::mapToResponse)
+                .map(mapper::mapToDetailResponse)
                 .toList();
 
         return ResponseEntity.ok(responses);

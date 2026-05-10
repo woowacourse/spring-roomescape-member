@@ -13,6 +13,7 @@ import roomescape.exception.EntityNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.AssembledReservation;
 import roomescape.service.dto.ReservationCreateCommand;
 
 @Service
@@ -28,24 +29,24 @@ public class ReservationService {
     public Reservation create(
             ReservationCreateCommand command
     ) {
-        ReservationTime time = findTimeById(command.timeId());
-        Theme theme = findThemeById(command.themeId());
-
         UUID reservationId = UUID.randomUUID();
         Reservation reservation = new Reservation(
                 reservationId,
                 command.name(),
                 command.date(),
-                time,
-                theme
+                command.timeId(),
+                command.themeId()
         );
 
         return reservationRepository.persist(reservation);
     }
 
     @Transactional(readOnly = true)
-    public List<Reservation> findAll() {
-        return reservationRepository.findAll();
+    public List<AssembledReservation> findAllIncludeDetail() {
+        return reservationRepository.findAll()
+                .stream()
+                .map(this::assembleReservation)
+                .toList();
     }
 
     @Transactional
@@ -58,6 +59,13 @@ public class ReservationService {
                     "reservationId = " + reservationId
             );
         }
+    }
+
+    private AssembledReservation assembleReservation(Reservation reservation) {
+        ReservationTime time = findTimeById(reservation.timeId());
+        Theme theme = findThemeById(reservation.themeId());
+
+        return new AssembledReservation(reservation, time, theme);
     }
 
     private ReservationTime findTimeById(UUID timeId) {
