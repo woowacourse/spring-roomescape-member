@@ -1,0 +1,68 @@
+package roomescape.api;
+
+import static org.hamcrest.Matchers.is;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import roomescape.util.TestDataInitializer;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+class ReservationApiTest {
+
+    @Autowired
+    private TestDataInitializer dataInitializer;
+
+    @Test
+    void 예약_조회() {
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0)); // 아직 생성 요청이 없으니 0개
+    }
+
+    @Test
+    void 예약_추가_및_삭제() {
+        dataInitializer.initializeReservationTime(LocalTime.now());
+        dataInitializer.initializeTheme("귀신의집", "무서워요", "/resources/image/...");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2023-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
+}
