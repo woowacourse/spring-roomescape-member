@@ -1,6 +1,6 @@
 package roomescape.theme.application.exception;
 
-import roomescape.global.RoomEscapeException;
+import roomescape.global.exception.RoomEscapeException;
 
 public class ThemeException extends RoomEscapeException {
     public ThemeException(String message) {
