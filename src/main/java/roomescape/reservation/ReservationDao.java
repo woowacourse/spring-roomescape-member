@@ -14,7 +14,7 @@ import roomescape.time.Time;
 public class ReservationDao {
     private static final RowMapper<Reservation> rowMapper = (rs, rowNum) -> {
         return new Reservation(
-                rs.getLong("reservation_id"),
+                rs.getLong("id"),
                 rs.getString("name"),
                 rs.getDate("date").toLocalDate(),
                 new Time(rs.getLong("time_id"),
@@ -42,24 +42,13 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public boolean isAvailable(Long themeId, LocalDate date, Long timeId) {
-        String sql = "select "
-                + " CASE "
-                + "WHEN r.id IS NULL THEN true "
-                + "ELSE false "
-                + "END AS is_available "
-                + "FROM reservation_time t "
-                + "LEFT JOIN reservation r "
-                + "ON t.id = r.time_id "
-                + "AND r.theme_id = ? "
-                + "AND r.date = ? "
-                + "WHERE t.id = ?";
+    public List<Reservation> selectByThemeIdAndDate(Long themeId, LocalDate date) {
+        String sql =
+                """
+                SELECT * from reservation where theme_id = ? and date = ?
+                """;
 
-        try {
-            return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId, date, timeId));
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
+        return jdbcTemplate.query(sql, rowMapper, themeId, date);
     }
 
     public Reservation insert(Reservation reservation) {

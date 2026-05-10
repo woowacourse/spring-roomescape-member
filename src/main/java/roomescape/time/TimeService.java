@@ -19,7 +19,7 @@ public class TimeService {
         return timeDao.selectAll();
     }
 
-    public List<AvailableTimeResponse> findByThemeIdAndDate(Long themeId, LocalDate date) {
+    public List<AvailableTime> findByThemeIdAndDate(Long themeId, LocalDate date) {
         return timeDao.selectByThemeIdAndDate(themeId, date);
     }
 

@@ -21,9 +21,9 @@ public class TimeDaoTest {
 
         Long themeId = 2L;
         LocalDate date = LocalDate.parse("2026-05-05");
-        List<AvailableTimeResponse> availableTimes = timeDao.selectByThemeIdAndDate(themeId, date);
+        List<AvailableTime> availableTimes = timeDao.selectByThemeIdAndDate(themeId, date);
 
         assertThat(availableTimes.size()).isEqualTo(11);
-        assertThat(availableTimes.getFirst().isAvailable()).isFalse();
+        assertThat(availableTimes.getFirst().getIsAvailable()).isFalse();
     }
 }

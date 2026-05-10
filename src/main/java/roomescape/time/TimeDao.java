@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.time.dto.AvailableTimeResponse;
 
 @Repository
 public class TimeDao {
@@ -16,13 +15,12 @@ public class TimeDao {
                 , rs.getTime("start_at").toLocalTime());
     };
 
-    private static final RowMapper<AvailableTimeResponse> availableTimeRowMapper = (rs, rowNum) -> {
-        return new AvailableTimeResponse(
+    private static final RowMapper<AvailableTime> availableTimeRowMapper = (rs, rowNum) -> {
+        return new AvailableTime(
                 rs.getTime("start_at").toLocalTime(),
                 rs.getBoolean("is_available")
         );
     };
-
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -44,7 +42,7 @@ public class TimeDao {
         return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
     }
 
-    public List<AvailableTimeResponse> selectByThemeIdAndDate(Long themeId, LocalDate date) {
+    public List<AvailableTime> selectByThemeIdAndDate(Long themeId, LocalDate date) {
         String sql = "select t.start_at, "
                 + " CASE "
                 + "WHEN r.id IS NULL THEN true "
