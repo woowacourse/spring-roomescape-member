@@ -25,8 +25,8 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public List<Reservation> findAll() {
-        return reservationDao.findAll();
+    public List<Reservation> findAll(int page, int size) {
+        return reservationDao.findAll(page,size);
     }
 
     public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {

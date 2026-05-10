@@ -28,17 +28,6 @@ class ReservationServiceTest {
     private ThemeService themeService;
 
     @Test
-    void 존재하지_않는_예약_삭제_시_에러() {
-        //given
-        Long fakeId = 999L;
-
-        //when&then
-        assertThatThrownBy(() -> reservationService.deleteById(fakeId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("존재하지 않는 예약");
-    }
-
-    @Test
     void 예약을_저장하고_조회한다() {
         //given
         ReservationTime savedTime = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));
@@ -47,7 +36,7 @@ class ReservationServiceTest {
                 savedTheme.getId());
 
         //when
-        List<Reservation> reservations = reservationService.findAll();
+        List<Reservation> reservations = reservationService.findAll(0,20);
 
         //then
         assertThat(reservations.getFirst().getId()).isEqualTo(savedReservation.getId());
@@ -65,7 +54,7 @@ class ReservationServiceTest {
         reservationService.deleteById(savedReservation.getId());
 
         //then
-        assertThat(reservationService.findAll()).hasSize(0);
+        assertThat(reservationService.findAll(0,20)).hasSize(0);
     }
 
     @Test

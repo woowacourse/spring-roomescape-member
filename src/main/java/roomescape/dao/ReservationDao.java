@@ -23,7 +23,7 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> findAll(int page, int size) {
         String sql = """
                  SELECT 
                      r.id as reservation_id, 
@@ -40,8 +40,11 @@ public class ReservationDao {
                  ON r.time_id = rt.id 
                  INNER JOIN theme th 
                  ON r.theme_id = th.id 
-                 ORDER BY r.date ASC, rt.start_at ASC, th.name ASC, r.name ASC
+                 ORDER BY r.date ASC, rt.start_at ASC, th.name ASC, r.name ASC 
+                 LIMIT ? OFFSET ? 
                 """;
+
+        int offset = page * size;
 
         return jdbcTemplate.query(sql,
                 (resultSet, rowNum) -> new Reservation(
@@ -58,7 +61,9 @@ public class ReservationDao {
                                 resultSet.getString(("thumbnail"))
                         )
 
-                ));
+                ),
+                size,
+                offset);
     }
 
     public Reservation save(Reservation reservation) {
