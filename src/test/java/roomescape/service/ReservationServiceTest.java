@@ -122,7 +122,10 @@ class ReservationServiceTest {
     }
 
     private ReservationRequest requestDtoFrom(Reservation reservation) {
-        return new ReservationRequest(reservation.getName().value(), reservation.getDateValue(),
-            reservation.getTime().getId(), reservation.getThemeId());
+        return new ReservationRequest(
+            reservation.getName().value(),
+            reservation.getDateValue(),
+            reservation.getTime().getId(),
+            reservation.getThemeId());
     }
 }
