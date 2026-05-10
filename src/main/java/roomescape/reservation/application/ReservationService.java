@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.domain.validator.ReservationValidator;
+import roomescape.reservation.domain.exception.DuplicateReservationException;
+import roomescape.reservation.domain.exception.ReservationNotFoundException;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.theme.domain.Theme;
@@ -22,7 +23,6 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
-    private final ReservationValidator reservationValidator;
     private final ThemeRepository themeRepository;
 
     @Transactional(readOnly = true)
@@ -34,15 +34,28 @@ public class ReservationService {
     }
 
     public ReservationResponse addReservation(ReservationRequest request) {
-        reservationValidator.validateNoDuplicate(request.date(), request.timeId(), request.themeId());
+        validateNoDuplicate(request);
         ReservationTime time = findReservationTime(request.timeId());
         Theme theme = findTheme(request.themeId());
         return ReservationResponse.from(reservationRepository.save(ReservationRequest.toEntity(request, time, theme)));
     }
 
     public void cancelReservation(Long id) {
-        reservationValidator.validateDeletable(id);
+        validateDeletable(id);
         reservationRepository.deleteById(id);
+    }
+
+    private void validateDeletable(Long id) {
+        if (!reservationRepository.existsById(id)) {
+            throw new ReservationNotFoundException("존재하지 않는 예약ID 입니다.");
+        }
+    }
+
+    private void validateNoDuplicate(ReservationRequest request) {
+        if (reservationRepository.existsByDateAndTimeAndTheme(
+                request.date(), request.timeId(), request.themeId())) {
+            throw new DuplicateReservationException("이미 해당 시간에 예약이 존재합니다.");
+        }
     }
 
     private ReservationTime findReservationTime(Long id) {
