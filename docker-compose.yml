@@ -5,7 +5,7 @@ services:
       - "8080:8080"
 
   frontend:
-    image: alstj2384/roomescape-frontend:latest
+    image: alstj2384/spring-roomescape-member-front:v2.0
     ports:
       - "4173:4173"
     depends_on:
