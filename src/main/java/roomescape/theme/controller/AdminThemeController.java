@@ -34,7 +34,7 @@ public class AdminThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTimes(
+    public ResponseEntity<Void> deleteTime(
             @PathVariable Long id
     ) {
         themeService.deleteById(id);

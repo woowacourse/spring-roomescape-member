@@ -36,7 +36,7 @@ public class AdminReservationTimeController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> deleteTimes(
+    public ResponseEntity<Void> deleteTime(
             @PathVariable Long id
     ) {
         reservationTimeService.deleteById(id);
