@@ -7,7 +7,8 @@ import roomescape.reservation.domain.repository.ReservationDetail;
 import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
 import roomescape.theme.application.dto.ThemeQueryResult;
 
-public record ReservationQueryResult(Long id, String name, @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date, ThemeQueryResult theme, ReservationTimeQueryResult time) {
+public record ReservationQueryResult(Long id, String name, @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
+                                     ThemeQueryResult theme, ReservationTimeQueryResult time) {
 
     public static ReservationQueryResult from(Reservation reservation, ThemeQueryResult themeQueryResult,
                                               ReservationTimeQueryResult timeQueryResult) {

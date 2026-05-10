@@ -17,7 +17,7 @@ public record ReservationCreateRequest(
         @NotNull(message = "[ERROR] 시간은 비어있을 수 없습니다.")
         Long timeId
 ) {
-   public ReservationCreateCommand toCommand() {
-       return new ReservationCreateCommand(name, date, themeId, timeId);
-   }
+    public ReservationCreateCommand toCommand() {
+        return new ReservationCreateCommand(name, date, themeId, timeId);
+    }
 }

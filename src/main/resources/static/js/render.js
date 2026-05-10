@@ -1,49 +1,43 @@
 import {appEl, modalRootEl, toastRootEl} from "./dom.js";
-import {
-  canSubmitReservation,
-  selectedTheme,
-  selectedTime,
-  state,
-  todayString
-} from "./state.js";
+import {canSubmitReservation, selectedTheme, selectedTime, state, todayString} from "./state.js";
 
 let enterAnimationTimer = null;
 
 export function render(options = {}) {
-  if (options.animate) {
-    window.clearTimeout(enterAnimationTimer);
-    appEl.classList.add("is-entering");
-    enterAnimationTimer = window.setTimeout(() => {
-      appEl.classList.remove("is-entering");
-    }, 900);
-  } else {
-    appEl.classList.remove("is-entering");
-  }
+    if (options.animate) {
+        window.clearTimeout(enterAnimationTimer);
+        appEl.classList.add("is-entering");
+        enterAnimationTimer = window.setTimeout(() => {
+            appEl.classList.remove("is-entering");
+        }, 900);
+    } else {
+        appEl.classList.remove("is-entering");
+    }
 
-  appEl.innerHTML = `
+    appEl.innerHTML = `
     ${renderHeader()}
     ${state.route === "admin" ? renderAdmin() : renderReserve()}
   `;
-  modalRootEl.innerHTML = renderConfirm();
-  toastRootEl.innerHTML = renderToast();
-  syncThemeFilter();
+    modalRootEl.innerHTML = renderConfirm();
+    toastRootEl.innerHTML = renderToast();
+    syncThemeFilter();
 }
 
 export function syncThemeFilter() {
-  const query = normalize(state.themeQuery);
-  const cards = appEl.querySelectorAll("[data-theme-card]");
+    const query = normalize(state.themeQuery);
+    const cards = appEl.querySelectorAll("[data-theme-card]");
 
-  cards.forEach((card) => {
-    const target = normalize(card.dataset.search || "");
-    card.hidden = Boolean(query) && !target.includes(query);
-  });
+    cards.forEach((card) => {
+        const target = normalize(card.dataset.search || "");
+        card.hidden = Boolean(query) && !target.includes(query);
+    });
 }
 
 function renderHeader() {
-  const reserveActive = state.route === "reserve";
-  const adminActive = state.route === "admin";
+    const reserveActive = state.route === "reserve";
+    const adminActive = state.route === "admin";
 
-  return `
+    return `
     <header class="site-header">
       <div class="site-header-inner">
         <button class="brand-button" type="button" data-route="reserve" aria-label="예약 화면으로 이동">
@@ -63,11 +57,11 @@ function renderHeader() {
 }
 
 function renderReserve() {
-  const theme = selectedTheme();
-  const popular = state.popularThemes;
-  const gridClass = `reservation-grid ${theme ? "has-booking" : ""}`;
+    const theme = selectedTheme();
+    const popular = state.popularThemes;
+    const gridClass = `reservation-grid ${theme ? "has-booking" : ""}`;
 
-  return `
+    return `
     <main class="page-shell">
       <section class="headline-row">
         <div>
@@ -130,8 +124,8 @@ function renderReserve() {
 }
 
 function renderPopularThemes(popular) {
-  if (state.loading.boot && popular.length === 0) {
-    return `
+    if (state.loading.boot && popular.length === 0) {
+        return `
       <div class="popular-header">
         <p class="section-kicker">Live Rank</p>
         <h2 id="popular-title">실시간 인기</h2>
@@ -139,19 +133,19 @@ function renderPopularThemes(popular) {
       </div>
       ${renderSkeletonStrip()}
     `;
-  }
+    }
 
-  if (popular.length === 0) {
-    return `
+    if (popular.length === 0) {
+        return `
       <div class="popular-header">
         <p class="section-kicker">Live Rank</p>
         <h2 id="popular-title">실시간 인기</h2>
       </div>
       ${renderEmpty("아직 인기 테마가 없습니다.")}
     `;
-  }
+    }
 
-  return `
+    return `
     <div class="popular-section">
       <div class="popular-header">
         <p class="section-kicker">Live Rank</p>
@@ -172,15 +166,15 @@ function renderPopularThemes(popular) {
 }
 
 function renderThemeGrid() {
-  if (state.loading.boot && state.themes.length === 0) {
-    return `<div class="theme-grid">${Array.from({length: 6}, () => `<div class="theme-card-skeleton"></div>`).join("")}</div>`;
-  }
+    if (state.loading.boot && state.themes.length === 0) {
+        return `<div class="theme-grid">${Array.from({length: 6}, () => `<div class="theme-card-skeleton"></div>`).join("")}</div>`;
+    }
 
-  if (state.themes.length === 0) {
-    return renderEmpty("등록된 테마가 없습니다.");
-  }
+    if (state.themes.length === 0) {
+        return renderEmpty("등록된 테마가 없습니다.");
+    }
 
-  return `
+    return `
     <div class="theme-grid">
       ${state.themes.map(renderThemeCard).join("")}
     </div>
@@ -188,9 +182,9 @@ function renderThemeGrid() {
 }
 
 function renderThemeCard(theme) {
-  const selected = isSelected(theme);
+    const selected = isSelected(theme);
 
-  return `
+    return `
     <button class="theme-card ${selected ? "is-active" : ""}" type="button" data-theme-id="${theme.id}" data-theme-card data-search="${escapeAttr(`${theme.name} ${theme.description}`)}" aria-pressed="${selected}">
       <span class="image-frame">
         <img src="${escapeAttr(theme.thumbnailImgUrl)}" alt="${escapeAttr(theme.name)}" loading="lazy" data-cover>
@@ -205,11 +199,11 @@ function renderThemeCard(theme) {
 }
 
 function renderSelectedTheme(theme) {
-  if (!theme) {
-    return `<div class="selected-theme is-empty">테마를 선택해 주세요.</div>`;
-  }
+    if (!theme) {
+        return `<div class="selected-theme is-empty">테마를 선택해 주세요.</div>`;
+    }
 
-  return `
+    return `
     <div class="selected-theme">
       <div class="selected-copy">
         <span>선택한 테마</span>
@@ -221,7 +215,7 @@ function renderSelectedTheme(theme) {
 }
 
 function renderReservationFields() {
-  return `
+    return `
     <div class="form-row">
       <label for="reservation-date">날짜</label>
       <input id="reservation-date" name="date" type="date" min="${todayString()}" value="${escapeAttr(state.selectedDate)}">
@@ -234,24 +228,24 @@ function renderReservationFields() {
 }
 
 function renderTimeSlots() {
-  if (!state.selectedThemeId) {
-    return renderPanelNotice("테마를 선택하면 시간이 표시됩니다.");
-  }
+    if (!state.selectedThemeId) {
+        return renderPanelNotice("테마를 선택하면 시간이 표시됩니다.");
+    }
 
-  if (state.loading.times) {
-    return `
+    if (state.loading.times) {
+        return `
       <div class="time-section">
         <div class="subsection-heading"><h3>시간 선택</h3></div>
         <div class="time-grid">${Array.from({length: 8}, () => `<span class="time-skeleton"></span>`).join("")}</div>
       </div>
     `;
-  }
+    }
 
-  if (state.availableTimes.length === 0) {
-    return renderPanelNotice("등록된 예약 시간이 없습니다.");
-  }
+    if (state.availableTimes.length === 0) {
+        return renderPanelNotice("등록된 예약 시간이 없습니다.");
+    }
 
-  return `
+    return `
     <div class="time-section">
       <div class="subsection-heading">
         <h3>시간 선택</h3>
@@ -269,9 +263,9 @@ function renderTimeSlots() {
 }
 
 function renderBookingSummary(theme) {
-  const time = selectedTime();
+    const time = selectedTime();
 
-  return `
+    return `
     <dl class="booking-summary">
       <div>
         <dt>테마</dt>
@@ -286,7 +280,7 @@ function renderBookingSummary(theme) {
 }
 
 function renderAdmin() {
-  return `
+    return `
     <main class="page-shell">
       <section class="headline-row">
         <div>
@@ -316,7 +310,7 @@ function renderAdmin() {
 }
 
 function renderAdminTab(tab, label) {
-  return `
+    return `
     <button class="${state.adminTab === tab ? "is-active" : ""}" type="button" data-admin-tab="${tab}">
       ${escapeHtml(label)}
     </button>
@@ -324,19 +318,19 @@ function renderAdminTab(tab, label) {
 }
 
 function renderAdminPanel() {
-  if (state.adminTab === "times") {
-    return renderTimesAdmin();
-  }
+    if (state.adminTab === "times") {
+        return renderTimesAdmin();
+    }
 
-  if (state.adminTab === "reservations") {
-    return renderReservationsAdmin();
-  }
+    if (state.adminTab === "reservations") {
+        return renderReservationsAdmin();
+    }
 
-  return renderThemesAdmin();
+    return renderThemesAdmin();
 }
 
 function renderThemesAdmin() {
-  return `
+    return `
     <div class="admin-panel-header">
       <div>
         <p class="section-kicker">Theme</p>
@@ -377,7 +371,7 @@ function renderThemesAdmin() {
 }
 
 function renderTimesAdmin() {
-  return `
+    return `
     <div class="admin-panel-header">
       <div>
         <p class="section-kicker">Time</p>
@@ -406,7 +400,7 @@ function renderTimesAdmin() {
 }
 
 function renderReservationsAdmin() {
-  return `
+    return `
     <div class="admin-panel-header">
       <div>
         <p class="section-kicker">Reservation</p>
@@ -435,7 +429,7 @@ function renderReservationsAdmin() {
 }
 
 function renderMetric(value, label) {
-  return `
+    return `
     <div class="metric">
       <strong>${escapeHtml(value)}</strong>
       <span>${escapeHtml(label)}</span>
@@ -444,7 +438,7 @@ function renderMetric(value, label) {
 }
 
 function renderSkeletonStrip() {
-  return `
+    return `
     <div class="popular-list">
       ${Array.from({length: 5}, () => `<span class="popular-skeleton"></span>`).join("")}
     </div>
@@ -452,19 +446,19 @@ function renderSkeletonStrip() {
 }
 
 function renderPanelNotice(message) {
-  return `<p class="panel-notice">${escapeHtml(message)}</p>`;
+    return `<p class="panel-notice">${escapeHtml(message)}</p>`;
 }
 
 function renderEmpty(message) {
-  return `<p class="empty-state">${escapeHtml(message)}</p>`;
+    return `<p class="empty-state">${escapeHtml(message)}</p>`;
 }
 
 function renderConfirm() {
-  if (!state.confirm) {
-    return "";
-  }
+    if (!state.confirm) {
+        return "";
+    }
 
-  return `
+    return `
     <div class="modal-backdrop" data-action="cancel-confirm">
       <section class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
         <h2 id="confirm-title">${escapeHtml(state.confirm.title)}</h2>
@@ -479,11 +473,11 @@ function renderConfirm() {
 }
 
 function renderToast() {
-  if (!state.toast) {
-    return "";
-  }
+    if (!state.toast) {
+        return "";
+    }
 
-  return `
+    return `
     <button class="toast ${state.toast.type}" type="button" data-action="dismiss-toast">
       ${escapeHtml(state.toast.message)}
     </button>
@@ -491,22 +485,22 @@ function renderToast() {
 }
 
 function isSelected(theme) {
-  return Number(state.selectedThemeId) === Number(theme.id);
+    return Number(state.selectedThemeId) === Number(theme.id);
 }
 
 function normalize(value) {
-  return String(value || "").trim().toLowerCase();
+    return String(value || "").trim().toLowerCase();
 }
 
 function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll("\"", "&quot;")
-    .replaceAll("'", "&#039;");
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;")
+        .replaceAll("'", "&#039;");
 }
 
 function escapeAttr(value) {
-  return escapeHtml(value);
+    return escapeHtml(value);
 }

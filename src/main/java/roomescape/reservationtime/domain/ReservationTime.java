@@ -1,7 +1,6 @@
 package roomescape.reservationtime.domain;
 
 import java.time.LocalTime;
-import java.util.Objects;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

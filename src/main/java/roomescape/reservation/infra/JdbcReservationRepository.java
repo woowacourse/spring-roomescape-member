@@ -36,14 +36,14 @@ public class JdbcReservationRepository implements ReservationRepository {
                         """,
                 (rs, rowNum) ->
                         new ReservationDetail(rs.getLong("id"),
-                                 rs.getString("name"),
-                                 rs.getDate("date").toLocalDate(),
-                                 rs.getLong("theme_id"),
-                                 rs.getString("theme_name"),
-                                 rs.getString("description"),
-                                 rs.getString("thumbnail_img_url"),
-                                 rs.getLong("time_id"),
-                                 rs.getTime("start_at").toLocalTime())
+                                rs.getString("name"),
+                                rs.getDate("date").toLocalDate(),
+                                rs.getLong("theme_id"),
+                                rs.getString("theme_name"),
+                                rs.getString("description"),
+                                rs.getString("thumbnail_img_url"),
+                                rs.getLong("time_id"),
+                                rs.getTime("start_at").toLocalTime())
         );
     }
 
