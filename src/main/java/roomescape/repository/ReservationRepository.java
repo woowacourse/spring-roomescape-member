@@ -47,7 +47,7 @@ public class ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> findAll(int page, int size) {
         String sql = """
                 SELECT
                     r.id,
@@ -63,8 +63,13 @@ public class ReservationRepository {
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme t ON r.theme_id = t.id
                 WHERE t.is_deleted = FALSE
+                ORDER BY r.id
+                LIMIT :size OFFSET :offset
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper);
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("size", size)
+                .addValue("offset", page * size);
+        return jdbcTemplate.query(sql, parameters, reservationRowMapper);
     }
 
     public Reservation save(Reservation reservation) {

@@ -26,8 +26,8 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public List<ReservationResponse> getReservations() {
-        return reservationRepository.findAll().stream()
+    public List<ReservationResponse> getReservations(int page, int size) {
+        return reservationRepository.findAll(page, size).stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
