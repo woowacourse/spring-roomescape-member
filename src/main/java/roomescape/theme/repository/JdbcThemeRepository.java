@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.projection.PopularThemeResult;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository{
@@ -84,37 +85,44 @@ public class JdbcThemeRepository implements ThemeRepository{
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<PopularThemeResult> findPopularThemes(
+            LocalDate startDate,
+            LocalDate endDate,
+            int limit
+    ) {
         String sql = """
-            SELECT
-                t.id,
-                t.name,
-                t.description,
-                t.thumbnail_url,
-                t.is_active,
-                COUNT(r.id) AS reservation_count
-            FROM reservation r
-            JOIN theme t ON r.theme_id = t.id
-            WHERE t.is_active = true
-              AND r.status = 'RESERVED'
-              AND r.date >= :startDate
-              AND r.date <= :endDate
-            GROUP BY t.id, t.name, t.description, t.thumbnail_url, t.is_active
-            ORDER BY reservation_count DESC
-            LIMIT :limit
-            """;
+        SELECT
+            t.id,
+            t.name,
+            t.description,
+            t.thumbnail_url,
+            t.is_active,
+            COUNT(r.id) AS reservation_count
+        FROM reservation r
+        JOIN theme t ON r.theme_id = t.id
+        JOIN reservation_date d ON r.date_id = d.id
+        WHERE t.is_active = true
+          AND r.status = 'RESERVED'
+          AND d.date >= :startDate
+          AND d.date <= :endDate
+        GROUP BY t.id, t.name, t.description, t.thumbnail_url, t.is_active
+        ORDER BY reservation_count DESC
+        LIMIT :limit
+        """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("startDate", startDate)
                 .addValue("endDate", endDate)
                 .addValue("limit", limit);
 
-        return jdbcTemplate.query(sql, params, (rs, rowNum) -> Theme.load(
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new PopularThemeResult(
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("description"),
                 rs.getString("thumbnail_url"),
-                rs.getBoolean("is_active")
+                rs.getBoolean("is_active"),
+                rs.getLong("reservation_count")
         ));
     }
+
 }

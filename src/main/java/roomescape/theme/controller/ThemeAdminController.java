@@ -3,16 +3,11 @@ package roomescape.theme.controller;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.request.ThemeActiveUpdateDto;
 import roomescape.theme.dto.request.ThemeSaveDto;
+import roomescape.theme.dto.response.PopularThemeDetailDto;
 import roomescape.theme.dto.response.ThemeDetailDto;
 import roomescape.theme.service.ThemeService;
 
@@ -30,6 +25,14 @@ public class ThemeAdminController {
     public ResponseEntity<List<ThemeDetailDto>> getThemes() {
         List<ThemeDetailDto> responseData = themeService.readThemes().stream()
                 .map(ThemeDetailDto::from)
+                .toList();
+        return ResponseEntity.ok(responseData);
+    }
+
+    @GetMapping("/themes/popular")
+    public ResponseEntity<List<PopularThemeDetailDto>> getPopularThemes(@RequestParam int top){
+        List<PopularThemeDetailDto> responseData = themeService.readPopularThemes(top).stream()
+                .map(PopularThemeDetailDto::from)
                 .toList();
         return ResponseEntity.ok(responseData);
     }

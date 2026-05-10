@@ -1,6 +1,7 @@
 package roomescape.theme.dto.response;
 
 import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.projection.PopularThemeResult;
 
 public record ThemeDetailDto(
         Long id,
@@ -16,6 +17,16 @@ public record ThemeDetailDto(
                 theme.description(),
                 theme.thumbnailUrl(),
                 theme.isActive()
+        );
+    }
+
+    public static ThemeDetailDto from(PopularThemeResult result) {
+        return new ThemeDetailDto(
+                result.id(),
+                result.name(),
+                result.description(),
+                result.thumbnailUrl(),
+                result.isActive()
         );
     }
 }

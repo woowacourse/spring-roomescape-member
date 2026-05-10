@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.repository.projection.PopularThemeResult;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,7 +34,7 @@ public class ThemeService {
         return themeRepository.findByIsActive(true);
     }
 
-    public List<Theme> readPopularThemes(int top) {
+    public List<PopularThemeResult> readPopularThemes(int top) {
         LocalDate endDate = LocalDate.now().minusDays(PREVIOUS_DAYS);
         LocalDate startDate = endDate.minusDays(POPULAR_STATISTICS_DAYS);
         return themeRepository.findPopularThemes(startDate, endDate, top);

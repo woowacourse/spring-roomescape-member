@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.repository.projection.PopularThemeResult;
 
 public class FakeThemeRepository implements ThemeRepository {
     private final List<Theme> themes = new ArrayList<>();
@@ -66,7 +67,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<PopularThemeResult> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
         return List.of();
     }
 }
