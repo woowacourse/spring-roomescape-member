@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -76,8 +75,10 @@ class JdbcThemeRepositoryTest {
     @Test
     void 저장된_모든_테마를_조회한다() {
         // given
-        Theme saved1 = themeRepository.createTheme(new Theme(null, new ThemeName("테마1"), "-", ThemeImageUrl.defaultImageUrl()));
-        Theme saved2 = themeRepository.createTheme(new Theme(null, new ThemeName("테마2"), "-", ThemeImageUrl.defaultImageUrl()));
+        Theme saved1 = themeRepository.createTheme(
+            new Theme(null, new ThemeName("테마1"), "-", ThemeImageUrl.defaultImageUrl()));
+        Theme saved2 = themeRepository.createTheme(
+            new Theme(null, new ThemeName("테마2"), "-", ThemeImageUrl.defaultImageUrl()));
 
         // when
         List<Theme> all = themeRepository.findAll();

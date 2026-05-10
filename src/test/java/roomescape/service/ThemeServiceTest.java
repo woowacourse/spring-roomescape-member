@@ -21,8 +21,10 @@ import roomescape.repository.theme.ThemeRepository;
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
 
-    private static final Theme THEME = new Theme(null, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
-    private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
+    private static final Theme THEME = new Theme(null, new ThemeName("name"), "description",
+        ThemeImageUrl.defaultImageUrl());
+    private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description",
+        ThemeImageUrl.defaultImageUrl());
 
     @Mock
     private ThemeRepository themeRepository;

@@ -19,4 +19,5 @@ public record ReservationRequest(
     @NotNull(message = "테마 ID는 필수 입력값입니다.")
     Long themeId
 ) {
+
 }

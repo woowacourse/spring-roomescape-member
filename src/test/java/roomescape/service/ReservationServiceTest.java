@@ -33,7 +33,8 @@ import roomescape.repository.time.ReservationTimeRepository;
 class ReservationServiceTest {
 
     private static final ReservationTime SAVED_TIME = new ReservationTime(1L, "12:30");
-    private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
+    private static final Theme SAVED_THEME = new Theme(1L, new ThemeName("name"), "description",
+        ThemeImageUrl.defaultImageUrl());
 
     @Mock
     private ThemeRepository themeRepository;

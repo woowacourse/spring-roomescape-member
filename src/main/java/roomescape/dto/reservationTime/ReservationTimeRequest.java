@@ -9,4 +9,5 @@ public record ReservationTimeRequest(
     @JsonFormat(pattern = "HH:mm")
     LocalTime startAt
 ) {
+
 }
