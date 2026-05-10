@@ -21,9 +21,9 @@ public class ReservationTimeUpdatingDao {
         jdbcTemplate.update(sql, reservationTimeReq.startAt(), id);
     }
 
-    public int delete(Long id) {
+    public void delete(Long id) {
         String sql = "delete from reservation_time where id = ?";
-        return jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
     }
 
     public Long insert(ReservationTimeRequest reservationTimeReq) {

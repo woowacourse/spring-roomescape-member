@@ -11,7 +11,6 @@ import roomescape.repository.ThemeUpdatingDao;
 
 import java.util.List;
 
-@Transactional(readOnly = true)
 @Service
 public class ThemeService {
 
@@ -23,7 +22,6 @@ public class ThemeService {
         this.themeUpdatingDao = themeUpdatingDao;
     }
 
-    @Transactional
     public ThemeResponse create(ThemeRequest themeRequest) {
         Long id = themeUpdatingDao.insert(themeRequest);
         return ThemeResponse.from(new Theme(id, themeRequest.name(), themeRequest.description(), themeRequest.url()));
@@ -41,12 +39,7 @@ public class ThemeService {
                 .toList();
     }
 
-    @Transactional
     public void delete(Long id) {
-        int count = themeUpdatingDao.delete(id);
-
-        if (count == 0) {
-            throw new ThemeNotFoundException(id);
-        }
+        themeUpdatingDao.delete(id);
     }
 }

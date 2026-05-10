@@ -32,8 +32,8 @@ public class ThemeUpdatingDao {
         return keyHolder.getKey().longValue();
     }
 
-    public int delete(Long id) {
+    public void delete(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
-        return jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
     }
 }

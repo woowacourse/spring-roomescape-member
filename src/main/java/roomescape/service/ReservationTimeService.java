@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRequest;
 import roomescape.domain.reservationtime.ReservationTimeResponse;
@@ -12,7 +11,6 @@ import roomescape.repository.ReservationTimeUpdatingDao;
 import java.time.LocalDate;
 import java.util.List;
 
-@Transactional(readOnly = true)
 @Service
 public class ReservationTimeService {
 
@@ -36,23 +34,16 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest reservationTimeReq) {
         Long generatedId = reservationTimeUpdatingDao.insert(reservationTimeReq);
         return ReservationTimeResponse.from(new ReservationTime(generatedId, reservationTimeReq.startAt()));
     }
 
-    @Transactional
     public void update(ReservationTimeRequest newReservationTimeReq, Long id) {
         reservationTimeUpdatingDao.save(id, newReservationTimeReq);
     }
 
-    @Transactional
     public void delete(Long id) {
-        int delete = reservationTimeUpdatingDao.delete(id);
-
-        if (delete == 0) {
-            throw new ReservationNotFoundException(id);
-        }
+        reservationTimeUpdatingDao.delete(id);
     }
 }
