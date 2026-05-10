@@ -63,7 +63,7 @@ async function cancelReservation(id, name) {
         return;
     }
 
-    const response = await fetch(`/member/reservations/${id}`, {
+    const response = await fetch(`/member/reservations/${id}/cancel`, {
         method: "PATCH"
     });
 

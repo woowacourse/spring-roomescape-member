@@ -35,7 +35,7 @@ public class ReservationController {
         return ResponseEntity.ok(responseData);
     }
 
-    @PatchMapping("/reservations/{id}")
+    @PatchMapping("/reservations/{id}/cancel")
     public ResponseEntity<ReservationDetailDto> cancel(@PathVariable Long id) {
         Reservation reservation = reservationService.cancel(id);
         ReservationDetailDto responseData = ReservationDetailDto.from(reservation);

@@ -73,7 +73,7 @@ class ReservationAdminControllerTest {
         Integer reservationId = createReservationByAdmin(reservationName, dateId, timeId, themeId);
 
         RestAssured.given().log().all()
-                .when().patch("/admin/reservations/" + reservationId)
+                .when().patch("/admin/reservations/" + reservationId + "/cancel")
                 .then().log().all()
                 .statusCode(200);
 
