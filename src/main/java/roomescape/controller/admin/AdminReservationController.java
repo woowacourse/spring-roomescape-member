@@ -24,6 +24,7 @@ import java.util.List;
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
     private static final String DEFAULT_PATH = "/reservations/";
+    public static final AdminReservationSavePolicy POLICY = new AdminReservationSavePolicy();
     private final ReservationService reservationService;
 
     public AdminReservationController(
@@ -38,7 +39,7 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest request) {
-        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand(), new AdminReservationSavePolicy());
+        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand(), POLICY);
         ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
 
         return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);
