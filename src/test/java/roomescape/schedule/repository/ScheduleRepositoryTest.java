@@ -3,9 +3,8 @@ package roomescape.schedule.repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.schedule.model.Schedule;
 import roomescape.theme.model.Theme;
 
@@ -16,14 +15,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@Transactional
+@JdbcTest
 public class ScheduleRepositoryTest {
 
     private final Theme theme = new Theme("테마", "설명", "경로", LocalTime.of(2, 0));
     private final Schedule schedule = new Schedule(LocalDateTime.of(2026, 12, 10, 12, 0), theme);
 
-    @Autowired
     private ScheduleRepository scheduleRepository;
 
     @Autowired
@@ -31,6 +28,8 @@ public class ScheduleRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        scheduleRepository = new ScheduleRepository(jdbcTemplate);
+
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM schedule");
         jdbcTemplate.update("DELETE FROM theme");

@@ -2,15 +2,14 @@ package roomescape.reservation.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired; // JdbcTemplate 주입을 위해 유지
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest; // SpringBootTest 대신 사용
+import org.springframework.jdbc.core.JdbcTemplate; // JdbcTemplate은 그대로 사용
 import roomescape.reservation.model.Reservation;
 import roomescape.schedule.model.Schedule;
 import roomescape.theme.model.Theme;
 import roomescape.user.model.Role;
 import roomescape.user.model.User;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -18,15 +17,13 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@Transactional
+@JdbcTest
 public class ReservationRepositoryTest {
 
     private final User user = new User(1L, "user1", Role.USER);
     private final Theme theme = new Theme(1L, "공포", "설명", "경로", LocalTime.of(2, 0));
     private final Schedule schedule = new Schedule(1L, LocalDateTime.of(2026, 12, 10, 12, 0), theme);
 
-    @Autowired
     private ReservationRepository reservationRepository;
 
     @Autowired
@@ -34,6 +31,8 @@ public class ReservationRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        reservationRepository = new ReservationRepository(jdbcTemplate);
+
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM schedule");
         jdbcTemplate.update("DELETE FROM theme");

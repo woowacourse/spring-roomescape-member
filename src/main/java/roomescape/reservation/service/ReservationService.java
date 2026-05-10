@@ -31,7 +31,7 @@ public class ReservationService {
     @Transactional
     public Long create(ReservationRequest request) {
         User user = userService.findOrCreateByName(request.name());
-        Schedule schedule = scheduleService.findById(request.scheduleId()); // ScheduleService를 통해 스케줄 조회
+        Schedule schedule = scheduleService.findById(request.scheduleId());
 
         if (reservationRepository.existsByScheduleId(schedule.getId())) {
             throw new IllegalArgumentException("이미 예약된 스케줄입니다.");
