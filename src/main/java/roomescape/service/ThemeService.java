@@ -54,8 +54,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> getPopularThemes(LocalDate startDate, LocalDate endDate) {
-        return themeRepository.findTop10ByReservationCount(startDate, endDate)
+    public List<ThemeResponse> getPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+        return themeRepository.findTopThemesByReservationCount(startDate, endDate, limit)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();

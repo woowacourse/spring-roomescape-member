@@ -43,9 +43,11 @@ public class ThemeController {
     @GetMapping("/popular")
     public ResponseEntity<ThemeResponses> getPopularThemes(
             @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate
+            @RequestParam LocalDate endDate,
+            @Positive(message = "조회 수는 양수여야 합니다.")
+            @RequestParam int limit
     ) {
-        ThemeResponses response = new ThemeResponses(themeService.getPopularThemes(startDate, endDate));
+        ThemeResponses response = new ThemeResponses(themeService.getPopularThemes(startDate, endDate, limit));
 
         return ResponseEntity.ok().body(response);
     }

@@ -105,7 +105,7 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
 
         // when
         LocalDate now = LocalDate.now();
-        List<Theme> popularThemes = themeRepository.findTop10ByReservationCount(now.minusDays(7), now.plusDays(1));
+        List<Theme> popularThemes = themeRepository.findTopThemesByReservationCount(now.minusDays(7), now.plusDays(1), 10);
 
         // then
         assertThat(popularThemes).hasSize(10);

@@ -54,9 +54,9 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTop10ByReservationCount(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findTopThemesByReservationCount(LocalDate startDate, LocalDate endDate, int limit) {
         return findAllActiveThemes().stream()
-                .limit(10)
+                .limit(limit)
                 .toList();
     }
 

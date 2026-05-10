@@ -83,7 +83,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTop10ByReservationCount(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findTopThemesByReservationCount(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                     SELECT
                         t.id AS id,
@@ -98,9 +98,9 @@ public class JdbcThemeRepository implements ThemeRepository {
                     WHERE t.is_active = 1
                     GROUP BY t.id, t.name, t.description, t.thumbnail_image_url, t.is_active
                     ORDER BY COUNT(r.id) DESC
-                    LIMIT 10
+                    LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, THEME_MAPPER, startDate, endDate);
+        return jdbcTemplate.query(sql, THEME_MAPPER, startDate, endDate, limit);
     }
 }

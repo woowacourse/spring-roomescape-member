@@ -104,13 +104,14 @@ class ThemeControllerTest extends BaseControllerUnitTest {
                         new ThemeResponse(2L, "놀이동산테마", "놀이동산 테마입니다.", "https://image.com/image.png")
                 )
         );
-        when(themeService.getPopularThemes(any(LocalDate.class), any(LocalDate.class))).thenReturn(
+        when(themeService.getPopularThemes(any(LocalDate.class), any(LocalDate.class), any(Integer.class))).thenReturn(
                 expected.responses());
 
         // when & then
         ThemeResponses response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .queryParam("startDate", "2026-05-06")
                 .queryParam("endDate", "2026-05-09")
+                .queryParam("limit", "10")
                 .when().get("/api/themes/popular")
                 .then().log().all()
                 .status(HttpStatus.OK)
