@@ -18,8 +18,8 @@ import org.springframework.http.HttpStatus;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.theme.domain.Theme;
-import roomescape.time.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.domain.ReservationTime;
 import roomescape.util.TestDataInitializer;
 
 import static org.assertj.core.api.Assertions.assertThat;

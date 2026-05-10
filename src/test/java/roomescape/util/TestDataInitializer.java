@@ -3,14 +3,12 @@ package roomescape.util;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.springframework.stereotype.Component;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.repository.dto.CreateReservationParams;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.ThemeRepository;
-import roomescape.theme.repository.dto.CreateThemeParams;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.time.repository.dto.CreateReservationTimeParams;
+import roomescape.domain.Theme;
+import roomescape.repository.ThemeRepository;
+import roomescape.domain.ReservationTime;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.domain.Reservation;
+import roomescape.repository.ReservationRepository;
 
 @Component
 public class TestDataInitializer {
@@ -27,17 +25,16 @@ public class TestDataInitializer {
     }
 
     public ReservationTime initializeReservationTime(LocalTime localTime) {
-        CreateReservationTimeParams createReservationTimeParams = new CreateReservationTimeParams(localTime.withSecond(0).withNano(0));
-        return reservationTimeRepository.save(createReservationTimeParams);
+        return reservationTimeRepository.save(new ReservationTime(localTime.withSecond(0).withNano(0)));
     }
 
     public Theme initializeTheme(String name, String description, String imageUrl) {
-        CreateThemeParams createThemeParams = new CreateThemeParams(name, description, imageUrl);
-        return themeRepository.save(createThemeParams);
+        return themeRepository.save(new Theme(null, name, description, imageUrl));
     }
 
     public void initializeReservation(String name, LocalDate date, Long timeId, Long themeId) {
-        CreateReservationParams createReservationParams = new CreateReservationParams(name, date, timeId, themeId);
-        reservationRepository.save(createReservationParams);
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
+        Theme theme = themeRepository.findById(themeId);
+        reservationRepository.save(new Reservation(null, name, date, reservationTime, theme));
     }
 }
