@@ -32,16 +32,20 @@ public class UserThemeController {
     }
 
     @GetMapping("/rank")
-    public ResponseEntity<List<ThemeResponse>> getRankedThemes(@RequestParam(defaultValue = "reservationCount") String sort,
-                                                               @RequestParam(defaultValue = "DESC") String order,
-                                                               @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> startDate,
-                                                               @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> endDate,
-                                                               @RequestParam(defaultValue = "10") Long limit) {
+    public ResponseEntity<List<ThemeResponse>> getRankedThemes(
+            @RequestParam(defaultValue = "RESERVATION_COUNT") String sort,
+            @RequestParam(defaultValue = "DESC") String order,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<LocalDate> endDate,
+            @RequestParam(defaultValue = "10") Long limit) {
+
+        ThemeSort themeSort = ThemeSort.from(sort);
+        SortOrder sortOrder = SortOrder.from(order);
 
         LocalDate actualEndDate = endDate.orElseGet(LocalDate::now);
         LocalDate actualStartDate = startDate.orElseGet(() -> actualEndDate.minusDays(7));
 
-        List<ThemeResponse> response = userThemeService.getThemes(sort, order, actualStartDate, actualEndDate, limit)
+        List<ThemeResponse> response = userThemeService.getThemes(themeSort, sortOrder, actualStartDate, actualEndDate, limit)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();

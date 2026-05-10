@@ -55,31 +55,19 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public List<Theme> findRanked(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
+    public List<Theme> findRanked(ThemeSort sort, SortOrder order, LocalDate startDate, LocalDate endDate, Long limit) {
         String sql = getReservationSortSql(sort, order, limit);
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
     }
 
-    private String getReservationSortSql(String sort, String order, Long limit) {
-        String sortColumn = "reservationCount";
-        if ("id".equalsIgnoreCase(sort)) {
-            sortColumn = "id";
-        } else if ("name".equalsIgnoreCase(sort)) {
-            sortColumn = "name";
-        }
-
-        String sortOrder = "DESC";
-        if ("ASC".equalsIgnoreCase(order)) {
-            sortOrder = "ASC";
-        }
-
+    private String getReservationSortSql(ThemeSort sort, SortOrder order, Long limit) {
         StringBuilder sql = new StringBuilder(
                 "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount " +
                         "FROM themes t " +
                         "INNER JOIN reservation r ON t.id = r.theme_id " +
                         "WHERE r.date >= ? AND r.date <= ? " +
                         "GROUP BY t.id, t.name, t.description, t.thumbnail " +
-                        "ORDER BY " + sortColumn + " " + sortOrder
+                        "ORDER BY " + sort.getColumn() + " " + order.name()
         );
 
         if (limit != null) {

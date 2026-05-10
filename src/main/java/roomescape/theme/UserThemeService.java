@@ -14,7 +14,7 @@ public class UserThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Theme> getThemes(String sort, String order, LocalDate startDate, LocalDate endDate, Long limit) {
+    public List<Theme> getThemes(ThemeSort sort, SortOrder order, LocalDate startDate, LocalDate endDate, Long limit) {
         return themeRepository.findRanked(sort, order, startDate, endDate, limit);
     }
 
