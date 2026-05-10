@@ -1,6 +1,7 @@
 package roomescape.user.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -50,11 +51,13 @@ public class ReservationDaoTest {
                 """;
         Reservation actual = jdbcTemplate.query(sql, rowMapper, expected.getId()).getFirst();
 
-        assertThat(expected.getId()).isEqualTo(actual.getId());
-        assertThat(expected.getName()).isEqualTo(actual.getName());
-        assertThat(expected.getDate()).isEqualTo(actual.getDate());
-        assertThat(expected.getTime().getId()).isEqualTo(actual.getTime().getId());
-        assertThat(expected.getTime().getStartAt()).isEqualTo(actual.getTime().getStartAt());
-        assertThat(expected.getThemeId()).isEqualTo(actual.getThemeId());
+        assertAll(
+                () -> assertThat(expected.getId()).isEqualTo(actual.getId()),
+                () -> assertThat(expected.getName()).isEqualTo(actual.getName()),
+                () -> assertThat(expected.getDate()).isEqualTo(actual.getDate()),
+                () -> assertThat(expected.getTime().getId()).isEqualTo(actual.getTime().getId()),
+                () -> assertThat(expected.getTime().getStartAt()).isEqualTo(actual.getTime().getStartAt()),
+                () -> assertThat(expected.getThemeId()).isEqualTo(actual.getThemeId())
+        );
     }
 }
