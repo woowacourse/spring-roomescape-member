@@ -99,7 +99,7 @@ function refreshTimes() {
     return;
   }
 
-  fetch(`${RESERVATION_API}?date=${state.date}&themeId=${state.themeId}`)
+  fetch(`/times/available?date=${state.date}&themeId=${state.themeId}`)
     .then(res => res.json())
     .then(times => renderTimes(times))
     .catch(err => {
