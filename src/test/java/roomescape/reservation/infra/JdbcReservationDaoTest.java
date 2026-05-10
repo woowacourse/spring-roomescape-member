@@ -1,4 +1,4 @@
-package roomescape.reservation.repository;
+package roomescape.reservation.infra;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.application.query.ReservationDetail;
 import roomescape.reservation.application.query.ReservationDetailDao;
-import roomescape.reservation.infra.JdbcReservationDao;
 import roomescape.support.TestDataHelper;
 
 @JdbcTest

@@ -1,4 +1,4 @@
-package roomescape.reservationtime.repository;
+package roomescape.reservationtime.infra;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -14,8 +14,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservationtime.application.query.AvailableReservationTime;
 import roomescape.reservationtime.application.query.AvailableTimeDao;
 import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
-import roomescape.reservationtime.infra.JdbcAvailableTimeDao;
-import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.infra.JdbcThemeRepository;
 import roomescape.theme.domain.repository.ThemeRepository;

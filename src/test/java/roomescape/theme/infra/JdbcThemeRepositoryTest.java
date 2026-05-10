@@ -1,10 +1,7 @@
-package roomescape.theme.repository;
+package roomescape.theme.infra;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,14 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.support.TestDataHelper;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.application.query.PopularTheme;
 import roomescape.theme.domain.repository.ThemeRepository;
-import roomescape.theme.infra.JdbcThemeRepository;
 
 @JdbcTest
 public class JdbcThemeRepositoryTest {

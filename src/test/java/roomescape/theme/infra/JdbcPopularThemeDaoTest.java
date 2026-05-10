@@ -1,4 +1,4 @@
-package roomescape.theme.repository;
+package roomescape.theme.infra;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,8 +18,6 @@ import roomescape.theme.application.query.PopularTheme;
 import roomescape.theme.application.query.PopularThemeDao;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.repository.ThemeRepository;
-import roomescape.theme.infra.JdbcPopularThemeDao;
-import roomescape.theme.infra.JdbcThemeRepository;
 
 @JdbcTest
 public class JdbcPopularThemeDaoTest {
