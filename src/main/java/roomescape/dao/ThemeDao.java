@@ -2,12 +2,13 @@ package roomescape.dao;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import roomescape.domain.Theme;
 
 public interface ThemeDao {
     Theme create(Theme theme);
 
-    Theme read(Long id);
+    Optional<Theme> read(Long id);
 
     List<Theme> readAll();
 

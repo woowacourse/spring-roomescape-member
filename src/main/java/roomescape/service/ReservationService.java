@@ -29,8 +29,8 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponseDto create(ReservationRequestDto request) {
-        ReservationTime reservationTime = reservationTimeDao.read(request.timeId());
-        Theme theme = themeDao.read(request.themeId());
+        ReservationTime reservationTime = findReservationTime(request.timeId());
+        Theme theme = findTheme(request.themeId());
 
         boolean existReservation = reservationDao.existByDateAndTimeIdAndThemeId(request.date(),
                 reservationTime.getId(),
@@ -43,6 +43,16 @@ public class ReservationService {
         Reservation reservation = reservationDao.create(reservationWithoutId);
 
         return ReservationResponseDto.from(reservation);
+    }
+
+    private ReservationTime findReservationTime(Long id) {
+        return reservationTimeDao.read(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_RESERVATION_TIME));
+    }
+
+    private Theme findTheme(Long id) {
+        return themeDao.read(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_THEME));
     }
 
     public List<ReservationResponseDto> readAll() {

@@ -10,6 +10,8 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationTimeAvailabilityResponseDto;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.exception.CustomException;
+import roomescape.exception.ErrorCode;
 
 @Service
 public class ReservationTimeService {
@@ -35,7 +37,7 @@ public class ReservationTimeService {
 
     public List<ReservationTimeAvailabilityResponseDto> readAvailabilityByDateAndTheme(
             LocalDate date, Long themeId) {
-        Theme theme = themeDao.read(themeId);
+        Theme theme = findTheme(themeId);
 
         List<ReservationTime> allReservationTimes = reservationTimeDao.readAll();
         List<Long> bookedTimeIdByDateAndTheme = reservationTimeDao.bookedTimeIdByDateAndTheme(date, theme.getId());
@@ -47,6 +49,11 @@ public class ReservationTimeService {
                     }
                     return ReservationTimeAvailabilityResponseDto.from(reservationTime, true);
                 }).toList();
+    }
+
+    private Theme findTheme(Long id) {
+        return themeDao.read(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_THEME));
     }
 
     public void delete(Long id) {
