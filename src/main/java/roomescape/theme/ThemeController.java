@@ -29,7 +29,7 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> readByPopular() {
+    public ResponseEntity<List<ThemeResponse>> readByPopularity() {
         LocalDate now = LocalDate.now();
         return ResponseEntity.status(HttpStatus.OK).body(themeService.readPopularThemes(now));
     }
