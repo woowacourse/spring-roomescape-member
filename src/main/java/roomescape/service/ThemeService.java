@@ -43,10 +43,9 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeRankResponse> getThemeRankings(int days, int limit) {
+    public List<ThemeRankResponse> getThemeRankings(int days, int limit, LocalDate today) {
         validateRankingCondition(days, limit);
 
-        LocalDate today = LocalDate.now();
         LocalDate fromDate = today.minusDays(days);
         List<Theme> themes = themeRepository.findThemesOrderByReservationCount(fromDate, today, limit);
 

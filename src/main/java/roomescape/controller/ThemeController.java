@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class ThemeController {
             @RequestParam(defaultValue = "7") int days,
             @RequestParam(defaultValue = "10") int limit
     ) {
-        return ResponseEntity.ok(themeService.getThemeRankings(days, limit));
+        return ResponseEntity.ok(themeService.getThemeRankings(days, limit, LocalDate.now()));
     }
 
     @PostMapping
