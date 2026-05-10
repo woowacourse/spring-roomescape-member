@@ -1,14 +1,18 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Duration;
@@ -22,10 +26,12 @@ public class ThemeRepository {
     private static final String FK_RESERVATION_THEME_ID = "fk_reservation_theme_id";
 
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme");
     }
@@ -66,28 +72,29 @@ public class ThemeRepository {
         }
     }
 
-    public List<ReservedTheme> findMostReserved(
-            long limit,
-            Duration duration
-    ) {
-        String findSql = "SELECT t.id, t.name, t.description, t.image_url, count(r.id) AS reservation_count"
-                + " FROM theme t"
-                + " LEFT OUTER JOIN reservation r"
-                + " ON t.id = r.theme_id"
-                + " WHERE r.date >= ? AND r.date <= ?"
-                + " GROUP BY t.id"
-                + " ORDER BY reservation_count DESC"
-                + " LIMIT ?";
+    public Map<UUID, Theme> findByIds(Collection<UUID> ids) {
+        if (ids.isEmpty()) {
+            return Map.of();
+        }
 
-        LocalDate startDate = duration.startDate();
-        LocalDate endDate = duration.endDate();
+        String findSql = "SELECT id, name, description, image_url"
+                + " FROM theme"
+                + " WHERE id IN (:ids)";
+        List<String> stringIds = ids.stream()
+                .map(UUID::toString)
+                .toList();
 
-        return jdbcTemplate.query(
+        List<Theme> themes = namedParameterJdbcTemplate.query(
                 findSql,
-                reservedThemeRowMapper(),
-                startDate, endDate,
-                limit
+                Map.of("ids", stringIds),
+                themeRowMapper()
         );
+
+        return themes.stream()
+                .collect(Collectors.toMap(
+                        Theme::id,
+                        Function.identity()
+                ));
     }
 
     public boolean delete(UUID themeId) {

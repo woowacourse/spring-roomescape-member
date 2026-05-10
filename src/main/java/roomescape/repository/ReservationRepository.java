@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Duration;
 import roomescape.domain.Reservation;
 
 @Repository
@@ -41,6 +42,19 @@ public class ReservationRepository {
                 + " FROM reservation r";
 
         return jdbcTemplate.query(findSql, reservationRowMapper());
+    }
+
+    public List<Reservation> findBetweenDuration(Duration duration) {
+        String findSql = "SELECT id, name, date, time_id, theme_id"
+                + " FROM reservation r"
+                + " WHERE date BETWEEN ? AND ?";
+
+        return jdbcTemplate.query(
+                findSql,
+                reservationRowMapper(),
+                duration.startDate(),
+                duration.endDate()
+        );
     }
 
     public boolean delete(UUID reservationId) {

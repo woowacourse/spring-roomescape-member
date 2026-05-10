@@ -7,6 +7,6 @@ public record ReservedTheme(
         String name,
         String description,
         String imageUrl,
-        int reservationCount
+        long reservationCount
 ) {
 }
