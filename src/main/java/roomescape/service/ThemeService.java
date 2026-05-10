@@ -12,7 +12,7 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ThemeService {
 
-    private final static int RANKS_LIMIT_COUNT = 10;
+    private static final int RANKS_LIMIT_COUNT = 10;
 
     private final ThemeRepository themeRepository;
 

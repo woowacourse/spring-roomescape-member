@@ -68,8 +68,8 @@ public class ThemeRepository {
                 INNER JOIN reservation r ON r.theme_id = t.id
                 WHERE r.date BETWEEN ? AND ?
                 GROUP BY t.id
-                order by (COUNT(r.id)) desc, t.id asc
-                limit ?;
+                ORDER BY (COUNT(r.id)) DESC , t.id ASC
+                LIMIT ?;
                 """;
         return jdbcTemplate.query(sql, THEME_ROW_MAPPER, lastWeekDate, currentDate, limit);
     }

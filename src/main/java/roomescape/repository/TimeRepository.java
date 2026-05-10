@@ -27,7 +27,7 @@ public class TimeRepository {
     }
 
     public List<ReservationTime> findAll() {
-        String sql = "select * from reservation_time";
+        String sql = "SELECT * FROM reservation_time";
         return jdbcTemplate.query(sql, TIME_ROW_MAPPER);
     }
 
@@ -42,12 +42,12 @@ public class TimeRepository {
     }
 
     public void deleteById(Long id) {
-        String sql = "delete from reservation_time where id = ?";
+        String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     public ReservationTime save(LocalTime startAt) {
-        String sql = "insert into reservation_time(start_at) values (?)";
+        String sql = "INSERT INTO reservation_time(start_at) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
@@ -61,7 +61,7 @@ public class TimeRepository {
     }
 
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "select * from reservation_time where id = ?";
+        String sql = "SELECT * FROM reservation_time WHERE id = ?";
         return jdbcTemplate.query(sql, TIME_ROW_MAPPER, id)
                 .stream()
                 .findFirst();

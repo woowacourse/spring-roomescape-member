@@ -87,11 +87,11 @@ public class ThemeRepositoryTest {
         List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(currentDate, lastWeekDate, limit);
 
         // then
-        Assertions.assertEquals(themes.get(0).getId(), 5);
-        Assertions.assertEquals(themes.get(1).getId(), 2);
-        Assertions.assertEquals(themes.get(2).getId(), 1);
-        Assertions.assertEquals(themes.get(3).getId(), 3);
-        Assertions.assertEquals(themes.get(4).getId(), 4);
-        Assertions.assertEquals(themes.get(5).getId(), 6);
+        Assertions.assertEquals(5, themes.get(0).getId());
+        Assertions.assertEquals(2, themes.get(1).getId());
+        Assertions.assertEquals(1, themes.get(2).getId());
+        Assertions.assertEquals(3, themes.get(3).getId());
+        Assertions.assertEquals(4, themes.get(4).getId());
+        Assertions.assertEquals(6, themes.get(5).getId());
     }
 }

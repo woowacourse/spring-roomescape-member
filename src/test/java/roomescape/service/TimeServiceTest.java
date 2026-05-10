@@ -21,7 +21,7 @@ public class TimeServiceTest {
         Assertions.assertThatThrownBy(() -> timeService.removeById(-1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-    
+
     @Test
     public void 존재하지_않는_시간에_대한_추가는_정상동작된다() {
         // given
@@ -48,6 +48,4 @@ public class TimeServiceTest {
         Assertions.assertThatThrownBy(() -> timeService.removeById(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-
-
 }

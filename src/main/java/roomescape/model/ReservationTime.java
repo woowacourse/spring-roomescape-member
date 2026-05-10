@@ -3,6 +3,7 @@ package roomescape.model;
 import java.time.LocalTime;
 
 public class ReservationTime {
+
     private static final int START_MINUTE = 0;
 
     private final Long id;
@@ -13,7 +14,6 @@ public class ReservationTime {
         this.startAt = startAt;
         validateStartAt();
     }
-
 
     private void validateStartAt() {
         if (startAt.getMinute() != START_MINUTE) {

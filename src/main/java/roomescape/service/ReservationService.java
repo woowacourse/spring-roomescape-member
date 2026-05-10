@@ -56,5 +56,4 @@ public class ReservationService {
                 reservationRequest.themeId(), reservationTime, theme);
         return ReservationResponse.from(reservation);
     }
-
 }
