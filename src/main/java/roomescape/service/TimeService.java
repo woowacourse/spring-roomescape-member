@@ -6,15 +6,18 @@ import org.springframework.stereotype.Service;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
 import roomescape.model.ReservationTime;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeRepository;
 
 @Service
 public class TimeService {
 
     private final TimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public TimeService(TimeRepository timeRepository) {
+    public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
         this.timeRepository = timeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<TimeResponse> readAll() {
@@ -32,6 +35,9 @@ public class TimeService {
     }
 
     public void removeById(Long id) {
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new IllegalArgumentException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
+        }
         int deleteCnt = timeRepository.deleteById(id);
         if (deleteCnt == 0) {
             throw new IllegalArgumentException("존재하지 않는 시간의 ID 입니다.");
