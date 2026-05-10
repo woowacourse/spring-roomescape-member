@@ -17,9 +17,9 @@ CREATE TABLE reservation_time (
 CREATE TABLE reservation (
     id      BIGINT       NOT NULL AUTO_INCREMENT,
     name    VARCHAR(255) NOT NULL,
+    theme_id BIGINT NOT NULL,
     date    DATE NOT NULL,
     time_id BIGINT NOT NULL,
-    theme_id BIGINT NOT NULL,
 
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id) ON DELETE CASCADE,
@@ -50,18 +50,18 @@ INSERT INTO reservation_time (start_at) VALUES ('18:00');
 INSERT INTO reservation_time (start_at) VALUES ('19:00');
 INSERT INTO reservation_time (start_at) VALUES ('20:00');
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('워넬', '2026-05-05', 1L, 2L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('도우너', '2026-05-05', 2L, 2L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 1L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 3L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 4L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 5L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 6L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 7L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 8L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 9L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 10L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 1L, 11L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 4L, 1L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 4L, 2L);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('로치', '2026-05-05', 4L, 3L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('워넬', 2L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('도우너', 2L, '2026-05-05', 2L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 1L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 3L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 4L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 5L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 6L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 7L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 8L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 9L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 10L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 11L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 1L, '2026-05-05', 4L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 2L, '2026-05-05', 4L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 3L, '2026-05-05', 4L);

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class TimeDao {
-    private static final RowMapper<Time> timeRowMapper = (rs, rowNum) -> {
-        return new Time(rs.getLong("id")
+    private static final RowMapper<ReservationTime> timeRowMapper = (rs, rowNum) -> {
+        return new ReservationTime(rs.getLong("id")
                 , rs.getTime("start_at").toLocalTime());
     };
 
@@ -32,12 +32,12 @@ public class TimeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Time> selectAll() {
+    public List<ReservationTime> selectAll() {
         String sql = "select id, start_at from reservation_time";
         return jdbcTemplate.query(sql, timeRowMapper);
     }
 
-    public Time selectById(Long id) {
+    public ReservationTime selectById(Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
         return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
     }
@@ -57,12 +57,12 @@ public class TimeDao {
         return jdbcTemplate.query(sql, availableTimeRowMapper, themeId, date);
     }
 
-    public Time insert(Time time) {
+    public ReservationTime insert(ReservationTime time) {
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("start_at", time.getStartAt());
 
         Long id = (long) simpleJdbcInsert.executeAndReturnKey(parameters);
-        return new Time(id, time.getStartAt());
+        return new ReservationTime(id, time.getStartAt());
     }
 
     public void delete(Long id) {

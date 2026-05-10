@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.time.AvailableTime;
-import roomescape.time.Time;
+import roomescape.time.ReservationTime;
 import roomescape.time.dto.AvailableTimeResponse;
 import roomescape.time.dto.TimeRequest;
 import roomescape.time.dto.TimeResponse;
@@ -49,7 +48,7 @@ public class TimeController {
 
     @PostMapping("/times")
     public ResponseEntity<TimeResponse> create(@RequestBody TimeRequest request) {
-        Time time = timeService.add(request.startAt());
+        ReservationTime time = timeService.add(request.startAt());
         TimeResponse response = TimeResponse.from(time);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

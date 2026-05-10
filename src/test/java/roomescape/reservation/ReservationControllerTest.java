@@ -13,12 +13,12 @@ import org.springframework.test.annotation.DirtiesContext;
 public class ReservationControllerTest {
 
     @Test
-    void 예약추가_예약존재_성공() {
+    void 예약추가_시간가능_성공() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "초록");
+        params.put("themeId", 2L);
         params.put("date", "2026-05-05");
         params.put("timeId", 7L);
-        params.put("themeId", 2L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

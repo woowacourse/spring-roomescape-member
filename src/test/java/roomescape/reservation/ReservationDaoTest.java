@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.time.Time;
+import roomescape.time.ReservationTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -19,10 +19,10 @@ public class ReservationDaoTest {
         return new Reservation(
                 rs.getLong("reservation_id"),
                 rs.getString("name"),
+                rs.getLong("theme_id"),
                 rs.getDate("date").toLocalDate(),
-                new Time(rs.getLong("time_id"),
-                        rs.getTime("start_at").toLocalTime()),
-                rs.getLong("theme_id")
+                new ReservationTime(rs.getLong("time_id"),
+                        rs.getTime("start_at").toLocalTime())
         );
     };
 
@@ -34,8 +34,8 @@ public class ReservationDaoTest {
 
     @Test
     void 예약_생성_테스트() {
-        Reservation reservation = new Reservation("초록", LocalDate.parse("2026-05-05"),
-                new Time(6L, LocalTime.parse("15:00")), 1L);
+        Reservation reservation = new Reservation("초록", 1L, LocalDate.parse("2026-05-05"),
+                new ReservationTime(6L, LocalTime.parse("15:00")));
         Reservation expected = reservationDao.insert(reservation);
 
         String sql =

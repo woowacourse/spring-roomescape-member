@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.time.dto.AvailableTimeResponse;
 
 @Service
 public class TimeService {
@@ -15,7 +14,7 @@ public class TimeService {
         this.timeDao = timeDao;
     }
 
-    public List<Time> findAll() {
+    public List<ReservationTime> findAll() {
         return timeDao.selectAll();
     }
 
@@ -23,8 +22,8 @@ public class TimeService {
         return timeDao.selectByThemeIdAndDate(themeId, date);
     }
 
-    public Time add(LocalTime startAt) {
-        Time time = new Time(startAt);
+    public ReservationTime add(LocalTime startAt) {
+        ReservationTime time = new ReservationTime(startAt);
         return timeDao.insert(time);
     }
 
