@@ -1,4 +1,4 @@
-package roomescape.controller.dto;
+package roomescape.service.dto;
 
 import java.time.LocalDate;
 

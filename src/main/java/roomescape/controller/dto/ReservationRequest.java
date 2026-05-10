@@ -3,6 +3,7 @@ package roomescape.controller.dto;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import roomescape.global.exception.InvalidReservationException;
+import roomescape.service.dto.CreateReservationCommand;
 
 public record ReservationRequest(
         String name,
