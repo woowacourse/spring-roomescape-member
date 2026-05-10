@@ -9,23 +9,30 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.fake.FakeAvailableReservationTimeRepository;
+import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservationtime.application.service.ReservationTimeService;
-import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.application.dto.AvailableReservationTimeQueryResult;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.exception.ReservationTimeException;
+import roomescape.reservationtime.application.service.ReservationTimeService;
+import roomescape.reservationtime.domain.ReservationTime;
 
 class ReservationTimeServiceTest {
 
     private FakeReservationTimeRepository timeRepository;
+    private FakeReservationRepository reservationRepository;
+    private FakeAvailableReservationTimeRepository availableTimeRepository;
     private ReservationTimeService timeService;
 
     @BeforeEach
     void setUp() {
         timeRepository = new FakeReservationTimeRepository();
-        timeService = new ReservationTimeService(timeRepository);
+        reservationRepository = new FakeReservationRepository();
+        availableTimeRepository = new FakeAvailableReservationTimeRepository(timeRepository, reservationRepository);
+        timeService = new ReservationTimeService(timeRepository, availableTimeRepository);
+
         timeRepository.save(ReservationTime.builder()
                 .startAt(LocalTime.of(9, 0))
                 .build()
@@ -45,8 +52,8 @@ class ReservationTimeServiceTest {
         List<AvailableReservationTimeQueryResult> timeResponses = timeService.findAvailableTimes(themeId, date);
 
         Assertions.assertThat(timeResponses).containsExactly(
-                new AvailableReservationTimeQueryResult(1L, LocalTime.of(9,0), true),
-                new AvailableReservationTimeQueryResult(2L, LocalTime.of(10,0), true)
+                new AvailableReservationTimeQueryResult(1L, LocalTime.of(9, 0), true),
+                new AvailableReservationTimeQueryResult(2L, LocalTime.of(10, 0), true)
         );
     }
 
@@ -56,7 +63,7 @@ class ReservationTimeServiceTest {
         Long themeId = 1L;
         LocalDate date = LocalDate.of(2026, 5, 6);
 
-        timeRepository.saveReservation(Reservation.builder()
+        reservationRepository.save(Reservation.builder()
                 .name("스타크")
                 .date(date)
                 .themeId(1L)
@@ -67,8 +74,8 @@ class ReservationTimeServiceTest {
         List<AvailableReservationTimeQueryResult> timeResponses = timeService.findAvailableTimes(themeId, date);
 
         Assertions.assertThat(timeResponses).containsExactly(
-                new AvailableReservationTimeQueryResult(1L, LocalTime.of(9,0), false),
-                new AvailableReservationTimeQueryResult(2L, LocalTime.of(10,0), true)
+                new AvailableReservationTimeQueryResult(1L, LocalTime.of(9, 0), false),
+                new AvailableReservationTimeQueryResult(2L, LocalTime.of(10, 0), true)
         );
     }
 

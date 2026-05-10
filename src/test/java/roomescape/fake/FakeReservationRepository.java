@@ -47,4 +47,8 @@ public class FakeReservationRepository implements ReservationRepository {
                         savedReservation.getTimeId().equals(timeId) &&
                         savedReservation.getDate().equals(date)));
     }
+
+    public List<Reservation> findAllReservations() {
+        return reservations.values().stream().toList();
+    }
 }

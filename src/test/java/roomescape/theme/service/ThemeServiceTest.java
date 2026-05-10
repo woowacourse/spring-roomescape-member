@@ -1,6 +1,7 @@
 package roomescape.theme.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,11 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.fake.FakeThemeRepository;
-import roomescape.theme.application.service.ThemeService;
 import roomescape.theme.application.dto.PopularThemeQueryResult;
-import roomescape.theme.application.exception.ThemeException;
 import roomescape.theme.application.dto.ThemeCreateCommand;
 import roomescape.theme.application.dto.ThemeQueryResult;
+import roomescape.theme.application.exception.ThemeException;
+import roomescape.theme.application.service.ThemeService;
 import roomescape.theme.domain.repository.PopularTheme;
 
 public class ThemeServiceTest {
@@ -30,7 +31,8 @@ public class ThemeServiceTest {
     @DisplayName("테마의 정상 추가를 테스트합니다.")
     @Test
     void save_theme_successfully() {
-        ThemeCreateCommand createRequestDto = new ThemeCreateCommand("theme name", "theme description", "theme img url");
+        ThemeCreateCommand createRequestDto = new ThemeCreateCommand("theme name", "theme description",
+                "theme img url");
         ThemeQueryResult themeQueryResult = themeService.save(createRequestDto);
 
         SoftAssertions.assertSoftly(assertSoftly -> {
@@ -44,7 +46,8 @@ public class ThemeServiceTest {
     @DisplayName("중복된 테마 추가 시 예외 발생을 테스트합니다.")
     @Test
     void save_duplicated_theme_exception() {
-        ThemeCreateCommand createRequestDto = new ThemeCreateCommand("theme name", "theme description", "theme img url");
+        ThemeCreateCommand createRequestDto = new ThemeCreateCommand("theme name", "theme description",
+                "theme img url");
         themeService.save(createRequestDto);
 
         assertThatThrownBy(() -> themeService.save(createRequestDto))
@@ -55,7 +58,8 @@ public class ThemeServiceTest {
     @DisplayName("테마의 삭제를 테스트합니다.")
     @Test
     void delete_theme() {
-        ThemeCreateCommand createRequestDto = new ThemeCreateCommand("theme name", "theme description", "theme img url");
+        ThemeCreateCommand createRequestDto = new ThemeCreateCommand("theme name", "theme description",
+                "theme img url");
         themeService.save(createRequestDto);
 
         assertThat(themeService.delete(1L)).isEqualTo(1);
@@ -64,7 +68,8 @@ public class ThemeServiceTest {
     @DisplayName("테마 조회를 테스트합니다.")
     @Test
     void find_theme() {
-        ThemeCreateCommand createRequestDto = new ThemeCreateCommand("theme name", "theme description", "theme img url");
+        ThemeCreateCommand createRequestDto = new ThemeCreateCommand("theme name", "theme description",
+                "theme img url");
         themeService.save(createRequestDto);
 
         ThemeQueryResult foundTheme = themeService.findById(1L);
@@ -88,9 +93,12 @@ public class ThemeServiceTest {
     @DisplayName("테마의 전체 조회를 테스트합니다.")
     @Test
     void find_all_themes() {
-        ThemeCreateCommand createRequestDto1 = new ThemeCreateCommand("theme name1", "theme description1", "theme img url1");
-        ThemeCreateCommand createRequestDto2 = new ThemeCreateCommand("theme name2", "theme description2", "theme img url2");
-        ThemeCreateCommand createRequestDto3 = new ThemeCreateCommand("theme name3", "theme description3", "theme img url3");
+        ThemeCreateCommand createRequestDto1 = new ThemeCreateCommand("theme name1", "theme description1",
+                "theme img url1");
+        ThemeCreateCommand createRequestDto2 = new ThemeCreateCommand("theme name2", "theme description2",
+                "theme img url2");
+        ThemeCreateCommand createRequestDto3 = new ThemeCreateCommand("theme name3", "theme description3",
+                "theme img url3");
 
         themeService.save(createRequestDto1);
         themeService.save(createRequestDto2);

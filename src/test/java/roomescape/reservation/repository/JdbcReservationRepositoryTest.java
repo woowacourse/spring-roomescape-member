@@ -17,11 +17,10 @@ import roomescape.support.RepositoryTestHelper;
 @JdbcTest
 class JdbcReservationRepositoryTest {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     ReservationRepository reservationRepository;
     RepositoryTestHelper testHelper;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {

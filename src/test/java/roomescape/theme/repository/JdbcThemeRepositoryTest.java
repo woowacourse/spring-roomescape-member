@@ -24,12 +24,11 @@ import roomescape.theme.infra.JdbcThemeRepository;
 @JdbcTest
 public class JdbcThemeRepositoryTest {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     ThemeRepository themeRepository;
     ReservationTimeRepository timeRepository;
     RepositoryTestHelper testHelper;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
@@ -139,15 +138,18 @@ public class JdbcThemeRepositoryTest {
                 .build());
 
         LocalDate yesterday = LocalDate.now().minusDays(1);
-        Theme theme1 = themeRepository.save(Theme.builder().name("theme name 1").description("theme description 1").thumbnailImgUrl("theme img url 1").build());
-        Theme theme2 = themeRepository.save(Theme.builder().name("theme name 2").description("theme description 2").thumbnailImgUrl("theme img url 2").build());
+        Theme theme1 = themeRepository.save(Theme.builder().name("theme name 1").description("theme description 1")
+                .thumbnailImgUrl("theme img url 1").build());
+        Theme theme2 = themeRepository.save(Theme.builder().name("theme name 2").description("theme description 2")
+                .thumbnailImgUrl("theme img url 2").build());
 
         testHelper.insertReservation("스타크", yesterday, theme1.getId(), time1.getId());
         testHelper.insertReservation("카야", yesterday, theme2.getId(), time2.getId());
         testHelper.insertReservation("스타크", yesterday, theme1.getId(), time1.getId());
 
         LocalDate today = LocalDate.now();
-        List<PopularTheme> popularThemes = themeRepository.findTop10PopularThemesBetween(today.minusWeeks(1), today.minusDays(1));
+        List<PopularTheme> popularThemes = themeRepository.findTop10PopularThemesBetween(today.minusWeeks(1),
+                today.minusDays(1));
 
         SoftAssertions.assertSoftly(assertSoftly -> {
             assertSoftly.assertThat(popularThemes.getFirst().id()).isEqualTo(theme1.getId());

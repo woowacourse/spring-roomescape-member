@@ -8,14 +8,14 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.fake.FakeAvailableReservationTimeRepository;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.fake.FakeThemeRepository;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationQueryResult;
-import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservation.application.exception.ReservationException;
-import roomescape.reservation.domain.repository.ReservationRepository;
+import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
 import roomescape.reservationtime.application.service.ReservationTimeService;
@@ -28,12 +28,17 @@ class ReservationServiceTest {
     private ThemeService themeService;
     private ReservationTimeService timeService;
     private ReservationService reservationService;
+    private FakeReservationRepository reservationRepository;
+    private FakeReservationTimeRepository timeRepository;
 
     @BeforeEach
     void setUp() {
         themeService = new ThemeService(new FakeThemeRepository());
-        timeService = new ReservationTimeService(new FakeReservationTimeRepository());
-        ReservationRepository reservationRepository = new FakeReservationRepository();
+        reservationRepository = new FakeReservationRepository();
+        timeRepository = new FakeReservationTimeRepository();
+        FakeAvailableReservationTimeRepository availableReservationTimeRepository =
+                new FakeAvailableReservationTimeRepository(timeRepository, reservationRepository);
+        timeService = new ReservationTimeService(timeRepository, availableReservationTimeRepository);
         reservationService = new ReservationService(reservationRepository, themeService, timeService);
     }
 
@@ -44,13 +49,15 @@ class ReservationServiceTest {
         timeService.save(new ReservationTimeCreateCommand(LocalTime.of(10, 0)));
 
         ReservationCreateCommand request = new ReservationCreateCommand("스타크", LocalDate.of(2026, 5, 6), 1L, 1L);
-        ReservationQueryResult reservationQueryResult = reservationService.save(request, LocalDateTime.of(2000, 1, 1, 0, 0));
+        ReservationQueryResult reservationQueryResult = reservationService.save(request,
+                LocalDateTime.of(2000, 1, 1, 0, 0));
 
         SoftAssertions.assertSoftly(assertSoftly -> {
             assertSoftly.assertThat(reservationQueryResult.id()).isEqualTo(1L);
             assertSoftly.assertThat(reservationQueryResult.name()).isEqualTo("스타크");
             assertSoftly.assertThat(reservationQueryResult.date()).isEqualTo("2026-05-06");
-            assertSoftly.assertThat(reservationQueryResult.time()).isEqualTo(new ReservationTimeQueryResult(1L, LocalTime.of(10,0)));
+            assertSoftly.assertThat(reservationQueryResult.time())
+                    .isEqualTo(new ReservationTimeQueryResult(1L, LocalTime.of(10, 0)));
             assertSoftly.assertThat(reservationQueryResult.theme())
                     .isEqualTo(new ThemeQueryResult(1L, "theme name", "theme description", "theme img url"));
         });

@@ -1,23 +1,16 @@
 package roomescape.fake;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.domain.repository.AvailableReservationTime;
 import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
     private final Map<Long, ReservationTime> times = new LinkedHashMap<>();
-    private final List<Reservation> reservations = new ArrayList<>();
     private Long idHoler = 1L;
 
     @Override
@@ -52,29 +45,8 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<AvailableReservationTime> findByThemeAndDate(Long themeId, LocalDate date) {
-        Set<Long> reservedTimeIds = reservations.stream()
-                .filter(reservation -> reservation.getThemeId().equals(themeId))
-                .filter(reservation -> reservation.getDate().equals(date))
-                .map(Reservation::getTimeId)
-                .collect(Collectors.toSet());
-
-        return times.values().stream()
-                .map(time -> new AvailableReservationTime(
-                        time.getId(),
-                        time.getStartAt(),
-                        !reservedTimeIds.contains(time.getId())
-                ))
-                .toList();
-    }
-
-    @Override
     public Boolean existsByStartAt(LocalTime startAt) {
         return times.values().stream()
                 .anyMatch(savedTimes -> savedTimes.getStartAt().equals(startAt));
-    }
-
-    public void saveReservation(Reservation reservation) {
-        reservations.add(reservation);
     }
 }
