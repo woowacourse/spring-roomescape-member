@@ -10,7 +10,7 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(Long id, String name, String description, String thumbnail) {
+    private Theme(Long id, String name, String description, String thumbnail) {
         validateName(name);
         validateDescription(description);
         validateThumbnail(thumbnail);
@@ -19,6 +19,10 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    public Theme(long id, String name, String description, String thumbnail) {
+        this(Long.valueOf(id), name, description, thumbnail);
     }
 
     public Theme(String name, String description, String thumbnail) {
