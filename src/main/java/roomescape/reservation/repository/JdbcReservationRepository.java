@@ -65,25 +65,35 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation save(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+    public Reservation save(Reservation reservation) {
         String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-                ps.setString(1, name);
-                ps.setObject(2, date);
-                ps.setLong(3, reservationTime.getId());
-                ps.setLong(4, theme.getId());
+                ps.setString(1, reservation.getName());
+                ps.setObject(2, reservation.getDate());
+                ps.setLong(3, reservation.getTime().getId());
+                ps.setLong(4, reservation.getTheme().getId());
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new ReservationDuplicatedException(date, reservationTime.getId(), theme.getId());
+            throw new ReservationDuplicatedException(
+                    reservation.getDate(),
+                    reservation.getTime().getId(),
+                    reservation.getTheme().getId()
+            );
         }
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return Reservation.of(id, name, date, reservationTime, theme);
+        return Reservation.of(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
     }
 
     @Override

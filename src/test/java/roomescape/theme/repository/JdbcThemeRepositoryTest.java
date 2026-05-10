@@ -86,11 +86,18 @@ class JdbcThemeRepositoryTest {
     void 테마를_삭제하면_이를_참조하는_예약도_삭제된다() {
         ReservationTime reservationTime = reservationTimeRepository.save(LocalTime.of(11, 0));
         Theme theme = themeRepository.save("테마", "테마 설명", "https://example.com/theme.png");
-        Reservation reservation = reservationRepository.save("밀란", LocalDate.of(2026, 5, 6), reservationTime, theme);
 
+        Reservation reservation = Reservation.create(
+                "밀란",
+                LocalDate.of(2026, 5, 6),
+                reservationTime,
+                theme
+        );
+
+        Reservation savedReservation = reservationRepository.save(reservation);
         themeRepository.deleteById(theme.getId());
 
-        Optional<Reservation> foundReservation = reservationRepository.findById(reservation.getId());
+        Optional<Reservation> foundReservation = reservationRepository.findById(savedReservation.getId());
         assertThat(foundReservation).isEmpty();
     }
 

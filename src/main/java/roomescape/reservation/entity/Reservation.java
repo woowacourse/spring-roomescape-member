@@ -21,6 +21,10 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(null, name, date, time, theme);
+    }
+
     public static Reservation of(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         return new Reservation(id, name, date, time, theme);
     }
@@ -47,11 +51,14 @@ public class Reservation {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
         Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id);
+        return id != null && Objects.equals(id, that.id);
     }
 
     @Override

@@ -37,13 +37,19 @@ class JdbcReservationRepositoryTest {
                 .orElseThrow(() -> new ReservationTimeNotFoundException(1L));
         Theme theme = themeRepository.findById(1L)
                 .orElseThrow(() -> new ThemeNotFoundException(1L));
+        Reservation reservation = Reservation.create(
+                name,
+                date,
+                reservationTime,
+                theme
+        );
 
-        Reservation reservation = reservationRepository.save(name, date, reservationTime, theme);
-        assertThat(reservation.getId()).isPositive();
-        assertThat(reservation.getName()).isEqualTo(name);
-        assertThat(reservation.getDate()).isEqualTo(date);
-        assertThat(reservation.getTime()).isEqualTo(reservationTime);
-        assertThat(reservation.getTheme()).isEqualTo(theme);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        assertThat(savedReservation.getId()).isPositive();
+        assertThat(savedReservation.getName()).isEqualTo(name);
+        assertThat(savedReservation.getDate()).isEqualTo(date);
+        assertThat(savedReservation.getTime()).isEqualTo(reservationTime);
+        assertThat(savedReservation.getTheme()).isEqualTo(theme);
     }
 
     @Test
@@ -54,11 +60,17 @@ class JdbcReservationRepositoryTest {
                 .orElseThrow(() -> new ReservationTimeNotFoundException(1L));
         Theme theme = themeRepository.findById(1L)
                 .orElseThrow(() -> new ThemeNotFoundException(1L));
+        Reservation reservation = Reservation.create(
+                name,
+                date,
+                reservationTime,
+                theme
+        );
 
-        Reservation reservation = reservationRepository.save(name, date, reservationTime, theme);
+        Reservation savedReservation = reservationRepository.save(reservation);
         List<Reservation> reservations = reservationRepository.findAll();
 
-        assertThat(reservations).containsExactly(reservation);
+        assertThat(reservations).containsExactly(savedReservation);
     }
 
     @Test
@@ -69,8 +81,14 @@ class JdbcReservationRepositoryTest {
                 .orElseThrow(() -> new ReservationTimeNotFoundException(1L));
         Theme theme = themeRepository.findById(1L)
                 .orElseThrow(() -> new ThemeNotFoundException(1L));
+        Reservation reservation = Reservation.create(
+                name,
+                date,
+                reservationTime,
+                theme
+        );
 
-        reservationRepository.save(name, date, reservationTime, theme);
+        reservationRepository.save(reservation);
         List<Long> reservedTimeIds = reservationRepository.findReservedTimeIdsByDateAndThemeId(date, theme.getId());
 
         assertThat(reservedTimeIds).containsExactly(reservationTime.getId());
@@ -84,12 +102,18 @@ class JdbcReservationRepositoryTest {
                 .orElseThrow(() -> new ReservationTimeNotFoundException(1L));
         Theme theme = themeRepository.findById(1L)
                 .orElseThrow(() -> new ThemeNotFoundException(1L));
+        Reservation reservation = Reservation.create(
+                name,
+                date,
+                reservationTime,
+                theme
+        );
 
-        Reservation reservation = reservationRepository.save(name, date, reservationTime, theme);
-        reservationRepository.deleteById(reservation.getId());
+        Reservation savedReservation = reservationRepository.save(reservation);
+        reservationRepository.deleteById(savedReservation.getId());
 
         List<Reservation> reservations = reservationRepository.findAll();
-        assertThat(reservations).doesNotContain(reservation);
+        assertThat(reservations).doesNotContain(savedReservation);
     }
 
 }
