@@ -2,7 +2,7 @@ package roomescape.reservation.application.dto;
 
 import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.repository.ReservationDetail;
+import roomescape.reservation.application.query.ReservationDetail;
 import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
 import roomescape.theme.application.dto.ThemeQueryResult;
 

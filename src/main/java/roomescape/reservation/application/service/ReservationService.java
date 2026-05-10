@@ -8,8 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationQueryResult;
 import roomescape.reservation.application.exception.ReservationException;
+import roomescape.reservation.application.query.ReservationDetailDao;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.repository.ReservationDetail;
+import roomescape.reservation.application.query.ReservationDetail;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
 import roomescape.reservationtime.application.service.ReservationTimeService;
@@ -22,12 +23,13 @@ import roomescape.theme.application.service.ThemeService;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final ReservationDetailDao reservationDetailDao;
     private final ThemeService themeService;
     private final ReservationTimeService timeService;
 
     @Transactional(readOnly = true)
     public List<ReservationQueryResult> findAll() {
-        List<ReservationDetail> result = reservationRepository.findAll();
+        List<ReservationDetail> result = reservationDetailDao.findAll();
         return result.stream()
                 .map(ReservationQueryResult::from)
                 .toList();

@@ -19,7 +19,6 @@ import roomescape.reservation.application.dto.ReservationQueryResult;
 import roomescape.reservation.application.exception.ReservationException;
 import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservation.domain.exception.InvalidReservationException;
-import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
 import roomescape.reservationtime.application.service.ReservationTimeService;
@@ -30,6 +29,7 @@ class ReservationServiceTest {
     private ThemeService themeService;
     private ReservationTimeService timeService;
     private ReservationService reservationService;
+    private FakeReservationRepository fakeReservationRepository;
 
     @BeforeEach
     void setUp() {
@@ -37,8 +37,8 @@ class ReservationServiceTest {
         themeService = new ThemeService(fakeThemeRepository, fakeThemeRepository);
         FakeReservationTimeRepository fakeTimeRepository = new FakeReservationTimeRepository();
         timeService = new ReservationTimeService(fakeTimeRepository, fakeTimeRepository);
-        ReservationRepository reservationRepository = new FakeReservationRepository();
-        reservationService = new ReservationService(reservationRepository, themeService, timeService);
+        fakeReservationRepository = new FakeReservationRepository();
+        reservationService = new ReservationService(fakeReservationRepository, fakeReservationRepository, themeService, timeService);
     }
 
     @DisplayName("사용자의 방탈출 예약 시간 추가를 테스트합니다.")
