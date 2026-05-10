@@ -71,8 +71,8 @@ public class ThemeRepository {
                 .findFirst();
     }
 
-    public List<Theme> findThemesOrderedByReservationCount(LocalDate startDate,
-                                                           LocalDate endDate,
+    public List<Theme> findThemesOrderByReservationCount(LocalDate fromDate,
+                                                           LocalDate toDate,
                                                            int limit) {
         String sql = """
                 SELECT
@@ -84,15 +84,15 @@ public class ThemeRepository {
                 FROM theme t
                 INNER JOIN reservation r ON t.id = r.theme_id
                 WHERE t.is_deleted = FALSE
-                  AND r.date >= :startDate
-                  AND r.date <= :endDate
+                  AND r.date >= :fromDate
+                  AND r.date <= :toDate
                 GROUP BY t.id, t.name, t.description, t.image_url
                 ORDER BY COUNT(r.id) DESC , t.name
                 LIMIT :limit
                 """;
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("startDate", startDate)
-                .addValue("endDate", endDate)
+                .addValue("fromDate", fromDate)
+                .addValue("toDate", toDate)
                 .addValue("limit", limit);
 
         return jdbcTemplate.query(sql, parameters, themeRowMapper);

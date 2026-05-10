@@ -6,7 +6,7 @@ import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.controller.dto.CreateThemeRequest;
+import roomescape.controller.dto.ThemeRequest;
 import roomescape.controller.dto.ThemeRankResponse;
 import roomescape.controller.dto.ThemeResponse;
 import roomescape.domain.Theme;
@@ -21,7 +21,7 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
 
     @Transactional
-    public ThemeResponse addTheme(CreateThemeRequest request) {
+    public ThemeResponse createTheme(ThemeRequest request) {
         Theme theme = Theme.createNew(
                 request.name(),
                 request.description(),
@@ -32,29 +32,29 @@ public class ThemeService {
         return ThemeResponse.from(savedTheme);
     }
 
-    public List<ThemeResponse> findAllThemes() {
+    public List<ThemeResponse> getThemes() {
         return themeRepository.findAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
 
     @Transactional
-    public void removeRegisteredTheme(Long id) {
+    public void deleteTheme(Long id) {
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeRankResponse> getThemeRankingsInRecentDays(int days, int limit) {
+    public List<ThemeRankResponse> getThemeRankings(int days, int limit) {
         validateRankingCondition(days, limit);
 
         LocalDate today = LocalDate.now();
-        LocalDate startDate = today.minusDays(days);
-        List<Theme> themes = themeRepository.findThemesOrderedByReservationCount(startDate, today, limit);
+        LocalDate fromDate = today.minusDays(days);
+        List<Theme> themes = themeRepository.findThemesOrderByReservationCount(fromDate, today, limit);
 
         return IntStream.range(0, themes.size())
                 .mapToObj(index -> {
                     int rank = index + 1;
-                    ThemeResponse themeResponse = ThemeResponse.from(themes.get(index));
-                    return new ThemeRankResponse(rank, themeResponse);
+                    ThemeResponse theme = ThemeResponse.from(themes.get(index));
+                    return new ThemeRankResponse(rank, theme);
                 })
                 .toList();
     }

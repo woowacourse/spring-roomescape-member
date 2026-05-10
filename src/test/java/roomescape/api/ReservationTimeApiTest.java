@@ -70,8 +70,8 @@ class ReservationTimeApiTest {
 
     @Test
     void 예약과_시간_연결() {
-        dataInitializer.initializeReservationTime(LocalTime.now());
-        dataInitializer.initializeTheme("hello", "world", "/resources/image/...");
+        dataInitializer.createReservationTime(LocalTime.now());
+        dataInitializer.createTheme("hello", "world", "/resources/image/...");
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
@@ -96,12 +96,12 @@ class ReservationTimeApiTest {
     @Test
     void 예약_가능_시간_조회() {
         // given
-        ReservationTime ten = dataInitializer.initializeReservationTime(LocalTime.of(10, 0));
-        ReservationTime eleven = dataInitializer.initializeReservationTime(LocalTime.of(11, 0));
-        Theme theme = dataInitializer.initializeTheme("hello", "world", "/resources/image/...");
+        ReservationTime ten = dataInitializer.createReservationTime(LocalTime.of(10, 0));
+        ReservationTime eleven = dataInitializer.createReservationTime(LocalTime.of(11, 0));
+        Theme theme = dataInitializer.createTheme("hello", "world", "/resources/image/...");
 
         LocalDate date = LocalDate.now().plusDays(1);
-        dataInitializer.initializeReservation("라텔", date, ten.getId(), theme.getId());
+        dataInitializer.createReservation("라텔", date, ten.getId(), theme.getId());
 
 
         Map<String, Object> params = new HashMap<>();

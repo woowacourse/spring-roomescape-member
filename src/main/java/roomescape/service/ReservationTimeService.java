@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.AvailableReservationTimeResponse;
-import roomescape.controller.dto.CreateResrvationTimeRequest;
-import roomescape.controller.dto.GetAvailableTimesRequest;
+import roomescape.controller.dto.ReservationTimeRequest;
+import roomescape.controller.dto.AvailableReservationTimesQuery;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.controller.dto.ThemeResponse;
-import roomescape.controller.dto.ThemeReservationTimesResponse;
+import roomescape.controller.dto.AvailableReservationTimesResponse;
 import roomescape.domain.ReservationTime;
 import roomescape.global.exception.DuplicateReservationTimeException;
 import roomescape.global.exception.ThemeNotFoundException;
@@ -27,7 +27,7 @@ public class ReservationTimeService {
     private final ThemeRepository themeRepository;
 
     @Transactional
-    public ReservationTimeResponse addReservationTime(CreateResrvationTimeRequest request) {
+    public ReservationTimeResponse createReservationTime(ReservationTimeRequest request) {
         if (reservationTimeRepository.existsByStartAt(request.startAt())) {
             throw new DuplicateReservationTimeException();
         }
@@ -36,22 +36,22 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(savedReservationTime);
     }
 
-    public List<ReservationTimeResponse> findAllReservationTimes() {
+    public List<ReservationTimeResponse> getReservationTimes() {
         return reservationTimeRepository.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
     }
 
     @Transactional
-    public void removeRegisteredReservationTime(Long id) {
+    public void deleteReservationTime(Long id) {
         reservationTimeRepository.deleteById(id);
     }
 
-    public ThemeReservationTimesResponse findAllAvailableTimes(GetAvailableTimesRequest request) {
+    public AvailableReservationTimesResponse getAvailableReservationTimes(AvailableReservationTimesQuery request) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         Set<Long> reservedTimeIds = new HashSet<>(
-                reservationTimeRepository.findIdByCondition(request.themeId(), request.date()));
+                reservationTimeRepository.findReservedTimeIds(request.themeId(), request.date()));
 
         List<AvailableReservationTimeResponse> availableTimes = reservationTimes.stream()
                 .map(time -> createResponse(time, reservedTimeIds))
@@ -59,7 +59,7 @@ public class ReservationTimeService {
                 .toList();
         ThemeResponse theme = ThemeResponse.from(themeRepository.findById(request.themeId())
                 .orElseThrow(ThemeNotFoundException::new));
-        return ThemeReservationTimesResponse.from(theme, availableTimes);
+        return AvailableReservationTimesResponse.from(theme, availableTimes);
     }
 
     private AvailableReservationTimeResponse createResponse(ReservationTime time, Set<Long> reservedIdSet) {

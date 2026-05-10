@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.CreateReservationRequest;
+import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
@@ -24,20 +24,20 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<ReservationResponse> reservations = reservationService.findAllReservations();
+        List<ReservationResponse> reservations = reservationService.getReservations();
         return ResponseEntity.ok(reservations);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservations(
-            @RequestBody CreateReservationRequest createReservationRequest) {
-        ReservationResponse reservation = reservationService.reserve(createReservationRequest);
+    public ResponseEntity<ReservationResponse> createReservation(
+            @RequestBody ReservationRequest request) {
+        ReservationResponse reservation = reservationService.createReservation(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(reservation);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservations(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.cancelReservation(id);
         return ResponseEntity.noContent().build();
     }

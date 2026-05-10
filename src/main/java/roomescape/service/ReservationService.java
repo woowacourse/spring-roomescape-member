@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.controller.dto.CreateReservationRequest;
+import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -26,14 +26,14 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public List<ReservationResponse> findAllReservations() {
+    public List<ReservationResponse> getReservations() {
         return reservationRepository.findAll().stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
     @Transactional
-    public ReservationResponse reserve(CreateReservationRequest request) {
+    public ReservationResponse createReservation(ReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(ReservationTimeNotFoundException::new);
         Theme theme = themeRepository.findById(request.themeId())
@@ -47,8 +47,8 @@ public class ReservationService {
     }
 
     private void validateReservationAvailable(LocalDate date, ReservationTime time, Theme theme) {
-        List<Long> reservedIds = reservationTimeRepository.findIdByCondition(theme.getId(), date);
-        if(reservedIds.contains(time.getId())) {
+        List<Long> reservedTimeIds = reservationTimeRepository.findReservedTimeIds(theme.getId(), date);
+        if(reservedTimeIds.contains(time.getId())) {
             throw new DuplicateReservationException();
         }
     }

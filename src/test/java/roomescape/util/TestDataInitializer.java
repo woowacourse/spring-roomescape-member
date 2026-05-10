@@ -26,15 +26,15 @@ public class TestDataInitializer {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTime initializeReservationTime(LocalTime localTime) {
+    public ReservationTime createReservationTime(LocalTime localTime) {
         return reservationTimeRepository.save(ReservationTime.createNew(localTime.withSecond(0).withNano(0)));
     }
 
-    public Theme initializeTheme(String name, String description, String imageUrl) {
+    public Theme createTheme(String name, String description, String imageUrl) {
         return themeRepository.save(Theme.createNew(name, description, imageUrl));
     }
 
-    public void initializeReservation(String name, LocalDate date, Long timeId, Long themeId) {
+    public void createReservation(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(ReservationTimeNotFoundException::new);
         Theme theme = themeRepository.findById(themeId)

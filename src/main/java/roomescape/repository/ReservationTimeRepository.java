@@ -72,7 +72,7 @@ public class ReservationTimeRepository {
                 .findFirst();
     }
 
-    public List<Long> findIdByCondition(Long themeId, LocalDate date) {
+    public List<Long> findReservedTimeIds(Long themeId, LocalDate date) {
         String sql = "select time_id " +
                 "from reservation " +
                 "where theme_id = :themeId and date = :date;";

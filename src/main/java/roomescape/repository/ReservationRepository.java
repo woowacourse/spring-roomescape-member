@@ -20,7 +20,7 @@ public class ReservationRepository {
     private static final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) -> {
         ReservationTime reservationTime = ReservationTime.from(
                 rs.getLong("time_id"),
-                rs.getObject("start_at", LocalTime.class)
+                rs.getObject("time_start_at", LocalTime.class)
         );
         Theme theme = Theme.from(
                 rs.getLong("theme_id"),
@@ -54,7 +54,7 @@ public class ReservationRepository {
                     r.name,
                     r.date,
                     rt.id AS time_id,
-                    rt.start_at,
+                    rt.start_at AS time_start_at,
                     t.id AS theme_id,
                     t.name AS theme_name,
                     t.description,

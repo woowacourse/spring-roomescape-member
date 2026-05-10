@@ -31,8 +31,8 @@ class ReservationApiTest {
 
     @Test
     void 예약_추가_및_삭제() {
-        dataInitializer.initializeReservationTime(LocalTime.now());
-        dataInitializer.initializeTheme("귀신의집", "무서워요", "/resources/image/...");
+        dataInitializer.createReservationTime(LocalTime.now());
+        dataInitializer.createTheme("귀신의집", "무서워요", "/resources/image/...");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
