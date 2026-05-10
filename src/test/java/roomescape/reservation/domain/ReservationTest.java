@@ -15,7 +15,7 @@ class ReservationTest {
     void 이름이_50자를_넘는_경우_예외가_발생한다() {
         //given
         String name = "a".repeat(51);
-        ReservationTime reservationTime = new ReservationTime(LocalTime.now());
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         LocalDate now = LocalDate.now();
 
         Theme theme = new Theme(null, "hello", "world", "/resources/image/...");
