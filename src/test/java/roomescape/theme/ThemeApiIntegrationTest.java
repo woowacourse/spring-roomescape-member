@@ -1,4 +1,4 @@
-package roomescape.theme.controller;
+package roomescape.theme;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
