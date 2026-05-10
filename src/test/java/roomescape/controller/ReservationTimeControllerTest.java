@@ -24,7 +24,7 @@ import roomescape.dto.TimeRequest;
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/mockData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 
-public class ReservationTimeController {
+public class ReservationTimeControllerTest {
 
     @LocalServerPort
     private int port;
