@@ -32,7 +32,7 @@ INSERT INTO reservation (name, date, theme_id, time_id)
 VALUES ('제이슨', '2026-05-03', 5, 2);
 
 INSERT INTO reservation (name, date, theme_id, time_id)
-VALUES ('워니', '2026-05-01', 4, 4);
+VALUES ('워니', '2026-05-05', 3, 4);
 
 INSERT INTO reservation (name, date, theme_id, time_id)
 VALUES ('포비', '2026-05-04', 5, 1);

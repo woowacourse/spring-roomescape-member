@@ -66,7 +66,7 @@ public class ThemeQueryingDao {
                     FROM reservation as r
                     WHERE r.date >= :filtered
                     GROUP BY r.theme_id
-                    ORDER BY count(1) DESC
+                    ORDER BY count(1) DESC, r.theme_id ASC
                     LIMIT :limit
                 ) AS top_themes ON t.id = top_themes.theme_id;
                 """;
