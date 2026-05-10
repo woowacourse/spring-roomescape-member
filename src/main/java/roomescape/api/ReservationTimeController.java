@@ -2,6 +2,7 @@ package roomescape.api;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,13 +53,13 @@ public class ReservationTimeController {
         ReservationTime time = new ReservationTime(null, request.startAt());
         ReservationTimeResponse response = ReservationTimeResponse.from(reservationTimeService.addTime(time));
 
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationFacade.deleteTime(id);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

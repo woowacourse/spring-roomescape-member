@@ -36,7 +36,7 @@ class ThemeApiTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("id", notNullValue())
                 .body("name", is("공포"))
                 .body("description", is("무서운 테마"))
@@ -55,7 +55,7 @@ class ThemeApiTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/themes")
@@ -77,13 +77,13 @@ class ThemeApiTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract().jsonPath().get("id");
 
         RestAssured.given().log().all()
                 .when().delete("/themes/" + id)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/themes")

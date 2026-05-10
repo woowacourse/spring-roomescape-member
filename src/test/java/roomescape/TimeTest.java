@@ -24,7 +24,7 @@ public class TimeTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/times")
@@ -35,7 +35,7 @@ public class TimeTest {
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class TimeTest {
                 .body(timeParams)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         Map<String, String> themeParams = new HashMap<>();
         themeParams.put("name", "공포");
@@ -58,7 +58,7 @@ public class TimeTest {
                 .body(themeParams)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
@@ -71,7 +71,7 @@ public class TimeTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")

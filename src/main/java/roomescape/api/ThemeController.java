@@ -1,5 +1,8 @@
 package roomescape.api;
 
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +17,6 @@ import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.facade.ReservationFacade;
 import roomescape.service.ThemeService;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/themes")
@@ -44,14 +44,14 @@ public class ThemeController {
         Theme theme = new Theme(null, request.name(), request.description(), request.thumbnailImageUrl());
         ThemeResponse response = ThemeResponse.from(themeService.addTheme(theme));
 
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationFacade.deleteTheme(id);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/popular")
