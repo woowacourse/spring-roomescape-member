@@ -8,6 +8,8 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -64,5 +66,22 @@ class ReservationApiTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "0, 1, 200",
+            "0, 0, 400",
+            "0, 100, 200",
+            "0, 101, 400",
+            "-1, 20, 400"
+    })
+    void 예약_목록_페이징_조건의_경계값을_검증한다(int page, int size, int statusCode) {
+        RestAssured.given().log().all()
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(statusCode);
     }
 }

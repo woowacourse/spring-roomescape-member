@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -156,5 +158,26 @@ class ThemeApiTest {
                 .statusCode(200)
                 .body("theme.name", contains("A 테마"))
                 .body("size()", is(1));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, 10, 200",
+            "0, 10, 400",
+            "180, 10, 200",
+            "181, 10, 400",
+            "7, 1, 200",
+            "7, 0, 400",
+            "7, 50, 200",
+            "7, 51, 400"
+    })
+    @DisplayName("인기 테마 조회 조건의 경계값을 검증한다.")
+    void validatePopularThemeRankingQueryRange(int days, int limit, int statusCode) {
+        RestAssured.given().log().all()
+                .queryParam("days", days)
+                .queryParam("limit", limit)
+                .when().get("/themes/rank")
+                .then().log().all()
+                .statusCode(statusCode);
     }
 }
