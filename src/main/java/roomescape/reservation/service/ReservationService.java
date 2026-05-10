@@ -43,6 +43,7 @@ public class ReservationService {
     }
 
     private void validateReservationAvailable(LocalDate date, Long timeId, Long themeId) {
+        //실제로 존재하는지 확인하기 위함.
         ReservationTime time = reservationTimeRepository.findById(timeId);
         Theme theme = themeRepository.findById(themeId);
 

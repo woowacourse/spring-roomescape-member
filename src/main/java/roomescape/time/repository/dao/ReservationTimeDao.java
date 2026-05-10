@@ -2,7 +2,6 @@ package roomescape.time.repository.dao;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,7 +18,7 @@ public class ReservationTimeDao {
     private static final RowMapper<ReservationTimeEntity> reservationTimeRowMapper = (rs, rowNum) ->
             new ReservationTimeEntity(
                     rs.getLong("id"),
-                    LocalTime.parse(rs.getString("start_at"), DateTimeFormatter.ofPattern("HH:mm"))
+                    rs.getObject("start_at", LocalTime.class)
             );
 
     private final JdbcTemplate jdbcTemplate;
