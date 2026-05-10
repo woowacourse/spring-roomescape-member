@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.InUseEntityException;
+import roomescape.exception.DataReferencedException;
 
 @Repository
 public class ReservationTimeRepository {
@@ -62,17 +62,16 @@ public class ReservationTimeRepository {
     }
 
     public boolean delete(UUID timeId) {
-        String deleteSql = "DELETE FROM reservation_time"
-                + " WHERE id = ?";
-
         try {
+            String deleteSql = "DELETE FROM reservation_time"
+                    + " WHERE id = ?";
             int deletedRowCount = jdbcTemplate.update(deleteSql, timeId.toString());
 
             return isDeleted(deletedRowCount);
         } catch (DataIntegrityViolationException exception) {
             if (isForeignKeyViolation(exception)) {
-                throw new InUseEntityException(
-                        "사용중이지 않은 시간만 제거할 수 있습니다.",
+                throw new DataReferencedException(
+                        "외래키 제약조건으로 인해 삭제에 실패했습니다.",
                         "timeId = " + timeId,
                         exception
                 );

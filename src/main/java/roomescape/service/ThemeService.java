@@ -2,9 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Duration;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
+import roomescape.exception.DataReferencedException;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.exception.InUseEntityException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.dto.ReservedTheme;
@@ -66,8 +66,19 @@ public class ThemeService {
 
     @Transactional
     public void delete(UUID themeId) {
-        boolean deleted = themeRepository.delete(themeId);
+        try {
+            boolean deleted = themeRepository.delete(themeId);
+            validateDeleted(deleted, themeId);
+        } catch (DataReferencedException exception) {
+            throw new InUseEntityException(
+                    "사용 중인 테마는 제거할 수 없습니다.",
+                    "themeId = " + themeId,
+                    exception
+            );
+        }
+    }
 
+    private void validateDeleted(boolean deleted, UUID themeId) {
         if (!deleted) {
             throw new EntityNotFoundException(
                     "삭제할 테마를 조회하지 못했습니다.",
