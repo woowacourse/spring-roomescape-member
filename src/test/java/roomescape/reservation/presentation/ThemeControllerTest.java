@@ -69,16 +69,13 @@ public class ThemeControllerTest {
     @Test
     void 최근_7일_예약_개수에_따른_인기_테마_조회_API_테스트() {
         RestAssured.given().log().all()
-                .queryParam("day", 7)
-                .queryParam("limit", 10)
                 .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4))
+                .body("size()", is(3))
                 .body("[0].id", is(2))
                 .body("[1].id", is(1))
-                .body("[2].id", is(3))
-                .body("[3].id", is(4));
+                .body("[2].id", is(3));
     }
 
     @Test

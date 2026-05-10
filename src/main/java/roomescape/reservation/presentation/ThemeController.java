@@ -57,7 +57,7 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeFindResponse>> findByDayAndLimit() {
-        List<ThemeFindResponse> responses = themeService.findByDayAndLimit();
+        List<ThemeFindResponse> responses = themeService.findPopularTheme();
 
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }

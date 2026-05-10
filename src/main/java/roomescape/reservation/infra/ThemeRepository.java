@@ -13,7 +13,7 @@ public interface ThemeRepository {
 
     List<Theme> findScheduledThemesByDate(LocalDate date);
 
-    List<Theme> findByDayAndLimit();
+    List<Theme> findPopularThemeByCurrentDate(LocalDate currentDate);
 
     Optional<Theme> findById(long id);
 

@@ -60,11 +60,11 @@ class JdbcThemeRepositoryTest {
     @Test
     void 최근_7일_예약_개수에_따른_인기_테마_조회_레포지토리_테스트() {
         // when
-        List<Theme> themes = repository.findByDayAndLimit();
+        List<Theme> themes = repository.findPopularThemeByCurrentDate(LocalDate.of(2026, 5, 9));
 
-        assertThat(themes).hasSize(4);
+        assertThat(themes).hasSize(3);
         assertThat(themes).extracting(Theme::getId)
-                .containsExactly(2L, 1L, 3L, 4L);
+                .containsExactly(2L, 1L, 3L);
     }
 
     @Test

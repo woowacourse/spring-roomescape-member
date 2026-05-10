@@ -32,8 +32,8 @@ public class ThemeService {
         return ThemeFindResponse.of(themes);
     }
 
-    public List<ThemeFindResponse> findByDayAndLimit() {
-        List<Theme> themes = themeRepository.findByDayAndLimit();
+    public List<ThemeFindResponse> findPopularTheme() {
+        List<Theme> themes = themeRepository.findPopularThemeByCurrentDate(LocalDate.now());
         return ThemeFindResponse.of(themes);
     }
 

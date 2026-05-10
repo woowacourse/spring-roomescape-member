@@ -74,19 +74,22 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findByDayAndLimit() {
+    public List<Theme> findPopularThemeByCurrentDate(LocalDate currentDate) {
+        LocalDate startDate = currentDate.minusDays(7);
+
         String sql = "SELECT t.id, t.name, t.description, t.thumbnail_url " +
                 "FROM theme t " +
-                "LEFT JOIN schedule s ON t.id = s.theme_id " +
-                "LEFT JOIN reservation r ON s.id = r.schedule_id " +
-                "AND s.date >= DATEADD('DAY', -:day, CURRENT_DATE) " +
-                "AND s.date < CURRENT_DATE " +
-                "GROUP BY t.id " +
-                "ORDER BY COUNT(r.id) DESC " +
+                "JOIN schedule s ON t.id = s.theme_id " +
+                "JOIN reservation r ON s.id = r.schedule_id " +
+                "WHERE s.date >= :startDate " +
+                "AND s.date < :currentDate " +
+                "GROUP BY t.id, t.name, t.description, t.thumbnail_url " +
+                "ORDER BY COUNT(r.id) DESC, t.id ASC " +
                 "LIMIT :limit";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("day", 7)
+                .addValue("startDate", startDate)
+                .addValue("currentDate", currentDate)
                 .addValue("limit", 10);
 
         return template.query(sql, params, themeRowMapper);
