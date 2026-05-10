@@ -1,8 +1,6 @@
 package roomescape.reservation.application.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,13 +34,14 @@ public class ReservationService {
     }
 
     public ReservationQueryResult save(ReservationCreateCommand request, LocalDateTime currentDateTime) {
-        ReservationTimeQueryResult timeQueryResult = timeService.findById(request.timeId());
-        validateReservationDateTime(request.date(), timeQueryResult.startAt(), currentDateTime);
-
-        validateDuplicateReservation(request);
         ThemeQueryResult themeQueryResult = themeService.findById(request.themeId());
+        ReservationTimeQueryResult timeQueryResult = timeService.findById(request.timeId());
 
         Reservation reservation = request.toEntity(themeQueryResult.id(), timeQueryResult.id());
+        reservation.validateNotPast(timeQueryResult.startAt(), currentDateTime);
+
+        validateDuplicateReservation(reservation);
+
         return ReservationQueryResult.from(reservationRepository.save(reservation), themeQueryResult, timeQueryResult);
     }
 
@@ -50,19 +49,13 @@ public class ReservationService {
         return reservationRepository.delete(id);
     }
 
-    private void validateReservationDateTime(LocalDate date, LocalTime startAt, LocalDateTime currentDateTime) {
-        LocalDateTime triedDateTime = LocalDateTime.of(date, startAt);
-
-        if (triedDateTime.isBefore(currentDateTime)) {
-            throw new ReservationException("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
-        }
-    }
-
-    private void validateDuplicateReservation(ReservationCreateCommand request) {
-        Boolean existsByDateAndTime = reservationRepository.existsByDateAndThemeAndTime(request.date(),
-                request.themeId(),
-                request.timeId()
+    private void validateDuplicateReservation(Reservation reservation) {
+        Boolean existsByDateAndTime = reservationRepository.existsByDateAndThemeAndTime(
+                reservation.getDate(),
+                reservation.getThemeId(),
+                reservation.getTimeId()
         );
+
         if (existsByDateAndTime) {
             throw new ReservationException("이미 해당 날짜와 시간에 예약이 존재합니다.");
         }

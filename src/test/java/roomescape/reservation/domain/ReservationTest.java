@@ -3,6 +3,8 @@ package roomescape.reservation.domain;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -69,5 +71,23 @@ class ReservationTest {
                 .build())
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("시간ID는 올바른 값이어야 합니다.");
+    }
+
+    @DisplayName("현재 시간보다 이전 예약 시간일 때 예외 발생을 테스트합니다.")
+    @Test
+    void validate_past_reservation_date_time() {
+        Reservation reservation = Reservation.builder()
+                .name("스타크")
+                .date(LocalDate.of(2026, 5, 6))
+                .themeId(1L)
+                .timeId(1L)
+                .build();
+
+        assertThatThrownBy(() -> reservation.validateNotPast(
+                LocalTime.of(10, 0),
+                LocalDateTime.of(2026, 5, 6, 11, 0)
+        ))
+                .isInstanceOf(InvalidReservationException.class)
+                .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
     }
 }

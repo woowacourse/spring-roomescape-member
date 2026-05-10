@@ -18,6 +18,7 @@ import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationQueryResult;
 import roomescape.reservation.application.exception.ReservationException;
 import roomescape.reservation.application.service.ReservationService;
+import roomescape.reservation.domain.exception.InvalidReservationException;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
@@ -76,7 +77,7 @@ class ReservationServiceTest {
 
         Assertions.assertThatThrownBy(
                         () -> reservationService.save(ReservationFixture.starkCreateCommand(1L, 1L), LocalDateTime.of(2026, 5, 6, 11, 0)))
-                .isInstanceOf(ReservationException.class)
+                .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
     }
 
