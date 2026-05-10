@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,7 @@ class JdbcThemeRepositoryTest {
         themeRepository.deleteById(saved.getId());
 
         // then
-        assertThat(themeRepository.findAll()).isEmpty();
+        assertThat(themeRepository.findById(saved.getId())).isEmpty();
     }
 
     @Test
@@ -121,6 +122,6 @@ class JdbcThemeRepositoryTest {
         }
         return themes.stream()
             .map(themeRepository::createTheme)
-            .toList();
+            .collect(Collectors.toList());
     }
 }
