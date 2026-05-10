@@ -79,10 +79,6 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        int count = reservationUpdatingDao.delete(id);
-
-        if (count == 0) {
-            throw new ReservationNotFoundException(id);
-        }
+        reservationUpdatingDao.delete(id);
     }
 }
