@@ -37,10 +37,10 @@ public class ThemeController {
         return ResponseEntity.ok(themeResponse);
     }
 
-    @GetMapping(value = "/themes/trending", params = {"from", "to", "limit"})
-    public ResponseEntity<List<ThemeResponse>> readByTrend(@RequestParam LocalDate from, @RequestParam LocalDate to,
+    @GetMapping(value = "/themes/trending", params = {"startDate", "endDate", "limit"})
+    public ResponseEntity<List<ThemeResponse>> readByTrend(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate,
                                                            @RequestParam int limit) {
-        List<ThemeResponse> themes = themeService.findByTrend(from, to, limit).stream()
+        List<ThemeResponse> themes = themeService.findByTrend(startDate, endDate, limit).stream()
                 .map(ThemeResponse::from)
                 .toList();
 

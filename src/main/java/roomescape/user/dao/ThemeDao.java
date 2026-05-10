@@ -37,7 +37,7 @@ public class ThemeDao {
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
-    public List<Theme> selectByTrend(LocalDate from, LocalDate to, int limit) {
+    public List<Theme> selectByTrend(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                 SELECT
                     t.id,
@@ -54,6 +54,6 @@ public class ThemeDao {
                 LIMIT ?;
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper, from, to, limit);
+        return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
     }
 }

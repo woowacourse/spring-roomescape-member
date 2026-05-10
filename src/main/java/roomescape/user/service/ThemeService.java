@@ -23,7 +23,7 @@ public class ThemeService {
         return themeDao.selectById(id);
     }
 
-    public List<Theme> findByTrend(LocalDate from, LocalDate to, int limit) {
-        return themeDao.selectByTrend(from, to, limit);
+    public List<Theme> findByTrend(LocalDate startDate, LocalDate endDate, int limit) {
+        return themeDao.selectByTrend(startDate, endDate, limit);
     }
 }

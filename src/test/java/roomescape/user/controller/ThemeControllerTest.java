@@ -14,7 +14,7 @@ public class ThemeControllerTest {
     @Test
     void 사용자_트렌드_테마_조회() throws Exception {
         RestAssured.given().log().all()
-                .when().get("/user/themes/trending?from=2026-05-01&to=2026-05-07&limit=10")
+                .when().get("/user/themes/trending?startDate=2026-05-01&endDate=2026-05-07&limit=10")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(10));
