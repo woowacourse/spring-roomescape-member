@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -25,6 +26,7 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
+    @Transactional
     public ReservationResponseDto create(ReservationRequestDto requestDto) {
         ReservationTime reservationTime = reservationTimeDao.read(requestDto.timeId());
         Theme theme = themeDao.read(requestDto.themeId());
