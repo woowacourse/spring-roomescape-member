@@ -1,6 +1,8 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.context.annotation.Primary;
@@ -47,12 +49,7 @@ public class JdbcThemeDao implements ThemeDao {
         try {
             return jdbcTemplate.queryForObject(
                     sql,
-                    (resultSet, rowNumber) -> {
-                        String name = resultSet.getString("name");
-                        String description = resultSet.getString("description");
-                        String thumbnailUrl = resultSet.getString("thumbnail_url");
-                        return new Theme(id, name, description, thumbnailUrl);
-                    },
+                    this::mapToTheme,
                     id
             );
         } catch (EmptyResultDataAccessException exception) {
@@ -64,21 +61,12 @@ public class JdbcThemeDao implements ThemeDao {
     public List<Theme> readAll() {
         String sql = "SELECT * FROM `theme`";
 
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNumber) -> {
-                    Long id = resultSet.getLong("id");
-                    String name = resultSet.getString("name");
-                    String description = resultSet.getString("description");
-                    String thumbnailUrl = resultSet.getString("thumbnail_url");
-                    return new Theme(id, name, description, thumbnailUrl);
-                }
-        );
+        return jdbcTemplate.query(sql, this::mapToTheme);
     }
 
     @Override
     public List<Theme> readRanking(LocalDate startDate, LocalDate endDate, int limit) {
-        String sql = "SELECT th.id AS theme_id, th.name, th.description, "
+        String sql = "SELECT th.id AS id, th.name, th.description, "
                 + "th.thumbnail_url, COUNT(r.id) AS reservation_count "
                 + "FROM theme th "
                 + "LEFT JOIN reservation r "
@@ -90,17 +78,20 @@ public class JdbcThemeDao implements ThemeDao {
 
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNumber) -> {
-                    Long id = resultSet.getLong("theme_id");
-                    String name = resultSet.getString("name");
-                    String description = resultSet.getString("description");
-                    String thumbnailUrl = resultSet.getString("thumbnail_url");
-                    return new Theme(id, name, description, thumbnailUrl);
-                },
+                this::mapToTheme,
                 startDate,
                 endDate,
                 limit
         );
+    }
+
+    private Theme mapToTheme(ResultSet resultSet, int rowNumber) throws SQLException {
+        Long id = resultSet.getLong("id");
+        String name = resultSet.getString("name");
+        String description = resultSet.getString("description");
+        String thumbnailUrl = resultSet.getString("thumbnail_url");
+
+        return new Theme(id, name, description, thumbnailUrl);
     }
 
     @Override

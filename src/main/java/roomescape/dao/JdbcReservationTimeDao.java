@@ -1,6 +1,8 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -45,10 +47,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         String sql = "SELECT * FROM `reservation_time` WHERE `id` = (?)";
 
         try {
-            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
-                LocalTime startAt = resultSet.getTime("start_at").toLocalTime();
-                return new ReservationTime(id, startAt);
-            }, id);
+            return jdbcTemplate.queryForObject(sql, this::mapToReservationTime, id);
         } catch (EmptyResultDataAccessException exception) {
             throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
         }
@@ -59,11 +58,14 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         String sql = "SELECT * FROM `reservation_time` "
                 + "ORDER BY start_at ASC";
 
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
-            Long id = resultSet.getLong("id");
-            LocalTime startAt = resultSet.getTime("start_at").toLocalTime();
-            return new ReservationTime(id, startAt);
-        });
+        return jdbcTemplate.query(sql, this::mapToReservationTime);
+    }
+
+    private ReservationTime mapToReservationTime(ResultSet resultSet, int rowNum) throws SQLException {
+        Long id = resultSet.getLong("id");
+        LocalTime startAt = resultSet.getTime("start_at").toLocalTime();
+
+        return new ReservationTime(id, startAt);
     }
 
     @Override

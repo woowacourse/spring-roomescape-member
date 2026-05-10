@@ -2,6 +2,8 @@ package roomescape.dao;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -53,21 +55,23 @@ public class JdbcReservationDao implements ReservationDao {
                         + "INNER JOIN `reservation_time` t ON r.time_id = t.id "
                         + "INNER JOIN `theme` th ON r.theme_id = th.id";
 
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
-            Long id = resultSet.getLong("id");
-            String name = resultSet.getString("name");
-            LocalDate date = resultSet.getDate("date").toLocalDate();
-            Long timeId = resultSet.getLong("time_id");
-            LocalTime timeValue = resultSet.getTime("time_value").toLocalTime();
-            Long themeId = resultSet.getLong("theme_id");
-            String themeName = resultSet.getString("theme_name");
-            String themeDescription = resultSet.getString("theme_description");
-            String themeThumbnailUrl = resultSet.getString("theme_thumbnail_url");
+        return jdbcTemplate.query(sql, this::mapToReservation);
+    }
 
-            ReservationTime reservationTime = new ReservationTime(timeId, timeValue);
-            Theme theme = new Theme(themeId, themeName, themeDescription, themeThumbnailUrl);
-            return new Reservation(id, name, date, reservationTime, theme);
-        });
+    private Reservation mapToReservation(ResultSet resultSet, int rowNum) throws SQLException {
+        Long id = resultSet.getLong("id");
+        String name = resultSet.getString("name");
+        LocalDate date = resultSet.getDate("date").toLocalDate();
+        Long timeId = resultSet.getLong("time_id");
+        LocalTime timeValue = resultSet.getTime("time_value").toLocalTime();
+        Long themeId = resultSet.getLong("theme_id");
+        String themeName = resultSet.getString("theme_name");
+        String themeDescription = resultSet.getString("theme_description");
+        String themeThumbnailUrl = resultSet.getString("theme_thumbnail_url");
+
+        ReservationTime reservationTime = new ReservationTime(timeId, timeValue);
+        Theme theme = new Theme(themeId, themeName, themeDescription, themeThumbnailUrl);
+        return new Reservation(id, name, date, reservationTime, theme);
     }
 
     @Override
