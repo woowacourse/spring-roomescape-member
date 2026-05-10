@@ -9,18 +9,17 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     private ReservationTime(Long id, LocalTime startAt) {
+        validateStartTime(startAt);
         this.id = id;
         this.startAt = startAt;
     }
 
     public static ReservationTime create(LocalTime startAt) {
-        validateStartTime(startAt);
         return new ReservationTime(null, startAt);
     }
 
     public static ReservationTime of(Long id, LocalTime startAt) {
         validateId(id);
-        validateStartTime(startAt);
         return new ReservationTime(id, startAt);
     }
 

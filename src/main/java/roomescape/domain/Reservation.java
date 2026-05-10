@@ -12,6 +12,10 @@ public class Reservation {
     private final Theme theme;
 
     private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        validateName(name);
+        validateDate(date);
+        validateTime(time);
+        validateTheme(theme);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -21,20 +25,12 @@ public class Reservation {
 
     public static Reservation create(String name, LocalDate date, ReservationTime time,
             Theme theme) {
-        validateName(name);
-        validateDate(date);
-        validateTime(time);
-        validateTheme(theme);
         return new Reservation(null, name, date, time, theme);
     }
 
     public static Reservation of(Long id, String name, LocalDate date, ReservationTime time,
             Theme theme) {
         validateId(id);
-        validateName(name);
-        validateDate(date);
-        validateTime(time);
-        validateTheme(theme);
         return new Reservation(id, name, date, time, theme);
     }
 
