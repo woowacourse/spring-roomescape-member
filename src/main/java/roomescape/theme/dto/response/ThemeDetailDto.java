@@ -9,8 +9,8 @@ public record ThemeDetailDto(
         String description,
         String thumbnailUrl,
         boolean isActive
-){
-    public static ThemeDetailDto from(Theme theme){
+) {
+    public static ThemeDetailDto from(Theme theme) {
         return new ThemeDetailDto(
                 theme.id(),
                 theme.name(),

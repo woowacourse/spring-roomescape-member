@@ -99,18 +99,6 @@ class ReservationTest {
                 .isNull();
     }
 
-//    @Test
-//    @DisplayName("과거 날짜로 예약 생성 시 예외 발생한다.")
-//    void create_before_now() {
-//        // given
-//        ReservationDate pastDate = ReservationDate.create(LocalDate.now().minusDays(1));
-//
-//        // when & then
-//        assertThatThrownBy(() -> Reservation.create(name, pastDate, reservationTime, theme))
-//                .isInstanceOf(IllegalArgumentException.class)
-//                .hasMessage("과거 날짜는 등록할 수 없습니다.");
-//    }
-
     @Test
     @DisplayName("예약자명이 유효하지 않은 경우 생성 시 예외가 발생한다.")
     void validateName() {

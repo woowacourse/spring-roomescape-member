@@ -1,6 +1,7 @@
 package roomescape.theme.controller;
 
 import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class ThemeAdminController {
     }
 
     @GetMapping("/themes/popular")
-    public ResponseEntity<List<PopularThemeDetailDto>> getPopularThemes(@RequestParam int top){
+    public ResponseEntity<List<PopularThemeDetailDto>> getPopularThemes(@RequestParam int top) {
         List<PopularThemeDetailDto> responseData = themeService.readPopularThemes(top).stream()
                 .map(PopularThemeDetailDto::from)
                 .toList();

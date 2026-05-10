@@ -50,8 +50,8 @@ public class FakeReservationRepository implements ReservationRepository {
         return store.values().stream()
                 .anyMatch(reservation ->
                         reservation.date().id().equals(dateId) &&
-                        reservation.time().id().equals(timeId) &&
-                        reservation.theme().id().equals(themeId)
+                                reservation.time().id().equals(timeId) &&
+                                reservation.theme().id().equals(themeId)
                 );
     }
 
@@ -60,8 +60,8 @@ public class FakeReservationRepository implements ReservationRepository {
         return store.values().stream()
                 .anyMatch(reservation ->
                         reservation.name().equals(name) &&
-                        reservation.date().id().equals(dateId) &&
-                        reservation.time().id().equals(timeId)
+                                reservation.date().id().equals(dateId) &&
+                                reservation.time().id().equals(timeId)
                 );
     }
 

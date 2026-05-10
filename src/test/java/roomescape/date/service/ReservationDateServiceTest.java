@@ -8,7 +8,6 @@ import roomescape.date.domain.ReservationDate;
 import roomescape.date.fixture.FakeReservationDateRepository;
 import roomescape.date.fixture.ReservationDateFixture;
 import roomescape.reservation.fixture.FakeReservationRepository;
-import roomescape.time.fixture.FakeReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

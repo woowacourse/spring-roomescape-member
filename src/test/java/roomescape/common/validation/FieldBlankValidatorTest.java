@@ -69,10 +69,10 @@ class FieldBlankValidatorTest {
     private record UseNotBlankDto(
             @NotBlank(message = "name은 비어있을 수 없습니다.")
             String name
-    ){
+    ) {
     }
 
-    private record WrongUseNotBlankDto (
+    private record WrongUseNotBlankDto(
             @NotBlank
             Long id
     ) {

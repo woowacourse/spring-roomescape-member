@@ -24,7 +24,7 @@ public class FakeThemeRepository implements ThemeRepository {
 
     public List<Theme> saveAll(List<Theme> themes) {
         List<Theme> savedThemes = new ArrayList<>();
-        for(Theme theme : themes){
+        for (Theme theme : themes) {
             Theme savedTheme = save(theme);
             savedThemes.add(savedTheme);
         }

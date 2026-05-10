@@ -3,6 +3,7 @@ package roomescape.theme.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,7 +14,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.projection.PopularThemeResult;
 
 @Repository
-public class JdbcThemeRepository implements ThemeRepository{
+public class JdbcThemeRepository implements ThemeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -67,11 +68,11 @@ public class JdbcThemeRepository implements ThemeRepository{
     @Override
     public boolean updateStatus(Theme theme) {
         String sql = """
-                    UPDATE theme 
-                    SET name = :name, description = :description,
-                        thumbnail_url = :thumbnail_url, is_active = :is_active
-                    WHERE id = :id
-                    """;
+                UPDATE theme 
+                SET name = :name, description = :description,
+                    thumbnail_url = :thumbnail_url, is_active = :is_active
+                WHERE id = :id
+                """;
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", theme.id())
@@ -91,24 +92,24 @@ public class JdbcThemeRepository implements ThemeRepository{
             int limit
     ) {
         String sql = """
-        SELECT
-            t.id,
-            t.name,
-            t.description,
-            t.thumbnail_url,
-            t.is_active,
-            COUNT(r.id) AS reservation_count
-        FROM reservation r
-        JOIN theme t ON r.theme_id = t.id
-        JOIN reservation_date d ON r.date_id = d.id
-        WHERE t.is_active = true
-          AND r.status = 'RESERVED'
-          AND d.date >= :startDate
-          AND d.date <= :endDate
-        GROUP BY t.id, t.name, t.description, t.thumbnail_url, t.is_active
-        ORDER BY reservation_count DESC
-        LIMIT :limit
-        """;
+                SELECT
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.thumbnail_url,
+                    t.is_active,
+                    COUNT(r.id) AS reservation_count
+                FROM reservation r
+                JOIN theme t ON r.theme_id = t.id
+                JOIN reservation_date d ON r.date_id = d.id
+                WHERE t.is_active = true
+                  AND r.status = 'RESERVED'
+                  AND d.date >= :startDate
+                  AND d.date <= :endDate
+                GROUP BY t.id, t.name, t.description, t.thumbnail_url, t.is_active
+                ORDER BY reservation_count DESC
+                LIMIT :limit
+                """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("startDate", startDate)
