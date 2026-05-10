@@ -15,7 +15,7 @@ public class FakeThemeRepository implements ThemeRepository {
 
     private final Map<Long, Theme> themes = new LinkedHashMap<>();
     private final List<PopularTheme> popularThemes = new ArrayList<>();
-    private Long idHoler = 1L;
+    private Long idHolder = 1L;
     @Getter
     private LocalDate from;
     @Getter
@@ -41,8 +41,8 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public Theme save(Theme theme) {
-        Theme savedTheme = theme.withId(idHoler);
-        themes.put(idHoler++, savedTheme);
+        Theme savedTheme = theme.withId(idHolder);
+        themes.put(idHolder++, savedTheme);
         return savedTheme;
     }
 

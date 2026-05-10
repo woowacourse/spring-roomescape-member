@@ -13,7 +13,7 @@ import roomescape.reservation.domain.repository.ReservationRepository;
 public class FakeReservationRepository implements ReservationRepository {
 
     private final Map<Long, Reservation> reservations = new LinkedHashMap<>();
-    private Long idHoler = 1L;
+    private Long idHolder = 1L;
 
     @Override
     public List<ReservationDetail> findAll() {
@@ -22,8 +22,8 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        Reservation savedReservation = reservation.withId(idHoler);
-        reservations.put(idHoler++, savedReservation);
+        Reservation savedReservation = reservation.withId(idHolder);
+        reservations.put(idHolder++, savedReservation);
         return savedReservation;
     }
 
