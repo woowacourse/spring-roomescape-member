@@ -1,0 +1,441 @@
+/* Hero */
+.hero-section {
+  position: relative;
+  min-height: calc(72svh - 52px);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(8, 8, 7, 0.88) 0%, rgba(8, 8, 7, 0.58) 42%, rgba(8, 8, 7, 0.16) 100%),
+    url('https://commons.wikimedia.org/wiki/Special:FilePath/Main%20%28Reading%20Room%29%20%283109281787%29.jpg?width=1600');
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 120px;
+  background: linear-gradient(180deg, rgba(8, 8, 7, 0), var(--color-paper));
+  pointer-events: none;
+}
+
+.hero-section .container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.display-hero {
+  max-width: 720px;
+  font-size: clamp(42px, 7vw, 76px);
+  line-height: 1.04;
+  letter-spacing: 0;
+  margin-bottom: 18px;
+}
+
+.subtitle.white {
+  max-width: 540px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 19px;
+  margin-bottom: 34px;
+}
+
+.hero-ctas {
+  display: flex;
+}
+
+/* Theme Selection */
+.popular-section {
+  padding: 72px 0 24px;
+  background: var(--color-paper);
+}
+
+#themes {
+  padding-top: 56px;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.section-kicker {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--color-apple-blue);
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-size: clamp(30px, 4vw, 46px);
+  letter-spacing: 0;
+}
+
+.section-link {
+  flex: 0 0 auto;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-apple-blue);
+}
+
+.popular-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 0.9fr;
+  gap: 18px;
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--color-tertiary-text);
+  text-align: center;
+  padding: 52px 20px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.theme-card,
+.popular-card {
+  background: #ffffff;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: rgba(20, 18, 16, 0.08) 0 14px 36px;
+  transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+  cursor: pointer;
+}
+
+.theme-card:hover,
+.popular-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(143, 31, 47, 0.28);
+  box-shadow: rgba(20, 18, 16, 0.18) 0 24px 56px;
+}
+
+.theme-image {
+  aspect-ratio: 4 / 3;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease;
+}
+
+.theme-card:hover .theme-image,
+.popular-card:hover .theme-image {
+  transform: scale(1.04);
+}
+
+.integrated-placeholder {
+  background:
+    linear-gradient(135deg, rgba(17, 17, 17, 0.08), rgba(17, 17, 17, 0.34)),
+    url('https://commons.wikimedia.org/wiki/Special:FilePath/Hotel%20Hallway.jpeg?width=1200');
+}
+
+.theme-content {
+  min-height: 174px;
+  padding: 22px;
+}
+
+.theme-title {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+
+.theme-description {
+  font-size: 15px;
+  color: var(--color-secondary-text);
+  line-height: 1.65;
+}
+
+.popular-card:first-child {
+  grid-row: span 2;
+}
+
+.popular-card:first-child .theme-image {
+  aspect-ratio: 16 / 10;
+}
+
+.popular-card:first-child .theme-content {
+  min-height: 186px;
+}
+
+/* Booking Overlay */
+.booking-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 8, 7, 0.58);
+  backdrop-filter: blur(14px);
+}
+
+.overlay-content {
+  position: relative;
+  background: #fffdfa;
+  width: 100%;
+  max-width: 620px;
+  max-height: 92vh;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 8px 8px 0 0;
+  padding: 34px;
+  overflow-y: auto;
+  box-shadow: rgba(0, 0, 0, 0.32) 0 -20px 60px;
+  animation: slideUp 0.36s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.close-btn {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 28px;
+  line-height: 1;
+  background: var(--color-light-gray);
+  color: rgba(21, 20, 18, 0.58);
+}
+
+.close-btn:hover {
+  color: var(--color-near-black);
+  background: #ece9e2;
+}
+
+.booking-steps {
+  display: flex;
+  gap: 8px;
+  margin: 8px 48px 32px 0;
+}
+
+.step {
+  flex: 1;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--color-light-gray);
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(21, 20, 18, 0.52);
+}
+
+.step.active {
+  color: #ffffff;
+  background: var(--color-apple-blue);
+}
+
+.step-pane {
+  display: none;
+}
+
+.step-pane.active {
+  display: block;
+  animation: fadeIn 0.22s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.theme-mini-info {
+  margin-bottom: 28px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.theme-mini-info h2,
+.step-pane h2 {
+  font-size: clamp(26px, 4vw, 34px);
+  line-height: 1.18;
+  margin-bottom: 8px;
+}
+
+.theme-mini-info p,
+.pane-subtitle {
+  color: var(--color-tertiary-text);
+  line-height: 1.6;
+}
+
+.form-group {
+  margin-bottom: 26px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: #24211d;
+}
+
+input[type="date"],
+input[type="text"] {
+  width: 100%;
+  min-height: 52px;
+  padding: 14px 16px;
+  background: #f6f5f1;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: rgba(143, 31, 47, 0.42);
+  box-shadow: rgba(143, 31, 47, 0.18) 0 0 0 4px;
+  background: #ffffff;
+}
+
+.time-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+}
+
+.time-slot {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+  background: #f6f5f1;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.time-slot:hover:not(.disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(143, 31, 47, 0.34);
+  background: #ffffff;
+}
+
+.time-slot.selected {
+  background: var(--color-apple-blue);
+  border-color: var(--color-apple-blue);
+  color: white;
+}
+
+.time-slot.disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+.btn-link {
+  color: var(--color-apple-blue);
+  font-weight: 800;
+  background: none;
+}
+
+.full-width {
+  width: 100%;
+}
+
+button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.summary-box {
+  background: #f6f5f1;
+  border: 1px solid var(--color-line);
+  padding: 22px;
+  border-radius: 8px;
+  margin: 20px 0 34px;
+  text-align: left;
+  line-height: 1.8;
+}
+
+.check-icon {
+  width: 74px;
+  height: 74px;
+  background: #1f8f5f;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  margin: 0 auto 20px;
+}
+
+@media (min-width: 834px) {
+  .overlay-content {
+    align-self: center;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.28) 0 28px 90px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-section {
+    min-height: 66svh;
+    background-position: 62% center;
+  }
+
+  .section-head {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .popular-grid,
+  .theme-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .popular-card:first-child {
+    grid-row: auto;
+  }
+
+  .overlay-content {
+    padding: 28px 20px;
+  }
+
+  .booking-steps {
+    flex-direction: column;
+    margin-right: 52px;
+  }
+}
