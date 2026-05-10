@@ -79,7 +79,8 @@ public class ReservationRepository {
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return Reservation.from(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        return Reservation.from(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
     public void deleteById(Long id) {

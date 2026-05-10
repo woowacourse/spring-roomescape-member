@@ -1,4 +1,3 @@
--- 1. 테이블 생성 (DDL을 최상단으로 이동)
 CREATE TABLE reservation_time
 (
     id       BIGINT NOT NULL AUTO_INCREMENT,
@@ -19,11 +18,11 @@ CREATE TABLE theme
 
 CREATE TABLE reservation
 (
-    id       BIGINT NOT NULL AUTO_INCREMENT,
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
     name     VARCHAR(255) NOT NULL,
-    date     DATE   NOT NULL,
-    time_id  BIGINT NOT NULL,
-    theme_id BIGINT NOT NULL,
+    date     DATE         NOT NULL,
+    time_id  BIGINT       NOT NULL,
+    theme_id BIGINT       NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT unique_reservation_slot UNIQUE (date, time_id, theme_id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),

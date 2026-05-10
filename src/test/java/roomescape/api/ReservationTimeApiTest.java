@@ -103,7 +103,6 @@ class ReservationTimeApiTest {
         LocalDate date = LocalDate.now().plusDays(1);
         dataInitializer.createReservation("라텔", date, ten.getId(), theme.getId());
 
-
         Map<String, Object> params = new HashMap<>();
         params.put("date", date.toString());
         params.put("timeId", ten.getId());

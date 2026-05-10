@@ -53,7 +53,8 @@ class ThemeApiTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNull();assertThat(response.jsonPath().getObject("id", Integer.class)).isNotNull();
+        assertThat(response.header("Location")).isNull();
+        assertThat(response.jsonPath().getObject("id", Integer.class)).isNotNull();
     }
 
     @Test

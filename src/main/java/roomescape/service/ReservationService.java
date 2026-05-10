@@ -49,7 +49,7 @@ public class ReservationService {
 
     private void validateReservationAvailable(LocalDate date, ReservationTime time, Theme theme) {
         List<Long> reservedTimeIds = reservationTimeRepository.findReservedTimeIds(theme.getId(), date);
-        if(reservedTimeIds.contains(time.getId())) {
+        if (reservedTimeIds.contains(time.getId())) {
             throw new DuplicateReservationException();
         }
     }

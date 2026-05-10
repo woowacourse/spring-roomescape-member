@@ -72,8 +72,8 @@ public class ThemeRepository {
     }
 
     public List<Theme> findThemesOrderByReservationCount(LocalDate fromDate,
-                                                           LocalDate toDate,
-                                                           int limit) {
+                                                         LocalDate toDate,
+                                                         int limit) {
         String sql = """
                 SELECT
                     t.id,
