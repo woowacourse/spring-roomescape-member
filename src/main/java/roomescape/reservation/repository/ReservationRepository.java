@@ -8,7 +8,7 @@ import roomescape.reservation.Reservation;
 public interface ReservationRepository {
     Reservation save(Reservation reservation);
 
-    List<Reservation> findAll();
+    List<Reservation> findAll(int page, int size);
 
     Optional<Reservation> findById(long id);
 

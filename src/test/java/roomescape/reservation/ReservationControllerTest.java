@@ -32,7 +32,9 @@ class ReservationControllerTest {
 
     @Test
     void 예약_조회() throws Exception {
-        given(reservationService.read()).willReturn(List.of());
+        int page = 0;
+        int size = 10;
+        given(reservationService.read(page, size)).willReturn(List.of());
 
         mockMvc.perform(get("/api/reservations"))
                 .andExpect(status().isOk());

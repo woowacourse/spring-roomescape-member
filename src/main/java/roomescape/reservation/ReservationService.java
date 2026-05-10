@@ -45,8 +45,8 @@ public class ReservationService {
         return ReservationResponse.from(saved);
     }
 
-    public List<ReservationResponse> read() {
-        return reservationRepository.findAll().stream()
+    public List<ReservationResponse> read(int page, int size) {
+        return reservationRepository.findAll(page, size).stream()
                 .map(ReservationResponse::from)
                 .toList();
     }

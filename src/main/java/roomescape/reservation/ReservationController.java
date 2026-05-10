@@ -31,8 +31,11 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> read() {
-        return ResponseEntity.ok().body(reservationService.read());
+    public ResponseEntity<List<ReservationResponse>> read(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok().body(reservationService.read(page, size));
     }
 
     @GetMapping(params = {"user_name"})

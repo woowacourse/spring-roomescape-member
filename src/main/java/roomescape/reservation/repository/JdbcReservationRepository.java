@@ -58,11 +58,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<Reservation> findAll(int page, int size) {
         String sql = "SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id, " +
                 "c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail " +
-                "FROM reservation r INNER JOIN reservation_time t ON r.time_id = t.id INNER JOIN theme c ON r.theme_id = c.id ";
-        return jdbcTemplate.query(sql, reservationRowMapper);
+                "FROM reservation r INNER JOIN reservation_time t ON r.time_id = t.id INNER JOIN theme c ON r.theme_id = c.id " +
+                "LIMIT ? OFFSET ? ";
+        int offset = page * size;
+        return jdbcTemplate.query(sql, reservationRowMapper, size, offset);
     }
 
     @Override
