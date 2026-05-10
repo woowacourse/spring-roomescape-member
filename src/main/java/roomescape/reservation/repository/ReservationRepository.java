@@ -3,6 +3,7 @@ package roomescape.reservation.repository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import roomescape.global.exception.ReservationNotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.mapper.ReservationMapper;
 import roomescape.reservation.repository.dao.ReservationDao;
@@ -42,7 +43,7 @@ public class ReservationRepository {
         int deletedCount = reservationDao.deleteById(id);
 
         if (deletedCount == 0) {
-            throw new IllegalArgumentException("존재하지 않는 예약 번호입니다.");
+            throw new ReservationNotFoundException();
         }
     }
 }

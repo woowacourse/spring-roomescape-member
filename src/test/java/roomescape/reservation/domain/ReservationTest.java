@@ -6,6 +6,7 @@ import java.time.LocalTime;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.global.exception.InvalidReservationException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -22,6 +23,6 @@ class ReservationTest {
 
         //when & then
         Assertions.assertThatThrownBy(() -> new Reservation(1L, name, now, reservationTime, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidReservationException.class);
     }
 }

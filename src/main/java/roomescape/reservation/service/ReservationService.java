@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.DuplicateReservationException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -47,7 +48,7 @@ public class ReservationService {
 
         List<Long> reservedIds = reservationTimeRepository.findIdByCondition(new FindReservedTimeParams(theme.getId(), date));
         if(reservedIds.contains(time.getId())) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+            throw new DuplicateReservationException();
         }
     }
 

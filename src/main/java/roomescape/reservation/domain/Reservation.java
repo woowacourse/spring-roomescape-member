@@ -2,6 +2,7 @@ package roomescape.reservation.domain;
 
 import java.time.LocalDate;
 import lombok.Getter;
+import roomescape.global.exception.InvalidReservationException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -27,7 +28,7 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("이름의 길이는 " + MAX_NAME_LENGTH + "를 넘을 수 없습니다.");
+            throw new InvalidReservationException("이름의 길이는 " + MAX_NAME_LENGTH + "를 넘을 수 없습니다.");
         }
     }
 }

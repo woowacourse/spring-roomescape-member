@@ -6,6 +6,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.DuplicateReservationTimeException;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.controller.dto.AvailableReservationTimeResponse;
@@ -29,6 +30,9 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResponse addReservationTime(CreateResrvationTimeRequest request) {
         CreateReservationTimeParams params = new CreateReservationTimeParams(request.startAt());
+        if (reservationTimeRepository.existsByStartAt(params)) {
+            throw new DuplicateReservationTimeException();
+        }
         ReservationTime savedReservationTime = reservationTimeRepository.save(params);
 
         return ReservationTimeResponse.from(savedReservationTime);
