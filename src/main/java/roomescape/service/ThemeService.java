@@ -20,13 +20,10 @@ public class ThemeService {
     private static final int POPULAR_THEME_LIMIT = 10;
 
     private final ThemeDao themeDao;
-    private final ReservationTimeDao reservationTimeDao;
     private final ReservationDao reservationDao;
 
-    public ThemeService(ThemeDao themeDao, ReservationTimeDao reservationTimeDao,
-                        ReservationDao reservationDao) {
+    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao) {
         this.themeDao = themeDao;
-        this.reservationTimeDao = reservationTimeDao;
         this.reservationDao = reservationDao;
     }
 
@@ -61,19 +58,5 @@ public class ThemeService {
             throw new IllegalArgumentException("기존 예약이 존재하는 테마는 삭제할 수 없습니다.");
         }
         themeDao.deleteById(id);
-    }
-
-    public List<ReservationTimeStatusResponse> findReservationTimeByDateAndThemeId(LocalDate date, Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        List<Long> timeIds = reservationDao.findReservedTimeIdsByDateAndThemeId(date, themeId);
-
-        LocalDateTime now = LocalDateTime.now();
-        return reservationTimes.stream()
-                .map(reservationTime -> {
-                    boolean available = !timeIds.contains(reservationTime.getId())
-                            && !reservationTime.isPast(date, now);
-                    return ReservationTimeStatusResponse.of(reservationTime, available);
-                })
-                .toList();
     }
 }
