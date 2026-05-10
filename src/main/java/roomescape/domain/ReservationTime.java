@@ -36,7 +36,7 @@ public class ReservationTime {
         if (startAt == null) {
             throw new IllegalArgumentException("시작시간은 필수입니다.");
         }
-        if (startAt.getMinute() % 60 != 0) {
+        if (startAt.getMinute() != 0) {
             throw new IllegalArgumentException("예약 시간은 한 시간 단위로만 설정 가능합니다.");
         }
     }
