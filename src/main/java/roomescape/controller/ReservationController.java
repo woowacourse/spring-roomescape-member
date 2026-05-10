@@ -37,7 +37,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody ReservationRequest request) {
-        ReservationResponse reservation = reservationService.createReservation(request);
+        ReservationResponse reservation = reservationService.createReservation(request.toCommand());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(reservation);
     }

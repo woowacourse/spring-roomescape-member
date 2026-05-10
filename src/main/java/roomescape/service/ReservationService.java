@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.controller.dto.CreateReservationCommand;
 import roomescape.controller.dto.ReservationPagingQuery;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
@@ -34,15 +35,15 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse createReservation(ReservationRequest request) {
-        ReservationTime time = reservationTimeRepository.findById(request.timeId())
+    public ReservationResponse createReservation(CreateReservationCommand command) {
+        ReservationTime time = reservationTimeRepository.findById(command.timeId())
                 .orElseThrow(ReservationTimeNotFoundException::new);
-        Theme theme = themeRepository.findById(request.themeId())
+        Theme theme = themeRepository.findById(command.themeId())
                 .orElseThrow(ThemeNotFoundException::new);
-        validateReservationAvailable(request.date(), time, theme);
+        validateReservationAvailable(command.date(), time, theme);
 
         Reservation reservation = reservationRepository.save(
-                Reservation.createNew(request.name(), request.date(), time, theme));
+                Reservation.createNew(command.name(), command.date(), time, theme));
 
         return ReservationResponse.from(reservation);
     }
