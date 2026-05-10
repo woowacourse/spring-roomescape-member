@@ -2,32 +2,49 @@ package roomescape.theme.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.InvalidRequestException;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 
 @SpringBootTest
+@Transactional
 class ThemeServiceTest {
 
-    @InjectMocks
+    @Autowired
     private ThemeService themeService;
 
-    @Mock
+    @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Test
     @DisplayName("이미 존재하는 이름의 테마를 생성하면 예외가 발생한다.")
     public void create_fail() {
         // given
-        given(themeRepository.existsByName("레벨2 탈출")).willReturn(true);
+        themeService.create(
+                "레벨2 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://example.com/theme.png"
+        );
 
         // when, then
         assertThatThrownBy(() -> themeService.create(
@@ -43,21 +60,26 @@ class ThemeServiceTest {
     @DisplayName("지정된 일 수 및 갯수를 기준으로 인기 테마를 조회한다.")
     public void findPopularThemes() {
         // given
-        int days = 7;
+        Theme popularTheme = themeRepository.save(new Theme("인기 테마", "인기 테마 설명", "https://example.com/popular.png"));
+        Theme lessPopularTheme = themeRepository.save(new Theme("덜 인기 테마", "덜 인기 테마 설명", "https://example.com/less-popular.png"));
+        Theme outOfRangeTheme = themeRepository.save(new Theme("기간 밖 테마", "기간 밖 테마 설명", "https://example.com/out-of-range.png"));
+
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime time2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
+
         LocalDate now = LocalDate.of(2026, 10, 15);
-        int size = 10;
+        reservationRepository.save(new Reservation("브라운", LocalDate.of(2026, 10, 8), time, popularTheme));
+        reservationRepository.save(new Reservation("레아", LocalDate.of(2026, 10, 8), time2, popularTheme));
+        reservationRepository.save(new Reservation("제이슨", LocalDate.of(2026, 10, 9), time, lessPopularTheme));
+        reservationRepository.save(new Reservation("포비", now, time, outOfRangeTheme));
 
         // when
-        themeService.findPopularThemes(days, now, size);
+        List<Theme> popularThemes = themeService.findPopularThemes(7, now, 10);
 
         // then
-        // themeRepository.findTopThemesByReservationCount()는 리포지토리 테스트에서 직접 하므로 호출만 검증
-        then(themeRepository).should()
-                .findTopThemesByReservationCount(
-                        LocalDate.of(2026, 10, 8),
-                        LocalDate.of(2026, 10, 14),
-                        size
-                );
+        assertThat(popularThemes)
+                .extracting(Theme::getId)
+                .containsExactly(popularTheme.getId(), lessPopularTheme.getId());
     }
 
 }
