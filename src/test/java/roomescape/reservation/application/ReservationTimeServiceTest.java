@@ -8,13 +8,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.reservation.infra.ReservationRepository;
 import roomescape.reservation.infra.ReservationTimeRepository;
-import roomescape.reservation.infra.ScheduleRepository;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ReservationTimeServiceTest {
@@ -25,7 +24,7 @@ public class ReservationTimeServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     @Mock
-    private ScheduleRepository scheduleRepository;
+    private ScheduleService scheduleService;
 
     @InjectMocks
     private ReservationTimeService reservationTimeService;
@@ -35,7 +34,7 @@ public class ReservationTimeServiceTest {
     void delete_실패_테스트_1() {
         // given
         long timeId = 1L;
-        when(scheduleRepository.existsByTimeId(timeId)).thenReturn(true);
+        doThrow(new IllegalStateException()).when(scheduleService).validateTimeDeletable(timeId);
 
         // when, then
         assertThatThrownBy(() -> reservationTimeService.delete(timeId))
@@ -49,8 +48,6 @@ public class ReservationTimeServiceTest {
     void delete_성공_테스트() {
         // given
         long timeId = 1L;
-        long themeId = 1L;
-        when(scheduleRepository.existsByTimeId(timeId)).thenReturn(false);
 
         // when
         reservationTimeService.delete(timeId);

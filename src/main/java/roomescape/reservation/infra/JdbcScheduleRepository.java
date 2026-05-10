@@ -35,7 +35,7 @@ public class JdbcScheduleRepository implements ScheduleRepository {
     public Optional<Schedule> findByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
         String sql = "SELECT * " +
                 "FROM schedule s " +
-                "JOIN reservation_time rt ON rt.id = s.id " +
+                "JOIN reservation_time rt ON rt.id = s.time_id " +
                 "JOIN theme t ON s.theme_id = t.id " +
                 "WHERE s.date = :date AND s.time_id = :timeId AND s.theme_id = :themeId";
 
@@ -43,6 +43,20 @@ public class JdbcScheduleRepository implements ScheduleRepository {
                 .addValue("date", date)
                 .addValue("timeId", timeId)
                 .addValue("themeId", themeId);
+
+        return template.query(sql, params, scheduleRowMapper).stream().findFirst();
+    }
+
+    @Override
+    public Optional<Schedule> findById(long id) {
+        String sql = "SELECT * " +
+                "FROM schedule s " +
+                "JOIN reservation_time rt ON rt.id = s.time_id " +
+                "JOIN theme t ON s.theme_id = t.id " +
+                "WHERE s.id = :id";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
 
         return template.query(sql, params, scheduleRowMapper).stream().findFirst();
     }

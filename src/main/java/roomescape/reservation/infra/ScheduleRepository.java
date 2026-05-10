@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface ScheduleRepository {
     Optional<Schedule> findByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId);
 
+    Optional<Schedule> findById(long id);
+
     boolean existsByTimeId(long timeId);
 
     boolean existsByThemeId(long themeId);

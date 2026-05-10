@@ -8,5 +8,5 @@ import lombok.Getter;
 public class Reservation {
     private final Long id;
     private String name;
-    private Schedule schedule;
+    private Long scheduleId;
 }

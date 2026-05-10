@@ -6,14 +6,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.reservation.infra.ScheduleRepository;
 import roomescape.reservation.infra.ThemeRepository;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ThemeServiceTest {
@@ -21,7 +20,7 @@ public class ThemeServiceTest {
     private ThemeRepository themeRepository;
 
     @Mock
-    private ScheduleRepository scheduleRepository;
+    private ScheduleService scheduleService;
 
     @InjectMocks
     private ThemeService themeService;
@@ -31,7 +30,7 @@ public class ThemeServiceTest {
     void delete_실패_테스트_1() {
         // given
         long themeId = 1L;
-        when(scheduleRepository.existsByThemeId(themeId)).thenReturn(true);
+        doThrow(new IllegalStateException()).when(scheduleService).validateThemeDeletable(themeId);
 
         // when, then
         assertThatThrownBy(() -> themeService.delete(themeId))
@@ -45,7 +44,6 @@ public class ThemeServiceTest {
     void delete_성공_테스트() {
         // given
         long themeId = 1L;
-        when(scheduleRepository.existsByThemeId(themeId)).thenReturn(false);
 
         // when
         themeService.delete(themeId);

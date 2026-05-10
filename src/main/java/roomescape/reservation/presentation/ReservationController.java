@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.presentation.dto.request.ReservationSaveRequest;
-import roomescape.reservation.presentation.dto.response.ReservationFindResponse;
+import roomescape.reservation.presentation.dto.response.ReservationDetailFindResponse;
 import roomescape.reservation.presentation.dto.response.ReservationSaveResponse;
 
 import java.util.List;
@@ -34,8 +34,8 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationFindResponse>> findAll() {
-        List<ReservationFindResponse> responses = reservationService.findAll();
+    public ResponseEntity<List<ReservationDetailFindResponse>> findAllDetails() {
+        List<ReservationDetailFindResponse> responses = reservationService.findAllDetails();
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 

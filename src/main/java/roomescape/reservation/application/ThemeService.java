@@ -3,7 +3,6 @@ package roomescape.reservation.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Theme;
-import roomescape.reservation.infra.ScheduleRepository;
 import roomescape.reservation.infra.ThemeRepository;
 import roomescape.reservation.presentation.dto.request.ThemeSaveRequest;
 import roomescape.reservation.presentation.dto.response.ThemeFindResponse;
@@ -16,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ThemeService {
     private final ThemeRepository themeRepository;
-    private final ScheduleRepository scheduleRepository;
+    private final ScheduleService scheduleService;
 
     public ThemeSaveResponse save(ThemeSaveRequest body) {
         Theme newTheme = themeRepository.save(body.toDomain());
@@ -24,9 +23,7 @@ public class ThemeService {
     }
 
     public void delete(long id) {
-        if (scheduleRepository.existsByThemeId(id)) {
-            throw new IllegalStateException("themeId= " + id + " 인 테마를 사용하는 스케줄이 있어 삭제할 수 없습니다.");
-        }
+        scheduleService.validateThemeDeletable(id);
         themeRepository.deleteById(id);
     }
 

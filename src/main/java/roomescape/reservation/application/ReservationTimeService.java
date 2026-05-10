@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.infra.ReservationRepository;
 import roomescape.reservation.infra.ReservationTimeRepository;
-import roomescape.reservation.infra.ScheduleRepository;
 import roomescape.reservation.presentation.dto.request.ReservationTimeSaveRequest;
 import roomescape.reservation.presentation.dto.response.AvailableTimeFindResponse;
 import roomescape.reservation.presentation.dto.response.ReservationTimeFindResponse;
@@ -20,7 +19,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ScheduleRepository scheduleRepository;
+    private final ScheduleService scheduleService;
     private final ReservationRepository reservationRepository;
 
     public ReservationTimeSaveResponse save(ReservationTimeSaveRequest body) {
@@ -32,9 +31,7 @@ public class ReservationTimeService {
     }
 
     public void delete(long id) {
-        if (scheduleRepository.existsByTimeId(id)) {
-            throw new IllegalStateException("timeId= " + id + " 인 시간을 사용하는 스케줄이 있어 삭제할 수 없습니다.");
-        }
+        scheduleService.validateTimeDeletable(id);
         reservationTimeRepository.deleteById(id);
     }
 

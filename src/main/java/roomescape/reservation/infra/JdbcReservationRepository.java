@@ -8,9 +8,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.Schedule;
-import roomescape.reservation.domain.Theme;
+import roomescape.reservation.infra.dto.ReservationDetailFind;
+import roomescape.reservation.presentation.dto.response.ThemeFindResponse;
+import roomescape.reservation.presentation.dto.response.dto.TimeInformation;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,23 +20,20 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class JdbcReservationRepository implements ReservationRepository {
     private final NamedParameterJdbcTemplate template;
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
-            new Reservation(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    new Schedule(
-                            resultSet.getLong("schedule_id"),
-                            resultSet.getDate("date").toLocalDate(),
-                            new ReservationTime(
-                                    resultSet.getLong("time_id"),
-                                    resultSet.getTime("start_at").toLocalTime()
-                            ),
-                            new Theme(
-                                    resultSet.getLong("theme_id"),
-                                    resultSet.getString("theme_name"),
-                                    resultSet.getString("description"),
-                                    resultSet.getString("thumbnail_url")
-                            )
+    private final RowMapper<ReservationDetailFind> reservationDetailFindRowMapper = (resultSet, rowNum) ->
+            new ReservationDetailFind(
+                    resultSet.getLong("reservation_id"),
+                    resultSet.getString("reservation_name"),
+                    resultSet.getDate("date").toLocalDate(),
+                    new ThemeFindResponse(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("theme_description"),
+                            resultSet.getString("theme_thumbnail_url")
+                    ),
+                    new TimeInformation(
+                            resultSet.getLong("time_id"),
+                            resultSet.getTime("start_at").toLocalTime()
                     )
             );
 
@@ -46,7 +43,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
-                .addValue("scheduleId", reservation.getSchedule().getId());
+                .addValue("scheduleId", reservation.getScheduleId());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(insertReservationSql, params, keyHolder);
@@ -59,36 +56,31 @@ public class JdbcReservationRepository implements ReservationRepository {
         return new Reservation(
                 keyHolder.getKey().longValue(),
                 reservation.getName(),
-                new Schedule(
-                        reservation.getSchedule().getId(),
-                        reservation.getSchedule().getDate(),
-                        reservation.getSchedule().getTime(),
-                        reservation.getSchedule().getTheme()
-                )
+                reservation.getScheduleId()
         );
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<ReservationDetailFind> findAllDetails() {
         String sql = """
                 SELECT
-                    r.id,
-                    r.name,
-                    r.schedule_id,
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
                     s.date,
-                    s.time_id,
-                    rt.start_at,
-                    s.theme_id,
+                    t.id AS theme_id,
                     t.name AS theme_name,
-                    t.description,
-                    t.thumbnail_url
+                    t.description AS theme_description,
+                    t.thumbnail_url AS theme_thumbnail_url,
+                    rt.id AS time_id,
+                    rt.start_at
                 FROM reservation r
                 JOIN schedule s ON r.schedule_id = s.id
-                JOIN reservation_time rt ON s.time_id = rt.id
                 JOIN theme t ON s.theme_id = t.id
+                JOIN reservation_time rt ON s.time_id = rt.id
+                ORDER BY r.id
                 """;
 
-        return template.query(sql, reservationRowMapper);
+        return template.query(sql, reservationDetailFindRowMapper);
     }
 
     @Override
