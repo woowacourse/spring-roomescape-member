@@ -192,6 +192,15 @@ button:disabled {
   gap: 10px;
 }
 
+.theme-list li.theme-item {
+  cursor: pointer;
+}
+
+.theme-list li.theme-item.selected {
+  background: #e7f5ff;
+  border-left: 4px solid #1c7ed6;
+}
+
 .theme-thumbnail {
   width: 72px;
   height: 72px;

@@ -97,6 +97,16 @@ function renderTimeList(times) {
   });
 }
 
+function renderScheduleList(schedules) {
+  const list = document.getElementById("schedule-list");
+  list.innerHTML = "";
+  schedules.forEach((schedule) => {
+    const li = document.createElement("li");
+    li.innerHTML = `#${schedule.id} / ${schedule.date} / timeId=${schedule.time_id} / themeId=${schedule.theme_id}`;
+    list.appendChild(li);
+  });
+}
+
 async function loadReservations() {
   const reservations = await api("/reservations");
   renderReservationList(reservations);
@@ -105,6 +115,11 @@ async function loadReservations() {
 async function loadTimes() {
   const times = await api("/times");
   renderTimeList(times);
+}
+
+async function loadSchedules() {
+  const schedules = await api("/schedule");
+  renderScheduleList(schedules);
 }
 
 document.getElementById("theme-form").addEventListener("submit", async (e) => {
@@ -352,9 +367,92 @@ document.getElementById("time-delete-form").addEventListener("submit", async (e)
   }
 });
 
+document.getElementById("schedule-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try {
+    const date = document.getElementById("schedule-date").value;
+    const timeId = Number(document.getElementById("schedule-time-id").value);
+    const themeId = Number(document.getElementById("schedule-theme-id").value);
+    const confirmed = await confirmAction({
+      title: "스케줄 추가 확인",
+      message: `${date} / timeId ${timeId} / themeId ${themeId} 스케줄을 추가할까요?`,
+      okLabel: "추가",
+    });
+    if (!confirmed) {
+      setStatus("스케줄 추가 취소");
+      return;
+    }
+
+    await api("/schedule", {
+      method: "POST",
+      body: JSON.stringify({
+        date,
+        timeId,
+        themeId,
+      }),
+    });
+    await loadSchedules();
+    setStatus("스케줄 추가 완료");
+    await showResultModal({
+      title: "스케줄 추가 성공",
+      message: `${date} 스케줄이 추가되었습니다.`,
+    });
+  } catch (error) {
+    setStatus(error.message, true);
+    await showResultModal({
+      title: "스케줄 추가 실패",
+      message: error.message,
+      isError: true,
+    });
+  }
+});
+
+document.getElementById("schedule-delete-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try {
+    const id = document.getElementById("schedule-delete-id").value;
+    const confirmed = await confirmAction({
+      title: "스케줄 삭제 확인",
+      message: `스케줄 ID ${id}를 삭제할까요?`,
+      okLabel: "삭제",
+      okDanger: true,
+    });
+    if (!confirmed) {
+      setStatus("스케줄 삭제 취소");
+      return;
+    }
+
+    await api(`/schedule/${id}`, { method: "DELETE" });
+    await loadSchedules();
+    setStatus(`스케줄 #${id} 삭제 완료`);
+    e.target.reset();
+    await showResultModal({
+      title: "스케줄 삭제 성공",
+      message: `스케줄 ID ${id}가 삭제되었습니다.`,
+    });
+  } catch (error) {
+    setStatus(error.message, true);
+    await showResultModal({
+      title: "스케줄 삭제 실패",
+      message: error.message,
+      isError: true,
+    });
+  }
+});
+
+document.getElementById("schedule-refresh").addEventListener("click", async () => {
+  try {
+    await loadSchedules();
+    setStatus("스케줄 목록 조회 완료");
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+});
+
 function setTodayDefault() {
   const today = new Date().toISOString().slice(0, 10);
   document.getElementById("reservation-date").value = today;
+  document.getElementById("schedule-date").value = today;
 }
 
 setTodayDefault();

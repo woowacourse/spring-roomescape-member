@@ -3,12 +3,17 @@ const statusEl = document.getElementById("status");
 const reservationSubmitEl = document.getElementById("reservation-submit");
 const selectedThemeLabelEl = document.getElementById("selected-theme-label");
 const selectedTimeLabelEl = document.getElementById("selected-time-label");
+const resultModalEl = document.getElementById("result-modal");
+const resultTitleEl = document.getElementById("result-title");
+const resultMessageEl = document.getElementById("result-message");
+const resultOkEl = document.getElementById("result-ok");
 let selectedThemeId = null;
 let selectedTimeId = null;
 let selectedTimeLabel = null;
 let selectedThemeName = null;
 
 function setStatus(message, isError = false) {
+  if (!statusEl) return;
   statusEl.textContent = message;
   statusEl.style.color = isError ? "#dc2626" : "#065f46";
 }
@@ -21,6 +26,22 @@ async function api(path, options = {}) {
   if (!response.ok) throw new Error(`요청 실패: ${response.status}`);
   if (response.status === 204) return null;
   return response.json();
+}
+
+function showResultModal({ title, message, isError = false }) {
+  return new Promise((resolve) => {
+    const card = resultModalEl.querySelector(".modal-card");
+    card.classList.remove("success", "error");
+    card.classList.add(isError ? "error" : "success");
+    resultTitleEl.textContent = title;
+    resultMessageEl.textContent = message;
+    resultModalEl.classList.remove("hidden");
+    resultOkEl.onclick = () => {
+      resultModalEl.classList.add("hidden");
+      resultOkEl.onclick = null;
+      resolve();
+    };
+  });
 }
 
 function renderThemeList(themes) {
@@ -36,9 +57,14 @@ function renderThemeList(themes) {
 
   themes.forEach((theme) => {
     const li = document.createElement("li");
+    li.classList.add("theme-item");
+    li.dataset.id = String(theme.id);
+    li.dataset.name = theme.name;
+    li.tabIndex = 0;
+    li.setAttribute("role", "button");
     li.innerHTML = `
       <img class="theme-thumbnail" src="${theme.thumbnailUrl}" alt="${theme.name} 썸네일">
-      <button class="theme-select" data-id="${theme.id}">${theme.name}</button>
+      <button class="theme-select" data-id="${theme.id}" type="button">${theme.name}</button>
       - ${theme.description}
       <span class="muted">(ID: ${theme.id})</span>
     `;
@@ -103,14 +129,15 @@ document.getElementById("theme-by-date-form").addEventListener("submit", async (
   }
 });
 
-document.getElementById("theme-list").addEventListener("click", async (e) => {
-  if (!e.target.classList.contains("theme-select")) return;
+async function selectThemeFromListItem(target) {
+  const item = target.closest(".theme-item");
+  if (!item) return;
   try {
     const date = document.getElementById("theme-date").value;
-    const themeId = e.target.dataset.id;
-    const themeName = e.target.textContent;
-    document.querySelectorAll(".theme-select").forEach((button) => button.classList.remove("selected"));
-    e.target.classList.add("selected");
+    const themeId = item.dataset.id;
+    const themeName = item.dataset.name;
+    document.querySelectorAll(".theme-item").forEach((li) => li.classList.remove("selected"));
+    item.classList.add("selected");
     selectedThemeId = Number(themeId);
     selectedThemeName = themeName;
     selectedThemeLabelEl.textContent = `테마: ${selectedThemeName}`;
@@ -120,6 +147,16 @@ document.getElementById("theme-list").addEventListener("click", async (e) => {
   } catch (error) {
     setStatus(error.message, true);
   }
+}
+
+document.getElementById("theme-list").addEventListener("click", async (e) => {
+  await selectThemeFromListItem(e.target);
+});
+
+document.getElementById("theme-list").addEventListener("keydown", async (e) => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  e.preventDefault();
+  await selectThemeFromListItem(e.target);
 });
 
 document.getElementById("reservation-form").addEventListener("submit", async (e) => {
@@ -127,7 +164,11 @@ document.getElementById("reservation-form").addEventListener("submit", async (e)
   try {
     if (!selectedThemeId || !selectedTimeId) {
       setStatus("테마와 시간을 먼저 선택하세요.", true);
-      alert("테마와 시간을 먼저 선택해주세요.");
+      await showResultModal({
+        title: "예약 실패",
+        message: "테마와 시간을 먼저 선택해주세요.",
+        isError: true,
+      });
       return;
     }
     const name = document.getElementById("reservation-name").value;
@@ -150,13 +191,20 @@ document.getElementById("reservation-form").addEventListener("submit", async (e)
       }),
     });
     setStatus(`예약 완료: ${name} / ${date} / ${selectedTimeLabel}`);
-    alert("예약이 완료되었습니다.");
+    await showResultModal({
+      title: "예약 성공",
+      message: `${name}님의 예약이 완료되었습니다.`,
+    });
     document.getElementById("reservation-name").value = "";
     const items = await api(`/times/availability?date=${date}&themeId=${selectedThemeId}`);
     renderAvailableTimes(items);
   } catch (error) {
     setStatus(`예약 실패: ${error.message}`, true);
-    alert(`예약에 실패했습니다.\n${error.message}`);
+    await showResultModal({
+      title: "예약 실패",
+      message: error.message,
+      isError: true,
+    });
   }
 });
 
