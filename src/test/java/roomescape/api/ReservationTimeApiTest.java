@@ -119,4 +119,40 @@ class ReservationTimeApiTest {
                         "availableTimes[0].startAt", equalTo(eleven.getStartAt().toString()));
     }
 
+    @Test
+    void 예약된_시간만_조회한다() {
+        ReservationTime ten = dataInitializer.createReservationTime(LocalTime.of(10, 0));
+        dataInitializer.createReservationTime(LocalTime.of(11, 0));
+        Theme theme = dataInitializer.createTheme("hello", "world", "/resources/image/...");
+
+        LocalDate date = LocalDate.now().plusDays(1);
+        dataInitializer.createReservation("라텔", date, ten.getId(), theme.getId());
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", date.toString());
+        params.put("themeId", theme.getId());
+        params.put("available", false);
+
+        RestAssured.given().log().all()
+                .queryParams(params)
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("availableTimes.size()", is(1),
+                        "availableTimes[0].startAt", equalTo(ten.getStartAt().toString()),
+                        "availableTimes[0].available", is(false));
+    }
+
+    @Test
+    void 존재하지_않는_테마의_예약_가능_시간을_조회하면_404를_반환한다() {
+        dataInitializer.createReservationTime(LocalTime.of(10, 0));
+
+        RestAssured.given().log().all()
+                .queryParam("date", LocalDate.now().plusDays(1).toString())
+                .queryParam("themeId", 999)
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(404);
+    }
+
 }

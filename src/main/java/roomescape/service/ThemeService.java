@@ -45,7 +45,8 @@ public class ThemeService {
 
     public List<ThemeRankResponse> getThemeRankings(ThemeRankingQuery query, LocalDate today) {
         LocalDate fromDate = today.minusDays(query.days());
-        List<Theme> themes = themeRepository.findThemesOrderByReservationCount(fromDate, today, query.limit());
+        LocalDate toDate = today.minusDays(1L);
+        List<Theme> themes = themeRepository.findThemesOrderByReservationCount(fromDate, toDate, query.limit());
 
         return IntStream.range(0, themes.size())
                 .mapToObj(index -> {

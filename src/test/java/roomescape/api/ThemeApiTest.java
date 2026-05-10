@@ -121,20 +121,20 @@ class ThemeApiTest {
         ReservationTime timeA = dataInitializer.createReservationTime(LocalTime.of(10, 0));
         ReservationTime timeB = dataInitializer.createReservationTime(LocalTime.of(11, 0));
         ReservationTime timeC = dataInitializer.createReservationTime(LocalTime.of(12, 0));
-        LocalDate today = LocalDate.now();
+        LocalDate yesterday = LocalDate.now().minusDays(1);
 
         // 테마 A에 예약 3개
-        dataInitializer.createReservation("사용자1", today, timeA.getId(), themeA.getId());
-        dataInitializer.createReservation("사용자2", today, timeB.getId(), themeA.getId());
-        dataInitializer.createReservation("사용자3", today, timeC.getId(), themeA.getId());
+        dataInitializer.createReservation("사용자1", yesterday, timeA.getId(), themeA.getId());
+        dataInitializer.createReservation("사용자2", yesterday, timeB.getId(), themeA.getId());
+        dataInitializer.createReservation("사용자3", yesterday, timeC.getId(), themeA.getId());
 
         // 테마 B에 예약 1개
-        dataInitializer.createReservation("사용자4", today, timeA.getId(), themeB.getId());
+        dataInitializer.createReservation("사용자4", yesterday, timeA.getId(), themeB.getId());
 
         // 테마 C에 예약 3개
-        dataInitializer.createReservation("사용자5", today, timeA.getId(), themeC.getId());
-        dataInitializer.createReservation("사용자6", today, timeB.getId(), themeC.getId());
-        dataInitializer.createReservation("사용자7", today, timeC.getId(), themeC.getId());
+        dataInitializer.createReservation("사용자5", yesterday, timeA.getId(), themeC.getId());
+        dataInitializer.createReservation("사용자6", yesterday, timeB.getId(), themeC.getId());
+        dataInitializer.createReservation("사용자7", yesterday, timeC.getId(), themeC.getId());
 
         RestAssured.given().log().all()
                 .queryParam("days", 7)
@@ -151,7 +151,7 @@ class ThemeApiTest {
     void getPopularThemesWithDefaultQueryParams() {
         Theme theme = dataInitializer.createTheme("A 테마", "설명A", "urlA");
         ReservationTime time = dataInitializer.createReservationTime(LocalTime.of(15, 0));
-        dataInitializer.createReservation("사용자1", LocalDate.now(), time.getId(), theme.getId());
+        dataInitializer.createReservation("사용자1", LocalDate.now().minusDays(1), time.getId(), theme.getId());
 
         RestAssured.given().log().all()
                 .when().get("/themes/rank")
@@ -159,6 +159,31 @@ class ThemeApiTest {
                 .statusCode(200)
                 .body("theme.name", contains("A 테마"))
                 .body("size()", is(1));
+    }
+
+    @Test
+    @DisplayName("인기 테마 조회는 오늘을 제외하고 days일 범위만 조회한다.")
+    void getPopularThemesExcludesTodayAndIncludesExactDaysBeforeToday() {
+        Theme includedStartTheme = dataInitializer.createTheme("시작일 포함 테마", "설명", "url");
+        Theme includedEndTheme = dataInitializer.createTheme("종료일 포함 테마", "설명", "url");
+        Theme excludedTodayTheme = dataInitializer.createTheme("오늘 제외 테마", "설명", "url");
+        Theme excludedBeforeRangeTheme = dataInitializer.createTheme("범위 이전 제외 테마", "설명", "url");
+        ReservationTime time = dataInitializer.createReservationTime(LocalTime.of(15, 0));
+        LocalDate today = LocalDate.now();
+
+        dataInitializer.createReservation("사용자1", today.minusDays(7), time.getId(), includedStartTheme.getId());
+        dataInitializer.createReservation("사용자2", today.minusDays(1), time.getId(), includedEndTheme.getId());
+        dataInitializer.createReservation("사용자3", today, time.getId(), excludedTodayTheme.getId());
+        dataInitializer.createReservation("사용자4", today.minusDays(8), time.getId(), excludedBeforeRangeTheme.getId());
+
+        RestAssured.given().log().all()
+                .queryParam("days", 7)
+                .queryParam("limit", 10)
+                .when().get("/themes/rank")
+                .then().log().all()
+                .statusCode(200)
+                .body("theme.name", contains("시작일 포함 테마", "종료일 포함 테마"))
+                .body("size()", is(2));
     }
 
     @ParameterizedTest

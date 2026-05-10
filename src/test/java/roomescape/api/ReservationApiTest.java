@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +67,88 @@ class ReservationApiTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+            "NULL, 2023-08-05",
+            "'', 2023-08-05",
+            "'   ', 2023-08-05",
+            "123456789012345678901234567890123456789012345678901, 2023-08-05",
+            "브라운, NULL"
+    }, nullValues = "NULL")
+    void 예약_생성_요청값이_유효하지_않으면_400을_반환한다(String name, String date) {
+        dataInitializer.createReservationTime(LocalTime.of(10, 0));
+        dataInitializer.createTheme("귀신의집", "무서워요", "/resources/image/...");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("date", date);
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 존재하지_않는_예약_시간으로_예약을_생성하면_404를_반환한다() {
+        dataInitializer.createTheme("귀신의집", "무서워요", "/resources/image/...");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2023-08-05");
+        params.put("timeId", 999);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 존재하지_않는_테마로_예약을_생성하면_404를_반환한다() {
+        dataInitializer.createReservationTime(LocalTime.of(10, 0));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2023-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 999);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 같은_날짜_시간_테마로_중복_예약하면_409를_반환한다() {
+        dataInitializer.createReservationTime(LocalTime.of(10, 0));
+        dataInitializer.createTheme("귀신의집", "무서워요", "/resources/image/...");
+        dataInitializer.createReservation("브라운", LocalDate.of(2023, 8, 5), 1L, 1L);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "라텔");
+        params.put("date", "2023-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409);
     }
 
     @ParameterizedTest
