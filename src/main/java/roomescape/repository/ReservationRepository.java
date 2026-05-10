@@ -16,13 +16,7 @@ import roomescape.model.Theme;
 @Repository
 public class ReservationRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-
-    public ReservationRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    private static final RowMapper<Reservation> reservationMapper = (rs, rowNum) -> new Reservation(
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) -> new Reservation(
             rs.getLong("id"),
             rs.getString("username"),
             rs.getObject("date", LocalDate.class),
@@ -38,6 +32,12 @@ public class ReservationRepository {
             )
     );
 
+    private final JdbcTemplate jdbcTemplate;
+
+    public ReservationRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+    
     public List<Reservation> findAll() {
         String selectSql =
                 "SELECT r.id, r.username, r.date, t.id as time_id, t.start_at, m.id as theme_id, m.name as theme_name, m.description, m.url  "
@@ -45,7 +45,7 @@ public class ReservationRepository {
                         "FROM reservation r " +
                         "INNER JOIN reservation_time t ON r.time_id = t.id " +
                         "INNER JOIN theme m ON r.theme_id = m.id ";
-        return jdbcTemplate.query(selectSql, reservationMapper);
+        return jdbcTemplate.query(selectSql, RESERVATION_ROW_MAPPER);
     }
 
     public void deleteById(Long id) {
@@ -80,7 +80,7 @@ public class ReservationRepository {
                         "INNER JOIN reservation_time t ON r.time_id = t.id " +
                         "INNER JOIN theme m ON r.theme_id = m.id " +
                         "WHERE r.id = ?";
-        return jdbcTemplate.queryForObject(sql, reservationMapper, id);
+        return jdbcTemplate.queryForObject(sql, RESERVATION_ROW_MAPPER, id);
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {

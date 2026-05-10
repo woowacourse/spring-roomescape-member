@@ -14,20 +14,20 @@ import roomescape.model.ReservationTime;
 @Repository
 public class TimeRepository {
 
+    private static final RowMapper<ReservationTime> TIME_ROW_MAPPER = (rs, rowNum) -> new ReservationTime(
+            rs.getLong("id"),
+            rs.getObject("start_at", LocalTime.class)
+    );
+
     private final JdbcTemplate jdbcTemplate;
 
     public TimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    private final static RowMapper<ReservationTime> timeRowMapper = (rs, rowNum) -> new ReservationTime(
-            rs.getLong("id"),
-            rs.getObject("start_at", LocalTime.class)
-    );
-
+    
     public List<ReservationTime> findAll() {
         String sql = "select * from reservation_time";
-        return jdbcTemplate.query(sql, timeRowMapper);
+        return jdbcTemplate.query(sql, TIME_ROW_MAPPER);
     }
 
     public List<ReservationTime> findAllByThemeIdAndDate(Long themeId, LocalDate date) {
@@ -37,7 +37,7 @@ public class TimeRepository {
                         "SELECT t.id, t.start_at FROM reservation r " +
                         "JOIN reservation_time t ON r.time_id = t.id " +
                         "WHERE r.date = ? AND r.theme_id = ?";
-        return jdbcTemplate.query(sql, timeRowMapper, date, themeId);
+        return jdbcTemplate.query(sql, TIME_ROW_MAPPER, date, themeId);
     }
 
     public void deleteById(Long id) {
@@ -61,7 +61,7 @@ public class TimeRepository {
 
     public ReservationTime findById(Long id) {
         String sql = "select * from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
+        return jdbcTemplate.queryForObject(sql, TIME_ROW_MAPPER, id);
     }
 
     public boolean existsByStartAt(LocalTime startAt) {

@@ -12,14 +12,14 @@ import roomescape.model.Theme;
 @Repository
 public class ThemeRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-
-    private final RowMapper<Theme> themeRowMapper = ((rs, rowNum) -> new Theme(
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = ((rs, rowNum) -> new Theme(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("description"),
             rs.getString("url")
     ));
+
+    private final JdbcTemplate jdbcTemplate;
 
     public ThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -46,12 +46,12 @@ public class ThemeRepository {
 
     public Theme findById(Long id) {
         String sql = "SELECT * FROM THEME WHERE ID = ?";
-        return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+        return jdbcTemplate.queryForObject(sql, THEME_ROW_MAPPER, id);
     }
 
     public List<Theme> findAll() {
         String sql = "SELECT * FROM THEME";
-        return jdbcTemplate.query(sql, themeRowMapper);
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
     }
 
     public List<Theme> findByCurrentDateAndLastWeekDateAndLimit(String currentDate, String lastWeekDate, int limit) {
@@ -68,6 +68,6 @@ public class ThemeRepository {
                 order by (COUNT(r.id)) desc, t.id asc
                 limit ?;
                 """;
-        return jdbcTemplate.query(sql, themeRowMapper, lastWeekDate, currentDate, limit);
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, lastWeekDate, currentDate, limit);
     }
 }
