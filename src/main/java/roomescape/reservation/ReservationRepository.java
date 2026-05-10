@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
@@ -31,7 +32,7 @@ public class ReservationRepository {
         return reservationDao.countByTimeId(timeId);
     }
 
-    public Reservation findById(long id) {
+    public Optional<Reservation> findById(long id) {
         return reservationDao.findById(id);
     }
 }

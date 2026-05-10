@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -81,7 +82,7 @@ public class ReservationDao {
         return jdbcTemplate.queryForList(sql, Long.class, date, themeId);
     }
 
-    Reservation findById(long id) {
+    Optional<Reservation> findById(long id) {
         String sql = "SELECT r.id AS reservation_id, r.name, r.date, " +
                 "rt.id AS time_id, rt.start_at AS time_value, " +
                 "th.id AS theme_id, th.name AS theme_name, " +
@@ -90,6 +91,9 @@ public class ReservationDao {
                 "INNER JOIN reservation_time AS rt ON r.time_id = rt.id " +
                 "INNER JOIN themes AS th ON r.theme_id = th.id " +
                 "WHERE r.id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+
+        List<Reservation> results = jdbcTemplate.query(sql, rowMapper, id);
+
+        return results.stream().findFirst();
     }
 }
