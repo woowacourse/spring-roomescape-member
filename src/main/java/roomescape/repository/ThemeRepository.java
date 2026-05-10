@@ -16,19 +16,16 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.exception.InUseEntityException;
-import roomescape.repository.dto.ReservedTheme;
 
 @Repository
 public class ThemeRepository {
 
     private static final String FK_RESERVATION_THEME_ID = "fk_reservation_theme_id";
 
-    private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ThemeRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme");
@@ -49,19 +46,19 @@ public class ThemeRepository {
         String findSql = "SELECT id, name, description, image_url"
                 + " FROM theme";
 
-        return jdbcTemplate.query(findSql, themeRowMapper());
+        return namedParameterJdbcTemplate.query(findSql, themeRowMapper());
     }
 
     public Optional<Theme> findById(UUID id) {
         try {
             String findSql = "SELECT id, name, description, image_url"
                     + " FROM theme"
-                    + " WHERE id = ?";
+                    + " WHERE id = :id";
 
-            Theme theme = jdbcTemplate.queryForObject(
+            Theme theme = namedParameterJdbcTemplate.queryForObject(
                     findSql,
-                    themeRowMapper(),
-                    id.toString()
+                    Map.of("id", id.toString()),
+                    themeRowMapper()
             );
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException exception) {
@@ -95,11 +92,14 @@ public class ThemeRepository {
     }
 
     public boolean delete(UUID themeId) {
-        String deleteSql = "DELETE FROM theme"
-                + " WHERE id = ?";
-
         try {
-            int deletedRowCount = jdbcTemplate.update(deleteSql, themeId.toString());
+            String deleteSql = "DELETE FROM theme"
+                    + " WHERE id = :id";
+
+            int deletedRowCount = namedParameterJdbcTemplate.update(
+                    deleteSql,
+                    Map.of("id", themeId)
+            );
 
             return isDeleted(deletedRowCount);
         } catch (DataIntegrityViolationException exception) {
@@ -134,18 +134,6 @@ public class ThemeRepository {
             String imageUrl = resultSet.getString("image_url");
 
             return new Theme(id, name, description, imageUrl);
-        };
-    }
-
-    private RowMapper<ReservedTheme> reservedThemeRowMapper() {
-        return (resultSet, rowNum) -> {
-            UUID id = UUID.fromString(resultSet.getString("id"));
-            String name = resultSet.getString("name");
-            String description = resultSet.getString("description");
-            String imageUrl = resultSet.getString("image_url");
-            int reservationCount = resultSet.getInt("reservation_count");
-
-            return new ReservedTheme(id, name, description, imageUrl, reservationCount);
         };
     }
 }
