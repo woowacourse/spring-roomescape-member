@@ -1,3 +1,14 @@
+ALTER TABLE reservation
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation_time
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation_time
+    ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE theme
+    ALTER COLUMN id RESTART WITH 1;
+
 INSERT INTO reservation_time (start_at)
 VALUES ('01:00'),
        ('02:00'),
