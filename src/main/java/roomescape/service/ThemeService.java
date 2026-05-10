@@ -28,7 +28,7 @@ public class ThemeService {
 
     public void removeById(Long id) {
         int deleteCnt = themeRepository.deleteById(id);
-        if(deleteCnt == 0) {
+        if (deleteCnt == 0) {
             throw new IllegalArgumentException("존재하지 않는 테마의 ID 입니다.");
         }
     }
@@ -49,11 +49,5 @@ public class ThemeService {
         return themes.stream()
                 .map(ThemeResponse::from)
                 .collect(Collectors.toList());
-    }
-
-    public ThemeResponse readById(Long id) {
-        Theme theme = themeRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 테마입니다."));
-        return ThemeResponse.from(theme);
     }
 }

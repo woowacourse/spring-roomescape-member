@@ -46,10 +46,4 @@ public class TimeService {
         ReservationTime reservationTime = timeRepository.save(timeRequest.startAt());
         return TimeResponse.from(reservationTime);
     }
-
-    public TimeResponse readById(Long id) {
-        ReservationTime reservationTime = timeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
-        return TimeResponse.from(reservationTime);
-    }
 }
