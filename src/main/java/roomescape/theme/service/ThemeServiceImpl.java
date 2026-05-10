@@ -14,7 +14,6 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.theme.service.dto.ThemeBestServiceDto;
 import roomescape.theme.service.dto.ThemeSaveServiceDto;
 import roomescape.time.service.TimeService;
 
@@ -93,7 +92,7 @@ public class ThemeServiceImpl implements ThemeService {
 
     @Override
     public List<Theme> getBestThemes() {
-        ThemeBestServiceDto themeBestServiceDto = new ThemeBestServiceDto(LocalDate.now(), dayCount, rankCount);
-        return themeRepository.findBestThemesByDate(themeBestServiceDto);
+        LocalDate today = LocalDate.now();
+        return themeRepository.findBestThemesByDate(today.minusDays(dayCount), today, rankCount);
     }
 }

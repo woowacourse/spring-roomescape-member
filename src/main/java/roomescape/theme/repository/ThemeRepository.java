@@ -3,7 +3,6 @@ package roomescape.theme.repository;
 import java.time.LocalDate;
 import java.util.List;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.service.dto.ThemeBestServiceDto;
 
 public interface ThemeRepository {
     List<Theme> findAll();
@@ -16,5 +15,5 @@ public interface ThemeRepository {
 
     boolean deleteById(Long id);
 
-    List<Theme> findBestThemesByDate(ThemeBestServiceDto themeBestServiceDto);
+    List<Theme> findBestThemesByDate(LocalDate startDate, LocalDate endDate, int limit);
 }
