@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.Getter;
+import roomescape.theme.application.query.PopularThemeDao;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.repository.PopularTheme;
+import roomescape.theme.application.query.PopularTheme;
 import roomescape.theme.domain.repository.ThemeRepository;
 
-public class FakeThemeRepository implements ThemeRepository {
+public class FakeThemeRepository implements ThemeRepository, PopularThemeDao {
 
     private final Map<Long, Theme> themes = new LinkedHashMap<>();
     private final List<PopularTheme> popularThemes = new ArrayList<>();

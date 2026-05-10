@@ -14,7 +14,7 @@ import roomescape.theme.application.dto.PopularThemeQueryResult;
 import roomescape.theme.application.dto.ThemeQueryResult;
 import roomescape.theme.application.exception.ThemeException;
 import roomescape.theme.application.service.ThemeService;
-import roomescape.theme.domain.repository.PopularTheme;
+import roomescape.theme.application.query.PopularTheme;
 
 public class ThemeServiceTest {
 
@@ -24,7 +24,7 @@ public class ThemeServiceTest {
     @BeforeEach
     void setUp() {
         themeRepository = new FakeThemeRepository();
-        themeService = new ThemeService(themeRepository);
+        themeService = new ThemeService(themeRepository, themeRepository);
     }
 
     @DisplayName("테마의 정상 추가를 테스트합니다.")
