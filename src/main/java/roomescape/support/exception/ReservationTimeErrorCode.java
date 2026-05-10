@@ -1,0 +1,24 @@
+package roomescape.support.exception;
+
+import lombok.Getter;
+
+@Getter
+public enum ReservationTimeErrorCode implements ErrorCode {
+
+    INVALID_RESERVATION_TIME("시간은 필수입니다."),
+    INVALID_RESERVATION_TIME_FORMAT("시간은 HH:MM 형식이어야 합니다."),
+    RESERVATION_TIME_NOT_EXIST("존재하지 않는 예약 시간대 입니다."),
+    RESERVATION_TIME_IN_USE("이미 예약이 존재하는 시간대는 삭제할 수 없습니다."),
+    ;
+
+    private final String message;
+
+    ReservationTimeErrorCode(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public String getCode() {
+        return name();
+    }
+}
