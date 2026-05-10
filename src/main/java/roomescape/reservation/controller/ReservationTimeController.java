@@ -26,7 +26,7 @@ public class ReservationTimeController {
 
     @GetMapping
     public List<ReservationTimeResponse> getTimes() {
-        return reservationTimeService.findAll();
+        return reservationTimeService.getAllTimes();
     }
 
     @PostMapping

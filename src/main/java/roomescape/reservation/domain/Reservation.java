@@ -1,10 +1,13 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.util.Objects;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import roomescape.theme.doamin.Theme;
 
 @Getter
+@EqualsAndHashCode(of = "id")
 public class Reservation {
     private final Long id;
     private final String name;

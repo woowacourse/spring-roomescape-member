@@ -16,7 +16,7 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public List<ReservationTimeResponse> findAll() {
+    public List<ReservationTimeResponse> getAllTimes() {
         return reservationTimeRepository.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();

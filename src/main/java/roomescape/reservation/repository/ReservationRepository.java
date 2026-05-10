@@ -93,7 +93,7 @@ public class ReservationRepository {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
-    public List<Reservation> findByName(String username) {
+    public List<Reservation> findAllByName(String username) {
         final String sql = """
                 SELECT r.id AS reservation_id, r.name, r.date,
                        t.id AS time_id, t.start_at AS time_value,
