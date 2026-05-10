@@ -117,20 +117,22 @@ class ThemeApiTest {
         Theme themeC = dataInitializer.initializeTheme("C 테마", "설명C", "urlC");
 
         ReservationTime time = dataInitializer.initializeReservationTime(LocalTime.of(15, 0));
-        LocalDate today = LocalDate.now();
+        LocalDate dateA = LocalDate.now().minusDays(2);
+        LocalDate dateB = LocalDate.now().minusDays(1);
+        LocalDate dateC = LocalDate.now();
 
         // 테마 A에 예약 3개
-        dataInitializer.initializeReservation("사용자1", today, time.getId(), themeA.getId());
-        dataInitializer.initializeReservation("사용자2", today, time.getId(), themeA.getId());
-        dataInitializer.initializeReservation("사용자3", today, time.getId(), themeA.getId());
+        dataInitializer.initializeReservation("사용자1", dateA, time.getId(), themeA.getId());
+        dataInitializer.initializeReservation("사용자2", dateB, time.getId(), themeA.getId());
+        dataInitializer.initializeReservation("사용자3", dateC, time.getId(), themeA.getId());
 
         // 테마 B에 예약 1개
-        dataInitializer.initializeReservation("사용자4", today, time.getId(), themeB.getId());
+        dataInitializer.initializeReservation("사용자4", dateA, time.getId(), themeB.getId());
 
         // 테마 C에 예약 3개
-        dataInitializer.initializeReservation("사용자5", today, time.getId(), themeC.getId());
-        dataInitializer.initializeReservation("사용자6", today, time.getId(), themeC.getId());
-        dataInitializer.initializeReservation("사용자7", today, time.getId(), themeC.getId());
+        dataInitializer.initializeReservation("사용자5", dateA, time.getId(), themeC.getId());
+        dataInitializer.initializeReservation("사용자6", dateB, time.getId(), themeC.getId());
+        dataInitializer.initializeReservation("사용자7", dateC, time.getId(), themeC.getId());
 
         RestAssured.given().log().all()
                 .queryParam("days", 7)
