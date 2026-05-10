@@ -42,7 +42,7 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
-        ThemeResponse theme = themeService.createTheme(request);
+        ThemeResponse theme = themeService.createTheme(request.toCommand());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(theme);
     }

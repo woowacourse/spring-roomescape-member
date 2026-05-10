@@ -12,6 +12,7 @@ import roomescape.controller.dto.ThemeRankingQuery;
 import roomescape.controller.dto.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.CreateThemeCommand;
 
 @Service
 @Transactional(readOnly = true)
@@ -21,11 +22,11 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
 
     @Transactional
-    public ThemeResponse createTheme(ThemeRequest request) {
+    public ThemeResponse createTheme(CreateThemeCommand command) {
         Theme theme = Theme.createNew(
-                request.name(),
-                request.description(),
-                request.imageUrl()
+                command.name(),
+                command.description(),
+                command.imageUrl()
         );
         Theme savedTheme = themeRepository.save(theme);
 
