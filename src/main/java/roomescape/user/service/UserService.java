@@ -8,6 +8,8 @@ import roomescape.user.model.Role;
 import roomescape.user.model.User;
 import roomescape.user.repository.UserRepository;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -24,6 +26,10 @@ public class UserService {
         User user = new User(request.name(), DEFAULT);
         Long id = userRepository.create(user);
         return UserResponse.from(new User(id, request.name(), DEFAULT));
+    }
+
+    public Optional<User> findByName(String name) {
+        return userRepository.findByName(name);
     }
 
     @Transactional

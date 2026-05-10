@@ -2,7 +2,6 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.reservation.dto.ReservationIdResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
@@ -12,6 +11,7 @@ import roomescape.schedule.service.ScheduleService;
 import roomescape.user.model.User;
 import roomescape.user.service.UserService;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -39,6 +39,15 @@ public class ReservationService {
 
         Reservation reservation = new Reservation(user, schedule);
         return reservationRepository.create(reservation);
+    }
+
+    public ReservationsResponse findReservationsByUserName(String name) {
+        return userService.findByName(name)
+                .map(user -> {
+                    List<Reservation> reservations = reservationRepository.findAllByUserId(user.getId());
+                    return ReservationsResponse.from(reservations);
+                })
+                .orElse(ReservationsResponse.from(Collections.emptyList()));
     }
 
 
