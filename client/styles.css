@@ -186,6 +186,20 @@ button:disabled {
 .list li:last-child { border-bottom: none; }
 .list li:hover { background: #f1f3f5; }
 
+.theme-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-thumbnail {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
 /* 인기 순위 리스트 */
 .popular-ranking {
   counter-reset: my-counter;

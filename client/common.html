@@ -53,11 +53,9 @@
   <!-- 인기 테마 섹션 -->
   <section class="popular-section">
     <h2>🔥 인기 테마 TOP</h2>
-    <form id="popular-form" class="row-form popular-filter">
-      <label>기준일(최근 N일) <input type="number" id="popular-day" min="1" value="7" required></label>
-      <label>표시 개수 <input type="number" id="popular-limit" min="1" value="10" required></label>
-      <button type="submit">확인하기</button>
-    </form>
+    <div class="row-form popular-filter">
+      <button type="button" id="popular-refresh" class="search-button">인기테마조회</button>
+    </div>
     <ol id="popular-list" class="list popular-ranking"></ol>
   </section>
 

@@ -5,16 +5,16 @@ INSERT INTO reservation_time (start_at) VALUES ('12:00'); -- id 3
 INSERT INTO reservation_time (start_at) VALUES ('13:00'); -- id 4
 
 INSERT INTO theme (name, description, thumbnail_url) VALUES
-('세기의 도둑', '보안을 뚫고 보석을 훔쳐라', 'https://example.com/themes/thief.jpg'),
-('심해 연구소', '심해 기지를 탈출하라', 'https://example.com/themes/deepsea.jpg'),
-('시간 여행자', '과거와 미래를 오가며 단서를 찾아라', 'https://example.com/themes/time.jpg'),
-('유령 호텔', '폐허가 된 호텔에서 사라진 손님을 찾아라', 'https://example.com/themes/ghost-hotel.jpg'),
-('비밀 실험동', '통제 구역 깊숙한 곳의 실험 기록을 회수하라', 'https://example.com/themes/lab-wing.jpg'),
-('왕실 감옥', '감시를 피해 감옥의 비밀 통로를 열어라', 'https://example.com/themes/royal-prison.jpg'),
-('마녀의 숲', '저주를 풀 단서를 모아 숲을 빠져나와라', 'https://example.com/themes/witch-forest.jpg'),
-('우주 정거장', '고장 난 정거장을 복구하고 귀환 신호를 보내라', 'https://example.com/themes/space-station.jpg'),
-('잠든 박물관', '야간 경비를 피해 전시실의 비밀을 밝혀라', 'https://example.com/themes/museum.jpg'),
-('붉은 파도', '폭풍우 치는 선박 위에서 사건의 진실을 추적하라', 'https://example.com/themes/red-wave.jpg');
+('세기의 도둑', '보안을 뚫고 보석을 훔쳐라', './images/thief.jpeg'),
+('심해 연구소', '심해 기지를 탈출하라', './images/deepsea.jpeg'),
+('시간 여행자', '과거와 미래를 오가며 단서를 찾아라', './images/time.jpeg'),
+('유령 호텔', '폐허가 된 호텔에서 사라진 손님을 찾아라', './images/ghosthotel.jpeg'),
+('비밀 실험동', '통제 구역 깊숙한 곳의 실험 기록을 회수하라', './images/lab-wing.png'),
+('왕실 감옥', '감시를 피해 감옥의 비밀 통로를 열어라', './images/royal-prison.jpeg'),
+('마녀의 숲', '저주를 풀 단서를 모아 숲을 빠져나와라', './images/witch-forest.jpeg'),
+('우주 정거장', '고장 난 정거장을 복구하고 귀환 신호를 보내라', './images/space-station.jpeg'),
+('잠든 박물관', '야간 경비를 피해 전시실의 비밀을 밝혀라', './images/museum.jpeg'),
+('붉은 파도', '폭풍우 치는 선박 위에서 사건의 진실을 추적하라', './images/red-wave.jpeg');
 
 INSERT INTO schedule (date, time_id, theme_id) VALUES
 ('2026-05-05', 1, 1), -- 5월 5일 10시 세기의 도둑

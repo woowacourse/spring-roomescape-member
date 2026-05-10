@@ -82,7 +82,7 @@ function renderReservationList(reservations) {
   list.innerHTML = "";
   reservations.forEach((reservation) => {
     const li = document.createElement("li");
-    li.innerHTML = `#${reservation.id} ${reservation.name} / ${reservation.date} / ${reservation.time.time} / themeId=${reservation.themeId}`;
+    li.innerHTML = `#${reservation.id} ${reservation.name} / ${reservation.date} / ${reservation.time.time} / themeId=${reservation.theme?.id}`;
     list.appendChild(li);
   });
 }

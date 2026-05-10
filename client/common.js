@@ -29,9 +29,9 @@ function renderThemeList(themes) {
   themes.forEach((theme) => {
     const li = document.createElement("li");
     li.innerHTML = `
+      <img class="theme-thumbnail" src="${theme.thumbnailUrl}" alt="${theme.name} 썸네일">
       <button class="theme-select" data-id="${theme.id}">${theme.name}</button>
       - ${theme.description}
-      <a href="${theme.thumbnailUrl}" target="_blank" rel="noreferrer">썸네일</a>
       <span class="muted">(ID: ${theme.id})</span>
     `;
     list.appendChild(li);
@@ -152,12 +152,9 @@ document.getElementById("reservation-form").addEventListener("submit", async (e)
   }
 });
 
-document.getElementById("popular-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
+document.getElementById("popular-refresh").addEventListener("click", async () => {
   try {
-    const day = document.getElementById("popular-day").value;
-    const limit = document.getElementById("popular-limit").value;
-    const themes = await api(`/themes/popular?day=${day}&limit=${limit}`);
+    const themes = await api("/themes/popular");
     renderPopular(themes);
     setStatus("인기 테마 조회 완료");
   } catch (error) {

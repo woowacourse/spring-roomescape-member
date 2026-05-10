@@ -4,10 +4,10 @@ INSERT INTO reservation_time (start_at) VALUES ('12:00');
 INSERT INTO reservation_time (start_at) VALUES ('13:00');
 
 INSERT INTO theme (name, description, thumbnail_url) VALUES
-('세기의 도둑', '보안을 뚫고 보석을 훔쳐라', 'https://example.com/themes/time.jpg'),
-('세기의 도둑2', '보안을 뚫고 보석을 훔쳐라2', 'https://example.com/themes2/time.jpg'),
-('세기의 도둑3', '보안을 뚫고 보석을 훔쳐라3', 'https://example.com/themes3/time.jpg'),
-('세기의 도둑4', '보안을 뚫고 보석을 훔쳐라4', 'https://example.com/themes4/time.jpg');
+('세기의 도둑', '보안을 뚫고 보석을 훔쳐라', './images/thief.jpeg'),
+('세기의 도둑2', '보안을 뚫고 보석을 훔쳐라2', './images/deepsea.jpeg'),
+('세기의 도둑3', '보안을 뚫고 보석을 훔쳐라3', './images/time.jpeg'),
+('세기의 도둑4', '보안을 뚫고 보석을 훔쳐라4', './images/ghosthotel.jpeg');
 
 INSERT INTO schedule (date, time_id, theme_id) VALUES
 ('2026-05-05', 1, 1), -- id=1
