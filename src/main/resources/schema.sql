@@ -1,0 +1,25 @@
+CREATE TABLE reservation_time (
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    start_at VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE theme (
+    id      BIGINT      NOT NULL AUTO_INCREMENT,
+    name    VARCHAR(20) NOT NULL,
+    description VARCHAR(1000),
+    url     VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE reservation (
+    id      BIGINT       NOT NULL AUTO_INCREMENT,
+    username    VARCHAR(20) NOT NULL,
+    date    VARCHAR(255) NOT NULL,
+    time_id BIGINT NOT NULL,
+    theme_id BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id)
+);
+
