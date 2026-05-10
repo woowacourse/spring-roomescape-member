@@ -24,9 +24,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
 
-    private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 5, 8);
-    private static final ZoneId ZONE = ZoneId.of("Asia/Seoul");
-
     @Mock
     private ThemeRepository themeRepository;
 
@@ -34,10 +31,7 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setUp() {
-        Clock fixedClock = Clock.fixed(
-                FIXED_TODAY.atStartOfDay(ZONE).toInstant(),
-                ZONE);
-        themeService = new ThemeService(themeRepository, fixedClock);
+        themeService = new ThemeService(themeRepository, Clock.systemDefaultZone());
     }
 
     @Test
@@ -101,13 +95,21 @@ class ThemeServiceTest {
 
     @Test
     void 인기_테마를_조회한다() {
+        final LocalDate fixedToday = LocalDate.of(2026, 5, 8);
+        final ZoneId zone = ZoneId.of("Asia/Seoul");
+
+        Clock fixedClock = Clock.fixed(
+                fixedToday.atStartOfDay(zone).toInstant(),
+                zone);
+        ThemeService timeRelatedThemeService = new ThemeService(themeRepository, fixedClock);
+
         List<Theme> themes = List.of(
                 new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg"),
                 new Theme(2L, "escape2", "방탈출2", "http://example.com/img2.jpg")
         );
 
-        when(themeRepository.findPopularThemes(FIXED_TODAY.minusDays(7), FIXED_TODAY.minusDays(1), 10)).thenReturn(themes);
-        List<Theme> result = themeService.findPopularThemes();
+        when(themeRepository.findPopularThemes(fixedToday.minusDays(7), fixedToday.minusDays(1), 10)).thenReturn(themes);
+        List<Theme> result = timeRelatedThemeService.findPopularThemes();
 
         assertThat(result.size()).isEqualTo(2);
         assertThat(result).isEqualTo(themes);
