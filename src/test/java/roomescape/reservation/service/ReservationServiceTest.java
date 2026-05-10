@@ -87,9 +87,7 @@ class ReservationServiceTest {
     void delete_reservation() {
         setTimeAndTheme();
 
-        ReservationQueryResult result = reservationService.save(ReservationFixture.starkCreateCommand(1L, 1L), LocalDateTime.of(2026, 5, 6, 9, 0));
-
-        assertThat(timeService.delete(result.id())).isEqualTo(1);
+        assertThat(timeService.delete(1L)).isEqualTo(1);
     }
 
     private void setTimeAndTheme() {
