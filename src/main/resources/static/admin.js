@@ -47,7 +47,7 @@ async function loadAdminData() {
   const [reservations, themes, times] = await Promise.all([
     requestJson("/reservations"),
     requestJson("/themes"),
-    requestJson("/times"),
+    requestJson("/admin/times"),
   ]);
   adminState.reservations = reservations;
   adminState.themes = themes;
@@ -251,7 +251,7 @@ function createThemeAdminContent(theme) {
 
 async function handleTimeSubmit(event) {
   event.preventDefault();
-  await requestJson("/times", createPostOption(timePayload()));
+  await requestJson("/admin/times", createPostOption(timePayload()));
   adminElements.timeForm.reset();
   showToast("예약 시간이 추가되었습니다.");
   await loadAdminData();
@@ -311,7 +311,7 @@ async function confirmThemeDelete(theme) {
 async function confirmTimeDelete(time) {
   const count = timeReservationCount(time.id);
   if (window.confirm(deleteConfirmMessage(formatStartAt(time.startAt), count))) {
-    await request(`/times/${time.id}`, {method: "DELETE"});
+    await request(`/admin/times/${time.id}`, {method: "DELETE"});
     showToast("예약 시간이 삭제되었습니다.");
     await loadAdminData();
   }
