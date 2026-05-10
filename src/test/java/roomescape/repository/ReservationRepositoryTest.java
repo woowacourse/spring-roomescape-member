@@ -59,17 +59,18 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 특정_날짜와_시간에_예약이_존재하는지_확인한다() {
+    void 특정_테마의_특정_날짜와_시간에_예약이_존재하는지_확인한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         reservationRepository.save(Reservation.of("이프", date, theme, reservationTime));
 
         // when & then
         Long otherTimeId = 99L;
+        Long themeId = theme.getId();
         LocalDate otherDate = date.plusDays(1);
-        assertThat(reservationRepository.existByDateAndTimeId(date, 1L)).isTrue();
-        assertThat(reservationRepository.existByDateAndTimeId(date, otherTimeId)).isFalse();
-        assertThat(reservationRepository.existByDateAndTimeId(otherDate, 1L)).isFalse();
+        assertThat(reservationRepository.existByDateAndTimeIdAndThemeId(date, 1L, themeId)).isTrue();
+        assertThat(reservationRepository.existByDateAndTimeIdAndThemeId(date, otherTimeId, themeId)).isFalse();
+        assertThat(reservationRepository.existByDateAndTimeIdAndThemeId(otherDate, 1L, themeId)).isFalse();
     }
 
     @Test

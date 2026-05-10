@@ -10,7 +10,7 @@ public interface ReservationRepository {
 
     void deleteById(Long id);
 
-    boolean existByDateAndTimeId(LocalDate date, Long timeId);
+    boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 
     List<Reservation> findAllByPaging(int page, int size);
 }

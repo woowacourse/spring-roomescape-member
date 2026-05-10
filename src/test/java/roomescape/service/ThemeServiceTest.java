@@ -92,6 +92,43 @@ class ThemeServiceTest {
                 .doesNotThrowAnyException();
     }
 
+    @Test
+    void 활성_테마_목록을_페이징_조건에_맞게_조회한다() {
+        // given
+        ThemeResponse first = themeService.register(new ThemeRequest("첫번째", "첫번째 설명", "http://image1.png"));
+        ThemeResponse second = themeService.register(new ThemeRequest("두번째", "두번째 설명", "http://image2.png"));
+        ThemeResponse inactive = themeService.register(new ThemeRequest("세번째", "세번째 설명", "http://image3.png"));
+        themeService.remove(inactive.id());
+
+        // when
+        List<ThemeResponse> responses = themeService.getAllActiveThemesByPaging(0, 10);
+
+        // then
+        assertThat(responses)
+                .extracting(ThemeResponse::id)
+                .containsExactly(first.id(), second.id());
+    }
+
+    @Test
+    void 인기_테마_목록을_조회_개수만큼_조회한다() {
+        // given
+        ThemeResponse first = themeService.register(new ThemeRequest("첫번째", "첫번째 설명", "http://image1.png"));
+        ThemeResponse second = themeService.register(new ThemeRequest("두번째", "두번째 설명", "http://image2.png"));
+        ThemeResponse inactive = themeService.register(new ThemeRequest("세번째", "세번째 설명", "http://image3.png"));
+        themeService.remove(inactive.id());
+
+        // when
+        List<ThemeResponse> responses = themeService.getPopularThemes(LocalDate.now().minusDays(7), LocalDate.now(), 1);
+
+        // then
+        assertThat(responses)
+                .extracting(ThemeResponse::id)
+                .containsExactly(first.id());
+        assertThat(responses)
+                .extracting(ThemeResponse::id)
+                .doesNotContain(second.id(), inactive.id());
+    }
+
     @ParameterizedTest
     @MethodSource("provideReservationStatusScenarios")
     void 테마별_예약_가능한_시간을_조회_시_시점에_따라_상태를_처리한다(LocalDate date, boolean expectedForEarlyTime,

@@ -30,7 +30,7 @@ public class ReservationService {
         Theme theme = findThemeOrThrow(request.themeId());
         ReservationTime time = findTimeOrThrow(request.timeId());
 
-        validateDuplicateReservation(request.date(), time);
+        validateDuplicateReservation(request.date(), time, theme);
 
         Reservation reservation = Reservation.of(request.name(), request.date(), theme, time);
         return ReservationResponse.from(reservationRepository.save(reservation));
@@ -48,8 +48,8 @@ public class ReservationService {
                 .toList();
     }
 
-    private void validateDuplicateReservation(LocalDate date, ReservationTime time) {
-        if (reservationRepository.existByDateAndTimeId(date, time.getId())) {
+    private void validateDuplicateReservation(LocalDate date, ReservationTime time, Theme theme) {
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(date, time.getId(), theme.getId())) {
             throw new DuplicateEntityException("이미 예약 된 날짜입니다. (%s-%s)", date, time.getStartAt());
         }
     }

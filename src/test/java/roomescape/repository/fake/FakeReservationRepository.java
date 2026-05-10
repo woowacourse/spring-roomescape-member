@@ -32,10 +32,13 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByDateAndTimeId(LocalDate date, Long timeId) {
+    public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         return reservations.stream()
-                .anyMatch(reservation -> reservation.getDate().equals(date) &&
-                        reservation.getTime().getId().equals(timeId));
+                .anyMatch(reservation ->
+                        reservation.getDate().equals(date)
+                                && reservation.getTime().getId().equals(timeId)
+                                && reservation.getTheme().getId().equals(themeId)
+                );
     }
 
     @Override

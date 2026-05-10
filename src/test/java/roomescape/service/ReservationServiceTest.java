@@ -91,15 +91,15 @@ class ReservationServiceTest {
     @Test
     void 같은_날짜와_같은_시간에_특정_테마로_예약을_시도하면_중복_예외가_발생한다() {
         // given: 1번 이미 10시 예약이 하나 존재함
-        themeRepository.save(ThemeFixture.createDefaultTheme());
-        reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());
+        Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
+        ReservationTime time = reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());
 
-        Reservation existingReservation = ReservationFixture.createDefaultReservationWithName("기존 예약자");
+        Reservation existingReservation = Reservation.of("기존 예약자", LocalDate.now().plusDays(1), theme, time);
         reservationRepository.save(existingReservation);
 
         LocalDate date = existingReservation.getDate();
 
-        ReservationRequest request = new ReservationRequest("새예약자", date, 1L, 1L);
+        ReservationRequest request = new ReservationRequest("새예약자", date, theme.getId(), time.getId());
 
         // when & then: DuplicateEntityException 발생 확인
         assertThatThrownBy(() -> reservationService.reserve(request))

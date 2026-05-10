@@ -134,4 +134,22 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
         assertThat(popularThemes.get(1).getId()).isEqualTo(1L);
         assertThat(popularThemes.get(2).getId()).isEqualTo(3L);
     }
+
+    @Test
+    void 예약_수가_같은_인기_테마는_ID_오름차순으로_조회한다() {
+        // given
+        dataSource.insertThemesByCount(3);
+        dataSource.insertTimeByStartToEndWithOneHourRotation(10, 12);
+        dataSource.insertReservation("바니", LocalDate.now(), 2L, 1L);
+        dataSource.insertReservation("이프", LocalDate.now(), 1L, 2L);
+
+        // when
+        LocalDate now = LocalDate.now();
+        List<Theme> popularThemes = themeRepository.findTopThemesByReservationCount(now.minusDays(1), now.plusDays(1), 3);
+
+        // then
+        assertThat(popularThemes)
+                .extracting(Theme::getId)
+                .containsExactly(1L, 2L, 3L);
+    }
 }

@@ -65,7 +65,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAllByPaging(int page, int size) {
         int offset = page * size;
-        String sql = "SELECT * FROM reservation_time LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM reservation_time ORDER BY start_at ASC, id ASC LIMIT ? OFFSET ?";
         return jdbcTemplate.query(sql, RESERVATION_TIME_MAPPER, size, offset);
     }
 

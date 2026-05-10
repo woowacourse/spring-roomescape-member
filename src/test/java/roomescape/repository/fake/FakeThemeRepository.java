@@ -53,7 +53,7 @@ public class FakeThemeRepository implements ThemeRepository {
 
         return themes.stream()
                 .filter(Theme::isActive)
-                .sorted(Comparator.comparing(Theme::getId).reversed())
+                .sorted(Comparator.comparing(Theme::getId))
                 .skip(offset)
                 .limit(size)
                 .toList();
@@ -63,6 +63,7 @@ public class FakeThemeRepository implements ThemeRepository {
     public List<Theme> findTopThemesByReservationCount(LocalDate startDate, LocalDate endDate, int limit) {
         return themes.stream()
                 .filter(Theme::isActive)
+                .sorted(Comparator.comparing(Theme::getId))
                 .limit(limit)
                 .toList();
     }

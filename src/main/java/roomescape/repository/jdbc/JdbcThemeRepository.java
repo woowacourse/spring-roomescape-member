@@ -79,7 +79,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAllActiveThemesByPaging(int page, int size) {
         int offset = page * size;
-        String sql = "SELECT * FROM theme WHERE is_active = 1 LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM theme WHERE is_active = 1 ORDER BY id ASC LIMIT ? OFFSET ?";
         return jdbcTemplate.query(sql, THEME_MAPPER, size, offset);
     }
 
@@ -98,7 +98,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                           AND r.date BETWEEN ? AND ?
                     WHERE t.is_active = 1
                     GROUP BY t.id, t.name, t.description, t.thumbnail_image_url, t.is_active
-                    ORDER BY COUNT(r.id) DESC
+                    ORDER BY COUNT(r.id) DESC, t.id ASC
                     LIMIT ?
                 """;
 

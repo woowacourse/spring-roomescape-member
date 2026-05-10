@@ -83,14 +83,17 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
     @Test
     void 모든_시간_목록을_조회한다() {
         // given
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
 
         // when
         List<ReservationTime> times = reservationTimeRepository.findAllByPaging(0, 10);
 
         // then
         assertThat(times).hasSize(2);
+        assertThat(times)
+                .extracting(ReservationTime::getStartAt)
+                .containsExactly(LocalTime.of(10, 0), LocalTime.of(11, 0));
     }
 
     @Test
