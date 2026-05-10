@@ -2,21 +2,16 @@ package roomescape.repository.theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
-import roomescape.domain.vo.MemberName;
-import roomescape.domain.vo.ReservationLocalDate;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.repository.reservation.JdbcReservationRepository;
@@ -88,32 +83,19 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
+    @Sql("/theme-popular-test-data.sql")
     void 최근_1주일간_예약이_많은_테마_상위_10개를_조회할_수_있다() {
         // given
-        List<ReservationTime> times = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            times.add(timeRepository.createReservationTime(new ReservationTime(LocalTime.of(i, 0))));
-        }
-        List<Theme> tenPopularThemesOrderByRank = createAndSaveTenThemes();
-
-        for (int i = 0; i < tenPopularThemesOrderByRank.size(); i++) {
-            for (int j = 0; j < i + 1; j++) {
-                reservationRepository.createReservation(new Reservation(
-                    null,
-                    new MemberName("name"),
-                    new ReservationLocalDate(LocalDate.now().minusDays(1)),
-                    times.get(j),
-                    tenPopularThemesOrderByRank.get(i)
-                ));
-            }
-        }
-        Collections.reverse(tenPopularThemesOrderByRank);
+        List<Theme> expected = themeRepository.findAll()
+            .stream()
+            .sorted(Comparator.comparingLong(Theme::getId).reversed())
+            .toList();
 
         // when
         List<Theme> themes = themeRepository.findWeekPopularThemesOrderByRank(10);
 
         // then
-        assertThat(themes).containsExactlyElementsOf(tenPopularThemesOrderByRank);
+        assertThat(themes).containsExactlyElementsOf(expected);
     }
 
     private List<Theme> createAndSaveTenThemes() {
