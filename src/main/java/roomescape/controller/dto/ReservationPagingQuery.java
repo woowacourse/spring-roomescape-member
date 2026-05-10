@@ -17,10 +17,6 @@ public record ReservationPagingQuery(
         validateOffset(page, size);
     }
 
-    public static ReservationPagingQuery of(int page, int size) {
-        return new ReservationPagingQuery(page, size);
-    }
-
     public int offset() {
         return page * size;
     }

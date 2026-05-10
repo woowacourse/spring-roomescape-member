@@ -1,6 +1,5 @@
 package roomescape.controller.dto;
 
-import java.time.LocalDate;
 import roomescape.global.exception.InvalidRankingConditionException;
 
 public record ThemeRankingQuery(
@@ -16,10 +15,6 @@ public record ThemeRankingQuery(
     public ThemeRankingQuery {
         validateDays(days);
         validateLimit(limit);
-    }
-
-    public static ThemeRankingQuery of(int days, int limit) {
-        return new ThemeRankingQuery(days, limit);
     }
 
     private static void validateDays(int days) {

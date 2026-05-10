@@ -29,7 +29,7 @@ public class ReservationController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        ReservationPagingQuery query = ReservationPagingQuery.of(page, size);
+        ReservationPagingQuery query = new ReservationPagingQuery(page, size);
         List<ReservationResponse> reservations = reservationService.getReservations(query);
         return ResponseEntity.ok(reservations);
     }
