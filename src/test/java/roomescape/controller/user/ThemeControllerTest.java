@@ -52,7 +52,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
         // when & then
         ThemeTimeResponses response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .queryParam("date", "2026-05-06")
-                .when().get("/api/themes/1")
+                .when().get("/api/themes/1/times")
                 .then().log().all()
                 .status(HttpStatus.OK)
                 .extract().as(new TypeRef<>() {
@@ -67,7 +67,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .queryParam("date", "2026-05-06")
-                .when().get("/api/themes/" + invalidThemeId)
+                .when().get("/api/themes/" + invalidThemeId + "/times")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body(containsString("테마 조회 식별자는 양수여야 합니다."));
@@ -77,7 +77,7 @@ class ThemeControllerTest extends BaseControllerUnitTest {
     void 테마_시간대_조회_요청_시_날짜가_없으면_400_BAD_REQUEST() {
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
-                .when().get("/api/themes/1")
+                .when().get("/api/themes/1/times")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body(containsString("date 파라미터가 누락 되었습니다."));

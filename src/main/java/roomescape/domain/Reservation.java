@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -27,10 +26,9 @@ public class Reservation {
 
     public static Reservation of(String name, LocalDate date, Theme theme, ReservationTime time) {
         Reservation reservation = new Reservation(null, name, date, theme, time);
-        LocalDateTime reservationDateTime = time.toReservationDateTime(date);
 
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("현재보다 이전 날짜로 예약할 수 없습니다.");
+        if (!time.isAvailableAt(date)) {
+            throw new IllegalArgumentException("현재보다 이전 시간대로 예약할 수 없습니다.");
         }
 
         return reservation;

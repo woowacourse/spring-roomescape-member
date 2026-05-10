@@ -1,16 +1,18 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.global.exception.DuplicateEntityException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.repository.dto.TimeSlotProjection;
 import roomescape.web.dto.ThemeRequest;
 import roomescape.web.dto.ThemeResponse;
 import roomescape.web.dto.ThemeTimesResponse;
@@ -21,6 +23,7 @@ import roomescape.web.dto.ThemeTimesResponse;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
     @Transactional
@@ -41,10 +44,16 @@ public class ThemeService {
     }
 
     public List<ThemeTimesResponse> getThemeReservationStatus(Long id, LocalDate date) {
-        return reservationTimeRepository.findTimesByThemeWithReservationStatus(id, date)
-                .stream()
-                .map(projection -> toResultWithTimeCheck(projection, date))
-                .toList();
+        Set<Long> reservedTimeIds = reservationRepository.findReservedTimeIdsByThemeIdAndDate(id, date);
+
+        List<ThemeTimesResponse> responses = new ArrayList<>();
+        reservationTimeRepository.findTimeSlotsForReservationStatus().forEach(
+                time -> {
+                    boolean reservable = isReservable(time, date, reservedTimeIds);
+                    responses.add(ThemeTimesResponse.of(time, reservable));
+                });
+
+        return responses;
     }
 
     public List<ThemeResponse> getAllActiveThemesByPaging(int page, int size) {
@@ -61,14 +70,8 @@ public class ThemeService {
                 .toList();
     }
 
-    private ThemeTimesResponse toResultWithTimeCheck(TimeSlotProjection projection, LocalDate date) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startAt = LocalDateTime.of(date, projection.startAt());
-
-        if (now.isAfter(startAt)) {
-            return ThemeTimesResponse.of(projection, false);
-        }
-        return ThemeTimesResponse.from(projection);
+    private boolean isReservable(ReservationTime time, LocalDate date, Set<Long> reservedTimeIds) {
+        return time.isAvailableAt(date) && !reservedTimeIds.contains(time.getId());
     }
 
     private void validateDuplicateName(String name) {

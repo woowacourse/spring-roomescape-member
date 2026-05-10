@@ -13,10 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.global.exception.DuplicateEntityException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.repository.fake.FakeReservationRepository;
 import roomescape.repository.fake.FakeReservationTimeRepository;
 import roomescape.repository.fake.FakeThemeRepository;
 import roomescape.web.dto.ThemeRequest;
@@ -26,6 +30,7 @@ import roomescape.web.dto.ThemeTimesResponse;
 class ThemeServiceTest {
 
     private ThemeRepository themeRepository;
+    private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeService themeService;
 
@@ -42,8 +47,9 @@ class ThemeServiceTest {
     @BeforeEach
     void setUp() {
         this.themeRepository = new FakeThemeRepository();
+        this.reservationRepository = new FakeReservationRepository();
         this.reservationTimeRepository = new FakeReservationTimeRepository();
-        this.themeService = new ThemeService(themeRepository, reservationTimeRepository);
+        this.themeService = new ThemeService(themeRepository, reservationRepository, reservationTimeRepository);
     }
 
     @Test
@@ -152,5 +158,25 @@ class ThemeServiceTest {
         assertThat(response)
                 .filteredOn(time -> time.startAt().isAfter(nowTime))
                 .allSatisfy(time -> assertThat(time.isReservable()).isEqualTo(expectedForLateTime));
+    }
+
+    @Test
+    void 테마별_예약_가능한_시간_조회_시_이미_예약된_시간은_예약_불가능하다() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        Theme theme = new Theme(1L, "공포테마", "설명", "http://image.png", true);
+        ReservationTime reservedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
+        reservationRepository.save(Reservation.of("이프", date, theme, reservedTime));
+
+        // when
+        List<ThemeTimesResponse> response = themeService.getThemeReservationStatus(theme.getId(), date);
+
+        // then
+        assertThat(response)
+                .filteredOn(time -> time.id().equals(reservedTime.getId()))
+                .singleElement()
+                .extracting(ThemeTimesResponse::isReservable)
+                .isEqualTo(false);
     }
 }

@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,5 +115,18 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
                 .hasSize(1)
                 .extracting(Reservation::getName)
                 .containsExactly("두번째");
+    }
+
+    @Test
+    void 특정_테마와_날짜에_예약된_시간_식별자를_조회한다() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        reservationRepository.save(Reservation.of("이프", date, theme, reservationTime));
+
+        // when
+        Set<Long> reservedTimeIds = reservationRepository.findReservedTimeIdsByThemeIdAndDate(theme.getId(), date);
+
+        // then
+        assertThat(reservedTimeIds).containsExactly(reservationTime.getId());
     }
 }

@@ -1,6 +1,5 @@
 package roomescape.repository.fake;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.dto.TimeSlotProjection;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
@@ -57,9 +55,9 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<TimeSlotProjection> findTimesByThemeWithReservationStatus(Long themeId, LocalDate date) {
+    public List<ReservationTime> findTimeSlotsForReservationStatus() {
         return reservationTimes.stream()
-                .map(time -> new TimeSlotProjection(time.getId(), time.getStartAt(), true))
+                .sorted(Comparator.comparing(ReservationTime::getStartAt).thenComparing(ReservationTime::getId))
                 .toList();
     }
 }

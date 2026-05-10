@@ -30,4 +30,8 @@ public class ReservationTime {
     public LocalDateTime toReservationDateTime(LocalDate date) {
         return LocalDateTime.of(date, this.startAt);
     }
+
+    public boolean isAvailableAt(LocalDate date) {
+        return !toReservationDateTime(date).isBefore(LocalDateTime.now());
+    }
 }

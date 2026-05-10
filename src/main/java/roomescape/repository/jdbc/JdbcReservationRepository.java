@@ -5,7 +5,9 @@ import static roomescape.repository.jdbc.ReservationEntityMapper.RESERVATION_ROW
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -67,5 +69,16 @@ public class JdbcReservationRepository implements ReservationRepository {
                     LIMIT ? OFFSET ?
                 """;
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, size, offset);
+    }
+
+    @Override
+    public Set<Long> findReservedTimeIdsByThemeIdAndDate(Long themeId, LocalDate date) {
+        String sql = """
+                SELECT time_id
+                FROM reservation
+                WHERE theme_id = ? AND date = ?
+                """;
+
+        return new HashSet<>(jdbcTemplate.queryForList(sql, Long.class, themeId, date));
     }
 }
