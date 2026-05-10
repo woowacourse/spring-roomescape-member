@@ -16,10 +16,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.fixture.ThemeFixture;
+import roomescape.support.TestClockConfig;
 import roomescape.support.TestDataHelper;
 
+@Import(TestClockConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ThemeApiTest {
 
@@ -165,7 +168,7 @@ public class ThemeApiTest {
         Long theme3Id = testHelper.insertTheme(ThemeFixture.themeCreateCommand(3));
         Long theme4Id = testHelper.insertTheme(ThemeFixture.themeCreateCommand(4));
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = TestClockConfig.FIXED_DATE;
         LocalDate oneDayAgo = today.minusDays(1);
         LocalDate twoDaysAgo = today.minusDays(2);
         LocalDate threeDaysAgo = today.minusDays(3);

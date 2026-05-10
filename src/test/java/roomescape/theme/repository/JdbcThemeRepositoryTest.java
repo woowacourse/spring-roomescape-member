@@ -138,7 +138,8 @@ public class JdbcThemeRepositoryTest {
                 .startAt(LocalTime.of(10, 0))
                 .build());
 
-        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate today = LocalDate.of(2026, 5, 10);
+        LocalDate yesterday = today.minusDays(1);
         Theme theme1 = themeRepository.save(Theme.builder().name("theme name 1").description("theme description 1").thumbnailImgUrl("theme img url 1").build());
         Theme theme2 = themeRepository.save(Theme.builder().name("theme name 2").description("theme description 2").thumbnailImgUrl("theme img url 2").build());
 
@@ -146,7 +147,6 @@ public class JdbcThemeRepositoryTest {
         testHelper.insertReservation("카야", yesterday, theme2.getId(), time2.getId());
         testHelper.insertReservation("스타크", yesterday, theme1.getId(), time2.getId());
 
-        LocalDate today = LocalDate.now();
         List<PopularTheme> popularThemes = themeRepository.findTop10PopularThemesBetween(today.minusWeeks(1), today.minusDays(1));
 
         SoftAssertions.assertSoftly(assertSoftly -> {

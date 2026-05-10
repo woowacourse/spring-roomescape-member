@@ -1,6 +1,7 @@
 package roomescape.reservation.presentation.controller;
 
 import jakarta.validation.Valid;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import roomescape.reservation.presentation.dto.ReservationResponse;
 @RestController
 public class ReservationController {
 
+    private final Clock clock;
     private final ReservationService reservationService;
 
     @GetMapping
@@ -41,7 +43,7 @@ public class ReservationController {
         ReservationCreateCommand createCommand = request.toCommand();
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ReservationResponse.from(reservationService.save(createCommand, LocalDateTime.now())));
+                .body(ReservationResponse.from(reservationService.save(createCommand, LocalDateTime.now(clock))));
     }
 
     @DeleteMapping("/{id}")
