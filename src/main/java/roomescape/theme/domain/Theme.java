@@ -3,8 +3,8 @@ package roomescape.theme.domain;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import roomescape.theme.domain.exception.InvalidThemeException;
 
-@Builder
 @Getter
 @EqualsAndHashCode(of = {"name", "description"})
 public class Theme {
@@ -14,6 +14,14 @@ public class Theme {
     private final String description;
     private final String thumbnailImgUrl;
 
+    @Builder
+    public Theme(Long id, String name, String description, String thumbnailImgUrl) {
+        this.id = id;
+        this.name = requireName(name);
+        this.description = requireDescription(description);
+        this.thumbnailImgUrl = requireThumbnailImgUrl(thumbnailImgUrl);
+    }
+
     public Theme withId(Long generatedId) {
         return Theme.builder()
                 .id(generatedId)
@@ -21,5 +29,26 @@ public class Theme {
                 .description(this.description)
                 .thumbnailImgUrl(this.thumbnailImgUrl)
                 .build();
+    }
+
+    private static String requireName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidThemeException("테마 이름은 비어있을 수 없습니다.");
+        }
+        return name;
+    }
+
+    private static String requireDescription(String description) {
+        if (description == null || description.isBlank()) {
+            throw new InvalidThemeException("테마 설명은 비어있을 수 없습니다.");
+        }
+        return description;
+    }
+
+    private static String requireThumbnailImgUrl(String thumbnailImgUrl) {
+        if (thumbnailImgUrl == null || thumbnailImgUrl.isBlank()) {
+            throw new InvalidThemeException("썸네일 이미지 URL은 비어있을 수 없습니다.");
+        }
+        return thumbnailImgUrl;
     }
 }

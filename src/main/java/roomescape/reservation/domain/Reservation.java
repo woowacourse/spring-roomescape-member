@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import roomescape.reservation.domain.exception.InvalidReservationException;
 
-@Builder
 @Getter
 @EqualsAndHashCode(of = {"name", "date", "themeId", "timeId"})
 public class Reservation {
@@ -16,6 +16,15 @@ public class Reservation {
     private final Long themeId;
     private final Long timeId;
 
+    @Builder
+    public Reservation(Long id, String name, LocalDate date, Long themeId, Long timeId) {
+        this.id = id;
+        this.name = requireName(name);
+        this.date = requireDate(date);
+        this.themeId = requireTheme(themeId);
+        this.timeId = requireTime(timeId);
+    }
+
     public Reservation withId(Long generatedId) {
         return Reservation.builder()
                 .id(generatedId)
@@ -24,5 +33,33 @@ public class Reservation {
                 .themeId(this.themeId)
                 .timeId(this.timeId)
                 .build();
+    }
+
+    private static String requireName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidReservationException("이름은 비어있을 수 없습니다.");
+        }
+        return name;
+    }
+
+    private static LocalDate requireDate(LocalDate date) {
+        if (date == null) {
+            throw new InvalidReservationException("날짜는 비어있을 수 없습니다.");
+        }
+        return date;
+    }
+
+    private static Long requireTheme(Long themeId) {
+        if (themeId == null || themeId <= 0) {
+            throw new InvalidReservationException("테마ID는 올바른 값이어야 합니다.");
+        }
+        return themeId;
+    }
+
+    private static Long requireTime(Long timeId) {
+        if (timeId == null || timeId <= 0) {
+            throw new InvalidReservationException("시간ID는 올바른 값이어야 합니다.");
+        }
+        return timeId;
     }
 }
