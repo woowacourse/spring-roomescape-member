@@ -47,7 +47,7 @@ public class ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> findAll(int page, int size) {
+    public List<Reservation> findAll(int size, int offset) {
         String sql = """
                 SELECT
                     r.id,
@@ -68,7 +68,7 @@ public class ReservationRepository {
                 """;
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("size", size)
-                .addValue("offset", page * size);
+                .addValue("offset", offset);
         return jdbcTemplate.query(sql, parameters, reservationRowMapper);
     }
 

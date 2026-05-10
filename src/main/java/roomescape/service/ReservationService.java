@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.controller.dto.ReservationPagingQuery;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.domain.Reservation;
@@ -26,8 +27,8 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public List<ReservationResponse> getReservations(int page, int size) {
-        return reservationRepository.findAll(page, size).stream()
+    public List<ReservationResponse> getReservations(ReservationPagingQuery query) {
+        return reservationRepository.findAll(query.size(), query.offset()).stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
