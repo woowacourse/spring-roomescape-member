@@ -31,3 +31,6 @@ CREATE TABLE IF NOT EXISTS reservation
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     UNIQUE (theme_id, date, time_id)
 );
+
+CREATE INDEX idx_reservation_date ON reservation(date);
+CREATE INDEX idx_reservation_user_name ON reservation(user_name);
