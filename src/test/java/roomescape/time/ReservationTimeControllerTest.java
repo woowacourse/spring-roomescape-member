@@ -49,7 +49,7 @@ class ReservationTimeControllerTest {
                         new ReservationTimeResponse(2L, LocalTime.of(11, 00))
                 ));
 
-        mockMvc.perform(get("/api/times/availability")
+        mockMvc.perform(get("/api/times/available")
                         .param("theme_id", "1")
                         .param("date", "2026-05-10")
                         .contentType(MediaType.APPLICATION_JSON))

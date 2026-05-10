@@ -56,7 +56,7 @@ class ThemeControllerTest {
                                 "방탈출이 처음이신 분들을 위한 입문 테마.",
                                 "https://example.com/themes/beginner.jpg")
                 ));
-        mockMvc.perform(get("/api/themes/popularity"))
+        mockMvc.perform(get("/api/themes/popular"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(5))

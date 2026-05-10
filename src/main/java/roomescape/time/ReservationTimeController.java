@@ -1,6 +1,5 @@
 package roomescape.time;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,7 @@ public class ReservationTimeController {
         return ResponseEntity.status(HttpStatus.OK).body(reservationTimeService.read());
     }
 
-    @GetMapping("/availability")
+    @GetMapping("/available")
     public ResponseEntity<List<ReservationTimeResponse>> readAvailableTimes(
             @RequestParam("theme_id") Long themeId,
             @RequestParam LocalDate date) {
