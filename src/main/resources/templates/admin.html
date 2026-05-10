@@ -184,11 +184,13 @@
     }
 
     async function loadThemes() {
-        renderThemes(await requestJson('/admin/themes'));
+        const response = await requestJson('/admin/themes');
+        renderThemes(response.themes);
     }
 
     async function loadTimes() {
-        renderTimes(await requestJson('/user/times'));
+        const response = await requestJson('/user/times');
+        renderTimes(response.reservationTimes);
     }
 
     themeForm.addEventListener('submit', async (event) => {

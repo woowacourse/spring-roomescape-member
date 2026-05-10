@@ -245,7 +245,8 @@
     }
 
     async function loadTimes() {
-        times = await requestJson('/user/times');
+        const response = await requestJson('/user/times');
+        times = response.reservationTimes;
     }
 
     async function loadTrendingThemes() {
@@ -274,8 +275,8 @@
     }
 
     async function loadReservations() {
-        const reservations = await requestJson('/user/reservations');
-        renderReservations(reservations);
+        const response = await requestJson('/user/reservations');
+        renderReservations(response.reservations);
     }
 
     form.addEventListener('submit', async (event) => {

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.admin.dto.AdminThemeRequest;
 import roomescape.admin.dto.AdminThemeResponse;
+import roomescape.admin.dto.AdminThemesResponse;
 import roomescape.admin.service.AdminThemeService;
 import roomescape.domain.Theme;
 
@@ -26,11 +27,12 @@ public class AdminThemeController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<List<AdminThemeResponse>> readAll() {
+    public ResponseEntity<AdminThemesResponse> readAll() {
         List<AdminThemeResponse> themes = adminThemeService.findAll().stream()
                 .map(AdminThemeResponse::from)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(themes);
+
+        return ResponseEntity.ok(new AdminThemesResponse(themes, themes.size()));
     }
 
     @GetMapping("/themes/{id}")

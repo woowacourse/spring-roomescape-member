@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.user.dto.AvailableTimeResponse;
 import roomescape.user.dto.ReservationTimeResponse;
+import roomescape.user.dto.ReservationTimesResponse;
 import roomescape.user.service.ReservationTimeService;
 
 @RestController
@@ -23,11 +24,11 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times")
-    public ResponseEntity<List<ReservationTimeResponse>> readAll() {
+    public ResponseEntity<ReservationTimesResponse> readAll() {
         List<ReservationTimeResponse> reservationTimes = timeService.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok().body(reservationTimes);
+        return ResponseEntity.ok().body(new ReservationTimesResponse(reservationTimes, reservationTimes.size()));
     }
 
     @GetMapping(value = "/times", params = {"themeId", "date"})

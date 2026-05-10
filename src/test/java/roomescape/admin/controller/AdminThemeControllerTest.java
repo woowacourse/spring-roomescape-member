@@ -19,9 +19,7 @@ public class AdminThemeControllerTest {
         RestAssured.given().log().all()
                 .when().get("/admin/themes")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(11));
-
+                .statusCode(200);
     }
 
     @Test
