@@ -18,6 +18,8 @@ import roomescape.exception.InUseEntityException;
 @Repository
 public class ReservationTimeRepository {
 
+    private static final String FK_RESERVATION_TIME_ID = "fk_reservation_time_id";
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -89,12 +91,23 @@ public class ReservationTimeRepository {
 
             return isDeleted(deletedRowCount);
         } catch (DataIntegrityViolationException exception) {
-            throw new InUseEntityException(
-                    "사용중이지 않은 시간만 제거할 수 있습니다.",
-                    "timeId = " + timeId,
-                    exception
-            );
+            if (isForeignKeyViolation(exception)) {
+                throw new InUseEntityException(
+                        "사용중이지 않은 시간만 제거할 수 있습니다.",
+                        "timeId = " + timeId,
+                        exception
+                );
+            }
+
+            throw exception;
         }
+    }
+
+    private boolean isForeignKeyViolation(DataIntegrityViolationException exception) {
+        String message = exception.getMessage();
+
+        return message != null &&
+                message.toLowerCase().contains(FK_RESERVATION_TIME_ID);
     }
 
     private boolean isDeleted(int deletedCount) {

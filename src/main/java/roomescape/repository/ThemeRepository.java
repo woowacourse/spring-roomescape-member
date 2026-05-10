@@ -19,6 +19,8 @@ import roomescape.repository.dto.ReservedTheme;
 @Repository
 public class ThemeRepository {
 
+    private static final String FK_RESERVATION_THEME_ID = "fk_reservation_theme_id";
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -97,12 +99,23 @@ public class ThemeRepository {
 
             return isDeleted(deletedRowCount);
         } catch (DataIntegrityViolationException exception) {
-            throw new InUseEntityException(
-                    "사용중이지 않은 테마만 제거할 수 있습니다.",
-                    "themeId = " + themeId,
-                    exception
-            );
+            if (isForeignKeyViolation(exception)) {
+                throw new InUseEntityException(
+                        "사용중이지 않은 테마만 제거할 수 있습니다.",
+                        "themeId = " + themeId,
+                        exception
+                );
+            }
+
+            throw exception;
         }
+    }
+
+    private boolean isForeignKeyViolation(DataIntegrityViolationException exception) {
+        String message = exception.getMessage();
+
+        return message != null &&
+                message.toLowerCase().contains(FK_RESERVATION_THEME_ID);
     }
 
     private boolean isDeleted(int deletedRowCount) {
