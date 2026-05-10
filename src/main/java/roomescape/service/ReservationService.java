@@ -30,7 +30,7 @@ public class ReservationService {
     }
 
     public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {
-        if (reservationDao.existByDateAndTimeIAndThemeId(date, timeId, themeId)) {
+        if (reservationDao.existByDateAndTimeAndThemeId(date, timeId, themeId)) {
             throw new IllegalArgumentException("이미 존재하는 예약입니다.");
         }
         ReservationTime time = reservationTimeDao.findById(timeId);

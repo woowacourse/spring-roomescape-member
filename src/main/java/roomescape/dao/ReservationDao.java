@@ -123,7 +123,7 @@ public class ReservationDao {
         return count != null && count > 0;
     }
 
-    public boolean existByDateAndTimeIAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean existByDateAndTimeAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
                 SELECT count(*) FROM reservation
                 where date = ?

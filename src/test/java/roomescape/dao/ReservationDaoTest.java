@@ -71,7 +71,7 @@ class ReservationDaoTest {
         reservationService.save("맥스", date, reservationTime.getId(), theme.getId());
 
         //when
-        boolean hasAlreadyReservation = reservationDao.existByDateAndTimeIAndThemeId(date, reservationTime.getId(),
+        boolean hasAlreadyReservation = reservationDao.existByDateAndTimeAndThemeId(date, reservationTime.getId(),
                 theme.getId());
 
         //then
