@@ -19,14 +19,14 @@ public class ThemeService {
 
     @Transactional
     public Theme create(String name, String description, String thumbnail) {
+        validateNotDuplicated(name);
         Theme theme = new Theme(name, description, thumbnail);
-        validateNotDuplicated(theme);
 
         return themeRepository.save(theme);
     }
 
-    private void validateNotDuplicated(Theme theme) {
-        if (themeRepository.existsByName(theme.getName())) {
+    private void validateNotDuplicated(String name) {
+        if (themeRepository.existsByName(name)) {
             throw new InvalidRequestException("이미 존재하는 테마 이름입니다.");
         }
     }
