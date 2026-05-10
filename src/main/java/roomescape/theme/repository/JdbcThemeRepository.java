@@ -15,8 +15,6 @@ import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
-    private static final String THEME_CREATE_FAILED_MESSAGE = "테마 생성에 실패했습니다.";
-
     private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) ->
             new Theme(
                     resultSet.getLong("id"),
@@ -141,14 +139,14 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     private void validateCreatedRowCount(int rowCount) {
         if (rowCount != 1) {
-            throw new InfrastructureException(THEME_CREATE_FAILED_MESSAGE);
+            throw new InfrastructureException("테마 생성에 실패했습니다.");
         }
     }
 
     private Long getGeneratedId(KeyHolder keyHolder) {
         Number key = keyHolder.getKey();
         if (key == null) {
-            throw new InfrastructureException(THEME_CREATE_FAILED_MESSAGE);
+            throw new InfrastructureException("테마 생성에 실패했습니다.");
         }
         return key.longValue();
     }

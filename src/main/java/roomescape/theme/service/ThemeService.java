@@ -11,8 +11,6 @@ import java.util.List;
 
 @Service
 public class ThemeService {
-    private static final String THEME_NAME_ALREADY_EXISTS_MESSAGE = "이미 존재하는 테마 이름입니다.";
-
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
@@ -29,7 +27,7 @@ public class ThemeService {
 
     private void validateNotDuplicated(Theme theme) {
         if (themeRepository.existsByName(theme.getName())) {
-            throw new InvalidRequestException(THEME_NAME_ALREADY_EXISTS_MESSAGE);
+            throw new InvalidRequestException("이미 존재하는 테마 이름입니다.");
         }
     }
 

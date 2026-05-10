@@ -17,8 +17,6 @@ import java.util.List;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
-    private static final String RESERVATION_CREATE_FAILED_MESSAGE = "예약 생성에 실패했습니다.";
-
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),
@@ -149,14 +147,14 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private void validateCreatedRowCount(int rowCount) {
         if (rowCount != 1) {
-            throw new InfrastructureException(RESERVATION_CREATE_FAILED_MESSAGE);
+            throw new InfrastructureException("예약 생성에 실패했습니다.");
         }
     }
 
     private Long getGeneratedId(KeyHolder keyHolder) {
         Number key = keyHolder.getKey();
         if (key == null) {
-            throw new InfrastructureException(RESERVATION_CREATE_FAILED_MESSAGE);
+            throw new InfrastructureException("예약 생성에 실패했습니다.");
         }
         return key.longValue();
     }

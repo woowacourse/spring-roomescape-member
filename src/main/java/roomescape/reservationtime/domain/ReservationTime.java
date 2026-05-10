@@ -8,10 +8,6 @@ import java.util.Objects;
 
 @Getter
 public class ReservationTime {
-    private static final String INVALID_RESERVATION_TIME_MESSAGE = "예약 시간은 비어 있을 수 없습니다.";
-    private static final String INVALID_RESERVATION_TIME_ID_MESSAGE = "예약 시간 id는 비어 있을 수 없습니다.";
-    private static final String RESERVATION_TIME_ALREADY_HAS_ID_MESSAGE = "이미 id가 존재하는 예약 시간입니다.";
-
     private final Long id;
     private final LocalTime startAt;
 
@@ -29,7 +25,7 @@ public class ReservationTime {
         validateId(id);
 
         if (this.id != null) {
-            throw new InvalidRequestException(RESERVATION_TIME_ALREADY_HAS_ID_MESSAGE);
+            throw new InvalidRequestException("이미 id가 존재하는 예약 시간입니다.");
         }
 
         return new ReservationTime(id, startAt);
@@ -37,13 +33,13 @@ public class ReservationTime {
 
     private void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new InvalidRequestException(INVALID_RESERVATION_TIME_MESSAGE);
+            throw new InvalidRequestException("예약 시간은 비어 있을 수 없습니다.");
         }
     }
 
     private void validateId(Long id) {
         if (id == null) {
-            throw new InvalidRequestException(INVALID_RESERVATION_TIME_ID_MESSAGE);
+            throw new InvalidRequestException("예약 시간 id는 비어 있을 수 없습니다.");
         }
     }
 

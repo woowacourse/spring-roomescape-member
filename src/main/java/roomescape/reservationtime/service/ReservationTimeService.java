@@ -16,9 +16,6 @@ import java.util.List;
 
 @Service
 public class ReservationTimeService {
-    private static final String RESERVATION_TIME_ALREADY_EXISTS_MESSAGE = "이미 존재하는 예약 시간입니다.";
-    private static final String THEME_NOT_FOUND_MESSAGE = "존재하지 않는 테마입니다.";
-
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -42,7 +39,7 @@ public class ReservationTimeService {
 
     private void validateNotDuplicated(ReservationTime reservationTime) {
         if (reservationTimeRepository.existsByStartAt(reservationTime.getStartAt())) {
-            throw new InvalidRequestException(RESERVATION_TIME_ALREADY_EXISTS_MESSAGE);
+            throw new InvalidRequestException("이미 존재하는 예약 시간입니다.");
         }
     }
 
@@ -75,7 +72,7 @@ public class ReservationTimeService {
 
     private void validateThemeExists(Long themeId) {
         if (!themeRepository.existsById(themeId)) {
-            throw new NotFoundException(THEME_NOT_FOUND_MESSAGE);
+            throw new NotFoundException("존재하지 않는 테마입니다.");
         }
     }
 }
