@@ -32,22 +32,22 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    Reservation save(String name, LocalDate date, ReservationTime time, Theme theme) {
+    Reservation save(Reservation reservation) {
         String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, name);
-            ps.setObject(2, date);
-            ps.setLong(3, time.id());
-            ps.setLong(4, theme.id());
+            ps.setString(1, reservation.getName());
+            ps.setObject(2, reservation.getDate());
+            ps.setLong(3, reservation.getTime().id());
+            ps.setLong(4, reservation.getTheme().id());
             return ps;
         }, keyHolder);
 
         long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        return new Reservation(generatedId, name, date, time, theme);
+        return new Reservation(generatedId, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     List<Reservation> findAll() {

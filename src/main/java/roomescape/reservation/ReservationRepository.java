@@ -2,10 +2,6 @@ package roomescape.reservation;
 
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
-import roomescape.reservationtime.ReservationTime;
-import roomescape.theme.Theme;
-
-import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -20,8 +16,8 @@ public class ReservationRepository {
         return reservationDao.findAll();
     }
 
-    public Reservation save(Theme theme, String name, LocalDate date, ReservationTime time) {
-        return reservationDao.save(name, date, time, theme);
+    public Reservation save(Reservation reservation) {
+        return reservationDao.save(reservation);
     }
 
     public void delete(long id) {
