@@ -9,12 +9,15 @@ public record ThemeResponse(
         String thumbnailUrl,
         Long runtime
 ) {
+
     public static ThemeResponse from(Theme theme) {
         return new ThemeResponse(
                 theme.getId(),
                 theme.getName(),
                 theme.getDescription(),
                 theme.getThumbnailUrl(),
-                theme.getRuntime().toHours());
+                theme.getRuntime().toMinutes()
+        );
     }
+
 }

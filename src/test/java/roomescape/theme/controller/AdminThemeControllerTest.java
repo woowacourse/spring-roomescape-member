@@ -30,7 +30,7 @@ class AdminThemeControllerTest {
                 .body("name", is("테마"))
                 .body("description", is("테마 설명"))
                 .body("thumbnailUrl", is("https://example.com/theme.png"))
-                .body("runtime", is(1));
+                .body("runtime", is(60));
     }
 
     @Test
