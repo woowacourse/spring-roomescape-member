@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -63,17 +64,17 @@ public class ThemeQueryingDao {
                 INNER JOIN (
                     SELECT r.theme_id
                     FROM reservation as r
-                    WHERE r.created_at >= :created_at
+                    WHERE r.date >= :filtered
                     GROUP BY r.theme_id
                     ORDER BY count(1) DESC
                     LIMIT :limit
                 ) AS top_themes ON t.id = top_themes.theme_id;
                 """;
 
-        LocalDateTime filtered = LocalDateTime.now().minusDays(period);
+        LocalDate filtered = LocalDate.now().minusDays(period);
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("limit", limit)
-                .addValue("created_at", filtered);
+                .addValue("filtered", filtered);
 
         return jdbcTemplate.query(sql, param, themeRowMapper);
     }
