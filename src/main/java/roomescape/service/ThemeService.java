@@ -45,7 +45,7 @@ public class ThemeService {
 
     public List<ThemeResponse> readRanks() {
         LocalDate currentDay = LocalDate.now().minusDays(1);
-        LocalDate lastWeekDay = currentDay.minusWeeks(1);
+        LocalDate lastWeekDay = LocalDate.now().minusWeeks(1);
         List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(currentDay.toString(),
                 lastWeekDay.toString(),
                 RANKS_LIMIT_COUNT);

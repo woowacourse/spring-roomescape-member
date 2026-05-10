@@ -26,5 +26,4 @@ public class ThemeTest {
         Assertions.assertThrows(IllegalArgumentException.class, () ->
                 new Theme(1L, name, "아이의 울음소리", "https://fake.com"));
     }
-
 }

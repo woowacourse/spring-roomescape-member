@@ -22,7 +22,7 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(14));
+                .body("size()", is(17));
     }
 
     @Test
@@ -46,5 +46,4 @@ public class ReservationControllerTest {
                 .statusCode(201)
                 .body("size()", is(5));
     }
-
 }

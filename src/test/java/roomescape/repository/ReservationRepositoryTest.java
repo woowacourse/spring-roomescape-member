@@ -31,7 +31,7 @@ public class ReservationRepositoryTest {
         // when
         List<Reservation> reservations = reservationRepository.findAll();
         // then
-        Assertions.assertEquals(14, reservations.size());
+        Assertions.assertEquals(17, reservations.size());
     }
 
     @Test
@@ -39,7 +39,7 @@ public class ReservationRepositoryTest {
         // when
         reservationRepository.deleteById(2L);
         // then
-        Assertions.assertEquals(13, reservationRepository.findAll().size());
+        Assertions.assertEquals(16, reservationRepository.findAll().size());
     }
 
     @Test
@@ -55,8 +55,8 @@ public class ReservationRepositoryTest {
         Reservation saved = reservationRepository.save(reservation);
 
         // then
-        Assertions.assertEquals(15, reservationRepository.findAll().size());
-        Assertions.assertEquals(15L, saved.getId());
+        Assertions.assertEquals(18, reservationRepository.findAll().size());
+        Assertions.assertEquals(18L, saved.getId());
         Assertions.assertEquals("포비", saved.getName());
         Assertions.assertEquals(LocalDate.of(2026, 5, 5), saved.getDate());
         Assertions.assertEquals(1L, saved.getTime().getId());

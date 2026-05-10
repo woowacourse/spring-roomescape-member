@@ -48,6 +48,4 @@ public class TimeServiceTest {
         Assertions.assertThatThrownBy(() -> timeService.register(timeRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-
-
 }

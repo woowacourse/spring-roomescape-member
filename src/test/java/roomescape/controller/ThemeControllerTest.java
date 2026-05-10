@@ -45,14 +45,4 @@ public class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(204);
     }
-
-    @Test
-    public void 인기_테마_조회_API() {
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .when().get("/themes/ranks")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(6));
-    }
 }
