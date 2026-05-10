@@ -14,10 +14,13 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    // think: theme를 도메인으로 넘길지, themeId로 넘길지
     boolean existsByDateAndTimeAndThemeId(Long dateId, Long timeId, Long themeId);
 
     boolean existsByNameAndDateAndTime(String name, Long dateId, Long timeId);
+
+    boolean existsByDateId(Long dateId);
+
+    boolean existsByTimeId(Long timeId);
 
     boolean updateStatus(Reservation reservation);
 

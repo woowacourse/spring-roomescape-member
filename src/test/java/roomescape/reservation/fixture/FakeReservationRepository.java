@@ -66,6 +66,18 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByDateId(Long dateId) {
+        return store.values().stream()
+                .anyMatch(reservation -> reservation.date().id().equals(dateId));
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        return store.values().stream()
+                .anyMatch(reservation -> reservation.time().id().equals(timeId));
+    }
+
+    @Override
     public boolean updateStatus(Reservation reservation) {
         Optional<Reservation> findReservation = findById(reservation.id());
         if (findReservation.isEmpty()) {

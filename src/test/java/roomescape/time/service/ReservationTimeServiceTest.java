@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.reservation.fixture.FakeReservationRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.request.ReservationTimeSaveDto;
 import roomescape.time.fixture.FakeReservationTimeRepository;
@@ -19,12 +20,14 @@ import roomescape.time.fixture.ReservationTimeFixture;
 class ReservationTimeServiceTest {
 
     private FakeReservationTimeRepository reservationTimeRepository;
+    private FakeReservationRepository reservationRepository;
     private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setup() {
         reservationTimeRepository = new FakeReservationTimeRepository();
-        reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+        reservationRepository = new FakeReservationRepository();
+        reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
     @Test

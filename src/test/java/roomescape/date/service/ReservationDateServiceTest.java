@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.fixture.FakeReservationDateRepository;
 import roomescape.date.fixture.ReservationDateFixture;
+import roomescape.reservation.fixture.FakeReservationRepository;
+import roomescape.time.fixture.FakeReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,12 +21,14 @@ class ReservationDateServiceTest {
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2099, 1, 1);
 
     private FakeReservationDateRepository reservationDateRepository;
+    private FakeReservationRepository reservationRepository;
     private ReservationDateService reservationDateService;
 
     @BeforeEach
     void setUp() {
         reservationDateRepository = new FakeReservationDateRepository();
-        reservationDateService = new ReservationDateService(reservationDateRepository);
+        reservationRepository = new FakeReservationRepository();
+        reservationDateService = new ReservationDateService(reservationDateRepository, reservationRepository);
     }
 
     @Test

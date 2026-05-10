@@ -182,6 +182,29 @@ public class JdbcReservationRepository implements ReservationRepository {
         return count != null && count > 0;
     }
 
+    @Override
+    public boolean existsByDateId(Long dateId) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM reservation 
+                WHERE date_id = :date_id 
+                """;
+
+        Integer count = jdbcTemplate.queryForObject(sql, new MapSqlParameterSource("date_id", dateId), Integer.class);
+        return count != null && count > 0;
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM reservation 
+                WHERE time_id = :time_id 
+                """;
+
+        Integer count = jdbcTemplate.queryForObject(sql, new MapSqlParameterSource("time_id", timeId), Integer.class);
+        return count != null && count > 0;    }
+
     public boolean updateStatus(Reservation reservation) {
         String sql = "UPDATE RESERVATION SET status = :status WHERE id = :id ";
         SqlParameterSource params = new MapSqlParameterSource()
