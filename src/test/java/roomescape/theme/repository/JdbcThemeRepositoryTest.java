@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 import roomescape.theme.domain.Theme;
-import roomescape.theme.service.dto.ThemeBestServiceDto;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -76,8 +75,8 @@ class JdbcThemeRepositoryTest {
         Theme theme2 = jdbcThemeRepository.save(new Theme("테마2", "설명2", "https://img.test/2.png"));
         Theme theme3 = jdbcThemeRepository.save(new Theme("테마3", "설명3", "https://img.test/3.png"));
 
-        LocalDate date = LocalDate.of(2026, 5, 10);
-        int dayCount = 7;
+        LocalDate startDate = LocalDate.of(2026, 5, 3);
+        LocalDate endDate = LocalDate.of(2026, 5, 10);
 
         insertReservation("a1", LocalDate.of(2026, 5, 7), timeId, theme1.getId());
         insertReservation("a2", LocalDate.of(2026, 5, 8), timeId, theme1.getId());
@@ -90,7 +89,7 @@ class JdbcThemeRepositoryTest {
         insertReservation("c_out", LocalDate.of(2026, 5, 2), timeId, theme3.getId());
 
         // when
-        List<Theme> bestThemes = jdbcThemeRepository.findBestThemesByDate(new ThemeBestServiceDto(date, dayCount, 10));
+        List<Theme> bestThemes = jdbcThemeRepository.findBestThemesByDate(startDate, endDate, 10);
 
         // then
         assertThat(bestThemes).hasSize(2);
