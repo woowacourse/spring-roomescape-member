@@ -6,13 +6,13 @@ import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-public class ControllerTestHelper {
+public class ApiIntegrationTestHelper {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert themeInsert;
     private final SimpleJdbcInsert reservationTimeInsert;
 
-    public ControllerTestHelper(JdbcTemplate jdbcTemplate) {
+    public ApiIntegrationTestHelper(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.themeInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")

@@ -15,19 +15,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.support.ControllerTestHelper;
+import roomescape.support.ApiIntegrationTestHelper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class ThemeControllerTest {
+public class ThemeApiIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private ControllerTestHelper testHelper;
+    private ApiIntegrationTestHelper testHelper;
 
     @BeforeEach
     void setUp() {
-        testHelper = new ControllerTestHelper(jdbcTemplate);
+        testHelper = new ApiIntegrationTestHelper(jdbcTemplate);
         testHelper.clearDatabase();
     }
 
