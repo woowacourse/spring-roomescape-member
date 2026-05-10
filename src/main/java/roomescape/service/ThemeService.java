@@ -41,10 +41,10 @@ public class ThemeService {
     public List<PopularThemeResponse> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
         return themeDao.findPopularThemes(startDate, endDate, limit)
                 .stream()
-                .map(popularTheme -> PopularThemeResponse.of(
-                        popularTheme.getTheme(),
-                        popularTheme.getReservationCount())
-                )
+                .map(result -> PopularThemeResponse.of(
+                        result.theme(),
+                        result.reservationCount()
+                ))
                 .toList();
     }
 
