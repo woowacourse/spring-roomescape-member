@@ -14,6 +14,10 @@ public class Theme {
         this.thumbnailImageUrl = thumbnailImageUrl;
     }
 
+    public Theme withId(Long id) {
+        return new Theme(id, name, description, thumbnailImageUrl);
+    }
+
     public Long getId() {
         return id;
     }

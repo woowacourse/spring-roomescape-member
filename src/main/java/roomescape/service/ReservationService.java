@@ -48,7 +48,7 @@ public class ReservationService {
         validateNotDuplicated(newReservation);
 
         Long newReservationId = reservationRepository.save(newReservation);
-        return reservationRepository.findById(newReservationId);
+        return newReservation.withId(newReservationId);
     }
 
     public void deleteReservation(Long id) {

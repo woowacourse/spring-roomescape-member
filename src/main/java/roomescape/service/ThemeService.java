@@ -49,7 +49,7 @@ public class ThemeService {
     public Theme createTheme(CreateThemeRequest request) {
         Theme theme = new Theme(null, request.name(), request.description(), request.thumbnailImageUrl());
         Long newThemeId = themeRepository.save(theme);
-        return themeRepository.findById(newThemeId);
+        return theme.withId(newThemeId);
     }
 
     public void deleteTheme(Long id) {

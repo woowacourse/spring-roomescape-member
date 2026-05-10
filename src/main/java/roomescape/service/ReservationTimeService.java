@@ -34,7 +34,7 @@ public class ReservationTimeService {
     public ReservationTime createReservationTime(CreateReservationTimeRequest request) {
         ReservationTime newReservationTime = new ReservationTime(null, request.startAt());
         Long newReservationTimeId = reservationTimeRepository.save(newReservationTime);
-        return reservationTimeRepository.findById(newReservationTimeId);
+        return newReservationTime.withId(newReservationTimeId);
     }
 
     public void deleteReservationTime(Long id) {

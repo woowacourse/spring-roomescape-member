@@ -18,6 +18,10 @@ public class Reservation {
         this.time = time;
     }
 
+    public Reservation withId(Long id) {
+        return new Reservation(id, name, theme, date, time);
+    }
+
     public Long getId() {
         return id;
     }
