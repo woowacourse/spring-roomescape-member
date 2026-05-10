@@ -15,7 +15,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.exception.ReservationDuplicatedException;
-import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.theme.entity.Theme;
 
@@ -128,13 +127,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
-
-        int affectedRows = jdbcTemplate.update(sql, id);
-        if (affectedRows == 0) {
-            throw new ReservationNotFoundException(id);
-        }
+        return jdbcTemplate.update(sql, id);
     }
 
 }

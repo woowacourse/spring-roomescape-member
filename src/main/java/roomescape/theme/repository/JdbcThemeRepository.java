@@ -11,7 +11,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.entity.Theme;
-import roomescape.theme.exception.ThemeNotFoundException;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -101,12 +100,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
-
-        int affectedRows = jdbcTemplate.update(sql, id);
-        if (affectedRows == 0) {
-            throw new ThemeNotFoundException(id);
-        }
+        return jdbcTemplate.update(sql, id);
     }
+
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.entity.Theme;
+import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.payload.ThemeRequest;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -40,7 +41,10 @@ public class ThemeService {
 
     @Transactional
     public void deleteById(Long id) {
-        themeRepository.deleteById(id);
+        int affected = themeRepository.deleteById(id);
+        if (affected == 0) {
+            throw new ThemeNotFoundException(id);
+        }
     }
 
 }

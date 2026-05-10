@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.payload.ReservationRequest;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.entity.ReservationTime;
@@ -52,7 +53,10 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
+        int affected = reservationRepository.deleteById(id);
+        if (affected == 0) {
+            throw new ReservationNotFoundException(id);
+        }
     }
 
 }
