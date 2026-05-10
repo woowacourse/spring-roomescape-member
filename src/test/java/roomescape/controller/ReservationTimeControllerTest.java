@@ -3,6 +3,7 @@ package roomescape.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import io.restassured.RestAssured;
@@ -23,6 +24,7 @@ import roomescape.dto.ResourceIdResponse;
 import roomescape.dto.reservationTime.AvailableReservationTimesResponse;
 import roomescape.dto.reservationTime.ReservationTimeRequest;
 import roomescape.dto.reservationTime.ReservationTimeResponse;
+import roomescape.exception.ErrorMessageResponse;
 import roomescape.service.ReservationService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -106,6 +108,28 @@ class ReservationTimeControllerTest {
         response
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    void 예약이_존재하는_시간을_삭제하면_예외가_발생한다() {
+        // given
+        doThrow(new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다"))
+            .when(reservationService).deleteReservationTime(anyLong());
+
+        // when
+        Response response = RestAssured
+            .given().log().all()
+            .queryParam("role", "admin")
+            .pathParam("id", 1)
+            .when().delete("/times/{id}");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+
+        ErrorMessageResponse body = response.as(ErrorMessageResponse.class);
+        assertThat(body.messages()).contains("예약이 존재하는 시간은 삭제할 수 없습니다");
     }
 
     @Test
