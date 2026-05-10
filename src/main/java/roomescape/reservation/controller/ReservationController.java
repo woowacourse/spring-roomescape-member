@@ -1,4 +1,4 @@
-package roomescape.user.controller;
+package roomescape.reservation.controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.Reservation;
-import roomescape.user.dto.ReservationRequest;
-import roomescape.user.dto.ReservationResponse;
-import roomescape.user.service.ReservationService;
+import roomescape.reservation.Reservation;
+import roomescape.reservation.ReservationService;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 
 @RestController
 @RequestMapping("/user")
