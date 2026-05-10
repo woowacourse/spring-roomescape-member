@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -103,8 +104,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(final long id) {
-        return template.queryForObject("""
+    public Optional<Reservation> findById(final long id) {
+        List<Reservation> reservations = template.query("""
                 SELECT
                     r.id as reservation_id,
                     r.name,
@@ -122,6 +123,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """,
             RESERVATION_ROW_MAPPER,
             id);
+
+        return reservations.stream().findFirst();
     }
 
     @Override

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -95,7 +96,7 @@ class JdbcReservationRepositoryTest {
         reservationRepository.deleteById(saved.getId());
 
         // then
-        assertThat(reservationRepository.findAll()).isEmpty();
+        assertThat(reservationRepository.findById(saved.getId())).isEmpty();
     }
 
     @Test
@@ -109,14 +110,14 @@ class JdbcReservationRepositoryTest {
             new Reservation("브라운", tomorrow, savedTime, savedTheme));
 
         // when
-        Reservation target = reservationRepository.findById(saved.getId());
+        Optional<Reservation> target = reservationRepository.findById(saved.getId());
 
         // then
-        assertThat(target.getId()).isEqualTo(saved.getId());
-        assertThat(target.getName()).isEqualTo(saved.getName());
-        assertThat(target.getDateValue()).isEqualTo(saved.getDateValue());
-        assertThat(target.getTime()).isEqualTo(saved.getTime());
-        assertThat(target.getTheme()).isEqualTo(saved.getTheme());
+        assertThat(target.get().getId()).isEqualTo(saved.getId());
+        assertThat(target.get().getName()).isEqualTo(saved.getName());
+        assertThat(target.get().getDateValue()).isEqualTo(saved.getDateValue());
+        assertThat(target.get().getTime()).isEqualTo(saved.getTime());
+        assertThat(target.get().getTheme()).isEqualTo(saved.getTheme());
     }
 
     @Test
