@@ -39,3 +39,5 @@ INSERT IGNORE INTO reservation (id, user_id, schedule_id) VALUES (9, 3, 9);
 INSERT IGNORE INTO reservation (id, user_id, schedule_id) VALUES (10, 1, 10);
 
 INSERT IGNORE INTO reservation (id, user_id, schedule_id) VALUES (11, 2, 11);
+
+INSERT IGNORE INTO schedule (id, theme_id, start_at, end_at) VALUES (12, 1, '2026-05-20 10:00:00', '2026-05-20 12:00:00');

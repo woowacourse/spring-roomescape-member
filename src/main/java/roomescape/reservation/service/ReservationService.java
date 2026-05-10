@@ -49,13 +49,16 @@ public class ReservationService {
 
         LocalDateTime startAt = LocalDateTime.of(LocalDate.parse(request.date()), LocalTime.parse(request.time()));
 
-        Schedule schedule = new Schedule(startAt, theme);
-        Long scheduleId = scheduleRepository.create(schedule);
-        Schedule savedSchedule = new Schedule(scheduleId, startAt, theme);
+        Schedule schedule = scheduleRepository.findByThemeIdAndStartAt(theme.getId(), startAt)
+                .orElseThrow(() -> new IllegalArgumentException("등록된 스케줄이 없습니다."));
 
-        Reservation reservation = new Reservation(user, savedSchedule, theme);
+        if (reservationRepository.existsByScheduleId(schedule.getId())) {
+            throw new IllegalArgumentException("해당 시간은 이미 예약이 완료되었습니다.");
+        }
+
+        Reservation reservation = new Reservation(user, schedule, theme);
         Long reservationId = reservationRepository.create(reservation);
-        Reservation savedReservation = new Reservation(reservationId, user, schedule, schedule.getTheme());
+        Reservation savedReservation = new Reservation(reservationId, user, schedule, theme);
         return ReservationIdResponse.from(savedReservation);
     }
 

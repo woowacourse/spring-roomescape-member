@@ -1,5 +1,6 @@
 package roomescape.schedule.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ScheduleRepository {
@@ -75,5 +77,38 @@ public class ScheduleRepository {
         }, themeId, startOfDay, endOfDay);
     }
 
+    public Optional<Schedule> findByThemeIdAndStartAt(Long themeId, LocalDateTime startAt) {
+        String sql = """
+                SELECT s.id AS schedule_id, 
+                       s.start_at, 
+                       s.end_at, 
+                       t.id AS theme_id, 
+                       t.name AS theme_name,
+                       t.description,
+                       t.image_url,
+                       t.required_time
+                FROM schedule s
+                INNER JOIN theme t ON s.theme_id = t.id
+                WHERE s.theme_id = ? AND s.start_at = ?
+                """;
+
+        try {
+            Schedule schedule = jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
+                Theme theme = new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
+                        resultSet.getString("description"), resultSet.getString("image_url"),
+                        resultSet.getObject("required_time", LocalTime.class));
+                return new Schedule(
+                        resultSet.getLong("schedule_id"),
+                        resultSet.getObject("start_at", LocalDateTime.class),
+                        theme
+                );
+            }, themeId, startAt);
+
+            return Optional.of(schedule);
+
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 
 }
