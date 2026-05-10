@@ -5,25 +5,25 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ThemeResponse;
-import roomescape.dto.TimeResponse;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ThemeRepository;
+import roomescape.repository.TimeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final TimeService timeService;
-    private final ThemeService themeService;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeService timeService,
-                              ThemeService themeService) {
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
-        this.timeService = timeService;
-        this.themeService = themeService;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> read() {
@@ -41,8 +41,10 @@ public class ReservationService {
     }
 
     public ReservationResponse register(ReservationRequest reservationRequest) {
-        TimeResponse timeResponse = timeService.readById(reservationRequest.timeId());
-        ThemeResponse themeResponse = themeService.readById(reservationRequest.themeId());
+        ReservationTime time = timeRepository.findById(reservationRequest.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+        Theme theme = themeRepository.findById(reservationRequest.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservationRequest.date(),
                 reservationRequest.timeId(),
@@ -51,7 +53,7 @@ public class ReservationService {
         }
 
         Reservation reservation = new Reservation(null, reservationRequest.name(), reservationRequest.date(),
-                ReservationTime.from(timeResponse), Theme.from(themeResponse));
+                time, theme);
         Reservation saved = reservationRepository.save(reservation);
         return ReservationResponse.from(saved);
     }

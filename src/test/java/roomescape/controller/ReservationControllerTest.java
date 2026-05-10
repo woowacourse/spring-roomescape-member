@@ -10,11 +10,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(statements = {
+        "SET REFERENTIAL_INTEGRITY FALSE",
+        "TRUNCATE TABLE reservation RESTART IDENTITY",
+        "TRUNCATE TABLE reservation_time RESTART IDENTITY",
+        "TRUNCATE TABLE theme RESTART IDENTITY",
+        "SET REFERENTIAL_INTEGRITY TRUE"
+}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/mockData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+
 public class ReservationControllerTest {
 
     @LocalServerPort
