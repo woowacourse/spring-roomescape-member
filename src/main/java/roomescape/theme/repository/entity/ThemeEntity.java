@@ -1,10 +1,13 @@
 package roomescape.theme.repository.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ThemeEntity {
 
+    @EqualsAndHashCode.Include
     private final Long id;
     private final String name;
     private final String description;

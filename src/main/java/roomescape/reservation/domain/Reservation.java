@@ -1,15 +1,18 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 @Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Reservation {
 
     private static final int MAX_NAME_LENGTH = 50;
 
+    @EqualsAndHashCode.Include
     private final Long id;
     private final String name;
     private final LocalDate date;
