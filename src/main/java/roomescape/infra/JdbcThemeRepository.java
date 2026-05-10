@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.infra;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -10,13 +10,14 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 
 @Repository
-public class ThemeDao {
+public class JdbcThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ThemeDao(JdbcTemplate jdbcTemplate) {
+    public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -27,37 +28,21 @@ public class ThemeDao {
             rs.getString("thumbnail_image_url")
     );
 
+    @Override
     public List<Theme> findAll() {
         String sql = "SELECT id, name, description, thumbnail_image_url " +
                 "FROM theme ORDER BY id DESC";
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
-    public Long save(Theme theme) {
-        String sql = "INSERT INTO theme (name, description, thumbnail_image_url) VALUES (?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDescription());
-            ps.setString(3, theme.getThumbnailImageUrl());
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().longValue();
-    }
-
-    public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
-    }
-
+    @Override
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
         List<Theme> results = jdbcTemplate.query(sql, themeRowMapper, id);
         return results.stream().findFirst();
     }
 
+    @Override
     public List<Theme> getPopularTop10Themes(LocalDate start, LocalDate end) {
         String sql = """
                 SELECT
@@ -77,5 +62,26 @@ public class ThemeDao {
                 end
         );
 
+    }
+
+    @Override
+    public Long save(Theme theme) {
+        String sql = "INSERT INTO theme (name, description, thumbnail_image_url) VALUES (?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, theme.getName());
+            ps.setString(2, theme.getDescription());
+            ps.setString(3, theme.getThumbnailImageUrl());
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 }

@@ -19,6 +19,14 @@ public class Theme {
         this.thumbnailImageUrl = thumbnailImageUrl;
     }
 
+    public Theme(
+            String name,
+            String description,
+            String thumbnailImageUrl
+    ) {
+        this(null, name, description, thumbnailImageUrl);
+    }
+
     public Long getId() {
         return id;
     }

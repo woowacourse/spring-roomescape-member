@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.Reservation;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.facade.ReservationFacade;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -21,11 +19,9 @@ import roomescape.service.ReservationService;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final ReservationFacade reservationFacade;
 
-    public ReservationController(ReservationService reservationService, ReservationFacade reservationFacade) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-        this.reservationFacade = reservationFacade;
     }
 
     @GetMapping
@@ -33,22 +29,18 @@ public class ReservationController {
         List<ReservationResponse> responses = reservationService.getReservations().stream()
                 .map(ReservationResponse::from)
                 .toList();
-
         return ResponseEntity.ok().body(responses);
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> add(@RequestBody ReservationRequest request) {
-        Reservation reservation = reservationFacade.addReservation(request);
-        ReservationResponse response = ReservationResponse.from(reservation);
-
+        ReservationResponse response = ReservationResponse.from(reservationService.addReservation(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteReservation(id);
-
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,56 +1,67 @@
 package roomescape.service;
 
-import java.time.LocalDate;
+import jakarta.annotation.Nonnull;
 import java.util.List;
-import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
-import roomescape.repository.ReservationRepository;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
+import roomescape.dto.ReservationRequest;
 
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository timeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<Reservation> getReservations() {
         return reservationRepository.findAll();
     }
 
-    public boolean hasReservationsByTimeId(Long timeId) {
-        return reservationRepository.existsByTimeId(timeId);
+    public Reservation getReservation(Long id) {
+        return reservationRepository.getById(id);
     }
 
     @Transactional
-    public Reservation addReservation(Reservation reservation) {
-        Long id = reservationRepository.save(reservation);
+    public Reservation addReservation(ReservationRequest request) {
+        ReservationTime reservationTime = timeRepository.getById(request.timeId());
+        Theme theme = themeRepository.getById(request.themeId());
 
-        return findById(id);
+        if (reservationRepository.existsBy(request.date(), reservationTime.getId(),
+                theme.getId())) {
+            throw new IllegalArgumentException("이미 예약이 존재합니다.");
+        }
+
+        Long id = reservationRepository.save(createReservation(request, reservationTime, theme));
+        return getReservation(id);
+    }
+
+    @Nonnull
+    private Reservation createReservation(ReservationRequest request, ReservationTime reservationTime,
+                                          Theme theme) {
+        return new Reservation(
+                request.name(),
+                request.date(),
+                reservationTime,
+                theme
+        );
     }
 
     @Transactional
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
-    }
-
-    public Reservation findById(Long id) {
-        return reservationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 ID입니다."));
-    }
-
-    public boolean hasReservationsByThemeId(Long themeId) {
-        return reservationRepository.existsByThemeId(themeId);
-    }
-
-    public boolean hasReservationsBy(LocalDate date, Long timeId, Long themeId) {
-        return reservationRepository.existsBy(date, timeId, themeId);
-    }
-
-    public Set<Long> findReservedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
-        return reservationRepository.findReservedTimeIdsByDateAndThemeId(date, themeId);
     }
 }

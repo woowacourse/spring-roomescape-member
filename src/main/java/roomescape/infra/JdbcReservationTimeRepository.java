@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.infra;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -9,13 +9,14 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
 
 @Repository
-public class ReservationTimeDao {
+public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -24,10 +25,26 @@ public class ReservationTimeDao {
             rs.getTime("start_at").toLocalTime()
     );
 
+    @Override
     public List<ReservationTime> findAll() {
         return jdbcTemplate.query("SELECT id, start_at FROM reservation_time ORDER BY start_at;", timeRowMapper);
     }
 
+    @Override
+    public Optional<ReservationTime> findById(Long id) {
+        String sql = "SELECT * FROM reservation_time WHERE id = ?";
+        List<ReservationTime> results = jdbcTemplate.query(sql, timeRowMapper, id);
+        return results.stream().findFirst();
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        String sql = "SELECT COUNT(*) FROM reservation_time WHERE id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
+
+    @Override
     public Long save(ReservationTime time) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -41,19 +58,8 @@ public class ReservationTimeDao {
         return keyHolder.getKey().longValue();
     }
 
+    @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
-    }
-
-    public boolean existsById(Long id) {
-        String sql = "SELECT COUNT(*) FROM reservation_time WHERE id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        return count != null && count > 0;
-    }
-
-    public Optional<ReservationTime> findById(Long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id = ?";
-        List<ReservationTime> results = jdbcTemplate.query(sql, timeRowMapper, id);
-        return results.stream().findFirst();
     }
 }
