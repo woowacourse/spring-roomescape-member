@@ -6,7 +6,11 @@ import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.theme.mapper.ThemeMapper;
 import roomescape.domain.time.mapper.TimeMapper;
 
-public class ReservationMapper {
+public final class ReservationMapper {
+
+    private ReservationMapper() {
+
+    }
 
     public static ReservationResponseDTO toResponseDTO(Reservation reservation) {
         return new ReservationResponseDTO(reservation.getId(), reservation.getName(), reservation.getDate(),
