@@ -156,4 +156,26 @@ class MockReservationDateServiceTest {
         verify(reservationDateRepository).findById(deregisteredId);
     }
 
+    @Test
+    @DisplayName("해당 날짜에 예약이 존재하면 예약날짜를 삭제할 수 없다.")
+    void delete_already_reserved() {
+        // given
+        Long dateId = 1L;
+        ReservationDate reservationDate = ReservationDate.load(dateId, DEFAULT_DATE);
+
+        when(reservationDateRepository.findById(dateId))
+                .thenReturn(Optional.of(reservationDate));
+
+        when(reservationRepository.existsByDateId(dateId))
+                .thenReturn(true);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> reservationDateService.deregister(dateId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 날짜에 예약이 존재하여, 삭제할 수 없습니다.");
+
+        verify(reservationDateRepository).findById(dateId);
+        verify(reservationRepository).existsByDateId(dateId);
+    }
+
 }
