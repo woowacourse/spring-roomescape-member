@@ -70,7 +70,7 @@ class ReservationControllerTest {
     @DisplayName("예약을 생성한다.")
     void createReservation() {
         Map<String, Object> params = new HashMap<>();
-        params.put("username", "새로운 사용자");
+        params.put("username", "테스터");
         params.put("themeId", 3);
         params.put("date", LocalDate.of(2026, 5, 8));
         params.put("timeId", 6);
@@ -83,7 +83,7 @@ class ReservationControllerTest {
                 .statusCode(201)
                 .header("Location", notNullValue())
                 .body("id", notNullValue())
-                .body("username", is("새로운 사용자"))
+                .body("username", is("테스터"))
                 .body("theme.id", is(3))
                 .body("theme.name", is("우주 정거장"))
                 .body("theme.description", is("우주에서 살아남으세요."))
