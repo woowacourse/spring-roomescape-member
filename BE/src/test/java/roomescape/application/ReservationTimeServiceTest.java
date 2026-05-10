@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -84,11 +85,10 @@ class ReservationTimeServiceTest {
         reservationRepository.save(Reservation.create("테스터", date, bookedTime, theme));
 
         // when
-        List<ReservationTime> result = reservationTimeService.getBookedTimes(date, theme.getId());
+        Set<Long> result = reservationTimeService.getBookedTimes(date, theme.getId());
 
         // then
         assertThat(result)
-                .extracting(ReservationTime::getId)
                 .containsExactlyInAnyOrder(bookedTime.getId());
     }
 

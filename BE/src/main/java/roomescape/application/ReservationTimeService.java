@@ -3,6 +3,8 @@ package roomescape.application;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,14 +37,18 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-    public List<ReservationTime> getBookedTimes(LocalDate date, Long themeId) {
+    public Set<Long> getBookedTimes(LocalDate date, Long themeId) {
         if (date == null || themeId == null) {
-            return List.of();
+            return Set.of();
         }
-        return reservationRepository.findByDateAndThemeId(date, themeId)
+        List<ReservationTime> bookedTimes =reservationRepository.findByDateAndThemeId(date, themeId)
                 .stream()
                 .map(Reservation::getTime)
                 .toList();
+
+        return bookedTimes.stream()
+                .map(ReservationTime::getId)
+                .collect(Collectors.toSet());
     }
 
     @Transactional

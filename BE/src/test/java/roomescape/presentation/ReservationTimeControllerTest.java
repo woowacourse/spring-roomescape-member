@@ -16,6 +16,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,7 @@ class ReservationTimeControllerTest {
     void readReservationTimes_success() throws Exception {
         // given
         ReservationTime time = ReservationTime.createRow(1L, LocalTime.of(10, 0));
-        given(reservationTimeService.getBookedTimes(null, null)).willReturn(List.of());
+        given(reservationTimeService.getBookedTimes(null, null)).willReturn(Set.of());
         given(reservationTimeService.getTimes()).willReturn(List.of(time));
 
         // when & then
@@ -108,7 +109,7 @@ class ReservationTimeControllerTest {
         given(reservationTimeService.getBookedTimes(
                 LocalDate.of(2026, 5, 5),
                 1L
-        )).willReturn(List.of(bookedTime));
+        )).willReturn(Set.of(bookedTime.getId()));
         given(reservationTimeService.getTimes()).willReturn(List.of(bookedTime, availableTime));
 
         // when & then

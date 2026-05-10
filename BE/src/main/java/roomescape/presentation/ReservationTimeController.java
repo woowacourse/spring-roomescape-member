@@ -43,11 +43,7 @@ public class ReservationTimeController {
             @RequestParam(required = false) LocalDate date,
             @RequestParam(required = false) Long themeId
     ) {
-        Set<Long> bookedTimeIds = service.getBookedTimes(date, themeId)
-                .stream()
-                .map(ReservationTime::getId)
-                .collect(Collectors.toSet());
-
+        Set<Long> bookedTimeIds = service.getBookedTimes(date, themeId);
         List<ReservationTimeResponse> responses = (service.getTimes()).stream()
                 .map(time -> ReservationTimeResponse.from(time, bookedTimeIds.contains(time.getId())))
                 .toList();
