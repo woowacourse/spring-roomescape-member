@@ -53,7 +53,7 @@ public class ThemeService {
     public List<PopularTheme> getPopularThemes(int days, int limit) {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(days);
-        List<Theme> themes = themeRepository.findPopularThemes(endDate, startDate, limit);
+        List<Theme> themes = themeRepository.findPopularThemes(startDate, endDate, limit);
 
         return IntStream.range(0, themes.size())
                 .mapToObj(idx -> PopularTheme.of(themes.get(idx), idx + 1))
