@@ -1,7 +1,7 @@
 package roomescape.reservationtime.application.dto;
 
 import java.time.LocalTime;
-import roomescape.reservationtime.domain.repository.AvailableReservationTime;
+import roomescape.reservationtime.application.query.AvailableReservationTime;
 
 public record AvailableReservationTimeQueryResult(
         Long id,

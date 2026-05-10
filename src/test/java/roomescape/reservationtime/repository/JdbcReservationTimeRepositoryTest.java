@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.reservationtime.domain.repository.AvailableReservationTime;
-import roomescape.reservationtime.domain.repository.AvailableTimeRepository;
+import roomescape.reservationtime.application.query.AvailableReservationTime;
+import roomescape.reservationtime.application.query.AvailableTimeDao;
 import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
-import roomescape.reservationtime.infra.JdbcAvailableTimeRepository;
+import roomescape.reservationtime.infra.JdbcAvailableTimeDao;
 import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.infra.JdbcThemeRepository;
@@ -28,14 +28,14 @@ class JdbcReservationTimeRepositoryTest {
     private JdbcTemplate jdbcTemplate;
 
     ReservationTimeRepository timeRepository;
-    AvailableTimeRepository availableTimeRepository;
+    AvailableTimeDao availableTimeDao;
     ThemeRepository themeRepository;
     TestDataHelper testHelper;
 
     @BeforeEach
     void setUp() {
         timeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
-        availableTimeRepository = new JdbcAvailableTimeRepository(jdbcTemplate);
+        availableTimeDao = new JdbcAvailableTimeDao(jdbcTemplate);
         themeRepository = new JdbcThemeRepository(jdbcTemplate);
         testHelper = new TestDataHelper(jdbcTemplate);
         testHelper.insertReservationTime(LocalTime.of(9, 0));
@@ -52,7 +52,7 @@ class JdbcReservationTimeRepositoryTest {
                 .thumbnailImgUrl("theme img url")
                 .build());
 
-        List<AvailableReservationTime> times = availableTimeRepository
+        List<AvailableReservationTime> times = availableTimeDao
                 .findByThemeAndDate(savedTheme.getId(), LocalDate.of(2026, 5, 4));
 
         List<LocalTime> expectedTimes = List.of(

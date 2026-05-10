@@ -4,15 +4,15 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import roomescape.reservationtime.domain.repository.AvailableReservationTime;
-import roomescape.reservationtime.domain.repository.AvailableTimeRepository;
+import roomescape.reservationtime.application.query.AvailableReservationTime;
+import roomescape.reservationtime.application.query.AvailableTimeDao;
 
 @Repository
-public class JdbcAvailableTimeRepository implements AvailableTimeRepository {
+public class JdbcAvailableTimeDao implements AvailableTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcAvailableTimeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcAvailableTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

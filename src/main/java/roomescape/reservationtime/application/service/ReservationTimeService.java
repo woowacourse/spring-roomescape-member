@@ -12,8 +12,8 @@ import roomescape.reservationtime.application.dto.AvailableReservationTimeQueryR
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
 import roomescape.reservationtime.application.exception.ReservationTimeException;
-import roomescape.reservationtime.domain.repository.AvailableReservationTime;
-import roomescape.reservationtime.domain.repository.AvailableTimeRepository;
+import roomescape.reservationtime.application.query.AvailableReservationTime;
+import roomescape.reservationtime.application.query.AvailableTimeDao;
 import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 public class ReservationTimeService {
 
     private final ReservationTimeRepository timeRepository;
-    private final AvailableTimeRepository availableTimeRepository;
+    private final AvailableTimeDao availableTimeDao;
 
     @Transactional(readOnly = true)
     public ReservationTimeQueryResult findById(Long timeId) {
@@ -41,7 +41,7 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public List<AvailableReservationTimeQueryResult> findAvailableTimes(Long themeId, LocalDate date) {
-        List<AvailableReservationTime> times = availableTimeRepository.findByThemeAndDate(themeId, date);
+        List<AvailableReservationTime> times = availableTimeDao.findByThemeAndDate(themeId, date);
 
         return times.stream()
                 .map(AvailableReservationTimeQueryResult::from)
