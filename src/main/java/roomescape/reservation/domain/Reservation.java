@@ -25,7 +25,23 @@ public class Reservation {
     }
 
     public static Reservation of(String name, LocalDate date, ReservationTime time, Theme theme) {
+        validate(name, date, time, theme);
         return new Reservation(null, name, date, time, theme);
+    }
+
+    private static void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("예약자 이름은 필수입니다.");
+        }
+        if (date == null) {
+            throw new IllegalArgumentException("날짜는 필수입니다.");
+        }
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+        }
+        if (theme == null) {
+            throw new IllegalArgumentException("테마는 필수입니다.");
+        }
     }
 
     public Long getId() { return id; }
