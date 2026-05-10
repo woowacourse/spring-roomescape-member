@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import roomescape.reservation.dto.ReservationRequest;
-import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.schedule.model.Schedule;
@@ -17,12 +16,10 @@ import roomescape.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,7 +28,6 @@ class ReservationServiceTest {
     private final User user = new User(1L, "user1", Role.USER);
     private final Theme theme = new Theme(1L, "공포", "설명", "경로", LocalTime.of(2, 0));
     private final Schedule schedule = new Schedule(1L, LocalDateTime.of(2026, 12, 10, 12, 0), theme);
-    private final Reservation reservation = new Reservation(1L, user, schedule);
 
     private ReservationService reservationService;
     private ReservationRepository reservationRepository;
