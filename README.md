@@ -5,7 +5,7 @@
 ### 예약
 
 * 사용자는 테마, 날짜, 시간를 선택하고 예약자 이름을 입력하여 예약한다.
-* 예약은 현재 날짜 이후만 가능하다.
+* 예약은 현재 시각 이후만 가능하다.
 * 예약은 특정 테마와 예약 시간 조합을 기준으로 생성된다.
 * 같은 테마의 같은 날 같은 시간의 중복 예약은 불가능하다.
 
@@ -21,6 +21,10 @@
 * 예약 시간은 `startAt`으로 관리한다.
 * 관리자는 예약 시간을 추가하거나 삭제할 수 있다.
 * 테마별 예약 가능 여부 조회 시 각 예약 시간의 예약 가능 상태를 함께 반환한다.
+
+## 관련 문서
+
+* [Playwright E2E 테스트 가이드](./e2e-test.md)
 
 ## API 공통 규칙
 
@@ -38,7 +42,7 @@
 **Request**
 
 ```http
-GET /api/themes HTTP/1.1
+GET /api/themes?page=0&size=10 HTTP/1.1
 ```
 
 **Response**
@@ -46,20 +50,22 @@ GET /api/themes HTTP/1.1
 ```json
 200 OK
 
-[
-  {
-    "id": 1,
-    "name": "공포",
-    "description": "공포 방탈출입니다.",
-    "thumbnailImageUrl": "http://image.url/horror"
-  },
-  {
-    "id": 2,
-    "name": "추리",
-    "description": "추리 방탈출입니다.",
-    "thumbnailImageUrl": "http://image.url/detective"
-  }
-]
+{
+  "responses": [
+    {
+      "id": 1,
+      "name": "공포",
+      "description": "공포 방탈출입니다.",
+      "thumbnailImageUrl": "http://image.url/horror"
+    },
+    {
+      "id": 2,
+      "name": "추리",
+      "description": "추리 방탈출입니다.",
+      "thumbnailImageUrl": "http://image.url/detective"
+    }
+  ]
+}
 ```
 
 #### 인기 테마 조회
@@ -67,7 +73,7 @@ GET /api/themes HTTP/1.1
 **Request**
 
 ```http
-GET /api/themes/popular?startDate=2026-05-01&endDate=2026-05-06 HTTP/1.1
+GET /api/themes/popular?startDate=2026-05-01&endDate=2026-05-06&limit=10 HTTP/1.1
 ```
 
 **Response**
@@ -75,14 +81,16 @@ GET /api/themes/popular?startDate=2026-05-01&endDate=2026-05-06 HTTP/1.1
 ```json
 200 OK
 
-[
-  {
-    "id": 1,
-    "name": "공포",
-    "description": "공포 방탈출입니다.",
-    "thumbnailImageUrl": "http://image.url/horror"
-  }
-]
+{
+  "responses": [
+    {
+      "id": 1,
+      "name": "공포",
+      "description": "공포 방탈출입니다.",
+      "thumbnailImageUrl": "http://image.url/horror"
+    }
+  ]
+}
 ```
 
 #### 특정 테마의 날짜별 예약 가능 시간 조회
@@ -90,7 +98,7 @@ GET /api/themes/popular?startDate=2026-05-01&endDate=2026-05-06 HTTP/1.1
 **Request**
 
 ```http
-GET /api/themes/1?date=2026-05-10 HTTP/1.1
+GET /api/themes/1/times?date=2026-05-10 HTTP/1.1
 ```
 
 **Response**
@@ -98,18 +106,20 @@ GET /api/themes/1?date=2026-05-10 HTTP/1.1
 ```json
 200 OK
 
-[
-  {
-    "id": 1,
-    "startAt": "10:00:00",
-    "isReservable": true
-  },
-  {
-    "id": 2,
-    "startAt": "12:00:00",
-    "isReservable": false
-  }
-]
+{
+  "responses": [
+    {
+      "id": 1,
+      "startAt": "10:00:00",
+      "isReservable": true
+    },
+    {
+      "id": 2,
+      "startAt": "12:00:00",
+      "isReservable": false
+    }
+  ]
+}
 ```
 
 ### 2. 사용자 예약
@@ -201,7 +211,7 @@ role: ADMIN
 **Request**
 
 ```http
-GET /api/admin/reservations HTTP/1.1
+GET /api/admin/reservations?page=0&size=10 HTTP/1.1
 role: ADMIN
 ```
 
@@ -210,17 +220,19 @@ role: ADMIN
 ```json
 200 OK
 
-[
-  {
-    "id": 1,
-    "name": "lim",
-    "date": "2026-05-10",
-    "time": {
-      "id": 2,
-      "startAt": "12:00:00"
+{
+  "responses": [
+    {
+      "id": 1,
+      "name": "lim",
+      "date": "2026-05-10",
+      "time": {
+        "id": 2,
+        "startAt": "12:00:00"
+      }
     }
-  }
-]
+  ]
+}
 ```
 
 #### 관리자 예약 생성
@@ -279,7 +291,7 @@ role: ADMIN
 **Request**
 
 ```http
-GET /api/admin/times HTTP/1.1
+GET /api/admin/times?page=0&size=10 HTTP/1.1
 role: ADMIN
 ```
 
@@ -288,16 +300,18 @@ role: ADMIN
 ```json
 200 OK
 
-[
-  {
-    "id": 1,
-    "startAt": "10:00:00"
-  },
-  {
-    "id": 2,
-    "startAt": "12:00:00"
-  }
-]
+{
+  "responses": [
+    {
+      "id": 1,
+      "startAt": "10:00:00"
+    },
+    {
+      "id": 2,
+      "startAt": "12:00:00"
+    }
+  ]
+}
 ```
 
 #### 예약 시간 추가
