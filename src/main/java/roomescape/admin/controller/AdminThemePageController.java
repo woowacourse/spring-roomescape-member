@@ -36,12 +36,12 @@ public class AdminThemePageController {
             @RequestParam(required = false) String image,
             RedirectAttributes redirectAttributes
     ) {
-        adminThemeService.add(name, description, image);
+        adminThemeService.addTheme(name, description, image);
         redirectAttributes.addFlashAttribute("message", "테마가 등록되었습니다.");
         return "redirect:/admin";
     }
 
-    @PostMapping("/admin/theme/{id}/delete")
+    @PostMapping("/admin/theme/{id}/deleteById")
     public String deleteTheme(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         adminThemeService.removeById(id);
         redirectAttributes.addFlashAttribute("message", "테마가 삭제되었습니다.");

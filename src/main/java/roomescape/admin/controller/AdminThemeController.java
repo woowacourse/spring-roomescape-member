@@ -41,8 +41,8 @@ public class AdminThemeController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<AdminThemeResponse> create(@RequestBody AdminThemeRequest request) {
-        Theme theme = adminThemeService.add(
+    public ResponseEntity<AdminThemeResponse> createTheme(@RequestBody AdminThemeRequest request) {
+        Theme theme = adminThemeService.addTheme(
                 request.name(),
                 request.description(),
                 request.image());

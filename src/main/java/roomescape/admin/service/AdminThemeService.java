@@ -22,7 +22,7 @@ public class AdminThemeService {
         return adminThemeDao.selectById(id);
     }
 
-    public Theme add(String name, String description, String image) {
+    public Theme addTheme(String name, String description, String image) {
         Theme theme = new Theme(name, description, image);
         return adminThemeDao.insert(theme);
     }

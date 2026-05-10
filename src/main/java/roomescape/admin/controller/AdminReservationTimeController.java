@@ -24,14 +24,14 @@ public class AdminReservationTimeController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<AdminReservationTimeResponse> create(@RequestBody AdminReservationTimeRequest request) {
-        ReservationTime time = adminReservationTimeService.add(request.startAt());
+    public ResponseEntity<AdminReservationTimeResponse> createTime(@RequestBody AdminReservationTimeRequest request) {
+        ReservationTime time = adminReservationTimeService.addReservationTime(request.startAt());
         return ResponseEntity.status(HttpStatus.CREATED).body(AdminReservationTimeResponse.from(time));
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        adminReservationTimeService.delete(id);
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        adminReservationTimeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -35,9 +35,9 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<?> create(@RequestBody ReservationRequest request) {
+    public ResponseEntity<?> createReservation(@RequestBody ReservationRequest request) {
         try {
-            Reservation reservation = reservationService.add(
+            Reservation reservation = reservationService.addReservation(
                     request.name(),
                     request.date(),
                     request.timeId(),
@@ -51,8 +51,8 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservationService.delete(id);
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

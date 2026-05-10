@@ -47,14 +47,14 @@ public class ReservationPageController {
             @RequestParam Long themeId,
             RedirectAttributes redirectAttributes
     ) {
-        reservationService.add(name, date, timeId, themeId);
+        reservationService.addReservation(name, date, timeId, themeId);
         redirectAttributes.addFlashAttribute("message", "예약이 등록되었습니다.");
         return "redirect:/";
     }
 
-    @PostMapping("/reservations/{id}/delete")
+    @PostMapping("/reservations/{id}/deleteById")
     public String deleteReservation(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        reservationService.delete(id);
+        reservationService.deleteById(id);
         redirectAttributes.addFlashAttribute("message", "예약이 취소되었습니다.");
         return "redirect:/";
     }

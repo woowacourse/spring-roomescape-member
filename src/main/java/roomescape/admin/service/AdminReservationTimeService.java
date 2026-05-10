@@ -14,12 +14,12 @@ public class AdminReservationTimeService {
         this.adminReservationTimeDao = adminReservationTimeDao;
     }
 
-    public ReservationTime add(LocalTime startAt) {
+    public ReservationTime addReservationTime(LocalTime startAt) {
         ReservationTime time = new ReservationTime(startAt);
         return adminReservationTimeDao.insert(time);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         adminReservationTimeDao.delete(id);
     }
 }
