@@ -145,7 +145,7 @@ public class JdbcThemeRepositoryTest {
 
         testHelper.insertReservation("스타크", yesterday, theme1.getId(), time1.getId());
         testHelper.insertReservation("카야", yesterday, theme2.getId(), time2.getId());
-        testHelper.insertReservation("스타크", yesterday, theme1.getId(), time1.getId());
+        testHelper.insertReservation("스타크", yesterday, theme1.getId(), time2.getId());
 
         LocalDate today = LocalDate.now();
         List<PopularTheme> popularThemes = themeRepository.findTop10PopularThemesBetween(today.minusWeeks(1),

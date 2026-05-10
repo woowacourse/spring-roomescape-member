@@ -96,13 +96,14 @@ public class ThemeApiIntegrationTest {
     @Test
     void find_popular_themes() {
         Long timeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
+        Long secondTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
         Long theme1Id = testHelper.insertTheme("theme name 1", "theme description 1", "theme img url 1");
         Long theme2Id = testHelper.insertTheme("theme name 2", "theme description 2", "theme img url 2");
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
         testHelper.insertReservation("스타크", yesterday, theme1Id, timeId);
         testHelper.insertReservation("카야", yesterday, theme2Id, timeId);
-        testHelper.insertReservation("스타크", yesterday, theme1Id, timeId);
+        testHelper.insertReservation("스타크", yesterday, theme1Id, secondTimeId);
 
         RestAssured.given().log().all()
                 .when().get("/themes/popular-top-10")
