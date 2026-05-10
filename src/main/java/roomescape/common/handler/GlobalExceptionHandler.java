@@ -6,6 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.dto.ErrorInformation;
@@ -46,6 +47,14 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage());
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ErrorInformation errorInformation = ErrorInformation.of(httpStatus, DEFAULT_ERROR_MESSAGE);
+        return ResponseEntity.status(httpStatus)
+                .body(errorInformation);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorInformation> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        ErrorInformation errorInformation = ErrorInformation.of(httpStatus, e.getMessage());
         return ResponseEntity.status(httpStatus)
                 .body(errorInformation);
     }
