@@ -1,4 +1,4 @@
-package roomescape.user.controller;
+package roomescape.theme.controller;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,16 +9,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.Theme;
-import roomescape.user.dto.ThemeResponse;
-import roomescape.user.service.ThemeService;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeService;
+import roomescape.theme.dto.ThemeResponse;
 
 @RestController
 @RequestMapping("/user")
-public class ThemeController {
+public class UserThemeController {
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public UserThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
@@ -38,7 +38,8 @@ public class ThemeController {
     }
 
     @GetMapping(value = "/themes/trending", params = {"startDate", "endDate", "limit"})
-    public ResponseEntity<List<ThemeResponse>> readByTrend(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate,
+    public ResponseEntity<List<ThemeResponse>> readByTrend(@RequestParam LocalDate startDate,
+                                                           @RequestParam LocalDate endDate,
                                                            @RequestParam int limit) {
         List<ThemeResponse> themes = themeService.findByTrend(startDate, endDate, limit).stream()
                 .map(ThemeResponse::from)

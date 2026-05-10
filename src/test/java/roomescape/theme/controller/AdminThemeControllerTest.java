@@ -1,4 +1,4 @@
-package roomescape.admin.controller;
+package roomescape.theme.controller;
 
 import static org.hamcrest.Matchers.is;
 
@@ -13,25 +13,6 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AdminThemeControllerTest {
-
-    @Test
-    void 관리자_전체_테마_조회() throws Exception {
-        RestAssured.given().log().all()
-                .when().get("/admin/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(11));
-
-    }
-
-    @Test
-    void 관리자_단일_테마_조회() {
-        RestAssured.given().log().all()
-                .when().get("/admin/themes/1")
-                .then().log().all()
-                .statusCode(200)
-                .body("name", is("은하수"));
-    }
 
     @Test
     void 관리자_테마_추가() {

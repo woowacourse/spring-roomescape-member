@@ -1,4 +1,4 @@
-package roomescape.admin.dao;
+package roomescape.theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,11 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class AdminThemeDaoTest {
+public class ThemeDaoTest {
     private static final RowMapper<Theme> rowMapper =
             (rs, rowNum) -> {
                 return new Theme(
@@ -29,7 +28,7 @@ public class AdminThemeDaoTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private AdminThemeDao adminThemeDao;
+    private ThemeDao themeDao;
 
     @Test
     void 데이터베이스_연동() {
@@ -44,23 +43,23 @@ public class AdminThemeDaoTest {
 
     @Test
     void 테마_전체_조회_테스트() {
-        List<Theme> themes = adminThemeDao.selectAll();
+        List<Theme> themes = themeDao.selectAll();
         assertThat(themes.size()).isEqualTo(11);
     }
 
     @Test
     void 테마_단일_조회_테스트() {
-        Theme firstTheme = adminThemeDao.selectById(1L);
+        Theme firstTheme = themeDao.selectById(1L);
         assertThat(firstTheme.getName()).isEqualTo("은하수");
 
-        Theme secoundTheme = adminThemeDao.selectById(2L);
+        Theme secoundTheme = themeDao.selectById(2L);
         assertThat(secoundTheme.getName()).isEqualTo("지구");
     }
 
     @Test
     void 테마_생성_테스트() {
         Theme theme = new Theme("디스커버리", "디스커버리 테마방입니다", "http.jp");
-        Theme expected = adminThemeDao.insert(theme);
+        Theme expected = themeDao.insert(theme);
 
         String sql = "SELECT * FROM theme WHERE id = ?";
         Theme actual = jdbcTemplate.query(sql, rowMapper, expected.getId()).getFirst();
@@ -74,9 +73,9 @@ public class AdminThemeDaoTest {
     @Test
     void 테마_삭제_테스트() {
         long id = 1L;
-        adminThemeDao.deleteById(id);
+        themeDao.deleteById(id);
 
-        List<Theme> themes = adminThemeDao.selectAll();
+        List<Theme> themes = themeDao.selectAll();
         assertThat(themes.size()).isEqualTo(10);
     }
 }

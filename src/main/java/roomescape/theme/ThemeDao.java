@@ -1,15 +1,15 @@
-package roomescape.user.dao;
+package roomescape.theme;
 
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme;
 
 @Repository
 public class ThemeDao {
-
     private static final RowMapper<Theme> rowMapper =
             (rs, rowNum) -> {
                 return new Theme(
@@ -20,9 +20,13 @@ public class ThemeDao {
             };
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     public List<Theme> selectAll() {
@@ -55,5 +59,19 @@ public class ThemeDao {
                 """;
 
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
+    }
+
+    public Theme insert(Theme theme) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("image", theme.getImage());
+        long id = (long) simpleJdbcInsert.executeAndReturnKey(params);
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getImage());
+    }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM theme where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
