@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>예약 페이지</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: sans-serif;
+      margin-top: 50px;
+    }
+    .container {
+      border: 2px solid #000;
+      padding: 20px;
+      width: 400px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 15px;
+    }
+    input[type="date"], input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      width: 80%;
+      box-sizing: border-box;
+    }
+    .time-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+    }
+    .time-btn.selected {
+      background-color: #000;
+      color: #fff;
+    }
+    .time-btn:disabled {
+      background-color: #e0e0e0;
+      color: #a0a0a0;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    #reserve-btn {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2 id="theme-name"></h2>
+  <img id="theme-image" src="" alt="Theme Image" style="display: none;">
+  <p id="theme-desc"></p>
+  <p id="theme-time"></p>
+</div>
+
+<div class="container">
+  <h3>예약자 정보</h3>
+  <input type="text" id="user-name" placeholder="이름을 입력하세요">
+
+  <h3>예약 날짜 선택</h3>
+  <input type="date" id="date-picker">
+
+  <h3>예약 시간 선택</h3>
+  <div id="time-list"></div>
+
+  <button id="reserve-btn">예약하기</button>
+</div>
+
+<script>
+  let selectedTimeId = null;
+  let allTimes = [];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const themeId = params.get('themeId');
+    const datePicker = document.getElementById('date-picker');
+
+    if (!themeId) return;
+
+    fetch(`/themes/${themeId}`)
+    .then(res => res.json())
+    .then(theme => {
+      document.getElementById('theme-name').textContent = theme.name;
+      document.getElementById('theme-desc').textContent = theme.description;
+      document.getElementById('theme-time').textContent = theme.runningTime + '분';
+      const img = document.getElementById('theme-image');
+      img.src = theme.imageUrl;
+      img.style.display = 'block';
+    });
+
+    fetch('/times')
+    .then(res => res.json())
+    .then(times => {
+      allTimes = times;
+      renderTimeButtons([]);
+    });
+
+    datePicker.addEventListener('change', () => {
+      const selectedDate = datePicker.value;
+      fetch(`/times/reserved?themeId=${themeId}&selectedDate=${selectedDate}`)
+      .then(res => res.json())
+      .then(bookedTimes => {
+        const bookedTimeIds = bookedTimes.map(t => t.id);
+        renderTimeButtons(bookedTimeIds);
+      });
+    });
+
+    function renderTimeButtons(bookedTimeIds) {
+      const timeList = document.getElementById('time-list');
+      timeList.innerHTML = '';
+      selectedTimeId = null;
+
+      allTimes.forEach(time => {
+        const btn = document.createElement('button');
+        btn.className = 'time-btn';
+        btn.textContent = time.startAt;
+
+        if (bookedTimeIds.includes(time.id)) {
+          btn.disabled = true;
+        }
+
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedTimeId = time.id;
+        });
+        timeList.appendChild(btn);
+      });
+    }
+
+    document.getElementById('reserve-btn').addEventListener('click', () => {
+      const name = document.getElementById('user-name').value;
+      const date = datePicker.value;
+
+      if (!name || !date || !selectedTimeId) {
+        alert('모든 정보를 입력해주세요.');
+        return;
+      }
+
+      fetch('/reservations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ themeId: parseInt(themeId), name, date, timeId: selectedTimeId })
+      })
+      .then(res => {
+        if (res.status === 201) {
+          alert('예약 성공!');
+          location.href = '/';
+        } else {
+          alert('예약 실패');
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>
