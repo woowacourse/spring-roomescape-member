@@ -1,4 +1,4 @@
-const API = '/themes/popular';
+const API = '/themes';
 
 document.addEventListener('DOMContentLoaded', () => {
     refresh();
