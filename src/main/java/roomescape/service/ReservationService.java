@@ -47,14 +47,7 @@ public class ReservationService {
     }
 
     public void deleteById(Long id) {
-        validateHasReservation(id);
         reservationDao.deleteById(id);
     }
 
-    private void validateHasReservation(Long id) {
-        boolean hasReservation = reservationDao.existById(id);
-        if (!hasReservation) {
-            throw new IllegalArgumentException("존재하지 않는 예약이라 삭제할 수 없습니다.");
-        }
-    }
 }
