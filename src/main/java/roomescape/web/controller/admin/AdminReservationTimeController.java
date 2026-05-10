@@ -49,7 +49,8 @@ public class AdminReservationTimeController {
 
     @GetMapping
     public ResponseEntity<ReservationTimeResponses> getAllTimes() {
-        ReservationTimeResponses response = new ReservationTimeResponses(reservationTimeService.getAllReservationTimes());
+        ReservationTimeResponses response = new ReservationTimeResponses(
+                reservationTimeService.getAllReservationTimes());
 
         return ResponseEntity.ok(response);
     }

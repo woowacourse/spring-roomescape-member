@@ -17,8 +17,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.global.exception.DuplicateEntityException;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.repository.collection.MemoryReservationTimeRepository;
-import roomescape.service.fake.FakeThemeRepository;
+import roomescape.repository.fake.FakeReservationTimeRepository;
+import roomescape.repository.fake.FakeThemeRepository;
 import roomescape.web.dto.ThemeRequest;
 import roomescape.web.dto.ThemeResponse;
 import roomescape.web.dto.ThemeTimesResponse;
@@ -42,7 +42,7 @@ class ThemeServiceTest {
     @BeforeEach
     void setUp() {
         this.themeRepository = new FakeThemeRepository();
-        this.reservationTimeRepository = new MemoryReservationTimeRepository();
+        this.reservationTimeRepository = new FakeReservationTimeRepository();
         this.themeService = new ThemeService(themeRepository, reservationTimeRepository);
     }
 
@@ -82,10 +82,10 @@ class ThemeServiceTest {
     void 테마_식별자로_테마를_삭제_할_수_있다() {
         // given
         ThemeRequest request = new ThemeRequest("공포테마", "설명", "http://image.png");
-        ThemeResponse registerresponse = themeService.register(request);
+        ThemeResponse response = themeService.register(request);
 
         // when
-        themeService.remove(registerresponse.id());
+        themeService.remove(response.id());
 
         // then: 같은 테마명으로 재등록 가능
         assertThatCode(() -> themeService.register(request))

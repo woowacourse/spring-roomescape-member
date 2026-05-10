@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTime;
 import roomescape.global.exception.DuplicateEntityException;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.collection.MemoryReservationTimeRepository;
+import roomescape.repository.fake.FakeReservationTimeRepository;
 import roomescape.web.dto.ReservationTimeRequest;
 import roomescape.web.dto.ReservationTimeResponse;
 
@@ -21,7 +21,7 @@ class ReservationTimeServiceTest {
 
     @BeforeEach
     void setUp() {
-        this.reservationTimeRepository = new MemoryReservationTimeRepository();
+        this.reservationTimeRepository = new FakeReservationTimeRepository();
         this.reservationTimeService = new ReservationTimeService(this.reservationTimeRepository);
     }
 

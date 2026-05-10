@@ -1,6 +1,4 @@
-package roomescape.repository.collection;
-
-import static java.util.Objects.requireNonNull;
+package roomescape.repository.fake;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,15 +11,13 @@ import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.dto.TimeSlotProjection;
 
-public class MemoryReservationTimeRepository implements ReservationTimeRepository {
+public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
     private final List<ReservationTime> reservationTimes = new CopyOnWriteArrayList<>();
     private final AtomicLong counter = new AtomicLong(1);
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        requireNonNull(reservationTime, "저장할 예약 시간 정보는 null일 수 없습니다.");
-
         ReservationTime saved = new ReservationTime(
                 counter.getAndIncrement(),
                 reservationTime.getStartAt()
@@ -45,7 +41,8 @@ public class MemoryReservationTimeRepository implements ReservationTimeRepositor
     @Override
     public boolean existsByStartAt(LocalTime time) {
         return reservationTimes.stream()
-                .anyMatch(reservationTime -> reservationTime.getStartAt().equals(time));
+                .anyMatch(reservationTime
+                        -> reservationTime.getStartAt().equals(time));
     }
 
     @Override

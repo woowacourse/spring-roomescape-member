@@ -28,5 +28,6 @@ public final class ReservationEntityMapper {
         );
     };
 
-    private ReservationEntityMapper() {}
+    private ReservationEntityMapper() {
+    }
 }

@@ -19,9 +19,9 @@ import roomescape.global.exception.EntityNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.repository.collection.MemoryReservationRepository;
-import roomescape.repository.collection.MemoryReservationTimeRepository;
-import roomescape.service.fake.FakeThemeRepository;
+import roomescape.repository.fake.FakeReservationRepository;
+import roomescape.repository.fake.FakeReservationTimeRepository;
+import roomescape.repository.fake.FakeThemeRepository;
 import roomescape.web.dto.ReservationRequest;
 import roomescape.web.dto.ReservationResponse;
 import roomescape.web.dto.ReservationTimeResponse;
@@ -35,8 +35,8 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        this.reservationRepository = new MemoryReservationRepository();
-        this.reservationTimeRepository = new MemoryReservationTimeRepository();
+        this.reservationRepository = new FakeReservationRepository();
+        this.reservationTimeRepository = new FakeReservationTimeRepository();
         this.themeRepository = new FakeThemeRepository();
         this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
                 themeRepository);
