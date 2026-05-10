@@ -39,11 +39,20 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId());
         Reservation newReservation = new Reservation(null, request.name(), theme, request.date(), reservationTime);
 
+        validateNotDuplicated(newReservation);
+
         Long newReservationId = reservationRepository.save(newReservation);
         return reservationRepository.findById(newReservationId);
     }
 
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    private void validateNotDuplicated(Reservation reservation) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+                reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId())) {
+            throw new IllegalStateException("해당 날짜·시간·테마에 이미 예약이 존재합니다.");
+        }
     }
 }

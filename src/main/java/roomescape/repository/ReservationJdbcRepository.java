@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -77,18 +76,14 @@ public class ReservationJdbcRepository implements ReservationRepository {
         String sql = "insert into reservation(name, theme_id, date, time_id) values(?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        try {
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-                ps.setString(1, reservation.getName());
-                ps.setLong(2, reservation.getTheme().getId());
-                ps.setDate(3, Date.valueOf(reservation.getDate()));
-                ps.setLong(4, reservation.getTime().getId());
-                return ps;
-            }, keyHolder);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("해당 날짜·시간·테마에 이미 예약이 존재합니다.");
-        }
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, reservation.getName());
+            ps.setLong(2, reservation.getTheme().getId());
+            ps.setDate(3, Date.valueOf(reservation.getDate()));
+            ps.setLong(4, reservation.getTime().getId());
+            return ps;
+        }, keyHolder);
 
         return keyHolder.getKey().longValue();
     }
@@ -107,5 +102,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 where theme_id = ? and date = ?
                 """;
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("time_id"), themeId, date);
+    }
+
+    @Override
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = "select exists(select 1 from reservation where date = ? and time_id = ? and theme_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
     }
 }
