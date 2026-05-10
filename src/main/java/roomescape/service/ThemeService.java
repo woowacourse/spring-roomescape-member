@@ -35,6 +35,10 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
+    public Theme getTheme(Long id) {
+        return themeRepository.findById(id);
+    }
+
     @Transactional
     public Theme createTheme(CreateThemeRequest request) {
         Theme theme = new Theme(null, request.name(), request.description(), request.thumbnailImageUrl());

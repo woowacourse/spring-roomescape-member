@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.theme.PopularThemeResponses;
 import roomescape.dto.theme.ThemeReservationTimeResponses;
+import roomescape.dto.theme.ThemeResponse;
 import roomescape.dto.theme.ThemeResponses;
 import roomescape.service.ThemeService;
 
@@ -25,6 +26,11 @@ public class ThemeController {
     @GetMapping
     public ResponseEntity<ThemeResponses> readThemes() {
         return ResponseEntity.ok(ThemeResponses.from(themeService.getThemes()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ThemeResponse> readTheme(@PathVariable Long id) {
+        return ResponseEntity.ok(ThemeResponse.from(themeService.getTheme(id)));
     }
 
     @GetMapping("/{id}/times")

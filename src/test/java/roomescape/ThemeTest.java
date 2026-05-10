@@ -1,6 +1,8 @@
 package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import java.util.List;
@@ -18,6 +20,18 @@ public class ThemeTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Test
+    void 테마_단건_조회() {
+        insertTheme();
+
+        RestAssured.given().log().all()
+                .when().get("/themes/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(1))
+                .body("name", equalTo("테마명"));
+    }
 
     @Test
     void 테마_전체_목록_반환() {
