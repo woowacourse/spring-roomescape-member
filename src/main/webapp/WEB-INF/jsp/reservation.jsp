@@ -307,6 +307,12 @@
                     <input type="text" id="name" name="name" required placeholder="이름을 입력하세요">
                 </div>
                 <div class="form-group">
+                    <label for="themeId">테마</label>
+                    <select id="themeId" name="themeId" required>
+                        <option value="">테마를 선택하세요</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="date">날짜</label>
                     <input type="date" id="date" name="date" required>
                 </div>
@@ -315,16 +321,10 @@
                     <div class="time-picker">
                         <p class="time-picker-guide">직접 입력 없이, 아래에서 원하는 시간대를 눌러 선택하세요.</p>
                         <div id="timeSlots" class="time-slots">
-                            <div class="time-slot-empty">예약 가능 시간을 불러오는 중입니다...</div>
+                            <div class="time-slot-empty">날짜와 테마를 선택하면 예약 가능한 시간이 표시됩니다.</div>
                         </div>
                         <input type="hidden" id="timeId" name="timeId" required>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label for="themeId">테마</label>
-                    <select id="themeId" name="themeId" required>
-                        <option value="">테마를 선택하세요</option>
-                    </select>
                 </div>
                 <button type="submit" class="btn">예약하기</button>
             </form>
@@ -334,16 +334,26 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            loadTimes();
             loadThemes();
+            document.getElementById('date').addEventListener('change', loadAvailableTimes);
+            document.getElementById('themeId').addEventListener('change', loadAvailableTimes);
         });
 
-        function loadTimes() {
-            fetch('/times')
+        function loadAvailableTimes() {
+            const date = document.getElementById('date').value;
+            const themeId = document.getElementById('themeId').value;
+
+            document.getElementById('timeId').value = '';
+
+            if (!date || !themeId) {
+                document.getElementById('timeSlots').innerHTML =
+                    '<div class="time-slot-empty">날짜와 테마를 선택하면 예약 가능한 시간이 표시됩니다.</div>';
+                return;
+            }
+
+            fetch(`/times?date=${date}&themeId=${themeId}`)
                 .then(response => response.json())
-                .then(times => {
-                    renderTimeSlots(times);
-                })
+                .then(times => renderTimeSlots(times))
                 .catch(error => {
                     console.error('시간 목록 불러오기 실패:', error);
                     document.getElementById('timeSlots').innerHTML =
