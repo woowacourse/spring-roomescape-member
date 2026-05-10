@@ -40,7 +40,7 @@ public class ThemeDao {
                         resultSet.getString("thumbnail")));
     }
 
-    public List<PopularTheme> findPopularThemes(LocalDate startDate, LocalDate endDate) {
+    public List<PopularTheme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                 select th.id, th.name, th.description, th.thumbnail, count(r.id) as reservation_count 
                 from theme th 
@@ -49,7 +49,7 @@ public class ThemeDao {
                 where r.date between ? and ? 
                 group by th.id, th.name, th.description, th.thumbnail 
                 order by reservation_count desc, th.id asc
-                limit 10
+                limit ?
                 """;
 
         return jdbcTemplate.query(sql,
@@ -64,6 +64,7 @@ public class ThemeDao {
                 )
                 , startDate.toString()
                 , endDate.toString()
+                , limit
         );
     }
 
