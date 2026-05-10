@@ -20,7 +20,7 @@ public class AdminReservationTimeTest {
                 .when().get("/admin/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("times.size()", is(0));
     }
 
     @Test
@@ -39,7 +39,7 @@ public class AdminReservationTimeTest {
                 .when().get("/admin/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("times.size()", is(1));
 
         RestAssured.given().log().all()
                 .when().delete("/admin/times/1")

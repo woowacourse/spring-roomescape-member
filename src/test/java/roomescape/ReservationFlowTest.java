@@ -28,7 +28,7 @@ public class ReservationFlowTest {
                 .when().get("/themes/1/times?date=2026-05-06")
                 .then().log().all()
                 .statusCode(200)
-                .body("[0].isReserved", equalTo(false));
+                .body("times[0].isReserved", equalTo(false));
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
@@ -46,7 +46,7 @@ public class ReservationFlowTest {
                 .when().get("/themes/1/times?date=2026-05-06")
                 .then().log().all()
                 .statusCode(200)
-                .body("[0].isReserved", equalTo(true));
+                .body("times[0].isReserved", equalTo(true));
     }
 
     private void insertTheme(Long id, String name) {

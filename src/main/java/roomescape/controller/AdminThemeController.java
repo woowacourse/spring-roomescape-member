@@ -2,7 +2,6 @@ package roomescape.controller;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.theme.CreateThemeRequest;
-import roomescape.dto.theme.PopularThemeResponse;
-import roomescape.dto.theme.ThemeReservationTimeResponse;
-import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.theme.PopularThemeResponses;
+import roomescape.dto.theme.ThemeReservationTimeResponses;
+import roomescape.dto.theme.ThemeResponses;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -30,11 +29,8 @@ public class AdminThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> readThemes() {
-        List<Theme> themes = themeService.getThemes();
-        return ResponseEntity.ok().body(themes.stream()
-                .map(ThemeResponse::from)
-                .toList());
+    public ResponseEntity<ThemeResponses> readThemes() {
+        return ResponseEntity.ok(ThemeResponses.from(themeService.getThemes()));
     }
 
     @PostMapping
@@ -51,13 +47,13 @@ public class AdminThemeController {
     }
 
     @GetMapping("/{id}/times")
-    public ResponseEntity<List<ThemeReservationTimeResponse>> readThemeTimes(@PathVariable Long id,
-                                                                             @RequestParam LocalDate date) {
-        return ResponseEntity.ok(themeService.getThemeTimes(id, date));
+    public ResponseEntity<ThemeReservationTimeResponses> readThemeTimes(@PathVariable Long id,
+                                                                        @RequestParam LocalDate date) {
+        return ResponseEntity.ok(ThemeReservationTimeResponses.from(themeService.getThemeTimes(id, date)));
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<PopularThemeResponse>> readPopularThemes(@RequestParam Integer limit) {
-        return ResponseEntity.ok(themeService.getPopularThemes(limit));
+    public ResponseEntity<PopularThemeResponses> readPopularThemes(@RequestParam Integer limit) {
+        return ResponseEntity.ok(PopularThemeResponses.from(themeService.getPopularThemes(limit)));
     }
 }

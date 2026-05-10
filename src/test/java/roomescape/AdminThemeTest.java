@@ -30,7 +30,7 @@ public class AdminThemeTest {
                 .when().get("/admin/themes")
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getList(".");
+                .extract().jsonPath().getList("themes");
 
         assertThat(themes).hasSize(2);
     }
@@ -101,7 +101,7 @@ public class AdminThemeTest {
                 .when().get("/admin/themes/1/times?date=2026-05-06")
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getList(".");
+                .extract().jsonPath().getList("times");
 
         assertThat(times).hasSize(2);
     }
@@ -117,7 +117,7 @@ public class AdminThemeTest {
                 .when().get("/admin/themes/1/times?date=2026-05-06")
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getBoolean("[0].isReserved");
+                .extract().jsonPath().getBoolean("times[0].isReserved");
 
         assertThat(isReserved).isTrue();
     }
@@ -131,7 +131,7 @@ public class AdminThemeTest {
                 .when().get("/admin/themes/1/times?date=2026-05-06")
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getBoolean("[0].isReserved");
+                .extract().jsonPath().getBoolean("times[0].isReserved");
 
         assertThat(isReserved).isFalse();
     }
@@ -143,7 +143,7 @@ public class AdminThemeTest {
                 .when().get("/admin/themes/popular?limit=10")
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getList(".");
+                .extract().jsonPath().getList("themes");
 
         assertThat(themes).hasSize(10);
 
@@ -172,7 +172,7 @@ public class AdminThemeTest {
                 .when().get("/admin/themes/popular?limit=10")
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getList("id");
+                .extract().jsonPath().getList("themes.id");
 
         assertThat(themeIds).doesNotContain(13, 14, 15);
     }

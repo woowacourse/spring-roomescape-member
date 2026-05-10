@@ -26,7 +26,7 @@ public class AdminReservationTest {
                 .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("reservations.size()", is(0));
     }
 
     @Test

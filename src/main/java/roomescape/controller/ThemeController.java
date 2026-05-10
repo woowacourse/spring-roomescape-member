@@ -1,17 +1,15 @@
 package roomescape.controller;
 
 import java.time.LocalDate;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.Theme;
-import roomescape.dto.theme.PopularThemeResponse;
-import roomescape.dto.theme.ThemeReservationTimeResponse;
-import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.theme.PopularThemeResponses;
+import roomescape.dto.theme.ThemeReservationTimeResponses;
+import roomescape.dto.theme.ThemeResponses;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -25,23 +23,18 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> readThemes() {
-        List<Theme> themes = themeService.getThemes();
-        return ResponseEntity.ok().body(themes.stream()
-                .map(ThemeResponse::from)
-                .toList());
+    public ResponseEntity<ThemeResponses> readThemes() {
+        return ResponseEntity.ok(ThemeResponses.from(themeService.getThemes()));
     }
 
     @GetMapping("/{id}/times")
-    public ResponseEntity<List<ThemeReservationTimeResponse>> readThemeTimes(@PathVariable Long id,
-                                                                             @RequestParam LocalDate date) {
-        List<ThemeReservationTimeResponse> themeTimes = themeService.getThemeTimes(id, date);
-        return ResponseEntity.ok().body(themeTimes);
+    public ResponseEntity<ThemeReservationTimeResponses> readThemeTimes(@PathVariable Long id,
+                                                                        @RequestParam LocalDate date) {
+        return ResponseEntity.ok(ThemeReservationTimeResponses.from(themeService.getThemeTimes(id, date)));
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<PopularThemeResponse>> readPopularThemes(@RequestParam Integer limit) {
-        List<PopularThemeResponse> popularThemes = themeService.getPopularThemes(limit);
-        return ResponseEntity.ok().body(popularThemes);
+    public ResponseEntity<PopularThemeResponses> readPopularThemes(@RequestParam Integer limit) {
+        return ResponseEntity.ok(PopularThemeResponses.from(themeService.getPopularThemes(limit)));
     }
 }

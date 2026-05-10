@@ -29,7 +29,7 @@ public class ReservationTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("reservations.size()", is(0));
     }
 
     @Test
@@ -54,7 +54,7 @@ public class ReservationTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("reservations.size()", is(1));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -65,7 +65,7 @@ public class ReservationTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("reservations.size()", is(0));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class ReservationTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
+                .jsonPath().getList("reservations", Reservation.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(reservations.size()).isEqualTo(count);
@@ -137,7 +137,7 @@ public class ReservationTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("reservations.size()", is(1));
     }
 
     @Test
