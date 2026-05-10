@@ -15,7 +15,7 @@ import roomescape.dto.TimeResponse;
 import roomescape.service.TimeService;
 
 @RestController
-@RequestMapping("/admins/times")
+@RequestMapping("/admin/times")
 public class AdminTimeController {
 
     private final TimeService timeService;
