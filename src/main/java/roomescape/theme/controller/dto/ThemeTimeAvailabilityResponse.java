@@ -1,4 +1,4 @@
-package roomescape.reservation.controller.dto;
+package roomescape.theme.controller.dto;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
