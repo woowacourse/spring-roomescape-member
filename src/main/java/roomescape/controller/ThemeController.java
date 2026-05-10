@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ThemeRequest;
 import roomescape.controller.dto.ThemeRankResponse;
 import roomescape.controller.dto.ThemeResponse;
+import roomescape.controller.dto.ThemeRankingQuery;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -35,7 +36,8 @@ public class ThemeController {
             @RequestParam(defaultValue = "7") int days,
             @RequestParam(defaultValue = "10") int limit
     ) {
-        return ResponseEntity.ok(themeService.getThemeRankings(days, limit, LocalDate.now()));
+        ThemeRankingQuery query = new ThemeRankingQuery(days, limit);
+        return ResponseEntity.ok(themeService.getThemeRankings(query, LocalDate.now()));
     }
 
     @PostMapping
@@ -50,5 +52,4 @@ public class ThemeController {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
-
 }
