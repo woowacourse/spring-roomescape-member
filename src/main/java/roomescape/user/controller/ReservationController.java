@@ -2,7 +2,7 @@ package roomescape.user.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.http.HttpStatus;
+import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +30,7 @@ public class ReservationController {
         @RequestBody ReservationRequest request
     ) {
         ReservationResponse response = reservationService.createReservation(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
     }
 
     @GetMapping("/reservations")

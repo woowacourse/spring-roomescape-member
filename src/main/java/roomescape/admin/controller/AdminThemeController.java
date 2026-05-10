@@ -1,6 +1,6 @@
 package roomescape.admin.controller;
 
-import org.springframework.http.HttpStatus;
+import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.admin.dto.AdminThemeRequest;
@@ -23,7 +23,7 @@ public class AdminThemeController {
             @RequestBody AdminThemeRequest request
             ) {
         AdminThemeResponse response = adminThemeService.createTheme(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.created(URI.create("/admin/themes/" + response.id())).body(response);
     }
 
     @GetMapping
