@@ -40,6 +40,38 @@ public class JdbcThemeRepository implements ThemeRepository {
         return theme.withId(id);
     }
 
+    private int insert(Theme theme, KeyHolder keyHolder) {
+        String sql = """
+                INSERT INTO theme (name, description, thumbnail)
+                VALUES (?, ?, ?)
+                """;
+
+        return jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    sql,
+                    new String[]{"id"}
+            );
+            preparedStatement.setString(1, theme.getName());
+            preparedStatement.setString(2, theme.getDescription());
+            preparedStatement.setString(3, theme.getThumbnail());
+            return preparedStatement;
+        }, keyHolder);
+    }
+
+    private void validateCreatedRowCount(int rowCount) {
+        if (rowCount != 1) {
+            throw new InfrastructureException("테마 생성에 실패했습니다.");
+        }
+    }
+
+    private Long getGeneratedId(KeyHolder keyHolder) {
+        Number key = keyHolder.getKey();
+        if (key == null) {
+            throw new InfrastructureException("테마 생성에 실패했습니다.");
+        }
+        return key.longValue();
+    }
+
     @Override
     public List<Theme> findAll() {
         String sql = """
@@ -117,37 +149,5 @@ public class JdbcThemeRepository implements ThemeRepository {
                 """;
 
         jdbcTemplate.update(sql, id);
-    }
-
-    private int insert(Theme theme, KeyHolder keyHolder) {
-        String sql = """
-                INSERT INTO theme (name, description, thumbnail)
-                VALUES (?, ?, ?)
-                """;
-
-        return jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    sql,
-                    new String[]{"id"}
-            );
-            preparedStatement.setString(1, theme.getName());
-            preparedStatement.setString(2, theme.getDescription());
-            preparedStatement.setString(3, theme.getThumbnail());
-            return preparedStatement;
-        }, keyHolder);
-    }
-
-    private void validateCreatedRowCount(int rowCount) {
-        if (rowCount != 1) {
-            throw new InfrastructureException("테마 생성에 실패했습니다.");
-        }
-    }
-
-    private Long getGeneratedId(KeyHolder keyHolder) {
-        Number key = keyHolder.getKey();
-        if (key == null) {
-            throw new InfrastructureException("테마 생성에 실패했습니다.");
-        }
-        return key.longValue();
     }
 }

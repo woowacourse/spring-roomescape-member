@@ -38,6 +38,36 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return reservationTime.withId(id);
     }
 
+    private int insert(ReservationTime reservationTime, KeyHolder keyHolder) {
+        String sql = """
+                INSERT INTO reservation_time (start_at)
+                VALUES (?)
+                """;
+
+        return jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    sql,
+                    new String[]{"id"}
+            );
+            preparedStatement.setString(1, reservationTime.getStartAt().toString());
+            return preparedStatement;
+        }, keyHolder);
+    }
+
+    private void validateCreatedRowCount(int rowCount) {
+        if (rowCount != 1) {
+            throw new InfrastructureException("예약 시간 생성에 실패했습니다.");
+        }
+    }
+
+    private Long getGeneratedId(KeyHolder keyHolder) {
+        Number key = keyHolder.getKey();
+        if (key == null) {
+            throw new InfrastructureException("예약 시간 생성에 실패했습니다.");
+        }
+        return key.longValue();
+    }
+
     @Override
     public List<ReservationTime> findAll() {
         String sql = """
@@ -81,35 +111,5 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, startAt.toString());
         return count != null && count > 0;
-    }
-
-    private int insert(ReservationTime reservationTime, KeyHolder keyHolder) {
-        String sql = """
-                INSERT INTO reservation_time (start_at)
-                VALUES (?)
-                """;
-
-        return jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    sql,
-                    new String[]{"id"}
-            );
-            preparedStatement.setString(1, reservationTime.getStartAt().toString());
-            return preparedStatement;
-        }, keyHolder);
-    }
-
-    private void validateCreatedRowCount(int rowCount) {
-        if (rowCount != 1) {
-            throw new InfrastructureException("예약 시간 생성에 실패했습니다.");
-        }
-    }
-
-    private Long getGeneratedId(KeyHolder keyHolder) {
-        Number key = keyHolder.getKey();
-        if (key == null) {
-            throw new InfrastructureException("예약 시간 생성에 실패했습니다.");
-        }
-        return key.longValue();
     }
 }

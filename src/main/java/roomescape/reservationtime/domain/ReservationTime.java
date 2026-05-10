@@ -21,6 +21,12 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
+    private void validateStartAt(LocalTime startAt) {
+        if (startAt == null) {
+            throw new InvalidRequestException("예약 시간은 비어 있을 수 없습니다.");
+        }
+    }
+
     public ReservationTime withId(Long id) {
         validateId(id);
 
@@ -29,12 +35,6 @@ public class ReservationTime {
         }
 
         return new ReservationTime(id, startAt);
-    }
-
-    private void validateStartAt(LocalTime startAt) {
-        if (startAt == null) {
-            throw new InvalidRequestException("예약 시간은 비어 있을 수 없습니다.");
-        }
     }
 
     private void validateId(Long id) {

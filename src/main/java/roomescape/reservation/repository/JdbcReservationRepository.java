@@ -103,29 +103,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         return reservation.withId(id);
     }
 
-    @Override
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM reservation
-                WHERE date = ? AND time_id = ? AND theme_id = ?
-            )
-            """;
-
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        String sql = """
-                DELETE FROM reservation
-                WHERE id = ?
-                """;
-
-        jdbcTemplate.update(sql, id);
-    }
-
     private int insert(Reservation reservation, KeyHolder keyHolder) {
         String sql = """
                 INSERT INTO reservation (name, date, time_id, theme_id)
@@ -157,5 +134,28 @@ public class JdbcReservationRepository implements ReservationRepository {
             throw new InfrastructureException("예약 생성에 실패했습니다.");
         }
         return key.longValue();
+    }
+
+    @Override
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation
+                WHERE date = ? AND time_id = ? AND theme_id = ?
+            )
+            """;
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        String sql = """
+                DELETE FROM reservation
+                WHERE id = ?
+                """;
+
+        jdbcTemplate.update(sql, id);
     }
 }

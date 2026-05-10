@@ -29,27 +29,11 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation withId(Long id) {
-        validateId(id);
-
-        if (this.id != null) {
-            throw new InvalidRequestException("이미 식별자가 존재하는 예약입니다.");
-        }
-
-        return new Reservation(id, name, date, time, theme);
-    }
-
     private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
-    }
-
-    private void validateId(Long id) {
-        if (id == null) {
-            throw new InvalidRequestException("예약 id는 비어 있을 수 없습니다.");
-        }
     }
 
     private void validateName(String name) {
@@ -73,6 +57,22 @@ public class Reservation {
     private void validateTheme(Theme theme) {
         if (theme == null) {
             throw new InvalidRequestException("테마 정보는 비어 있을 수 없습니다.");
+        }
+    }
+
+    public Reservation withId(Long id) {
+        validateId(id);
+
+        if (this.id != null) {
+            throw new InvalidRequestException("이미 식별자가 존재하는 예약입니다.");
+        }
+
+        return new Reservation(id, name, date, time, theme);
+    }
+
+    private void validateId(Long id) {
+        if (id == null) {
+            throw new InvalidRequestException("예약 id는 비어 있을 수 없습니다.");
         }
     }
 
