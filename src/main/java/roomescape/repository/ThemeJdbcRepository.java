@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.PopularTheme;
 import roomescape.domain.Theme;
-import roomescape.dto.theme.PopularThemeResponse;
 
 @Repository
 public class ThemeJdbcRepository implements ThemeRepository {
@@ -70,7 +70,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public List<PopularThemeResponse> findPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit) {
+    public List<PopularTheme> findPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit) {
         String sql = """
                 select t.id, t.name, t.description, t.thumbnail_image_url, count(r.id) as reservation_count
                 from theme t
@@ -80,11 +80,8 @@ public class ThemeJdbcRepository implements ThemeRepository {
                 limit ?
                 """;
 
-        RowMapper<PopularThemeResponse> popularThemeRowMapper = (resultSet, rowNum) -> new PopularThemeResponse(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail_image_url"),
+        RowMapper<PopularTheme> popularThemeRowMapper = (resultSet, rowNum) -> new PopularTheme(
+                rowMapper.mapRow(resultSet, rowNum),
                 resultSet.getLong("reservation_count")
         );
 

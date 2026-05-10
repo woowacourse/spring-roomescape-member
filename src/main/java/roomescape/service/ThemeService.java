@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.PopularTheme;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.theme.CreateThemeRequest;
-import roomescape.dto.theme.PopularThemeResponse;
 import roomescape.dto.theme.ThemeReservationTimeResponse;
 import roomescape.dto.theme.ThemeResponses;
 import roomescape.repository.ReservationRepository;
@@ -70,7 +70,7 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<PopularThemeResponse> getPopularThemes(Integer limit) {
+    public List<PopularTheme> getPopularThemes(Integer limit) {
         LocalDate today = timeProvider.today();
         LocalDate to = today.minusDays(1);
         LocalDate from = today.minusDays(POPULAR_THEME_PERIOD_DAYS);
