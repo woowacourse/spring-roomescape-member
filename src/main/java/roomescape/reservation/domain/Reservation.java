@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-@EqualsAndHashCode(of = {"name", "date", "themeId", "timeId"})
+@EqualsAndHashCode(of = {"date", "themeId", "timeId"})
 public class Reservation {
 
     private final Long id;
