@@ -34,6 +34,17 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     }
 
     @Override
+    public List<ReservationTime> findAll(int limit, int offset) {
+        String sql = """
+                select id, start_at
+                from reservation_time
+                order by id
+                limit ? offset ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, limit, offset);
+    }
+
+    @Override
     public ReservationTime findById(Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);

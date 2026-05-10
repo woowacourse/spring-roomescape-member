@@ -6,7 +6,7 @@ import roomescape.domain.Reservation;
 
 public interface ReservationRepository {
 
-    List<Reservation> findAll();
+    List<Reservation> findAll(int limit, int offset);
 
     Reservation findById(Long id);
 

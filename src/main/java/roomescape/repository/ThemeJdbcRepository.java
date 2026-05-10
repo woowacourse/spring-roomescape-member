@@ -31,9 +31,14 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAll() {
-        String sql = "select id, name, description, thumbnail_image_url from theme";
-        return jdbcTemplate.query(sql, rowMapper);
+    public List<Theme> findAll(int limit, int offset) {
+        String sql = """
+                select id, name, description, thumbnail_image_url
+                from theme
+                order by id
+                limit ? offset ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, limit, offset);
     }
 
     @Override

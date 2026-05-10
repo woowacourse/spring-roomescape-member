@@ -7,6 +7,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.CreateReservationRequest;
+import roomescape.dto.reservation.ReservationResponses;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -25,8 +26,13 @@ public class ReservationService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<Reservation> getReservations() {
-        return reservationRepository.findAll();
+    public ReservationResponses getReservations(int page, int size) {
+        List<Reservation> reservations = reservationRepository.findAll(size + 1, page * size);
+        boolean hasNext = reservations.size() > size;
+        if (hasNext) {
+            reservations = reservations.subList(0, size);
+        }
+        return ReservationResponses.of(reservations, hasNext);
     }
 
     public Reservation getReservation(Long id) {

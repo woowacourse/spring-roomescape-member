@@ -24,8 +24,11 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<ThemeResponses> readThemes() {
-        return ResponseEntity.ok(ThemeResponses.from(themeService.getThemes()));
+    public ResponseEntity<ThemeResponses> readThemes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(themeService.getThemes(page, size));
     }
 
     @GetMapping("/{id}")

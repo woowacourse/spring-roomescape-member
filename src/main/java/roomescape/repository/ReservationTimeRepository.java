@@ -7,6 +7,8 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
+    List<ReservationTime> findAll(int limit, int offset);
+
     ReservationTime findById(Long id);
 
     Long save(ReservationTime reservationTime);

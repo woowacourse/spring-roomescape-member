@@ -39,4 +39,25 @@ public class ReservationTimeTest {
                 .body("id", is(1))
                 .body("startAt", is("10:00"));
     }
+
+    @Test
+    void 시간_페이징_조회() {
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('10:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('11:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
+
+        RestAssured.given().log().all()
+                .when().get("/times?page=0&size=2")
+                .then().log().all()
+                .statusCode(200)
+                .body("times.size()", is(2))
+                .body("hasNext", is(true));
+
+        RestAssured.given().log().all()
+                .when().get("/times?page=1&size=2")
+                .then().log().all()
+                .statusCode(200)
+                .body("times.size()", is(1))
+                .body("hasNext", is(false));
+    }
 }

@@ -175,6 +175,29 @@ public class ReservationTest {
                 .body(equalTo("해당 날짜·시간·테마에 이미 예약이 존재합니다."));
     }
 
+    @Test
+    void 예약_페이징_조회() {
+        insertTheme(1L, "테마명");
+        insertReservationTime(1L, "10:00");
+        insertReservation("A", 1L, "2026-05-06", 1L);
+        insertReservation("B", 1L, "2026-05-07", 1L);
+        insertReservation("C", 1L, "2026-05-08", 1L);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?page=0&size=2")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(2))
+                .body("hasNext", is(true));
+
+        RestAssured.given().log().all()
+                .when().get("/reservations?page=1&size=2")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.size()", is(1))
+                .body("hasNext", is(false));
+    }
+
     private void insertTheme(Long id, String name) {
         jdbcTemplate.update(
                 "INSERT INTO theme(id, name, description, thumbnail_image_url) VALUES (?, ?, '설명', 'https://thumbnail.url')",

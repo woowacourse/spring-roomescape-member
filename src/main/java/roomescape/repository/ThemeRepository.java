@@ -7,7 +7,7 @@ import roomescape.dto.theme.PopularThemeResponse;
 
 public interface ThemeRepository {
 
-    List<Theme> findAll();
+    List<Theme> findAll(int limit, int offset);
 
     Theme findById(Long id);
 

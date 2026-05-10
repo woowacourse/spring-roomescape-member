@@ -9,6 +9,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.theme.CreateThemeRequest;
 import roomescape.dto.theme.PopularThemeResponse;
 import roomescape.dto.theme.ThemeReservationTimeResponse;
+import roomescape.dto.theme.ThemeResponses;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -31,8 +32,13 @@ public class ThemeService {
         this.timeProvider = timeProvider;
     }
 
-    public List<Theme> getThemes() {
-        return themeRepository.findAll();
+    public ThemeResponses getThemes(int page, int size) {
+        List<Theme> themes = themeRepository.findAll(size + 1, page * size);
+        boolean hasNext = themes.size() > size;
+        if (hasNext) {
+            themes = themes.subList(0, size);
+        }
+        return ThemeResponses.of(themes, hasNext);
     }
 
     public Theme getTheme(Long id) {

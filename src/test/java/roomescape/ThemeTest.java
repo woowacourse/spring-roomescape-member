@@ -133,6 +133,27 @@ public class ThemeTest {
         assertThat(themeIds).doesNotContain(13, 14, 15);
     }
 
+    @Test
+    void 테마_페이징_조회() {
+        insertTheme();
+        insertTheme();
+        insertTheme();
+
+        RestAssured.given().log().all()
+                .when().get("/themes?page=0&size=2")
+                .then().log().all()
+                .statusCode(200)
+                .body("themes.size()", is(2))
+                .body("hasNext", is(true));
+
+        RestAssured.given().log().all()
+                .when().get("/themes?page=1&size=2")
+                .then().log().all()
+                .statusCode(200)
+                .body("themes.size()", is(1))
+                .body("hasNext", is(false));
+    }
+
     private void insertTheme() {
         jdbcTemplate.execute(
                 "INSERT INTO theme(name, description, thumbnail_image_url) VALUES ('테마명', '테마설명', 'https://thumbnail.url')");

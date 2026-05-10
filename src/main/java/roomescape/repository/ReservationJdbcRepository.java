@@ -45,7 +45,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<Reservation> findAll(int limit, int offset) {
         String sql = """
                 select r.id, r.name, r.date,
                        t.id as time_id, t.start_at,
@@ -53,8 +53,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 from reservation r
                 join reservation_time t on r.time_id = t.id
                 join theme th on r.theme_id = th.id
+                order by r.id
+                limit ? offset ?
                 """;
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, rowMapper, limit, offset);
     }
 
     @Override
