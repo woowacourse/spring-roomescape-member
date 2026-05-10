@@ -3,6 +3,9 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -43,6 +46,9 @@ class ThemeServiceTest {
 
         // then
         assertThat(saved).isEqualTo(SAVED_THEME);
+
+        verify(themeRepository, times(1)).createTheme(any());
+        verifyNoMoreInteractions(themeRepository);
     }
 
     @Test
@@ -50,6 +56,9 @@ class ThemeServiceTest {
         // when & then
         assertThatCode(() -> themeService.deleteThemeById(SAVED_THEME.getId()))
             .doesNotThrowAnyException();
+
+        verify(themeRepository, times(1)).deleteById(SAVED_THEME.getId());
+        verifyNoMoreInteractions(themeRepository);
     }
 
     @Test
@@ -65,6 +74,9 @@ class ThemeServiceTest {
 
         // then
         assertThat(all).containsExactlyElementsOf(themes);
+
+        verify(themeRepository, times(1)).findAll();
+        verifyNoMoreInteractions(themeRepository);
     }
 
     @Test
@@ -80,6 +92,9 @@ class ThemeServiceTest {
 
         // then
         assertThat(themes).containsExactlyElementsOf(tenPopularThemesOrderByRank);
+
+        verify(themeRepository, times(1)).findWeekPopularThemesOrderByRank(10);
+        verifyNoMoreInteractions(themeRepository);
     }
 
     private List<Theme> createTenThemes() {

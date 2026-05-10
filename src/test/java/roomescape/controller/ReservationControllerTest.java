@@ -1,6 +1,10 @@
 package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import io.restassured.RestAssured;
@@ -47,7 +51,7 @@ class ReservationControllerTest {
         Reservation reservation = reservation();
         ReservationRequest request = requestDtoFrom(reservation);
 
-        when(reservationService.addReservation(request))
+        when(reservationService.addReservation(any()))
             .thenReturn(reservation.withId(1L));
 
         // when
@@ -64,6 +68,9 @@ class ReservationControllerTest {
 
         ReservationResponse responseDto = response.as(ReservationResponse.class);
         assertThat(responseDto.id()).isEqualTo(1L);
+
+        verify(reservationService, times(1)).addReservation(any());
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -94,6 +101,9 @@ class ReservationControllerTest {
         });
         assertThat(actualResponse).hasSize(3);
         assertThat(actualResponse).containsExactlyElementsOf(expectedResponse);
+
+        verify(reservationService, times(1)).getReservations();
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -108,6 +118,9 @@ class ReservationControllerTest {
         response
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
+
+        verify(reservationService, times(1)).deleteReservation(1L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     private Reservation reservation() {

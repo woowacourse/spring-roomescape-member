@@ -4,12 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,6 +68,9 @@ class ReservationTimeControllerTest {
 
         ResourceIdResponse responseDto = response.as(ResourceIdResponse.class);
         assertThat(responseDto).isEqualTo(new ResourceIdResponse(newTime.getId()));
+
+        verify(reservationService, times(1)).addReservationTime(any());
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -93,6 +100,9 @@ class ReservationTimeControllerTest {
         List<ReservationTimeResponse> actualResponse = response.as(new TypeRef<>() {
         });
         assertThat(actualResponse).containsExactlyElementsOf(expectedResponse);
+
+        verify(reservationService, times(1)).getReservationTimes();
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -108,6 +118,9 @@ class ReservationTimeControllerTest {
         response
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
+
+        verify(reservationService, times(1)).deleteReservationTime(1L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
@@ -130,11 +143,16 @@ class ReservationTimeControllerTest {
 
         ErrorMessageResponse body = response.as(ErrorMessageResponse.class);
         assertThat(body.messages()).contains("예약이 존재하는 시간은 삭제할 수 없습니다");
+
+        verify(reservationService, times(1)).deleteReservationTime(1L);
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Test
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
         // given
+        LocalDate date = LocalDate.parse("2026-05-05");
+
         ReservationTime availableTime = reservationTime();
         ReservationTime impossibleTime = new ReservationTime(2L, "14:30");
         List<ReservationTime> allTimes = List.of(availableTime, impossibleTime);
@@ -162,6 +180,10 @@ class ReservationTimeControllerTest {
 
         AvailableReservationTimesResponse responseDto = response.as(AvailableReservationTimesResponse.class);
         assertThat(responseDto).isEqualTo(expected);
+
+        verify(reservationService, times(1)).getAvailableTimes(date, 1L);
+        verify(reservationService, times(1)).getReservationTimes();
+        verifyNoMoreInteractions(reservationService);
     }
 
     @Nested
@@ -185,6 +207,8 @@ class ReservationTimeControllerTest {
             response
                 .then()
                 .statusCode(HttpStatus.FORBIDDEN.value());
+
+            verifyNoMoreInteractions(reservationService);
         }
 
         @Test
@@ -200,6 +224,8 @@ class ReservationTimeControllerTest {
             response
                 .then()
                 .statusCode(HttpStatus.FORBIDDEN.value());
+
+            verifyNoMoreInteractions(reservationService);
         }
     }
 

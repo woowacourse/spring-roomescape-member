@@ -2,6 +2,9 @@ package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import io.restassured.RestAssured;
@@ -66,6 +69,9 @@ class ThemeControllerTest {
 
         ResourceIdResponse responseDto = response.as(ResourceIdResponse.class);
         assertThat(responseDto).isEqualTo(new ResourceIdResponse(savedTheme.getId()));
+
+        verify(themeService, times(1)).addTheme(any());
+        verifyNoMoreInteractions(themeService);
     }
 
     @Test
@@ -94,6 +100,9 @@ class ThemeControllerTest {
         List<ThemeResponse> actualResponse = response.as(new TypeRef<>() {
         });
         assertThat(actualResponse).containsExactlyElementsOf(expectedResponse);
+
+        verify(themeService, times(1)).getThemes();
+        verifyNoMoreInteractions(themeService);
     }
 
     @Test
@@ -119,6 +128,9 @@ class ThemeControllerTest {
         PopularThemesResponse actualResponse = response.as(new TypeRef<>() {
         });
         assertThat(actualResponse).isEqualTo(expectedResponse);
+
+        verify(themeService, times(1)).findWeekPopularThemesOrderByRank(10);
+        verifyNoMoreInteractions(themeService);
     }
 
     @Test
@@ -134,6 +146,9 @@ class ThemeControllerTest {
         response
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
+
+        verify(themeService, times(1)).deleteThemeById(1L);
+        verifyNoMoreInteractions(themeService);
     }
 
     @Nested
@@ -157,6 +172,8 @@ class ThemeControllerTest {
             response
                 .then()
                 .statusCode(HttpStatus.FORBIDDEN.value());
+
+            verifyNoMoreInteractions(themeService);
         }
 
         @Test
@@ -172,6 +189,8 @@ class ThemeControllerTest {
             response
                 .then()
                 .statusCode(HttpStatus.FORBIDDEN.value());
+
+            verifyNoMoreInteractions(themeService);
         }
     }
 

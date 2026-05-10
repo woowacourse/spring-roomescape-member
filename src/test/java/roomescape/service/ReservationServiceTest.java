@@ -6,7 +6,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -72,14 +74,18 @@ class ReservationServiceTest {
 
         // then
         assertThat(availableTimes).containsExactlyInAnyOrder(availableTime1, availableTime2);
+
+        verify(themeRepository, times(1)).findById(anyLong());
+        verify(timeRepository, times(1)).findByDateAndThemeId(any(), anyLong());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 
     @Test
     void 동일한_테마에서_이미_예약된_시간을_선택하면_예외가_발생한다() {
         // given
-        when(timeRepository.findById(SAVED_TIME.getId()))
+        when(timeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_TIME));
-        when(themeRepository.findById(SAVED_THEME.getId()))
+        when(themeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_THEME));
         when(timeRepository.findByDateAndThemeId(any(), anyLong()))
             .thenReturn(List.of());
@@ -88,14 +94,19 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.addReservation(requestDtoFrom(reservation())))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("이미 예약된");
+
+        verify(timeRepository, times(1)).findById(anyLong());
+        verify(themeRepository, times(1)).findById(anyLong());
+        verify(timeRepository, times(1)).findByDateAndThemeId(any(), anyLong());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 
     @Test
     void 날짜와_시간이_같더라도_테마가_다르면_예약할_수_있다() {
         // given
-        Theme otherTheme = new Theme(2L, new ThemeName("테마2"), "테마2입니다.", ThemeImageUrl.defaultImageUrl());
+        Theme otherTheme = new Theme(2L, new ThemeName("n"), "d", ThemeImageUrl.defaultImageUrl());
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation reservation = new Reservation("이름", tomorrow, SAVED_TIME, otherTheme);
+        Reservation reservation = new Reservation("n", tomorrow, SAVED_TIME, otherTheme);
 
         when(timeRepository.findById(SAVED_TIME.getId()))
             .thenReturn(Optional.of(SAVED_TIME));
@@ -107,7 +118,12 @@ class ReservationServiceTest {
         // when & then
         assertThatCode(() -> reservationService.addReservation(requestDtoFrom(reservation)))
             .doesNotThrowAnyException();
-        verify(reservationRepository).createReservation(any());
+
+        verify(timeRepository, times(1)).findById(anyLong());
+        verify(themeRepository, times(1)).findById(anyLong());
+        verify(timeRepository, times(1)).findByDateAndThemeId(any(), anyLong());
+        verify(reservationRepository, times(1)).createReservation(any());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 
     @Test
@@ -120,6 +136,9 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.deleteReservationTime(SAVED_TIME.getId()))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("예약이 존재하는");
+
+        verify(reservationRepository, times(1)).existsByTimeId(anyLong());
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 
     private ReservationRequest requestDtoFrom(Reservation reservation) {
