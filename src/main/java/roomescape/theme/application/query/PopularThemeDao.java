@@ -1,8 +1,8 @@
 package roomescape.theme.application.query;
 
-import java.time.LocalDate;
 import java.util.List;
+import roomescape.theme.domain.PopularThemePeriod;
 
 public interface PopularThemeDao {
-    List<PopularTheme> findTop10PopularThemesBetween(LocalDate from, LocalDate to);
+    List<PopularTheme> findTop10PopularThemes(PopularThemePeriod period);
 }

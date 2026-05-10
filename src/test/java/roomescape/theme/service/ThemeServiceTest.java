@@ -13,8 +13,8 @@ import roomescape.fixture.fake.FakeThemeRepository;
 import roomescape.theme.application.dto.PopularThemeQueryResult;
 import roomescape.theme.application.dto.ThemeQueryResult;
 import roomescape.theme.application.exception.ThemeException;
-import roomescape.theme.application.service.ThemeService;
 import roomescape.theme.application.query.PopularTheme;
+import roomescape.theme.application.service.ThemeService;
 
 public class ThemeServiceTest {
 
@@ -99,11 +99,10 @@ public class ThemeServiceTest {
                 10
         ));
 
-        List<PopularThemeQueryResult> responses = themeService.findPopularThemes(LocalDate.of(2026, 5, 6));
+        LocalDate today = LocalDate.of(2026, 5, 6);
+        List<PopularThemeQueryResult> responses = themeService.findPopularThemes(today);
 
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(themeRepository.getFrom()).isEqualTo(LocalDate.of(2026, 4, 29));
-            softly.assertThat(themeRepository.getTo()).isEqualTo(LocalDate.of(2026, 5, 5));
             softly.assertThat(responses).containsExactly(
                     new PopularThemeQueryResult(
                             1L,

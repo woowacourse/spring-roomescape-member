@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.application.query.PopularThemeDao;
+import roomescape.theme.domain.PopularThemePeriod;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.application.dto.PopularThemeQueryResult;
 import roomescape.theme.application.dto.ThemeCreateCommand;
@@ -37,7 +38,7 @@ public class ThemeService {
 
     @Transactional(readOnly = true)
     public List<PopularThemeQueryResult> findPopularThemes(LocalDate today) {
-        return popularThemeDao.findTop10PopularThemesBetween(today.minusWeeks(1), today.minusDays(1))
+        return popularThemeDao.findTop10PopularThemes(PopularThemePeriod.from(today))
                 .stream()
                 .map(PopularThemeQueryResult::from)
                 .toList();

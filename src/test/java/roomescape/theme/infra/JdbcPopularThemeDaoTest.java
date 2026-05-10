@@ -16,6 +16,7 @@ import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.support.TestDataHelper;
 import roomescape.theme.application.query.PopularTheme;
 import roomescape.theme.application.query.PopularThemeDao;
+import roomescape.theme.domain.PopularThemePeriod;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.repository.ThemeRepository;
 
@@ -57,7 +58,7 @@ public class JdbcPopularThemeDaoTest {
         testHelper.insertReservation("카야", yesterday, theme2.getId(), time2.getId());
         testHelper.insertReservation("스타크", yesterday, theme1.getId(), time2.getId());
 
-        List<PopularTheme> popularThemes = themeDao.findTop10PopularThemesBetween(today.minusWeeks(1), today.minusDays(1));
+        List<PopularTheme> popularThemes = themeDao.findTop10PopularThemes(PopularThemePeriod.from(today));
 
         SoftAssertions.assertSoftly(assertSoftly -> {
             assertSoftly.assertThat(popularThemes.getFirst().id()).isEqualTo(theme1.getId());
