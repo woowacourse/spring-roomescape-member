@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
@@ -25,7 +27,7 @@ class AdminThemeControllerTest extends ControllerTest {
                 .statusCode(201);
     }
 
-    @DisplayName("API - 관리자 테마 삭제")
+    @DisplayName("관리자 테마 삭제")
     @Test
     void API_관리자_테마_삭제() {
         Map<String, Object> params = new HashMap<>();
@@ -49,5 +51,16 @@ class AdminThemeControllerTest extends ControllerTest {
                 .when().delete("/admin/themes/{id}")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @DisplayName("예약에 사용 중인 테마 삭제하면 400")
+    @Test
+    void 예약에_사용중인_테마_삭제하면_400() {
+        RestAssured.given().log().all()
+                .pathParam("id", 1)
+                .when().delete("/admin/themes/{id}")
+                .then().log().all()
+                .statusCode(400)
+                .body(equalTo("예약에 사용 중인 테마는 삭제할 수 없습니다."));
     }
 }
