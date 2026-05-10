@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Import(ReservationTimeRepository.class)
@@ -68,6 +69,14 @@ class ReservationTimeRepositoryTest {
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getStartAt()).isEqualTo(saved1.getStartAt());
         assertThat(result.get(1).getStartAt()).isEqualTo(saved2.getStartAt());
+    }
+
+    @Test
+    void 같은_시작_시간을_중복_저장할_수_없다() {
+        reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
+
+        assertThatThrownBy(() -> reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0))))
+                .isInstanceOf(RuntimeException.class);
     }
 
     @Test

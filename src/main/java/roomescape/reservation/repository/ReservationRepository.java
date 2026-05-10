@@ -71,7 +71,7 @@ public class ReservationRepository {
         return (rs, rowNum) -> {
             ReservationTime time = new ReservationTime(
                     rs.getLong("time_id"),
-                    LocalTime.parse(rs.getString("time_start_at"))
+                    rs.getObject("time_start_at", LocalTime.class)
             );
 
             Theme theme = new Theme(

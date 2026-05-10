@@ -41,7 +41,7 @@ class ReservationRepositoryTest {
         this.time = jdbcTemplate.queryForObject("SELECT * FROM reservation_time",
                 (rs, rowNum) -> new ReservationTime(
                         rs.getLong("id"),
-                        LocalTime.parse(rs.getString("start_at"))));
+                        rs.getObject("start_at", LocalTime.class)));
         this.theme = jdbcTemplate.queryForObject("SELECT * FROM theme",
                 (rs, rowNum) -> new Theme(
                         rs.getLong("id"),

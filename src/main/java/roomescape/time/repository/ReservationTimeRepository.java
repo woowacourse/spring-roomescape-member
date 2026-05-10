@@ -27,7 +27,7 @@ public class ReservationTimeRepository {
         try {
             ReservationTime time = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 Long id = rs.getLong("id");
-                LocalTime startAt = LocalTime.parse(rs.getString("start_at"));
+                LocalTime startAt = rs.getObject("start_at", LocalTime.class);
                 return new ReservationTime(id, startAt);
             }, timeId);
             return Optional.ofNullable(time);
@@ -63,7 +63,7 @@ public class ReservationTimeRepository {
     private RowMapper<ReservationTime> reservationTimeRowsMapper() {
         return (rs, rowNum) -> new ReservationTime(
                 rs.getLong("id"),
-                LocalTime.parse(rs.getString("start_at"))
+                rs.getObject("start_at", LocalTime.class)
         );
     }
 }
