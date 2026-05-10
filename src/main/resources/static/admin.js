@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function loadReservations() {
     fetch('/reservations').then(r => r.json()).then(data => {
-      allReservations = data;
+      allReservations = data.reservations;
       renderReservations();
     });
   }
