@@ -2,6 +2,7 @@ package roomescape.web.controller.admin;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -48,9 +49,12 @@ public class AdminReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<ReservationTimeResponses> getAllTimes() {
+    public ResponseEntity<ReservationTimeResponses> getAllTimes(
+            @PositiveOrZero(message = "페이지 번호는 0 이상이어야 합니다.") int page,
+            @Positive(message = "조회 개수는 양수여야 합니다.") int size
+    ) {
         ReservationTimeResponses response = new ReservationTimeResponses(
-                reservationTimeService.getAllReservationTimes());
+                reservationTimeService.getAllReservationTimesByPaging(page, size));
 
         return ResponseEntity.ok(response);
     }

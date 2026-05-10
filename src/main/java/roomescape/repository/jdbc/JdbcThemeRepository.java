@@ -77,9 +77,10 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAllActiveThemes() {
-        String sql = "SELECT * FROM theme WHERE is_active = 1";
-        return jdbcTemplate.query(sql, THEME_MAPPER);
+    public List<Theme> findAllActiveThemesByPaging(int page, int size) {
+        int offset = page * size;
+        String sql = "SELECT * FROM theme WHERE is_active = 1 LIMIT ? OFFSET ?";
+        return jdbcTemplate.query(sql, THEME_MAPPER, size, offset);
     }
 
     @Override

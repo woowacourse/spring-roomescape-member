@@ -78,21 +78,21 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
         Reservation saved = reservationRepository.save(Reservation.of("이프", LocalDate.now().plusDays(1), theme, reservationTime));
 
         // when
-        reservationRepository.delete(saved.getId());
+        reservationRepository.deleteById(saved.getId());
 
         // then
         assertThat(dataSource.hasReservationById(saved.getId())).isFalse();
     }
 
     @Test
-    void 모든_예약_목록을_조회한다() {
+    void 페이징_조건에_맞는_예약_목록을_조회한다() {
         // given: 과거 부터 미래 예약 목록 주어짐
         dataSource.insertReservation("이프", LocalDate.now().minusDays(1), 1L, 1L);
         dataSource.insertReservation("이프", LocalDate.now(), 1L, 1L);
         dataSource.insertReservation("이프", LocalDate.now().plusDays(1), 1L, 1L);
 
         // when
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAllByPaging(0, 10);
 
         // then
         assertThat(reservations).hasSize(3);

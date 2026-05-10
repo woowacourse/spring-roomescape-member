@@ -33,8 +33,8 @@ public class ReservationTimeService {
         reservationTimeRepository.deleteById(id);
     }
 
-    public List<ReservationTimeResponse> getAllReservationTimes() {
-        return reservationTimeRepository.findAll()
+    public List<ReservationTimeResponse> getAllReservationTimesByPaging(int page, int size) {
+        return reservationTimeRepository.findAllByPaging(page, size)
                 .stream()
                 .map(ReservationTimeResponse::from)
                 .toList();

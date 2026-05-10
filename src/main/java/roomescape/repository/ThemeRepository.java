@@ -15,7 +15,7 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(Long id);
 
-    List<Theme> findAllActiveThemes();
+    List<Theme> findAllActiveThemesByPaging(int page, int size);
 
     List<Theme> findTopThemesByReservationCount(LocalDate startDate, LocalDate endDate, int limit);
 }

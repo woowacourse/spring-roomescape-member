@@ -40,7 +40,7 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 활성화된_테마_조회가_있는지_확인() {
+    void 활성화된_테마_조회가_있는지_확인한다() {
         // given
         Theme theme = new Theme("바니의 집", "바니의 집입니다", "http://image.png/image.com");
         themeRepository.save(theme);
@@ -53,7 +53,7 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 활성화된_테마가_있을_때_같은_테마를_추가하면_제약_위반() {
+    void 활성화된_테마가_있을_때_같은_테마를_추가하면_제약_위반_예외가_발생한다() {
         // given
         Theme theme = new Theme("바니의 집", "바니의 집입니다", "http://image.png/image.com");
         themeRepository.save(theme);
@@ -64,7 +64,7 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 비성활화된_같은_테마는_여러개_존재_가능() {
+    void 비성활화된_같은_테마는_여러개_존재_가능하다() {
         // given
         Theme first = new Theme(1L, "바니의 집", "바니의 집입니다", "http://image.png/image.com", false);
         Theme second = new Theme(1L, "바니의 집", "바니의 집입니다", "http://image.png/image.com", false);

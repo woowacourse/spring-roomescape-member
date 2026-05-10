@@ -82,10 +82,13 @@ class ThemeControllerTest extends BaseControllerUnitTest {
                         new ThemeResponse(2L, "놀이동산테마", "놀이동산 테마입니다.", "https://image.com/image.png")
                 )
         );
-        when(themeService.getAllActiveThemes()).thenReturn(expected.responses());
+        when(themeService.getAllActiveThemesByPaging(any(Integer.class), any(Integer.class))).thenReturn(
+                expected.responses());
 
         // when & then
         ThemeResponses response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .queryParam("page", "0")
+                .queryParam("size", "1")
                 .when().get("/api/themes")
                 .then().log().all()
                 .status(HttpStatus.OK)

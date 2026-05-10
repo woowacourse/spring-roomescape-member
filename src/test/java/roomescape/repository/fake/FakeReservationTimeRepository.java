@@ -2,7 +2,7 @@ package roomescape.repository.fake;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -46,8 +46,14 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        return Collections.unmodifiableList(reservationTimes);
+    public List<ReservationTime> findAllByPaging(int page, int size) {
+        int offset = page * size;
+
+        return reservationTimes.stream()
+                .sorted(Comparator.comparing(ReservationTime::getId).reversed())
+                .skip(offset)
+                .limit(size)
+                .toList();
     }
 
     @Override

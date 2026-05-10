@@ -84,7 +84,7 @@ public class RestExceptionHandlerTest {
                 }
                 """;
 
-        // when & then: post 메서드가 아닌 delete 메서드로 요청
+        // when & then: post 메서드가 아닌 deleteById 메서드로 요청
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(body)

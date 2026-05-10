@@ -1,6 +1,7 @@
 package roomescape.repository.fake;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -47,15 +48,21 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAllActiveThemes() {
+    public List<Theme> findAllActiveThemesByPaging(int page, int size) {
+        int offset = page * size;
+
         return themes.stream()
                 .filter(Theme::isActive)
+                .sorted(Comparator.comparing(Theme::getId).reversed())
+                .skip(offset)
+                .limit(size)
                 .toList();
     }
 
     @Override
     public List<Theme> findTopThemesByReservationCount(LocalDate startDate, LocalDate endDate, int limit) {
-        return findAllActiveThemes().stream()
+        return themes.stream()
+                .filter(Theme::isActive)
                 .limit(limit)
                 .toList();
     }

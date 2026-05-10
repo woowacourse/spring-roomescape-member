@@ -64,7 +64,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.remove(id);
 
         // then: 전체 조회 시 해당 데이터가 존재하지 않음
-        assertThat(reservationTimeRepository.findAll()).isEmpty();
+        assertThat(reservationTimeRepository.findAllByPaging(0, 10)).isEmpty();
     }
 
     @Test
@@ -74,7 +74,7 @@ class ReservationTimeServiceTest {
         reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
 
         // when: 전체 조회를 요청함
-        List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTimes();
+        List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTimesByPaging(0, 10);
 
         // then: 저장된 2개의 시간 정보가 반환됨
         assertThat(responses).hasSize(2);

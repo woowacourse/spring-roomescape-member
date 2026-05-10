@@ -38,11 +38,11 @@ public class ReservationService {
 
     @Transactional
     public void cancel(Long id) {
-        reservationRepository.delete(id);
+        reservationRepository.deleteById(id);
     }
 
-    public List<ReservationResponse> getAllReservations() {
-        return reservationRepository.findAll()
+    public List<ReservationResponse> getAllReservationsByPaging(int page, int size) {
+        return reservationRepository.findAllByPaging(page, size)
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();

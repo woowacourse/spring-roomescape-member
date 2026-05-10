@@ -87,7 +87,7 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
         reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
 
         // when
-        List<ReservationTime> times = reservationTimeRepository.findAll();
+        List<ReservationTime> times = reservationTimeRepository.findAllByPaging(0, 10);
 
         // then
         assertThat(times).hasSize(2);

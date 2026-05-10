@@ -17,7 +17,7 @@ public interface ReservationTimeRepository {
 
     boolean existsByStartAt(LocalTime time);
 
-    List<ReservationTime> findAll();
+    List<ReservationTime> findAllByPaging(int page, int size);
 
     List<TimeSlotProjection> findTimesByThemeWithReservationStatus(Long themeId, LocalDate date);
 }

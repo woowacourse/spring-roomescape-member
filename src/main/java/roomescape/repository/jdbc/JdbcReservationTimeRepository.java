@@ -63,9 +63,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        String sql = "SELECT * FROM reservation_time";
-        return jdbcTemplate.query(sql, RESERVATION_TIME_MAPPER);
+    public List<ReservationTime> findAllByPaging(int page, int size) {
+        int offset = page * size;
+        String sql = "SELECT * FROM reservation_time LIMIT ? OFFSET ?";
+        return jdbcTemplate.query(sql, RESERVATION_TIME_MAPPER, size, offset);
     }
 
     @Override

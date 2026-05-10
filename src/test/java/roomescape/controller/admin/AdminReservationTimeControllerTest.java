@@ -102,10 +102,13 @@ class AdminReservationTimeControllerTest extends BaseControllerUnitTest {
                         new ReservationTimeResponse(2L, LocalTime.of(11, 0))
                 )
         );
-        when(reservationTimeService.getAllReservationTimes()).thenReturn(expected.responses());
+        when(reservationTimeService.getAllReservationTimesByPaging(any(Integer.class), any(Integer.class))).thenReturn(
+                expected.responses());
 
         // when & then
         ReservationTimeResponses response = RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+                .queryParam("page", "0")
+                .queryParam("size", "1")
                 .when().get("/api/admin/times")
                 .then().log().all()
                 .status(HttpStatus.OK)

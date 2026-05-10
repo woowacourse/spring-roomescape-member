@@ -1,6 +1,7 @@
 package roomescape.web.controller.user;
 
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,17 +35,20 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<ThemeResponses> getAllThemes() {
-        ThemeResponses response = new ThemeResponses(themeService.getAllActiveThemes());
+    public ResponseEntity<ThemeResponses> getAllThemesByPaging(
+            @PositiveOrZero(message = "페이지 번호는 0 이상이어야 합니다.") int page,
+            @Positive(message = "조회 개수는 양수여야 합니다.") int size
+    ) {
+        ThemeResponses response = new ThemeResponses(themeService.getAllActiveThemesByPaging(page, size));
 
         return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<ThemeResponses> getPopularThemes(
+    public ResponseEntity<ThemeResponses> getPopularThemesByPaging(
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate,
-            @Positive(message = "조회 수는 양수여야 합니다.")
+            @Positive(message = "조회 개수는 양수여야 합니다.")
             @RequestParam int limit
     ) {
         ThemeResponses response = new ThemeResponses(themeService.getPopularThemes(startDate, endDate, limit));

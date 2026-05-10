@@ -42,7 +42,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
@@ -54,7 +54,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<Reservation> findAllByPaging(int page, int size) {
+        int offset = page * size;
         String sql = """
                     SELECT r.id AS res_id, r.name AS res_name, r.date AS res_date,
                            rt.id AS time_id, rt.start_at AS time_start,
@@ -62,7 +63,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                     FROM reservation r
                     JOIN reservation_time rt ON r.time_id = rt.id
                     JOIN theme t ON r.theme_id = t.id
+                    ORDER BY r.id DESC
+                    LIMIT ? OFFSET ?
                 """;
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, size, offset);
     }
 }

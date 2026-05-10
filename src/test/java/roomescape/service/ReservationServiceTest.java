@@ -108,13 +108,13 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 모든_예약_목록을_조회한다() {
+    void 페이징_정보에_따른_모든_예약_목록을_조회한다() {
         // given: 2개의 예약이 저장되어 있음
         reservationRepository.save(ReservationFixture.createDefaultReservationWithName("이프"));
         reservationRepository.save(ReservationFixture.createDefaultReservationWithName("바니"));
 
         // when: 전체 조회를 요청함
-        List<ReservationResponse> responses = reservationService.getAllReservations();
+        List<ReservationResponse> responses = reservationService.getAllReservationsByPaging(0, 10);
 
         // then: 2개의 결과가 반환됨
         assertThat(responses).hasSize(2);
@@ -129,6 +129,6 @@ class ReservationServiceTest {
         reservationService.cancel(saved.getId());
 
         // then: 조회 시 목록이 비어있음
-        assertThat(reservationService.getAllReservations()).isEmpty();
+        assertThat(reservationService.getAllReservationsByPaging(1, 10)).isEmpty();
     }
 }

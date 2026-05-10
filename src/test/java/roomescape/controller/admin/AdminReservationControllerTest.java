@@ -107,10 +107,12 @@ class AdminReservationControllerTest extends BaseControllerUnitTest {
                 new ReservationResponse(1L, "웨지", LocalDate.of(2028, 5, 9), timeResponse),
                 new ReservationResponse(2L, "바니", LocalDate.of(2028, 5, 9), timeResponse)
         ));
-        when(reservationService.getAllReservations()).thenReturn(expected.responses());
+        when(reservationService.getAllReservationsByPaging(0, 10)).thenReturn(expected.responses());
 
         // when & then
         ReservationResponses response = RestAssuredMockMvc.given().spec(adminSpec()).log().all()
+                .queryParam("page", "0")
+                .queryParam("size", "10")
                 .when().get("/api/admin/reservations")
                 .then().log().all()
                 .status(HttpStatus.OK)
