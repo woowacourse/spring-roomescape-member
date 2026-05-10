@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,7 +30,7 @@ public class TimeRepository {
         return jdbcTemplate.query(sql, timeRowMapper);
     }
 
-    public List<ReservationTime> findAllByThemeIdAndDate(Long themeId, String date) {
+    public List<ReservationTime> findAllByThemeIdAndDate(Long themeId, LocalDate date) {
         String sql =
                 "SELECT id, start_at FROM reservation_time " +
                         "EXCEPT " +

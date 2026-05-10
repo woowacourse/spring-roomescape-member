@@ -32,7 +32,7 @@ public class ThemeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeRequest)
-                .when().post("admins/themes")
+                .when().post("admin/themes")
                 .then().log().all()
                 .statusCode(201)
                 .body("size()", is(4));
@@ -42,7 +42,7 @@ public class ThemeControllerTest {
     public void 특정_테마_삭제_API() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().delete("admins/themes/1")
+                .when().delete("admin/themes/1")
                 .then().log().all()
                 .statusCode(204);
     }

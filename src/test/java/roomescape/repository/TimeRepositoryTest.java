@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -61,7 +62,7 @@ public class TimeRepositoryTest {
     void 테마ID와_날짜로_예약_가능한_시간을_조회할_수_있다() {
         // given
         Long themeId = 2L;
-        String date = "2026-05-04";
+        LocalDate date = LocalDate.of(2026, 5, 4);
         // when
         List<ReservationTime> times = timeRepository.findAllByThemeIdAndDate(themeId, date);
         // then

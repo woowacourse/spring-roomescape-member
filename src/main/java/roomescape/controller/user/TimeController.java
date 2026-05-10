@@ -1,5 +1,6 @@
 package roomescape.controller.user;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +22,7 @@ public class TimeController {
 
     @GetMapping(params = {"themeId", "date"})
     public ResponseEntity<List<TimeResponse>> readAllByThemeIdAndDate(@RequestParam Long themeId,
-                                                                      @RequestParam String date) {
+                                                                      @RequestParam LocalDate date) {
         List<TimeResponse> reservationTimes = timeService.readAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(reservationTimes);
     }

@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -28,7 +29,7 @@ public class TimeService {
                 .collect(Collectors.toList());
     }
 
-    public List<TimeResponse> readAllByThemeIdAndDate(Long themeId, String date) {
+    public List<TimeResponse> readAllByThemeIdAndDate(Long themeId, LocalDate date) {
         List<ReservationTime> times = timeRepository.findAllByThemeIdAndDate(themeId, date);
         return times.stream()
                 .map(TimeResponse::from)

@@ -20,7 +20,7 @@ public class TimeControllerTest {
     public void 전체_시간_조회_API() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("admins/times")
+                .when().get("admin/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(14));
@@ -40,7 +40,7 @@ public class TimeControllerTest {
     public void 예약_가능한_시간_삭제_API() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().delete("admins/times/1")
+                .when().delete("admin/times/1")
                 .then().log().all()
                 .statusCode(500);
     }
@@ -52,7 +52,7 @@ public class TimeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeRequest)
-                .when().post("admins/times")
+                .when().post("admin/times")
                 .then().log().all()
                 .statusCode(201)
                 .body("size()", is(2));
