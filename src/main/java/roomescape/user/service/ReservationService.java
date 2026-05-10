@@ -22,8 +22,8 @@ public class ReservationService {
     private final AdminThemeRepository adminThemeRepository;
 
     public ReservationService(
-            ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository, AdminThemeRepository adminThemeRepository
+        ReservationRepository reservationRepository,
+        ReservationTimeRepository reservationTimeRepository, AdminThemeRepository adminThemeRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
@@ -32,16 +32,16 @@ public class ReservationService {
 
     public ReservationResponse createReservation(ReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 time id입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 time id입니다."));
         Theme theme = adminThemeRepository.findById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 theme id입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 theme id입니다."));
         validateDuplicateReservation(request);
 
         Reservation reservation = Reservation.of(
-                request.name(),
-                request.date(),
-                time,
-                theme
+            request.name(),
+            request.date(),
+            time,
+            theme
         );
 
         Reservation saved = reservationRepository.save(reservation);

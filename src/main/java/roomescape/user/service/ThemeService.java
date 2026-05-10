@@ -4,22 +4,25 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.user.dto.ThemeResponse;
+import roomescape.user.repository.ReservationRepository;
 import roomescape.user.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<ThemeResponse> getTopThemes() {
         LocalDate startDate = LocalDate.now().minusDays(7);
         LocalDate endDate = LocalDate.now();
 
-        List<Long> themeIds = themeRepository.findThemeIdTop10(startDate, endDate);
+        List<Long> themeIds = reservationRepository.findThemeIdTop10(startDate, endDate);
 
         return themeIds.stream()
             .map(themeRepository::findById)
