@@ -112,4 +112,10 @@ public class ScheduleRepository {
         }
     }
 
+    public boolean existsByThemeId(Long themeId) {
+        String sql = "SELECT COUNT(*) FROM schedule WHERE theme_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
+        return count != null && count > 0;
+    }
+
 }
