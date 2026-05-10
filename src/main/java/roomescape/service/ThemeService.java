@@ -31,9 +31,12 @@ public class ThemeService {
         return themeDao.findAll();
     }
 
-    public List<PopularThemeResponse> findPopularThemes() {
-        LocalDate startDate = LocalDate.now().minusDays(7);
-        LocalDate endDate = LocalDate.now().plusDays(30);
+    public List<PopularThemeResponse> findPopularThemes(){
+        LocalDate today = LocalDate.now();
+        return findPopularThemes(today.minusDays(7), today.minusDays(1));
+    }
+
+    public List<PopularThemeResponse> findPopularThemes(LocalDate startDate, LocalDate endDate) {
         return themeDao.findPopularThemes(startDate, endDate)
                 .stream()
                 .map(popularTheme -> PopularThemeResponse.of(
