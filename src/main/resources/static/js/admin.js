@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initDatePicker();
     initTimeSelectBox();
 
+    loadPopularThemes();
     loadDates();
     loadTimes();
     loadThemes();
@@ -303,4 +304,58 @@ async function cancelReservation(id) {
     });
 
     await loadReservations();
+}
+
+async function loadPopularThemes() {
+    const popularThemeList = document.getElementById("popular-theme-list");
+
+    const response = await fetch("/admin/themes/popular?top=10");
+
+    if (!response.ok) {
+        popularThemeList.innerHTML = `
+            <div class="popular-admin-empty">
+                인기 테마를 불러오지 못했습니다.
+            </div>
+        `;
+        return;
+    }
+
+    const themes = await response.json();
+    popularThemeList.innerHTML = "";
+
+    if (themes.length === 0) {
+        popularThemeList.innerHTML = `
+            <div class="popular-admin-empty">
+                아직 인기 테마 데이터가 없습니다.
+            </div>
+        `;
+        return;
+    }
+
+    themes.forEach((theme, index) => {
+        const statusClass = theme.isActive ? "active" : "inactive";
+        const statusText = theme.isActive ? "활성" : "비활성";
+
+        popularThemeList.insertAdjacentHTML("beforeend", `
+            <article class="popular-admin-card">
+                <div class="popular-admin-rank">${index + 1}</div>
+
+                <img src="${theme.thumbnailUrl}" alt="${theme.name}">
+
+                <div class="popular-admin-content">
+                    <div class="popular-admin-title-row">
+                        <h3>${theme.name}</h3>
+                        <span class="badge ${statusClass}">${statusText}</span>
+                    </div>
+
+                    <p>${theme.description}</p>
+
+                    <div class="popular-admin-count">
+                        <span>예약 횟수</span>
+                        <strong>${theme.reservationCount}</strong>
+                    </div>
+                </div>
+            </article>
+        `);
+    });
 }
