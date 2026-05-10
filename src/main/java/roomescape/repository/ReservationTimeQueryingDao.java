@@ -38,20 +38,18 @@ public class ReservationTimeQueryingDao {
         }
     }
 
-    public List<ReservationTime> findAllReservationTime(LocalDate date, Long themeId) {
-        if (date == null && themeId == null) {
-            String sql = """
-                   select t.id, t.start_at from reservation_time as t
-                   """;
-            return jdbcTemplate.query(sql, reservationTimeRowMapper);
-        }
+    public List<ReservationTime> findAllReservationTime() {
+        String sql = "select id, start_at from reservation_time";
+        return jdbcTemplate.query(sql, reservationTimeRowMapper);
+    }
 
+    public List<ReservationTime> findAvailableReservationTime(LocalDate date, Long themeId) {
         String sql = """
                 select t.id, t.start_at from reservation_time as t
                 left join reservation as r on t.id = r.time_id
                                         and r.date = ?
                                         and r.theme_id = ?
-                where r.id is null;
+                where r.id is null
                 """;
         return jdbcTemplate.query(sql, reservationTimeRowMapper, date, themeId);
     }

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.reservationtime.ReservationTimeRequest;
 import roomescape.domain.reservationtime.ReservationTimeResponse;
-import roomescape.exception.ReservationNotFoundException;
 import roomescape.repository.ReservationTimeQueryingDao;
 import roomescape.repository.ReservationTimeUpdatingDao;
 
@@ -22,9 +21,16 @@ public class ReservationTimeService {
         this.reservationTimeUpdatingDao = reservationTimeUpdatingDao;
     }
 
-    public List<ReservationTimeResponse> read(LocalDate date, Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeQueryingDao.findAllReservationTime(date, themeId);
-        return reservationTimes.stream()
+    public List<ReservationTimeResponse> readAll() {
+        return reservationTimeQueryingDao.findAllReservationTime()
+                .stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+    }
+
+    public List<ReservationTimeResponse> readAvailable(LocalDate date, Long themeId) {
+        return reservationTimeQueryingDao.findAvailableReservationTime(date, themeId)
+                .stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
     }

@@ -351,7 +351,7 @@
                 return;
             }
 
-            fetch(`/times?date=${date}&themeId=${themeId}`)
+            fetch(`/times/available?date=${date}&themeId=${themeId}`)
                 .then(response => response.json())
                 .then(times => renderTimeSlots(times))
                 .catch(error => {
