@@ -66,7 +66,7 @@ public class ThemeRepositoryTest {
         Long themeId = 2L;
 
         // when
-        Theme theme = themeRepository.findById(themeId);
+        Theme theme = themeRepository.findById(themeId).get();
 
         // then
         Assertions.assertEquals(themeId, theme.getId());

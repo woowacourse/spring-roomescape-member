@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -24,7 +25,7 @@ public class TimeRepository {
     public TimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    
+
     public List<ReservationTime> findAll() {
         String sql = "select * from reservation_time";
         return jdbcTemplate.query(sql, TIME_ROW_MAPPER);
@@ -59,9 +60,11 @@ public class TimeRepository {
         return new ReservationTime(id, startAt);
     }
 
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         String sql = "select * from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql, TIME_ROW_MAPPER, id);
+        return jdbcTemplate.query(sql, TIME_ROW_MAPPER, id)
+                .stream()
+                .findFirst();
     }
 
     public boolean existsByStartAt(LocalTime startAt) {

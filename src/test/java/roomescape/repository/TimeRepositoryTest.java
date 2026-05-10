@@ -43,7 +43,7 @@ public class TimeRepositoryTest {
     @Test
     void timeId로_시간을_조회할_수_있다() {
         // when
-        ReservationTime time = timeRepository.findById(2L);
+        ReservationTime time = timeRepository.findById(2L).get();
         // then
         Assertions.assertEquals(LocalTime.of(11, 0), time.getStartAt());
     }

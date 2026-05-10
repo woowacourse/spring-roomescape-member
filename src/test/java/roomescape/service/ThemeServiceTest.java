@@ -51,11 +51,11 @@ public class ThemeServiceTest {
     @Test
     void 최근_7일_범위만_인기_테마_집계에_포함된다() {
         // given
-        Theme theme = themeRepository.findById(1L);
-        Theme firstTheme = themeRepository.findById(1L);
-        Theme secondTheme = themeRepository.findById(2L);
-        Theme thirdTheme = themeRepository.findById(3L);
-        ReservationTime reservationTime = timeRepository.findById(1L);
+        Theme theme = themeRepository.findById(1L).get();
+        Theme firstTheme = themeRepository.findById(1L).get();
+        Theme secondTheme = themeRepository.findById(2L).get();
+        Theme thirdTheme = themeRepository.findById(3L).get();
+        ReservationTime reservationTime = timeRepository.findById(1L).get();
 
         // 포함되어야 하는 날짜
         reservationRepository.save("포함", LocalDate.of(2026, 5, 10), 1L, 1L, reservationTime, firstTheme);

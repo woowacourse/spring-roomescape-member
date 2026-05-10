@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -37,7 +38,7 @@ public class ReservationRepository {
     public ReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    
+
     public List<Reservation> findAll() {
         String selectSql =
                 "SELECT r.id, r.username, r.date, t.id as time_id, t.start_at, m.id as theme_id, m.name as theme_name, m.description, m.url  "
@@ -72,7 +73,7 @@ public class ReservationRepository {
                 reservationTime, theme);
     }
 
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql =
                 "SELECT r.id, r.username, r.date, t.id as time_id, t.start_at, m.id as theme_id, m.name as theme_name, m.description, m.url  "
                         +
@@ -80,7 +81,9 @@ public class ReservationRepository {
                         "INNER JOIN reservation_time t ON r.time_id = t.id " +
                         "INNER JOIN theme m ON r.theme_id = m.id " +
                         "WHERE r.id = ?";
-        return jdbcTemplate.queryForObject(sql, RESERVATION_ROW_MAPPER, id);
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id)
+                .stream()
+                .findFirst();
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
