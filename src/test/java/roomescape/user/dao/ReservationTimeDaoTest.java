@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.user.dto.AvailableTimeResponse;
+import roomescape.domain.TimeAvailability;
 
 @JdbcTest
 @Import(ReservationTimeDao.class)
@@ -21,9 +21,9 @@ public class ReservationTimeDaoTest {
 
         Long themeId = 2L;
         LocalDate date = LocalDate.parse("2026-05-05");
-        List<AvailableTimeResponse> availableTimes = reservationTimeDao.selectByThemeIdAndDate(themeId, date);
+        List<TimeAvailability> availableTimes = reservationTimeDao.selectByThemeIdAndDate(themeId, date);
 
         assertThat(availableTimes.size()).isEqualTo(11);
-        assertThat(availableTimes.getFirst().isAvailable()).isFalse();
+        assertThat(availableTimes.getFirst().available()).isFalse();
     }
 }

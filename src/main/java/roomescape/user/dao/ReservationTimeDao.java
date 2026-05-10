@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.user.dto.AvailableTimeResponse;
+import roomescape.domain.TimeAvailability;
 
 @Repository
 public class ReservationTimeDao {
@@ -17,8 +17,8 @@ public class ReservationTimeDao {
                 , LocalTime.parse(rs.getString("start_at"), DateTimeFormatter.ofPattern("HH:mm")));
     };
 
-    private static final RowMapper<AvailableTimeResponse> availableTimeRowMapper = (rs, rowNum) -> {
-        return new AvailableTimeResponse(
+    private static final RowMapper<TimeAvailability> availableTimeRowMapper = (rs, rowNum) -> {
+        return new TimeAvailability(
                 LocalTime.parse(rs.getString("start_at")),
                 rs.getBoolean("is_available")
         );
@@ -40,7 +40,7 @@ public class ReservationTimeDao {
         return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
     }
 
-    public List<AvailableTimeResponse> selectByThemeIdAndDate(Long themeId, LocalDate date) {
+    public List<TimeAvailability> selectByThemeIdAndDate(Long themeId, LocalDate date) {
         String sql = """
                 select t.start_at,
                     CASE

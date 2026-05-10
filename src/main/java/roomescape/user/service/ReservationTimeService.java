@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.TimeAvailability;
 import roomescape.user.dao.ReservationTimeDao;
 import roomescape.user.dto.AvailableTimeResponse;
 
@@ -20,7 +21,7 @@ public class ReservationTimeService {
         return timeDao.selectAll();
     }
 
-    public List<AvailableTimeResponse> findByThemeIdAndDate(Long themeId, LocalDate date) {
+    public List<TimeAvailability> findByThemeIdAndDate(Long themeId, LocalDate date) {
         return timeDao.selectByThemeIdAndDate(themeId, date);
     }
 }

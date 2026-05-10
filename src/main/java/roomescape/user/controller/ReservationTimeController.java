@@ -34,7 +34,10 @@ public class ReservationTimeController {
     @GetMapping(value = "/times", params = {"themeId", "date"})
     public ResponseEntity<List<AvailableTimeResponse>> readByThemeIdAndDate(@RequestParam Long themeId,
                                                                             @RequestParam LocalDate date) {
-        List<AvailableTimeResponse> availableTimes = timeService.findByThemeIdAndDate(themeId, date);
+        List<AvailableTimeResponse> availableTimes = timeService.findByThemeIdAndDate(themeId, date)
+                .stream()
+                .map(AvailableTimeResponse::from)
+                .toList();
         return ResponseEntity.ok().body(availableTimes);
     }
 }
