@@ -3,6 +3,7 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Assumptions;
@@ -99,6 +100,74 @@ class ThemeRepositoryTest {
         void skipIfDependentTestFailed() {
             skipIfPersistTestFailed();
             skipIfFindAllTestFailed();
+        }
+
+        @Nested
+        class 테마를_ID_컬렉션_기준으로_조회한다 {
+
+            @Test
+            void ID_목록와_일치하는_테마들을_조회한다() {
+                // given
+                UUID idA = UUID.randomUUID();
+                UUID idB = UUID.randomUUID();
+
+                Theme transientThemeA = new Theme(
+                        idA,
+                        DEFAULT_NAME,
+                        DEFAULT_DESCRIPTION,
+                        DEFAULT_IMAGE_URL
+                );
+                Theme persistedThemeA = themeRepository.persist(transientThemeA);
+
+                Theme transientThemeB = new Theme(
+                        idB,
+                        DEFAULT_NAME,
+                        DEFAULT_DESCRIPTION,
+                        DEFAULT_IMAGE_URL
+                );
+                Theme persistedThemeB = themeRepository.persist(transientThemeB);
+
+                Map<UUID, Theme> expected = Map.of(
+                        idA, persistedThemeA,
+                        idB, persistedThemeB
+                );
+
+                // when
+                Map<UUID, Theme> actual = themeRepository.findByIds(List.of(idA, idB));
+
+                // then
+                assertThat(actual).containsExactlyInAnyOrderEntriesOf(expected);
+            }
+
+            @Test
+            void ID_목록과_일치하는_테마가_없다면_빈_컬렉션을_반환한다() {
+                // given
+                Theme transientTheme = new Theme(
+                        DEFAULT_ID,
+                        DEFAULT_NAME,
+                        DEFAULT_DESCRIPTION,
+                        DEFAULT_IMAGE_URL
+                );
+                themeRepository.persist(transientTheme);
+
+                // when
+                Map<UUID, Theme> foundThemes = themeRepository.findByIds(List.of(NOT_EXIST_ID));
+
+                // then
+                assertThat(foundThemes).isEmpty();
+            }
+
+            @Test
+            void ID_목록이_비어_있다면_빈_컬렉션을_반환한다() {
+                // given
+                List<UUID> emptyIds = List.of();
+
+                // when
+                Map<UUID, Theme> foundThemes = themeRepository.findByIds(emptyIds);
+
+                // then
+                assertThat(foundThemes).isEmpty();
+            }
         }
 
         @Nested
