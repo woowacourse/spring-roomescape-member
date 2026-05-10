@@ -58,18 +58,6 @@ class ThemeAdminControllerTest {
     }
 
     @Test
-    @DisplayName("관리자는 단일 테마를 조회한다.")
-    void get_theme() {
-        Integer themeId = createTheme(themeName);
-
-        RestAssured.given().log().all()
-                .when().get("/admin/themes/" + themeId)
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(5));
-    }
-
-    @Test
     @DisplayName("관리자는 테마 활성화 상태를 변경한다.")
     void update_theme_status() {
         Integer themeId = createTheme(themeName);
@@ -81,13 +69,6 @@ class ThemeAdminControllerTest {
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().patch("/admin/themes/" + themeId)
-                .then().log().all()
-                .statusCode(200)
-                .body("id", is(themeId))
-                .body("isActive", is(true));
-
-        RestAssured.given().log().all()
-                .when().get("/admin/themes/" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("id", is(themeId))

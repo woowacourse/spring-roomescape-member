@@ -34,13 +34,6 @@ public class ThemeAdminController {
         return ResponseEntity.ok(responseData);
     }
 
-    @GetMapping("/themes/{id}")
-    public ResponseEntity<ThemeDetailDto> getTheme(@PathVariable Long id) {
-        Theme theme = themeService.readTheme(id);
-        ThemeDetailDto responseData = ThemeDetailDto.from(theme);
-        return ResponseEntity.ok(responseData);
-    }
-
     @PostMapping("/themes")
     public ResponseEntity<ThemeDetailDto> createTheme(@Validated @RequestBody ThemeSaveDto dto) {
         Theme theme = themeService.register(dto.name(), dto.description(), dto.thumbnailUrl());
