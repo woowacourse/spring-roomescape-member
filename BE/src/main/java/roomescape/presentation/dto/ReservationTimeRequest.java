@@ -1,8 +1,8 @@
 package roomescape.presentation.dto;
 
 import java.time.LocalTime;
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationTimeException;
+import org.springframework.http.HttpStatus;
+import roomescape.global.exception.BusinessException;
 
 public record ReservationTimeRequest(
         LocalTime startAt
@@ -13,7 +13,7 @@ public record ReservationTimeRequest(
 
     private void validatStartAtNotEmpty(LocalTime startAt) {
         if (startAt == null) {
-            throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_START_AT_NULL);
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "예약 시간이 비어있습니다.");
         }
     }
 }

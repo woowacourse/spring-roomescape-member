@@ -3,11 +3,11 @@ package roomescape.application;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationTimeException;
+import roomescape.global.exception.BusinessException;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
@@ -48,7 +48,7 @@ public class ReservationTimeService {
     @Transactional
     public void deleteTime(Long id) {
         if (reservationRepository.existsByReservationTimeId(id)) {
-            throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_ALREADY_USED);
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "참조하고 있는 예약 시간이어서 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(id);
     }

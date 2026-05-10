@@ -1,8 +1,7 @@
 package roomescape.presentation.dto;
 
-
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationException;
+import org.springframework.http.HttpStatus;
+import roomescape.global.exception.BusinessException;
 
 public record ThemeRequest(
         String name,
@@ -16,19 +15,18 @@ public record ThemeRequest(
     }
 
     private static void validateNameNotEmpty(String name) {
-        validateStringValueNotEmpty(name, new ReservationException(ErrorCode.THEME_REQUEST_NAME_NULL));
+        validateStringValueNotEmpty(name, new BusinessException(HttpStatus.BAD_REQUEST, "테마 이름은 null 혹은 빈 값일 수 없습니다"));
     }
 
     private static void validateDescriptionNotEmpty(String description) {
-        ReservationException reservationException = new ReservationException(ErrorCode.THEME_REQUEST_DESCRIPTION_NULL);
-        validateStringValueNotEmpty(description, reservationException);
+        validateStringValueNotEmpty(description, new BusinessException(HttpStatus.BAD_REQUEST, "테마 설명은 null 혹은 빈 값일 수 없습니다"));
     }
 
     private static void validateThumbnailNotEmpty(String thumbnail) {
-        validateStringValueNotEmpty(thumbnail, new ReservationException(ErrorCode.THEME_REQUEST_THUMBNAIL_NULL));
+        validateStringValueNotEmpty(thumbnail, new BusinessException(HttpStatus.BAD_REQUEST, "테마 썸네일은 null 혹은 빈 값일 수 없습니다"));
     }
 
-    private static void validateStringValueNotEmpty(String description, ReservationException reservationException) {
+    private static void validateStringValueNotEmpty(String description, BusinessException reservationException) {
         if (description == null || description.trim().isBlank()) {
             throw reservationException;
         }

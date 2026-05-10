@@ -3,35 +3,15 @@ package roomescape.global.exception;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.global.exception.customException.ReservationException;
-import roomescape.global.exception.customException.ReservationTimeException;
-import roomescape.global.exception.customException.ThemeException;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ReservationException.class)
-    public ResponseEntity<String> handleReservationException(ReservationException e) {
-        ErrorCode errorCode = e.getErrorCode();
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(errorCode.getMessage());
-    }
-
-    @ExceptionHandler(ReservationTimeException.class)
-    public ResponseEntity<String> handleReservationTimeException(ReservationTimeException e) {
-        ErrorCode errorCode = e.getErrorCode();
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(errorCode.getMessage());
-    }
-
-    @ExceptionHandler(ThemeException.class)
-    public ResponseEntity<String> handleThemeException(ThemeException e) {
-        ErrorCode errorCode = e.getErrorCode();
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(errorCode.getMessage());
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusiness(BusinessException e) {
+        return ResponseEntity.status(e.getStatus())
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

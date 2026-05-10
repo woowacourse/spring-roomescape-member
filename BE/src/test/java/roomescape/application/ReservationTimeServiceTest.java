@@ -13,11 +13,11 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.global.exception.customException.ReservationTimeException;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.global.exception.BusinessException;
 
 class ReservationTimeServiceTest {
 
@@ -117,6 +117,6 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteTime(savedReservationTime.id()))
-                .isInstanceOf(ReservationTimeException.class);
+                .isInstanceOf(BusinessException.class);
     }
 }

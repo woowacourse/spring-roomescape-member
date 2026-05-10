@@ -5,12 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.http.HttpStatus;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.domain.ThemeSortType;
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ThemeException;
-
+import roomescape.global.exception.BusinessException;
 
 public class FakeThemeRepository implements ThemeRepository {
 
@@ -54,7 +53,7 @@ public class FakeThemeRepository implements ThemeRepository {
     public void deleteById(Long id) {
         Theme removed = store.remove(id);
         if (removed == null) {
-            throw new ThemeException(ErrorCode.THEME_NOT_FOUND);
+            throw new BusinessException(HttpStatus.NOT_FOUND, "테마를 찾을 수 없습니다.");
         }
     }
 

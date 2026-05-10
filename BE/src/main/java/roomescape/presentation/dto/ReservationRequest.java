@@ -1,9 +1,8 @@
 package roomescape.presentation.dto;
 
 import java.time.LocalDate;
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationException;
-import roomescape.global.exception.customException.ReservationTimeException;
+import org.springframework.http.HttpStatus;
+import roomescape.global.exception.BusinessException;
 
 public record ReservationRequest(
         String name,
@@ -19,19 +18,19 @@ public record ReservationRequest(
 
     private static void validateNameNotEmpty(String name) {
         if (name == null || name.trim().isBlank()) {
-            throw new ReservationException(ErrorCode.RESERVATION_NAME_EMPTY);
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "예약자의 이름이 비어있습니다.");
         }
     }
     
     private static void validateTimeIdNotEmpty(Long timeId) {
         if (timeId == null) {
-            throw new ReservationTimeException(ErrorCode.RESERVATION_TIME_ID_NULL);
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "예약 시간이 비어있습니다.");
         }
     }
 
     private static void validateDateNotEmpty(LocalDate date) {
         if (date == null) {
-            throw new ReservationException(ErrorCode.RESERVATION_DATE_NULL);
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "예약 날짜가 비어있습니다.");
         }
     }
 }

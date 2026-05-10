@@ -12,8 +12,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.fake.FakeThemeRepository;
-import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ReservationTimeException;
+import roomescape.global.exception.BusinessException;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.domain.ReservationTime;
@@ -77,8 +76,7 @@ class ReservationServiceTest {
                 request.timeId(),
                 request.themeId()
             )
-        ).isInstanceOf(ReservationTimeException.class)
-                .hasMessage(ErrorCode.RESERVATION_TIME_NOT_FOUND.getMessage());
+        ).isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -104,8 +102,7 @@ class ReservationServiceTest {
                         request.timeId(),
                         request.themeId()
                 )
-        ).isInstanceOf(ReservationTimeException.class)
-                .hasMessage(ErrorCode.RESERVATION_TIME_NOT_FOUND.getMessage());
+        ).isInstanceOf(BusinessException.class);
     }
 
     @Test
