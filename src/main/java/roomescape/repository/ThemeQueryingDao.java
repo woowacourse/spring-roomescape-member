@@ -64,17 +64,20 @@ public class ThemeQueryingDao {
                 INNER JOIN (
                     SELECT r.theme_id
                     FROM reservation as r
-                    WHERE r.date >= :filtered
+                    WHERE r.date >= :filtered AND r.date < :today
                     GROUP BY r.theme_id
                     ORDER BY count(1) DESC, r.theme_id ASC
                     LIMIT :limit
                 ) AS top_themes ON t.id = top_themes.theme_id;
                 """;
 
-        LocalDate filtered = LocalDate.now().minusDays(period);
+        LocalDate today = LocalDate.now();
+        LocalDate filtered = today.minusDays(period);
+
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("limit", limit)
-                .addValue("filtered", filtered);
+                .addValue("filtered", filtered)
+                .addValue("today", today);
 
         return jdbcTemplate.query(sql, param, themeRowMapper);
     }
