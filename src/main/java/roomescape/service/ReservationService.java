@@ -1,17 +1,16 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.ReservedTimes;
 import roomescape.service.dto.CreateReservationCommand;
 import roomescape.controller.dto.ReservationPagingQuery;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.global.exception.DuplicateReservationException;
 import roomescape.global.exception.ReservationTimeNotFoundException;
 import roomescape.global.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -39,19 +38,16 @@ public class ReservationService {
                 .orElseThrow(ReservationTimeNotFoundException::new);
         Theme theme = themeRepository.findById(command.themeId())
                 .orElseThrow(ThemeNotFoundException::new);
-        validateReservationAvailable(command.date(), time, theme);
+        ReservedTimes reservedTimes = new ReservedTimes(reservationTimeRepository.findReservedTimeIds(
+                theme.getId(),
+                command.date()
+        ));
+        reservedTimes.validateAvailable(time.getId());
 
         Reservation reservation = reservationRepository.save(
                 Reservation.createNew(command.name(), command.date(), time, theme));
 
         return ReservationResponse.from(reservation);
-    }
-
-    private void validateReservationAvailable(LocalDate date, ReservationTime time, Theme theme) {
-        List<Long> reservedTimeIds = reservationTimeRepository.findReservedTimeIds(theme.getId(), date);
-        if (reservedTimeIds.contains(time.getId())) {
-            throw new DuplicateReservationException();
-        }
     }
 
     @Transactional

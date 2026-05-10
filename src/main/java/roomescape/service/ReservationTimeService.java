@@ -12,6 +12,7 @@ import roomescape.controller.dto.AvailableReservationTimesResponse;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.controller.dto.ThemeResponse;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservedTimes;
 import roomescape.global.exception.DuplicateReservationTimeException;
 import roomescape.global.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationTimeRepository;
@@ -49,23 +50,28 @@ public class ReservationTimeService {
     }
 
     public AvailableReservationTimesResponse getAvailableReservationTimes(AvailableReservationTimesQuery request) {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-
-        Set<Long> reservedTimeIds = new HashSet<>(
-                reservationTimeRepository.findReservedTimeIds(request.themeId(), request.date()));
-
-        List<AvailableReservationTimeResponse> availableTimes = reservationTimes.stream()
-                .map(time -> createResponse(time, reservedTimeIds))
-                .filter(response -> isMatchCondition(request.available(), response.available()))
-                .toList();
         ThemeResponse theme = ThemeResponse.from(themeRepository.findById(request.themeId())
                 .orElseThrow(ThemeNotFoundException::new));
+
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        ReservedTimes reservedTimes = new ReservedTimes(
+                reservationTimeRepository.findReservedTimeIds(request.themeId(), request.date())
+        );
+
+        List<AvailableReservationTimeResponse> availableTimes = reservationTimes.stream()
+                .map(time -> createResponse(time, reservedTimes))
+                .filter(response -> isMatchCondition(request.available(), response.available()))
+                .toList();
+
         return AvailableReservationTimesResponse.from(theme, availableTimes);
     }
 
-    private AvailableReservationTimeResponse createResponse(ReservationTime time, Set<Long> reservedIdSet) {
-        boolean isAvailable = !reservedIdSet.contains(time.getId());
-        return new AvailableReservationTimeResponse(time.getId(), time.getStartAt(), isAvailable);
+    private AvailableReservationTimeResponse createResponse(ReservationTime time, ReservedTimes reservedTimes) {
+        return new AvailableReservationTimeResponse(
+                time.getId(),
+                time.getStartAt(),
+                reservedTimes.isAvailable(time.getId())
+        );
     }
 
     private boolean isMatchCondition(Boolean requestAvailable, boolean isAvailable) {
