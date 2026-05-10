@@ -1,4 +1,4 @@
-package roomescape.user.dao;
+package roomescape.time;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -7,13 +7,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.ReservationTime;
-import roomescape.user.dto.AvailableTimeResponse;
+import roomescape.time.dto.AvailableTimeResponse;
 
 @Repository
-public class ReservationTimeDao {
-    private static final RowMapper<ReservationTime> timeRowMapper = (rs, rowNum) -> {
-        return new ReservationTime(rs.getLong("id")
+public class TimeDao {
+    private static final RowMapper<Time> timeRowMapper = (rs, rowNum) -> {
+        return new Time(rs.getLong("id")
                 , rs.getTime("start_at").toLocalTime());
     };
 
@@ -28,19 +27,19 @@ public class ReservationTimeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
+    public TimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<ReservationTime> selectAll() {
+    public List<Time> selectAll() {
         String sql = "select id, start_at from reservation_time";
         return jdbcTemplate.query(sql, timeRowMapper);
     }
 
-    public ReservationTime selectById(Long id) {
+    public Time selectById(Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
         return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
     }
@@ -60,12 +59,12 @@ public class ReservationTimeDao {
         return jdbcTemplate.query(sql, availableTimeRowMapper, themeId, date);
     }
 
-    public ReservationTime insert(ReservationTime time) {
+    public Time insert(Time time) {
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("start_at", time.getStartAt());
 
         Long id = (long) simpleJdbcInsert.executeAndReturnKey(parameters);
-        return new ReservationTime(id, time.getStartAt());
+        return new Time(id, time.getStartAt());
     }
 
     public void delete(Long id) {

@@ -1,4 +1,4 @@
-package roomescape.user.controller;
+package roomescape.time.controller;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,26 +13,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.ReservationTime;
-import roomescape.user.dto.AvailableTimeResponse;
-import roomescape.user.dto.ReservationTimeRequest;
-import roomescape.user.dto.ReservationTimeResponse;
-import roomescape.user.service.ReservationTimeService;
+import roomescape.time.Time;
+import roomescape.time.dto.AvailableTimeResponse;
+import roomescape.time.dto.TimeRequest;
+import roomescape.time.dto.TimeResponse;
+import roomescape.time.TimeService;
 
 @RestController
 @RequestMapping("/user")
-public class ReservationTimeController {
+public class TimeController {
 
-    private final ReservationTimeService timeService;
+    private final TimeService timeService;
 
-    public ReservationTimeController(ReservationTimeService timeService) {
+    public TimeController(TimeService timeService) {
         this.timeService = timeService;
     }
 
     @GetMapping("/times/reservation-time")
-    public ResponseEntity<List<ReservationTimeResponse>> readAll() {
-        List<ReservationTimeResponse> reservationTimes = timeService.findAll().stream()
-                .map(ReservationTimeResponse::from)
+    public ResponseEntity<List<TimeResponse>> readAll() {
+        List<TimeResponse> reservationTimes = timeService.findAll().stream()
+                .map(TimeResponse::from)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(reservationTimes);
     }
@@ -45,9 +45,9 @@ public class ReservationTimeController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ReservationTimeResponse> create(@RequestBody ReservationTimeRequest request) {
-        ReservationTime time = timeService.add(request.startAt());
-        ReservationTimeResponse response = ReservationTimeResponse.from(time);
+    public ResponseEntity<TimeResponse> create(@RequestBody TimeRequest request) {
+        Time time = timeService.add(request.startAt());
+        TimeResponse response = TimeResponse.from(time);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

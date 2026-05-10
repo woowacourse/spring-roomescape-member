@@ -5,17 +5,17 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import roomescape.time.Time;
 import roomescape.user.dao.ReservationDao;
-import roomescape.user.dao.ReservationTimeDao;
+import roomescape.time.TimeDao;
 
 @Service
 public class ReservationService {
 
     private final ReservationDao reservationDao;
-    private final ReservationTimeDao timeDao;
+    private final TimeDao timeDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao timeDao) {
+    public ReservationService(ReservationDao reservationDao, TimeDao timeDao) {
         this.reservationDao = reservationDao;
         this.timeDao = timeDao;
     }
@@ -26,7 +26,7 @@ public class ReservationService {
 
     @Transactional
     public Reservation add(String name, LocalDate date, Long timeId, Long themeId) {
-        ReservationTime time = timeDao.selectById(timeId);
+        Time time = timeDao.selectById(timeId);
         Reservation reservation = new Reservation(name, date, time, themeId);
 
         boolean isAvailable = reservationDao.isAvailable(themeId, date, timeId);

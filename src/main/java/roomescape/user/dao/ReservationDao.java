@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import roomescape.time.Time;
 
 @Repository
 public class ReservationDao {
@@ -18,7 +18,7 @@ public class ReservationDao {
                 rs.getLong("reservation_id"),
                 rs.getString("name"),
                 rs.getDate("date").toLocalDate(),
-                new ReservationTime(rs.getLong("time_id"),
+                new Time(rs.getLong("time_id"),
                         rs.getTime("start_at").toLocalTime()),
                 rs.getLong("theme_id")
         );

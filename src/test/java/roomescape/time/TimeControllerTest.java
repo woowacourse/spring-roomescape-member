@@ -1,4 +1,4 @@
-package roomescape.user.controller;
+package roomescape.time;
 
 import static org.hamcrest.Matchers.is;
 
@@ -9,7 +9,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationTimeControllerTest {
+public class TimeControllerTest {
 
     @Test
     void 예약_가능_시간_조회_테스트() {
