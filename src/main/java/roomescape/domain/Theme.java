@@ -41,7 +41,7 @@ public class Theme {
         }
     }
 
-    public static void validateName(String name) {
+    private static void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
         }
@@ -50,7 +50,7 @@ public class Theme {
         }
     }
 
-    public static void validateDescription(String description) {
+    private static void validateDescription(String description) {
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("설명은 필수 입력 사항입니다.");
         }
@@ -59,7 +59,7 @@ public class Theme {
         }
     }
 
-    public static void validateImageUrl(String imageUrl) {
+    private static void validateImageUrl(String imageUrl) {
         if (imageUrl == null || imageUrl.isBlank()) {
             throw new IllegalArgumentException("이미지 URL은 필수입니다.");
         }
