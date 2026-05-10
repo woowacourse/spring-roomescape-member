@@ -3,6 +3,7 @@ package roomescape.theme;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.theme.dto.ThemeRequest;
@@ -10,6 +11,7 @@ import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
+@Transactional
 public class ThemeService {
 
     private static final int POPULAR_PERIOD = 7;
