@@ -1,5 +1,6 @@
 package roomescape.controller.admin;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class AdminTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> register(@RequestBody TimeRequest timeRequest) {
+    public ResponseEntity<TimeResponse> register(@Valid @RequestBody TimeRequest timeRequest) {
         TimeResponse timeResponse = timeService.register(timeRequest);
         return ResponseEntity.created(URI.create("/times/" + timeResponse.id())).body(timeResponse);
     }

@@ -47,4 +47,15 @@ public class ReservationControllerTest {
                 .body("size()", is(5));
     }
 
+    @Test
+    public void 예약_생성시_이름_검증에_실패하면_클라이언트_오류가_발생한다() {
+        ReservationRequest reservationRequest = new ReservationRequest("", LocalDate.of(2026, 5, 6), 2L, 2L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
 }
