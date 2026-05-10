@@ -1,4 +1,4 @@
-package roomescape.reservation.controller;
+package roomescape.reservation;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
