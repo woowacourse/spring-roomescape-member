@@ -1,6 +1,7 @@
-package roomescape.theme.controller;
+package roomescape.time.controller;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -12,28 +13,25 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class AdminThemeControllerTest {
+class AdminTimeControllerTest {
 
     @Test
-    void 테마_추가_성공() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "디스커버리");
-        params.put("description", "디스커버리 테마방입니다.");
-        params.put("image", "http.jpg");
+    void 시간_추가_성공() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("startAt", "21:00");
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/admin/themes")
+                .contentType(ContentType.JSON)
+                .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201)
-                .and().body("name", is("디스커버리"));
+                .statusCode(201);
     }
 
     @Test
-    void 테마_삭제_성공() {
+    void 시간_삭제_성공() {
         RestAssured.given().log().all()
-                .when().delete("/admin/themes/1")
+                .when().delete("/admin/times/1")
                 .then().log().all()
                 .statusCode(204);
     }

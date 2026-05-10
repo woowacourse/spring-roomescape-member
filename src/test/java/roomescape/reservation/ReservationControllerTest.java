@@ -1,5 +1,7 @@
 package roomescape.reservation;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
@@ -13,7 +15,16 @@ import org.springframework.test.annotation.DirtiesContext;
 public class ReservationControllerTest {
 
     @Test
-    void 예약추가_시간가능_성공() {
+    void 전체예약_조회_성공() {
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(15));
+    }
+
+    @Test
+    void 시간존재예약_추가_성공() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "초록");
         params.put("themeId", 2L);
@@ -23,13 +34,13 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/user/reservations")
+                .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
     }
 
     @Test
-    void 예약추가_시간없음_실패() {
+    void 시간없음예약_추가_실패() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "초록");
         params.put("date", "2026-05-05");
@@ -39,7 +50,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/user/reservations")
+                .when().post("/reservations")
                 .then().log().all()
                 .statusCode(500);
     }
@@ -47,7 +58,7 @@ public class ReservationControllerTest {
     @Test
     void 예약삭제_성공() {
         RestAssured.given().log().all()
-                .when().delete("/user/reservations/1")
+                .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
     }

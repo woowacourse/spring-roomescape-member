@@ -1,4 +1,4 @@
-package roomescape.time;
+package roomescape.time.controller;
 
 import static org.hamcrest.Matchers.is;
 
@@ -12,9 +12,18 @@ import org.springframework.test.annotation.DirtiesContext;
 public class TimeControllerTest {
 
     @Test
-    void 예약_가능_시간_조회_테스트() {
+    void 전제시간_조회_성공() {
         RestAssured.given().log().all()
-                .when().get("/user/times/available-time?themeId=1&date=2026-05-05")
+                .when().get("/times/reservation-time")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(11));
+    }
+
+    @Test
+    void 예약가능시간_조회_성공() {
+        RestAssured.given().log().all()
+                .when().get("/times/available-time?themeId=1&date=2026-05-05")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(11));

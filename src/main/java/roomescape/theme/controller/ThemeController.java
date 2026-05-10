@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.Theme;
@@ -14,11 +13,10 @@ import roomescape.theme.ThemeService;
 import roomescape.theme.dto.ThemeResponse;
 
 @RestController
-@RequestMapping("/user")
-public class UserThemeController {
+public class ThemeController {
     private final ThemeService themeService;
 
-    public UserThemeController(ThemeService themeService) {
+    public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
