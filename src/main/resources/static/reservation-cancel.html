@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 취소 · 방탈출</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #f59e0b;
+            text-decoration: none;
+        }
+
+        .btn-back {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.15s;
+        }
+        .btn-back:hover { color: #f1f5f9; }
+
+        main {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 1.75rem;
+        }
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+        .page-sub {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* ── 토스트 / 에러 ── */
+        .toast {
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            font-size: 0.875rem;
+            margin-bottom: 1.25rem;
+        }
+        .toast-success {
+            background: #14532d33;
+            border: 1px solid #22c55e55;
+            color: #86efac;
+        }
+        .toast-error {
+            background: #7f1d1d33;
+            border: 1px solid #ef444455;
+            color: #fca5a5;
+        }
+
+        /* ── 예약 카드 ── */
+        .res-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .res-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            transition: border-color 0.2s;
+        }
+        .res-card:hover { border-color: #475569; }
+
+        .res-info {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .res-theme {
+            font-size: 1.05rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .res-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem 0.85rem;
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        .res-meta .dot {
+            width: 3px;
+            height: 3px;
+            background: #475569;
+            border-radius: 50%;
+        }
+
+        .res-name {
+            color: #f59e0b;
+            font-weight: 700;
+        }
+
+        .btn-cancel {
+            flex-shrink: 0;
+            background: transparent;
+            border: 1px solid #ef4444aa;
+            color: #fca5a5;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        .btn-cancel:hover {
+            background: #ef4444;
+            color: #0f172a;
+        }
+        .btn-cancel:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .state-msg {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
+        /* ── 확인 모달 ── */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: #0f172acc;
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 1rem;
+        }
+        .modal-backdrop.show { display: flex; }
+
+        .modal {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            width: min(420px, 100%);
+            padding: 1.75rem;
+        }
+
+        .modal h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .modal p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.55;
+            margin-bottom: 1.5rem;
+        }
+        .modal p strong { color: #f1f5f9; }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.6rem;
+            justify-content: flex-end;
+        }
+        .modal-actions button {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-secondary {
+            background: #334155;
+            color: #f1f5f9;
+        }
+        .btn-secondary:hover { background: #475569; }
+        .btn-danger {
+            background: #ef4444;
+            color: #0f172a;
+        }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="/" class="logo">🔐 방탈출</a>
+    <a href="/" class="btn-back">← 메인으로</a>
+</header>
+
+<main>
+    <div class="page-header">
+        <h1 class="page-title">📂 예약 취소</h1>
+        <p class="page-sub">취소할 예약을 선택해주세요.</p>
+    </div>
+
+    <div id="toast"></div>
+
+    <div id="res-list" class="res-list">
+        <p class="state-msg">불러오는 중...</p>
+    </div>
+</main>
+
+<!-- 취소 확인 모달 -->
+<div class="modal-backdrop" id="modal">
+    <div class="modal">
+        <h3>예약을 취소하시겠습니까?</h3>
+        <p id="modal-text"></p>
+        <div class="modal-actions">
+            <button class="btn-secondary" id="modal-close">닫기</button>
+            <button class="btn-danger" id="modal-confirm">취소하기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pending = null;
+
+    function showToast(type, text) {
+        document.getElementById('toast').innerHTML =
+            `<div class="toast toast-${type}">${text}</div>`;
+    }
+    function clearToast() {
+        document.getElementById('toast').innerHTML = '';
+    }
+
+    function openModal(r) {
+        pending = r;
+        document.getElementById('modal-text').innerHTML = `
+            <strong>${r.theme.name}</strong> · ${r.name}<br>
+            ${r.date} · ${r.time.startAt}
+        `;
+        document.getElementById('modal-confirm').disabled = false;
+        document.getElementById('modal').classList.add('show');
+    }
+    function closeModal() {
+        pending = null;
+        document.getElementById('modal').classList.remove('show');
+    }
+
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('modal').addEventListener('click', (e) => {
+        if (e.target.id === 'modal') closeModal();
+    });
+    document.getElementById('modal-confirm').addEventListener('click', confirmCancel);
+
+    async function load() {
+        const c = document.getElementById('res-list');
+        try {
+            const reservations = await fetch('/reservations').then(r => r.json());
+            if (!reservations.length) {
+                c.innerHTML = '<p class="state-msg">예약 내역이 없습니다.</p>';
+                return;
+            }
+            c.innerHTML = '';
+            reservations.forEach(r => c.appendChild(createCard(r)));
+        } catch {
+            c.innerHTML = '<p class="state-msg">불러오기에 실패했습니다.</p>';
+        }
+    }
+
+    function createCard(r) {
+        const card = document.createElement('div');
+        card.className = 'res-card';
+        card.innerHTML = `
+            <div class="res-info">
+                <div class="res-theme">${r.theme.name}</div>
+                <div class="res-meta">
+                    <span class="res-name">${r.name}</span>
+                    <span class="dot"></span>
+                    <span>${r.date}</span>
+                    <span class="dot"></span>
+                    <span>${r.time.startAt}</span>
+                </div>
+            </div>
+            <button class="btn-cancel">취소</button>
+        `;
+        card.querySelector('.btn-cancel').addEventListener('click', () => openModal(r));
+        return card;
+    }
+
+    async function confirmCancel() {
+        if (!pending) return;
+        const r = pending;
+        const btn = document.getElementById('modal-confirm');
+        btn.disabled = true;
+        btn.textContent = '취소 중...';
+        clearToast();
+        try {
+            const res = await fetch(`/reservations/${r.id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error(await res.text());
+            closeModal();
+            showToast('success', `#${r.id} 예약이 취소되었습니다.`);
+            await load();
+        } catch {
+            closeModal();
+            showToast('error', '취소에 실패했습니다. 다시 시도해주세요.');
+        } finally {
+            btn.textContent = '취소하기';
+        }
+    }
+
+    load();
+</script>
+
+</body>
+</html>
