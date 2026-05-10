@@ -1,0 +1,56 @@
+.admin-container {
+    max-width: 900px;
+}
+
+.admin-section {
+    margin-bottom: 50px;
+}
+
+.admin-section h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+.admin-section h3 {
+    font-size: 1.1rem;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: #34495e;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.admin-table th, .admin-table td {
+    border: 1px solid #e2e8f0;
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.admin-table th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    color: #555;
+}
+
+.admin-table tbody tr:nth-child(even) {
+    background-color: #fcfdff;
+}
+
+.admin-table .delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    width: auto; /* 버튼 너비 자동 조절 */
+}
+
+.admin-table .delete-btn:hover {
+    background-color: #c0392b;
+}

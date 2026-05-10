@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방탈출 관리자 페이지</title>
+    <link rel="stylesheet" href="style.css"> <!-- 기존 스타일 재활용 -->
+    <link rel="stylesheet" href="admin.css"> <!-- 관리자 페이지 전용 스타일 -->
+</head>
+<body>
+    <div class="container admin-container">
+        <h1>관리자 페이지 🛠️</h1>
+
+        <!-- 테마 관리 섹션 -->
+        <section class="admin-section">
+            <h2>테마 관리</h2>
+            <div class="form-group">
+                <label for="theme-name-input">테마명</label>
+                <input type="text" id="theme-name-input" placeholder="예: 공포">
+            </div>
+            <div class="form-group">
+                <label for="theme-required-time-input">소요시간 (분)</label>
+                <input type="number" id="theme-required-time-input" placeholder="예: 120">
+            </div>
+            <button id="add-theme-btn" class="primary-btn">테마 추가</button>
+
+            <hr>
+
+            <h3>등록된 테마 목록</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>테마명</th>
+                        <th>소요시간</th>
+                        <th>삭제</th>
+                    </tr>
+                </thead>
+                <tbody id="theme-list-body">
+                    <!-- 테마 목록이 여기에 로드됩니다 -->
+                    <tr><td colspan="4" class="empty-message">테마를 불러오는 중입니다...</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <hr>
+
+        <!-- 스케줄 관리 섹션 -->
+        <section class="admin-section">
+            <h2>스케줄 관리</h2>
+            <div class="form-group">
+                <label for="schedule-date-input">날짜</label>
+                <input type="date" id="schedule-date-input">
+            </div>
+            <div class="form-group">
+                <label for="schedule-time-input">시간</label>
+                <input type="time" id="schedule-time-input">
+            </div>
+            <div class="form-group">
+                <label for="schedule-theme-select">테마 선택</label>
+                <select id="schedule-theme-select">
+                    <option value="">테마를 선택하세요</option>
+                    <!-- 테마 목록이 여기에 로드됩니다 -->
+                </select>
+            </div>
+            <button id="add-schedule-btn" class="primary-btn">스케줄 추가</button>
+
+            <hr>
+
+            <h3>등록된 스케줄 목록</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>날짜</th>
+                        <th>시간</th>
+                        <th>테마명</th>
+                        <th>삭제</th>
+                    </tr>
+                </thead>
+                <tbody id="schedule-list-body">
+                    <!-- 스케줄 목록이 여기에 로드됩니다 -->
+                    <tr><td colspan="5" class="empty-message">스케줄을 불러오는 중입니다...</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <hr>
+
+        <!-- 예약 관리 섹션 -->
+        <section class="admin-section">
+            <h2>예약 관리</h2>
+            <button id="load-reservations-btn" class="primary-btn">전체 예약 조회</button>
+
+            <hr>
+
+            <h3>전체 예약 목록</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>예약ID</th>
+                        <th>유저명</th>
+                        <th>테마명</th>
+                        <th>시작시간</th>
+                        <th>종료시간</th>
+                        <th>삭제</th>
+                    </tr>
+                </thead>
+                <tbody id="reservation-list-body">
+                    <!-- 예약 목록이 여기에 로드됩니다 -->
+                    <tr><td colspan="6" class="empty-message">예약을 불러오는 중입니다...</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
