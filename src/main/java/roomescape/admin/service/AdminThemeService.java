@@ -1,23 +1,20 @@
 package roomescape.admin.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.theme.controller.dto.ThemeRequest;
-import roomescape.theme.repository.ThemeDao;
+import roomescape.theme.doamin.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
+@RequiredArgsConstructor
 public class AdminThemeService {
+    private final ThemeRepository themeRepository;
 
-    private final ThemeDao themeDao;
-
-    public AdminThemeService(ThemeDao themeDao) {
-        this.themeDao = themeDao;
+    public long saveTheme(String name, String description, String thumbnailUrl) {
+        return themeRepository.save(Theme.of(name, description, thumbnailUrl));
     }
 
-    public Long save(ThemeRequest request) {
-        return themeDao.save(request.name(), request.description(), request.thumbnail_url());
-    }
-
-    public void delete(long id) {
-        themeDao.delete(id);
+    public void deleteTheme(long id) {
+        themeRepository.remove(id);
     }
 }

@@ -1,22 +1,17 @@
 package roomescape.admin.service;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.admin.controller.dto.AdminReservationResponse;
-import roomescape.reservation.repository.ReservationDao;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
 
 @Service
+@RequiredArgsConstructor
 public class AdminReservationService {
+    private final ReservationRepository reservationRepository;
 
-    private final ReservationDao reservationDao;
-
-    public AdminReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
-    }
-
-    public List<AdminReservationResponse> getAllReservations() {
-        return reservationDao.findAll().stream()
-                .map(r -> AdminReservationResponse.from(r, r.getTheme()))
-                .toList();
+    public List<Reservation> getAllReservations() {
+        return reservationRepository.findAll();
     }
 }

@@ -2,5 +2,7 @@ package roomescape.reservation.controller.dto;
 
 import java.time.LocalTime;
 
-public record ReservationTimeRequest(LocalTime startAt) {
+public record ReservationTimeRequest(
+        LocalTime startAt
+) {
 }

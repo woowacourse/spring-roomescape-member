@@ -1,8 +1,10 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import lombok.Getter;
 import roomescape.theme.doamin.Theme;
 
+@Getter
 public class Reservation {
     private final Long id;
     private final String name;
@@ -19,27 +21,11 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Long getId() {
-        return id;
+    public static Reservation of(String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(null, name, date, time, theme);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public ReservationTime getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
-    }
-
-    public static void validate(String name, LocalDate date, ReservationTime time) {
+    private void validate(String name, LocalDate date, ReservationTime time) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("예약자 이름은 비어있을 수 없습니다.");
         }

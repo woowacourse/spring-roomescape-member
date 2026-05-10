@@ -1,47 +1,52 @@
 package roomescape.theme.controller;
 
+import java.time.LocalDate;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.controller.dto.AvailableReservationTimeResponse;
+import roomescape.reservation.controller.dto.ThemeTimeAvailabilityResponse;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
 @RequestMapping("/themes")
 @RestController
+@RequiredArgsConstructor
 public class ThemeController {
-
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
-        this.themeService = themeService;
-    }
-
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
-        return ResponseEntity.ok(themeService.getAllThemes());
+    public List<ThemeResponse> getAllThemes() {
+        return themeService.getAllThemes().stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 
-    @GetMapping(params = "condition")
+    @GetMapping(params = "sort")
     public ResponseEntity<List<ThemeResponse>> getThemesByCondition(
-            @RequestParam String condition,
-            @RequestParam(defaultValue = "10") int size) {
-        if ("popular".equals(condition)) {
-            return ResponseEntity.ok(themeService.getPopularThemes(size));
-        }
+            @RequestParam String sort,
+            @RequestParam(defaultValue = "10") int limit) {
 
-        return ResponseEntity.badRequest().build();
+        return switch (sort) {
+            case "popular" -> ResponseEntity.ok(themeService.getPopularThemes(limit).stream()
+                    .map(ThemeResponse::from)
+                    .toList());
+            default -> ResponseEntity.badRequest().build();
+        };
     }
 
     @GetMapping("/{id}/times")
-    public ResponseEntity<List<AvailableReservationTimeResponse>> getReservationTimes(
+    public List<ThemeTimeAvailabilityResponse> getReservationTimes(
             @PathVariable long id,
-            @RequestParam String date) {
-        final List<AvailableReservationTimeResponse> reservationTimeResponses = themeService.getAvailableTimeResponses(id, date);
-        return ResponseEntity.ok(reservationTimeResponses);
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        return themeService.getThemeTimeAvailability(id, date).stream()
+                .map(ThemeTimeAvailabilityResponse::from)
+                .toList();
     }
 }

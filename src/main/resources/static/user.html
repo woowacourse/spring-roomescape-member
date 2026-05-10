@@ -724,7 +724,7 @@
     document.getElementById('popular-empty').style.display = 'none';
 
     try {
-      const res = await fetch(`${API}/themes?condition=popular&size=5`);
+      const res = await fetch(`${API}/themes?condition=popular&limit=5`);
       const themes = await res.json();
 
       document.getElementById('popular-loading').style.display = 'none';

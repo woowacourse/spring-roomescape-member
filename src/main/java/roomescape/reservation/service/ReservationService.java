@@ -1,45 +1,55 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
-import roomescape.theme.doamin.Theme;
-import roomescape.reservation.controller.dto.ReservationResponse;
-import roomescape.reservation.repository.ReservationDao;
-import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.repository.ReservationTimeDao;
-import roomescape.theme.repository.ThemeDao;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.ReservationTimeRepository;
+import roomescape.theme.doamin.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationService {
-    private final ReservationDao reservationDao;
-    private final ReservationTimeDao reservationTimeDao;
-    private final ThemeDao themeDao;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
-        this.reservationDao = reservationDao;
-        this.reservationTimeDao = reservationTimeDao;
-        this.themeDao = themeDao;
+    public long createReservation(String name,
+                                  LocalDate date,
+                                  long timeId,
+                                  long themeId) {
+        Optional<ReservationTime> findTime = reservationTimeRepository.findById(timeId);
+        if (findTime.isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 예약 시간입니다.");
+        }
+
+        Optional<Theme> findTheme = themeRepository.findById(themeId);
+        if (findTheme.isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+        }
+
+        return reservationRepository.save(Reservation.of(name, date, findTime.get(), findTheme.get()));
     }
 
-    public ReservationResponse save(ReservationRequest request) {
-        ReservationTime time = reservationTimeDao.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
-        Theme theme = themeDao.findById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-        Reservation.validate(request.name(), request.date(), time);
-        Long id = reservationDao.save(request.name(), request.date(), request.timeId(), request.themeId());
-        return ReservationResponse.from(new Reservation(id, request.name(), request.date(), time, theme), theme);
+    public void deleteReservation(long id) {
+        reservationRepository.remove(id);
     }
 
-    public void delete(Long id) {
-        reservationDao.delete(id);
+    public List<Reservation> getReservationsByUsername(String username) {
+        return reservationRepository.findByName(username);
     }
 
-    public List<ReservationResponse> findAllByName(String username) {
-        return reservationDao.findByName(username).stream()
-                .map(r -> ReservationResponse.from(r, r.getTheme()))
-                .toList();
+    public Reservation getReservation(long id) {
+        Optional<Reservation> findReservation = reservationRepository.findById(id);
+        if (findReservation.isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 예약입니다.");
+        }
+
+        return findReservation.get();
     }
 }

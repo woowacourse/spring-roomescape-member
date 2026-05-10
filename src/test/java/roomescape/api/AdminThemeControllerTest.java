@@ -1,6 +1,4 @@
-package roomescape.controller;
-
-import static org.hamcrest.Matchers.equalTo;
+package roomescape.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -8,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
@@ -24,7 +21,7 @@ class AdminThemeControllerTest {
         Map<String,Object> params = new HashMap<>();
         params.put("name", "공포의 폐병원");
         params.put("description", "공포의 폐병원");
-        params.put("thumbnail_url", "https://images.unsplash.com/photo-1505635552518-3448ff116af3?w=300&q=80");
+        params.put("thumbnailUrl", "https://images.unsplash.com/photo-1505635552518-3448ff116af3?w=300&q=80");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -40,7 +37,7 @@ class AdminThemeControllerTest {
         Map<String,Object> params = new HashMap<>();
         params.put("name", "공포의 폐병원");
         params.put("description", "공포의 폐병원");
-        params.put("thumbnail_url", "https://images.unsplash.com/photo-1505635552518-3448ff116af3?w=300&q=80");
+        params.put("thumbnailUrl", "https://images.unsplash.com/photo-1505635552518-3448ff116af3?w=300&q=80");
 
         final String location = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
