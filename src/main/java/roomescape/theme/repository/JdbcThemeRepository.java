@@ -1,5 +1,7 @@
 package roomescape.theme.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,6 +17,8 @@ import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
+    private static final Logger log = LoggerFactory.getLogger(JdbcThemeRepository.class);
+
     private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) ->
             new Theme(
                     resultSet.getLong("id"),
@@ -60,6 +64,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     private void validateCreatedRowCount(int rowCount) {
         if (rowCount != 1) {
+            log.error("Theme insert affected unexpected row count. rowCount={}", rowCount);
             throw new InfrastructureException("테마 생성에 실패했습니다.");
         }
     }
@@ -67,6 +72,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     private Long getGeneratedId(KeyHolder keyHolder) {
         Number key = keyHolder.getKey();
         if (key == null) {
+            log.error("Theme insert did not return generated id.");
             throw new InfrastructureException("테마 생성에 실패했습니다.");
         }
         return key.longValue();

@@ -1,5 +1,7 @@
 package roomescape.reservation.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -17,6 +19,8 @@ import java.util.List;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
+    private static final Logger log = LoggerFactory.getLogger(JdbcReservationRepository.class);
+
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),
@@ -124,6 +128,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private void validateCreatedRowCount(int rowCount) {
         if (rowCount != 1) {
+            log.error("Reservation insert affected unexpected row count. rowCount={}", rowCount);
             throw new InfrastructureException("예약 생성에 실패했습니다.");
         }
     }
@@ -131,6 +136,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     private Long getGeneratedId(KeyHolder keyHolder) {
         Number key = keyHolder.getKey();
         if (key == null) {
+            log.error("Reservation insert did not return generated id.");
             throw new InfrastructureException("예약 생성에 실패했습니다.");
         }
         return key.longValue();
