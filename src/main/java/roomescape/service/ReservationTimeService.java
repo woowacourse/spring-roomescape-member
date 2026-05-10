@@ -43,11 +43,13 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(Long id) {
-        if(reservationRepository.existByTimeId(id)) {
+        if (reservationRepository.existByTimeId(id)) {
             throw new DomainException(ErrorCode.RESERVATION_TIME_HAS_RESERVATION);
         }
 
-        reservationTimeRepository.deleteById(id);
+        if (!reservationTimeRepository.deleteById(id)) {
+            throw new DomainException(ErrorCode.RESERVATION_TIME_NOT_FOUND);
+        }
     }
 
     @Transactional(readOnly = true)

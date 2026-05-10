@@ -67,9 +67,23 @@ class JdbcReservationTimeRepositoryTest {
     void 예약_시간을_삭제한다() {
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
 
-        reservationTimeRepository.deleteById(reservationTime.getId());
+        boolean deleted = reservationTimeRepository.deleteById(reservationTime.getId());
 
+        assertThat(deleted).isTrue();
         assertThat(reservationTimeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간은 삭제되지 않는다.")
+    public void deleteById_fail() {
+        // given
+        Long id = 1L;
+
+        // when
+        boolean deleted = reservationTimeRepository.deleteById(id);
+
+        // then
+        assertThat(deleted).isFalse();
     }
 
     @Test

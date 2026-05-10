@@ -67,6 +67,18 @@ class ReservationTimeServiceTest {
                 .hasMessage(ErrorCode.RESERVATION_TIME_HAS_RESERVATION.message());
     }
 
+    @Test
+    @DisplayName("해당 예약 시간이 존재하지 않으면 삭제할 수 없기 때문에 예외가 발생한다.")
+    public void delete_fail2() {
+        // given
+        Long id = 1L;
+
+        // when, then
+        assertThatThrownBy(() -> reservationTimeService.delete(id))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(ErrorCode.RESERVATION_TIME_NOT_FOUND.message());
+    }
+
     private ReservationTime insertReservationTime(LocalTime startAt) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
