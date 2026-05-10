@@ -41,11 +41,13 @@ public class ReservationDaoTest {
         Reservation expected = reservationDao.insert(reservation);
 
         String sql =
-                "select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id "
-                        + "from reservation r "
-                        + "inner join reservation_time t "
-                        + "on r.time_id = t.id "
-                        + "and r.id = ?";
+                """
+                        select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id
+                        from reservation r
+                        inner join reservation_time t
+                        on r.time_id = t.id
+                        and r.id = ?
+                """;
         Reservation actual = jdbcTemplate.query(sql, rowMapper, expected.getId()).getFirst();
 
         assertThat(expected.getId()).isEqualTo(actual.getId());
