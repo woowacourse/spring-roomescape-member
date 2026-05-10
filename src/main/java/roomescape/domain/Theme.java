@@ -6,6 +6,8 @@ public class Theme {
     private final String description;
     private final String image;
 
+    private static final int MAX_NAME_LENGTH = 20;
+
     public Theme(String name, String description, String image) {
         this(null, name, description, image);
     }
@@ -35,11 +37,11 @@ public class Theme {
     }
 
     private void validateName(String name) {
-        if (name == null || name.isBlank()){
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이름은 공백일 수 없습니다.");
         }
-        if (name.length() > 20) {
-            throw new IllegalArgumentException("[ERROR] 이름은 20자를 초과할 수 없습니다");
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new IllegalArgumentException("[ERROR] 이름은 %d자를 초과할 수 없습니다".formatted(MAX_NAME_LENGTH));
         }
     }
 }

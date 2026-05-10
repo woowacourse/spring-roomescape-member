@@ -9,6 +9,8 @@ public class Reservation {
     private final ReservationTime time;
     private final Long themeId;
 
+    private static final int MAX_NAME_LENGTH = 20;
+
     public Reservation(String name, LocalDate date, ReservationTime time, Long themeId) {
         this(null, name, date, time, themeId);
     }
@@ -46,8 +48,8 @@ public class Reservation {
         if (name == null || name.isBlank()){
             throw new IllegalArgumentException("[ERROR] 이름은 공백일 수 없습니다.");
         }
-        if (name.length() > 20) {
-            throw new IllegalArgumentException("[ERROR] 이름은 20자를 초과할 수 없습니다");
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new IllegalArgumentException("[ERROR] 이름은 %d자를 초과할 수 없습니다".formatted(MAX_NAME_LENGTH));
         }
     }
 }
