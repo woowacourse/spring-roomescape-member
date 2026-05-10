@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationTimeAvailabilityResponseDto;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
@@ -34,10 +35,10 @@ public class ReservationTimeService {
 
     public List<ReservationTimeAvailabilityResponseDto> readAvailabilityByDateAndTheme(
             LocalDate date, Long themeId) {
-        themeDao.read(themeId);
+        Theme theme = themeDao.read(themeId);
 
         List<ReservationTime> allReservationTimes = reservationTimeDao.readAll();
-        List<Long> bookedTimeIdByDateAndTheme = reservationTimeDao.bookedTimeIdByDateAndTheme(date, themeId);
+        List<Long> bookedTimeIdByDateAndTheme = reservationTimeDao.bookedTimeIdByDateAndTheme(date, theme.getId());
 
         return allReservationTimes.stream()
                 .map(reservationTime -> {

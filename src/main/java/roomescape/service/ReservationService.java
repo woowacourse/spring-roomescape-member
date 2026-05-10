@@ -15,6 +15,7 @@ import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
 
 @Service
+
 public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
@@ -27,17 +28,18 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponseDto create(ReservationRequestDto requestDto) {
-        ReservationTime reservationTime = reservationTimeDao.read(requestDto.timeId());
-        Theme theme = themeDao.read(requestDto.themeId());
+    public ReservationResponseDto create(ReservationRequestDto request) {
+        ReservationTime reservationTime = reservationTimeDao.read(request.timeId());
+        Theme theme = themeDao.read(request.themeId());
 
-        boolean existReservation = reservationDao.existByDateAndTimeIdAndThemeId(requestDto.date(), requestDto.timeId(),
-                requestDto.themeId());
+        boolean existReservation = reservationDao.existByDateAndTimeIdAndThemeId(request.date(),
+                reservationTime.getId(),
+                theme.getId());
         if (existReservation) {
             throw new CustomException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
-        Reservation reservationWithoutId = requestDto.toEntity(reservationTime, theme);
+        Reservation reservationWithoutId = request.toEntity(reservationTime, theme);
         Reservation reservation = reservationDao.create(reservationWithoutId, reservationTime, theme);
 
         return ReservationResponseDto.from(reservation);
