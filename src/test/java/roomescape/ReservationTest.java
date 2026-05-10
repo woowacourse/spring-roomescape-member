@@ -33,6 +33,20 @@ public class ReservationTest {
     }
 
     @Test
+    void 예약_단건_조회() {
+        insertTheme(1L, "테마명");
+        insertReservationTime(1L, "10:00");
+        insertReservation("브라운", 1L, "2026-05-06", 1L);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(1))
+                .body("name", equalTo("브라운"));
+    }
+
+    @Test
     void 예약_추가_및_삭제() {
         insertTheme(1L, "테마명");
         insertReservationTime(1L, "10:00");

@@ -29,6 +29,10 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public Reservation getReservation(Long id) {
+        return reservationRepository.findById(id);
+    }
+
     @Transactional
     public Reservation createReservation(CreateReservationRequest request) {
         Theme theme = themeRepository.findById(request.themeId());
