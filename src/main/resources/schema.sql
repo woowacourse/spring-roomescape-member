@@ -23,6 +23,6 @@ CREATE TABLE reservation
     theme_id BIGINT       NOT NULL,
     created_at VARCHAR(255) NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id) ON DELETE CASCADE,
-    FOREIGN KEY (theme_id) REFERENCES theme (id) ON DELETE CASCADE
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id) ON DELETE RESTRICT,
+    FOREIGN KEY (theme_id) REFERENCES theme (id) ON DELETE RESTRICT
 );
