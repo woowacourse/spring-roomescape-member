@@ -20,7 +20,8 @@ public class ThemeService {
         LocalDate startDate = LocalDate.now().minusDays(7);
         LocalDate endDate = LocalDate.now();
 
-        return themeRepository.findTop10ByDateBetween(startDate, endDate).stream()
+        List<Long> themeIds = themeRepository.findThemeIdTop10(startDate, endDate);
+        return themeRepository.findAllByIds(themeIds).stream()
                 .map(ThemeResponse::of)
                 .collect(Collectors.toList());
     }

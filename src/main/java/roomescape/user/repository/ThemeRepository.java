@@ -2,6 +2,7 @@ package roomescape.user.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -23,16 +24,21 @@ public class ThemeRepository {
         resultSet.getString("image_url")
     );
 
-    public List<Theme> findTop10ByDateBetween(LocalDate startDate, LocalDate endDate) {
+    public List<Long> findThemeIdTop10(LocalDate startDate, LocalDate endDate) {
         String query = """
-            SELECT t.id, t.name, t.description, t.image_url
-            FROM theme t
-            INNER JOIN reservation r ON t.id = r.theme_id
+            SELECT r.theme_id
+            FROM reservation r
             WHERE r.date BETWEEN ? AND ?
-            GROUP BY t.id, t.name, t.description, t.image_url
+            GROUP BY r.theme_id
             ORDER BY COUNT(r.id) DESC
             LIMIT 10
             """;
-        return jdbcTemplate.query(query, rowMapper, startDate, endDate);
+        return jdbcTemplate.query(query, (rs, rowNum) -> rs.getLong("theme_id"), startDate, endDate);
+    }
+
+    public List<Theme> findAllByIds(List<Long> ids) {
+        String placeholders = ids.stream().map(id -> "?").collect(Collectors.joining(", "));
+        String query = "SELECT id, name, description, image_url FROM theme WHERE id IN (" + placeholders + ")";
+        return jdbcTemplate.query(query, rowMapper, ids.toArray());
     }
 }
