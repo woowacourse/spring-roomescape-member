@@ -17,19 +17,6 @@ public class ThemeJdbcTemplateRepository implements ThemeRepository {
 
     private static final String FIND_QUERY = "SELECT id, name, description, thumbnail_url FROM theme WHERE id = ?";
     private static final String FIND_ALL_QUERY = "SELECT id, name, description, thumbnail_url FROM theme";
-    private static final String FIND_TOP_N_BY_PERIOD_QUERY = """
-            SELECT
-                theme.id,
-                theme.name,
-                theme.description,
-                theme.thumbnail_url
-            FROM theme
-            JOIN reservation ON reservation.theme_id = theme.id
-            WHERE reservation.date BETWEEN ? AND ?
-            GROUP BY theme.id, theme.name
-            ORDER BY %s
-            LIMIT ?
-            """;
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> Theme.createRow(
             rs.getLong("id"),
             rs.getString("name"),
@@ -79,25 +66,7 @@ public class ThemeJdbcTemplateRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTopNByPeriod(LocalDate startAt, LocalDate endAt, ThemeSortType sortType, Long limit) {
-        return jdbcTemplate.query(
-                FIND_TOP_N_BY_PERIOD_QUERY.formatted(getSortSql(sortType)),
-                THEME_ROW_MAPPER,
-                startAt,
-                endAt,
-                limit
-        );
-    }
-
-    @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
-    }
-
-    private String getSortSql(ThemeSortType sortType) {
-        if (sortType.equals(ThemeSortType.POPULAR)) {
-            return "COUNT(reservation.id) DESC";
-        }
-        return "theme.id ASC";
     }
 }

@@ -40,16 +40,6 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTopNByPeriod(LocalDate startAt, LocalDate endAt, ThemeSortType sortType, Long limit) {
-        long maxResults = (limit != null) ? limit : 10L;
-
-        return store.values().stream()
-                .sorted((t1, t2) -> Long.compare(t2.getId(), t1.getId()))
-                .limit(maxResults)
-                .toList();
-    }
-
-    @Override
     public void deleteById(Long id) {
         Theme removed = store.remove(id);
         if (removed == null) {
