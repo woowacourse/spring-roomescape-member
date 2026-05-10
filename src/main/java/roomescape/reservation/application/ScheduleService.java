@@ -2,9 +2,14 @@ package roomescape.reservation.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.domain.Schedule;
 import roomescape.reservation.infra.ScheduleRepository;
+import roomescape.reservation.presentation.dto.request.ScheduleSaveRequest;
+import roomescape.reservation.presentation.dto.response.ScheduleFindResponse;
+import roomescape.reservation.presentation.dto.response.ScheduleSaveResponse;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +33,27 @@ public class ScheduleService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "해당 조건을 가진 일정이 없습니다. date: " + date + "timeId: " + timeId + "themeId: " + themeId
                 ));
+    }
+
+    public List<ScheduleFindResponse> findAll() {
+        List<Schedule> schedules = scheduleRepository.findAll();
+        return ScheduleFindResponse.from(schedules);
+    }
+
+    public ScheduleFindResponse findById(long id) {
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID를 가진 스케줄이 존재하지 않습니다. ID=" + id));
+        return ScheduleFindResponse.from(schedule);
+    }
+
+    public ScheduleSaveResponse save(ScheduleSaveRequest body) {
+        Schedule newSchedule = scheduleRepository.save(body.toDomain());
+        return ScheduleSaveResponse.from(newSchedule);
+    }
+
+    public void deleteById(long scheduleId) {
+        if (scheduleRepository.deleteById(scheduleId) != 1) {
+            throw new IllegalStateException("해당 ID를 가진 스케줄을 삭제하지 못하였습니다 ID=" + scheduleId);
+        }
     }
 }

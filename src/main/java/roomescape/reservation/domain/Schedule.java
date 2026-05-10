@@ -10,6 +10,6 @@ import java.time.LocalDate;
 public class Schedule {
     private final Long id;
     private LocalDate date;
-    private ReservationTime time;
-    private Theme theme;
+    private Long timeId;
+    private Long themeId;
 }
