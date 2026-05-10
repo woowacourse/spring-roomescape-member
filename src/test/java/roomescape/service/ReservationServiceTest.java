@@ -31,6 +31,7 @@ class ReservationServiceTest {
             Instant.parse("2026-05-10T03:00:00Z"),
             ZoneId.of("Asia/Seoul")
     );
+
     private static final LocalDate TODAY = LocalDate.of(2026, 5, 10);
 
     private ReservationService reservationService;

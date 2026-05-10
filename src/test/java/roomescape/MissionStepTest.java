@@ -4,9 +4,16 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.config.FixedClockConfig;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +23,10 @@ import static org.hamcrest.Matchers.is;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 public class MissionStepTest {
+
+    private static final String TODAY = "2026-05-10";
+    private static final String FUTURE_DATE = "2026-05-15";
+    private static final String FUTURE_TIME = "14:00";
 
     @Test
     void 예약_조회() {
@@ -53,7 +64,7 @@ public class MissionStepTest {
     @Test
     void 예약과_시간_연결() {
         Map<String, Object> time = new HashMap<>();
-        time.put("startAt", "10:00");
+        time.put("startAt", FUTURE_TIME);
 
         int timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -77,7 +88,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", FUTURE_DATE);
         reservation.put("timeId", timeId);
         reservation.put("themeId", themeId);
 
