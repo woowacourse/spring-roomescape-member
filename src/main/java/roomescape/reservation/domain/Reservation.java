@@ -1,0 +1,28 @@
+package roomescape.reservation.domain;
+
+import java.time.LocalDate;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+@Builder
+@Getter
+@EqualsAndHashCode(of = {"date", "themeId", "timeId"})
+public class Reservation {
+
+    private final Long id;
+    private final String name;
+    private final LocalDate date;
+    private final Long themeId;
+    private final Long timeId;
+
+    public Reservation withId(Long generatedId) {
+        return Reservation.builder()
+                .id(generatedId)
+                .name(this.name)
+                .date(this.date)
+                .themeId(this.themeId)
+                .timeId(this.timeId)
+                .build();
+    }
+}
