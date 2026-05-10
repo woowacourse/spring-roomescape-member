@@ -1,5 +1,6 @@
 package roomescape.reservation.domain;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -89,5 +90,37 @@ class ReservationTest {
         ))
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
+    }
+
+    @DisplayName("현재 시간과 예약 시간이 같을 때 예외가 발생하지 않음을 테스트합니다.")
+    @Test
+    void validate_same_reservation_date_time() {
+        Reservation reservation = Reservation.builder()
+                .name("스타크")
+                .date(LocalDate.of(2026, 5, 6))
+                .themeId(1L)
+                .timeId(1L)
+                .build();
+
+        assertThatNoException().isThrownBy(() -> reservation.validateNotPast(
+                LocalTime.of(10, 0),
+                LocalDateTime.of(2026, 5, 6, 10, 0)
+        ));
+    }
+
+    @DisplayName("현재 시간보다 이후 예약 시간일 때 예외가 발생하지 않음을 테스트합니다.")
+    @Test
+    void validate_future_reservation_date_time() {
+        Reservation reservation = Reservation.builder()
+                .name("스타크")
+                .date(LocalDate.of(2026, 5, 6))
+                .themeId(1L)
+                .timeId(1L)
+                .build();
+
+        assertThatNoException().isThrownBy(() -> reservation.validateNotPast(
+                LocalTime.of(10, 0),
+                LocalDateTime.of(2026, 5, 6, 9, 59)
+        ));
     }
 }
