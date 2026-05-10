@@ -215,7 +215,7 @@
     // ── Load Themes ────────────────────────────────────
     async function loadThemes() {
         try {
-            const data = await api('GET', '/admin/themes');
+            const data = (await api('GET', '/themes')).themes;
             document.getElementById('theme-count').textContent = data.length;
 
             // Update dropdown for time check
@@ -262,7 +262,7 @@
         const container = document.getElementById('popular-list');
         container.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
         try {
-            const data = await api('GET', `/admin/themes/popular?limit=${limit}`);
+            const data = (await api('GET', `/themes/popular?limit=${limit}`)).themes;
             if (!data.length) {
                 container.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><p>데이터가 없습니다.</p></div>`;
                 return;
@@ -309,7 +309,7 @@
         const container = document.getElementById('time-slots');
         container.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
         try {
-            const data = await api('GET', `/admin/themes/${themeId}/times?date=${date}`);
+            const data = (await api('GET', `/themes/${themeId}/times?date=${date}`)).times;
             if (!data.length) {
                 container.innerHTML = `<div class="empty-state"><div class="empty-icon">⏰</div><p>등록된 시간이 없습니다.</p></div>`;
                 return;

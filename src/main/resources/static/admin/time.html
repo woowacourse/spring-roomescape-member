@@ -124,7 +124,7 @@
 
     async function loadTimes() {
         try {
-            const data = await api('GET', '/admin/times');
+            const data = (await api('GET', '/times')).times;
             document.getElementById('time-count').textContent = data.length;
             const tbody = document.getElementById('time-table-body');
 

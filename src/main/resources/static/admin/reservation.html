@@ -155,7 +155,7 @@
     // ── Load ──────────────────────────────────────────
     async function loadReservations() {
         try {
-            const data = await api('GET', '/admin/reservations');
+            const data = (await api('GET', '/reservations')).reservations;
             document.getElementById('total-count').textContent = data.length;
             const tbody = document.getElementById('reservation-table-body');
 
@@ -185,7 +185,7 @@
 
     async function loadThemes() {
         try {
-            const themes = await api('GET', '/admin/themes');
+            const themes = (await api('GET', '/themes')).themes;
             const sel = document.getElementById('res-theme');
             sel.innerHTML = '<option value="">테마 선택</option>' +
                 themes.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
@@ -202,7 +202,7 @@
         // 날짜+테마가 모두 있으면 가용 시간 조회
         if (themeId && date) {
             try {
-                const times = await api('GET', `/admin/themes/${themeId}/times?date=${date}`);
+                const times = (await api('GET', `/themes/${themeId}/times?date=${date}`)).times;
                 sel.innerHTML = '<option value="">시간 선택</option>' +
                     times.map(t => `<option value="${t.id}" ${t.isReserved ? 'disabled' : ''}>${t.startAt}${t.isReserved ? ' (예약됨)' : ''}</option>`).join('');
                 return;
@@ -212,7 +212,7 @@
 
         // 전체 시간 목록
         try {
-            const times = await api('GET', '/admin/times');
+            const times = (await api('GET', '/times')).times;
             sel.innerHTML = '<option value="">시간 선택</option>' +
                 times.map(t => `<option value="${t.id}">${t.startAt}</option>`).join('');
         } catch (e) {
@@ -233,7 +233,7 @@
         }
 
         try {
-            await api('POST', '/admin/reservations', {
+            await api('POST', '/reservations', {
                 name,
                 date,
                 themeId: Number(themeId),
@@ -253,7 +253,7 @@
     async function deleteReservation(id) {
         if (!confirm(`예약 #${id}을 삭제할까요?`)) return;
         try {
-            await api('DELETE', `/admin/reservations/${id}`);
+            await api('DELETE', `/reservations/${id}`);
             toast('예약이 삭제되었습니다.', 'success');
             await loadReservations();
         } catch (e) {

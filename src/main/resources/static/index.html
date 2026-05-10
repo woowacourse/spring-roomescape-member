@@ -397,7 +397,7 @@
         const grid = document.getElementById('theme-grid');
         grid.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
         try {
-            const themes = await api('GET', '/themes');
+            const themes = (await api('GET', '/themes')).themes;
             if (!themes.length) {
                 grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🎭</div><p>등록된 테마가 없습니다.</p></div>`;
                 return;
@@ -438,7 +438,7 @@
         const container = document.getElementById('popular-section');
         container.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
         try {
-            const data = await api('GET', `/themes/popular?limit=${limit}`);
+            const data = (await api('GET', `/themes/popular?limit=${limit}`)).themes;
             if (!data.length) {
                 container.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><p>데이터가 없습니다.</p></div>`;
                 return;
@@ -483,7 +483,7 @@
 
         container.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
         try {
-            const data = await api('GET', `/themes/${state.selectedTheme.id}/times?date=${date}`);
+            const data = (await api('GET', `/themes/${state.selectedTheme.id}/times?date=${date}`)).times;
             if (!data.length) {
                 container.innerHTML = `<div class="empty-state"><div class="empty-icon">⏰</div><p>가용 시간이 없습니다.</p></div>`;
                 return;

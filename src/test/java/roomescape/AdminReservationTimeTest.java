@@ -15,15 +15,6 @@ import org.springframework.test.annotation.DirtiesContext;
 public class AdminReservationTimeTest {
 
     @Test
-    void 관리자_시간_조회() {
-        RestAssured.given().log().all()
-                .when().get("/admin/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("times.size()", is(0));
-    }
-
-    @Test
     void 관리자_시간_추가_및_삭제() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
@@ -36,7 +27,7 @@ public class AdminReservationTimeTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/admin/times")
+                .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("times.size()", is(1));
