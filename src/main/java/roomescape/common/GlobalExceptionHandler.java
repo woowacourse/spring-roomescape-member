@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservation.exception.ReservationNotFoundException;
+import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.theme.exception.ThemeNotFoundException;
 
@@ -25,14 +26,17 @@ public class GlobalExceptionHandler {
                 .body(e.getMessage());
     }
 
-    @ExceptionHandler(ReservationDuplicatedException.class)
-    public ResponseEntity<String> handleReservationAlreadyExists(ReservationDuplicatedException e) {
+    @ExceptionHandler({
+            ReservationDuplicatedException.class,
+            ReservationTimeDuplicatedException.class
+    })
+    public ResponseEntity<String> handleDuplicatedException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> MethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String message = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
