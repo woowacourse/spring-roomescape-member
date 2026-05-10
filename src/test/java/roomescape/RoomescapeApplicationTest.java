@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoomescapeApplicationTest {
@@ -53,7 +54,11 @@ class RoomescapeApplicationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
-                .then().statusCode(201);
+                .then().statusCode(201)
+                .body("name", equalTo("브라운"))
+                .body("date", equalTo(date.toString()))
+                .body("time.id", equalTo(1))
+                .body("theme.id", equalTo(1));
 
         List<Integer> availableTimes = RestAssured.given()
                 .queryParam("date", date.toString())
