@@ -18,7 +18,7 @@ public class ReservationDao {
             new ReservationEntity(
                     rs.getLong("id"),
                     rs.getString("name"),
-                    LocalDate.parse(rs.getString("date")),
+                    rs.getObject("date", LocalDate.class),
                     rs.getLong("time_id"),
                     rs.getLong("theme_id")
             );

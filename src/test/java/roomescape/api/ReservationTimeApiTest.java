@@ -49,6 +49,26 @@ class ReservationTimeApiTest {
     }
 
     @Test
+    void 같은_예약_시간은_등록할_수_없다() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     void 예약과_시간_연결() {
         dataInitializer.initializeReservationTime(LocalTime.now());
         dataInitializer.initializeTheme("hello", "world", "/resources/image/...");

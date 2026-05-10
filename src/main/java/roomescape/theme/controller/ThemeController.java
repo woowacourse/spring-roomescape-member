@@ -31,8 +31,8 @@ public class ThemeController {
 
     @GetMapping("/rank")
     public ResponseEntity<List<ThemeRankResponse>> getRankedThemes(
-            @RequestParam int days,
-            @RequestParam int limit
+            @RequestParam(defaultValue = "7") int days,
+            @RequestParam(defaultValue = "10") int limit
     ) {
         return ResponseEntity.ok(themeService.getThemeRankingsInRecentDays(days, limit));
     }

@@ -1,5 +1,6 @@
 package roomescape.theme.repository.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -64,7 +65,7 @@ public class ThemeDao {
         return jdbcTemplate.queryForObject(sql, themeEntityRowMapper, id);
     }
 
-    public List<ThemeEntity> findThemesOrderByReservationCountDesc(String startDate, String endDate, int limit) {
+    public List<ThemeEntity> findThemesOrderByReservationCountDesc(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                 SELECT
                     t.id,

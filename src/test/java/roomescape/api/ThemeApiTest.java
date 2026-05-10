@@ -115,21 +115,23 @@ class ThemeApiTest {
         Theme themeB = dataInitializer.initializeTheme("B 테마", "설명B", "urlB");
         Theme themeC = dataInitializer.initializeTheme("C 테마", "설명C", "urlC");
 
-        ReservationTime time = dataInitializer.initializeReservationTime(LocalTime.of(15, 0));
+        ReservationTime timeA = dataInitializer.initializeReservationTime(LocalTime.of(10, 0));
+        ReservationTime timeB = dataInitializer.initializeReservationTime(LocalTime.of(11, 0));
+        ReservationTime timeC = dataInitializer.initializeReservationTime(LocalTime.of(12, 0));
         LocalDate today = LocalDate.now();
 
         // 테마 A에 예약 3개
-        dataInitializer.initializeReservation("사용자1", today, time.getId(), themeA.getId());
-        dataInitializer.initializeReservation("사용자2", today, time.getId(), themeA.getId());
-        dataInitializer.initializeReservation("사용자3", today, time.getId(), themeA.getId());
+        dataInitializer.initializeReservation("사용자1", today, timeA.getId(), themeA.getId());
+        dataInitializer.initializeReservation("사용자2", today, timeB.getId(), themeA.getId());
+        dataInitializer.initializeReservation("사용자3", today, timeC.getId(), themeA.getId());
 
         // 테마 B에 예약 1개
-        dataInitializer.initializeReservation("사용자4", today, time.getId(), themeB.getId());
+        dataInitializer.initializeReservation("사용자4", today, timeA.getId(), themeB.getId());
 
         // 테마 C에 예약 3개
-        dataInitializer.initializeReservation("사용자5", today, time.getId(), themeC.getId());
-        dataInitializer.initializeReservation("사용자6", today, time.getId(), themeC.getId());
-        dataInitializer.initializeReservation("사용자7", today, time.getId(), themeC.getId());
+        dataInitializer.initializeReservation("사용자5", today, timeA.getId(), themeC.getId());
+        dataInitializer.initializeReservation("사용자6", today, timeB.getId(), themeC.getId());
+        dataInitializer.initializeReservation("사용자7", today, timeC.getId(), themeC.getId());
 
         RestAssured.given().log().all()
                 .queryParam("days", 7)
@@ -139,5 +141,20 @@ class ThemeApiTest {
                 .statusCode(200)
                 .body("theme.name", contains("A 테마", "C 테마", "B 테마"))
                 .body("size()", is(3));
+    }
+
+    @Test
+    @DisplayName("인기 테마 조회는 days와 limit를 생략하면 기본값을 사용한다.")
+    void getPopularThemesWithDefaultQueryParams() {
+        Theme theme = dataInitializer.initializeTheme("A 테마", "설명A", "urlA");
+        ReservationTime time = dataInitializer.initializeReservationTime(LocalTime.of(15, 0));
+        dataInitializer.initializeReservation("사용자1", LocalDate.now(), time.getId(), theme.getId());
+
+        RestAssured.given().log().all()
+                .when().get("/themes/rank")
+                .then().log().all()
+                .statusCode(200)
+                .body("theme.name", contains("A 테마"))
+                .body("size()", is(1));
     }
 }

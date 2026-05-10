@@ -2,7 +2,6 @@ package roomescape.time.repository.dao;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -20,7 +19,7 @@ public class ReservationTimeDao {
     private static final RowMapper<ReservationTimeEntity> reservationTimeRowMapper = (rs, rowNum) ->
             new ReservationTimeEntity(
                     rs.getLong("id"),
-                    LocalTime.parse(rs.getString("start_at"), DateTimeFormatter.ofPattern("HH:mm"))
+                    rs.getObject("start_at", LocalTime.class)
             );
 
     private final JdbcTemplate jdbcTemplate;
@@ -35,8 +34,14 @@ public class ReservationTimeDao {
 
     public Long insert(LocalTime startAt) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("startAt", startAt);
+                .addValue("start_at", startAt);
         return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+    }
+
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = "select count(1) from reservation_time where start_at = ?;";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, startAt);
+        return count != null && count > 0;
     }
 
     public Optional<ReservationTimeEntity> selectById(Long id) {
@@ -52,7 +57,7 @@ public class ReservationTimeDao {
     }
     
     public List<ReservationTimeEntity> selectAll() {
-        String sql = "select * from reservation_time;";
+        String sql = "select * from reservation_time order by start_at;";
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
