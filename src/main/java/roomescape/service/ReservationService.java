@@ -52,6 +52,8 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        reservationRepository.deleteById(id);
+        if (!reservationRepository.deleteById(id)) {
+            throw new DomainException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
     }
 }

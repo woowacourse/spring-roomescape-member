@@ -19,6 +19,7 @@ public class ErrorStatusMapper {
         statusByErrorCode.put(ErrorCode.RESERVATION_ALREADY_HAS_ID, HttpStatus.BAD_REQUEST);
         statusByErrorCode.put(ErrorCode.RESERVATION_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         statusByErrorCode.put(ErrorCode.RESERVATION_TIME_ALREADY_HAS_ID, HttpStatus.BAD_REQUEST);
+        statusByErrorCode.put(ErrorCode.RESERVATION_NOT_FOUND, HttpStatus.NOT_FOUND);
         statusByErrorCode.put(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         statusByErrorCode.put(ErrorCode.RESERVATION_CREATE_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
         statusByErrorCode.put(ErrorCode.RESERVATION_TIME_NOT_FOUND, HttpStatus.NOT_FOUND);

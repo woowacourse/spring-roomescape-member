@@ -46,6 +46,18 @@ class ReservationServiceTest {
                 .hasMessage(ErrorCode.RESERVATION_ALREADY_EXISTS.message());
     }
 
+    @Test
+    @DisplayName("해당 예약이 존재하지 않으면 삭제할 수 없기 때문에 예외가 발생한다.")
+    public void delete_fail() {
+        // given
+        Long id = 1L;
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.delete(id))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(ErrorCode.RESERVATION_NOT_FOUND.message());
+    }
+
     private ReservationTime insertReservationTime(LocalTime startAt) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 

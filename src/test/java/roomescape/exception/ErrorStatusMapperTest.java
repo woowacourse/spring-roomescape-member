@@ -28,6 +28,7 @@ class ErrorStatusMapperTest {
         assertThat(errorStatusMapper.map(ErrorCode.INVALID_THEME_THUMBNAIL)).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(errorStatusMapper.map(ErrorCode.INVALID_THEME)).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(errorStatusMapper.map(ErrorCode.THEME_ALREADY_HAS_ID)).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(errorStatusMapper.map(ErrorCode.RESERVATION_NOT_FOUND)).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(errorStatusMapper.map(ErrorCode.RESERVATION_TIME_NOT_FOUND)).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(errorStatusMapper.map(ErrorCode.THEME_NOT_FOUND)).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(errorStatusMapper.map(ErrorCode.RESERVATION_CREATE_FAILED)).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);

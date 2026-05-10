@@ -104,9 +104,23 @@ class JdbcReservationRepositoryTest {
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
         Reservation reservation = reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
 
-        reservationRepository.deleteById(reservation.getId());
+        boolean deleted = reservationRepository.deleteById(reservation.getId());
 
+        assertThat(deleted).isTrue();
         assertThat(reservationRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약은 삭제되지 않는다.")
+    public void deleteById_fail() {
+        // given
+        Long id = 1L;
+
+        // when
+        boolean deleted = reservationRepository.deleteById(id);
+
+        // then
+        assertThat(deleted).isFalse();
     }
 
     @Test

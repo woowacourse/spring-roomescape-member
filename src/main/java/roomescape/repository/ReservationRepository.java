@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ReservationRepository {
+
     List<Reservation> findAll();
 
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
@@ -14,7 +15,7 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    void deleteById(Long id);
+    boolean deleteById(Long id);
 
     boolean existByTimeId(Long timeId);
 
