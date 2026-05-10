@@ -17,12 +17,12 @@ public record ThemeRequest(
         @NotNull
         LocalTime durationTime
 ) {
-    public static Theme toEntity(ThemeRequest request) {
+    public Theme toEntity() {
         return Theme.builder()
-                .name(request.name)
-                .description(request.description)
-                .thumbnailImageUrl(request.thumbnailImageUrl)
-                .durationTime(request.durationTime)
+                .name(name)
+                .description(description)
+                .thumbnailImageUrl(thumbnailImageUrl)
+                .durationTime(durationTime)
                 .build();
     }
 }

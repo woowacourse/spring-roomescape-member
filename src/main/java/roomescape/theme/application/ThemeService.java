@@ -23,7 +23,7 @@ public class ThemeService {
     private final ThemeRepository repository;
 
     public ThemeResponse addTheme(ThemeRequest request) {
-        Theme theme = repository.save(ThemeRequest.toEntity(request));
+        Theme theme = repository.save(request.toEntity());
         return ThemeResponse.from(theme);
     }
 
