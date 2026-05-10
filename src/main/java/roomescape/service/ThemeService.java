@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -66,12 +67,11 @@ public class ThemeService {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         List<Long> timeIds = reservationDao.findReservedTimeIdsByDateAndThemeId(date, themeId);
 
+        LocalDateTime now = LocalDateTime.now();
         return reservationTimes.stream()
                 .map(reservationTime -> {
-                    boolean isPast = date.isBefore(LocalDate.now()) ||
-                            (date.isEqual(LocalDate.now()) && reservationTime.getStartAt()
-                                    .isBefore(LocalTime.now()));
-                    boolean available = !timeIds.contains(reservationTime.getId()) && !isPast;
+                    boolean available = !timeIds.contains(reservationTime.getId())
+                            && !reservationTime.isPast(date, now);
                     return ReservationTimeStatusResponse.of(reservationTime, available);
                 })
                 .toList();
