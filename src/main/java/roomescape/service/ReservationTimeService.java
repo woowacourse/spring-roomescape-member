@@ -2,13 +2,17 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.ReservationTimeCreateCommand;
 
@@ -17,7 +21,8 @@ import roomescape.service.dto.ReservationTimeCreateCommand;
 @Slf4j
 public class ReservationTimeService {
 
-    private final ReservationTimeRepository repository;
+    private final ReservationTimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
 
     @Transactional
     public ReservationTime create(
@@ -26,12 +31,12 @@ public class ReservationTimeService {
         UUID id = UUID.randomUUID();
         ReservationTime reservationTime = new ReservationTime(id, command.startAt());
 
-        return repository.persist(reservationTime);
+        return timeRepository.persist(reservationTime);
     }
 
     @Transactional(readOnly = true)
     public List<ReservationTime> findAll() {
-        return repository.findAll();
+        return timeRepository.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -39,12 +44,21 @@ public class ReservationTimeService {
             UUID themeId,
             LocalDate date
     ) {
-        return repository.findReservationAvailableTimes(themeId, date);
+        List<ReservationTime> allTimes = timeRepository.findAll();
+        List<Reservation> existReservations = reservationRepository.findByDateAndThemeId(date, themeId);
+
+        Set<UUID> inUsedTimeIds = existReservations.stream()
+                .map(Reservation::timeId)
+                .collect(Collectors.toUnmodifiableSet());
+
+        return allTimes.stream()
+                .filter(time -> !inUsedTimeIds.contains(time.id()))
+                .toList();
     }
 
     @Transactional
     public void delete(UUID timeId) {
-        boolean deleted = repository.delete(timeId);
+        boolean deleted = timeRepository.delete(timeId);
 
         if (!deleted) {
             throw new EntityNotFoundException(

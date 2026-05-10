@@ -57,6 +57,19 @@ public class ReservationRepository {
         );
     }
 
+    public List<Reservation> findByDateAndThemeId(LocalDate date, UUID themeId) {
+        String findSql = "SELECT id, name, date, time_id, theme_id"
+                + " FROM reservation r"
+                + " WHERE date = ? AND theme_id = ?";
+
+        return jdbcTemplate.query(
+                findSql,
+                reservationRowMapper(),
+                date,
+                themeId
+        );
+    }
+
     public boolean delete(UUID reservationId) {
         String deleteSql = "DELETE FROM reservation"
                 + " WHERE id = ?";
