@@ -9,7 +9,7 @@ import roomescape.reservation.presentation.dto.request.ReservationTimeSaveReques
 import roomescape.reservation.presentation.dto.response.AvailableTimeFindResponse;
 import roomescape.reservation.presentation.dto.response.ReservationTimeFindResponse;
 import roomescape.reservation.presentation.dto.response.ReservationTimeSaveResponse;
-import roomescape.reservation.presentation.dto.response.dto.TimeInformation;
+import roomescape.reservation.presentation.dto.response.TimeInformation;
 
 import java.time.LocalDate;
 import java.util.List;

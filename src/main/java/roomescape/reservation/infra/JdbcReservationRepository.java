@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.infra.dto.ReservationDetailFind;
 import roomescape.reservation.presentation.dto.response.ThemeFindResponse;
-import roomescape.reservation.presentation.dto.response.dto.TimeInformation;
+import roomescape.reservation.presentation.dto.response.TimeInformation;
 
 import java.time.LocalDate;
 import java.util.List;
