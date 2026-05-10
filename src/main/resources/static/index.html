@@ -5,107 +5,163 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>방탈출 예약</title>
     <style>
+        :root {
+            --bg: #f6f9fc;
+            --panel: #ffffff;
+            --line: #e5edf5;
+            --text: #191f28;
+            --muted: #8b95a1;
+            --primary: #3182f6;
+            --primary-strong: #1b64da;
+            --soft: #eef5ff;
+            --success-bg: #effaf3;
+            --success-text: #1f8f55;
+            --error-bg: #fff2f2;
+            --error-text: #d14343;
+            --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; color: #333; }
+        body {
+            font-family: "Pretendard", "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(49, 130, 246, 0.10), transparent 28%),
+                linear-gradient(180deg, #f9fbff 0%, var(--bg) 38%, #f3f6fb 100%);
+            color: var(--text);
+            min-height: 100vh;
+        }
 
         header {
-            background: linear-gradient(135deg, #2c3e50, #3498db);
-            color: white; padding: 20px 0; text-align: center;
+            max-width: 1120px; margin: 24px auto 0; padding: 34px 32px 28px;
+            border-radius: 30px; background: linear-gradient(135deg, #ffffff 0%, #f3f8ff 100%);
+            box-shadow: var(--shadow); text-align: left;
+            position: relative;
         }
-        header h1 { font-size: 1.8rem; }
-        header p { margin-top: 4px; opacity: 0.8; font-size: 0.9rem; }
+        header h1 { font-size: 2.3rem; line-height: 1.2; letter-spacing: -0.04em; }
+        header p { margin-top: 10px; color: #5f6b7a; font-size: 1rem; }
+
+        .topbar {
+            position: absolute; top: 20px; right: 22px;
+            display: flex; gap: 8px; align-items: center;
+            background: rgba(255, 255, 255, 0.88); padding: 6px; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+            border: 1px solid rgba(229, 237, 245, 0.95); border-radius: 999px; backdrop-filter: blur(14px);
+        }
+        .topbar a {
+            text-decoration: none; padding: 8px 12px; border-radius: 999px;
+            border: 1px solid transparent; color: #4e5968; background: transparent; font-weight: 700; font-size: 0.83rem; transition: all 0.2s;
+        }
+        .topbar a.active, .topbar a:hover {
+            background: var(--soft); border-color: #d9e8ff; color: var(--primary-strong);
+        }
 
         nav {
-            display: flex; justify-content: center; gap: 12px;
-            background: #fff; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            max-width: 1120px; margin: 16px auto 0; display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;
+            background: transparent; padding: 0 4px;
         }
         nav button {
-            padding: 8px 20px; border: 2px solid #3498db; border-radius: 20px;
-            background: white; color: #3498db; cursor: pointer; font-size: 0.9rem;
+            padding: 12px 18px; border: 1px solid transparent; border-radius: 16px;
+            background: transparent; color: #6b7684; cursor: pointer; font-size: 0.95rem; font-weight: 700;
             transition: all 0.2s;
         }
         nav button:hover, nav button.active {
-            background: #3498db; color: white;
+            background: var(--panel); color: var(--primary-strong); box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            border-color: var(--line);
         }
 
-        .container { max-width: 900px; margin: 24px auto; padding: 0 16px; }
+        .container { max-width: 1120px; margin: 24px auto 40px; padding: 0 16px; }
 
         .section { display: none; }
         .section.active { display: block; }
 
         .card {
-            background: white; border-radius: 12px; padding: 20px;
-            margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: var(--panel); border-radius: 28px; padding: 28px;
+            margin-bottom: 18px; box-shadow: var(--shadow); border: 1px solid rgba(229, 237, 245, 0.88);
         }
-        .card h3 { margin-bottom: 8px; color: #2c3e50; }
-        .card p { color: #666; font-size: 0.9rem; line-height: 1.5; }
+        .card h3 { margin-bottom: 10px; color: var(--text); font-size: 1.45rem; letter-spacing: -0.03em; }
+        .card p { color: #6b7684; font-size: 0.98rem; line-height: 1.6; }
 
         .theme-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px;
         }
         .theme-card {
-            background: white; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s;
+            background: var(--panel); border-radius: 24px; overflow: hidden;
+            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06); transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(229, 237, 245, 0.9);
         }
-        .theme-card:hover { transform: translateY(-4px); }
+        .theme-card:hover { transform: translateY(-6px); box-shadow: 0 22px 36px rgba(15, 23, 42, 0.09); }
         .theme-card img {
-            width: 100%; height: 160px; object-fit: cover; background: #ddd;
+            width: 100%; height: 190px; object-fit: cover; background: #dfe9f5;
         }
-        .theme-card .info { padding: 14px; }
-        .theme-card .info h3 { font-size: 1rem; margin-bottom: 6px; }
-        .theme-card .info p { font-size: 0.85rem; color: #666; line-height: 1.4; }
+        .theme-card .info { padding: 20px; }
+        .theme-card .info h3 { font-size: 1.12rem; margin-bottom: 6px; }
+        .theme-card .info p { font-size: 0.92rem; color: #6b7684; line-height: 1.55; }
 
         .rank-badge {
             display: inline-flex; align-items: center; justify-content: center;
-            background: #e74c3c; color: white; width: 24px; height: 24px;
-            border-radius: 50%; font-weight: bold; font-size: 0.8rem;
-            flex-shrink: 0; margin-right: 6px;
+            background: var(--soft); color: var(--primary-strong); width: 30px; height: 30px;
+            border-radius: 12px; font-weight: 800; font-size: 0.85rem;
+            flex-shrink: 0; margin-right: 8px;
         }
         .theme-card .info .title-row {
             display: flex; align-items: center; margin-bottom: 6px;
         }
 
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 0.95rem; color: #4e5968; }
         .form-group input, .form-group select {
-            width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px;
-            font-size: 0.9rem;
+            width: 100%; padding: 15px 16px; border: 1px solid var(--line); border-radius: 18px;
+            font-size: 0.95rem; background: #fbfdff; color: var(--text);
         }
         .form-group input:focus, .form-group select:focus {
-            outline: none; border-color: #3498db;
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(49, 130, 246, 0.12); background: white;
         }
 
-        .time-slots { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+        .time-slots { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
         .time-slot {
-            padding: 10px 20px; border: 2px solid #3498db; border-radius: 8px;
-            background: white; cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+            padding: 14px 18px; border: 1px solid #dbe7f3; border-radius: 18px;
+            background: #fbfdff; cursor: pointer; font-size: 0.95rem; font-weight: 700; color: #4e5968; transition: all 0.2s;
         }
         .time-slot:hover, .time-slot.selected {
-            background: #3498db; color: white;
+            background: var(--soft); color: var(--primary-strong); border-color: #cfe0ff;
         }
         .time-slot.unavailable {
-            border-color: #ccc; color: #ccc; cursor: not-allowed; text-decoration: line-through;
+            border-color: #edf2f7; color: #b0b8c1; cursor: not-allowed; text-decoration: line-through; background: #f8fafc;
         }
 
         .btn-primary {
-            padding: 12px 32px; background: #3498db; color: white; border: none;
-            border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.2s;
+            padding: 16px 24px; background: var(--primary); color: white; border: none;
+            border-radius: 18px; font-size: 1rem; font-weight: 800; cursor: pointer; transition: background 0.2s, transform 0.2s;
+            min-width: 180px;
         }
-        .btn-primary:hover { background: #2980b9; }
-        .btn-primary:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .btn-primary:hover { background: var(--primary-strong); transform: translateY(-1px); }
+        .btn-primary:disabled { background: #c9d3df; cursor: not-allowed; transform: none; }
 
         .message {
-            padding: 12px 16px; border-radius: 8px; margin-top: 16px; display: none;
+            padding: 14px 16px; border-radius: 16px; margin-top: 18px; display: none; font-weight: 600;
         }
-        .message.success { display: block; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .message.error { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .message.success { display: block; background: var(--success-bg); color: var(--success-text); border: 1px solid #ccefd8; }
+        .message.error { display: block; background: var(--error-bg); color: var(--error-text); border: 1px solid #ffd6d6; }
 
-        .empty { text-align: center; padding: 40px; color: #999; }
+        .empty { text-align: center; padding: 42px 20px; color: var(--muted); font-size: 0.96rem; }
+
+        @media (max-width: 768px) {
+            header { margin: 16px 16px 0; padding: 28px 22px 24px; border-radius: 24px; }
+            header h1 { font-size: 1.9rem; }
+            .topbar { top: 16px; right: 16px; }
+            nav { margin-left: 16px; margin-right: 16px; }
+            .card { padding: 22px; border-radius: 24px; }
+            .theme-grid { grid-template-columns: 1fr; }
+            .btn-primary { width: 100%; }
+        }
     </style>
 </head>
 <body>
 
 <header>
+    <div class="topbar">
+        <a href="/" class="active">사용자</a>
+        <a href="/admin.html">관리자</a>
+    </div>
     <h1>방탈출 예약</h1>
     <p>테마를 고르고, 탈출에 도전하세요!</p>
 </header>
@@ -167,11 +223,19 @@
             <div id="res-message" class="message"></div>
         </div>
     </div>
-
 </div>
 
 <script>
     let selectedTimeId = null;
+
+    const THEME_STYLES = [
+        { keywords: ['공포', '귀신', '폐', '요람', '비명', '악몽'], palette: ['#111827', '#7f1d1d'], accent: 'MIDNIGHT HORROR' },
+        { keywords: ['추리', '탐정', '미스터리', '사건', '단서'], palette: ['#1f2937', '#1d4ed8'], accent: 'MYSTERY CASE' },
+        { keywords: ['우주', '행성', '은하', '미래', '실험'], palette: ['#0f172a', '#2563eb'], accent: 'SPACE MISSION' },
+        { keywords: ['학교', '교실', '캠퍼스', '동아리'], palette: ['#1e3a8a', '#0f766e'], accent: 'CAMPUS QUEST' },
+        { keywords: ['감옥', '탈옥', '도둑', '루팡'], palette: ['#312e81', '#7c3aed'], accent: 'ESCAPE OPERATION' },
+        { keywords: ['동화', '숲', '마법', '성'], palette: ['#14532d', '#059669'], accent: 'FAIRY FOREST' }
+    ];
 
     function extractTimeList(payload) {
         if (Array.isArray(payload)) return payload;
@@ -179,6 +243,45 @@
         if (Array.isArray(payload?.availableTimes)) return payload.availableTimes;
         if (Array.isArray(payload?.data)) return payload.data;
         return null;
+    }
+
+    function getThemeVisualStyle(theme) {
+        const text = `${theme.name || ''} ${theme.description || ''}`;
+        return THEME_STYLES.find((style) => style.keywords.some((keyword) => text.includes(keyword)))
+            || { palette: ['#0f172a', '#3182f6'], accent: 'ROOM ESCAPE' };
+    }
+
+    function createThemePlaceholder(theme) {
+        const style = getThemeVisualStyle(theme);
+        const [start, end] = style.palette;
+        const title = (theme.name || 'ESCAPE ROOM').slice(0, 20);
+        const subtitle = (theme.description || style.accent).slice(0, 34);
+        const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400">
+                <defs>
+                    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="${start}" />
+                        <stop offset="100%" stop-color="${end}" />
+                    </linearGradient>
+                </defs>
+                <rect width="640" height="400" rx="32" fill="url(#bg)" />
+                <circle cx="560" cy="78" r="72" fill="rgba(255,255,255,0.12)" />
+                <circle cx="102" cy="336" r="88" fill="rgba(255,255,255,0.08)" />
+                <text x="48" y="84" fill="rgba(255,255,255,0.72)" font-size="24" font-family="Pretendard, Segoe UI, sans-serif" font-weight="700">${style.accent}</text>
+                <text x="48" y="228" fill="#ffffff" font-size="44" font-family="Pretendard, Segoe UI, sans-serif" font-weight="800">${title}</text>
+                <text x="48" y="274" fill="rgba(255,255,255,0.82)" font-size="22" font-family="Pretendard, Segoe UI, sans-serif">${subtitle}</text>
+            </svg>
+        `;
+        return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+    }
+
+    function resolveThemeImage(theme) {
+        return theme.url && theme.url.trim() ? theme.url : createThemePlaceholder(theme);
+    }
+
+    function handleThemeImageError(img, theme) {
+        img.onerror = null;
+        img.src = createThemePlaceholder(theme);
     }
 
     function getTimeId(time) {
@@ -231,7 +334,7 @@
         const card = document.createElement('div');
         card.className = 'theme-card';
         card.innerHTML = `
-            <img src="${theme.url}" alt="${theme.name}" onerror="this.style.display='none'">
+            <img src="${resolveThemeImage(theme)}" alt="${theme.name}">
             <div class="info">
                 <div class="title-row">
                     ${rank ? `<span class="rank-badge">${rank}</span>` : ''}
@@ -240,6 +343,8 @@
                 <p>${theme.description || ''}</p>
             </div>
         `;
+        const image = card.querySelector('img');
+        image.addEventListener('error', () => handleThemeImageError(image, theme));
         return card;
     }
 
@@ -280,8 +385,7 @@
         const current = select.value;
         select.innerHTML = '<option value="">-- 테마를 선택하세요 --</option>';
         try {
-            const res = await fetch('/themes');
-            const themes = await res.json();
+            const themes = await fetchThemes();
             themes.forEach(theme => {
                 const opt = document.createElement('option');
                 opt.value = theme.id;
@@ -290,6 +394,14 @@
             });
             if (current) select.value = current;
         } catch (e) { /* ignore */ }
+    }
+
+    async function fetchThemes() {
+        const res = await fetch('/themes');
+        if (!res.ok) {
+            throw new Error('failed to load themes');
+        }
+        return res.json();
     }
 
     async function loadAvailableTimes() {

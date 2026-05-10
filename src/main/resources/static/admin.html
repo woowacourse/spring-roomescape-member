@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방탈출 관리자</title>
+    <style>
+        :root {
+            --bg: #f6f9fc;
+            --panel: #ffffff;
+            --line: #e5edf5;
+            --text: #191f28;
+            --muted: #8b95a1;
+            --primary: #3182f6;
+            --primary-strong: #1b64da;
+            --soft: #eef5ff;
+            --danger: #f04452;
+            --danger-strong: #d92d20;
+            --success-bg: #effaf3;
+            --success-text: #1f8f55;
+            --error-bg: #fff2f2;
+            --error-text: #d14343;
+            --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Pretendard", "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(49, 130, 246, 0.10), transparent 28%),
+                linear-gradient(180deg, #f9fbff 0%, var(--bg) 40%, #f3f6fb 100%);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        header {
+            max-width: 1120px; margin: 24px auto 0; padding: 34px 32px 28px;
+            border-radius: 30px; background: linear-gradient(135deg, #ffffff 0%, #f3f8ff 100%);
+            box-shadow: var(--shadow); text-align: left; position: relative;
+        }
+        header h1 { font-size: 2.2rem; margin-bottom: 8px; letter-spacing: -0.04em; }
+        header p { color: #5f6b7a; font-size: 1rem; line-height: 1.6; }
+
+        .topbar {
+            position: absolute; top: 20px; right: 22px;
+            display: flex; gap: 8px; align-items: center;
+            background: rgba(255, 255, 255, 0.88); padding: 6px; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+            border: 1px solid rgba(229, 237, 245, 0.95); border-radius: 999px; backdrop-filter: blur(14px);
+        }
+        .topbar a {
+            text-decoration: none; padding: 8px 12px; border-radius: 999px;
+            border: 1px solid transparent; color: #4e5968; background: transparent; font-weight: 700; font-size: 0.83rem; transition: all 0.2s;
+        }
+        .topbar a.active, .topbar a:hover {
+            background: var(--soft); border-color: #d9e8ff; color: var(--primary-strong);
+        }
+
+        .container { max-width: 1120px; margin: 24px auto 40px; padding: 0 16px; }
+        .card {
+            background: var(--panel); border-radius: 28px; padding: 28px;
+            margin-bottom: 18px; box-shadow: var(--shadow); border: 1px solid rgba(229, 237, 245, 0.88);
+        }
+        .card h2 { margin-bottom: 10px; font-size: 1.38rem; color: var(--text); letter-spacing: -0.03em; }
+        .card p { color: #6b7684; line-height: 1.6; }
+
+        .admin-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px;
+        }
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block; margin-bottom: 8px; font-size: 0.95rem; font-weight: 700; color: #4e5968;
+        }
+        .form-group input {
+            width: 100%; padding: 15px 16px; border: 1px solid var(--line); border-radius: 18px; font-size: 0.95rem;
+            background: #fbfdff; color: var(--text);
+        }
+        .form-group input:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(49, 130, 246, 0.12); background: white;
+        }
+
+        .btn-primary {
+            padding: 15px 22px; background: var(--primary); color: white; border: none;
+            border-radius: 18px; font-size: 0.98rem; font-weight: 800; cursor: pointer; transition: background 0.2s, transform 0.2s;
+        }
+        .btn-primary:hover { background: var(--primary-strong); transform: translateY(-1px); }
+
+        .btn-danger {
+            padding: 10px 16px; background: var(--danger); color: white; border: none;
+            border-radius: 14px; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: background 0.2s;
+        }
+        .btn-danger:hover { background: var(--danger-strong); }
+
+        .message {
+            padding: 14px 16px; border-radius: 16px; margin-top: 18px; display: none; font-weight: 600;
+        }
+        .message.success { display: block; background: var(--success-bg); color: var(--success-text); border: 1px solid #ccefd8; }
+        .message.error { display: block; background: var(--error-bg); color: var(--error-text); border: 1px solid #ffd6d6; }
+
+        .admin-list {
+            display: flex; flex-direction: column; gap: 12px; margin-top: 18px;
+        }
+        .admin-item {
+            display: flex; justify-content: space-between; align-items: center; gap: 14px;
+            padding: 16px 18px; border: 1px solid var(--line); border-radius: 22px; background: #fbfdff;
+        }
+        .admin-item strong {
+            display: block; margin-bottom: 5px; color: var(--text); font-size: 1rem;
+        }
+        .admin-item span {
+            font-size: 0.9rem; color: #6b7684; line-height: 1.55;
+        }
+        .empty {
+            text-align: center; padding: 42px 18px; color: var(--muted); font-size: 0.96rem;
+        }
+
+        @media (max-width: 768px) {
+            header { margin: 16px 16px 0; padding: 28px 22px 24px; border-radius: 24px; }
+            header h1 { font-size: 1.9rem; }
+            .topbar { top: 16px; right: 16px; }
+            .card { padding: 22px; border-radius: 24px; }
+            .btn-primary { width: 100%; }
+            .admin-item { align-items: flex-start; flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="topbar">
+        <a href="/">사용자</a>
+        <a href="/admin.html" class="active">관리자</a>
+    </div>
+    <h1>방탈출 관리자</h1>
+    <p>테마, 예약 시간, 예약 내역을 관리하는 전용 화면입니다.</p>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2>관리 콘솔</h2>
+        <p>예약 시간과 테마를 추가하거나 삭제하고, 전체 예약 내역을 바로 확인할 수 있습니다.</p>
+    </div>
+
+    <div class="admin-grid">
+        <div class="card">
+            <h2>예약 시간 관리</h2>
+            <div class="form-group">
+                <label for="admin-time">새 예약 시간</label>
+                <input type="time" id="admin-time" step="3600">
+            </div>
+            <button class="btn-primary" type="button" onclick="createAdminTime()">시간 추가</button>
+            <div id="admin-time-message" class="message"></div>
+            <div id="admin-times-list" class="admin-list">
+                <p class="empty">시간 목록을 불러오는 중입니다</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>테마 관리</h2>
+            <div class="form-group">
+                <label for="admin-theme-name">테마 이름</label>
+                <input type="text" id="admin-theme-name" placeholder="1~20자">
+            </div>
+            <div class="form-group">
+                <label for="admin-theme-description">설명</label>
+                <input type="text" id="admin-theme-description" placeholder="테마 설명">
+            </div>
+            <div class="form-group">
+                <label for="admin-theme-url">이미지 URL</label>
+                <input type="url" id="admin-theme-url" placeholder="https://example.com/image.jpg">
+            </div>
+            <button class="btn-primary" type="button" onclick="createAdminTheme()">테마 추가</button>
+            <div id="admin-theme-message" class="message"></div>
+            <div id="admin-themes-list" class="admin-list">
+                <p class="empty">테마 목록을 불러오는 중입니다</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>예약 관리</h2>
+        <p>등록된 예약을 확인하고 필요하면 삭제할 수 있습니다.</p>
+        <div id="admin-reservations-message" class="message"></div>
+        <div id="admin-reservations-list" class="admin-list">
+            <p class="empty">예약 목록을 불러오는 중입니다</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showMessage(el, type, text) {
+        el.className = `message ${type}`;
+        el.textContent = text;
+        el.style.display = 'block';
+    }
+
+    function renderAdminItems(container, items, emptyText, renderItem) {
+        if (items.length === 0) {
+            container.innerHTML = `<p class="empty">${emptyText}</p>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        items.forEach(item => container.appendChild(renderItem(item)));
+    }
+
+    function createAdminItem(title, description, buttonText, onDelete) {
+        const row = document.createElement('div');
+        row.className = 'admin-item';
+
+        const info = document.createElement('div');
+        info.innerHTML = `<strong>${title}</strong><span>${description}</span>`;
+
+        const actions = document.createElement('div');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn-danger';
+        button.textContent = buttonText;
+        button.onclick = onDelete;
+
+        actions.appendChild(button);
+        row.appendChild(info);
+        row.appendChild(actions);
+        return row;
+    }
+
+    async function fetchThemes() {
+        const res = await fetch('/themes');
+        if (!res.ok) {
+            throw new Error('failed to load themes');
+        }
+        return res.json();
+    }
+
+    function formatReservationSummary(reservation) {
+        return `${reservation.date} ${reservation.time.startAt} · ${reservation.theme.name}`;
+    }
+
+    async function loadAdminTimes() {
+        const container = document.getElementById('admin-times-list');
+        container.innerHTML = '<p class="empty">시간 목록을 불러오는 중입니다</p>';
+
+        try {
+            const res = await fetch('/admin/times');
+            if (!res.ok) {
+                throw new Error('failed');
+            }
+            const times = await res.json();
+            renderAdminItems(container, times, '등록된 시간이 없습니다', (time) => createAdminItem(
+                time.startAt,
+                `시간 ID: ${time.id}`,
+                '삭제',
+                () => deleteAdminTime(time.id)
+            ));
+        } catch (e) {
+            container.innerHTML = '<p class="empty">시간 목록을 불러오지 못했습니다</p>';
+        }
+    }
+
+    async function loadAdminThemes() {
+        const container = document.getElementById('admin-themes-list');
+        container.innerHTML = '<p class="empty">테마 목록을 불러오는 중입니다</p>';
+
+        try {
+            const themes = await fetchThemes();
+            renderAdminItems(container, themes, '등록된 테마가 없습니다', (theme) => createAdminItem(
+                theme.name,
+                theme.description || `테마 ID: ${theme.id}`,
+                '삭제',
+                () => deleteAdminTheme(theme.id)
+            ));
+        } catch (e) {
+            container.innerHTML = '<p class="empty">테마 목록을 불러오지 못했습니다</p>';
+        }
+    }
+
+    async function loadAdminReservations() {
+        const container = document.getElementById('admin-reservations-list');
+        container.innerHTML = '<p class="empty">예약 목록을 불러오는 중입니다</p>';
+
+        try {
+            const res = await fetch('/admin/reservations');
+            if (!res.ok) {
+                throw new Error('failed');
+            }
+            const reservations = await res.json();
+            renderAdminItems(container, reservations, '등록된 예약이 없습니다', (reservation) => createAdminItem(
+                reservation.name,
+                formatReservationSummary(reservation),
+                '삭제',
+                () => deleteAdminReservation(reservation.id)
+            ));
+        } catch (e) {
+            container.innerHTML = '<p class="empty">예약 목록을 불러오지 못했습니다</p>';
+        }
+    }
+
+    async function createAdminTime() {
+        const input = document.getElementById('admin-time');
+        const message = document.getElementById('admin-time-message');
+
+        if (!input.value) {
+            showMessage(message, 'error', '추가할 시간을 입력해주세요.');
+            return;
+        }
+
+        try {
+            const res = await fetch('/admin/times', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ startAt: input.value })
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || '예약 시간 추가에 실패했습니다.');
+            }
+
+            input.value = '';
+            showMessage(message, 'success', '예약 시간이 추가되었습니다.');
+            loadAdminTimes();
+        } catch (e) {
+            showMessage(message, 'error', e.message || '예약 시간 추가에 실패했습니다.');
+        }
+    }
+
+    async function createAdminTheme() {
+        const name = document.getElementById('admin-theme-name');
+        const description = document.getElementById('admin-theme-description');
+        const url = document.getElementById('admin-theme-url');
+        const message = document.getElementById('admin-theme-message');
+
+        if (!name.value.trim()) {
+            showMessage(message, 'error', '테마 이름을 입력해주세요.');
+            return;
+        }
+
+        try {
+            const res = await fetch('/admin/themes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: name.value.trim(),
+                    description: description.value.trim(),
+                    url: url.value.trim()
+                })
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || '테마 추가에 실패했습니다.');
+            }
+
+            name.value = '';
+            description.value = '';
+            url.value = '';
+            showMessage(message, 'success', '테마가 추가되었습니다.');
+            loadAdminThemes();
+        } catch (e) {
+            showMessage(message, 'error', e.message || '테마 추가에 실패했습니다.');
+        }
+    }
+
+    async function deleteAdminTime(id) {
+        const message = document.getElementById('admin-time-message');
+
+        try {
+            const res = await fetch(`/admin/times/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || '예약 시간 삭제에 실패했습니다.');
+            }
+
+            showMessage(message, 'success', '예약 시간이 삭제되었습니다.');
+            loadAdminTimes();
+        } catch (e) {
+            showMessage(message, 'error', e.message || '예약 시간 삭제에 실패했습니다.');
+        }
+    }
+
+    async function deleteAdminTheme(id) {
+        const message = document.getElementById('admin-theme-message');
+
+        try {
+            const res = await fetch(`/admin/themes/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || '테마 삭제에 실패했습니다.');
+            }
+
+            showMessage(message, 'success', '테마가 삭제되었습니다.');
+            loadAdminThemes();
+        } catch (e) {
+            showMessage(message, 'error', e.message || '테마 삭제에 실패했습니다.');
+        }
+    }
+
+    async function deleteAdminReservation(id) {
+        const message = document.getElementById('admin-reservations-message');
+
+        try {
+            const res = await fetch(`/admin/reservations/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || '예약 삭제에 실패했습니다.');
+            }
+
+            showMessage(message, 'success', '예약이 삭제되었습니다.');
+            loadAdminReservations();
+        } catch (e) {
+            showMessage(message, 'error', e.message || '예약 삭제에 실패했습니다.');
+        }
+    }
+
+    Promise.all([
+        loadAdminTimes(),
+        loadAdminThemes(),
+        loadAdminReservations()
+    ]);
+</script>
+
+</body>
+</html>
