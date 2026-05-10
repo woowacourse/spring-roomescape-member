@@ -5,6 +5,8 @@ import java.util.Objects;
 public class Theme {
 
     private static final long DEFAULT_RUNNING_TIME = 60L;
+    private static final long NAME_MAX_LENGTH = 20L;
+    private static final long DESCRIPTION_MIN_LENGTH = 3L;
 
     private final Long id;
     private final String name;
@@ -37,7 +39,9 @@ public class Theme {
             throw new IllegalArgumentException("ID는 필수값입니다.");
         }
         if (id < 1) {
-            throw new IllegalArgumentException("ID는 1 이상의 숫자여야 합니다. (입력값: " + id + ")");
+            throw new IllegalArgumentException(
+                    String.format("ID는 1 이상의 숫자여야 합니다. (입력값: %d)", id)
+            );
         }
     }
 
@@ -45,8 +49,10 @@ public class Theme {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
         }
-        if (name.length() > 20) {
-            throw new IllegalArgumentException("이름은 20자 이내여야 합니다.");
+        if (name.length() > NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException(
+                    String.format("이름은 %d자 이내여야 합니다.", NAME_MAX_LENGTH)
+            );
         }
     }
 
@@ -54,8 +60,10 @@ public class Theme {
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("설명은 필수 입력 사항입니다.");
         }
-        if (description.length() < 3) {
-            throw new IllegalArgumentException("설명은 최소 5자 이상 작성해주세요.");
+        if (description.length() < DESCRIPTION_MIN_LENGTH) {
+            throw new IllegalArgumentException(
+                    String.format("설명은 최소 %d자 이상 작성해주세요.", DESCRIPTION_MIN_LENGTH)
+            );
         }
     }
 

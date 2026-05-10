@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public class Reservation {
 
+    private static final long NAME_MAX_LENGTH = 20L;
     private final Long id;
     private final String name;
     private final LocalDate date;
@@ -48,7 +49,9 @@ public class Reservation {
             throw new IllegalArgumentException("이름 입력은 필수입니다.");
         }
         if (name.length() > 20) {
-            throw new IllegalArgumentException("이름은 20자 이내여야 합니다.");
+            throw new IllegalArgumentException(
+                    String.format("이름은 %d자 이내여야 합니다.", NAME_MAX_LENGTH)
+            );
         }
     }
 
