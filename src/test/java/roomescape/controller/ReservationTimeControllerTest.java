@@ -37,6 +37,8 @@ class ReservationTimeControllerTest {
     @LocalServerPort
     private int port;
 
+    private static final long TIME_ID = 1L;
+
     @MockitoBean
     private ReservationService reservationService;
 
@@ -111,7 +113,7 @@ class ReservationTimeControllerTest {
         Response response = RestAssured
             .given().log().all()
             .queryParam("role", "admin")
-            .pathParam("id", 1)
+            .pathParam("id", TIME_ID)
             .when().delete("/times/{id}");
 
         // then
@@ -119,7 +121,7 @@ class ReservationTimeControllerTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
 
-        verify(reservationService, times(1)).deleteReservationTime(1L);
+        verify(reservationService, times(1)).deleteReservationTime(TIME_ID);
         verifyNoMoreInteractions(reservationService);
     }
 
@@ -133,7 +135,7 @@ class ReservationTimeControllerTest {
         Response response = RestAssured
             .given().log().all()
             .queryParam("role", "admin")
-            .pathParam("id", 1)
+            .pathParam("id", TIME_ID)
             .when().delete("/times/{id}");
 
         // then
@@ -144,7 +146,7 @@ class ReservationTimeControllerTest {
         ErrorMessageResponse body = response.as(ErrorMessageResponse.class);
         assertThat(body.messages()).contains("예약이 존재하는 시간은 삭제할 수 없습니다");
 
-        verify(reservationService, times(1)).deleteReservationTime(1L);
+        verify(reservationService, times(1)).deleteReservationTime(TIME_ID);
         verifyNoMoreInteractions(reservationService);
     }
 
@@ -169,7 +171,7 @@ class ReservationTimeControllerTest {
         // when
         Response response = RestAssured
             .given().log().all()
-            .queryParam("date", "2026-05-05")
+            .queryParam("date", date.toString())
             .queryParam("themeId", 1)
             .when().get("/times/available");
 
@@ -217,7 +219,7 @@ class ReservationTimeControllerTest {
             Response response = RestAssured
                 .given().log().all()
                 .queryParam("role", "user")
-                .pathParam("id", 1)
+                .pathParam("id", TIME_ID)
                 .when().delete("/times/{id}");
 
             // then
@@ -230,7 +232,7 @@ class ReservationTimeControllerTest {
     }
 
     private ReservationTime reservationTime() {
-        return new ReservationTime(1L, "12:30");
+        return new ReservationTime(TIME_ID, "12:30");
     }
 
     private ReservationTimeRequest requestDtoFrom(ReservationTime time) {

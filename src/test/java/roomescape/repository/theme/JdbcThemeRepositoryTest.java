@@ -2,10 +2,8 @@ package roomescape.repository.theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -14,12 +12,8 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
-import roomescape.repository.reservation.JdbcReservationRepository;
-import roomescape.repository.reservation.ReservationRepository;
-import roomescape.repository.time.JdbcReservationTimeRepository;
-import roomescape.repository.time.ReservationTimeRepository;
 
-@Import({JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
+@Import({JdbcThemeRepository.class})
 @JdbcTest
 class JdbcThemeRepositoryTest {
 
@@ -30,17 +24,9 @@ class JdbcThemeRepositoryTest {
         ThemeImageUrl.defaultImageUrl());
 
     private final ThemeRepository themeRepository;
-    private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository timeRepository;
 
     @Autowired
-    public JdbcThemeRepositoryTest(
-        ReservationRepository repository,
-        ReservationTimeRepository timeRepository,
-        ThemeRepository themeRepository
-    ) {
-        this.reservationRepository = repository;
-        this.timeRepository = timeRepository;
+    public JdbcThemeRepositoryTest(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
     }
 
@@ -96,15 +82,5 @@ class JdbcThemeRepositoryTest {
 
         // then
         assertThat(themes).containsExactlyElementsOf(expected);
-    }
-
-    private List<Theme> createAndSaveTenThemes() {
-        List<Theme> themes = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            themes.add(new Theme(null, new ThemeName("테마" + i), "테마" + i, ThemeImageUrl.defaultImageUrl()));
-        }
-        return themes.stream()
-            .map(themeRepository::createTheme)
-            .collect(Collectors.toList());
     }
 }

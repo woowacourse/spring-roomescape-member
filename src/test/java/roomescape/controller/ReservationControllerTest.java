@@ -32,7 +32,7 @@ import roomescape.service.ReservationService;
 class ReservationControllerTest {
 
     private static final ReservationTime TIME = new ReservationTime(1L, "12:00");
-    private static final Theme THEME = new Theme(1L, new ThemeName("n"), "d", ThemeImageUrl.defaultImageUrl());
+    private static final Theme THEME = new Theme(1L, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
 
     @LocalServerPort
     private int port;
@@ -47,7 +47,7 @@ class ReservationControllerTest {
 
     @Test
     void 예약을_추가한다() {
-        //given
+        // given
         Reservation reservation = reservation();
         ReservationRequest request = requestDtoFrom(reservation);
 
@@ -109,9 +109,10 @@ class ReservationControllerTest {
     @Test
     void 예약을_삭제한다() {
         // given & when
+        long id = 1L;
         Response response = RestAssured
             .given().log().all()
-            .pathParam("id", 1)
+            .pathParam("id", id)
             .when().delete("/reservations/{id}");
 
         // then
@@ -119,7 +120,7 @@ class ReservationControllerTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
 
-        verify(reservationService, times(1)).deleteReservation(1L);
+        verify(reservationService, times(1)).deleteReservation(id);
         verifyNoMoreInteractions(reservationService);
     }
 

@@ -37,6 +37,8 @@ class ThemeControllerTest {
     @LocalServerPort
     private int port;
 
+    private static final long THEME_ID = 1L;
+
     @MockitoBean
     private ThemeService themeService;
 
@@ -50,7 +52,7 @@ class ThemeControllerTest {
         // given
         ThemeRequest request = themeRequestDtoFrom(theme());
 
-        Theme savedTheme = theme().withId(1L);
+        Theme savedTheme = theme().withId(THEME_ID);
         when(themeService.addTheme(any()))
             .thenReturn(savedTheme);
 
@@ -139,7 +141,7 @@ class ThemeControllerTest {
         Response response = RestAssured
             .given().log().all()
             .queryParam("role", "admin")
-            .pathParam("id", 1)
+            .pathParam("id", THEME_ID)
             .when().delete("/themes/{id}");
 
         // then
@@ -147,7 +149,7 @@ class ThemeControllerTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value());
 
-        verify(themeService, times(1)).deleteThemeById(1L);
+        verify(themeService, times(1)).deleteThemeById(THEME_ID);
         verifyNoMoreInteractions(themeService);
     }
 
@@ -182,7 +184,7 @@ class ThemeControllerTest {
             Response response = RestAssured
                 .given().log().all()
                 .queryParam("role", "user")
-                .pathParam("id", 1)
+                .pathParam("id", THEME_ID)
                 .when().delete("/themes/{id}");
 
             // then

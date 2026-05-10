@@ -59,21 +59,20 @@ class ReservationServiceTest {
     @Test
     void 날짜와_테마아이디로_예약가능한_시간을_조회한다() {
         // given
-        ReservationTime availableTime1 = new ReservationTime(1L, "12:30");
+        LocalDate date = LocalDate.now().minusDays(1L);
         ReservationTime availableTime2 = new ReservationTime(2L, "14:30");
-        Reservation reservation = reservation();
 
         when(themeRepository.findById(anyLong()))
             .thenReturn(Optional.of(SAVED_THEME));
         when(timeRepository.findByDateAndThemeId(any(), anyLong()))
-            .thenReturn(List.of(availableTime1, availableTime2));
+            .thenReturn(List.of(SAVED_TIME, availableTime2));
 
         // when
         List<ReservationTime> availableTimes = reservationService
-            .getAvailableTimes(reservation.getDateValue(), reservation.getThemeId());
+            .getAvailableTimes(date, SAVED_THEME.getId());
 
         // then
-        assertThat(availableTimes).containsExactlyInAnyOrder(availableTime1, availableTime2);
+        assertThat(availableTimes).containsExactlyInAnyOrder(SAVED_TIME, availableTime2);
 
         verify(themeRepository, times(1)).findById(anyLong());
         verify(timeRepository, times(1)).findByDateAndThemeId(any(), anyLong());
@@ -104,9 +103,9 @@ class ReservationServiceTest {
     @Test
     void 날짜와_시간이_같더라도_테마가_다르면_예약할_수_있다() {
         // given
-        Theme otherTheme = new Theme(2L, new ThemeName("n"), "d", ThemeImageUrl.defaultImageUrl());
+        Theme otherTheme = new Theme(2L, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Reservation reservation = new Reservation("n", tomorrow, SAVED_TIME, otherTheme);
+        Reservation reservation = new Reservation("name", tomorrow, SAVED_TIME, otherTheme);
 
         when(timeRepository.findById(SAVED_TIME.getId()))
             .thenReturn(Optional.of(SAVED_TIME));
