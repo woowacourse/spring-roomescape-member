@@ -20,6 +20,10 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
+    public ReservationTime getReservationTime(Long id) {
+        return reservationTimeRepository.findById(id);
+    }
+
     @Transactional
     public ReservationTime createReservationTime(CreateReservationTimeRequest request) {
         ReservationTime newReservationTime = new ReservationTime(null, request.startAt());

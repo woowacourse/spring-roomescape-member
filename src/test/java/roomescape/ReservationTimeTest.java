@@ -27,4 +27,16 @@ public class ReservationTimeTest {
                 .statusCode(200)
                 .body("times.size()", is(2));
     }
+
+    @Test
+    void 시간_단건_조회() {
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('10:00')");
+
+        RestAssured.given().log().all()
+                .when().get("/times/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(1))
+                .body("startAt", is("10:00"));
+    }
 }
