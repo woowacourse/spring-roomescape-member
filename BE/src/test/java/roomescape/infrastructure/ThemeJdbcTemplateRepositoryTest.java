@@ -42,9 +42,9 @@ class ThemeJdbcTemplateRepositoryTest {
         Theme savedTheme = themeRepository.save(theme);
 
         // then
-        Assertions.assertNotNull(savedTheme.id());
+        Assertions.assertNotNull(savedTheme.getId());
 
-        Theme expect = theme.appendId(savedTheme.id());
+        Theme expect = theme.appendId(savedTheme.getId());
         Assertions.assertEquals(expect, savedTheme);
     }
 
@@ -56,10 +56,10 @@ class ThemeJdbcTemplateRepositoryTest {
         Theme savedTheme = themeRepository.save(theme);
 
         // when
-        Optional<Theme> foundTheme = themeRepository.findById(savedTheme.id());
+        Optional<Theme> foundTheme = themeRepository.findById(savedTheme.getId());
 
         // then
-        Assertions.assertEquals(savedTheme.id(), foundTheme.get().id());
+        Assertions.assertEquals(savedTheme.getId(), foundTheme.get().getId());
     }
 
     @Test
@@ -107,10 +107,10 @@ class ThemeJdbcTemplateRepositoryTest {
         Theme savedTheme = themeRepository.save(theme);
 
         // when
-        themeRepository.deleteById(savedTheme.id());
+        themeRepository.deleteById(savedTheme.getId());
 
         // then
-        Optional<Theme> result = themeRepository.findById(savedTheme.id());
+        Optional<Theme> result = themeRepository.findById(savedTheme.getId());
         Assertions.assertFalse(result.isPresent());
     }
 
@@ -145,17 +145,17 @@ class ThemeJdbcTemplateRepositoryTest {
         jdbcTemplate.update("""
             INSERT INTO reservation (name, date, time_id, theme_id)
             VALUES (?, ?, ?, ?)
-            """, "예약자1", LocalDate.of(2026, 5, 1), 1L, theme1.id());
+            """, "예약자1", LocalDate.of(2026, 5, 1), 1L, theme1.getId());
 
         jdbcTemplate.update("""
             INSERT INTO reservation (name, date, time_id, theme_id)
             VALUES (?, ?, ?, ?)
-            """, "예약자2", LocalDate.of(2026, 5, 2), 2L, theme1.id());
+            """, "예약자2", LocalDate.of(2026, 5, 2), 2L, theme1.getId());
 
         jdbcTemplate.update("""
             INSERT INTO reservation (name, date, time_id, theme_id)
             VALUES (?, ?, ?, ?)
-            """, "예약자3", LocalDate.of(2026, 5, 3), 3L, theme2.id());
+            """, "예약자3", LocalDate.of(2026, 5, 3), 3L, theme2.getId());
 
         // when
         List<Theme> result = themeRepository.findTopNByPeriod(
@@ -167,7 +167,7 @@ class ThemeJdbcTemplateRepositoryTest {
 
         // then
         Assertions.assertEquals(2, result.size());
-        Assertions.assertEquals(theme1.id(), result.get(0).id());
-        Assertions.assertEquals(theme2.id(), result.get(1).id());
+        Assertions.assertEquals(theme1.getId(), result.get(0).getId());
+        Assertions.assertEquals(theme2.getId(), result.get(1).getId());
     }
 }

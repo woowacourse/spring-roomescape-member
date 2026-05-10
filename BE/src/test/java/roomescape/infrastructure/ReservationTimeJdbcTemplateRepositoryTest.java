@@ -35,7 +35,7 @@ class ReservationTimeJdbcTemplateRepositoryTest {
         ReservationTime result = timeRepository.save(testReservationTime);
 
         //then
-        Assertions.assertNotNull(result.id());
+        Assertions.assertNotNull(result.getId());
     }
 
     @Test
@@ -48,13 +48,13 @@ class ReservationTimeJdbcTemplateRepositoryTest {
         ReservationTime saved2 = timeRepository.save(time2);
 
         //when
-        Optional<ReservationTime> result = timeRepository.findById(saved2.id());
+        Optional<ReservationTime> result = timeRepository.findById(saved2.getId());
 
         //then
         Assertions.assertTrue(result.isPresent());
 
-        LocalTime foundTime = result.get().startAt();
-        Assertions.assertEquals(foundTime, saved2.startAt());
+        LocalTime foundTime = result.get().getStartAt();
+        Assertions.assertEquals(foundTime, saved2.getStartAt());
     }
 
     @Test
@@ -95,13 +95,13 @@ class ReservationTimeJdbcTemplateRepositoryTest {
         ReservationTime saved = timeRepository.save(time);
 
         //when
-        Long deleteTargetId = saved.id();
+        Long deleteTargetId = saved.getId();
         timeRepository.deleteById(deleteTargetId);
 
         //then
         Optional<ReservationTime> deleteTargetFindResult = timeRepository.findAll()
                 .stream()
-                .filter(reservationTime -> reservationTime.id().equals(deleteTargetId))
+                .filter(reservationTime -> reservationTime.getId().equals(deleteTargetId))
                 .findAny();
         Assertions.assertTrue(deleteTargetFindResult.isEmpty());
     }

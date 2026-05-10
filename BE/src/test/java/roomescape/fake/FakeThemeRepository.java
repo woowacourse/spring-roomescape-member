@@ -18,13 +18,13 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public Theme save(Theme theme) {
-        if (theme.id() == null) {
-            Theme saved = Theme.createRow(++sequence, theme.name(), theme.description(), theme.thumbnailUrl());
-            store.put(saved.id(), saved);
+        if (theme.getId() == null) {
+            Theme saved = Theme.createRow(++sequence, theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
+            store.put(saved.getId(), saved);
             return saved;
         }
 
-        store.put(theme.id(), theme);
+        store.put(theme.getId(), theme);
 
         return theme;
     }
@@ -44,7 +44,7 @@ public class FakeThemeRepository implements ThemeRepository {
         long maxResults = (limit != null) ? limit : 10L;
 
         return store.values().stream()
-                .sorted((t1, t2) -> Long.compare(t2.id(), t1.id()))
+                .sorted((t1, t2) -> Long.compare(t2.getId(), t1.getId()))
                 .limit(maxResults)
                 .toList();
     }

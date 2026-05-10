@@ -30,7 +30,7 @@ public class ThemeJdbcTemplateRepository implements ThemeRepository {
             ORDER BY %s
             LIMIT ?
             """;
-    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> new Theme(
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> Theme.createRow(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("description"),
@@ -56,9 +56,9 @@ public class ThemeJdbcTemplateRepository implements ThemeRepository {
 
     private Map<String, Object> prepareInsertParams(Theme theme) {
         return Map.of(
-                "name", theme.name(),
-                "description", theme.description(),
-                "thumbnail_url", theme.thumbnailUrl()
+                "name", theme.getName(),
+                "description", theme.getDescription(),
+                "thumbnail_url", theme.getThumbnailUrl()
 
         );
     }

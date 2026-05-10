@@ -41,7 +41,7 @@ public class ReservationTimeService {
         }
         return reservationRepository.findByDateAndThemeId(date, themeId)
                 .stream()
-                .map(Reservation::time)
+                .map(Reservation::getTime)
                 .toList();
     }
 

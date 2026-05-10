@@ -45,11 +45,11 @@ public class ReservationTimeController {
     ) {
         Set<Long> bookedTimeIds = service.getBookedTimes(date, themeId)
                 .stream()
-                .map(ReservationTime::id)
+                .map(ReservationTime::getId)
                 .collect(Collectors.toSet());
 
         List<ReservationTimeResponse> responses = (service.getTimes()).stream()
-                .map(time -> ReservationTimeResponse.from(time, bookedTimeIds.contains(time.id())))
+                .map(time -> ReservationTimeResponse.from(time, bookedTimeIds.contains(time.getId())))
                 .toList();
         return ResponseEntity.ok(responses);
     }

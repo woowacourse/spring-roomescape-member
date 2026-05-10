@@ -41,8 +41,8 @@ class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest(
                 "흑곰",
                 LocalDate.now(),
-                savedTime.id(),
-                savedTheme.id()
+                savedTime.getId(),
+                savedTheme.getId()
         );
 
         // when & then
@@ -137,7 +137,7 @@ class ReservationServiceTest {
         ));
 
         // when & then
-        assertThatCode(() -> reservationService.getReservationsByDateAndTheme(LocalDate.now(), savedTheme.id()))
+        assertThatCode(() -> reservationService.getReservationsByDateAndTheme(LocalDate.now(), savedTheme.getId()))
                 .doesNotThrowAnyException();
     }
 
@@ -155,7 +155,7 @@ class ReservationServiceTest {
         ));
 
         // when & then
-        assertThatCode(() -> reservationService.deleteReservation(savedReservation.id()))
+        assertThatCode(() -> reservationService.deleteReservation(savedReservation.getId()))
                 .doesNotThrowAnyException();
     }
 }

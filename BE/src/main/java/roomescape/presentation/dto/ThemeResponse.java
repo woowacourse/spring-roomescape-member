@@ -10,10 +10,10 @@ public record ThemeResponse(
 ) {
     public static ThemeResponse from(Theme theme) {
         return new ThemeResponse(
-                theme.id(),
-                theme.name(),
-                theme.description(),
-                theme.thumbnailUrl()
+                theme.getId(),
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnailUrl()
         );
     }
 }

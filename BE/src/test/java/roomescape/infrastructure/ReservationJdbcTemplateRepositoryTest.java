@@ -66,8 +66,8 @@ class ReservationJdbcTemplateRepositoryTest {
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // then
-        Assertions.assertNotNull(savedReservation.id());
-        Assertions.assertEquals(TEST_NAME, savedReservation.name());
+        Assertions.assertNotNull(savedReservation.getId());
+        Assertions.assertEquals(TEST_NAME, savedReservation.getName());
     }
 
     @Test
@@ -97,7 +97,7 @@ class ReservationJdbcTemplateRepositoryTest {
 
         // then
         Assertions.assertEquals(2, result.size());
-        Assertions.assertTrue(result.stream().allMatch(r -> r.date().equals(DATE_TODAY)));
+        Assertions.assertTrue(result.stream().allMatch(r -> r.getDate().equals(DATE_TODAY)));
     }
 
     @Test
@@ -109,11 +109,11 @@ class ReservationJdbcTemplateRepositoryTest {
         reservationRepository.save(Reservation.create(TEST_NAME + "3", DATE_TODAY, savedTime1, savedTheme2));
 
         // when
-        List<Reservation> result = reservationRepository.findByDateAndThemeId(null, savedTheme1.id());
+        List<Reservation> result = reservationRepository.findByDateAndThemeId(null, savedTheme1.getId());
 
         // then
         Assertions.assertEquals(2, result.size());
-        Assertions.assertTrue(result.stream().allMatch(r -> r.theme().id().equals(savedTheme1.id())));
+        Assertions.assertTrue(result.stream().allMatch(r -> r.getTheme().getId().equals(savedTheme1.getId())));
     }
 
     @Test
@@ -125,13 +125,13 @@ class ReservationJdbcTemplateRepositoryTest {
         reservationRepository.save(Reservation.create(TEST_NAME + "3", DATE_TOMORROW, savedTime1, savedTheme1));
 
         // when
-        List<Reservation> result = reservationRepository.findByDateAndThemeId(DATE_TODAY, savedTheme1.id());
+        List<Reservation> result = reservationRepository.findByDateAndThemeId(DATE_TODAY, savedTheme1.getId());
 
         // then
         Assertions.assertEquals(1, result.size());
         Reservation only = result.get(0);
-        Assertions.assertEquals(DATE_TODAY, only.date());
-        Assertions.assertEquals(savedTheme1.id(), only.theme().id());
+        Assertions.assertEquals(DATE_TODAY, only.getDate());
+        Assertions.assertEquals(savedTheme1.getId(), only.getTheme().getId());
     }
 
     @Test
@@ -141,7 +141,7 @@ class ReservationJdbcTemplateRepositoryTest {
         reservationRepository.save(Reservation.create(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1));
 
         // when
-        List<Reservation> result = reservationRepository.findByDateAndThemeId(DATE_TOMORROW, savedTheme2.id());
+        List<Reservation> result = reservationRepository.findByDateAndThemeId(DATE_TOMORROW, savedTheme2.getId());
 
         // then
         Assertions.assertTrue(result.isEmpty());
@@ -154,7 +154,7 @@ class ReservationJdbcTemplateRepositoryTest {
         reservationRepository.save(Reservation.create(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1));
 
         // when
-        boolean exists = reservationRepository.existsByReservationTimeId(savedTime1.id());
+        boolean exists = reservationRepository.existsByReservationTimeId(savedTime1.getId());
         boolean notExists = reservationRepository.existsByReservationTimeId(999L);
 
         // then
@@ -171,13 +171,13 @@ class ReservationJdbcTemplateRepositoryTest {
         );
 
         // when
-        Long deleteTargetId = saved.id();
+        Long deleteTargetId = saved.getId();
         reservationRepository.deleteById(deleteTargetId);
 
         // then
         Optional<Reservation> deleteTargetFindResult = reservationRepository.findAll()
                 .stream()
-                .filter(reservation -> deleteTargetId.equals(reservation.id()))
+                .filter(reservation -> deleteTargetId.equals(reservation.getId()))
                 .findAny();
 
         Assertions.assertTrue(deleteTargetFindResult.isEmpty());

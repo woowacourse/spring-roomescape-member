@@ -13,8 +13,8 @@ public record ReservationTimeResponse(
 
     public static ReservationTimeResponse from(ReservationTime reservationTime, boolean alreadyBooked) {
         return new ReservationTimeResponse(
-                reservationTime.id(),
-                reservationTime.startAt().toString(),
+                reservationTime.getId(),
+                reservationTime.getStartAt().toString(),
                 alreadyBooked
         );
     }

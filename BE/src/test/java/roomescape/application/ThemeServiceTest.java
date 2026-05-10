@@ -34,7 +34,7 @@ class ThemeServiceTest {
 
         // when & then
         Assertions.assertDoesNotThrow(
-                () -> themeService.findById(saved.id())
+                () -> themeService.findById(saved.getId())
         );
     }
 
@@ -56,7 +56,7 @@ class ThemeServiceTest {
     void deleteById_success() {
         // given
         Theme saved = themeService.save(TEST_THEMA_NAME, TEST_THEMA_DESCRIPTION, TEST_THEMA_THUMBNAIL);
-        Long deleteTagetId = saved.id();
+        Long deleteTagetId = saved.getId();
 
         //when & then
         Assertions.assertDoesNotThrow(

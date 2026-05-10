@@ -15,19 +15,19 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        if (reservation.id() == null) {
+        if (reservation.getId() == null) {
             Reservation saved = Reservation.createRow(
                     sequence++,
-                    reservation.name(),
-                    reservation.date(),
-                    reservation.time(),
-                    reservation.theme()
+                    reservation.getName(),
+                    reservation.getDate(),
+                    reservation.getTime(),
+                    reservation.getTheme()
             );
-            store.put(saved.id(), saved);
+            store.put(saved.getId(), saved);
             return saved;
         }
 
-        store.put(reservation.id(), reservation);
+        store.put(reservation.getId(), reservation);
         return reservation;
     }
 
@@ -44,8 +44,8 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public boolean existsByReservationTimeId(Long reservationTimeId) {
         return store.values().stream()
-                .anyMatch(reservation -> reservation.time()
-                        .id()
+                .anyMatch(reservation -> reservation.getTime()
+                        .getId()
                         .equals(reservationTimeId)
                 );
     }
@@ -53,8 +53,8 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         return store.values().stream()
-                .filter(reservation -> date == null || reservation.date().equals(date))
-                .filter(reservation -> themeId == null || reservation.theme().id().equals(themeId))
+                .filter(reservation -> date == null || reservation.getDate().equals(date))
+                .filter(reservation -> themeId == null || reservation.getTheme().getId().equals(themeId))
                 .toList();
     }
 

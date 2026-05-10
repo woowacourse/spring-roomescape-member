@@ -14,15 +14,15 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        if (reservationTime.id() == null) {
+        if (reservationTime.getId() == null) {
             ReservationTime saved = ReservationTime.createRow(
                     sequence++,
-                    reservationTime.startAt()
+                    reservationTime.getStartAt()
             );
-            store.put(saved.id(), saved);
+            store.put(saved.getId(), saved);
             return saved;
         }
-        store.put(reservationTime.id(), reservationTime);
+        store.put(reservationTime.getId(), reservationTime);
         return reservationTime;
     }
 

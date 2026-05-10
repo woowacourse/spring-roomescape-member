@@ -78,12 +78,12 @@ class ReservationTimeServiceTest {
         reservationRepository.save(Reservation.create("테스터", date, bookedTime, theme));
 
         // when
-        List<ReservationTime> result = reservationTimeService.getBookedTimes(date, theme.id());
+        List<ReservationTime> result = reservationTimeService.getBookedTimes(date, theme.getId());
 
         // then
         assertThat(result)
-                .extracting(ReservationTime::id)
-                .containsExactlyInAnyOrder(bookedTime.id());
+                .extracting(ReservationTime::getId)
+                .containsExactlyInAnyOrder(bookedTime.getId());
     }
 
     @Test
@@ -94,7 +94,7 @@ class ReservationTimeServiceTest {
         ReservationTime saved = reservationTimeService.saveTime(testStartAt);
 
         Assertions.assertDoesNotThrow(
-                () -> reservationTimeService.deleteTime(saved.id())
+                () -> reservationTimeService.deleteTime(saved.getId())
         );
     }
 
@@ -116,7 +116,7 @@ class ReservationTimeServiceTest {
         reservationRepository.save(Reservation.create("테스터", LocalDate.now(), savedReservationTime, null));
 
         // when & then
-        assertThatThrownBy(() -> reservationTimeService.deleteTime(savedReservationTime.id()))
+        assertThatThrownBy(() -> reservationTimeService.deleteTime(savedReservationTime.getId()))
                 .isInstanceOf(BusinessException.class);
     }
 }
