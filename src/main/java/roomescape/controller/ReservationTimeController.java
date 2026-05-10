@@ -34,11 +34,12 @@ public class ReservationTimeController {
     @GetMapping(params = {"themeId", "date"})
     public ResponseEntity<AvailableReservationTimesResponse> getAvailableReservationTimes(
             @RequestParam Long themeId,
-            @RequestParam LocalDate date,
+            @RequestParam String date,
             @RequestParam(required = false) Boolean available
     ) {
         return ResponseEntity.ok(reservationTimeService.getAvailableReservationTimes(
-                AvailableReservationTimesQuery.of(themeId, date, available)));
+                AvailableReservationTimesQuery.toQuery(themeId, date, available)
+        ));
     }
 
     @PostMapping
