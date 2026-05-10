@@ -28,7 +28,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Reservation> getReservations() {
+    public List<Reservation> findReservations() {
         return reservationRepository.findAllWithTime();
     }
 

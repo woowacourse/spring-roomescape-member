@@ -69,7 +69,7 @@ class ThemeRepositoryTest {
     void 존재하는_id로_삭제하면_해당_테마가_삭제된다() {
         Theme saved = themeRepository.save(new Theme("공포방", "무서운방입니다.", "image-url"));
 
-        themeRepository.remove(saved.getId());
+        themeRepository.deleteById(saved.getId());
 
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT count(*) FROM theme WHERE id = ?", Integer.class, saved.getId());

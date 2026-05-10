@@ -35,7 +35,7 @@ class ThemeControllerTest {
                 new Theme(1L, "공포방", "무서운방입니다.", "image-url"),
                 new Theme(2L, "추리방", "추리하는방입니다.", "image-url2")
         );
-        when(themeService.getThemes()).thenReturn(themes);
+        when(themeService.findThemes()).thenReturn(themes);
 
         mockMvc.perform(get("/themes"))
                 .andExpect(status().isOk())
@@ -50,7 +50,7 @@ class ThemeControllerTest {
                 new AvailableTime(1L, LocalTime.of(13, 0), true),
                 new AvailableTime(2L, LocalTime.of(15, 0), false),
                 new AvailableTime(3L, LocalTime.of(17, 0), true));
-        when(themeService.getAvailableTimes(any(), any())).thenReturn(availableTimes);
+        when(themeService.findAvailableTimes(any(), any())).thenReturn(availableTimes);
 
         mockMvc.perform(get("/themes/1/available-times")
                         .param("date", "2025-05-06"))
@@ -75,7 +75,7 @@ class ThemeControllerTest {
                 new PopularTheme(9L, "레서방9", "레서방입니다9.", "path/to/image9", 9),
                 new PopularTheme(10L, "레서방10", "레서방입니다10.", "path/to/image10", 10)
         );
-        when(themeService.getPopularThemes(anyInt(), anyInt())).thenReturn(popularThemes);
+        when(themeService.findPopularThemes(anyInt(), anyInt())).thenReturn(popularThemes);
 
         mockMvc.perform(get("/themes/popular")
                         .param("days", "1")

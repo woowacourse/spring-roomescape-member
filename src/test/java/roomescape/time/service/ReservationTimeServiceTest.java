@@ -30,7 +30,7 @@ class ReservationTimeServiceTest {
         List<ReservationTime> times = List.of(new ReservationTime(1L, LocalTime.of(10, 0)));
         when(reservationTimeRepository.findAll()).thenReturn(times);
 
-        List<ReservationTime> result = reservationTimeService.getTimes();
+        List<ReservationTime> result = reservationTimeService.findTimes();
 
         verify(reservationTimeRepository).findAll();
         assertThat(result).isSameAs(times);
@@ -48,9 +48,9 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 시간을_삭제하면_Repository_remove에_id를_전달한다() {
-        reservationTimeService.removeTime(3L);
+    void 시간을_삭제하면_Repository_deleteById에_id를_전달한다() {
+        reservationTimeService.deleteTime(3L);
 
-        verify(reservationTimeRepository).remove(3L);
+        verify(reservationTimeRepository).deleteById(3L);
     }
 }

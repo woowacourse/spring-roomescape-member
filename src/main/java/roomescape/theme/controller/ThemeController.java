@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.PopularThemeResponse;
-import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.dto.ThemeAvailableTimeResponse;
+import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.AvailableTime;
 import roomescape.theme.service.PopularTheme;
 import roomescape.theme.service.ThemeService;
@@ -26,7 +26,7 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes() {
-        List<Theme> themes = themeService.getThemes();
+        List<Theme> themes = themeService.findThemes();
         List<ThemeResponse> response = themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
@@ -35,7 +35,7 @@ public class ThemeController {
 
     @GetMapping("/{id}/available-times")
     public ResponseEntity<List<ThemeAvailableTimeResponse>> getAvailableTimes(@PathVariable Long id, @RequestParam LocalDate date) {
-        List<AvailableTime> availableTimes = themeService.getAvailableTimes(id, date);
+        List<AvailableTime> availableTimes = themeService.findAvailableTimes(id, date);
         List<ThemeAvailableTimeResponse> response = availableTimes.stream()
                 .map(ThemeAvailableTimeResponse::from)
                 .toList();
@@ -44,7 +44,7 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<PopularThemeResponse>> getPopularThemes(@RequestParam int days, @RequestParam int limit) {
-        List<PopularTheme> popularThemes = themeService.getPopularThemes(days, limit);
+        List<PopularTheme> popularThemes = themeService.findPopularThemes(days, limit);
         List<PopularThemeResponse> response = popularThemes.stream()
                 .map(PopularThemeResponse::from)
                 .toList();

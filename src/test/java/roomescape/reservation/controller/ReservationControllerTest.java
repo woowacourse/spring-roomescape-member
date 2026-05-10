@@ -45,7 +45,7 @@ class ReservationControllerTest {
                         new ReservationTime(2L, LocalTime.of(20, 0)),
                         new Theme(2L, "추리방", "추리하는방입니다.", "image-url2"))
         );
-        when(reservationService.getReservations()).thenReturn(reservations);
+        when(reservationService.findReservations()).thenReturn(reservations);
 
         mockMvc.perform(get("/reservations"))
                 .andExpect(status().isOk())

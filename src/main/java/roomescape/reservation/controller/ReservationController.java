@@ -22,7 +22,7 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<Reservation> reservations = reservationService.getReservations();
+        List<Reservation> reservations = reservationService.findReservations();
         List<ReservationResponse> response = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();

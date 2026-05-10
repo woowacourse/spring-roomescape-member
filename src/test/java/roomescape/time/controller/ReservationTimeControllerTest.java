@@ -37,7 +37,7 @@ class ReservationTimeControllerTest {
                 new ReservationTime(4L, LocalTime.of(13, 0))
         );
 
-        when(reservationTimeService.getTimes()).thenReturn(created);
+        when(reservationTimeService.findTimes()).thenReturn(created);
 
         mockMvc.perform(get("/times"))
                 .andExpect(status().isOk())

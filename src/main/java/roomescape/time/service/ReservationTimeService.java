@@ -24,12 +24,12 @@ public class ReservationTimeService {
         return reservationTimeRepository.save(reservationTime);
     }
 
-    public List<ReservationTime> getTimes() {
+    public List<ReservationTime> findTimes() {
         return reservationTimeRepository.findAll();
     }
 
     @Transactional
-    public void removeTime(Long id) {
-        reservationTimeRepository.remove(id);
+    public void deleteTime(Long id) {
+        reservationTimeRepository.deleteById(id);
     }
 }

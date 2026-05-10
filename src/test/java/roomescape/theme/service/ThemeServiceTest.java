@@ -34,7 +34,7 @@ class ThemeServiceTest {
         List<Theme> themes = List.of(new Theme(1L, "공포방", "무서운방입니다.", "image-url"));
         when(themeRepository.findAll()).thenReturn(themes);
 
-        List<Theme> result = themeService.getThemes();
+        List<Theme> result = themeService.findThemes();
 
         verify(themeRepository, times(1)).findAll();
         assertThat(result).isSameAs(themes);
@@ -52,9 +52,9 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 테마를_삭제하면_Repository_remove에_id를_전달한다() {
-        themeService.removeTheme(3L);
-        verify(themeRepository).remove(3L);
+    void 테마를_삭제하면_Repository_deleteById에_id를_전달한다() {
+        themeService.deleteTheme(3L);
+        verify(themeRepository).deleteById(3L);
     }
 
     @Test
@@ -69,7 +69,7 @@ class ThemeServiceTest {
         when(reservationTimeRepository.findAll()).thenReturn(reservationTimes);
         when(themeRepository.findNotAvailableTimes(any(), any())).thenReturn(availableTimes);
 
-        List<AvailableTime> result = themeService.getAvailableTimes(1L, LocalDate.of(2026, 5, 6));
+        List<AvailableTime> result = themeService.findAvailableTimes(1L, LocalDate.of(2026, 5, 6));
 
         verify(reservationTimeRepository, times(1)).findAll();
         verify(themeRepository, times(1)).findNotAvailableTimes(any(), any());
@@ -97,7 +97,7 @@ class ThemeServiceTest {
 
         when(themeRepository.findPopularThemes(any(), any(), anyInt())).thenReturn(themes);
 
-        List<PopularTheme> result = themeService.getPopularThemes(7, 10);
+        List<PopularTheme> result = themeService.findPopularThemes(7, 10);
         verify(themeRepository, times(1)).findPopularThemes(any(), any(), anyInt());
 
         assertThat(result.size()).isEqualTo(10);

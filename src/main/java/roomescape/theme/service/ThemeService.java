@@ -30,15 +30,15 @@ public class ThemeService {
     }
 
     @Transactional
-    public void removeTheme(Long id) {
-        themeRepository.remove(id);
+    public void deleteTheme(Long id) {
+        themeRepository.deleteById(id);
     }
 
-    public List<Theme> getThemes() {
+    public List<Theme> findThemes() {
         return themeRepository.findAll();
     }
 
-    public List<AvailableTime> getAvailableTimes(Long id, LocalDate date){
+    public List<AvailableTime> findAvailableTimes(Long id, LocalDate date) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         List<Long> availableTimes = themeRepository.findNotAvailableTimes(id, date);
 
@@ -50,7 +50,7 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<PopularTheme> getPopularThemes(int days, int limit) {
+    public List<PopularTheme> findPopularThemes(int days, int limit) {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(days);
         List<Theme> themes = themeRepository.findPopularThemes(startDate, endDate, limit);

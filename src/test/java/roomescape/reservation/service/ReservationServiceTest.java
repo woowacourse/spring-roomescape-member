@@ -51,7 +51,7 @@ class ReservationServiceTest {
         );
         when(reservationRepository.findAllWithTime()).thenReturn(reservations);
 
-        List<Reservation> result = reservationService.getReservations();
+        List<Reservation> result = reservationService.findReservations();
 
         verify(reservationRepository).findAllWithTime();
         assertThat(result).isSameAs(reservations);

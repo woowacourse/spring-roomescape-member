@@ -75,7 +75,7 @@ class ReservationTimeRepositoryTest {
         ReservationTime saved = reservationTimeRepository.save(
                 new ReservationTime(null, LocalTime.of(10, 0)));
 
-        reservationTimeRepository.remove(saved.getId());
+        reservationTimeRepository.deleteById(saved.getId());
 
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT count(*) FROM reservation_time WHERE id = ?", Integer.class, saved.getId());
