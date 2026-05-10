@@ -46,28 +46,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
-        return jdbcTemplate.query("""
-                SELECT 
-                    r.id AS reservation_id,
-                    r.name,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail 
-                FROM reservation r
-                INNER JOIN reservation_time t
-                    ON r.time_id = t.id
-                INNER JOIN theme th
-                    ON r.theme_id = th.id
-                WHERE date = ? AND theme_Id = ?
-                """, reservationRowMapper, date, themeId);
-    }
-
-    @Override
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
