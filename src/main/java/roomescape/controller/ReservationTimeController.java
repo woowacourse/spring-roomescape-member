@@ -76,6 +76,9 @@ public class ReservationTimeController {
         List<ReservationTime> allTimes = reservationService.getReservationTimes();
         List<ReservationTime> availableTimes = reservationService.getAvailableTimes(date, themeId);
 
-        return AvailableReservationTimesResponse.of(allTimes, availableTimes);
+        return AvailableReservationTimesResponse.builder()
+            .allTimes(allTimes)
+            .availableTimes(availableTimes)
+            .build();
     }
 }
