@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Duration;
 import roomescape.domain.Theme;
 import roomescape.exception.InUseEntityException;
 import roomescape.repository.dto.ReservedTheme;
@@ -49,8 +47,7 @@ public class ThemeRepository {
 
     public List<Theme> findAll() {
         String findSql = "SELECT id, name, description, image_url"
-                + " FROM theme"
-                + " ORDER BY id";
+                + " FROM theme";
 
         return jdbcTemplate.query(findSql, themeRowMapper());
     }
