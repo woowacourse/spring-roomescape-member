@@ -1,16 +1,17 @@
 package roomescape;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
+import java.time.LocalDate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import roomescape.service.TimeProvider;
 
 @Configuration
 public class TestClockConfig {
 
     @Bean
-    public Clock clock() {
-        return Clock.fixed(Instant.parse("2026-05-07T00:00:00Z"), ZoneId.systemDefault());
+    @Primary
+    public TimeProvider timeProvider() {
+        return () -> LocalDate.of(2026, 5, 7);
     }
 }
