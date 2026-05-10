@@ -10,11 +10,18 @@ public class Theme {
     private final String description;
     private final String imageUrl;
 
-    public Theme(Long id, String name, String description, String imageUrl) {
+    private Theme(Long id, String name, String description, String imageUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
     }
-}
 
+    public static Theme createNew(String name, String description, String imageUrl) {
+        return new Theme(null, name, description, imageUrl);
+    }
+
+    public static Theme from(Long id, String name, String description, String imageUrl) {
+        return new Theme(id, name, description, imageUrl);
+    }
+}

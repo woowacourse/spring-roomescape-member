@@ -1,29 +1,87 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.global.exception.ReservationNotFoundException;
 import roomescape.domain.Reservation;
-import roomescape.repository.dao.ReservationDao;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.global.exception.ReservationNotFoundException;
 
 @Repository
-@RequiredArgsConstructor
 public class ReservationRepository {
 
-    private final ReservationDao reservationDao;
+    private static final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) -> {
+        ReservationTime reservationTime = ReservationTime.from(
+                rs.getLong("time_id"),
+                rs.getObject("start_at", LocalTime.class)
+        );
+        Theme theme = Theme.from(
+                rs.getLong("theme_id"),
+                rs.getString("theme_name"),
+                rs.getString("description"),
+                rs.getString("image_url")
+        );
+        return Reservation.from(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getObject("date", LocalDate.class),
+                reservationTime,
+                theme
+        );
+    };
+
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
+    public ReservationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate())
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
+    }
 
     public List<Reservation> findAll() {
-        return reservationDao.selectAll();
+        String sql = """
+                SELECT
+                    r.id,
+                    r.name,
+                    r.date,
+                    rt.id AS time_id,
+                    rt.start_at,
+                    t.id AS theme_id,
+                    t.name AS theme_name,
+                    t.description,
+                    t.image_url
+                FROM reservation r
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                INNER JOIN theme t ON r.theme_id = t.id
+                WHERE t.is_deleted = FALSE
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     public Reservation save(Reservation reservation) {
-        Long id = reservationDao.insert(reservation);
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return Reservation.from(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     public void deleteById(Long id) {
-        int deletedCount = reservationDao.deleteById(id);
+        String sql = "delete from reservation where id = :id;";
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", id);
+        int deletedCount = jdbcTemplate.update(sql, parameters);
 
         if (deletedCount == 0) {
             throw new ReservationNotFoundException();

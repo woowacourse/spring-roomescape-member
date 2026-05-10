@@ -22,8 +22,7 @@ public class ThemeService {
 
     @Transactional
     public ThemeResponse addTheme(CreateThemeRequest request) {
-        Theme theme = new Theme(
-                null,
+        Theme theme = Theme.createNew(
                 request.name(),
                 request.description(),
                 request.imageUrl()

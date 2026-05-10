@@ -5,14 +5,16 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.global.exception.DuplicateReservationException;
-import roomescape.domain.Reservation;
 import roomescape.controller.dto.CreateReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
-import roomescape.repository.ReservationRepository;
-import roomescape.domain.Theme;
-import roomescape.repository.ThemeRepository;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.global.exception.DuplicateReservationException;
+import roomescape.global.exception.ReservationTimeNotFoundException;
+import roomescape.global.exception.ThemeNotFoundException;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
@@ -32,12 +34,14 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse reserve(CreateReservationRequest request) {
-        ReservationTime time = reservationTimeRepository.findById(request.timeId());
-        Theme theme = themeRepository.findById(request.themeId());
+        ReservationTime time = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(ReservationTimeNotFoundException::new);
+        Theme theme = themeRepository.findById(request.themeId())
+                .orElseThrow(ThemeNotFoundException::new);
         validateReservationAvailable(request.date(), time, theme);
 
         Reservation reservation = reservationRepository.save(
-                new Reservation(null, request.name(), request.date(), time, theme));
+                Reservation.createNew(request.name(), request.date(), time, theme));
 
         return ReservationResponse.from(reservation);
     }

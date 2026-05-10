@@ -6,16 +6,17 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.global.exception.DuplicateReservationTimeException;
-import roomescape.controller.dto.ThemeResponse;
-import roomescape.repository.ThemeRepository;
 import roomescape.controller.dto.AvailableReservationTimeResponse;
 import roomescape.controller.dto.CreateResrvationTimeRequest;
 import roomescape.controller.dto.GetAvailableTimesRequest;
 import roomescape.controller.dto.ReservationTimeResponse;
+import roomescape.controller.dto.ThemeResponse;
 import roomescape.controller.dto.ThemeReservationTimesResponse;
 import roomescape.domain.ReservationTime;
+import roomescape.global.exception.DuplicateReservationTimeException;
+import roomescape.global.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,7 +31,7 @@ public class ReservationTimeService {
         if (reservationTimeRepository.existsByStartAt(request.startAt())) {
             throw new DuplicateReservationTimeException();
         }
-        ReservationTime savedReservationTime = reservationTimeRepository.save(new ReservationTime(request.startAt()));
+        ReservationTime savedReservationTime = reservationTimeRepository.save(ReservationTime.createNew(request.startAt()));
 
         return ReservationTimeResponse.from(savedReservationTime);
     }
@@ -56,7 +57,8 @@ public class ReservationTimeService {
                 .map(time -> createResponse(time, reservedTimeIds))
                 .filter(response -> isMatchCondition(request.available(), response.available()))
                 .toList();
-        ThemeResponse theme = ThemeResponse.from(themeRepository.findById(request.themeId()));
+        ThemeResponse theme = ThemeResponse.from(themeRepository.findById(request.themeId())
+                .orElseThrow(ThemeNotFoundException::new));
         return ThemeReservationTimesResponse.from(theme, availableTimes);
     }
 

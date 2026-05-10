@@ -3,12 +3,14 @@ package roomescape.util;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.springframework.stereotype.Component;
-import roomescape.domain.Theme;
-import roomescape.repository.ThemeRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.repository.ReservationTimeRepository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.global.exception.ReservationTimeNotFoundException;
+import roomescape.global.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Component
 public class TestDataInitializer {
@@ -25,16 +27,18 @@ public class TestDataInitializer {
     }
 
     public ReservationTime initializeReservationTime(LocalTime localTime) {
-        return reservationTimeRepository.save(new ReservationTime(localTime.withSecond(0).withNano(0)));
+        return reservationTimeRepository.save(ReservationTime.createNew(localTime.withSecond(0).withNano(0)));
     }
 
     public Theme initializeTheme(String name, String description, String imageUrl) {
-        return themeRepository.save(new Theme(null, name, description, imageUrl));
+        return themeRepository.save(Theme.createNew(name, description, imageUrl));
     }
 
     public void initializeReservation(String name, LocalDate date, Long timeId, Long themeId) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
-        Theme theme = themeRepository.findById(themeId);
-        reservationRepository.save(new Reservation(null, name, date, reservationTime, theme));
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
+                .orElseThrow(ReservationTimeNotFoundException::new);
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(ThemeNotFoundException::new);
+        reservationRepository.save(Reservation.createNew(name, date, reservationTime, theme));
     }
 }

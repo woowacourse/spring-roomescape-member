@@ -15,13 +15,21 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public static Reservation createNew(String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(null, name, date, time, theme);
+    }
+
+    public static Reservation from(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(id, name, date, time, theme);
     }
 
     private void validateName(String name) {

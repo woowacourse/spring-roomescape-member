@@ -16,13 +16,13 @@ class ReservationTest {
     void 이름이_50자를_넘는_경우_예외가_발생한다() {
         //given
         String name = "a".repeat(51);
-        ReservationTime reservationTime = new ReservationTime(LocalTime.now());
+        ReservationTime reservationTime = ReservationTime.createNew(LocalTime.now());
         LocalDate now = LocalDate.now();
 
-        Theme theme = new Theme(null, "hello", "world", "/resources/image/...");
+        Theme theme = Theme.createNew("hello", "world", "/resources/image/...");
 
         //when & then
-        Assertions.assertThatThrownBy(() -> new Reservation(1L, name, now, reservationTime, theme))
+        Assertions.assertThatThrownBy(() -> Reservation.from(1L, name, now, reservationTime, theme))
                 .isInstanceOf(InvalidReservationException.class);
     }
 }
