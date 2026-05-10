@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.common.exception.ErrorCode;
 import roomescape.common.exception.InfrastructureException;
-import roomescape.service.dto.ReservationTimeAvailability;
+import roomescape.repository.dto.ReservationTimeAvailability;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;

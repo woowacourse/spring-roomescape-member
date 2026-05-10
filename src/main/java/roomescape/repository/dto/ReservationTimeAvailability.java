@@ -1,4 +1,4 @@
-package roomescape.service.dto;
+package roomescape.repository.dto;
 
 
 import lombok.Getter;
