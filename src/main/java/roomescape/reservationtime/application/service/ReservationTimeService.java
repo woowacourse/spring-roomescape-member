@@ -39,6 +39,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<AvailableReservationTimeQueryResult> findAvailableTimes(Long themeId, LocalDate date) {
         List<AvailableReservationTime> times = availableTimeRepository.findByThemeAndDate(themeId, date);
 
