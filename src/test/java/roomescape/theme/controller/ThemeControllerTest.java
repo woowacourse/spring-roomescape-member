@@ -1,0 +1,34 @@
+package roomescape.theme.controller;
+
+import static org.hamcrest.Matchers.is;
+
+import io.restassured.RestAssured;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+class ThemeControllerTest {
+
+    @Test
+    @DisplayName("인기 테마 조회 성공")
+    void 인기_테마_조회_성공() {
+        RestAssured.given().log().all()
+                .when().get("/themes/top?limit=10")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(3));
+    }
+
+    @Test
+    @DisplayName("인기 테마 조회 성공 - limit 적용")
+    void 인기_테마_조회_limit_적용() {
+        RestAssured.given().log().all()
+                .when().get("/themes/top?limit=2")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
+}

@@ -1,0 +1,56 @@
+package roomescape.theme.controller;
+
+import static org.hamcrest.Matchers.is;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import java.util.Map;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+class AdminThemeControllerTest {
+
+    private Map<String, String> themeBody() {
+        return Map.of("name", "테마5", "description", "설명", "imageUrl", "https://image.com");
+    }
+
+    @Test
+    @DisplayName("테마 생성 성공")
+    void 테마_생성_성공() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeBody())
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @Test
+    @DisplayName("테마 전체 조회 성공")
+    void 테마_전체_조회_성공() {
+        RestAssured.given().log().all()
+                .when().get("/admin/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(4));
+    }
+
+    @Test
+    @DisplayName("테마 삭제 성공")
+    void 테마_삭제_성공() {
+        Integer id = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeBody())
+                .when().post("/admin/themes")
+                .then().extract().path("id");
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/" + id)
+                .then().log().all()
+                .statusCode(204);
+    }
+}
