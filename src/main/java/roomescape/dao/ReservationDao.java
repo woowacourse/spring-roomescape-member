@@ -3,11 +3,9 @@ package roomescape.dao;
 import java.time.LocalDate;
 import java.util.List;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 
 public interface ReservationDao {
-    Reservation create(Reservation reservation, ReservationTime reservationTime, Theme theme);
+    Reservation create(Reservation reservation);
 
     List<Reservation> readAll();
 

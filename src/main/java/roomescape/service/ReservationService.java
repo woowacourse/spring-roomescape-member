@@ -40,7 +40,7 @@ public class ReservationService {
         }
 
         Reservation reservationWithoutId = request.toEntity(reservationTime, theme);
-        Reservation reservation = reservationDao.create(reservationWithoutId, reservationTime, theme);
+        Reservation reservation = reservationDao.create(reservationWithoutId);
 
         return ReservationResponseDto.from(reservation);
     }
