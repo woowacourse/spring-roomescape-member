@@ -1,0 +1,46 @@
+package roomescape.user.reservationtime;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import roomescape.user.reservationtime.dto.TimeRequest;
+import roomescape.user.reservationtime.dto.TimeResponse;
+
+@Service
+public class ReservationTimeService {
+
+    private final ReservationTimeRepository timeRepository;
+
+    public ReservationTimeService(ReservationTimeRepository timeRepository) {
+        this.timeRepository = timeRepository;
+    }
+
+    public TimeResponse createTime(TimeRequest request) {
+        ReservationTime time = ReservationTime.of(
+                request.startAt(),
+                request.finishAt()
+        );
+        ReservationTime saved = timeRepository.save(time);
+        return TimeResponse.of(saved);
+    }
+
+    public List<TimeResponse> getAllTimes() {
+        List<ReservationTime> times = timeRepository.findAll();
+
+        return times.stream()
+            .map(TimeResponse::of)
+            .toList();
+    }
+
+    public void deleteById(Long id) {
+        validateReservationTimeId(id);
+        timeRepository.deleteById(id);
+    }
+
+    private void validateReservationTimeId(Long id) {
+        boolean isValidId = timeRepository.existsById(id);
+        if (!isValidId) {
+            throw new IllegalArgumentException("[ERROR] 유효하지 않은 Id입니다");
+        }
+    }
+}
