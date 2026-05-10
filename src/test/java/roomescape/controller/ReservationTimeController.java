@@ -58,7 +58,7 @@ public class ReservationTimeController {
     public void 예약_가능한_시간_삭제_API() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().delete("/times/1")
+                .when().delete("/times/11")
                 .then().log().all()
                 .statusCode(204);
     }

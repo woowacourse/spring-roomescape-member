@@ -25,7 +25,7 @@ public class TimeServiceTest {
     @Test
     void 존재하는_시간을_삭제하는_경우_삭제된다() {
         // then
-        Assertions.assertThatCode(() -> timeService.removeById(1L))
+        Assertions.assertThatCode(() -> timeService.removeById(11L))
                 .doesNotThrowAnyException();
     }
 

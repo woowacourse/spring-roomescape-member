@@ -23,7 +23,7 @@ public class ThemeServiceTest {
     @Test
     void 존재하는_테마를_삭제하는경우_삭제된다() {
         // then
-        Assertions.assertThatCode(() -> themeService.removeById(1L))
+        Assertions.assertThatCode(() -> themeService.removeById(7L))
                 .doesNotThrowAnyException();
     }
 }

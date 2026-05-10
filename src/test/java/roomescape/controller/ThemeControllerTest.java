@@ -59,7 +59,7 @@ public class ThemeControllerTest {
     public void 특정_테마_삭제_API() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().delete("/themes/1")
+                .when().delete("/themes/7")
                 .then().log().all()
                 .statusCode(204);
     }

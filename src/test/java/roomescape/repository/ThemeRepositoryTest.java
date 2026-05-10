@@ -51,7 +51,7 @@ public class ThemeRepositoryTest {
     @Test
     public void 저장된_테마를_삭제할_수_있다() {
         // given
-        Long themeId = 2L;
+        Long themeId = 7L;
 
         // when
         themeRepository.deleteById(themeId);
