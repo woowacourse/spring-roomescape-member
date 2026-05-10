@@ -103,16 +103,18 @@ test("예약된 시간은 비활성화되고 관리자 취소 후 다시 예약 
 });
 
 async function fetchThemes(request) {
-  const response = await request.get("/api/themes");
+  const response = await request.get("/api/themes?page=0&size=100");
   expect(response.ok()).toBeTruthy();
-  return response.json();
+  const body = await response.json();
+  return body.responses;
 }
 
 async function findFirstReservableSlot(request, themeId, date) {
-  const response = await request.get(`/api/themes/${themeId}?date=${date}`);
+  const response = await request.get(`/api/themes/${themeId}/times?date=${date}`);
   expect(response.ok()).toBeTruthy();
 
-  const slots = await response.json();
+  const body = await response.json();
+  const slots = body.responses;
   const reservableSlot = slots.find((slot) => slot.isReservable);
 
   expect(reservableSlot, `No reservable slot found for theme ${themeId} on ${date}`).toBeTruthy();

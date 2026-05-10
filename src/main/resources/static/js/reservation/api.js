@@ -1,11 +1,25 @@
 import { requestJson } from "../common/http.js";
 
+const DEFAULT_PAGE = 0;
+const DEFAULT_SIZE = 100;
+
+function unwrapResponses(response) {
+  return response.responses;
+}
+
 export function fetchThemes() {
-  return requestJson("/api/themes");
+  const searchParams = new URLSearchParams({
+    page: String(DEFAULT_PAGE),
+    size: String(DEFAULT_SIZE)
+  });
+
+  return requestJson(`/api/themes?${searchParams.toString()}`).then(unwrapResponses);
 }
 
 export function fetchThemeSlots(themeId, date) {
-  return requestJson(`/api/themes/${themeId}?date=${date}`);
+  const searchParams = new URLSearchParams({ date });
+
+  return requestJson(`/api/themes/${themeId}/times?${searchParams.toString()}`).then(unwrapResponses);
 }
 
 export function createReservation(payload) {

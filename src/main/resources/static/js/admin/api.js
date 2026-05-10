@@ -9,8 +9,20 @@ const ADMIN_ONLY_HEADERS = {
   role: "ADMIN"
 };
 
+const DEFAULT_PAGE = 0;
+const DEFAULT_SIZE = 100;
+
+function unwrapResponses(response) {
+  return response.responses;
+}
+
 export function fetchThemes() {
-  return requestJson("/api/themes");
+  const searchParams = new URLSearchParams({
+    page: String(DEFAULT_PAGE),
+    size: String(DEFAULT_SIZE)
+  });
+
+  return requestJson(`/api/themes?${searchParams.toString()}`).then(unwrapResponses);
 }
 
 export function createTheme(payload) {
@@ -29,9 +41,14 @@ export function deleteTheme(id) {
 }
 
 export function fetchReservations() {
-  return requestJson("/api/admin/reservations", {
-    headers: ADMIN_ONLY_HEADERS
+  const searchParams = new URLSearchParams({
+    page: String(DEFAULT_PAGE),
+    size: String(DEFAULT_SIZE)
   });
+
+  return requestJson(`/api/admin/reservations?${searchParams.toString()}`, {
+    headers: ADMIN_ONLY_HEADERS
+  }).then(unwrapResponses);
 }
 
 export function createReservation(payload) {
@@ -50,9 +67,14 @@ export function deleteReservation(id) {
 }
 
 export function fetchTimes() {
-  return requestJson("/api/admin/times", {
-    headers: ADMIN_ONLY_HEADERS
+  const searchParams = new URLSearchParams({
+    page: String(DEFAULT_PAGE),
+    size: String(DEFAULT_SIZE)
   });
+
+  return requestJson(`/api/admin/times?${searchParams.toString()}`, {
+    headers: ADMIN_ONLY_HEADERS
+  }).then(unwrapResponses);
 }
 
 export function createTime(payload) {
