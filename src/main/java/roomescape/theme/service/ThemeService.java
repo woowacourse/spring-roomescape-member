@@ -50,8 +50,7 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<PopularTheme> findPopularThemes(int days, int limit) {
-        LocalDate endDate = LocalDate.now();
+    public List<PopularTheme> findPopularThemes(LocalDate endDate, int days, int limit) {
         LocalDate startDate = endDate.minusDays(days);
         List<Theme> themes = themeRepository.findPopularThemes(startDate, endDate, limit);
 

@@ -10,6 +10,7 @@ import roomescape.theme.service.AvailableTime;
 import roomescape.theme.service.PopularTheme;
 import roomescape.theme.service.ThemeService;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -75,7 +76,7 @@ class ThemeControllerTest {
                 new PopularTheme(9L, "레서방9", "레서방입니다9.", "path/to/image9", 9),
                 new PopularTheme(10L, "레서방10", "레서방입니다10.", "path/to/image10", 10)
         );
-        when(themeService.findPopularThemes(anyInt(), anyInt())).thenReturn(popularThemes);
+        when(themeService.findPopularThemes(any(LocalDate.class), anyInt(), anyInt())).thenReturn(popularThemes);
 
         mockMvc.perform(get("/themes/popular")
                         .param("days", "1")

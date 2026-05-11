@@ -96,10 +96,12 @@ class ThemeServiceTest {
                 new Theme(10L, "공포방10", "무서워요10", "image-url10")
         );
 
-        when(themeRepository.findPopularThemes(any(), any(), anyInt())).thenReturn(themes);
+        LocalDate endDate = LocalDate.of(2026, 5, 11);
+        LocalDate startDate = LocalDate.of(2026, 5, 4);
+        when(themeRepository.findPopularThemes(startDate, endDate, 10)).thenReturn(themes);
 
-        List<PopularTheme> result = themeService.findPopularThemes(7, 10);
-        verify(themeRepository, times(1)).findPopularThemes(any(), any(), anyInt());
+        List<PopularTheme> result = themeService.findPopularThemes(endDate, 7, 10);
+        verify(themeRepository, times(1)).findPopularThemes(startDate, endDate, 10);
 
         assertThat(result).containsExactly(
                 new PopularTheme(1L, "공포방1", "무서워요1", "image-url1", 1),
