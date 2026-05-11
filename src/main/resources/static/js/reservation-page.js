@@ -9,6 +9,74 @@ const reservationSubmitButton = document.getElementById("reservation-submit");
 
 let selectedTimeId = null;
 let availableTimes = [];
+const checkForm = document.getElementById("check-form");
+const checkNameInput = document.getElementById("check-name");
+const myReservationList = document.getElementById("my-reservation-list");
+const checkFeedback = document.getElementById("check-feedback");
+
+// 예약 조회 렌더링 함수
+function renderMyReservations(reservations, username) {
+    if (reservations.length === 0) {
+        myReservationList.innerHTML = '<div class="empty-card">조회된 예약이 없습니다.</div>';
+        return;
+    }
+
+    myReservationList.innerHTML = reservations.map((reservation) => `
+        <article style="background: white; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong>${reservation.theme.name}</strong>
+                <p style="margin: 0.25rem 0 0; color: #64748b; font-size: 0.875rem;">
+                    ${reservation.date} · ${formatTime(reservation.time.startAt)}
+                </p>
+            </div>
+            <button class="button danger" type="button" data-action="cancel-my-reservation" data-id="${reservation.id}" data-name="${username}">
+                취소
+            </button>
+        </article>
+    `).join("");
+}
+
+// 1. 조회 폼 제출 이벤트
+checkForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearFeedback(checkFeedback);
+    const name = checkNameInput.value.trim();
+
+    try {
+        // GET /reservations/{username} API 호출
+        const reservations = await request(`/reservations/${name}`, { method: "GET" });
+        renderMyReservations(reservations, name);
+    } catch (error) {
+        showFeedback(checkFeedback, "error", error.message);
+    }
+});
+
+// 2. 예약 취소 버튼 클릭 이벤트 (이벤트 위임)
+myReservationList.addEventListener("click", async (event) => {
+    const target = event.target.closest('[data-action="cancel-my-reservation"]');
+    if (!target) return;
+
+    if (!window.confirm("이 예약을 정말 취소하시겠습니까?")) return;
+
+    clearFeedback(checkFeedback);
+    const id = target.dataset.id;
+    const username = target.dataset.name;
+
+    try {
+        // DELETE /reservations/{id}?username={username} API 호출
+        await request(`/reservations/${id}?username=${username}`, { method: "DELETE" });
+        showFeedback(checkFeedback, "success", "예약이 성공적으로 취소되었습니다.");
+
+        // 취소 후 목록 다시 불러오기
+        const reservations = await request(`/reservations/${username}`, { method: "GET" });
+        renderMyReservations(reservations, username);
+
+        // 취소된 자리가 생겼을 수 있으므로 예약 가능 시간표도 리로드
+        await loadAvailableTimes();
+    } catch (error) {
+        showFeedback(checkFeedback, "error", error.message);
+    }
+});
 
 function showFeedback(element, type, message) {
     element.hidden = false;
