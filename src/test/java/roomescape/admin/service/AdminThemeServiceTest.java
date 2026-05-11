@@ -1,45 +1,54 @@
 package roomescape.admin.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.doamin.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminThemeServiceTest {
 
-    @Mock
-    private ThemeRepository themeRepository;
-
-    @InjectMocks
+    @Autowired
     private AdminThemeService adminThemeService;
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @DisplayName("관리자는 테마를 저장할 수 있다.")
     @Test
     void saveTheme() {
-        Theme theme = new Theme(1L, "공포", "무서운 테마", "https://image.test/theme.png");
-        when(themeRepository.save(any(Theme.class))).thenReturn(theme);
+        Theme savedTheme = adminThemeService.saveTheme(
+                "감옥 탈출",
+                "철통 보안 감옥에서 탈출하라!",
+                "https://image.test/prison.png"
+        );
 
-        Theme savedTheme = adminThemeService.saveTheme("공포", "무서운 테마", "https://image.test/theme.png");
+        assertThat(savedTheme.getId()).isNotNull();
 
-        assertThat(savedTheme).isEqualTo(theme);
-        verify(themeRepository).save(any(Theme.class));
+        Theme foundTheme = themeRepository.findById(savedTheme.getId())
+                .orElseThrow();
+
+        assertThat(foundTheme.getName()).isEqualTo("감옥 탈출");
+        assertThat(foundTheme.getDescription()).isEqualTo("철통 보안 감옥에서 탈출하라!");
+        assertThat(foundTheme.getThumbnailUrl())
+                .isEqualTo("https://image.test/prison.png");
     }
 
     @DisplayName("관리자는 테마를 삭제할 수 있다.")
     @Test
     void deleteTheme() {
-        adminThemeService.deleteTheme(1L);
+        // test-data.sql 기준 theme_id=4 존재
+        adminThemeService.deleteTheme(4L);
 
-        verify(themeRepository).delete(1L);
+        assertThat(themeRepository.findById(4L)).isEmpty();
     }
 }

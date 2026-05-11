@@ -51,7 +51,7 @@ public class ThemeRepository {
                                 th.name,
                                 th.description,
                                 th.thumbnail_url
-                            ORDER BY COUNT(r.id) DESC
+                            ORDER BY COUNT(*) DESC
                             LIMIT ?
                             """;
         return jdbcTemplate.query(sql, themeRowMapper, from, to, size);
