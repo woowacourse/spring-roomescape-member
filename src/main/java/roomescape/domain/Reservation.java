@@ -29,7 +29,7 @@ public class Reservation {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Reservation that) || that.id == null) {
+        if (!(o instanceof Reservation that) || id == null) {
             return false;
         }
 

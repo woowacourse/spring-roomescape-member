@@ -25,7 +25,7 @@ public class Time {
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof Time time)) return false;
+        if (!(o instanceof Time time) || id == null) return false;
 
         return Objects.equals(id, time.id);
     }

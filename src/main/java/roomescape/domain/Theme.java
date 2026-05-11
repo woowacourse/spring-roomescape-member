@@ -28,7 +28,7 @@ public class Theme {
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof Theme theme)) {
+        if (!(o instanceof Theme theme) || id == null) {
             return false;
         }
 
