@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.time.controller.dto.request.CreateResrvationTimeRequest;
+import roomescape.time.controller.dto.request.CreateReservationTimeRequest;
 import roomescape.time.controller.dto.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
@@ -18,7 +18,7 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
 
     @Transactional
-    public ReservationTimeResponse addReservationTime(CreateResrvationTimeRequest request) {
+    public ReservationTimeResponse addReservationTime(CreateReservationTimeRequest request) {
         CreateReservationTimeParams params = new CreateReservationTimeParams(request.startAt());
         ReservationTime savedReservationTime = reservationTimeRepository.save(params);
 
