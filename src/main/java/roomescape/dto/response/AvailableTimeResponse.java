@@ -10,7 +10,7 @@ public record AvailableTimeResponse(
         String time,
         Boolean available
 ) {
-    public static List<AvailableTimeResponse> toDto(Map<ReservationTime, Boolean> reservationBooleanMap) {
+    public static List<AvailableTimeResponse> from(Map<ReservationTime, Boolean> reservationBooleanMap) {
         return reservationBooleanMap.entrySet().stream()
                 .map(reservationBooleanEntry -> {
                     ReservationTime reservationTime = reservationBooleanEntry.getKey();

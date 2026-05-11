@@ -3,6 +3,7 @@ package roomescape.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.ThemeDao;
+import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.exception.UnauthorizedException;
 
@@ -21,7 +22,8 @@ public class ThemeServiceTest {
 
     @Test
     void 관리자가_아니면_테마를_생성할_수_없다() {
-        assertThatThrownBy(() -> themeService.createTheme("공포", "설명", "image.jpg", "USER"))
+        assertThatThrownBy(() -> themeService.createTheme(
+                new ThemeCreateRequest("공포", "설명", "image.jpg", "USER")))
                 .isInstanceOf(UnauthorizedException.class);
     }
 

@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
+import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.dto.response.PopularThemeResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.exception.UnauthorizedException;
@@ -23,10 +25,10 @@ public class ThemeService {
     }
 
     @Transactional
-    public Theme createTheme(String name, String description, String imgUrl, String userName) {
-        validateAdmin(userName);
-        Long id = themeDao.insertTheme(name, description, imgUrl);
-        return themeDao.findById(id);
+    public ThemeResponse createTheme(ThemeCreateRequest request) {
+        validateAdmin(request.userName());
+        Long id = themeDao.insertTheme(request.name(), request.description(), request.imgUrl());
+        return ThemeResponse.from(themeDao.findById(id));
     }
 
     @Transactional
@@ -40,8 +42,8 @@ public class ThemeService {
         }
     }
 
-    public List<Theme> getThemes() {
-        return themeDao.findAllThemes();
+    public List<ThemeResponse> getThemes() {
+        return ThemeResponse.from(themeDao.findAllThemes());
     }
 
     public List<PopularThemeResponse> getPopularThemes(LocalDate from, LocalDate to) {

@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.request.ReservationTimeCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ReservationTimeNotFoundException;
 
@@ -23,14 +25,14 @@ public class ReservationTimeService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public List<ReservationTime> getReservationTimes() {
-        return reservationTimeDao.findAllReservationTimes();
+    public List<ReservationTimeResponse> getReservationTimes() {
+        return ReservationTimeResponse.from(reservationTimeDao.findAllReservationTimes());
     }
 
     @Transactional
-    public ReservationTime createReservationTime(ReservationTime reservationTime) {
-        Long id = reservationTimeDao.insertReservationTime(reservationTime.getStartAt());
-        return reservationTimeDao.findById(id);
+    public ReservationTimeResponse createReservationTime(ReservationTimeCreateRequest request) {
+        Long id = reservationTimeDao.insertReservationTime(request.startAt());
+        return ReservationTimeResponse.from(reservationTimeDao.findById(id));
     }
 
     @Transactional
@@ -51,6 +53,6 @@ public class ReservationTimeService {
 
     public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long id) {
         Map<ReservationTime, Boolean> reservationTimeBooleanMap = reservationTimeDao.findAvailableTimes(date, id);
-        return AvailableTimeResponse.toDto(reservationTimeBooleanMap);
+        return AvailableTimeResponse.from(reservationTimeBooleanMap);
     }
 }

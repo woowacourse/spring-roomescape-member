@@ -6,6 +6,8 @@ import org.springframework.dao.DuplicateKeyException;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ReservationAlreadyExistsException;
 import roomescape.exception.ReservationNotFoundException;
 
@@ -32,7 +34,9 @@ public class ReservationServiceTest {
         when(reservationDao.insertReservation("이든", LocalDate.of(2026, 05, 06), 1L, 1L))
                 .thenThrow(new DuplicateKeyException("중복 키 에러"));
 
-        assertThatThrownBy(() -> reservationService.createReservation("이든", LocalDate.of(2026, 05, 06), 1L, 1L))
+        assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(
+                        "이든", LocalDate.of(2026, 05, 06), 1L, 1L
+                )))
                 .isInstanceOf(ReservationAlreadyExistsException.class);
     }
 
@@ -46,9 +50,11 @@ public class ReservationServiceTest {
                 .thenReturn(generatedId);
         when(reservationDao.findReservationById(generatedId)).thenReturn(expected);
 
-        Reservation actual = reservationService.createReservation("이든", LocalDate.of(2026, 05, 06), 1L, 1L);
+        ReservationResponse actual = reservationService.createReservation(new ReservationCreateRequest(
+                "이든", LocalDate.of(2026, 05, 06), 1L, 1L
+        ));
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(ReservationResponse.from(expected));
         verify(reservationDao).insertReservation("이든", LocalDate.of(2026, 05, 06), 1L, 1L);
         verify(reservationDao).findReservationById(generatedId);
     }

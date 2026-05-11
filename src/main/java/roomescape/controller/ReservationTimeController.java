@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.ReservationTime;
+import roomescape.dto.request.ReservationTimeCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
 @RequestMapping("/api/v1/times")
@@ -29,16 +30,16 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTime>> getReservationTimes() {
-        List<ReservationTime> reservationTimeList = reservationTimeService.getReservationTimes();
-        return ResponseEntity.ok().body(reservationTimeList);
+    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
+        List<ReservationTimeResponse> reservationTimes = reservationTimeService.getReservationTimes();
+        return ResponseEntity.ok().body(reservationTimes);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTime> createReservationTime(@RequestBody ReservationTime reservationTime) {
-        ReservationTime savedReservationTime = reservationTimeService.createReservationTime(reservationTime);
-        return ResponseEntity.created(URI.create("/api/v1/times/" + savedReservationTime.getId()))
-                .body(savedReservationTime);
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody ReservationTimeCreateRequest request) {
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.createReservationTime(request);
+        return ResponseEntity.created(URI.create("/api/v1/times/" + reservationTimeResponse.id()))
+                .body(reservationTimeResponse);
     }
 
     @DeleteMapping("/{id}")

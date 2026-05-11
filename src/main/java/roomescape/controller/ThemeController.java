@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.dto.request.ThemeDeleteRequest;
 import roomescape.dto.response.PopularThemeResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -30,20 +30,15 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Theme>> getThemes() {
-        List<Theme> themes = themeService.getThemes();
-        return ResponseEntity.ok().body(themes);
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
+        List<ThemeResponse> themeResponses = themeService.getThemes();
+        return ResponseEntity.ok().body(themeResponses);
     }
 
     @PostMapping
-    public ResponseEntity<Theme> createTheme(@RequestBody ThemeCreateRequest request) {
-        Theme theme = themeService.createTheme(
-                request.name(),
-                request.description(),
-                request.imgUrl(),
-                request.userName()
-        );
-        return ResponseEntity.created(URI.create("/api/v1/themes/" + theme.getId())).body(theme);
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeCreateRequest request) {
+        ThemeResponse themeResponse = themeService.createTheme(request);
+        return ResponseEntity.created(URI.create("/api/v1/themes/" + themeResponse.id())).body(themeResponse);
     }
 
     @DeleteMapping("/{id}")
