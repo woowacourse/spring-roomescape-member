@@ -10,20 +10,15 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.common.exception.NotFoundException;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
 import roomescape.dto.response.AvailableTimeResponseDto;
@@ -47,14 +42,6 @@ class ThemeControllerTest {
 
     @Nested
     class Get {
-
-        static Stream<Arguments> invalidPopularThemeParams() {
-            return Stream.of(
-                    Arguments.of("limit이 최대값 초과", 16, 7),
-                    Arguments.of("days가 최대값 초과", 10, 11),
-                    Arguments.of("limit이 0 이하", 0, 7)
-            );
-        }
 
         @Test
         @DisplayName("전체 테마 목록을 조회하면 200을 반환한다")
@@ -84,17 +71,6 @@ class ThemeControllerTest {
                     .extract().as(ThemeResponseDto.class);
 
             assertThat(actual).isEqualTo(expected);
-        }
-
-        @Test
-        @DisplayName("존재하지 않는 테마 id를 조회하면 404를 반환한다")
-        void returnsNotFoundWhenIdNotExists() {
-            given(themeService.findById(999L)).willThrow(new NotFoundException("존재하지 않는 테마입니다."));
-
-            RestAssuredMockMvc.given()
-                    .when().get("/themes/999")
-                    .then()
-                    .status(HttpStatus.NOT_FOUND);
         }
 
         @Test
@@ -131,18 +107,6 @@ class ThemeControllerTest {
                     .extract().as(new TypeRef<>() {});
 
             assertThat(actual).isEqualTo(expected);
-        }
-
-        @ParameterizedTest(name = "{0}")
-        @MethodSource("invalidPopularThemeParams")
-        @DisplayName("유효하지 않은 파라미터로 인기 테마를 조회하면 400을 반환한다")
-        void returnsValidationErrorWithInvalidParams(String description, int limit, int days) {
-            RestAssuredMockMvc.given()
-                    .queryParam("limit", limit)
-                    .queryParam("days", days)
-                    .when().get("/themes/populars")
-                    .then()
-                    .status(HttpStatus.BAD_REQUEST);
         }
     }
 }

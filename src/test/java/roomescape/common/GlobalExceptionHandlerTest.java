@@ -1,0 +1,108 @@
+package roomescape.common;
+
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.common.GlobalExceptionHandlerTest.FakeController.TestRequest;
+import roomescape.common.exception.ConflictException;
+import roomescape.common.exception.NotFoundException;
+
+class GlobalExceptionHandlerTest {
+
+    @BeforeEach
+    void setUp() {
+        GlobalExceptionHandler handler = new GlobalExceptionHandler(List.of());
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new FakeController())
+                .setControllerAdvice(handler)
+                .build();
+        RestAssuredMockMvc.mockMvc(mockMvc);
+    }
+
+    @Test
+    @DisplayName("NotFoundException이 발생하면 404를 반환한다")
+    void returnsNotFoundForNotFoundException() {
+        RestAssuredMockMvc.given()
+                .when().get("/test/not-found")
+                .then()
+                .status(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("ConflictException이 발생하면 409를 반환한다")
+    void returnsConflictForConflictException() {
+        RestAssuredMockMvc.given()
+                .when().get("/test/conflict")
+                .then()
+                .status(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    @DisplayName("IllegalArgumentException이 발생하면 400을 반환한다")
+    void returnsBadRequestForIllegalArgumentException() {
+        RestAssuredMockMvc.given()
+                .when().get("/test/illegal-argument")
+                .then()
+                .status(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("잘못된 JSON 형식으로 요청하면 400을 반환한다")
+    void returnsBadRequestForInvalidJson() {
+        RestAssuredMockMvc.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("{ invalid json }")
+                .when().post("/test/validate")
+                .then()
+                .status(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("Bean Validation 실패 시 400을 반환한다")
+    void returnsBadRequestForValidationFailure() {
+        TestRequest testRequest = new TestRequest(null);
+        RestAssuredMockMvc.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(testRequest)
+                .when().post("/test/validate")
+                .then()
+                .status(HttpStatus.BAD_REQUEST);
+    }
+
+    @RestController
+    static class FakeController {
+
+        @GetMapping("/test/not-found")
+        void throwNotFoundException() {
+            throw new NotFoundException("찾을 수 없음");
+        }
+
+        @GetMapping("/test/conflict")
+        void throwConflictException() {
+            throw new ConflictException("충돌");
+        }
+
+        @GetMapping("/test/illegal-argument")
+        void throwIllegalArgumentException() {
+            throw new IllegalArgumentException("잘못된 인수");
+        }
+
+        @PostMapping("/test/validate")
+        void validate(@Valid @RequestBody TestRequest request) {
+        }
+
+        record TestRequest(@NotNull String value) {
+        }
+    }
+}
