@@ -2,6 +2,7 @@ package roomescape.theme.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class ThemeAdminController {
     }
 
     @GetMapping("/themes")
+    @Operation(summary = "Read all themes", description = "모든 테마를 조회하는 api")
     public ResponseEntity<List<ThemeDetailDto>> getThemes() {
         List<ThemeDetailDto> responseData = themeService.readThemes().stream()
                 .map(ThemeDetailDto::from)
@@ -38,12 +40,14 @@ public class ThemeAdminController {
     }
 
     @GetMapping("/themes/{id}")
+    @Operation(summary = "Read a theme by id", description = "테마 id로 테마를 조회하는 api")
     public ResponseEntity<ThemeDetailDto> getTheme(@PathVariable Long id) {
         ThemeDetailDto responseData = ThemeDetailDto.from(themeService.readTheme(id));
         return ResponseEntity.ok(responseData);
     }
 
     @PostMapping("/themes")
+    @Operation(summary = "Create a theme", description = "테마를 생성하는 api")
     public ResponseEntity<ThemeDetailDto> createTheme(@Valid @RequestBody ThemeSaveDto dto) {
         Theme theme = themeService.register(dto.name(), dto.description(), dto.thumbnailUrl());
         ThemeDetailDto responseData = ThemeDetailDto.from(theme);
@@ -51,6 +55,7 @@ public class ThemeAdminController {
     }
 
     @PatchMapping("/themes/{id}")
+    @Operation(summary = "Update theme status", description = "테마 활성화 상태를 업데이트하는 api")
     public ResponseEntity<ThemeDetailDto> updateThemeStatus(@PathVariable Long id, @Valid @RequestBody ThemeActiveUpdateDto dto) {
         Theme theme = themeService.updateStatus(id, dto.isActive());
         ThemeDetailDto responseData = ThemeDetailDto.from(theme);

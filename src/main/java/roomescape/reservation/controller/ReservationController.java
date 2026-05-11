@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
+    @Operation(summary = "Create a reservation", description = "예약을 생성하는 api")
     public ResponseEntity<ReservationResponse> create(
             @Valid @RequestBody ReservationSaveDto dto
     ) {
@@ -32,12 +34,14 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations/{name}")
+    @Operation(summary = "Read reservations by name", description = "예약자 이름으로 예약 목록을 조회하는 api")
     public ResponseEntity<List<ReservationResponse>> getMyReservations(@PathVariable String name) {
         List<ReservationResponse> responseData = reservationService.readAllByName(name);
         return ResponseEntity.ok(responseData);
     }
 
     @PatchMapping("/reservations/{id}")
+    @Operation(summary = "Cancel a reservation", description = "예약을 취소하는 api")
     public ResponseEntity<ReservationResponse> cancel(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.cancel(id));
     }

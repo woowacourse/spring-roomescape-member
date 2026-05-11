@@ -1,5 +1,6 @@
 package roomescape.theme.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ public class ThemeController {
     }
 
     @GetMapping("/themes")
+    @Operation(summary = "Read active themes", description = "활성화된 테마를 조회하는 api")
     public ResponseEntity<List<ThemeDetailDto>> getActiveThemes(){
         List<ThemeDetailDto> responseData = themeService.readActiveThemes().stream()
                 .map(ThemeDetailDto::from)
@@ -25,6 +27,7 @@ public class ThemeController {
     }
 
     @GetMapping("/themes/popular")
+    @Operation(summary = "Read popular themes", description = "인기 테마를 조회하는 api")
     public ResponseEntity<List<ThemeDetailDto>> getPopularThemes(@RequestParam int top){
         List<ThemeDetailDto> responseData = themeService.readPopularThemes(top).stream()
                 .map(ThemeDetailDto::from)

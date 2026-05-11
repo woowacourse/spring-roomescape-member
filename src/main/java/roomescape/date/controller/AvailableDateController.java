@@ -1,5 +1,6 @@
 package roomescape.date.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ public class AvailableDateController {
     }
 
     @GetMapping("/dates")
+    @Operation(summary = "Get all available dates", description = "예약 가능한 날짜 전체 목록을 조회하는 api")
     public ResponseEntity<List<AvailableDateDetailDto>> getAvailableDates() {
         List<AvailableDateDetailDto> responseData = availableDateService.readAvailableDates()
                 .stream()

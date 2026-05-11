@@ -2,6 +2,7 @@ package roomescape.closeddate.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ public class ClosedDateAdminController {
     }
 
     @GetMapping("/closed-dates")
+    @Operation(summary = "Get all closed dates", description = "휴무일 전체 목록을 조회하는 api")
     public ResponseEntity<List<ClosedDateDetailDto>> getClosedDates() {
         List<ClosedDateDetailDto> responseData = closedDateService.readClosedDates().stream()
                 .map(ClosedDateDetailDto::from)
@@ -34,6 +36,7 @@ public class ClosedDateAdminController {
     }
 
     @PostMapping("/closed-dates")
+    @Operation(summary = "Create a closed date", description = "휴무일을 등록하는 api")
     public ResponseEntity<ClosedDateDetailDto> createClosedDate(
             @Valid @RequestBody ClosedDateSaveDto dto
     ) {
@@ -42,6 +45,7 @@ public class ClosedDateAdminController {
     }
 
     @DeleteMapping("/closed-dates/{id}")
+    @Operation(summary = "Delete a closed date", description = "휴무일을 삭제하는 api")
     public ResponseEntity<ClosedDateDetailDto> deleteClosedDate(@PathVariable Long id) {
         ClosedDateDetailDto responseData = ClosedDateDetailDto.from(closedDateService.deregister(id));
         return ResponseEntity.ok(responseData);
