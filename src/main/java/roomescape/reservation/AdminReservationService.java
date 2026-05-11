@@ -32,7 +32,9 @@ public class AdminReservationService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));
 
-        return reservationRepository.save(theme, name, date, reservationTime);
+        Reservation reservation = new Reservation(name, date, reservationTime, theme);
+
+        return reservationRepository.save(reservation);
     }
 
     @Transactional
