@@ -2,8 +2,11 @@ package roomescape.domain.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -65,13 +68,26 @@ class ThemeServiceTest {
     class GetPopularThemesTest {
 
         @Test
-        void 성공() {
+        void 오늘을_제외하고_직전_7일의_예약_개수로_인기_테마를_조회한다() {
             // given
-            LocalDate targetDate = LocalDate.now();
-            for (int i = 1; i <= 15; i++) {
-                Theme theme = themeRepository.save(Theme.create("테마" + i, "설명" + i, "https://image.com/" + i + ".png"));
-                saveReservations(theme, targetDate, (16 - i) * 5);
-            }
+            Clock fixedClock = Clock.fixed(Instant.parse("2026-05-08T00:00:00Z"), ZoneId.of("Asia/Seoul"));
+            themeService = new ThemeService(themeRepository, fixedClock);
+            LocalDate today = LocalDate.now(fixedClock);
+
+            Theme includedTheme = themeRepository.save(
+                Theme.create("직전 7일 포함 테마", "설명", "https://image.com/included.png"));
+            Theme todayTheme = themeRepository.save(
+                Theme.create("오늘 예약 테마", "설명", "https://image.com/today.png"));
+            Theme beforeRangeTheme = themeRepository.save(
+                Theme.create("범위 밖 테마", "설명", "https://image.com/before-range.png"));
+            Theme lessPopularTheme = themeRepository.save(
+                Theme.create("예약 적은 테마", "설명", "https://image.com/less-popular.png"));
+
+            saveReservations(includedTheme, today.minusDays(1), 3);
+            saveReservations(includedTheme, today.minusDays(7), 2);
+            saveReservations(todayTheme, today, 10);
+            saveReservations(beforeRangeTheme, today.minusDays(8), 10);
+            saveReservations(lessPopularTheme, today.minusDays(1), 1);
 
             // when
             List<ThemeResponseDTO> actual = themeService.getPopularThemes();
@@ -79,7 +95,7 @@ class ThemeServiceTest {
             // then
             assertThat(actual)
                 .extracting(ThemeResponseDTO::name)
-                .containsExactly("테마1", "테마2", "테마3", "테마4", "테마5", "테마6", "테마7", "테마8", "테마9", "테마10");
+                .containsExactly("직전 7일 포함 테마", "예약 적은 테마");
         }
     }
 

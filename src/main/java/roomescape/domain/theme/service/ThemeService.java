@@ -1,7 +1,9 @@
 package roomescape.domain.theme.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.domain.theme.dto.request.ThemeCreateRequestDTO;
 import roomescape.domain.theme.dto.response.ThemeResponseDTO;
@@ -13,9 +15,16 @@ import roomescape.domain.theme.repository.ThemeRepository;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
+    @Autowired
     public ThemeService(ThemeRepository themeRepository) {
+        this(themeRepository, Clock.systemDefaultZone());
+    }
+
+    public ThemeService(ThemeRepository themeRepository, Clock clock) {
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     public List<ThemeResponseDTO> getThemes() {
@@ -23,9 +32,12 @@ public class ThemeService {
     }
 
     public List<ThemeResponseDTO> getPopularThemes() {
+        LocalDate today = LocalDate.now(clock);
+        LocalDate startDate = today.minusDays(7);
+        LocalDate endDate = today.minusDays(1);
+
         return convertThemesToDTO(
-            themeRepository.findPopularThemesDateBetween(LocalDate.now().minusDays(7), LocalDate.now().minusDays(1),
-                10));
+            themeRepository.findPopularThemesDateBetween(startDate, endDate, 10));
     }
 
     private List<ThemeResponseDTO> convertThemesToDTO(List<Theme> themes) {
