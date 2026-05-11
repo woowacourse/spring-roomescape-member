@@ -72,7 +72,7 @@
   // 인기 테마 조회 (서버 데이터만 사용)[cite: 13]
   async function loadPopular() {
     try {
-      const themes = await fetchJson(`/theme/popular?limit=${POPULAR_LIMIT}`);
+      const themes = await fetchJson(`/themes/popular?limit=${POPULAR_LIMIT}`);
 
       popularList.innerHTML = "";
       if (!themes || !themes.length) {
@@ -102,7 +102,7 @@
   async function loadThemesForBooking() {
     themeGrid.innerHTML = '<p class="panel-hint">테마 목록을 불러오는 중…</p>';
     try {
-      const apiThemes = await fetchJson(`/theme`);
+      const apiThemes = await fetchJson(`/themes`);
       state.themes = [...(apiThemes || [])].sort((a, b) =>
           a.name.localeCompare(b.name, "ko")
       );
@@ -153,7 +153,7 @@
       const results = await Promise.all(
           chunk.map(async (dateStr) => {
             const slots = await fetchJson(
-                `/theme/${themeId}/available-time?date=${dateStr}`
+                `/themes/${themeId}/available-times?date=${dateStr}`
             );
             return Array.isArray(slots) && slots.length > 0 ? dateStr : null;
           })
@@ -274,7 +274,7 @@
     timeSelect.innerHTML = "";
     try {
       const slots = await fetchJson(
-          `/theme/${state.selectedTheme.id}/available-time?date=${dateStr}`
+          `/themes/${state.selectedTheme.id}/available-times?date=${dateStr}`
       );
       if (!slots.length) {
         timeSelect.disabled = true;

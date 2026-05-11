@@ -54,7 +54,7 @@
   async function loadThemesIntoDeleteSelect() {
     themeDeleteSelect.innerHTML = "";
     try {
-      const apiThemes = await fetchJson(`/theme`);
+      const apiThemes = await fetchJson(`/themes`);
       const themes = apiThemes || [];
       const sorted = [...themes].sort((a, b) => a.name.localeCompare(b.name, "ko"));
 
@@ -88,7 +88,7 @@
       formData.append("description", themeDesc.value.trim());
       formData.append("file", file);
 
-      const res = await fetch("/admin/theme", { method: "POST", body: formData });
+      const res = await fetch("/admin/themes", { method: "POST", body: formData });
       if (!res.ok) throw new Error(await res.text() || "등록 실패");
 
       setMsg(themeCreateMsg, "테마가 등록되었습니다.", true);
@@ -103,7 +103,7 @@
     const id = themeDeleteSelect.value;
     if (!id || !confirm("삭제하시겠습니까?")) return;
     try {
-      await fetchJson(`/admin/theme/${id}`, { method: "DELETE" });
+      await fetchJson(`/admin/themes/${id}`, { method: "DELETE" });
       setMsg(themeDeleteMsg, "삭제되었습니다.", true);
       await loadThemesIntoDeleteSelect(); // 삭제 후 목록 갱신
     } catch (e) {
