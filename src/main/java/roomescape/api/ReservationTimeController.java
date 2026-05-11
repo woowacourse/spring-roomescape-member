@@ -27,7 +27,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> search() {
+    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
         List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes()
                 .stream()
                 .map(time -> ReservationTimeResponse.from(time, false))
@@ -37,9 +37,9 @@ public class ReservationTimeController {
     }
 
     @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<ReservationTimeResponse>> searchAvailableReservationTime(@RequestParam LocalDate date,
-                                                                                        @RequestParam Long themeId) {
-        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.getReservationTimesWithAvailability(
+    public ResponseEntity<List<ReservationTimeResponse>> searchTimeSlotsByDateAndTheme(@RequestParam LocalDate date,
+                                                                                       @RequestParam Long themeId) {
+        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.getTimeSlotsWithReservationStatus(
                         date, themeId)
                 .stream()
                 .map(ReservationTimeResponse::of)

@@ -4,13 +4,13 @@ import jakarta.annotation.Nonnull;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
 import roomescape.dto.ReservationRequest;
+import roomescape.entity.Reservation;
+import roomescape.entity.ReservationTime;
+import roomescape.entity.Theme;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 @Transactional(readOnly = true)

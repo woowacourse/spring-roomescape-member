@@ -1,9 +1,10 @@
-package roomescape.domain;
+package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import roomescape.entity.Reservation;
 
 public interface ReservationRepository {
 

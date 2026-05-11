@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.ReservationTimeStatus;
 import roomescape.dto.ReservationTimeRequest;
+import roomescape.entity.ReservationTime;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,7 +32,7 @@ public class ReservationTimeService {
         return reservationtimeRepository.getById(id);
     }
 
-    public List<ReservationTimeStatus> getReservationTimesWithAvailability(LocalDate date, Long themeId) {
+    public List<ReservationTimeStatus> getTimeSlotsWithReservationStatus(LocalDate date, Long themeId) {
         List<ReservationTime> times = getReservationTimes();
         Set<Long> reservedTimeIds = reservationRepository.findReservedTimeIdsByDateAndThemeId(date, themeId);
 

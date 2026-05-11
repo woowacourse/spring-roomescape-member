@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
 import roomescape.dto.ThemeRequest;
+import roomescape.entity.Theme;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 @Transactional(readOnly = true)

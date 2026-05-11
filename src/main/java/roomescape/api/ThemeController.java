@@ -27,7 +27,7 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> search() {
+    public ResponseEntity<List<ThemeResponse>> findAll() {
         List<ThemeResponse> responses = themeService.getThemes().stream()
                 .map(ThemeResponse::from)
                 .toList();
