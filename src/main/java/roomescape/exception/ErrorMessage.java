@@ -21,6 +21,8 @@ public enum ErrorMessage {
     INTEGRITY_VIOLATION_ON_DELETE("데이터 무결성 위반으로 삭제에 실패했습니다."),
 
     DUPLICATED_RESERVATION_REQUEST("해당 날짜, 시간, 테마의 예약이 존재하여 예약할 수 없습니다."),
+
+    UNAUTHORIZED_DELETE_RESERVATION_REQUEST("해당 예약을 삭제할 권한이 없습니다."),
     ;
 
     private final String message;
