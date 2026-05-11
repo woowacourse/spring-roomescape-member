@@ -12,7 +12,9 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,6 +23,8 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+
+    private final Clock clock;
 
     @Transactional(readOnly = true)
     public List<Reservation> findAllReservations() {
@@ -35,9 +39,17 @@ public class ReservationService {
                 .orElseThrow(() -> new DomainException(ErrorCode.THEME_NOT_FOUND));
 
         Reservation reservation = new Reservation(name, date, time, theme);
+
         validateNotDuplicated(reservation);
+        validateNotPast(reservation);
 
         return reservationRepository.save(reservation);
+    }
+
+    private void validateNotPast(Reservation reservation) {
+        if(reservation.isPast(LocalDateTime.now(clock))) {
+            throw new DomainException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
+        }
     }
 
     private void validateNotDuplicated(Reservation reservation) {

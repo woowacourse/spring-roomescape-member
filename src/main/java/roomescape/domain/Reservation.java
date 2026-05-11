@@ -1,11 +1,14 @@
 package roomescape.domain;
 
+import lombok.Getter;
 import roomescape.common.exception.DomainException;
 import roomescape.common.exception.ErrorCode;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Getter
 public class Reservation {
     private final Long id;
     private final String name;
@@ -68,30 +71,6 @@ public class Reservation {
         }
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public ReservationTime getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
-    }
-
-    public boolean isSameTime(ReservationTime time) {
-        return Objects.equals(this.time, time);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -102,5 +81,10 @@ public class Reservation {
     @Override
     public int hashCode() {
         return Objects.hashCode(getId());
+    }
+
+    public boolean isPast(LocalDateTime now) {
+        return LocalDateTime.of(date, time.getStartAt())
+                .isBefore(now);
     }
 }
