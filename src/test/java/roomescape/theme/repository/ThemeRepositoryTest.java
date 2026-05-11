@@ -98,13 +98,13 @@ class ThemeRepositoryTest {
 
     @Test
     @DisplayName("테마를 활성화한다.")
-    void updateStatus_active() {
+    void update_active() {
         // given
         Theme savedTheme = jdbcThemeRepository.save(Theme.create("테마1", "테마1 설명", "테마1 썸네일"));
         savedTheme.updateStatus(true);
 
         // when
-        jdbcThemeRepository.updateStatus(savedTheme);
+        jdbcThemeRepository.update(savedTheme);
 
         // then
         assertThat(jdbcThemeRepository.findById(savedTheme.id()).get().isActive())
@@ -114,7 +114,7 @@ class ThemeRepositoryTest {
 
     @Test
     @DisplayName("테마를 비활성화한다.")
-    void updateStatus_deactivate() {
+    void update_deactivate() {
         // given
         Theme theme = Theme.create("테마1", "테마1 설명", "테마1 썸네일");
         theme.updateStatus(true);
@@ -122,7 +122,7 @@ class ThemeRepositoryTest {
         savedTheme.updateStatus(false);
 
         // when
-        jdbcThemeRepository.updateStatus(savedTheme);
+        jdbcThemeRepository.update(savedTheme);
 
         // then
         assertThat(jdbcThemeRepository.findById(savedTheme.id()).get().isActive())

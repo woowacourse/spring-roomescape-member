@@ -54,7 +54,7 @@ public class ThemeService {
     public Theme updateStatus(Long id, boolean isActive) {
         Theme theme = getTheme(id);
         theme.updateStatus(isActive);
-        if (!themeRepository.updateStatus(theme)) {
+        if (!themeRepository.update(theme)) {
             log.warn("Theme status update failed: id={}, name={}", theme.id(), theme.name());
             throw new IllegalArgumentException("테마 상태 변경에 실패했습니다.");
         }
