@@ -16,6 +16,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.request.ThemeCreateRequest;
 import roomescape.theme.dto.response.ReservedThemeResponse;
 import roomescape.theme.dto.response.ThemeResponse;
+import roomescape.theme.service.ThemeRankingService;
 import roomescape.theme.service.ThemeService;
 
 @RestController
@@ -23,9 +24,11 @@ import roomescape.theme.service.ThemeService;
 public class ThemeController {
 
     private final ThemeService themeService;
+    private final ThemeRankingService themeRankingService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(ThemeService themeService, ThemeRankingService themeRankingService) {
         this.themeService = themeService;
+        this.themeRankingService = themeRankingService;
     }
 
     @GetMapping
@@ -62,7 +65,7 @@ public class ThemeController {
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate
     ) {
-        List<ReservedThemeResponse> responses = themeService.findMostReserved(limit, startDate, endDate);
+        List<ReservedThemeResponse> responses = themeRankingService.findMostReserved(limit, startDate, endDate);
 
         return ResponseEntity.ok(responses);
     }

@@ -1,12 +1,10 @@
 package roomescape.theme.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.theme.dao.ThemeDAO;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.request.ThemeCreateRequest;
-import roomescape.theme.dto.response.ReservedThemeResponse;
 
 @Service
 public class ThemeService {
@@ -29,18 +27,6 @@ public class ThemeService {
         );
 
         return themeDAO.insert(theme);
-    }
-
-    public List<ReservedThemeResponse> findMostReserved(long limit, LocalDate startDate, LocalDate endDate) {
-        LocalDate notNullEndDate = handleDefaultEndDate(endDate);
-        return themeDAO.findMostReserved(limit, startDate, notNullEndDate);
-    }
-
-    private LocalDate handleDefaultEndDate(LocalDate endDate) {
-        if (endDate == null) {
-            return LocalDate.now().minusDays(1);
-        }
-        return endDate;
     }
 
     public void delete(long id) {
