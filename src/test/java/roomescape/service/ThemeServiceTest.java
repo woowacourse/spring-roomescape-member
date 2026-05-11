@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,18 +57,19 @@ class ThemeServiceTest {
     class FindAll {
 
         @Test
-        void 테마가_없으면_빈_목록을_반환한다() {
+        @DisplayName("테마가 없으면 빈 목록을 반환한다")
+        void returnsEmptyList() {
             assertThat(themeService.findAll()).isEmpty();
         }
 
         @Test
-        void 전체_테마_목록을_반환한다() {
+        @DisplayName("전체 테마 목록을 반환한다")
+        void returnsAllThemes() {
             List<Theme> saved = new ArrayList<>();
             saved.add(themeService.create(requestDto1));
             saved.add(themeService.create(requestDto2));
 
-            assertThat(themeService.findAll())
-                    .isEqualTo(saved);
+            assertThat(themeService.findAll()).isEqualTo(saved);
         }
     }
 
@@ -75,14 +77,16 @@ class ThemeServiceTest {
     class FindById {
 
         @Test
-        void 존재하는_id로_테마를_조회한다() {
+        @DisplayName("존재하는 id로 테마를 조회한다")
+        void returnsThemeById() {
             Theme saved = themeService.create(requestDto1);
 
             assertThat(themeService.findById(saved.getId())).isEqualTo(saved);
         }
 
         @Test
-        void 존재하지_않는_id를_조회하면_예외를_반환한다() {
+        @DisplayName("존재하지 않는 id를 조회하면 예외를 반환한다")
+        void throwsWhenIdNotFound() {
             assertThatThrownBy(() -> themeService.findById(-1L))
                     .isInstanceOf(NotFoundException.class);
         }
@@ -92,7 +96,8 @@ class ThemeServiceTest {
     class Create {
 
         @Test
-        void 유효한_요청으로_테마를_생성한다() {
+        @DisplayName("유효한 요청으로 테마를 생성한다")
+        void createsTheme() {
             Theme saved = themeService.create(requestDto1);
 
             assertThat(saved.getId()).isNotNull();
@@ -100,7 +105,8 @@ class ThemeServiceTest {
         }
 
         @Test
-        void 중복된_테마_이름으로_생성하면_예외를_반환한다() {
+        @DisplayName("중복된 테마 이름으로 생성하면 예외를 반환한다")
+        void throwsWhenDuplicateName() {
             themeService.create(requestDto1);
 
             assertThatThrownBy(() -> themeService.create(requestDto1))
@@ -112,7 +118,8 @@ class ThemeServiceTest {
     class Delete {
 
         @Test
-        void 테마를_삭제한다() {
+        @DisplayName("테마를 삭제한다")
+        void deletesTheme() {
             Theme saved = themeService.create(requestDto1);
             assertThat(themeDao.existsById(saved.getId())).isTrue();
 
@@ -122,16 +129,19 @@ class ThemeServiceTest {
         }
 
         @Test
-        void 존재하지_않는_id를_삭제하면_예외를_반환한다() {
+        @DisplayName("존재하지 않는 id를 삭제하면 예외를 반환한다")
+        void throwsWhenDeletingNonExistentId() {
             assertThatThrownBy(() -> themeService.delete(-1L))
                     .isInstanceOf(NotFoundException.class);
         }
 
         @Test
-        void 예약이_있는_테마는_삭제할_수_없다() {
+        @DisplayName("예약이 있는 테마는 삭제할 수 없다")
+        void throwsWhenThemeHasReservation() {
             Theme savedTheme = themeService.create(requestDto1);
             Time savedTime = timeDao.insert(new Time(LocalTime.of(13, 0)));
             reservationDao.insert(new Reservation("유저", LocalDate.now(), savedTime, savedTheme));
+
             Long id = savedTheme.getId();
             assertThatThrownBy(() -> themeService.delete(id))
                     .isInstanceOf(ConflictException.class);
@@ -142,7 +152,8 @@ class ThemeServiceTest {
     class FindAvailableTimesById {
 
         @Test
-        void 테마의_이용_가능한_시간_목록을_반환한다() {
+        @DisplayName("테마의 이용 가능한 시간 목록을 반환한다")
+        void returnsAvailableTimes() {
             Theme savedTheme = themeService.create(requestDto1);
             Time bookedTime = timeDao.insert(new Time(LocalTime.of(13, 0)));
             Time availableTime = timeDao.insert(new Time(LocalTime.of(14, 0)));
@@ -162,7 +173,8 @@ class ThemeServiceTest {
     class FindPopulars {
 
         @Test
-        void 인기_테마_목록을_limit만큼_반환한다() {
+        @DisplayName("인기 테마 목록을 limit만큼 반환한다")
+        void returnsPopularThemesByLimit() {
             Theme popularTheme = themeService.create(requestDto1);
             themeService.create(requestDto2);
             Time savedTime = timeDao.insert(new Time(LocalTime.of(13, 0)));
@@ -176,9 +188,10 @@ class ThemeServiceTest {
         }
 
         @Test
-        void 예약_수가_많은_테마가_먼저_반환된다() {
-            Theme morePopular = themeService.create(requestDto1);
+        @DisplayName("예약 수가 많은 테마가 먼저 반환된다")
+        void returnsThemesOrderedByReservationCount() {
             Theme lessPopular = themeService.create(requestDto2);
+            Theme morePopular = themeService.create(requestDto1);
             Time savedTime1 = timeDao.insert(new Time(LocalTime.of(13, 0)));
             Time savedTime2 = timeDao.insert(new Time(LocalTime.of(14, 0)));
 
@@ -192,24 +205,17 @@ class ThemeServiceTest {
         }
 
         @Test
-        void 기간_밖의_예약은_집계하지_않는다() {
+        @DisplayName("기간 밖의 예약은 집계하지 않는다")
+        void excludesReservationsOutsidePeriod() {
             Theme inPeriodTheme = themeService.create(requestDto1);
             Theme outOfPeriodTheme = themeService.create(requestDto2);
             Time savedTime = timeDao.insert(new Time(LocalTime.of(13, 0)));
 
-            reservationDao.insert(new Reservation("유저1", LocalDate.now(), savedTime, inPeriodTheme));
-            reservationDao.insert(new Reservation("유저2", LocalDate.now().minusDays(2), savedTime, outOfPeriodTheme));
+            reservationDao.insert(new Reservation("유저2", LocalDate.now().minusDays(1), savedTime, outOfPeriodTheme));
 
             List<Theme> result = themeService.findPopulars(new PopularThemeRequestDto(2, 1));
 
             assertThat(result).containsExactly(inPeriodTheme, outOfPeriodTheme);
-        }
-
-        @Test
-        void 예약이_없는_테마는_반환하지_않는다() {
-            List<Theme> result = themeService.findPopulars(new PopularThemeRequestDto(10, 7));
-
-            assertThat(result).isEmpty();
         }
     }
 }

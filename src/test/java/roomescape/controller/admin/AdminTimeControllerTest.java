@@ -11,6 +11,7 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +43,11 @@ class AdminTimeControllerTest {
     }
 
     @Nested
-    class GET {
+    class Get {
 
         @Test
-        void 전체_시간_목록을_조회하면_200을_반환한다() {
+        @DisplayName("전체 시간 목록을 조회하면 200을 반환한다")
+        void returnsAllTimes() {
             given(timeService.findAll()).willReturn(List.of(time));
             List<TimeResponseDto> expected = List.of(TimeResponseDto.from(time));
 
@@ -59,7 +61,8 @@ class AdminTimeControllerTest {
         }
 
         @Test
-        void 존재하는_시간_id를_조회하면_200을_반환한다() {
+        @DisplayName("존재하는 시간 id를 조회하면 200을 반환한다")
+        void returnsTimeById() {
             given(timeService.findById(time.getId())).willReturn(time);
             TimeResponseDto expected = TimeResponseDto.from(time);
 
@@ -73,7 +76,8 @@ class AdminTimeControllerTest {
         }
 
         @Test
-        void 존재하지_않는_시간_id를_조회하면_404를_반환한다() {
+        @DisplayName("존재하지 않는 시간 id를 조회하면 404를 반환한다")
+        void returnsNotFoundWhenIdNotExists() {
             given(timeService.findById(999L)).willThrow(new NotFoundException("존재하지 않는 시간입니다."));
 
             RestAssuredMockMvc.given()
@@ -84,10 +88,11 @@ class AdminTimeControllerTest {
     }
 
     @Nested
-    class POST {
+    class Post {
 
         @Test
-        void 유효한_요청으로_시간을_생성하면_201을_반환한다() {
+        @DisplayName("유효한 요청으로 시간을 생성하면 201을 반환한다")
+        void createsTime() {
             TimeRequestDto requestDto = new TimeRequestDto(LocalTime.of(13, 0));
             given(timeService.create(any())).willReturn(time);
             TimeResponseDto expected = TimeResponseDto.from(time);
@@ -105,7 +110,8 @@ class AdminTimeControllerTest {
         }
 
         @Test
-        void startAt이_null이면_400을_반환한다() {
+        @DisplayName("startAt이 null이면 400을 반환한다")
+        void returnsValidationErrorWhenStartAtIsNull() {
             TimeRequestDto requestDto = new TimeRequestDto(null);
 
             RestAssuredMockMvc.given()
@@ -117,7 +123,8 @@ class AdminTimeControllerTest {
         }
 
         @Test
-        void 중복된_시간을_생성하면_409를_반환한다() {
+        @DisplayName("중복된 시간을 생성하면 409를 반환한다")
+        void returnsConflictWhenDuplicateTime() {
             TimeRequestDto requestDto = new TimeRequestDto(LocalTime.of(13, 0));
             given(timeService.create(any())).willThrow(new ConflictException("이미 존재하는 시간입니다."));
 
@@ -131,10 +138,11 @@ class AdminTimeControllerTest {
     }
 
     @Nested
-    class DELETE {
+    class Delete {
 
         @Test
-        void 시간을_삭제하면_204를_반환한다() {
+        @DisplayName("시간을 삭제하면 204를 반환한다")
+        void deletesTime() {
             willDoNothing().given(timeService).delete(time.getId());
 
             RestAssuredMockMvc.given()
@@ -144,7 +152,8 @@ class AdminTimeControllerTest {
         }
 
         @Test
-        void 예약이_있는_시간을_삭제하면_409를_반환한다() {
+        @DisplayName("예약이 있는 시간을 삭제하면 409를 반환한다")
+        void returnsConflictWhenTimeHasReservation() {
             willThrow(new ConflictException("해당 시간에 예약이 존재합니다.")).given(timeService).delete(time.getId());
 
             RestAssuredMockMvc.given()

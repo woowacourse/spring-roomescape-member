@@ -14,6 +14,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -53,10 +54,11 @@ class AdminReservationControllerTest {
     }
 
     @Nested
-    class GET {
+    class Get {
 
         @Test
-        void 전체_예약_목록을_조회한다() {
+        @DisplayName("전체 예약 목록을 조회한다")
+        void returnsAllReservations() {
             List<Reservation> reservations = List.of(reservation);
             given(reservationService.findAll()).willReturn(reservations);
             List<ReservationResponseDto> expected = reservations.stream()
@@ -67,15 +69,15 @@ class AdminReservationControllerTest {
                     .when().get("/admin/reservations")
                     .then()
                     .status(HttpStatus.OK)
-                    .extract().as(new TypeRef<>() {
-                    });
+                    .extract().as(new TypeRef<>() {});
 
             assertThat(actual).isEqualTo(expected);
             then(reservationService).should().findAll();
         }
 
         @Test
-        void 존재하는_예약_id를_조회하면_200을_반환한다() {
+        @DisplayName("존재하는 예약 id를 조회하면 200을 반환한다")
+        void returnsReservationById() {
             given(reservationService.findById(reservation.getId())).willReturn(reservation);
             ReservationResponseDto expected = ReservationResponseDto.from(reservation);
 
@@ -89,7 +91,8 @@ class AdminReservationControllerTest {
         }
 
         @Test
-        void 존재하지_않는_예약_id를_조회하면_404를_반환한다() {
+        @DisplayName("존재하지 않는 예약 id를 조회하면 404를 반환한다")
+        void returnsNotFoundWhenIdNotExists() {
             long notExistsId = -1;
             given(reservationService.findById(notExistsId)).willThrow(new NotFoundException("존재하지 않는 예약입니다."));
 
@@ -101,9 +104,9 @@ class AdminReservationControllerTest {
     }
 
     @Nested
-    class POST {
+    class Post {
 
-        static Stream<Arguments> 유효하지_않은_예약_요청_목록() {
+        static Stream<Arguments> invalidReservationRequests() {
             return Stream.of(
                     Arguments.of("name이 공백", ReservationRequestDtoFixture.withBlankName()),
                     Arguments.of("name이 20자 초과", ReservationRequestDtoFixture.withNameExceedingMaxLength()),
@@ -114,11 +117,10 @@ class AdminReservationControllerTest {
         }
 
         @Test
-        void 유효한_요청으로_예약을_생성하면_201을_반환한다() {
+        @DisplayName("유효한 요청으로 예약을 생성하면 201을 반환한다")
+        void createsReservation() {
             ReservationRequestDto requestDto = new ReservationRequestDto(reservation.getName(), reservation.getDate(),
-                    time.getId(),
-                    theme.getId());
-
+                    time.getId(), theme.getId());
             given(reservationService.create(any(ReservationRequestDto.class))).willReturn(reservation);
             ReservationResponseDto expected = ReservationResponseDto.from(reservation);
 
@@ -135,8 +137,9 @@ class AdminReservationControllerTest {
         }
 
         @ParameterizedTest(name = "{0}")
-        @MethodSource("유효하지_않은_예약_요청_목록")
-        void 유효하지_않은_요청으로_예약을_생성하면_400을_반환한다(String description, ReservationRequestDto invalidRequest) {
+        @MethodSource("invalidReservationRequests")
+        @DisplayName("유효하지 않은 요청으로 예약을 생성하면 400을 반환한다")
+        void returnsValidationError(String description, ReservationRequestDto invalidRequest) {
             RestAssuredMockMvc.given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(invalidRequest)
@@ -147,10 +150,11 @@ class AdminReservationControllerTest {
     }
 
     @Nested
-    class DELETE {
+    class Delete {
 
         @Test
-        void 예약을_삭제하면_204를_반환한다() {
+        @DisplayName("예약을 삭제하면 204를 반환한다")
+        void deletesReservation() {
             willDoNothing().given(reservationService).delete(reservation.getId());
 
             RestAssuredMockMvc.given()
@@ -160,7 +164,8 @@ class AdminReservationControllerTest {
         }
 
         @Test
-        void 존재하지_않는_예약을_삭제하면_404를_반환한다() {
+        @DisplayName("존재하지 않는 예약을 삭제하면 404를 반환한다")
+        void returnsNotFoundWhenIdNotExists() {
             Long notExistsId = 1L;
             willThrow(new NotFoundException("존재하지 않는 예약입니다.")).given(reservationService).delete(notExistsId);
 

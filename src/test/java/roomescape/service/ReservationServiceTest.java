@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,18 +66,19 @@ class ReservationServiceTest {
     class FindAll {
 
         @Test
-        void 예약이_없으면_빈_목록을_반환한다() {
+        @DisplayName("예약이 없으면 빈 목록을 반환한다")
+        void returnsEmptyList() {
             assertThat(reservationService.findAll()).isEmpty();
         }
 
         @Test
-        void 전체_예약_목록을_반환한다() {
+        @DisplayName("전체 예약 목록을 반환한다")
+        void returnsAllReservations() {
             List<Reservation> saved = new ArrayList<>();
             saved.add(reservationService.create(requestDto1));
             saved.add(reservationService.create(requestDto2));
 
-            assertThat(reservationService.findAll())
-                    .isEqualTo(saved);
+            assertThat(reservationService.findAll()).isEqualTo(saved);
         }
     }
 
@@ -84,14 +86,16 @@ class ReservationServiceTest {
     class FindById {
 
         @Test
-        void 존재하는_id로_예약을_조회한다() {
+        @DisplayName("존재하는 id로 예약을 조회한다")
+        void returnsReservationById() {
             Reservation saved = reservationService.create(requestDto1);
 
             assertThat(reservationService.findById(saved.getId())).isEqualTo(saved);
         }
 
         @Test
-        void 존재하지_않는_id를_조회하면_예외를_반환한다() {
+        @DisplayName("존재하지 않는 id를 조회하면 예외를 반환한다")
+        void throwsWhenIdNotFound() {
             assertThatThrownBy(() -> reservationService.findById(-1L))
                     .isInstanceOf(NotFoundException.class);
         }
@@ -101,7 +105,8 @@ class ReservationServiceTest {
     class Create {
 
         @Test
-        void 유효한_요청으로_예약을_생성한다() {
+        @DisplayName("유효한 요청으로 예약을 생성한다")
+        void createsReservation() {
             Reservation saved = reservationService.create(requestDto1);
 
             assertThat(saved.getId()).isNotNull();
@@ -110,7 +115,8 @@ class ReservationServiceTest {
         }
 
         @Test
-        void 시간이_존재하지_않으면_예외를_반환한다() {
+        @DisplayName("시간이 존재하지 않으면 예외를 반환한다")
+        void throwsWhenTimeNotFound() {
             ReservationRequestDto dto = new ReservationRequestDto(
                     "유저1", LocalDate.of(2026, 5, 3), -1L, savedTheme1.getId());
 
@@ -119,7 +125,8 @@ class ReservationServiceTest {
         }
 
         @Test
-        void 테마가_존재하지_않으면_예외를_반환한다() {
+        @DisplayName("테마가 존재하지 않으면 예외를 반환한다")
+        void throwsWhenThemeNotFound() {
             ReservationRequestDto dto = new ReservationRequestDto(
                     "유저1", LocalDate.of(2026, 5, 3), savedTime1.getId(), -1L);
 
@@ -128,7 +135,8 @@ class ReservationServiceTest {
         }
 
         @Test
-        void 동일한_테마_날짜_시간으로_예약을_생성하면_예외를_반환한다() {
+        @DisplayName("동일한 테마, 날짜, 시간으로 예약을 생성하면 예외를 반환한다")
+        void throwsWhenDuplicateReservation() {
             reservationService.create(requestDto1);
 
             assertThatThrownBy(() -> reservationService.create(requestDto1))
@@ -140,7 +148,8 @@ class ReservationServiceTest {
     class Delete {
 
         @Test
-        void 예약을_삭제한다() {
+        @DisplayName("예약을 삭제한다")
+        void deletesReservation() {
             Reservation saved = reservationService.create(requestDto1);
             reservationService.delete(saved.getId());
 
@@ -148,7 +157,8 @@ class ReservationServiceTest {
         }
 
         @Test
-        void 존재하지_않는_id를_삭제하면_예외를_반환한다() {
+        @DisplayName("존재하지 않는 id를 삭제하면 예외를 반환한다")
+        void throwsWhenDeletingNonExistentId() {
             assertThatThrownBy(() -> reservationService.delete(-1L))
                     .isInstanceOf(NotFoundException.class);
         }

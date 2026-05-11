@@ -12,6 +12,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -43,94 +45,104 @@ class ThemeControllerTest {
         RestAssuredMockMvc.mockMvc(mockMvc);
     }
 
-    @Test
-    void 전체_테마_목록을_조회하면_200을_반환한다() {
-        given(themeService.findAll()).willReturn(List.of(theme));
-        List<ThemeResponseDto> expected = List.of(ThemeResponseDto.from(theme));
+    @Nested
+    class Get {
 
-        List<ThemeResponseDto> actual = RestAssuredMockMvc.given()
-                .when().get("/themes")
-                .then()
-                .status(HttpStatus.OK)
-                .extract().as(new TypeRef<>() {});
+        static Stream<Arguments> invalidPopularThemeParams() {
+            return Stream.of(
+                    Arguments.of("limit이 최대값 초과", 16, 7),
+                    Arguments.of("days가 최대값 초과", 10, 11),
+                    Arguments.of("limit이 0 이하", 0, 7)
+            );
+        }
 
-        assertThat(actual).isEqualTo(expected);
-    }
+        @Test
+        @DisplayName("전체 테마 목록을 조회하면 200을 반환한다")
+        void returnsAllThemes() {
+            given(themeService.findAll()).willReturn(List.of(theme));
+            List<ThemeResponseDto> expected = List.of(ThemeResponseDto.from(theme));
 
-    @Test
-    void 존재하는_테마_id를_조회하면_200을_반환한다() {
-        given(themeService.findById(theme.getId())).willReturn(theme);
-        ThemeResponseDto expected = ThemeResponseDto.from(theme);
+            List<ThemeResponseDto> actual = RestAssuredMockMvc.given()
+                    .when().get("/themes")
+                    .then()
+                    .status(HttpStatus.OK)
+                    .extract().as(new TypeRef<>() {});
 
-        ThemeResponseDto actual = RestAssuredMockMvc.given()
-                .when().get("/themes/" + theme.getId())
-                .then()
-                .status(HttpStatus.OK)
-                .extract().as(ThemeResponseDto.class);
+            assertThat(actual).isEqualTo(expected);
+        }
 
-        assertThat(actual).isEqualTo(expected);
-    }
+        @Test
+        @DisplayName("존재하는 테마 id를 조회하면 200을 반환한다")
+        void returnsThemeById() {
+            given(themeService.findById(theme.getId())).willReturn(theme);
+            ThemeResponseDto expected = ThemeResponseDto.from(theme);
 
-    @Test
-    void 존재하지_않는_테마_id를_조회하면_404를_반환한다() {
-        given(themeService.findById(999L)).willThrow(new NotFoundException("존재하지 않는 테마입니다."));
+            ThemeResponseDto actual = RestAssuredMockMvc.given()
+                    .when().get("/themes/" + theme.getId())
+                    .then()
+                    .status(HttpStatus.OK)
+                    .extract().as(ThemeResponseDto.class);
 
-        RestAssuredMockMvc.given()
-                .when().get("/themes/999")
-                .then()
-                .status(HttpStatus.NOT_FOUND);
-    }
+            assertThat(actual).isEqualTo(expected);
+        }
 
-    @Test
-    void 테마의_이용_가능한_시간_목록을_조회하면_200을_반환한다() {
-        List<AvailableTimeResponseDto> expected = List.of(
-                new AvailableTimeResponseDto(1L, LocalTime.of(13, 0), false),
-                new AvailableTimeResponseDto(2L, LocalTime.of(14, 0), true)
-        );
-        given(themeService.findAvailableTimesById(eq(theme.getId()), any(LocalDate.class))).willReturn(expected);
+        @Test
+        @DisplayName("존재하지 않는 테마 id를 조회하면 404를 반환한다")
+        void returnsNotFoundWhenIdNotExists() {
+            given(themeService.findById(999L)).willThrow(new NotFoundException("존재하지 않는 테마입니다."));
 
-        List<AvailableTimeResponseDto> actual = RestAssuredMockMvc.given()
-                .queryParam("localDate", "2026-05-10")
-                .when().get("/themes/" + theme.getId() + "/times")
-                .then()
-                .status(HttpStatus.OK)
-                .extract().as(new TypeRef<>() {});
+            RestAssuredMockMvc.given()
+                    .when().get("/themes/999")
+                    .then()
+                    .status(HttpStatus.NOT_FOUND);
+        }
 
-        assertThat(actual).isEqualTo(expected);
-    }
+        @Test
+        @DisplayName("테마의 이용 가능한 시간 목록을 조회하면 200을 반환한다")
+        void returnsAvailableTimes() {
+            List<AvailableTimeResponseDto> expected = List.of(
+                    new AvailableTimeResponseDto(1L, LocalTime.of(13, 0), false),
+                    new AvailableTimeResponseDto(2L, LocalTime.of(14, 0), true)
+            );
+            given(themeService.findAvailableTimesById(eq(theme.getId()), any(LocalDate.class))).willReturn(expected);
 
-    @Test
-    void 인기_테마_목록을_조회하면_200을_반환한다() {
-        given(themeService.findPopulars(any())).willReturn(List.of(theme));
-        List<ThemeResponseDto> expected = List.of(ThemeResponseDto.from(theme));
+            List<AvailableTimeResponseDto> actual = RestAssuredMockMvc.given()
+                    .queryParam("localDate", "2026-05-10")
+                    .when().get("/themes/" + theme.getId() + "/times")
+                    .then()
+                    .status(HttpStatus.OK)
+                    .extract().as(new TypeRef<>() {});
 
-        List<ThemeResponseDto> actual = RestAssuredMockMvc.given()
-                .queryParam("limit", "10")
-                .queryParam("days", "7")
-                .when().get("/themes/populars")
-                .then()
-                .status(HttpStatus.OK)
-                .extract().as(new TypeRef<>() {});
+            assertThat(actual).isEqualTo(expected);
+        }
 
-        assertThat(actual).isEqualTo(expected);
-    }
+        @Test
+        @DisplayName("인기 테마 목록을 조회하면 200을 반환한다")
+        void returnsPopularThemes() {
+            given(themeService.findPopulars(any())).willReturn(List.of(theme));
+            List<ThemeResponseDto> expected = List.of(ThemeResponseDto.from(theme));
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("유효하지_않은_인기_테마_파라미터_목록")
-    void 유효하지_않은_파라미터로_인기_테마를_조회하면_400을_반환한다(String description, int limit, int days) {
-        RestAssuredMockMvc.given()
-                .queryParam("limit", limit)
-                .queryParam("days", days)
-                .when().get("/themes/populars")
-                .then()
-                .status(HttpStatus.BAD_REQUEST);
-    }
+            List<ThemeResponseDto> actual = RestAssuredMockMvc.given()
+                    .queryParam("limit", "10")
+                    .queryParam("days", "7")
+                    .when().get("/themes/populars")
+                    .then()
+                    .status(HttpStatus.OK)
+                    .extract().as(new TypeRef<>() {});
 
-    static Stream<Arguments> 유효하지_않은_인기_테마_파라미터_목록() {
-        return Stream.of(
-                Arguments.of("limit이 최대값 초과", 16, 7),
-                Arguments.of("days가 최대값 초과", 10, 11),
-                Arguments.of("limit이 0 이하", 0, 7)
-        );
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("invalidPopularThemeParams")
+        @DisplayName("유효하지 않은 파라미터로 인기 테마를 조회하면 400을 반환한다")
+        void returnsValidationErrorWithInvalidParams(String description, int limit, int days) {
+            RestAssuredMockMvc.given()
+                    .queryParam("limit", limit)
+                    .queryParam("days", days)
+                    .when().get("/themes/populars")
+                    .then()
+                    .status(HttpStatus.BAD_REQUEST);
+        }
     }
 }

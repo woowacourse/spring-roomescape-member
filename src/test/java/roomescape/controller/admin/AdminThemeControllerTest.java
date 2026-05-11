@@ -11,6 +11,7 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,10 +48,11 @@ class AdminThemeControllerTest {
     }
 
     @Nested
-    class GET {
+    class Get {
 
         @Test
-        void 전체_테마_목록을_조회하면_200을_반환한다() {
+        @DisplayName("전체 테마 목록을 조회하면 200을 반환한다")
+        void returnsAllThemes() {
             given(themeService.findAll()).willReturn(List.of(theme));
             List<ThemeResponseDto> expected = List.of(ThemeResponseDto.from(theme));
 
@@ -64,7 +66,8 @@ class AdminThemeControllerTest {
         }
 
         @Test
-        void 존재하는_테마_id를_조회하면_200을_반환한다() {
+        @DisplayName("존재하는 테마 id를 조회하면 200을 반환한다")
+        void returnsThemeById() {
             given(themeService.findById(theme.getId())).willReturn(theme);
             ThemeResponseDto expected = ThemeResponseDto.from(theme);
 
@@ -78,7 +81,8 @@ class AdminThemeControllerTest {
         }
 
         @Test
-        void 존재하지_않는_테마_id를_조회하면_404를_반환한다() {
+        @DisplayName("존재하지 않는 테마 id를 조회하면 404를 반환한다")
+        void returnsNotFoundWhenIdNotExists() {
             given(themeService.findById(999L)).willThrow(new NotFoundException("존재하지 않는 테마입니다."));
 
             RestAssuredMockMvc.given()
@@ -89,9 +93,9 @@ class AdminThemeControllerTest {
     }
 
     @Nested
-    class POST {
+    class Post {
 
-        static Stream<Arguments> 유효하지_않은_테마_요청_목록() {
+        static Stream<Arguments> invalidThemeRequests() {
             return Stream.of(
                     Arguments.of("name이 공백", ThemeRequestDtoFixture.withBlankName()),
                     Arguments.of("name이 40자 초과", ThemeRequestDtoFixture.withNameExceedingMaxLength()),
@@ -101,7 +105,8 @@ class AdminThemeControllerTest {
         }
 
         @Test
-        void 유효한_요청으로_테마를_생성하면_201을_반환한다() {
+        @DisplayName("유효한 요청으로 테마를 생성하면 201을 반환한다")
+        void createsTheme() {
             ThemeRequestDto requestDto = new ThemeRequestDto(
                     theme.getName().getValue(), theme.getThumbnailUrl(), theme.getDescription());
             given(themeService.create(any())).willReturn(theme);
@@ -120,8 +125,9 @@ class AdminThemeControllerTest {
         }
 
         @ParameterizedTest(name = "{0}")
-        @MethodSource("유효하지_않은_테마_요청_목록")
-        void 유효하지_않은_요청으로_테마를_생성하면_400을_반환한다(String description, ThemeRequestDto invalidRequest) {
+        @MethodSource("invalidThemeRequests")
+        @DisplayName("유효하지 않은 요청으로 테마를 생성하면 400을 반환한다")
+        void returnsValidationError(String description, ThemeRequestDto invalidRequest) {
             RestAssuredMockMvc.given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(invalidRequest)
@@ -131,7 +137,8 @@ class AdminThemeControllerTest {
         }
 
         @Test
-        void 중복된_테마를_생성하면_409를_반환한다() {
+        @DisplayName("중복된 테마를 생성하면 409를 반환한다")
+        void returnsConflictWhenDuplicateTheme() {
             ThemeRequestDto requestDto = new ThemeRequestDto(
                     theme.getName().getValue(), theme.getThumbnailUrl(), theme.getDescription());
             given(themeService.create(any())).willThrow(new ConflictException("이미 존재하는 테마명입니다."));
@@ -146,10 +153,11 @@ class AdminThemeControllerTest {
     }
 
     @Nested
-    class DELETE {
+    class Delete {
 
         @Test
-        void 테마를_삭제하면_204를_반환한다() {
+        @DisplayName("테마를 삭제하면 204를 반환한다")
+        void deletesTheme() {
             willDoNothing().given(themeService).delete(theme.getId());
 
             RestAssuredMockMvc.given()
@@ -159,7 +167,8 @@ class AdminThemeControllerTest {
         }
 
         @Test
-        void 예약이_있는_테마를_삭제하면_409를_반환한다() {
+        @DisplayName("예약이 있는 테마를 삭제하면 409를 반환한다")
+        void returnsConflictWhenThemeHasReservation() {
             willThrow(new ConflictException("해당 테마에 예약이 존재합니다.")).given(themeService).delete(theme.getId());
 
             RestAssuredMockMvc.given()

@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,18 +56,19 @@ class TimeServiceTest {
     class FindAll {
 
         @Test
-        void 시간이_없으면_빈_목록을_반환한다() {
+        @DisplayName("시간이 없으면 빈 목록을 반환한다")
+        void returnsEmptyList() {
             assertThat(timeService.findAll()).isEmpty();
         }
 
         @Test
-        void 전체_시간_목록을_반환한다() {
+        @DisplayName("전체 시간 목록을 반환한다")
+        void returnsAllTimes() {
             List<Time> saved = new ArrayList<>();
             saved.add(timeService.create(timeRequestDto1));
             saved.add(timeService.create(timeRequestDto2));
 
-            assertThat(timeService.findAll())
-                    .isEqualTo(saved);
+            assertThat(timeService.findAll()).isEqualTo(saved);
         }
     }
 
@@ -74,14 +76,16 @@ class TimeServiceTest {
     class FindById {
 
         @Test
-        void 존재하는_id로_시간을_조회한다() {
+        @DisplayName("존재하는 id로 시간을 조회한다")
+        void returnsTimeById() {
             Time saved = timeService.create(timeRequestDto1);
 
             assertThat(timeService.findById(saved.getId())).isEqualTo(saved);
         }
 
         @Test
-        void 존재하지_않는_id를_조회하면_예외를_반환한다() {
+        @DisplayName("존재하지 않는 id를 조회하면 예외를 반환한다")
+        void throwsWhenIdNotFound() {
             assertThatThrownBy(() -> timeService.findById(-1L))
                     .isInstanceOf(NotFoundException.class);
         }
@@ -91,7 +95,8 @@ class TimeServiceTest {
     class Create {
 
         @Test
-        void 유효한_요청으로_시간을_생성한다() {
+        @DisplayName("유효한 요청으로 시간을 생성한다")
+        void createsTime() {
             Time saved = timeService.create(timeRequestDto1);
 
             assertThat(saved.getId()).isNotNull();
@@ -99,7 +104,8 @@ class TimeServiceTest {
         }
 
         @Test
-        void 중복된_시간을_생성하면_예외를_반환한다() {
+        @DisplayName("중복된 시간을 생성하면 예외를 반환한다")
+        void throwsWhenDuplicateTime() {
             timeService.create(timeRequestDto1);
 
             assertThatThrownBy(() -> timeService.create(timeRequestDto1))
@@ -111,7 +117,8 @@ class TimeServiceTest {
     class Delete {
 
         @Test
-        void 시간을_삭제한다() {
+        @DisplayName("시간을 삭제한다")
+        void deletesTime() {
             Time saved = timeService.create(timeRequestDto1);
             timeService.delete(saved.getId());
 
@@ -119,17 +126,19 @@ class TimeServiceTest {
         }
 
         @Test
-        void 존재하지_않는_id를_삭제하면_예외를_반환한다() {
+        @DisplayName("존재하지 않는 id를 삭제하면 예외를 반환한다")
+        void throwsWhenDeletingNonExistentId() {
             assertThatThrownBy(() -> timeService.delete(-1L))
                     .isInstanceOf(NotFoundException.class);
         }
 
         @Test
-        void 예약이_있는_시간은_삭제할_수_없다() {
+        @DisplayName("예약이 있는 시간은 삭제할 수 없다")
+        void throwsWhenTimeHasReservation() {
             Time savedTime = timeService.create(timeRequestDto1);
             Theme savedTheme = themeDao.insert(new Theme(new Name("테마"), "http://thumbnail_url", "설명"));
             reservationDao.insert(new Reservation("유저", LocalDate.now(), savedTime, savedTheme));
-            
+
             Long id = savedTime.getId();
             assertThatThrownBy(() -> timeService.delete(id))
                     .isInstanceOf(ConflictException.class);

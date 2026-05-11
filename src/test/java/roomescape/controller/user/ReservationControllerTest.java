@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -47,67 +49,75 @@ class ReservationControllerTest {
         RestAssuredMockMvc.mockMvc(mockMvc);
     }
 
-    @Test
-    void 유효한_요청으로_예약을_생성하면_200을_반환한다() {
-        ReservationRequestDto requestDto = new ReservationRequestDto("유저1", LocalDate.of(2026, 5, 10), 1L, 1L);
-        given(reservationService.create(any())).willReturn(reservation);
-        ReservationResponseDto expected = ReservationResponseDto.from(reservation);
+    @Nested
+    class Post {
 
-        ReservationResponseDto actual = RestAssuredMockMvc.given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(requestDto)
-                .when().post("/reservations")
-                .then()
-                .status(HttpStatus.OK)
-                .extract().as(ReservationResponseDto.class);
+        static Stream<Arguments> invalidReservationRequests() {
+            return Stream.of(
+                    Arguments.of("name이 공백", ReservationRequestDtoFixture.withBlankName()),
+                    Arguments.of("name이 20자 초과", ReservationRequestDtoFixture.withNameExceedingMaxLength()),
+                    Arguments.of("date가 null", ReservationRequestDtoFixture.withNullDate()),
+                    Arguments.of("timeId가 null", ReservationRequestDtoFixture.withNullTimeId()),
+                    Arguments.of("themeId가 null", ReservationRequestDtoFixture.withNullThemeId())
+            );
+        }
 
-        assertThat(actual).isEqualTo(expected);
-    }
+        @Test
+        @DisplayName("유효한 요청으로 예약을 생성하면 200을 반환한다")
+        void createsReservation() {
+            ReservationRequestDto requestDto = new ReservationRequestDto("유저1", LocalDate.of(2026, 5, 10), 1L, 1L);
+            given(reservationService.create(any())).willReturn(reservation);
+            ReservationResponseDto expected = ReservationResponseDto.from(reservation);
 
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("유효하지_않은_예약_요청_목록")
-    void 유효하지_않은_요청으로_예약을_생성하면_400을_반환한다(String description, ReservationRequestDto invalidRequest) {
-        RestAssuredMockMvc.given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(invalidRequest)
-                .when().post("/reservations")
-                .then()
-                .status(HttpStatus.BAD_REQUEST);
-    }
+            ReservationResponseDto actual = RestAssuredMockMvc.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(requestDto)
+                    .when().post("/reservations")
+                    .then()
+                    .status(HttpStatus.OK)
+                    .extract().as(ReservationResponseDto.class);
 
-    static Stream<Arguments> 유효하지_않은_예약_요청_목록() {
-        return Stream.of(
-                Arguments.of("name이 공백", ReservationRequestDtoFixture.withBlankName()),
-                Arguments.of("name이 20자 초과", ReservationRequestDtoFixture.withNameExceedingMaxLength()),
-                Arguments.of("date가 null", ReservationRequestDtoFixture.withNullDate()),
-                Arguments.of("timeId가 null", ReservationRequestDtoFixture.withNullTimeId()),
-                Arguments.of("themeId가 null", ReservationRequestDtoFixture.withNullThemeId())
-        );
-    }
+            assertThat(actual).isEqualTo(expected);
+        }
 
-    @Test
-    void 존재하지_않는_시간으로_예약을_생성하면_404를_반환한다() {
-        ReservationRequestDto requestDto = new ReservationRequestDto("유저1", LocalDate.of(2026, 5, 10), 999L, 1L);
-        given(reservationService.create(any())).willThrow(new NotFoundException("존재하지 않는 시간입니다."));
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("invalidReservationRequests")
+        @DisplayName("유효하지 않은 요청으로 예약을 생성하면 400을 반환한다")
+        void returnsValidationError(String description, ReservationRequestDto invalidRequest) {
+            RestAssuredMockMvc.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(invalidRequest)
+                    .when().post("/reservations")
+                    .then()
+                    .status(HttpStatus.BAD_REQUEST);
+        }
 
-        RestAssuredMockMvc.given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(requestDto)
-                .when().post("/reservations")
-                .then()
-                .status(HttpStatus.NOT_FOUND);
-    }
+        @Test
+        @DisplayName("존재하지 않는 시간으로 예약을 생성하면 404를 반환한다")
+        void returnsNotFoundWhenTimeNotExists() {
+            ReservationRequestDto requestDto = new ReservationRequestDto("유저1", LocalDate.of(2026, 5, 10), 999L, 1L);
+            given(reservationService.create(any())).willThrow(new NotFoundException("존재하지 않는 시간입니다."));
 
-    @Test
-    void 중복된_예약을_생성하면_409를_반환한다() {
-        ReservationRequestDto requestDto = new ReservationRequestDto("유저1", LocalDate.of(2026, 5, 10), 1L, 1L);
-        given(reservationService.create(any())).willThrow(new ConflictException("이미 존재하는 예약이 있습니다."));
+            RestAssuredMockMvc.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(requestDto)
+                    .when().post("/reservations")
+                    .then()
+                    .status(HttpStatus.NOT_FOUND);
+        }
 
-        RestAssuredMockMvc.given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(requestDto)
-                .when().post("/reservations")
-                .then()
-                .status(HttpStatus.CONFLICT);
+        @Test
+        @DisplayName("중복된 예약을 생성하면 409를 반환한다")
+        void returnsConflictWhenDuplicateReservation() {
+            ReservationRequestDto requestDto = new ReservationRequestDto("유저1", LocalDate.of(2026, 5, 10), 1L, 1L);
+            given(reservationService.create(any())).willThrow(new ConflictException("이미 존재하는 예약이 있습니다."));
+
+            RestAssuredMockMvc.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(requestDto)
+                    .when().post("/reservations")
+                    .then()
+                    .status(HttpStatus.CONFLICT);
+        }
     }
 }
