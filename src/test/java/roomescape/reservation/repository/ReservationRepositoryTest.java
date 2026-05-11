@@ -57,7 +57,7 @@ class ReservationRepositoryTest {
 
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT count(*) FROM reservation WHERE id = ?", Integer.class, saved.getId());
-        assertThat(saved.getId()).isPositive();;
+        assertThat(count).isEqualTo(1);
     }
 
     @Test
