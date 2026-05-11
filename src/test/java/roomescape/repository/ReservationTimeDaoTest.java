@@ -3,18 +3,17 @@ package roomescape.repository;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.time.LocalTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.TimeStatus;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeDaoTest {
 
     @Autowired
@@ -22,6 +21,12 @@ class ReservationTimeDaoTest {
 
     @Autowired
     private ReservationTimeDao reservationTimeDao;
+
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+    }
 
     private final RowMapper<ReservationTime> rowMapper = (rs, rowNum) -> {
         if (rs.getString("status").equals(TimeStatus.DELETED.toString())) {
@@ -40,7 +45,7 @@ class ReservationTimeDaoTest {
 
     @Test
     @DisplayName("시간 생성 테스트")
-    void ofReservationTimeTest() {
+    void CreateReservationTimeTest() {
         ReservationTime reservationTime = ReservationTime.pending(LocalTime.of(9, 0));
         ReservationTime saved = reservationTimeDao.save(reservationTime);
 
@@ -51,7 +56,7 @@ class ReservationTimeDaoTest {
 
     @Test
     @DisplayName("시간 삭제 테스트")
-    void deleteReservationTimeTest() {
+    void DeleteReservationTimeTest() {
         ReservationTime reservationTime = ReservationTime.pending(LocalTime.of(9, 0));
         ReservationTime saved = reservationTimeDao.save(reservationTime);
 
