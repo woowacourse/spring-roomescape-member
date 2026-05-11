@@ -43,7 +43,9 @@ class JdbcReservationTimeRepositoryTest {
         Optional<ReservationTime> result = reservationTimeRepository.findById(saved.getId());
 
         // then
-        assertThat(result.get()).isEqualTo(saved);
+        assertThat(result.get())
+                .usingRecursiveComparison()
+                .isEqualTo(saved);
     }
 
     @DisplayName("저장된 모든 예약시간을 조회한다")
@@ -63,6 +65,7 @@ class JdbcReservationTimeRepositoryTest {
         // then
         assertThat(found)
                 .hasSize(2)
+                .usingRecursiveFieldByFieldElementComparator()
                 .containsExactlyInAnyOrder(reservationTime1, reservationTime2);
     }
 

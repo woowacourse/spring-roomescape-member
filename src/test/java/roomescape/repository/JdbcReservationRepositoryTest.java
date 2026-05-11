@@ -64,7 +64,9 @@ class JdbcReservationRepositoryTest {
         Optional<Reservation> result = reservationRepository.findById(saved.getId());
 
         // then
-        assertThat(result.get()).isEqualTo(saved);
+        assertThat(result.get())
+                .usingRecursiveComparison()
+                .isEqualTo(saved);
     }
 
     @DisplayName("저장된 모든 예약을 조회한다")
@@ -95,9 +97,8 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(foundReservations)
                 .hasSize(2)
-                .containsExactlyInAnyOrder(
-                        savedRudevicoReservation, savedCocoReservation
-                );
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactlyInAnyOrder(savedRudevicoReservation, savedCocoReservation);
     }
 
     @DisplayName("id에 해당하는 예약을 삭제한다")

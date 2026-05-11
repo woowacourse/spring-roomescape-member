@@ -45,25 +45,6 @@ public class Theme {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Theme theme = (Theme) o;
-        return Objects.equals(id, theme.id) && Objects.equals(name, theme.name)
-                && Objects.equals(description, theme.description) && Objects.equals(
-                imageUrl, theme.imageUrl);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, description, imageUrl);
-    }
-
-    @Override
     public String toString() {
         return "Theme{" +
                 "id=" + id +

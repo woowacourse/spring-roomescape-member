@@ -43,7 +43,9 @@ class JdbcThemeRepositoryTest {
         Optional<Theme> result = themeRespository.findById(saved.getId());
 
         // then
-        assertThat(result.get()).isEqualTo(saved);
+        assertThat(result.get())
+                .usingRecursiveComparison()
+                .isEqualTo(saved);
     }
 
     @DisplayName("저장된 모든 테마를 조회한다")
@@ -63,6 +65,7 @@ class JdbcThemeRepositoryTest {
         // then
         assertThat(foundThemes)
                 .hasSize(2)
+                .usingRecursiveFieldByFieldElementComparator()
                 .containsExactlyInAnyOrder(
                         savedHorror,
                         savedSuspect
