@@ -24,7 +24,7 @@ public class ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long create(Reservation reservation) {
+    public Reservation create(Reservation reservation) {
         String sql = "INSERT INTO reservation (schedule_id, user_id) VALUES (?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -36,7 +36,10 @@ public class ReservationRepository {
                     ps.setLong(2, reservation.getUser().getId());
                     return ps;
                 }, keyHolder);
-        return keyHolder.getKey().longValue();
+
+        Long generatedId = keyHolder.getKey().longValue();
+
+        return new Reservation(generatedId, reservation.getUser(), reservation.getSchedule(), reservation.getTheme());
     }
 
     public List<Reservation> findAll() {

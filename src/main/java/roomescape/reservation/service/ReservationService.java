@@ -50,8 +50,7 @@ public class ReservationService {
         }
 
         Reservation reservation = new Reservation(user, schedule, theme);
-        Long reservationId = reservationRepository.create(reservation);
-        Reservation savedReservation = new Reservation(reservationId, user, schedule, theme);
+        Reservation savedReservation = reservationRepository.create(reservation);
         return ReservationIdResponse.from(savedReservation);
     }
 

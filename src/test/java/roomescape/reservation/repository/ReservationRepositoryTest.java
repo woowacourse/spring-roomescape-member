@@ -51,7 +51,8 @@ public class ReservationRepositoryTest {
     void 예약을_데이터베이스에_성공적으로_저장하고_생성된_ID를_반환한다() {
         Reservation reservation = new Reservation(user, schedule, theme);
 
-        Long savedId = reservationRepository.create(reservation);
+        Reservation savedReservation = reservationRepository.create(reservation);
+        Long savedId = savedReservation.getId();
 
         assertThat(savedId).isNotNull();
 
@@ -78,7 +79,8 @@ public class ReservationRepositoryTest {
     @Test
     void 예약을_데이터베이스에서_정상적으로_삭제한다() {
         Reservation reservation = new Reservation(user, schedule, theme);
-        Long savedId = reservationRepository.create(reservation);
+        Reservation savedReservation = reservationRepository.create(reservation);
+        Long savedId = savedReservation.getId();
 
         reservationRepository.delete(savedId);
 
