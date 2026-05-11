@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.QueryWithParams;
-import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationInfo;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -77,7 +77,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             )
             """;
 
-    private static final RowMapper<Reservation> MAPPER = (rs, rowNumber) -> new Reservation(
+    private static final RowMapper<ReservationInfo> MAPPER = (rs, rowNumber) -> new ReservationInfo(
             rs.getLong(COLUMN_ID),
             rs.getString(COLUMN_NAME),
             rs.getDate(COLUMN_DATE).toLocalDate(),
@@ -105,13 +105,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> getAllReservation(String name) {
+    public List<ReservationInfo> getAllReservation(String name) {
         QueryWithParams queryWithParams = getReservationsQuery(name);
         return Collections.unmodifiableList(jdbcTemplate.query(queryWithParams.query(), MAPPER, queryWithParams.params().toArray()));
     }
 
     @Override
-    public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
+    public ReservationInfo addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
                 COLUMN_NAME, reservationCommand.name(),
                 COLUMN_DATE, reservationCommand.date(),
@@ -119,7 +119,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 COLUMN_THEME_ID, reservationCommand.themeId()
         )).longValue();
 
-        return new Reservation(id, reservationCommand.name(), reservationCommand.date(), reservationTime,
+        return new ReservationInfo(id, reservationCommand.name(), reservationCommand.date(), reservationTime,
                 theme);
     }
 

@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationInfo;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.service.RoomReservationService;
@@ -33,13 +33,13 @@ class ReservationControllerTest {
     @MockitoBean
     private RoomReservationService roomReservationService;
 
-    private Reservation reservation;
+    private ReservationInfo reservation;
 
     @BeforeEach
     void setUp() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme reservationTheme = new Theme(1L, "테마1", "테마 설명", "image url");
-        reservation = new Reservation(1L, "홍길동", "2026-05-06", reservationTime, reservationTheme);
+        reservation = new ReservationInfo(1L, "홍길동", "2026-05-06", reservationTime, reservationTheme);
     }
 
     @Test

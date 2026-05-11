@@ -7,8 +7,8 @@ import roomescape.domain.theme.Theme;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.ReservationException;
 
-public record Reservation(long id, String name, LocalDate date, ReservationTime time, Theme reservationTheme) {
-    public Reservation(long id, String name, String date, ReservationTime time, Theme theme) {
+public record ReservationInfo(long id, String name, LocalDate date, ReservationTime time, Theme reservationTheme) {
+    public ReservationInfo(long id, String name, String date, ReservationTime time, Theme theme) {
         this(id, name, validateDate(date), time, theme);
     }
 

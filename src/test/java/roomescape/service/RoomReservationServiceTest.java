@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationInfo;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.theme.PopularThemeCondition;
 import roomescape.domain.theme.ReservationThemeWithCount;
@@ -30,13 +30,13 @@ public class RoomReservationServiceTest {
     private ReservationRepository createReservationRepository(boolean isExist) {
         return new ReservationRepository() {
             @Override
-            public List<Reservation> getAllReservation(String name) {
+            public List<ReservationInfo> getAllReservation(String name) {
                 return List.of();
             }
 
             @Override
-            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
-                return new Reservation(1, reservationCommand.name(), reservationCommand.date(), reservationTime, theme);
+            public ReservationInfo addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
+                return new ReservationInfo(1, reservationCommand.name(), reservationCommand.date(), reservationTime, theme);
             }
 
             @Override
@@ -136,9 +136,9 @@ public class RoomReservationServiceTest {
                 theme));
         ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
 
-        Reservation reservation = reservationService.addReservation(reservationCommand);
+        ReservationInfo reservation = reservationService.addReservation(reservationCommand);
 
-        assertThat(reservation).isEqualTo(new Reservation(1, "브라운", "2023-08-05", reservationTime, theme));
+        assertThat(reservation).isEqualTo(new ReservationInfo(1, "브라운", "2023-08-05", reservationTime, theme));
     }
 
     @Test

@@ -9,7 +9,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
-import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationInfo;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservationTime.ReservationTimeCommand;
@@ -26,7 +26,7 @@ public class ReservationTimeServiceTest {
         return new ReservationRepository() {
 
             @Override
-            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
+            public ReservationInfo addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
                 return null;
             }
 
@@ -51,7 +51,7 @@ public class ReservationTimeServiceTest {
             }
 
             @Override
-            public List<Reservation> getAllReservation(String name) {
+            public List<ReservationInfo> getAllReservation(String name) {
                 return List.of();
             }
         };

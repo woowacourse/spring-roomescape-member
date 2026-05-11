@@ -3,7 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationInfo;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -26,12 +26,12 @@ public class RoomReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Reservation> getAllReservation(String name) {
+    public List<ReservationInfo> getAllReservation(String name) {
         return reservationRepository.getAllReservation(name);
     }
 
     @Transactional
-    public Reservation addReservation(ReservationCommand reservationCommand) {
+    public ReservationInfo addReservation(ReservationCommand reservationCommand) {
         ReservationTime reservationTime = reservationTimeRepository.getReservationTime(reservationCommand.timeId())
                 .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_RESERVATION_TIME_ID));
 
