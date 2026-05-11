@@ -6,18 +6,14 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-
 public class ReservationTest {
 
     @Autowired
@@ -25,22 +21,6 @@ public class ReservationTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("""
-            INSERT INTO reservation_time
-            VALUES (1, '10:00', 'AVAILABLE')
-            """);
-        jdbcTemplate.update("""
-            INSERT INTO theme
-            VALUES (1, '공포의 저택', 'url1', '설명1', 'AVAILABLE')
-            """);
-        jdbcTemplate.update("""
-            INSERT INTO theme
-            VALUES (2, '우주 탐험대', 'https://picsum.photos/seed/space/400/300', '은하계를 누비는 우주 탐험', 'AVAILABLE')
-            """);
-    }
-
-    @AfterEach
-    void tearDown() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
@@ -49,6 +29,14 @@ public class ReservationTest {
     @Test
     @DisplayName("예약 생성 테스트")
     void createReservation() {
+        jdbcTemplate.update("""
+            INSERT INTO reservation_time
+            VALUES (1, '10:00', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO theme
+            VALUES (2, '우주 탐험대', 'https://picsum.photos/seed/space/400/300', '은하계를 누비는 우주 탐험', 'AVAILABLE')
+            """);
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "녀녕");
@@ -84,6 +72,14 @@ public class ReservationTest {
     @Test
     @DisplayName("예약 삭제 테스트")
     void deleteReservationTest() {
+        jdbcTemplate.update("""
+            INSERT INTO reservation_time
+            VALUES (1, '10:00', 'AVAILABLE')
+            """);
+        jdbcTemplate.update("""
+            INSERT INTO theme
+            VALUES (1, '공포의 저택', 'url1', '설명1', 'AVAILABLE')
+            """);
         jdbcTemplate.update("""
             INSERT INTO reservation
             VALUES (1, 'user_a', '2026-04-28', 'AVAILABLE', 1, 1)
