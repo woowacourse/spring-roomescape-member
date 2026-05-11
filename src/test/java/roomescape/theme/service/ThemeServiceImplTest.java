@@ -1,6 +1,7 @@
 package roomescape.theme.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -126,9 +127,9 @@ class ThemeServiceImplTest {
         when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(List.of(2L));
 
         List<ReservationTime> allTimes = List.of(
-                new ReservationTime(1L, "10:00", "12:00"),
-                new ReservationTime(2L, "12:00", "14:00"),
-                new ReservationTime(3L, "14:00", "16:00")
+                new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0)),
+                new ReservationTime(2L, LocalTime.of(12, 0), LocalTime.of(14, 0)),
+                new ReservationTime(3L, LocalTime.of(14, 0), LocalTime.of(16, 0))
         );
         when(timeService.findAll()).thenReturn(allTimes);
 
@@ -146,8 +147,8 @@ class ThemeServiceImplTest {
         when(reservationRepository.findTimeIdsByThemeIdAndDate(1L, date)).thenReturn(Collections.emptyList());
 
         List<ReservationTime> allTimes = List.of(
-                new ReservationTime(1L, "10:00", "12:00"),
-                new ReservationTime(2L, "12:00", "14:00")
+                new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0)),
+                new ReservationTime(2L, LocalTime.of(12, 0), LocalTime.of(14, 0))
         );
         when(timeService.findAll()).thenReturn(allTimes);
 

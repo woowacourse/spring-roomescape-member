@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -36,8 +37,8 @@ class TimeControllerTest {
         LocalDate date = LocalDate.of(2026, 5, 6);
 
         List<ReservationTime> times = List.of(
-                new ReservationTime(1L, "10:00", "12:00"),
-                new ReservationTime(2L, "12:00", "14:00")
+                new ReservationTime(1L, LocalTime.of(10, 0), LocalTime.of(12, 0)),
+                new ReservationTime(2L, LocalTime.of(12, 0), LocalTime.of(14, 0))
         );
         Mockito.when(themeService.getAvailableTimes(themeId, date)).thenReturn(times);
 

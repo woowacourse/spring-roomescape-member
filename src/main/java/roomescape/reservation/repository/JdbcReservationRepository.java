@@ -1,9 +1,10 @@
 package roomescape.reservation.repository;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -94,7 +95,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             ReservationTime time = null;
             Long timeId = rs.getLong("time_id");
             if (!rs.wasNull()) {
-                time = new ReservationTime(timeId, rs.getString("start_time"), rs.getString("end_time"));
+                time = new ReservationTime(timeId, rs.getObject("start_time", LocalTime.class), rs.getObject("end_time", LocalTime.class));
             }
 
             Theme theme = null;

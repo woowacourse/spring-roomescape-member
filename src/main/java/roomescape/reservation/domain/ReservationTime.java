@@ -1,15 +1,17 @@
 package roomescape.reservation.domain;
 
+import java.time.LocalTime;
+
 public class ReservationTime {
     private final Long id;
-    private final String startAt;
-    private final String endAt;
+    private final LocalTime startAt;
+    private final LocalTime endAt;
 
-    public ReservationTime(String startAt, String endAt) {
+    public ReservationTime(LocalTime startAt, LocalTime endAt) {
         this(null, startAt, endAt);
     }
 
-    public ReservationTime(Long id, String startAt, String endAt) {
+    public ReservationTime(Long id, LocalTime startAt, LocalTime endAt) {
         this.id = id;
         this.startAt = startAt;
         this.endAt = endAt;
@@ -23,11 +25,11 @@ public class ReservationTime {
         return id;
     }
 
-    public String getStartAt() {
+    public LocalTime getStartAt() {
         return startAt;
     }
 
-    public String getEndAt() {
+    public LocalTime getEndAt() {
         return endAt;
     }
 }
