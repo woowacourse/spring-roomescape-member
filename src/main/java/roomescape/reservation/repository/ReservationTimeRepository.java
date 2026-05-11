@@ -48,7 +48,7 @@ public class ReservationTimeRepository {
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 
-    public long save(ReservationTime reservationTime) {
+    public ReservationTime save(ReservationTime reservationTime) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -75,11 +75,11 @@ public class ReservationTimeRepository {
             return ps;
         }, keyHolder);
 
-        if (keyHolder.getKey() != null) {
-            return keyHolder.getKey().longValue();
+        if(keyHolder.getKey() != null) {
+            return new ReservationTime(keyHolder.getKey().longValue(), reservationTime.getStartAt());
         }
 
-        return reservationTime.getId();
+        return reservationTime;
     }
 
     public void delete(long id) {

@@ -51,11 +51,12 @@ class ReservationTimeServiceTest {
     void createTimeSuccess() {
         LocalTime startAt = LocalTime.of(11, 0);
         when(reservationTimeRepository.existsByStartAt(startAt)).thenReturn(false);
-        when(reservationTimeRepository.save(any(ReservationTime.class))).thenReturn(3L);
+        long id = 3L;
+        when(reservationTimeRepository.save(any(ReservationTime.class))).thenReturn(new ReservationTime(id, startAt));
 
-        long createdId = reservationTimeService.createTime(startAt);
+        long createdId = reservationTimeService.createTime(startAt).getId();
 
-        assertThat(createdId).isEqualTo(3L);
+        assertThat(createdId).isEqualTo(id);
     }
 
     @DisplayName("이미 존재하는 예약 시간은 생성할 수 없다.")

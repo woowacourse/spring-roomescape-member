@@ -30,10 +30,9 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createTime(@RequestBody @Valid ReservationTimeRequest request) {
-        final long reservationId = reservationTimeService.createTime(request.startAt());
-        final ReservationTime reservationTime = reservationTimeService.getTime(reservationId);
+        final ReservationTime reservationTime = reservationTimeService.createTime(request.startAt());
 
-        return ResponseEntity.created(URI.create("/times/" + reservationId))
+        return ResponseEntity.created(URI.create("/times/" + reservationTime.getId()))
                 .body(ReservationTimeResponse.from(reservationTime));
     }
 

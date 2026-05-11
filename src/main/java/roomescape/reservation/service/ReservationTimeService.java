@@ -22,7 +22,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public long createTime(LocalTime startAt) {
+    public ReservationTime createTime(LocalTime startAt) {
         if (reservationTimeRepository.existsByStartAt(startAt)) {
             throw new IllegalArgumentException("이미 존재하는 예약 시간입니다.");
         }

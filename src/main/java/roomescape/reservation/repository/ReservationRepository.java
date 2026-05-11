@@ -44,7 +44,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
-    public long save(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -78,10 +78,16 @@ public class ReservationRepository {
         }, keyHolder);
 
         if (keyHolder.getKey() != null) {
-            return keyHolder.getKey().longValue();
+            return new Reservation(
+                    keyHolder.getKey().longValue(),
+                    reservation.getName(),
+                    reservation.getDate(),
+                    reservation.getTime(),
+                    reservation.getTheme()
+            );
         }
 
-        return reservation.getId();
+        return reservation;
     }
 
     public boolean existsByTimeId(long timeId) {

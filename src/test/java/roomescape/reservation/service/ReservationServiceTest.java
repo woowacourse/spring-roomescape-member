@@ -47,9 +47,9 @@ class ReservationServiceTest {
 
         when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(time));
         when(themeRepository.findById(2L)).thenReturn(Optional.of(theme));
-        when(reservationRepository.save(any(Reservation.class))).thenReturn(10L);
+        when(reservationRepository.save(any(Reservation.class))).thenReturn(new Reservation(10L, "체셔", LocalDate.of(2026, 5, 10), time, theme));
 
-        long reservationId = reservationService.createReservation("체셔", LocalDate.of(2026, 5, 10), 1L, 2L);
+        long reservationId = reservationService.createReservation("체셔", LocalDate.of(2026, 5, 10), 1L, 2L).getId();
 
         assertThat(reservationId).isEqualTo(10L);
         verify(reservationRepository).save(any(Reservation.class));

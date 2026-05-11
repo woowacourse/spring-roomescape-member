@@ -20,7 +20,7 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
 
 
-    public long createReservation(String name,
+    public Reservation createReservation(String name,
                                   LocalDate date,
                                   long timeId,
                                   long themeId) {
