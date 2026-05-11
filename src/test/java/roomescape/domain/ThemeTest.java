@@ -77,7 +77,7 @@ class ThemeTest {
     }
 
     @Test
-    void 테마를_삭제할_수_있다() {
+    void 테마를_비활성화_할_수_있다() {
         // given
         Theme theme = ThemeFixture.createDefaultTheme();
 
@@ -89,7 +89,7 @@ class ThemeTest {
     }
 
     @Test
-    void 이미_삭제된_테마를_삭제하면_예외가_발생한다() {
+    void 이미_비활성화된_테마를_다시_비활성화하면_예외가_발생한다() {
         // given
         Theme theme = ThemeFixture.createDefaultTheme();
         theme.deactivate();
@@ -98,5 +98,29 @@ class ThemeTest {
         assertThatThrownBy(theme::deactivate)
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 비활성화 된 테마입니다.");
+    }
+
+    @Test
+    void 테마를_활성화_할_수_있다() {
+        // given
+        Theme theme = ThemeFixture.createDefaultTheme();
+        theme.deactivate();
+
+        // when
+        theme.activate();
+
+        // then
+        assertThat(theme.isActive()).isTrue();
+    }
+
+    @Test
+    void 이미_활성화된_테마를_다시_활성화하면_예외가_발생한다() {
+        // given
+        Theme theme = ThemeFixture.createDefaultTheme();
+
+        // when & then
+        assertThatThrownBy(theme::activate)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("이미 활성화 된 테마입니다.");
     }
 }
