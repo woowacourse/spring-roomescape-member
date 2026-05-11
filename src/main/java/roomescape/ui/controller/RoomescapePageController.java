@@ -22,7 +22,6 @@ import roomescape.reservation.controller.dto.ReservationResponseDto;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
-import roomescape.theme.controller.dto.ThemeAvailableTimeResponseDto;
 import roomescape.theme.controller.dto.ThemeResponseDto;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.service.ThemeService;
@@ -204,14 +203,14 @@ public class RoomescapePageController {
         return "redirect:/dashboard/holidays";
     }
 
-    private List<ThemeAvailableTimeResponseDto> availableTimes(Long availableThemeId, LocalDate availableDate, Model model) {
+    private List<TimeResponseDto> availableTimes(Long availableThemeId, LocalDate availableDate, Model model) {
         if (availableThemeId == null || availableDate == null) {
             return List.of();
         }
         try {
             return themeService.getAvailableTimes(availableThemeId, availableDate)
                     .stream()
-                    .map(ThemeAvailableTimeResponseDto::from)
+                    .map(TimeResponseDto::from)
                     .toList();
         } catch (IllegalArgumentException | ThemeNotFoundException e) {
             log.info("Failed to load available times for themeId={} date={}: {}", availableThemeId, availableDate, e.getMessage());

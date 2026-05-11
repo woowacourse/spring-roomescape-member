@@ -1,6 +1,5 @@
 package roomescape.theme.controller;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,9 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.controller.dto.ThemeAvailableTimeResponseDto;
 import roomescape.theme.controller.dto.ThemeResponseDto;
 import roomescape.theme.controller.dto.ThemeSaveRequestDto;
 import roomescape.theme.service.ThemeService;
@@ -40,17 +37,6 @@ public class ThemeController {
         ThemeResponseDto body = ThemeResponseDto.from(
                 themeService.create(themeRequest.toServiceDto()));
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
-    }
-
-    @GetMapping("/themes/{themeId}/times")
-    public ResponseEntity<List<ThemeAvailableTimeResponseDto>> getAvailableTimes(
-            @PathVariable Long themeId,
-            @RequestParam LocalDate date
-    ) {
-        List<ThemeAvailableTimeResponseDto> body = themeService.getAvailableTimes(themeId, date).stream()
-                .map(ThemeAvailableTimeResponseDto::from)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(body);
     }
 
     @DeleteMapping("/themes/{id}")

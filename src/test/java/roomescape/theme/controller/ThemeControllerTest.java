@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import roomescape.reservation.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.service.ThemeService;
@@ -83,29 +81,5 @@ class ThemeControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    void getAvailableTimes() throws Exception {
-        Long themeId = 1L;
-        LocalDate date = LocalDate.of(2026, 5, 6);
-
-        List<ReservationTime> times = List.of(
-                new ReservationTime(1L, "10:00", "12:00"),
-                new ReservationTime(2L, "12:00", "14:00")
-        );
-        Mockito.when(themeService.getAvailableTimes(themeId, date)).thenReturn(times);
-
-        mockMvc.perform(get("/themes/{themeId}/times", themeId)
-                        .queryParam("date", "2026-05-06")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void getAvailableTimes_잘못된_날짜형식이면_400() throws Exception {
-        mockMvc.perform(get("/themes/{themeId}/times", 1L)
-                        .queryParam("date", "2026/05/06")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
 }
 
