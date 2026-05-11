@@ -70,7 +70,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + createdId)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
