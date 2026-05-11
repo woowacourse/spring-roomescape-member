@@ -103,7 +103,7 @@ public class RoomescapePageController {
             @RequestParam String name,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam Long themeId,
-            @RequestParam String time,
+            @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime time,
             RedirectAttributes redirectAttributes
     ) {
         try {
