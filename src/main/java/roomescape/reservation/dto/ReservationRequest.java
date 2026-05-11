@@ -1,14 +1,12 @@
 package roomescape.reservation.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record ReservationRequest(
-        @NotBlank(message = "날짜는 필수입니다.")
-        String date,
+import java.time.LocalDateTime;
 
-        @NotBlank(message = "시간은 필수입니다.")
-        String time,
+public record ReservationRequest(
+        @NotNull(message = "시간은 필수입니다.")
+        LocalDateTime startAt,
 
         @NotNull(message = "테마 ID는 필수입니다.")
         Long themeId,

@@ -15,8 +15,6 @@ import roomescape.user.model.User;
 import roomescape.user.service.UserService;
 
 import java.util.List;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.LocalDateTime;
 
 @Service
@@ -42,7 +40,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(info.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        LocalDateTime startAt = LocalDateTime.of(LocalDate.parse(info.date()), LocalTime.parse(info.time()));
+        LocalDateTime startAt = info.startAt();
 
         Schedule schedule = scheduleRepository.findByThemeIdAndStartAt(theme.getId(), startAt)
                 .orElseThrow(() -> new IllegalArgumentException("등록된 스케줄이 없습니다."));

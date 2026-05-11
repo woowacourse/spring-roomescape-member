@@ -25,7 +25,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationIdResponse> create(@RequestBody @Valid ReservationRequest request) {
         ReservationCreateInfo info = new ReservationCreateInfo(
-                request.userId(), request.date(), request.time(), request.themeId());
+                request.userId(), request.startAt(), request.themeId());
         ReservationIdResponse response = reservationService.create(info);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

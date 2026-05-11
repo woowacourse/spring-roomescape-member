@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.dto.ReservationCreateInfo;
 import roomescape.reservation.dto.ReservationIdResponse;
-import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -66,7 +65,8 @@ class ReservationServiceTest {
 
     @Test
     void 새로운_예약을_생성한다() {
-        ReservationCreateInfo info = new ReservationCreateInfo(1L, "2026-12-10", "15:00", 1L);
+        ReservationCreateInfo info = new ReservationCreateInfo(1L,
+                LocalDateTime.of(2026, 12, 10, 15, 0), 1L);
 
         ReservationIdResponse response = reservationService.create(info);
 
