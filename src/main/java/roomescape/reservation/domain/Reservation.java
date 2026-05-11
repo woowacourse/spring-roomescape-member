@@ -19,6 +19,7 @@ public class Reservation {
     private LocalDate date;
     private ReservationTime time;
     private Theme theme;
+    private Status status;
 
     public Reservation withId(Long id) {
         return Reservation.builder()
@@ -27,6 +28,7 @@ public class Reservation {
                 .date(this.date)
                 .time(this.time)
                 .theme(this.theme)
+                .status(Status.ACTIVE)
                 .build();
     }
 }
