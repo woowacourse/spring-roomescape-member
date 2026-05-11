@@ -43,7 +43,8 @@ public class ReservationTimeAdminController {
 
     @DeleteMapping("/times/{id}")
     @Operation(summary = "Delete reservation time", description = "예약 시간을 삭제하는 api")
-    public ResponseEntity<ReservationTimeDetailDto> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(reservationTimeService.delete(id));
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        reservationTimeService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -35,11 +35,10 @@ public class ClosedDateService {
     }
 
     @Transactional
-    public ClosedDate deregister(Long id) {
+    public void deregister(Long id) {
         ClosedDate closedDate = getClosedDate(id);
         closedDateRepository.delete(id);
         log.info("Closed date deleted: id={}, date={}", closedDate.id(), closedDate.date());
-        return closedDate;
     }
 
     @NonNull

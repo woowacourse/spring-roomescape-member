@@ -46,8 +46,8 @@ public class ClosedDateAdminController {
 
     @DeleteMapping("/closed-dates/{id}")
     @Operation(summary = "Delete a closed date", description = "휴무일을 삭제하는 api")
-    public ResponseEntity<ClosedDateDetailDto> deleteClosedDate(@PathVariable Long id) {
-        ClosedDateDetailDto responseData = ClosedDateDetailDto.from(closedDateService.deregister(id));
-        return ResponseEntity.ok(responseData);
+    public ResponseEntity<Void> deleteClosedDate(@PathVariable Long id) {
+        closedDateService.deregister(id);
+        return ResponseEntity.noContent().build();
     }
 }
