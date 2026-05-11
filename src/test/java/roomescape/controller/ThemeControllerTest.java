@@ -13,14 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ThemeRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@Sql(statements = {
-        "SET REFERENTIAL_INTEGRITY FALSE",
-        "TRUNCATE TABLE reservation RESTART IDENTITY",
-        "TRUNCATE TABLE reservation_time RESTART IDENTITY",
-        "TRUNCATE TABLE theme RESTART IDENTITY",
-        "SET REFERENTIAL_INTEGRITY TRUE"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/mockData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/truncate.sql", "/mockData.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 
 public class ThemeControllerTest {
 
