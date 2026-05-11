@@ -1,8 +1,10 @@
-package roomescape.theme;
+package roomescape.theme.service;
 
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.theme.Theme;
+import roomescape.theme.dao.ThemeDao;
 
 @Service
 public class ThemeService {

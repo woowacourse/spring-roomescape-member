@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.time.TimeService;
+import roomescape.time.service.TimeService;
 import roomescape.time.dto.AvailableTimeResponse;
 import roomescape.time.dto.TimeResponse;
 

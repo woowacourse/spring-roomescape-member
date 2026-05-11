@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.reservation.dao;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.Reservation;
 import roomescape.time.ReservationTime;
 
 @Repository

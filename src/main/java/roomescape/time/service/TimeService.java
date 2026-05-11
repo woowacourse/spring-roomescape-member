@@ -1,9 +1,12 @@
-package roomescape.time;
+package roomescape.time.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.time.AvailableTime;
+import roomescape.time.ReservationTime;
+import roomescape.time.dao.TimeDao;
 
 @Service
 public class TimeService {

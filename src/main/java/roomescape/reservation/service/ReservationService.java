@@ -1,11 +1,13 @@
-package roomescape.reservation;
+package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.Reservation;
+import roomescape.reservation.dao.ReservationDao;
 import roomescape.time.ReservationTime;
-import roomescape.time.TimeDao;
+import roomescape.time.dao.TimeDao;
 
 @Service
 public class ReservationService {
