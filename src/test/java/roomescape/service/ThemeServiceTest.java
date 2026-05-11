@@ -132,8 +132,8 @@ class ThemeServiceTest {
             Theme savedTheme = themeService.create(requestDto1);
             Time savedTime = timeDao.insert(new Time(LocalTime.of(13, 0)));
             reservationDao.insert(new Reservation("유저", LocalDate.now(), savedTime, savedTheme));
-
-            assertThatThrownBy(() -> themeService.delete(savedTheme.getId()))
+            Long id = savedTheme.getId();
+            assertThatThrownBy(() -> themeService.delete(id))
                     .isInstanceOf(ConflictException.class);
         }
     }
