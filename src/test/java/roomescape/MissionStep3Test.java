@@ -1,10 +1,13 @@
 package roomescape;
 
 import static org.hamcrest.core.Is.is;
+import static roomescape.config.TestFixture.reservationRequestBody;
+import static roomescape.config.TestFixture.reservationTimeRequestBody;
+import static roomescape.config.TestFixture.themeRequestBody;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
+import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,8 +19,7 @@ public class MissionStep3Test {
 
     @Test
     void 시간_관리_API() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        Map<String, Object> params = reservationTimeRequestBody("10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -40,33 +42,34 @@ public class MissionStep3Test {
 
     @Test
     void 예약과_시간_연결() {
-        Map<String, Object> reservationTime = new HashMap<>();
-        reservationTime.put("startAt", "12:00");
+        Map<String, Object> reservationTime = reservationTimeRequestBody("12:00");
 
-        RestAssured.given().log().all()
+        Integer reservationTimeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationTime)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract()
+                .path("id");
 
-        Map<String, Object> theme = new HashMap<>();
-        theme.put("name", "테마A");
-        theme.put("description", "테마A란...");
-        theme.put("thumbnailUrl", "www.d.d.d");
+        Map<String, Object> theme = themeRequestBody("테마A", "테마A란...", "www.d.d.d");
 
-        RestAssured.given().log().all()
+        Integer themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(theme)
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract()
+                .path("id");
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
+        Map<String, Object> reservation = reservationRequestBody(
+                "브라운",
+                LocalDate.of(2023, 8, 5),
+                reservationTimeId.longValue(),
+                themeId.longValue()
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

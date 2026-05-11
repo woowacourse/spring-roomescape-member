@@ -1,57 +1,66 @@
 package roomescape.theme.controller;
 
-import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static roomescape.config.TestFixture.themeRequestBody;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import java.util.HashMap;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
-@Sql("/create_theme.sql")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@Transactional
+@AutoConfigureMockMvc
+@SpringBootTest
 class AdminThemeControllerTest {
 
-    @Test
-    void 테마를_추가한다() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "테마");
-        params.put("description", "테마 설명");
-        params.put("thumbnailUrl", "https://example.com/theme.png");
+    @Autowired
+    private MockMvc mockMvc;
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201)
-                .body("name", is("테마"))
-                .body("description", is("테마 설명"))
-                .body("thumbnailUrl", is("https://example.com/theme.png"))
-                .body("runtime", is(60));
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Test
+    void 테마를_추가한다() throws Exception {
+        Map<String, Object> request = themeRequestBody("테마", "테마 설명", "https://example.com/theme.png");
+
+        mockMvc.perform(post("/admin/themes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("테마"))
+                .andExpect(jsonPath("$.description").value("테마 설명"))
+                .andExpect(jsonPath("$.thumbnailUrl").value("https://example.com/theme.png"))
+                .andExpect(jsonPath("$.runtime").value(60));
     }
 
     @Test
-    void 테마를_삭제한다() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "테마");
-        params.put("description", "테마 설명");
-        params.put("thumbnailUrl", "https://example.com/theme.png");
+    void 테마를_삭제한다() throws Exception {
+        Map<String, Object> request = themeRequestBody("테마", "테마 설명", "https://example.com/theme.png");
+        int id = postTheme(request);
 
-        Integer id = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201)
-                .extract()
-                .path("id");
-
-        RestAssured.given().log().all()
-                .when().delete("/admin/themes/" + id)
-                .then().log().all()
-                .statusCode(204);
+        mockMvc.perform(delete("/admin/themes/{id}", id))
+                .andExpect(status().isNoContent());
     }
+
+    private int postTheme(Map<String, Object> request) throws Exception {
+        MvcResult result = mockMvc.perform(post("/admin/themes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        return objectMapper.readTree(result.getResponse().getContentAsString())
+                .get("id")
+                .asInt();
+    }
+
 }

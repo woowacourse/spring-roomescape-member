@@ -1,6 +1,9 @@
 package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.config.TestFixture.reservation;
+import static roomescape.config.TestFixture.reservationTime;
+import static roomescape.config.TestFixture.theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -8,16 +11,20 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.entity.ReservationTime;
+import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@JdbcTest
+@Import({JdbcThemeRepository.class, JdbcReservationTimeRepository.class, JdbcReservationRepository.class})
 class JdbcThemeRepositoryTest {
 
     @Autowired
@@ -31,43 +38,36 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_저장하는_테스트() {
-        String name = "테마";
-        String description = "테마 설명";
-        String thumbnailUrl = "https://example.com/theme.png";
+        Theme theme = theme("테마");
 
-        Theme theme = Theme.create(name, description, thumbnailUrl, Theme.RUNTIME);
         Theme savedTheme = themeRepository.save(theme);
 
         assertThat(savedTheme.getId()).isPositive();
-        assertThat(savedTheme.getName()).isEqualTo(name);
-        assertThat(savedTheme.getDescription()).isEqualTo(description);
-        assertThat(savedTheme.getThumbnailUrl()).isEqualTo(thumbnailUrl);
+        assertThat(savedTheme.getName()).isEqualTo(theme.getName());
+        assertThat(savedTheme.getDescription()).isEqualTo(theme.getDescription());
+        assertThat(savedTheme.getThumbnailUrl()).isEqualTo(theme.getThumbnailUrl());
         assertThat(savedTheme.getRuntime()).isEqualTo(Theme.RUNTIME);
     }
 
     @Test
     void 테마를_조회하는_테스트() {
-        String name = "테마";
-        String description = "테마 설명";
-        String thumbnailUrl = "https://example.com/theme.png";
-
-        Theme theme = Theme.create(name, description, thumbnailUrl, Theme.RUNTIME);
+        Theme theme = theme("테마");
         Theme savedTheme = themeRepository.save(theme);
 
         Theme foundTheme = themeRepository.findById(savedTheme.getId())
                 .orElseThrow(() -> new ThemeNotFoundException(savedTheme.getId()));
 
         assertThat(foundTheme.getId()).isEqualTo(savedTheme.getId());
-        assertThat(foundTheme.getName()).isEqualTo(name);
-        assertThat(foundTheme.getDescription()).isEqualTo(description);
-        assertThat(foundTheme.getThumbnailUrl()).isEqualTo(thumbnailUrl);
+        assertThat(foundTheme.getName()).isEqualTo(theme.getName());
+        assertThat(foundTheme.getDescription()).isEqualTo(theme.getDescription());
+        assertThat(foundTheme.getThumbnailUrl()).isEqualTo(theme.getThumbnailUrl());
         assertThat(foundTheme.getRuntime()).isEqualTo(Theme.RUNTIME);
     }
 
     @Test
     void 모든_테마를_조회하는_테스트() {
-        Theme theme1 = Theme.create("테마1", "테마 설명1", "https://example.com/theme1.png", Theme.RUNTIME);
-        Theme theme2 = Theme.create("테마2", "테마 설명2", "https://example.com/theme2.png", Theme.RUNTIME);
+        Theme theme1 = theme("테마1");
+        Theme theme2 = theme("테마2");
 
         Theme savedTheme1 = themeRepository.save(theme1);
         Theme savedTheme2 = themeRepository.save(theme2);
@@ -79,7 +79,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_삭제하는_테스트() {
-        Theme theme = Theme.create("테마", "테마 설명", "https://example.com/theme.png", Theme.RUNTIME);
+        Theme theme = theme("테마");
         Theme savedTheme = themeRepository.save(theme);
 
         themeRepository.deleteById(savedTheme.getId());
@@ -92,12 +92,12 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_삭제하면_이를_참조하는_예약도_삭제된다() {
-        ReservationTime reservationTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(11, 0)));
+        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(11, 0)));
 
-        Theme theme = Theme.create("테마", "테마 설명", "https://example.com/theme.png", Theme.RUNTIME);
+        Theme theme = theme("테마");
         Theme savedTheme = themeRepository.save(theme);
 
-        Reservation reservation = Reservation.create(
+        Reservation reservation = reservation(
                 "밀란",
                 LocalDate.of(2026, 5, 6),
                 reservationTime,

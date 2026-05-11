@@ -2,16 +2,19 @@ package roomescape.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.config.TestFixture.themeRequest;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.payload.ThemeRequest;
 
+@Transactional
 @SpringBootTest
 class ThemeServiceTest {
 
@@ -20,22 +23,22 @@ class ThemeServiceTest {
 
     @Test
     void 테마요청을_올바르게_저장하는지_확인하는_테스트() {
-        ThemeRequest themeRequest = new ThemeRequest("테마", "테마 설명", "https://example.com/theme.png");
+        ThemeRequest request = themeRequest("테마");
 
-        Theme theme = themeService.save(themeRequest);
+        Theme theme = themeService.save(request);
 
-        assertThat(theme.getName()).isEqualTo(themeRequest.name());
-        assertThat(theme.getDescription()).isEqualTo(themeRequest.description());
-        assertThat(theme.getThumbnailUrl()).isEqualTo(themeRequest.thumbnailUrl());
+        assertThat(theme.getName()).isEqualTo(request.name());
+        assertThat(theme.getDescription()).isEqualTo(request.description());
+        assertThat(theme.getThumbnailUrl()).isEqualTo(request.thumbnailUrl());
         assertThat(theme.getRuntime()).isEqualTo(Theme.RUNTIME);
     }
 
     @Test
     void 테마목록을_올바르게_조회하는지_확인하는_테스트() {
-        ThemeRequest themeRequest1 = new ThemeRequest("테마1", "테마 설명1", "https://example.com/theme1.png");
-        ThemeRequest themeRequest2 = new ThemeRequest("테마2", "테마 설명2", "https://example.com/theme2.png");
-        Theme theme1 = themeService.save(themeRequest1);
-        Theme theme2 = themeService.save(themeRequest2);
+        ThemeRequest request1 = themeRequest("테마1");
+        ThemeRequest request2 = themeRequest("테마2");
+        Theme theme1 = themeService.save(request1);
+        Theme theme2 = themeService.save(request2);
 
         List<Theme> themes = themeService.findAll();
 
@@ -44,8 +47,8 @@ class ThemeServiceTest {
 
     @Test
     void 테마를_올바르게_삭제하는지_확인하는_테스트() {
-        ThemeRequest themeRequest = new ThemeRequest("테마", "테마 설명", "https://example.com/theme.png");
-        Theme theme = themeService.save(themeRequest);
+        ThemeRequest request = themeRequest("테마");
+        Theme theme = themeService.save(request);
 
         themeService.deleteById(theme.getId());
 
