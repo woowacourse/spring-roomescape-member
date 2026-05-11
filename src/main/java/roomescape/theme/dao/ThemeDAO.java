@@ -63,7 +63,7 @@ public class ThemeDAO {
         String sql = "SELECT t.id, t.name, t.description, t.image_url, count(r.id) AS reservation_count"
                 + " FROM theme t"
                 + " LEFT OUTER JOIN reservation r ON t.id = r.theme_id"
-                + " WHERE (? IS NULL OR r.date >= ?) AND r.date <= ?"
+                + " AND (? IS NULL OR r.date >= ?) AND r.date <= ?"
                 + " GROUP BY t.id"
                 + " ORDER BY reservation_count DESC"
                 + " LIMIT ?";
