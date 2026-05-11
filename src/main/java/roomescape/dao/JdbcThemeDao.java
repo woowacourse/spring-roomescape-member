@@ -91,7 +91,7 @@ public class JdbcThemeDao implements ThemeDao {
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNumber) -> {
-                    Long id = resultSet.getLong("id");
+                    Long id = resultSet.getLong("theme_id");
                     String name = resultSet.getString("name");
                     String description = resultSet.getString("description");
                     String thumbnailUrl = resultSet.getString("thumbnail_url");
