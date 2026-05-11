@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.time.controller.dto.request.CreateResrvationTimeRequest;
+import roomescape.time.controller.dto.request.CreateReservationTimeRequest;
 import roomescape.time.controller.dto.response.ReservationTimeResponse;
 import roomescape.time.service.ReservationTimeService;
 
@@ -29,9 +29,9 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
-            @RequestBody CreateResrvationTimeRequest createResrvationTimeRequest) {
+            @RequestBody CreateReservationTimeRequest createReservationTimeRequest) {
         ReservationTimeResponse createdReservationTime = reservationTimeService.addReservationTime(
-                createResrvationTimeRequest);
+                createReservationTimeRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(createdReservationTime);
     }
