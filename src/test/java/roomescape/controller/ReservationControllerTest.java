@@ -25,7 +25,8 @@ public class ReservationControllerTest {
         // when & then
         createReservation("브라운", "2026-05-06", timeId, themeId)
                 .statusCode(201)
-                .body("id", notNullValue());
+                .body("id", notNullValue())
+                .header("Location", "/reservations/1");
     }
 
     @Test
