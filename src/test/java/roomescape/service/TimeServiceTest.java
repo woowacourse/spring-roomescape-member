@@ -71,7 +71,7 @@ class TimeServiceTest {
     }
 
     @Nested
-    class findById {
+    class FindById {
 
         @Test
         void 존재하는_id로_시간을_조회한다() {
@@ -88,7 +88,7 @@ class TimeServiceTest {
     }
 
     @Nested
-    class create {
+    class Create {
 
         @Test
         void 유효한_요청으로_시간을_생성한다() {
@@ -108,7 +108,7 @@ class TimeServiceTest {
     }
 
     @Nested
-    class delete {
+    class Delete {
 
         @Test
         void 시간을_삭제한다() {

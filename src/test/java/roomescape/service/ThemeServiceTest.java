@@ -53,7 +53,7 @@ class ThemeServiceTest {
     }
 
     @Nested
-    class findAll {
+    class FindAll {
 
         @Test
         void 테마가_없으면_빈_목록을_반환한다() {
@@ -72,7 +72,7 @@ class ThemeServiceTest {
     }
 
     @Nested
-    class findById {
+    class FindById {
 
         @Test
         void 존재하는_id로_테마를_조회한다() {
@@ -89,7 +89,7 @@ class ThemeServiceTest {
     }
 
     @Nested
-    class create {
+    class Create {
 
         @Test
         void 유효한_요청으로_테마를_생성한다() {
@@ -109,7 +109,7 @@ class ThemeServiceTest {
     }
 
     @Nested
-    class delete {
+    class Delete {
 
         @Test
         void 테마를_삭제한다() {
@@ -139,7 +139,7 @@ class ThemeServiceTest {
     }
 
     @Nested
-    class findAvailableTimesById {
+    class FindAvailableTimesById {
 
         @Test
         void 테마의_이용_가능한_시간_목록을_반환한다() {
@@ -159,7 +159,7 @@ class ThemeServiceTest {
     }
 
     @Nested
-    class findPopulars {
+    class FindPopulars {
 
         @Test
         void 인기_테마_목록을_limit만큼_반환한다() {
