@@ -4,13 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.schedule.dto.ScheduleRequest;
 import roomescape.schedule.dto.ScheduleResponse;
 import roomescape.schedule.dto.SchedulesResponse;
 import roomescape.schedule.model.Schedule;
 import roomescape.theme.model.Theme;
+import roomescape.support.DatabaseHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,27 +30,21 @@ class ScheduleServiceTest {
 
     @Autowired
     private ScheduleService scheduleService;
-    
+
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DatabaseHelper databaseHelper;
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM schedule");
-        jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.update("DELETE FROM \"USER\"");
+        databaseHelper.cleanUp();
     }
 
     @Test
     void 데이터베이스에_저장된_모든_스케줄을_조회한다() {
         Long themeId = 1L;
-        jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url, required_time) VALUES (?, ?, ?, ?, ?)",
-                themeId, theme.getName(), theme.getDescription(), theme.getImageUrl(), theme.getRequiredTime());
-        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
-                1L, themeId, schedule1.getStartAt(), schedule1.getEndAt());
-        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
-                2L, themeId, schedule2.getStartAt(), schedule2.getEndAt());
+        databaseHelper.insertTheme(themeId, theme.getName(), theme.getDescription(), theme.getImageUrl(), "02:00:00");
+        databaseHelper.insertSchedule(1L, themeId, "2026-12-10 12:00:00", "2026-12-10 14:00:00");
+        databaseHelper.insertSchedule(2L, themeId, "2026-12-10 16:00:00", "2026-12-10 18:00:00");
 
         ScheduleRequest request = new ScheduleRequest(LocalDate.of(2026, 12, 10), themeId);
 

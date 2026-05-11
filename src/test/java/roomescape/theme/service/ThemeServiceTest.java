@@ -11,6 +11,7 @@ import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.dto.ThemesResponse;
 import roomescape.theme.model.Theme;
+import roomescape.support.DatabaseHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,12 +30,12 @@ class ThemeServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DatabaseHelper databaseHelper;
+
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM schedule");
-        jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.update("DELETE FROM \"USER\"");
+        databaseHelper.cleanUp();
     }
 
     @Test

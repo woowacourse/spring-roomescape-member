@@ -4,31 +4,25 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.dto.ReservationCreateInfo;
 import roomescape.reservation.dto.ReservationIdResponse;
 import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.schedule.model.Schedule;
-import roomescape.theme.model.Theme;
-import roomescape.user.model.Role;
-import roomescape.user.model.User;
+import roomescape.support.DatabaseHelper;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.support.TestFixture.SCHEDULE_12시;
+import static roomescape.support.TestFixture.THEME_공포;
+import static roomescape.support.TestFixture.USER_1;
 
 @SpringBootTest
 @Transactional
 class ReservationServiceTest {
-
-    private final User user = new User(1L, "user1", Role.USER);
-    private final Theme theme = new Theme(1L, "공포", "설명", "경로", LocalTime.of(2, 0));
-    private final Schedule schedule = new Schedule(1L, LocalDateTime.of(2026, 12, 10, 12, 0), theme);
 
     @Autowired
     private ReservationService reservationService;
@@ -37,24 +31,16 @@ class ReservationServiceTest {
     private ReservationRepository reservationRepository;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DatabaseHelper databaseHelper;
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM schedule");
-        jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.update("DELETE FROM \"USER\"");
-
-        jdbcTemplate.update("INSERT INTO \"USER\" (id, name, role) VALUES (?, ?, ?)",
-                1L, "user1", "USER");
-        jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url, required_time) VALUES (?, ?, ?, ?, ?)",
-                1L, "공포", "설명", "경로", LocalTime.of(2, 0));
-        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
-                1L, 1L, "2026-12-10 12:00:00", "2026-12-10 14:00:00");
-        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
-                2L, 1L, "2026-12-10 15:00:00", "2026-12-10 17:00:00");
-        reservationRepository.create(new Reservation(user, schedule, theme));
+        databaseHelper.cleanUp();
+        databaseHelper.insertUser(USER_1.getId(), USER_1.getName(), USER_1.getRole().name());
+        databaseHelper.insertTheme(THEME_공포.getId(), THEME_공포.getName(), THEME_공포.getDescription(), THEME_공포.getImageUrl(), "02:00:00");
+        databaseHelper.insertSchedule(SCHEDULE_12시.getId(), THEME_공포.getId(), "2026-12-10 12:00:00", "2026-12-10 14:00:00");
+        databaseHelper.insertSchedule(2L, THEME_공포.getId(), "2026-12-10 15:00:00", "2026-12-10 17:00:00");
+        reservationRepository.create(new Reservation(USER_1, SCHEDULE_12시, THEME_공포));
     }
 
     @Test

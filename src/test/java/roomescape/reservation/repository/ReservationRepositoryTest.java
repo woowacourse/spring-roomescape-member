@@ -10,6 +10,7 @@ import roomescape.schedule.model.Schedule;
 import roomescape.theme.model.Theme;
 import roomescape.user.model.Role;
 import roomescape.user.model.User;
+import roomescape.support.DatabaseHelper;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -32,19 +33,15 @@ public class ReservationRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DatabaseHelper databaseHelper;
+
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM schedule");
-        jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.update("DELETE FROM \"USER\"");
-
-        jdbcTemplate.update("INSERT INTO \"USER\" (id, name, role) VALUES (?, ?, ?)",
-                1L, "user1", "USER");
-        jdbcTemplate.update("INSERT INTO theme (id, name, description, image_url, required_time) VALUES (?, ?, ?, ?, ?)",
-                1L, "공포", "설명", "경로", LocalTime.of(2, 0));
-        jdbcTemplate.update("INSERT INTO schedule (id, theme_id, start_at, end_at) VALUES (?, ?, ?, ?)",
-                1L, 1L, "2026-12-10 12:00:00", "2026-12-10 14:00:00");
+        databaseHelper.cleanUp();
+        databaseHelper.insertUser(1L, "user1", "USER");
+        databaseHelper.insertTheme(1L, "공포", "설명", "경로", "02:00:00");
+        databaseHelper.insertSchedule(1L, 1L, "2026-12-10 12:00:00", "2026-12-10 14:00:00");
     }
 
     @Test

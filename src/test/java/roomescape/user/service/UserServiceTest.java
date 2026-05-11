@@ -17,9 +17,6 @@ class UserServiceTest {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private UserRepository userRepository;
-
     @Test
     void 유저를_생성하면_DB에_실제로_저장되다() {
         UserRequest request = new UserRequest("루크");

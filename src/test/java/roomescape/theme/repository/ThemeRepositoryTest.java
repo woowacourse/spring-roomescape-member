@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.model.Theme;
+import roomescape.support.DatabaseHelper;
 
 import org.junit.jupiter.api.BeforeEach;
 
@@ -27,12 +28,12 @@ class ThemeRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DatabaseHelper databaseHelper;
+
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM schedule");
-        jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.update("DELETE FROM \"USER\"");
+        databaseHelper.cleanUp();
     }
 
     @Test
