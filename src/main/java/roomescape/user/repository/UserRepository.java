@@ -35,14 +35,14 @@ public class UserRepository {
         return  keyHolder.getKey().longValue();
     }
 
-    public Optional<User> findByName(String name) {
-        String sql = "SELECT id, name, role FROM \"USER\" WHERE name = ?";
+    public Optional<User> findById(Long id) {
+        String sql = "SELECT id, name, role FROM \"USER\" WHERE id = ?";
         try {
             User user = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new User(
                     rs.getLong("id"),
                     rs.getString("name"),
                     Role.valueOf(rs.getString("role"))
-            ), name);
+            ), id);
             return Optional.of(user);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

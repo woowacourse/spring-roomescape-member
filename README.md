@@ -84,13 +84,13 @@
 
 ### 3. 예약 생성
 
-| 항목 | 상세 내용                                                    |
-| :--- |:---------------------------------------------------------|
-| **URL** | `/reservations`                                          |
-| **HTTP Method** | `POST`                                                   |
-| **Request (Body)** | `{ "date":"날짜", "time":"시간", "themeId":1, "name":"이름" }` |
-| **Response** | `{ "id": 101 }`                                          |
-| **StatusCode**  | `201 Created`                                            |
+| 항목 | 상세 내용                                                   |
+| :--- |:--------------------------------------------------------|
+| **URL** | `/reservations`                                         |
+| **HTTP Method** | `POST`                                                  |
+| **Request (Body)** | `{ "date":"날짜", "time":"시간", "themeId":1, "userId":1 }` |
+| **Response** | `{ "id": 101 }`                                         |
+| **StatusCode**  | `201 Created`                                           |
 
 ### 4. 인기 테마 통계 조회
 

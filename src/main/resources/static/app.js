@@ -201,13 +201,21 @@ document.getElementById('reserve-btn').addEventListener('click', () => {
 
     const date = document.getElementById('date-input').value;
 
+    // 💡 백엔드 테스트를 위한 임시 유저 ID 매핑 딕셔너리
+    // data.sql에 등록된 유저 데이터를 기준으로 매핑합니다.
+    const userMap = {
+        '루크': 1,
+        '소낙눈': 2,
+        '포비': 3
+    };
+    const mappedUserId = userMap[currentUser] || 1; // 매핑되지 않은 이름이면 기본값 1로 세팅
+
     // 서버로 보낼 데이터 객체 (백엔드 DTO와 모양을 맞춰야 합니다)
     const reservationData = {
-        // 🚨 예약 전이라 scheduleId가 없으므로, 생성에 필요한 모든 정보를 보냅니다.
         date: date,
         time: selectedTime,
         themeId: parseInt(themeId),
-        name: currentUser // 처음에 로그인할 때 저장해둔 이름을 사용합니다.
+        userId: mappedUserId // 💡 백엔드 변경 스펙에 맞추어 name 대신 userId를 전송합니다.
     };
 
     fetch('/reservations', {

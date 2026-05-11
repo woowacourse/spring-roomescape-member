@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.dto.ReservationCreateInfo;
 import roomescape.reservation.dto.ReservationIdResponse;
-import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -13,8 +12,7 @@ import roomescape.schedule.repository.ScheduleRepository;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.user.model.User;
-import roomescape.user.model.Role;
-import roomescape.user.repository.UserRepository;
+import roomescape.user.service.UserService;
 
 import java.util.List;
 import java.time.LocalDate;
@@ -27,24 +25,19 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ScheduleRepository scheduleRepository;
-    private final UserRepository userRepository;
     private final ThemeRepository themeRepository;
+    private final UserService userService;
 
-    public ReservationService(ReservationRepository reservationRepository, ScheduleRepository scheduleRepository, UserRepository userRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ScheduleRepository scheduleRepository, ThemeRepository themeRepository, UserService userService) {
         this.reservationRepository = reservationRepository;
         this.scheduleRepository = scheduleRepository;
-        this.userRepository = userRepository;
         this.themeRepository = themeRepository;
+        this.userService = userService;
     }
 
     @Transactional
     public ReservationIdResponse create(ReservationCreateInfo info) {
-        User user = userRepository.findByName(info.name())
-                .orElseGet(() -> {
-                    User newUser = new User(info.name(), Role.USER);
-                    Long newUserId = userRepository.create(newUser);
-                    return new User(newUserId, info.name(), Role.USER);
-                });
+        User user = userService.getUserById(info.userId());
 
         Theme theme = themeRepository.findById(info.themeId());
 

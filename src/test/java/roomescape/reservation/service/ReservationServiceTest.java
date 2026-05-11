@@ -66,7 +66,7 @@ class ReservationServiceTest {
 
     @Test
     void 새로운_예약을_생성한다() {
-        ReservationCreateInfo info = new ReservationCreateInfo("user1", "2026-12-10", "15:00", 1L);
+        ReservationCreateInfo info = new ReservationCreateInfo(1L, "2026-12-10", "15:00", 1L);
 
         ReservationIdResponse response = reservationService.create(info);
 

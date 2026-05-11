@@ -13,7 +13,7 @@ public record ReservationRequest(
         @NotNull(message = "테마 ID는 필수입니다.")
         Long themeId,
 
-        @NotBlank(message = "이름은 필수입니다.")
-        String name
+        @NotNull(message = "유저 ID는 필수입니다.")
+        Long userId
 ) {
 }

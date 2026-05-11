@@ -1,7 +1,7 @@
 package roomescape.reservation.dto;
 
 public record ReservationCreateInfo(
-        String name,
+        Long userId,
         String date,
         String time,
         Long themeId
