@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('예약 완료')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <div class="success-card" hidden id="success-card">
+        <h1>예약이 완료되었습니다</h1>
+        <dl>
+            <dt>예약 번호</dt>
+            <dd id="r-id"></dd>
+            <dt>예약자</dt>
+            <dd id="r-name"></dd>
+            <dt>테마</dt>
+            <dd id="r-theme"></dd>
+            <dt>날짜</dt>
+            <dd id="r-date"></dd>
+            <dt>시간</dt>
+            <dd id="r-time"></dd>
+        </dl>
+        <a class="btn" href="#" id="r-mine-link">내 예약 보기</a>
+        <a class="btn btn-outline" th:href="@{/}">홈으로</a>
+    </div>
+
+    <div class="success-card" hidden id="empty-card">
+        <h1>최근 예약 정보가 없습니다</h1>
+        <p>홈에서 다시 예약을 진행해주세요.</p>
+        <a class="btn" th:href="@{/}">홈으로</a>
+    </div>
+</main>
+
+<script th:src="@{/js/reservation-success.js}"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('내 예약')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <h1>내 예약 조회</h1>
+
+    <div class="form-inline">
+        <div class="form-row">
+            <label for="search-name">이름</label>
+            <input id="search-name" placeholder="예약자 이름" type="text"/>
+        </div>
+        <button class="btn" id="search-btn" type="button">검색</button>
+    </div>
+
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>이름</th>
+            <th>테마</th>
+            <th>날짜</th>
+            <th>시간</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody id="reservation-rows">
+        <tr>
+            <td colspan="6" style="text-align:center; color:#888;">이름을 입력해 검색하세요.</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<script th:src="@{/js/reservation-mine.js}"></script>
+</body>
+</html>

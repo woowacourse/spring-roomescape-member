@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('관리자')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <h1>관리자</h1>
+    <div class="admin-menu">
+        <a th:href="@{/admin/reservation}">예약 관리</a>
+        <a th:href="@{/admin/time}">시간 관리</a>
+        <a th:href="@{/admin/theme}">테마 관리</a>
+    </div>
+</main>
+</body>
+</html>

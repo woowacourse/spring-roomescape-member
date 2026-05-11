@@ -1,0 +1,419 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #1a1a1a;
+    background: #fafafa;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button {
+    cursor: pointer;
+    font: inherit;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/* Header */
+.site-header {
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 16px 0;
+    margin-bottom: 32px;
+}
+
+.site-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.site-header .logo {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.site-header nav a {
+    margin-left: 20px;
+    color: #555;
+    font-size: 14px;
+}
+
+.site-header nav a:hover {
+    color: #1a1a1a;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+}
+
+.btn:hover {
+    opacity: 0.85;
+}
+
+.btn-outline {
+    background: transparent;
+    color: #1a1a1a;
+    border-color: #1a1a1a;
+}
+
+.btn-danger {
+    background: #d44;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.btn-lg {
+    padding: 14px 28px;
+    font-size: 16px;
+}
+
+/* Hero carousel */
+.carousel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #222;
+    height: 360px;
+}
+
+.carousel-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.4s ease;
+}
+
+.carousel-slide {
+    flex: 0 0 100%;
+    height: 100%;
+    position: relative;
+    color: #fff;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.6);
+}
+
+.carousel-caption {
+    position: absolute;
+    bottom: 32px;
+    left: 32px;
+    right: 32px;
+}
+
+.carousel-caption h2 {
+    margin: 0 0 8px;
+    font-size: 28px;
+}
+
+.carousel-caption p {
+    margin: 0 0 16px;
+    font-size: 15px;
+    opacity: 0.9;
+}
+
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+}
+
+.carousel-arrow.prev {
+    left: 16px;
+}
+
+.carousel-arrow.next {
+    right: 16px;
+}
+
+.carousel-dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+}
+
+.carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+}
+
+.carousel-dot.active {
+    background: #fff;
+}
+
+/* CTA */
+.cta-row {
+    text-align: center;
+    margin: 32px 0;
+}
+
+/* Theme grid */
+.section-title {
+    font-size: 20px;
+    margin: 32px 0 16px;
+}
+
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 767px) {
+    .theme-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .carousel {
+        height: 240px;
+    }
+
+    .carousel-caption h2 {
+        font-size: 20px;
+    }
+}
+
+.theme-card {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+}
+
+.theme-card img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+}
+
+.theme-card-body {
+    padding: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.theme-card-name {
+    font-weight: 600;
+    margin: 0 0 4px;
+    font-size: 15px;
+}
+
+.theme-card-desc {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 12px;
+    flex: 1;
+}
+
+/* Forms */
+.form-row {
+    margin-bottom: 16px;
+}
+
+.form-row label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.form-row input, .form-row select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font: inherit;
+}
+
+/* Reservation page */
+.selected-theme {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.selected-theme img {
+    width: 160px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.selected-theme h3 {
+    margin: 0 0 8px;
+}
+
+.selected-theme p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.time-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 24px;
+}
+
+.time-button {
+    padding: 8px 16px;
+    border: 2px solid #ccc;
+    background: #fff;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.time-button.selected {
+    border-color: #1a1a1a;
+    background: #1a1a1a;
+    color: #fff;
+}
+
+.time-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Tables */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.data-table th, .data-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.data-table th {
+    background: #f5f5f5;
+    font-weight: 600;
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Success page */
+.success-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 32px;
+    max-width: 480px;
+    margin: 32px auto;
+    text-align: center;
+}
+
+.success-card h1 {
+    margin-top: 0;
+}
+
+.success-card dl {
+    text-align: left;
+    margin: 24px 0;
+}
+
+.success-card dt {
+    font-weight: 600;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #666;
+}
+
+.success-card dd {
+    margin: 4px 0 0;
+    font-size: 15px;
+}
+
+/* Admin */
+.admin-menu {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 32px 0;
+}
+
+.admin-menu a {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.admin-menu a:hover {
+    border-color: #1a1a1a;
+}
+
+.form-inline {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: end;
+}
+
+.form-inline .form-row {
+    flex: 1;
+    min-width: 140px;
+    margin: 0;
+}

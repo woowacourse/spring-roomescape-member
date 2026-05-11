@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('예약 관리')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <h1>예약 관리</h1>
+
+    <div class="form-inline">
+        <div class="form-row">
+            <label for="r-name">이름</label>
+            <input id="r-name" type="text"/>
+        </div>
+        <div class="form-row">
+            <label for="r-date">날짜</label>
+            <input id="r-date" type="date"/>
+        </div>
+        <div class="form-row">
+            <label for="r-time">시간</label>
+            <select id="r-time">
+                <option value="">선택</option>
+                <option th:each="t : ${times}" th:text="${t.startAt()}" th:value="${t.id()}"></option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="r-theme">테마</label>
+            <select id="r-theme">
+                <option value="">선택</option>
+                <option th:each="th : ${themes}" th:text="${th.name()}" th:value="${th.id()}"></option>
+            </select>
+        </div>
+        <button class="btn" id="add-btn" type="button">추가</button>
+    </div>
+
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>이름</th>
+            <th>날짜</th>
+            <th>시간</th>
+            <th>테마</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody id="rows">
+        <tr th:attr="data-id=${r.id()}" th:each="r : ${reservations}">
+            <td th:text="${r.id()}"></td>
+            <td th:text="${r.name()}"></td>
+            <td th:text="${r.date()}"></td>
+            <td th:text="${r.time().startAt()}"></td>
+            <td th:text="${r.theme().name()}"></td>
+            <td>
+                <button class="btn btn-danger btn-sm delete-btn" type="button">삭제</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<script th:src="@{/js/admin-reservation.js}"></script>
+</body>
+</html>
