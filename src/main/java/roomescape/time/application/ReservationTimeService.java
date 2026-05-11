@@ -22,6 +22,8 @@ import roomescape.time.domain.ReservationTimeRepository;
 @RequiredArgsConstructor
 public class ReservationTimeService {
 
+    private static final int NONE_EFFECTED = 0;
+
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
@@ -39,7 +41,7 @@ public class ReservationTimeService {
         if (reservationRepository.existsByReservationTime(id)) {
             throw new ReservationTimeInUseException("해당 시간에 예약이 존재합니다.");
         }
-        if (reservationTimeRepository.deleteById(id) < 1) {
+        if (reservationTimeRepository.deleteById(id) == NONE_EFFECTED) {
             throw new ReservationTimeNotFoundException("존재하지 않는 시간ID 입니다.");
         }
     }

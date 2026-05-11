@@ -15,6 +15,7 @@ import roomescape.theme.presentation.dto.ThemeResponse;
 @RequiredArgsConstructor
 public class ThemeService {
 
+    private static final int NONE_EFFECTED = 0;
     private static final int WEEKS_BOUND = 1;
     private static final int DAYS_BOUND = 1;
     private static final int THEME_SIZE_LIMIT = 10;
@@ -26,7 +27,7 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        if (themeRepository.delete(id) < 1) {
+        if (themeRepository.delete(id) == NONE_EFFECTED) {
             throw new ThemeNotFoundException("존재하지 않는 테마입니다.");
         }
     }
