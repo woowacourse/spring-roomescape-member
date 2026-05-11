@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{fragments/site :: head('예약')}"></head>
+<body>
+
+<header th:replace="~{fragments/site :: header('home')}"></header>
+
+<main>
+
+    <section class="case-banner" id="case-banner"></section>
+
+    <div class="section-label">
+        <span class="num">§ 01</span>
+        <h2>일자 선택</h2>
+        <span class="meta">SELECT INVESTIGATION DATE</span>
+    </div>
+
+    <form id="date-form" class="form-card">
+        <div class="field" style="margin-bottom: 0;">
+            <label for="date">조사 일자</label>
+            <div class="inline-control">
+                <input type="date" id="date" name="date" required>
+                <button type="submit" class="btn btn-primary">시간 조회 →</button>
+            </div>
+            <span class="field-help">오늘 (<span id="today-label"></span>) 이후 날짜만 선택 가능</span>
+        </div>
+    </form>
+
+    <section id="slots-area" style="display: none;">
+        <div class="section-label">
+            <span class="num">§ 02</span>
+            <h2>시간 슬롯</h2>
+            <span class="meta">
+                <span id="slots-date"></span> · 가용 <span id="slots-count">0</span>건
+            </span>
+        </div>
+
+        <div class="empty-state" id="slots-empty" style="display: none;">
+            ※ 이 날짜의 모든 시간이 마감되었습니다 — 다른 날짜를 시도하세요
+        </div>
+
+        <form id="reserve-form" class="form-card">
+            <div class="field">
+                <label>시간 선택</label>
+                <div class="slot-grid" id="slots-list"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="field" style="margin-bottom: 0;">
+                    <label for="userName">탐정 이름</label>
+                    <input type="text" id="userName" name="userName"
+                           placeholder="예: 셜록 / 매트 / 동키"
+                           required minlength="1">
+                    <span class="field-help">본인 확인용 표기 · 별명 가능</span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a th:href="@{/}" class="btn btn-ghost btn-sm">← 뒤로</a>
+                <button type="submit" class="btn btn-primary">예약 확정</button>
+            </div>
+        </form>
+    </section>
+
+    <div class="callout notice" id="initial-notice">
+        <strong>안내 ·</strong>
+        먼저 조사 일자를 선택하면 그 날의 가용 시간 슬롯이 표시됩니다.
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/site :: footer}"></footer>
+
+<script th:src="@{/js/booking.js}"></script>
+
+</body>
+</html>
