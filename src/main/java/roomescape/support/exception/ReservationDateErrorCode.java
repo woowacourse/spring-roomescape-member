@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 public enum ReservationDateErrorCode implements ErrorCode {
     RESERVATION_DATE_NOT_EXIST(HttpStatus.NOT_FOUND, "존재하지 않는 날짜 입니다."),
     RESERVATION_DATE_IN_USE(HttpStatus.CONFLICT, "이미 예약이 존재하는 날짜는 삭제할 수 없습니다."),
+    INVALID_RESERVATION_DATE(HttpStatus.BAD_REQUEST, "날짜는 비어 있을 수 없습니다."),
     ;
 
     private final HttpStatus httpStatus;

@@ -1,6 +1,8 @@
 package roomescape.domain.theme;
 
 import lombok.Getter;
+import roomescape.support.exception.RoomescapeException;
+import roomescape.support.exception.ThemeErrorCode;
 
 @Getter
 public class Theme {
@@ -11,6 +13,7 @@ public class Theme {
     private final String url;
 
     private Theme(Long id, String name, String content, String url) {
+        validate(name, content, url);
         this.id = id;
         this.name = name;
         this.content = content;
@@ -33,5 +36,17 @@ public class Theme {
             content,
             url
         );
+    }
+
+    private static void validate(String name, String content, String url) {
+        if (name == null) {
+            throw new RoomescapeException(ThemeErrorCode.INVALID_THEME_NAME);
+        }
+        if (content == null) {
+            throw new RoomescapeException(ThemeErrorCode.INVALID_THEME_CONTENT);
+        }
+        if (url == null) {
+            throw new RoomescapeException(ThemeErrorCode.INVALID_THEME_URL);
+        }
     }
 }
