@@ -26,8 +26,8 @@ public class ReservationTimeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTime) {
         return new ReservationRepository() {
             @Override
-            public Reservation getReservation(long id) {
-                return null;
+            public Optional<Reservation> getReservation(long id) {
+                return Optional.empty();
             }
 
             @Override

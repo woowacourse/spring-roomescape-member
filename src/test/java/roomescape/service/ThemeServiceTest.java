@@ -26,8 +26,8 @@ public class ThemeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTheme) {
         return new ReservationRepository() {
             @Override
-            public Reservation getReservation(long id) {
-                return null;
+            public Optional<Reservation> getReservation(long id) {
+                return Optional.empty();
             }
 
             @Override

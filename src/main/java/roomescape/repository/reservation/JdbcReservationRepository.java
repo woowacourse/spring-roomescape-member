@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -121,8 +122,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation getReservation(long id) {
-        return jdbcTemplate.queryForObject(SELECT_BY_ID_SQL, RESERVATION_MAPPER, id);
+    public Optional<Reservation> getReservation(long id) {
+        return jdbcTemplate.query(SELECT_BY_ID_SQL, RESERVATION_MAPPER, id)
+                .stream()
+                .findFirst();
     }
 
     @Override

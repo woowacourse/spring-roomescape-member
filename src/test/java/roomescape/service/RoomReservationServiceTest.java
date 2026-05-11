@@ -31,8 +31,8 @@ public class RoomReservationServiceTest {
     private ReservationRepository createReservationRepository(boolean isExist) {
         return new ReservationRepository() {
             @Override
-            public Reservation getReservation(long id) {
-                return null;
+            public Optional<Reservation> getReservation(long id) {
+                return Optional.empty();
             }
 
             @Override
