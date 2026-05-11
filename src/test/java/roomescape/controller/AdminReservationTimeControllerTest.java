@@ -19,7 +19,8 @@ public class AdminReservationTimeControllerTest {
         // when & then
         createTime("10:00")
                 .statusCode(201)
-                .body("id", notNullValue());
+                .body("id", notNullValue())
+                .header("Location", "/admin/times/1");
     }
 
     @Test

@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import static org.hamcrest.Matchers.notNullValue;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
@@ -16,7 +18,9 @@ public class AdminThemeControllerTest {
     void 테마를_추가한다() {
         // when & then
         createTheme("방탈출1", "다함께 탈출해요 방탈출", "https://asdfsdf.sdfs")
-                .statusCode(201);
+                .statusCode(201)
+                .body("id", notNullValue())
+                .header("Location", "/admin/themes/1");
     }
 
     @Test
