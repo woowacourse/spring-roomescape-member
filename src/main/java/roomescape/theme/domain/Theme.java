@@ -1,8 +1,5 @@
 package roomescape.theme.domain;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class Theme {
     private Long id;
     private String name;
@@ -36,28 +33,24 @@ public class Theme {
 
     private static void validateId(Long id) {
         if (id == null) {
-            log.warn("Theme id validation failed: id=null");
             throw new IllegalArgumentException("테마 ID는 필수입니다.");
         }
     }
 
     private static void validateName(String name) {
         if (name == null || name.isBlank()) {
-            log.warn("Theme name validation failed: name=null or blank");
             throw new IllegalArgumentException("테마 이름은 필수입니다.");
         }
     }
 
     private static void validateThumbnailUrl(String thumbnailUrl) {
         if (thumbnailUrl == null || thumbnailUrl.isBlank()) {
-            log.warn("Theme thumbnailUrl validation failed: thumbnailUrl=null or blank");
             throw new IllegalArgumentException("테마 썸네일 URL은 필수입니다.");
         }
     }
 
     private static void validateDescription(String description) {
         if (description == null || description.isBlank()) {
-            log.warn("Theme description validation failed: description=null or blank");
             throw new IllegalArgumentException("테마 설명은 필수입니다.");
         }
     }

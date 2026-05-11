@@ -1,9 +1,7 @@
 package roomescape.closeddate.domain;
 
 import java.time.LocalDate;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class ClosedDate {
     private Long id;
     private LocalDate date;
@@ -35,21 +33,18 @@ public class ClosedDate {
 
     private static void validateId(Long id) {
         if (id == null) {
-            log.warn("Closed date ID validation failed: id=null");
             throw new IllegalArgumentException("휴일 날짜 ID는 필수입니다.");
         }
     }
 
     private static void validateDate(LocalDate date) {
         if (date == null) {
-            log.warn("Closed date date validation failed: date=null");
             throw new IllegalArgumentException("휴일 날짜는 필수입니다.");
         }
     }
 
     private static void validatePast(LocalDate date) {
         if (date.isBefore(LocalDate.now())) {
-            log.warn("Closed date date validation failed: date={}", date);
             throw new IllegalArgumentException("과거 날짜는 등록할 수 없습니다.");
         }
     }
