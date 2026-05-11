@@ -19,6 +19,8 @@ import roomescape.time.domain.ReservationTimeRepository;
 @RequiredArgsConstructor
 public class ReservationService {
 
+    private static final int NONE_EFFECTED = 0;
+
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
     private final ThemeRepository themeRepository;
@@ -37,9 +39,16 @@ public class ReservationService {
         return reservationRepository.save(command.toEntity(time, theme));
     }
 
-    public void cancelReservation(Long id) {
-        if (reservationRepository.deleteById(id) < 1) {
+    public void deleteReservation(Long id) {
+        if (reservationRepository.deleteById(id) == NONE_EFFECTED) {
             throw new ReservationNotFoundException("존재하지 않는 예약ID 입니다.");
         }
+    }
+
+    public void cancelReservation(Long id, String username) {
+        if (!reservationRepository.existsByIdAndUsername(id, username)) {
+            throw new ReservationNotFoundException("해당 예약을 찾을 수 없거나 취소할 권한이 없습니다.");
+        }
+        reservationRepository.cancelById(id);
     }
 }
