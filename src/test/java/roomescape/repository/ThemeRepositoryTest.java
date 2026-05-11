@@ -10,14 +10,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @JdbcTest
-@Import(ThemeRepository.class)
+@Import({ThemeRepository.class, ReservationTimeRepository.class})
 class ThemeRepositoryTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     private Theme savedTheme;
 
@@ -54,16 +62,47 @@ class ThemeRepositoryTest {
     void 테마를_삭제한다() {
         themeRepository.deleteById(savedTheme.getId());
 
-        Optional<Theme> found = themeRepository.findById(savedTheme.getId());
-        assertThat(found).isEmpty();
+        assertThat(themeRepository.findById(savedTheme.getId())).isEmpty();
     }
 
     @Test
-    void 인기_테마를_조회한다() {
-        // findFamous는 reservation 데이터와 join되므로 통합 테스트에서 별도 검증
-        // 여기서는 빈 결과 반환 여부만 확인
-        List<Theme> famous = themeRepository.findFamous(7, LocalDate.now(), 10);
+    void 인기_테마를_예약_횟수_기준으로_조회한다() {
+        Theme theme2 = themeRepository.save(Theme.of("추리", "머리 쓰는 테마", "https://example.com/img2.jpg"));
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
 
-        assertThat(famous).isNotNull();
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        LocalDate twoDaysAgo = today.minusDays(2);
+
+        // savedTheme 예약 2건
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "유저1", yesterday, time.getId(), savedTheme.getId());
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "유저2", twoDaysAgo, time.getId(), savedTheme.getId());
+
+        // theme2 예약 1건
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "유저3", yesterday, time.getId(), theme2.getId());
+
+        List<Theme> famous = themeRepository.findFamous(7, today, 10);
+
+        assertThat(famous).hasSize(2);
+        assertThat(famous.get(0).getId()).isEqualTo(savedTheme.getId()); // 2건이라 1위
+        assertThat(famous.get(1).getId()).isEqualTo(theme2.getId());     // 1건이라 2위
+    }
+
+    @Test
+    void 조회_기간_밖의_예약은_인기_테마에_포함되지_않는다() {
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+
+        LocalDate today = LocalDate.now();
+        LocalDate eightDaysAgo = today.minusDays(8); // 7일 범위 밖
+
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "유저1", eightDaysAgo, time.getId(), savedTheme.getId());
+
+        List<Theme> famous = themeRepository.findFamous(7, today, 10);
+
+        assertThat(famous).isEmpty();
     }
 }
