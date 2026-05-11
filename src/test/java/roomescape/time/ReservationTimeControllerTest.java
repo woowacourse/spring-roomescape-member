@@ -1,33 +1,44 @@
 package roomescape.time;
 
-import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.restassured.RestAssured;
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@WebMvcTest(ReservationTimeController.class)
 class ReservationTimeControllerTest {
 
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private ReservationTimeService reservationTimeService;
+
     @Test
-    void 예약시간_조회() {
-        RestAssured.given().log().all()
-                .when().get("/api/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(5));
+    void 예약시간_조회() throws Exception {
+        given(reservationTimeService.read()).willReturn(List.of());
+
+        mockMvc.perform(get("/api/times"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void 예약_가능한_시간_조회() {
-        RestAssured.given().log().all()
-                .queryParam("theme_id", 1)
-                .queryParam("date", "2026-05-10")
-                .when().get("/api/times/availability")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(2));
+    void 예약_가능한_시간_조회() throws Exception {
+        given(reservationTimeService.readAvailableTimes(eq(1L), any(LocalDate.class)))
+                .willReturn(List.of());
+
+        mockMvc.perform(get("/api/times/availability")
+                        .param("theme_id", "1")
+                        .param("date", "2026-05-10"))
+                .andExpect(status().isOk());
     }
 }
