@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dao.ReservationDAO;
+import roomescape.reservation.dao.ReservationTimeDAO;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.ReservationCreateResponse;
@@ -15,12 +16,15 @@ import roomescape.reservation.dto.response.TimeResponse;
 public class ReservationService {
 
     private final ReservationDAO reservationDAO;
+    private final ReservationTimeDAO reservationTimeDAO;
 
-    public ReservationService(ReservationDAO reservationDAO) {
+    public ReservationService(ReservationDAO reservationDAO, ReservationTimeDAO reservationTimeDAO) {
         this.reservationDAO = reservationDAO;
+        this.reservationTimeDAO = reservationTimeDAO;
     }
 
     public ReservationCreateResponse create(ReservationRequest request) {
+        reservationTimeDAO.findById(request.timeId());
         Reservation reservation = reservationDAO.insert(request.name(), LocalDate.parse(request.date()), request.timeId(), request.themeId());
         return ReservationCreateResponse.from(reservation);
     }

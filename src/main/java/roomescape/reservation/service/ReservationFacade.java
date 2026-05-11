@@ -24,7 +24,6 @@ public class ReservationFacade {
     }
 
     public ReservationCreateResponse createReservation(ReservationRequest request) {
-        reservationTimeService.findById(request.timeId());
         return reservationService.create(request);
     }
 
