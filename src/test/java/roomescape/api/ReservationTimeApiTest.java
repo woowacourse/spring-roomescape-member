@@ -112,7 +112,7 @@ class ReservationTimeApiTest {
         // when
         RestAssured.given().log().all()
                 .queryParams(params)
-                .when().get("/times")
+                .when().get("/times/available")
                 .then().log().all()
                 .statusCode(200)
                 .body("availableTimes.size()", is(1),
@@ -135,7 +135,7 @@ class ReservationTimeApiTest {
 
         RestAssured.given().log().all()
                 .queryParams(params)
-                .when().get("/times")
+                .when().get("/times/available")
                 .then().log().all()
                 .statusCode(200)
                 .body("availableTimes.size()", is(1),
@@ -150,7 +150,7 @@ class ReservationTimeApiTest {
         RestAssured.given().log().all()
                 .queryParam("date", LocalDate.now().plusDays(1).toString())
                 .queryParam("themeId", 999)
-                .when().get("/times")
+                .when().get("/times/available")
                 .then().log().all()
                 .statusCode(404);
     }

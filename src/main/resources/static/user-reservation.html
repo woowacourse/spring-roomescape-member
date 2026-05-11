@@ -281,7 +281,7 @@
     async function loadAvailableTimes() {
         timeList.innerHTML = '<div class="loading-msg">예약 가능 시간을 확인 중입니다...</div>';
         try {
-            const res = await fetch(`/times?themeId=${selectedThemeId}&date=${selectedDate}`);
+            const res = await fetch(`/times/available?themeId=${selectedThemeId}&date=${selectedDate}`);
             const data = await res.json();
             timeList.innerHTML = '';
 
