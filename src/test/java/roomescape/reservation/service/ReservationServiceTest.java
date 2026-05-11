@@ -48,11 +48,11 @@ class ReservationServiceTest {
                         new Theme(1L, "공포방", "무서운방입니다.", "image-url")
                 )
         );
-        when(reservationRepository.findAll()).thenReturn(reservations);
+        when(reservationRepository.findAll(0, 10)).thenReturn(reservations);
 
-        List<Reservation> result = reservationService.findReservations();
+        List<Reservation> result = reservationService.findReservations(0, 10);
 
-        verify(reservationRepository).findAll();
+        verify(reservationRepository).findAll(0, 10);
         assertThat(result).isSameAs(reservations);
     }
 

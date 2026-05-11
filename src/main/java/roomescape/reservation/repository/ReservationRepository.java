@@ -23,7 +23,7 @@ public class ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> findAll(int page, int size) {
         String sql = """
                 SELECT r.id          AS reservation_id,
                        r.name        AS reservation_name,
@@ -37,8 +37,11 @@ public class ReservationRepository {
                 FROM reservation r
                 JOIN reservation_time t ON r.time_id = t.id
                 JOIN theme th ON r.theme_id = th.id
+                ORDER BY r.id
+                LIMIT ? OFFSET ?
                 """;
-        return jdbcTemplate.query(sql, reservationRowsMapper());
+        int offset = page * size;
+        return jdbcTemplate.query(sql, reservationRowsMapper(), size, offset);
     }
 
     public Reservation save(Reservation reservation) {

@@ -45,7 +45,7 @@ class ReservationControllerTest {
                         new ReservationTime(2L, LocalTime.of(20, 0)),
                         new Theme(2L, "추리방", "추리하는방입니다.", "image-url2"))
         );
-        when(reservationService.findReservations()).thenReturn(reservations);
+        when(reservationService.findReservations(0, 10)).thenReturn(reservations);
 
         mockMvc.perform(get("/reservations"))
                 .andExpect(status().isOk())
@@ -57,6 +57,20 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.reservations[0].theme.name").value("공포방"))
                 .andExpect(jsonPath("$.reservations[1].id").value(2))
                 .andExpect(jsonPath("$.reservations[1].name").value("어셔"));
+        verify(reservationService).findReservations(0, 10);
+    }
+
+    @Test
+    void 예약_목록_조회시_페이지_정보를_Service에_전달한다() throws Exception {
+        when(reservationService.findReservations(1, 5)).thenReturn(List.of());
+
+        mockMvc.perform(get("/reservations")
+                        .param("page", "1")
+                        .param("size", "5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.reservations.length()").value(0));
+
+        verify(reservationService).findReservations(1, 5);
     }
 
     @Test

@@ -65,7 +65,7 @@ class ReservationRepositoryTest {
         reservationRepository.save(new Reservation(
                 null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
 
-        List<Reservation> result = reservationRepository.findAll();
+        List<Reservation> result = reservationRepository.findAll(0, 10);
 
         assertThat(result).hasSize(1);
         Reservation reservation = result.get(0);
@@ -77,6 +77,21 @@ class ReservationRepositoryTest {
         assertThat(reservation.getTheme().getName()).isEqualTo("공포방");
         assertThat(reservation.getTheme().getDescription()).isEqualTo("무서운방입니다.");
         assertThat(reservation.getTheme().getThumbnail()).isEqualTo("image-url");
+    }
+
+    @Test
+    void 예약_목록을_페이지_단위로_조회한다() {
+        reservationRepository.save(new Reservation(
+                null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 11), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "레서", LocalDate.of(2026, 5, 12), time, theme));
+
+        List<Reservation> result = reservationRepository.findAll(1, 2);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("레서");
     }
 
     @Test

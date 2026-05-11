@@ -46,8 +46,12 @@ class ReservationE2ETest {
     void getReservations() {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "브라운", "2025-12-25", 1L, 1L);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "어셔", "2025-12-26", 1L, 1L);
 
         RestAssured.given().log().all()
+                .queryParam("page", 0)
+                .queryParam("size", 1)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)

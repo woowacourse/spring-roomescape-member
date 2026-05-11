@@ -27,8 +27,8 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Reservation> findReservations() {
-        return reservationRepository.findAll();
+    public List<Reservation> findReservations(int page, int size) {
+        return reservationRepository.findAll(page, size);
     }
 
     @Transactional
