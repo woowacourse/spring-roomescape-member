@@ -13,8 +13,6 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ThemeService {
 
-    private final static int RANKS_LIMIT_COUNT = 10;
-
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -47,12 +45,11 @@ public class ThemeService {
         return new ThemeAllResponse(responses);
     }
 
-    public ThemeAllResponse readRanks() {
+    public ThemeAllResponse readRanks(Long limit) {
         LocalDate currentDay = LocalDate.now().minusDays(1);
         LocalDate lastWeekDay = LocalDate.now().minusWeeks(1);
         List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(currentDay.toString(),
-                lastWeekDay.toString(),
-                RANKS_LIMIT_COUNT);
+                lastWeekDay.toString(), limit);
 
         List<ThemeResponse> responses = themes.stream()
                 .map(ThemeResponse::from)

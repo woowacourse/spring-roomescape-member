@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ThemeAllResponse;
 import roomescape.dto.ThemeRequest;
@@ -38,8 +39,11 @@ public class ThemeController {
     }
 
     @GetMapping("/ranks")
-    public ResponseEntity<ThemeAllResponse> readRanks() {
-        ThemeAllResponse themeResponses = themeService.readRanks();
+    public ResponseEntity<ThemeAllResponse> readRanks(@RequestParam("limit") Long limit) {
+        if (limit == null || limit <= 0 || limit > 30) {
+            return ResponseEntity.badRequest().build();
+        }
+        ThemeAllResponse themeResponses = themeService.readRanks(limit);
         return ResponseEntity.ok().body(themeResponses);
     }
 

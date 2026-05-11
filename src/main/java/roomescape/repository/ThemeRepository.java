@@ -60,7 +60,7 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
-    public List<Theme> findByCurrentDateAndLastWeekDateAndLimit(String currentDate, String lastWeekDate, int limit) {
+    public List<Theme> findByCurrentDateAndLastWeekDateAndLimit(String currentDate, String lastWeekDate, long limit) {
         String sql = """
                 SELECT
                     t.id,
