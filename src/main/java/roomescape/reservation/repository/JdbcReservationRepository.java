@@ -92,6 +92,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN reservation_date d ON r.date_id = d.id
                 INNER JOIN reservation_time t ON r.time_id = t.id
                 INNER JOIN theme th ON r.theme_id = th.id
+                WHERE r.id = :id
                 """;
         SqlParameterSource params = new MapSqlParameterSource("id", id);
 
