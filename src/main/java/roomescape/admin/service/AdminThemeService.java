@@ -10,7 +10,7 @@ import roomescape.theme.repository.ThemeRepository;
 public class AdminThemeService {
     private final ThemeRepository themeRepository;
 
-    public long saveTheme(String name, String description, String thumbnailUrl) {
+    public Theme saveTheme(String name, String description, String thumbnailUrl) {
         return themeRepository.save(Theme.of(name, description, thumbnailUrl));
     }
 

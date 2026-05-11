@@ -26,11 +26,12 @@ class AdminThemeServiceTest {
     @DisplayName("관리자는 테마를 저장할 수 있다.")
     @Test
     void saveTheme() {
-        when(themeRepository.save(any(Theme.class))).thenReturn(1L);
+        Theme theme = new Theme(1L, "공포", "무서운 테마", "https://image.test/theme.png");
+        when(themeRepository.save(any(Theme.class))).thenReturn(theme);
 
-        long savedId = adminThemeService.saveTheme("공포", "무서운 테마", "https://image.test/theme.png");
+        Theme savedTheme = adminThemeService.saveTheme("공포", "무서운 테마", "https://image.test/theme.png");
 
-        assertThat(savedId).isEqualTo(1L);
+        assertThat(savedTheme).isEqualTo(theme);
         verify(themeRepository).save(any(Theme.class));
     }
 

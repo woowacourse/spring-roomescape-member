@@ -57,7 +57,7 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, themeRowMapper, from, to, size);
     }
 
-    public long save(Theme theme) {
+    public Theme save(Theme theme) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -88,11 +88,13 @@ public class ThemeRepository {
             return ps;
         }, keyHolder);
 
+        //if문으로
         if (keyHolder.getKey() != null) {
-            return keyHolder.getKey().longValue();
+            return new Theme(keyHolder.getKey().longValue(), theme.getName(), theme.getDescription(),
+                    theme.getThumbnailUrl());
         }
 
-        return theme.getId();
+        return theme;
     }
 
     public void delete(long id) {
