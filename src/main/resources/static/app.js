@@ -99,14 +99,14 @@ async function loadAvailableTimes() {
     return;
   }
 
-  state.availableTimes = await request(`/times?date=${date}&themeId=${themeId}`);
+  state.availableTimes = await request(`/times/available?date=${date}&themeId=${themeId}`);
   state.availability = { date, themeId };
   renderAvailableTimes();
   renderReservationCondition();
 }
 
 async function loadPopularThemes() {
-  state.popularThemes = await request("/themes?days=7&limits=10");
+  state.popularThemes = await request("/themes/popular?days=7&limit=10");
   renderPopularThemes();
 }
 
@@ -332,7 +332,7 @@ function renderThemes() {
           <td>${theme.id}</td>
           <td>${escapeHtml(theme.name)}</td>
           <td>${escapeHtml(theme.description)}</td>
-          <td>${theme.runtime}시간</td>
+          <td>${theme.runtime}분</td>
           <td><button class="danger" type="button" onclick="deleteTheme(${theme.id})">삭제</button></td>
         </tr>
       `).join("")
@@ -363,7 +363,7 @@ function themeCard(theme) {
       <div>
         <h3>${escapeHtml(theme.name)}</h3>
         <p>${escapeHtml(theme.description)}</p>
-        <span>${theme.runtime}시간</span>
+        <span>${theme.runtime}분</span>
       </div>
     </article>
   `;
