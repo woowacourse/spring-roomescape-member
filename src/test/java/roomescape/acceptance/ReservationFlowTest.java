@@ -1,23 +1,32 @@
-package roomescape;
+package roomescape.acceptance;
 
 import static org.hamcrest.Matchers.equalTo;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationFlowTest {
+class ReservationFlowTest {
+
+    @LocalServerPort
+    private int port;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @Test
     void 예약_생성_후_해당_시간이_예약됨으로_변경된다() {
@@ -30,11 +39,11 @@ public class ReservationFlowTest {
                 .statusCode(200)
                 .body("times[0].isReserved", equalTo(false));
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2026-05-06");
-        params.put("timeId", 1);
-        params.put("themeId", 1);
+        Map<String, Object> params = Map.of(
+                "name", "브라운",
+                "date", "2026-05-06",
+                "timeId", 1,
+                "themeId", 1);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
