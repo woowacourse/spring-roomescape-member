@@ -10,10 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.fixture.ThemeFixture;
 import roomescape.fixture.fake.FakeThemeRepository;
-import roomescape.theme.application.dto.PopularThemeQueryResult;
 import roomescape.theme.application.dto.ThemeQueryResult;
 import roomescape.theme.application.exception.ThemeException;
-import roomescape.theme.application.query.PopularTheme;
+import roomescape.theme.application.query.PopularThemeResult;
 import roomescape.theme.application.service.ThemeService;
 
 public class ThemeServiceTest {
@@ -91,7 +90,7 @@ public class ThemeServiceTest {
     @DisplayName("인기 테마 조회를 테스트합니다.")
     @Test
     void find_popular_themes() {
-        themeRepository.savePopularTheme(new PopularTheme(
+        themeRepository.savePopularTheme(new PopularThemeResult(
                 1L,
                 "인기 테마",
                 "인기 테마 설명",
@@ -100,11 +99,11 @@ public class ThemeServiceTest {
         ));
 
         LocalDate today = LocalDate.of(2026, 5, 6);
-        List<PopularThemeQueryResult> responses = themeService.findPopularThemes(today);
+        List<PopularThemeResult> responses = themeService.findPopularThemes(today);
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(responses).containsExactly(
-                    new PopularThemeQueryResult(
+                    new PopularThemeResult(
                             1L,
                             "인기 테마",
                             "인기 테마 설명",

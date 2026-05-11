@@ -38,7 +38,8 @@ class ReservationServiceTest {
         FakeReservationTimeRepository fakeTimeRepository = new FakeReservationTimeRepository();
         timeService = new ReservationTimeService(fakeTimeRepository, fakeTimeRepository);
         fakeReservationRepository = new FakeReservationRepository();
-        reservationService = new ReservationService(fakeReservationRepository, fakeReservationRepository, themeService, timeService);
+        reservationService = new ReservationService(fakeReservationRepository, fakeReservationRepository,
+                themeService, timeService);
     }
 
     @DisplayName("사용자의 방탈출 예약 시간 추가를 테스트합니다.")

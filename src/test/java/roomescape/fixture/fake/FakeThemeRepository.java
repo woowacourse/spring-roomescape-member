@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import roomescape.theme.application.query.PopularTheme;
+import roomescape.theme.application.query.PopularThemeResult;
 import roomescape.theme.application.query.PopularThemeDao;
 import roomescape.theme.domain.PopularThemePeriod;
 import roomescape.theme.domain.Theme;
@@ -14,7 +14,7 @@ import roomescape.theme.domain.repository.ThemeRepository;
 public class FakeThemeRepository implements ThemeRepository, PopularThemeDao {
 
     private final Map<Long, Theme> themes = new LinkedHashMap<>();
-    private final List<PopularTheme> popularThemes = new ArrayList<>();
+    private final List<PopularThemeResult> popularThemes = new ArrayList<>();
     private Long idHolder = 1L;
 
     @Override
@@ -29,7 +29,7 @@ public class FakeThemeRepository implements ThemeRepository, PopularThemeDao {
     }
 
     @Override
-    public List<PopularTheme> findTop10PopularThemes(PopularThemePeriod period) {
+    public List<PopularThemeResult> findTop10PopularThemes(PopularThemePeriod period) {
         return popularThemes;
     }
 
@@ -59,7 +59,7 @@ public class FakeThemeRepository implements ThemeRepository, PopularThemeDao {
                 .anyMatch(savedTheme -> savedTheme.equals(theme));
     }
 
-    public void savePopularTheme(PopularTheme popularTheme) {
+    public void savePopularTheme(PopularThemeResult popularTheme) {
         popularThemes.add(popularTheme);
     }
 }

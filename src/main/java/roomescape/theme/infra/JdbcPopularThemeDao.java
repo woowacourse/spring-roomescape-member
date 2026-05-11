@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import roomescape.theme.application.query.PopularTheme;
+import roomescape.theme.application.query.PopularThemeResult;
 import roomescape.theme.application.query.PopularThemeDao;
 import roomescape.theme.domain.PopularThemePeriod;
 
@@ -15,7 +15,7 @@ public class JdbcPopularThemeDao implements PopularThemeDao {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<PopularTheme> findTop10PopularThemes(PopularThemePeriod period) {
+    public List<PopularThemeResult> findTop10PopularThemes(PopularThemePeriod period) {
         String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail_img_url, COUNT(*) as reserved_count
                 FROM theme t
@@ -27,7 +27,7 @@ public class JdbcPopularThemeDao implements PopularThemeDao {
                 """;
 
         return jdbcTemplate.query(sql,
-                (rs, rowNum) -> new PopularTheme(
+                (rs, rowNum) -> new PopularThemeResult(
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("description"),
