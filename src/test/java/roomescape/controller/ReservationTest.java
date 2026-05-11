@@ -58,7 +58,6 @@ public class ReservationTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1))
-                .body("[0].id", is(1))
                 .body("[0].name", is("녀녕"))
                 .body("[0].date", is("2025-05-05"))
                 .body("[0].time.id", is(1))

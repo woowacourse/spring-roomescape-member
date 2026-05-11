@@ -7,17 +7,15 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ThemeProvideTest {
+class PopularThemeTest {
 
     @Test
-    @Sql(scripts = "/testData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/themePopularTestData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("최근 예약이 많았던 테마는 정해진 갯수 한계 내에서 조회되어야 한다.")
-    void readAvailableTime() {
+    void readPopularThemeWithLimit() {
         long limit = 10;
 
         LocalDate today = LocalDate.of(2026, 5, 5);
@@ -35,9 +33,9 @@ public class ThemeProvideTest {
     }
 
     @Test
-    @Sql(scripts = "/testData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/themePopularTestData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("최근 예약이 많았던 테마는 기간 내 예약이 많은 상위 테마들을 조회할 수 있어야 한다. ")
-    void sortThemes() {
+    void readPopularThemeSortedByReservationCount() {
         LocalDate today = LocalDate.of(2026, 5, 5);
         LocalDate startAt = today.minusWeeks(1);
         LocalDate endAt = today.minusDays(1);
