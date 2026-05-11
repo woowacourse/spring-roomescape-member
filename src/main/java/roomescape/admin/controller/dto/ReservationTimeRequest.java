@@ -1,4 +1,4 @@
-package roomescape.time.dto;
+package roomescape.admin.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

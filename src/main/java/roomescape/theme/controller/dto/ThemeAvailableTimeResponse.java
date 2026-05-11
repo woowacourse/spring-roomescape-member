@@ -1,4 +1,4 @@
-package roomescape.theme.dto;
+package roomescape.theme.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import roomescape.theme.service.AvailableTime;
