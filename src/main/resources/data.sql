@@ -1,0 +1,70 @@
+INSERT INTO theme (name, description, url) VALUES ('붉은 요람', '10년 전 의문의 화재로 폐쇄된 안개마을 영아원. 그곳에서 들려오는 울음소리의 정체를 밝혀야 합니다.', 'https://escape.com/images/red-cradle.png');
+
+INSERT INTO theme (name, description, url) VALUES ('루팡의 예고장', '세계 최고의 보석 ''여신의 눈물''이 전시된 박물관. 당신은 예고된 시간에 맞춰 보석을 훔쳐낼 수 있을까요?', 'https://escape.com/images/lupin.png');
+
+INSERT INTO theme (name, description, url) VALUES ('마법 알바', '대마법사 멀린의 실험실에서 구하는 고수익 꿀알바! 하지만 조건이 조금 이상합니다...', 'https://escape.com/images/magic.png');
+
+INSERT INTO theme (name, description, url) VALUES ('화성 정착촌', '2050년 화성, 통신이 끊긴 정착촌에서 살아남기 위한 생존자들의 사투가 시작됩니다.', 'https://escape.com/images/mars.png');
+
+INSERT INTO theme (name, description, url) VALUES ('악몽의 초대장', '잠들 때마다 당신을 찾아오는 의문의 남자. 오늘 밤, 그 악몽의 끝을 확인해야 합니다.', 'https://escape.com/images/nightmare.png');
+
+INSERT INTO theme (name, description, url) VALUES ('폐쇄 병동 404호', '기록조차 남지 않은 정신병원의 지하 병동. 차가운 수술대 위에서 당신은 깨어납니다.', 'https://escape.com/images/hospital.png');
+
+INSERT INTO theme (name, description, url) VALUES ('인형사의 방', '주인의 사랑을 받지 못한 인형들이 스스로 움직이기 시작하는 기이한 저택.', 'https://escape.com/images/doll.png');
+
+INSERT INTO theme (name, description, url) VALUES ('사일런트 정글', '길을 잃은 아마존의 깊은 숲속, 보이지 않는 무언가가 당신을 사냥하기 시작합니다.', 'https://escape.com/images/jungle.png');
+
+INSERT INTO theme (name, description, url) VALUES ('검은 상단', '조선시대, 금지된 주술을 부리는 상단의 비밀 창고에 잠입했습니다.', 'https://escape.com/images/dark-merchant.png');
+
+INSERT INTO theme (name, description, url) VALUES ('기억의 세탁소', '지우고 싶은 아픈 기억이 있나요? 당신의 추억을 깨끗하게 세탁해 드립니다.', 'https://escape.com/images/laundry.png');
+
+INSERT INTO theme (name, description, url) VALUES ('할아버지의 시계', '멈춰버린 할아버지의 태엽 시계를 다시 돌리기 위한 손자의 시간 여행.', 'https://escape.com/images/clock.png');
+
+INSERT INTO theme (name, description, url) VALUES ('구름 위 카페', '하늘에서 가장 가까운 카페에서 만난 낯선 이와의 짧고 따뜻한 대화.', 'https://escape.com/images/cafe.png');
+
+INSERT INTO theme (name, description, url) VALUES ('졸업앨범', '10년 만에 찾은 모교, 사라진 친구의 흔적을 낡은 졸업앨범 속에서 찾아냅니다.', 'https://escape.com/images/album.png');
+
+INSERT INTO theme (name, description, url) VALUES ('사라진 다이아몬드', '철통 보안을 자랑하는 카지노 금고에서 사라진 다이아몬드의 행방을 쫓으세요.', 'https://escape.com/images/diamond.png');
+
+INSERT INTO theme (name, description, url) VALUES ('비밀 요원 Z', '적진 한가운데 고립된 요원. 해킹을 통해 탈출 경로를 확보해야 합니다.', 'https://escape.com/images/agent.png');
+
+INSERT INTO theme (name, description, url) VALUES ('셜록의 마지막 편지', '셜록 홈즈가 남긴 마지막 단서. 런던의 베이커 가 221B번지에서 추리가 시작됩니다.', 'https://escape.com/images/sherlock.png');
+
+INSERT INTO theme (name, description, url) VALUES ('완벽한 알리바이', '당신은 살인 사건의 유력한 용의자입니다. 60분 안에 무죄를 입증할 증거를 찾으세요.', 'https://escape.com/images/alibi.png');
+
+--시간 데이터 (reservation_time)
+-- 매장에서 운영하는 표준 타임 테이블을 생성합니다.
+INSERT INTO reservation_time (start_at) VALUES ('10:00');
+INSERT INTO reservation_time (start_at) VALUES ('11:00');
+INSERT INTO reservation_time (start_at) VALUES ('12:00');
+INSERT INTO reservation_time (start_at) VALUES ('13:00');
+INSERT INTO reservation_time (start_at) VALUES ('14:00');
+INSERT INTO reservation_time (start_at) VALUES ('15:00');
+INSERT INTO reservation_time (start_at) VALUES ('16:00');
+INSERT INTO reservation_time (start_at) VALUES ('17:00');
+INSERT INTO reservation_time (start_at) VALUES ('18:00');
+INSERT INTO reservation_time (start_at) VALUES ('19:00');
+INSERT INTO reservation_time (start_at) VALUES ('20:00');
+INSERT INTO reservation_time (start_at) VALUES ('21:00');
+INSERT INTO reservation_time (start_at) VALUES ('22:00');
+INSERT INTO reservation_time (start_at) VALUES ('23:00');
+
+-- [1위 타겟] 테마 5 (폐쇄 병동 404호) : 총 6건 (5월 1일~3일 집중)
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('윤기', '2026-05-01', 1, 5);
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('매트', '2026-05-01', 2, 5);
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('토리', '2026-05-02', 3, 5);
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('브라운', '2026-05-02', 4, 5);
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('제이슨', '2026-05-03', 5, 5);
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('워니', '2026-05-03', 6, 5);
+
+-- [2위 타겟] 테마 2 (루팡의 예고장) : 총 4건 (5월 3일~5일 집중)
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('루팡1', '2026-05-03', 7, 2);
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('루팡2', '2026-05-04', 8, 2);
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('루팡3', '2026-05-04', 9, 2);
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('루팡4', '2026-05-05', 10, 2);
+
+-- [기타] 데이터 분산 (5월 1일~5일 골고루)
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('포비', '2026-05-01', 1, 1); -- 테마 1
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('준이', '2026-05-02', 2, 3);   -- 테마 3
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('공원', '2026-05-04', 3, 4);  -- 테마 4
+INSERT INTO reservation (username, date, time_id, theme_id) VALUES ('구바', '2026-05-05', 4, 6);  -- 테마 6
