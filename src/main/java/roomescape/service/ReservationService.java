@@ -1,8 +1,8 @@
 package roomescape.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import roomescape.dto.ReservationAllResponse;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.model.Reservation;
@@ -26,16 +26,17 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResponse> read() {
+    public ReservationAllResponse read() {
         List<Reservation> reservations = reservationRepository.findAll();
-        return reservations.stream()
+        List<ReservationResponse> responses = reservations.stream()
                 .map(ReservationResponse::from)
-                .collect(Collectors.toList());
+                .toList();
+        return new ReservationAllResponse(responses);
     }
 
     public void removeById(Long id) {
         int deleteCnt = reservationRepository.deleteById(id);
-        if(deleteCnt == 0) {
+        if (deleteCnt == 0) {
             throw new IllegalArgumentException("존재하지 않는 예약의 ID 입니다.");
         }
     }
@@ -57,5 +58,4 @@ public class ReservationService {
         Reservation saved = reservationRepository.save(reservation);
         return ReservationResponse.from(saved);
     }
-
 }
