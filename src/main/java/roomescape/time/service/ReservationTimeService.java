@@ -40,6 +40,7 @@ public class ReservationTimeService {
 
     private void validateDuplicateTimeExist(LocalTime startAt) {
         if (reservationTimeRepository.existsByStartAt(startAt)) {
+            log.warn("Reservation time already exists: startAt={}", startAt);
             throw new ConflictException("이미 존재하는 예약 시간입니다.");
         }
     }
@@ -47,7 +48,10 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeDetailDto delete(Long id) {
         ReservationTime reservationTime = reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> {
+                    log.warn("Reservation time not found: id={}", id);
+                    return new NotFoundException("존재하지 않는 예약 시간입니다.");
+                });
         reservationTimeRepository.delete(id);
         log.info("Reservation time deleted: id={}, startAt={}", id, reservationTime.startAt());
         return ReservationTimeDetailDto.from(reservationTime);

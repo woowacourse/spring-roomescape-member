@@ -58,12 +58,19 @@ public class ReservationService {
     @Transactional
     public ReservationResponse create(ReservationSaveDto dto) {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> {
+                    log.warn("Reservation time not found: id={}", dto.timeId());
+                    return new NotFoundException("존재하지 않는 예약 시간입니다.");
+                });
 
         Theme theme = themeRepository.findById(dto.themeId())
-                .orElseThrow(() -> new NotFoundException("해당 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> {
+                    log.warn("Theme not found: id={}", dto.themeId());
+                    return new NotFoundException("해당 테마가 존재하지 않습니다.");
+                });
 
         if (closedDateRepository.existsByDate(dto.date())) {
+            log.warn("Closed date exists: date={}", dto.date());
             throw new IllegalArgumentException("예약 불가능한 날짜입니다.");
         }
 
@@ -87,12 +94,14 @@ public class ReservationService {
 
     private void validateNotAlreadyBookedByOthers(LocalDate date, LocalTime time, Theme theme) {
         if (reservationRepository.existsByDateAndTimeAndThemeId(date, time, theme.id())) {
+            log.warn("Reservation already exists: date={}, time={}, theme={}", date, time, theme.name());
             throw new ConflictException("해당 날짜/시간/테마는 이미 예약되었습니다.");
         }
     }
 
     private void validateUserHasNoReservationAtSameTime(String name, LocalDate date, ReservationTime time) {
         if (reservationRepository.existsByNameAndDateAndTime(name, date, time.startAt())) {
+            log.warn("User already has a reservation at the same time: name={}, date={}, time={}", name, date, time.startAt());
             throw new ConflictException("동일한 날짜와 시간에 예약이 존재합니다.");
         }
     }
@@ -108,7 +117,10 @@ public class ReservationService {
 
     private Reservation getReservation(Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> {
+                    log.warn("Reservation not found: id={}", id);
+                    return new NotFoundException("존재하지 않는 예약입니다.");
+                });
     }
 
 }

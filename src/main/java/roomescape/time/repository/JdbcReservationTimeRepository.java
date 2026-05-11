@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
 
+@Slf4j
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -64,6 +66,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
         int deleteCount = jdbcTemplate.update(sql, params);
         if (deleteCount == 0) {
+            log.warn("Reservation time not found: id={}", id);
             throw new NotFoundException("예약 시간을 삭제할 수 없습니다.");
         }
     }

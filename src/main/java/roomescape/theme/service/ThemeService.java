@@ -55,6 +55,7 @@ public class ThemeService {
         Theme theme = getTheme(id);
         theme.updateStatus(isActive);
         if (!themeRepository.updateStatus(theme)) {
+            log.warn("Theme status update failed: id={}, name={}", theme.id(), theme.name());
             throw new IllegalArgumentException("해당 테마가 존재하지 않습니다.");
         }
         log.info("Theme status updated: id={}, name={}, isActive={}", theme.id(), theme.name(), theme.isActive());
@@ -63,6 +64,9 @@ public class ThemeService {
 
     @NonNull
     private Theme getTheme(Long id) {
-        return themeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+        return themeRepository.findById(id).orElseThrow(() -> {
+            log.warn("Theme not found: id={}", id);
+            return new IllegalArgumentException("해당 테마가 존재하지 않습니다.");
+        });
     }
 }

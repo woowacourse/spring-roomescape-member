@@ -28,6 +28,7 @@ public class ClosedDateService {
     @Transactional
     public ClosedDate register(LocalDate date) {
         if (closedDateRepository.existsByDate(date)) {
+            log.warn("Closed date already exists: date={}", date);
             throw new ConflictException("이미 등록된 휴무일입니다.");
         }
         log.info("Closed date registered: date={}", date);
@@ -44,6 +45,9 @@ public class ClosedDateService {
     @NonNull
     private ClosedDate getClosedDate(Long id) {
         return closedDateRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 휴무일입니다."));
+                .orElseThrow(() -> {
+                    log.warn("Closed date not found: id={}", id);
+                    return new NotFoundException("존재하지 않는 휴무일입니다.");
+                });
     }
 }

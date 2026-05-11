@@ -2,7 +2,9 @@ package roomescape.time.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
@@ -24,12 +26,14 @@ public class ReservationTime {
 
     private static void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
+            log.warn("Reservation start time validation failed: startAt=null");
             throw new IllegalArgumentException("예약 시작 시간은 필수입니다.");
         }
     }
 
     private static void validateId(Long timeId) {
         if (timeId == null) {
+            log.warn("Reservation time ID validation failed: timeId=null");
             throw new IllegalArgumentException("예약 시간 ID는 필수입니다.");
         }
     }
