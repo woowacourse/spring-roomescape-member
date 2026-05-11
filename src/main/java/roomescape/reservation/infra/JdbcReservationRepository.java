@@ -111,7 +111,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 + "FROM reservation r "
                 + "INNER JOIN theme t ON r.theme_id = t.id "
                 + "INNER JOIN reservation_time rt ON r.time_id = rt.id "
-                + "WHERE r.name = :username";
+                + "WHERE r.name = :username AND r.status = 'ACTIVE'";
         return jdbcTemplate.query(sql, Map.of("username", username), rowMapper);
     }
 
