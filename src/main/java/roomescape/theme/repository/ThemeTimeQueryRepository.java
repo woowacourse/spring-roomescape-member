@@ -25,9 +25,12 @@ public class ThemeTimeQueryRepository {
     public List<ThemeTimeAvailability> findThemeAvailableTime(long themeId, LocalDate date) {
         final String sql = """
                     SELECT
-                          rt.id,
-                          rt.start_at,
-                          CASE WHEN r.id IS NULL THEN TRUE ELSE FALSE END AS available
+                        rt.id,
+                        rt.start_at,
+                        CASE WHEN r.id IS NULL
+                            THEN TRUE 
+                            ELSE FALSE 
+                        END AS available
                       FROM reservation_time rt
                       LEFT JOIN reservation r
                           ON rt.id = r.time_id
