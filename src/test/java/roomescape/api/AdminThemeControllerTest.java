@@ -17,7 +17,7 @@ class AdminThemeControllerTest {
 
     @DisplayName("관리자 테마 추가")
     @Test
-    void 관리자_테마_추가(){
+    void adminThemeCreate(){
         Map<String,Object> params = new HashMap<>();
         params.put("name", "공포의 폐병원");
         params.put("description", "공포의 폐병원");
@@ -33,7 +33,7 @@ class AdminThemeControllerTest {
 
     @DisplayName("API - 관리자 테마 삭제")
     @Test
-    void API_관리자_테마_삭제() {
+    void apiAdminThemeDelete() {
         Map<String,Object> params = new HashMap<>();
         params.put("name", "공포의 폐병원");
         params.put("description", "공포의 폐병원");

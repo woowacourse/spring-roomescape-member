@@ -21,7 +21,7 @@ class ReservationControllerTest {
 
     @DisplayName("사용자 예약 추가")
     @Test
-    void 사용자_예약_추가_API() {
+    void userReservationCreateApi() {
         Map<String,Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2026-05-05");
@@ -38,7 +38,7 @@ class ReservationControllerTest {
 
     @DisplayName("사용자 예약 삭제")
     @Test
-    void 사용자_예약_삭제(){
+    void userReservationDelete(){
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .pathParam("id",1)
@@ -49,7 +49,7 @@ class ReservationControllerTest {
 
     @DisplayName("사용자 예약 조회")
     @Test
-    void 사용자_예약_조회(){
+    void userReservationRetrieve(){
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .queryParam("username","김철수")
@@ -60,4 +60,4 @@ class ReservationControllerTest {
 
     }
 
-    }
+}

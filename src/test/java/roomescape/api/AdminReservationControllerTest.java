@@ -15,7 +15,7 @@ class AdminReservationControllerTest {
 
     @DisplayName("모든 사용자의 예약 내역이 모두 조회되어야한다.")
     @Test
-    void 관리자_예약_조회_API() {
+    void adminReservationRetrieveApi() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().get("/admin/reservations")

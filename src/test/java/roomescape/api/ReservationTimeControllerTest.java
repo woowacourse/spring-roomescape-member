@@ -19,23 +19,23 @@ class ReservationTimeControllerTest {
 
     @DisplayName("API - 예약 시간 등록")
     @Test
-    void API_예약_시간_등록() {
+    void apiReservationTimeCreate() {
         final String createStartAt = "23:00";
         final Map<String,Object> params = new HashMap<>();
         params.put("startAt", createStartAt);
 
         RestAssured.given().log().all()
-               .contentType(ContentType.JSON)
-               .body(params)
-               .when().post("/times")
-               .then().log().all()
-               .statusCode(201)
-               .body("startAt", equalTo(createStartAt));
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201)
+                .body("startAt", equalTo(createStartAt));
     }
 
     @DisplayName("API - 예약 시간 조회")
     @Test
-    void API_예약_시간_조회() {
+    void apiReservationTimeRetrieve() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().get("/times")
@@ -46,7 +46,7 @@ class ReservationTimeControllerTest {
 
     @DisplayName("API - 예약 시간 삭제")
     @Test
-    void API_예약_시간_삭제() {
+    void apiReservationTimeDelete() {
         final String createStartAt = "23:00";
         final Map<String,Object> params = new HashMap<>();
         params.put("startAt", createStartAt);

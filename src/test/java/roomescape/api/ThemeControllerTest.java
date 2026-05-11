@@ -17,7 +17,7 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("API - 전체 테마 조회")
-    void API_전체_테마_조회() {
+    void apiAllThemesRetrieve() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().get("/themes")
@@ -27,7 +27,7 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("API - Top 10 테마 조회")
-    void API_예약_시간_조회() {
+    void apiTop10ThemesRetrieve() {
         Map<String,Object> params = new HashMap<>();
         params.put("condition", "popular");
         params.put("size", "10");
@@ -42,7 +42,7 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("API - 특정 id의 테마 시간 조회")
-    void API_특정_id의_테마_시간_조회() {
+    void apiSpecificIdThemeTimesRetrieve() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .pathParam("id", 0)
