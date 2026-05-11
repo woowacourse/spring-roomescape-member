@@ -6,8 +6,8 @@ DROP TABLE IF EXISTS holiday;
 CREATE TABLE reservation_time
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
-    start_time VARCHAR(255) NOT NULL,
-    end_time   VARCHAR(255) NOT NULL,
+    start_time TIME NOT NULL,
+    end_time   TIME NOT NULL,
     PRIMARY KEY (id)
 );
 
