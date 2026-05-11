@@ -1,6 +1,6 @@
 # 학습 로그 #02
 
-**시간**: 05/11 10:30 ~ 11:30 (약 60분)
+**시간**: 05/11 10:30 ~ 11:30, 16:00 ~ 17:30 (약 150분)
 **학습 범위**: Controller 테스트 작성
 
 ## 1. 막힌 것의 종류
@@ -10,7 +10,7 @@
 - [ ] 개념 자체를 모르겠다 (예: "스프링 빈이 뭔지 모르겠다")
 - [ ] 개념은 알겠는데 코드로 어떻게 쓰는지 모르겠다 (예: "JdbcTemplate 문법을 모르겠다")
 - [ ] 코드는 돌아가는데 이게 맞는 건지 모르겠다 (예: "계층 분리를 이렇게 해도 되나?")
-- [ ] 기타: ___
+- [x] 기타: 코드도 모르고, 개념도 모르고, 단위테스트 기준도 모른다.
 
 ## 2. 이번 타임의 학습 전략
 
@@ -132,6 +132,34 @@ void returnsConflictWhenDuplicateTheme() {
 그런데 여러 상태코드에 대해서 진행하기 때문에 Service의 코드가 변경되면 테스트도 변경되어야 한다.
 그렇기 때문에, 테스트를 분리하는게 맞다고 생각한다.
 그렇지 않다면 비슷한 테스트가 모든 Controller에서 반복될 것이다.
+
+변경 이후:
+
+```java
+
+@Test
+@DisplayName("유효한 요청으로 테마를 생성하면 201을 반환한다")
+void createsTheme() {
+    ThemeRequestDto requestDto = new ThemeRequestDto(
+            theme.getName().getValue(), theme.getThumbnailUrl(), theme.getDescription());
+    given(themeService.create(any())).willReturn(theme);
+    ThemeResponseDto expected = ThemeResponseDto.from(theme);
+
+    ThemeResponseDto actual = RestAssuredMockMvc.given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(requestDto)
+            .when().post("/admin/themes")
+            .then()
+            .status(HttpStatus.CREATED)
+            .header("Location", "http://localhost/admin/themes/" + theme.getId())
+            .extract().as(ThemeResponseDto.class);
+
+    assertThat(actual).isEqualTo(expected);
+}
+```
+
+- 404, 409 Exception은 단위테스트로 분리
+    - 이렇게 함으로써 Controller의 중복 체크를 없앴다.
 
 ## 3. 전략 평가
 
