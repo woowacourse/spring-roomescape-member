@@ -16,11 +16,13 @@ public enum HttpErrorMapping {
             INVALID_THEME_ID_FORMAT,
             INVALID_START_TIME_NULL,
             INVALID_START_TIME_FORMAT,
-            INVALID_RESERVATION_TIME_ID,
-            INVALID_THEME_ID,
             DUPLICATED_RESERVATION_REQUEST
     )),
-
+    NOT_FOUNT_ERRORS(HttpStatus.NOT_FOUND, List.of(
+            INVALID_THEME_ID,
+            INVALID_RESERVATION_TIME_ID,
+            INVALID_RESERVATION_ID
+    )),
     CONFLICT_ERRORS(HttpStatus.CONFLICT, List.of(
             CANNOT_DELETE_RESERVATION_TIME_IN_USE,
             CANNOT_DELETE_THEME_IN_USE,

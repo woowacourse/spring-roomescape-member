@@ -5,9 +5,12 @@ public enum ErrorMessage {
     INVALID_NAME_LENGTH("이름은 20자를 초과할 수 없습니다."),
     INVALID_DATE_NULL("날짜는 필수입니다."),
     INVALID_DATE_FORMAT("유효하지 않은 날짜입니다."),
-    INVALID_TIME_ID_FORMAT("시간 ID는 0보다 커야 합니다."),
 
-    INVALID_THEME_ID_FORMAT("테마 ID는 0보다 커야 합니다."),
+    INVALID_RESERVATION_ID("유효하지 않는 예약 id 입니다."),
+
+    INVALID_TIME_ID_FORMAT("시간 id는 0보다 커야 합니다."),
+
+    INVALID_THEME_ID_FORMAT("테마 id 0보다 커야 합니다."),
     INVALID_THEME_ID("유효하지 않은 테마 id입니다."),
 
     INVALID_START_TIME_NULL("시작 시간은 필수입니다."),

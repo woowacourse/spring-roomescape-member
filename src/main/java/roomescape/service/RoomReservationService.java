@@ -1,8 +1,10 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationInfo;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
@@ -10,12 +12,16 @@ import roomescape.domain.theme.Theme;
 import roomescape.exception.DuplicatedReservationRequestException;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundResourceException;
+import roomescape.exception.ReservationException;
+import roomescape.exception.UnauthorizedException;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 @Service
 public class RoomReservationService {
+    private static final String ADMIN_NAME = "admin";
+
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
@@ -45,7 +51,19 @@ public class RoomReservationService {
         return reservationRepository.addReservation(reservationCommand, reservationTime, theme);
     }
 
-    public void deleteReservation(long id) {
+    public void deleteReservation(long id, String name) {
+        Optional<Reservation> optionalReservation = reservationRepository.getReservation(id);
+
+        if(optionalReservation.isEmpty()) {
+            throw new ReservationException(ErrorMessage.INVALID_RESERVATION_ID);
+        }
+
+        Reservation reservation = optionalReservation.get();
+
+        if(!reservation.name().equals(name) && !name.equals(ADMIN_NAME)) {
+            throw new UnauthorizedException(ErrorMessage.UNAUTHORIZED_DELETE_RESERVATION_REQUEST);
+        }
+
         reservationRepository.deleteReservation(id);
     }
 }
