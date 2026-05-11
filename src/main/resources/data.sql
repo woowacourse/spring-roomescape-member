@@ -32,6 +32,19 @@ INSERT INTO reservation_time (start_at) VALUES ('17:00');
 INSERT INTO reservation_time (start_at) VALUES ('18:00');
 INSERT INTO reservation_time (start_at) VALUES ('19:00');
 
+-- 과거 예약 데이터 추가
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('popular01', FORMATDATETIME(DATEADD('DAY', -1, CURRENT_DATE()), 'yyyy-MM-dd'), 1, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('popular02', FORMATDATETIME(DATEADD('DAY', -2, CURRENT_DATE()), 'yyyy-MM-dd'), 2, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('popular03', FORMATDATETIME(DATEADD('DAY', -3, CURRENT_DATE()), 'yyyy-MM-dd'), 3, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('popular04', FORMATDATETIME(DATEADD('DAY', -4, CURRENT_DATE()), 'yyyy-MM-dd'), 4, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('popular05', FORMATDATETIME(DATEADD('DAY', -5, CURRENT_DATE()), 'yyyy-MM-dd'), 5, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('popular06', FORMATDATETIME(DATEADD('DAY', -1, CURRENT_DATE()), 'yyyy-MM-dd'), 1, 2);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('popular07', FORMATDATETIME(DATEADD('DAY', -2, CURRENT_DATE()), 'yyyy-MM-dd'), 2, 2);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('popular08', FORMATDATETIME(DATEADD('DAY', -3, CURRENT_DATE()), 'yyyy-MM-dd'), 3, 2);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('popular09', FORMATDATETIME(DATEADD('DAY', -1, CURRENT_DATE()), 'yyyy-MM-dd'), 1, 3);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('popular10', FORMATDATETIME(DATEADD('DAY', -2, CURRENT_DATE()), 'yyyy-MM-dd'), 2, 3);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('popular11', FORMATDATETIME(DATEADD('DAY', -1, CURRENT_DATE()), 'yyyy-MM-dd'), 1, 4);
+
 -- 1등 (1번 테마) : 10회
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', FORMATDATETIME(DATEADD('DAY', 2, CURRENT_DATE()), 'yyyy-MM-dd'), 1, 1);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', FORMATDATETIME(DATEADD('DAY', 3, CURRENT_DATE()), 'yyyy-MM-dd'), 2, 1);
