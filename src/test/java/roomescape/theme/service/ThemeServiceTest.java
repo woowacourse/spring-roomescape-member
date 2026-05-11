@@ -73,11 +73,12 @@ class ThemeServiceTest {
 
         verify(reservationTimeRepository, times(1)).findAll();
         verify(themeRepository, times(1)).findNotAvailableTimes(any(), any());
-        assertThat(result.size()).isEqualTo(4);
-        assertThat(result.get(0).isAvailable()).isFalse();
-        assertThat(result.get(1).isAvailable()).isTrue();
-        assertThat(result.get(2).isAvailable()).isFalse();
-        assertThat(result.get(3).isAvailable()).isTrue();
+        assertThat(result).containsExactly(
+                new AvailableTime(1L, LocalTime.of(13, 0), false),
+                new AvailableTime(2L, LocalTime.of(15, 0), true),
+                new AvailableTime(3L, LocalTime.of(18, 0), false),
+                new AvailableTime(4L, LocalTime.of(20, 0), true)
+        );
     }
 
     @Test
@@ -100,10 +101,17 @@ class ThemeServiceTest {
         List<PopularTheme> result = themeService.findPopularThemes(7, 10);
         verify(themeRepository, times(1)).findPopularThemes(any(), any(), anyInt());
 
-        assertThat(result.size()).isEqualTo(10);
-        assertThat(result.get(0).rank()).isEqualTo(1);
-        assertThat(result.get(1).rank()).isEqualTo(2);
-        assertThat(result.get(8).rank()).isEqualTo(9);
-        assertThat(result.get(9).rank()).isEqualTo(10);
+        assertThat(result).containsExactly(
+                new PopularTheme(1L, "공포방1", "무서워요1", "image-url1", 1),
+                new PopularTheme(2L, "공포방2", "무서워요2", "image-url2", 2),
+                new PopularTheme(3L, "공포방3", "무서워요3", "image-url3", 3),
+                new PopularTheme(4L, "공포방4", "무서워요4", "image-url4", 4),
+                new PopularTheme(5L, "공포방5", "무서워요5", "image-url5", 5),
+                new PopularTheme(6L, "공포방6", "무서워요6", "image-url6", 6),
+                new PopularTheme(7L, "공포방7", "무서워요7", "image-url7", 7),
+                new PopularTheme(8L, "공포방8", "무서워요8", "image-url8", 8),
+                new PopularTheme(9L, "공포방9", "무서워요9", "image-url9", 9),
+                new PopularTheme(10L, "공포방10", "무서워요10", "image-url10", 10)
+        );
     }
 }

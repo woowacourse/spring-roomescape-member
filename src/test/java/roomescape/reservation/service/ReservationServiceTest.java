@@ -75,8 +75,10 @@ class ReservationServiceTest {
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getName()).isEqualTo("어셔");
         assertThat(result.getDate()).isEqualTo(LocalDate.of(2026, 5, 10));
-        assertThat(result.getTime()).isSameAs(time);
-        assertThat(result.getTheme()).isSameAs(theme);
+        assertThat(result.getTime().getId()).isEqualTo(1L);
+        assertThat(result.getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(result.getTheme().getId()).isEqualTo(2L);
+        assertThat(result.getTheme().getName()).isEqualTo("공포방");
     }
 
     @Test
