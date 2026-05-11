@@ -1,5 +1,7 @@
 package roomescape.theme.service;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,9 +14,11 @@ import roomescape.theme.repository.ThemeRepository;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, Clock clock) {
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     @Transactional
@@ -35,8 +39,11 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> findPopularThemes(int days, int limits) {
-        return themeRepository.findPopularThemes(days, limits);
+    public List<Theme> findPopularThemes(int days, int limit) {
+        LocalDate today = LocalDate.now(clock);
+        LocalDate start = today.minusDays(days);
+
+        return themeRepository.findPopularThemes(start, today, limit);
     }
 
     @Transactional

@@ -1,5 +1,6 @@
 package roomescape.theme.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.theme.entity.Theme;
@@ -12,7 +13,7 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
-    List<Theme> findPopularThemes(int days, int limit);
+    List<Theme> findPopularThemes(LocalDate startDateInclusive, LocalDate endDateExclusive, int limit);
 
     int deleteById(Long id);
 

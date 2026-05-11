@@ -3,15 +3,20 @@ package roomescape.theme.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.Duration;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.config.FixedClockTestConfig;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.payload.ThemeRequest;
 
+@ActiveProfiles("test")
+@Import(FixedClockTestConfig.class)
 @SpringBootTest
 class ThemeServiceTest {
 
@@ -27,7 +32,7 @@ class ThemeServiceTest {
         assertThat(theme.getName()).isEqualTo(themeRequest.name());
         assertThat(theme.getDescription()).isEqualTo(themeRequest.description());
         assertThat(theme.getThumbnailUrl()).isEqualTo(themeRequest.thumbnailUrl());
-        assertThat(theme.getRuntime()).isEqualTo(Duration.ofHours(1));
+        assertThat(theme.getRuntime()).isEqualTo(Theme.RUNTIME);
     }
 
     @Test
@@ -50,7 +55,9 @@ class ThemeServiceTest {
         themeService.deleteById(theme.getId());
 
         List<Theme> themes = themeService.findAll();
-        assertThat(themes).doesNotContain(theme);
+        assertThat(themes)
+                .extracting(Theme::getId)
+                .doesNotContain(theme.getId());
     }
 
     @Test
@@ -58,4 +65,16 @@ class ThemeServiceTest {
         assertThatThrownBy(() -> themeService.deleteById(999L))
                 .isInstanceOf(ThemeNotFoundException.class);
     }
+
+    @Sql("/create_dummies_for_popular_themes.sql")
+    @Test
+    void 최근_1주_동안_인기있는_테마를_조회한다() {
+        List<Theme> themes = themeService.findPopularThemes(7, 10);
+
+        assertThat(themes).hasSize(5);
+        assertThat(themes)
+                .extracting(Theme::getName)
+                .containsExactly("테마5", "테마4", "테마3", "테마2", "테마1");
+    }
+
 }

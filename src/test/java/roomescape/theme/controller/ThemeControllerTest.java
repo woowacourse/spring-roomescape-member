@@ -22,7 +22,7 @@ class ThemeControllerTest {
                 .body("name", hasItem("공포의 저택"))
                 .body("description", hasItem("어두운 저택에 숨겨진 비밀을 찾아 탈출하는 테마"))
                 .body("thumbnailUrl", hasItem("https://example.com/themes/haunted-house.png"))
-                .body("runtime", hasItem(1));
+                .body("runtime", hasItem(60));
     }
 
     @Sql("/create_dummies_for_popular_themes.sql")
@@ -31,7 +31,7 @@ class ThemeControllerTest {
         RestAssured.given().log().all()
                 .queryParam("days", 7)
                 .queryParam("limit", 10)
-                .when().get("/themes")
+                .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200)
                 .body("$", hasSize(5))

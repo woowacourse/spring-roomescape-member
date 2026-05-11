@@ -114,8 +114,11 @@ class JdbcThemeRepositoryTest {
 
     @Sql("/create_dummies_for_popular_themes.sql")
     @Test
-    void 인기있는_테마를_조회하는_테스트() {
-        List<Theme> themes = themeRepository.findPopularThemes(7, 10);
+    void 최근_1주_동안_인기있는_테마를_조회하는_테스트() {
+        LocalDate today = LocalDate.of(2026, 5, 8);
+        LocalDate start = today.minusDays(7);
+
+        List<Theme> themes = themeRepository.findPopularThemes(start, today, 10);
 
         assertThat(themes).hasSize(5);
         assertThat(themes)
