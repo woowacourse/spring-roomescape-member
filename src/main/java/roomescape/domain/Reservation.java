@@ -17,16 +17,8 @@ public class Reservation {
         return new Reservation(null, username, date, null, null, ReservationStatus.DRAFT);
     }
 
-    public static Reservation of(long id, String username, LocalDate date, ReservationTime time, Theme theme) {
-        return new Reservation(id, username, date, time, theme, ReservationStatus.AVAILABLE);
-    }
-
-    public Reservation hold() {
-        return new Reservation(this.id, this.username, this.reservationDate, this.reservationTime, this.reservationTheme, ReservationStatus.HOLD);
-    }
-
-    public Reservation deleted () {
-        return new Reservation(this.id, this.username, this.reservationDate, this.reservationTime, this.reservationTheme, ReservationStatus.DELETED);
+    public static Reservation of(long id, String username, LocalDate date, ReservationTime time, Theme theme, ReservationStatus status) {
+        return new Reservation(id, username, date, time, theme, status);
     }
 
     public long id() {

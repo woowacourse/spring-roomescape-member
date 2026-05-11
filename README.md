@@ -115,7 +115,7 @@
 
 - 테스트 간 DB 데이터 분리 방법을 몰라 막혔음
   - `@DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)` 로 컨텍스트를 매 테스트 전에 재시작
-  - `@Sql(scripts = "/testData.sql", executionPhase = BEFORE_TEST_METHOD)` 로 테스트별 데이터 주입
+  - `@Sql(scripts = "/themePopularTestData.sql", executionPhase = BEFORE_TEST_METHOD)` 로 테스트별 데이터 주입
   - 테이블 초기화가 필요한 경우 아래 SQL을 sql 파일 앞에 추가
     ```sql
     DROP TABLE IF EXISTS reservation;
