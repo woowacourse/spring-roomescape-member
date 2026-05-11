@@ -62,7 +62,6 @@ public class ReservationRepository {
                 FROM reservation r
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 INNER JOIN theme t ON r.theme_id = t.id
-                WHERE t.is_deleted = FALSE
                 ORDER BY r.id
                 LIMIT :size OFFSET :offset
                 """;

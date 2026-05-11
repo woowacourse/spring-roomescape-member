@@ -12,7 +12,6 @@ CREATE TABLE theme
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     image_url   VARCHAR(512) NOT NULL,
-    is_deleted  BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (id)
 );
 

@@ -34,25 +34,22 @@ public class ThemeRepository {
     }
 
     public List<Theme> findAll() {
-        String sql = "select * from theme where is_deleted = :isDeleted;";
-        SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("isDeleted", false);
-        return jdbcTemplate.query(sql, parameters, themeRowMapper);
+        String sql = "select * from theme;";
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     public Theme save(Theme theme) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
-                .addValue("image_url", theme.getImageUrl())
-                .addValue("is_deleted", false);
+                .addValue("image_url", theme.getImageUrl());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return Theme.from(id, theme.getName(), theme.getDescription(), theme.getImageUrl());
     }
 
     public void deleteById(Long id) {
-        String sql = "update theme set is_deleted = true where id = :id;";
+        String sql = "delete from theme where id = :id;";
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("id", id);
         int deletedCount = jdbcTemplate.update(sql, parameters);
@@ -63,7 +60,7 @@ public class ThemeRepository {
     }
 
     public Optional<Theme> findById(Long id) {
-        String sql = "select * from theme where id = :id AND is_deleted = FALSE;";
+        String sql = "select * from theme where id = :id;";
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("id", id);
         return jdbcTemplate.query(sql, parameters, themeRowMapper)
@@ -79,12 +76,10 @@ public class ThemeRepository {
                     t.id,
                     t.name,
                     t.description,
-                    t.image_url,
-                    t.is_deleted
+                    t.image_url
                 FROM theme t
                 INNER JOIN reservation r ON t.id = r.theme_id
-                WHERE t.is_deleted = FALSE
-                  AND r.date >= :fromDate
+                WHERE r.date >= :fromDate
                   AND r.date <= :toDate
                 GROUP BY t.id, t.name, t.description, t.image_url
                 ORDER BY COUNT(r.id) DESC , t.name
