@@ -1,0 +1,83 @@
+package roomescape.reservationtime.service;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.domain.Reservation;
+import roomescape.global.exception.InvalidRequestException;
+import roomescape.global.exception.NotFoundException;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.theme.repository.ThemeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+public class ReservationTimeService {
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
+
+    public ReservationTimeService(
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository,
+            ReservationRepository reservationRepository) {
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
+    }
+
+    @Transactional
+    public ReservationTime create(LocalTime startAt) {
+        ReservationTime reservationTime = new ReservationTime(startAt);
+        validateNotDuplicated(reservationTime);
+
+        return reservationTimeRepository.save(reservationTime);
+    }
+
+    private void validateNotDuplicated(ReservationTime reservationTime) {
+        if (reservationTimeRepository.existsByStartAt(reservationTime.getStartAt())) {
+            throw new InvalidRequestException("이미 존재하는 예약 시간입니다.");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationTime> findAll() {
+        return reservationTimeRepository.findAll();
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        reservationTimeRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationTimeAvailability> findAvailableTimes(LocalDate date, Long themeId) {
+        validateThemeExists(themeId);
+
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        Set<ReservationTime> reservedTimes = reservations.stream()
+                .map(Reservation::getTime)
+                .collect(Collectors.toCollection(HashSet::new));
+
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+
+        return reservationTimes.stream()
+                .map(reservationTime -> new ReservationTimeAvailability(
+                        reservationTime,
+                        !reservedTimes.contains(reservationTime)
+                ))
+                .toList();
+    }
+
+    private void validateThemeExists(Long themeId) {
+        if (!themeRepository.existsById(themeId)) {
+            throw new NotFoundException("존재하지 않는 테마입니다.");
+        }
+    }
+}
