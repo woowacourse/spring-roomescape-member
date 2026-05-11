@@ -1,44 +1,22 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.NotFoundException;
-import roomescape.reservationtime.ReservationTime;
-import roomescape.reservationtime.ReservationTimeRepository;
-import roomescape.theme.Theme;
-import roomescape.theme.ThemeRepository;
 
 import java.time.LocalDate;
 
 @Service
 public class AdminReservationService {
-    private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final ReservationService reservationService;
 
-    public AdminReservationService(ReservationRepository reservationRepository,
-                                   ReservationTimeRepository reservationTimeRepository,
-                                   ThemeRepository themeRepository) {
-        this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
+    public AdminReservationService(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
-    @Transactional
-    public Reservation createForceReservation(Long themeId, String name, LocalDate date, Long timeId) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException("해당 날짜를 찾을 수 없습니다."));
-
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));
-
-        Reservation reservation = new Reservation(name, date, reservationTime, theme);
-
-        return reservationRepository.save(reservation);
+    public Reservation createForceReservation(String name, LocalDate date, Long timeId, Long themeId) {
+        return reservationService.save(name, date, timeId, themeId);
     }
 
-    @Transactional
     public void forceDeleteReservation(long id) {
-        reservationRepository.delete(id);
+        reservationService.deleteById(id);
     }
 }
