@@ -1,7 +1,7 @@
 package roomescape.controller.dto.reservationtime;
 
 import java.time.LocalDate;
-import roomescape.service.dto.AvailableReservationTimesCondition;
+import roomescape.service.dto.reservationtime.AvailableReservationTimesCondition;
 
 public record AvailableReservationTimesQuery(
         Long themeId,

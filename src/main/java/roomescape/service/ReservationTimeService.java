@@ -10,12 +10,12 @@ import roomescape.global.exception.DuplicateReservationTimeException;
 import roomescape.global.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.AvailableReservationTimesCondition;
-import roomescape.service.dto.AvailableReservationTimeResult;
-import roomescape.service.dto.AvailableReservationTimesResult;
-import roomescape.service.dto.CreateReservationTimeCommand;
-import roomescape.service.dto.ReservationTimeResult;
-import roomescape.service.dto.ThemeResult;
+import roomescape.service.dto.reservationtime.AvailableReservationTimesCondition;
+import roomescape.service.dto.reservationtime.AvailableReservationTimeResult;
+import roomescape.service.dto.reservationtime.AvailableReservationTimesResult;
+import roomescape.service.dto.reservationtime.CreateReservationTimeCommand;
+import roomescape.service.dto.reservationtime.ReservationTimeResult;
+import roomescape.service.dto.theme.ThemeResult;
 
 @Service
 @Transactional(readOnly = true)

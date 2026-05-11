@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
-import roomescape.service.dto.CreateReservationCommand;
+import roomescape.service.dto.reservation.CreateReservationCommand;
 
 public record ReservationRequest(
         @NotBlank(message = "예약자 이름은 필수입니다.")

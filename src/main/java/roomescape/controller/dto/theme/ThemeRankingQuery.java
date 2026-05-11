@@ -1,6 +1,6 @@
 package roomescape.controller.dto.theme;
 
-import roomescape.service.dto.ThemeRankingCondition;
+import roomescape.service.dto.theme.ThemeRankingCondition;
 
 public record ThemeRankingQuery(
         int days,

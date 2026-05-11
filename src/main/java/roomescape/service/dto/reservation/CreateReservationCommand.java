@@ -1,4 +1,4 @@
-package roomescape.service.dto;
+package roomescape.service.dto.reservation;
 
 import java.time.LocalDate;
 import roomescape.global.exception.InvalidReservationException;

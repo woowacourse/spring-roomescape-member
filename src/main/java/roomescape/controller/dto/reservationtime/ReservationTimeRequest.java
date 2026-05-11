@@ -3,7 +3,7 @@ package roomescape.controller.dto.reservationtime;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalTime;
-import roomescape.service.dto.CreateReservationTimeCommand;
+import roomescape.service.dto.reservationtime.CreateReservationTimeCommand;
 
 public record ReservationTimeRequest(
         @NotBlank(message = "예약 시간은 필수입니다.")

@@ -19,7 +19,7 @@ import roomescape.controller.dto.theme.ThemeRankResponse;
 import roomescape.controller.dto.theme.ThemeResponse;
 import roomescape.controller.dto.theme.ThemeRankingQuery;
 import roomescape.service.ThemeService;
-import roomescape.service.dto.ThemeResult;
+import roomescape.service.dto.theme.ThemeResult;
 
 @RestController
 @RequestMapping("/themes")

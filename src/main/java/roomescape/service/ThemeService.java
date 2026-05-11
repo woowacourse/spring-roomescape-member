@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.CreateThemeCommand;
-import roomescape.service.dto.ThemeRankResult;
-import roomescape.service.dto.ThemeRankingCondition;
-import roomescape.service.dto.ThemeResult;
+import roomescape.service.dto.theme.CreateThemeCommand;
+import roomescape.service.dto.theme.ThemeRankResult;
+import roomescape.service.dto.theme.ThemeRankingCondition;
+import roomescape.service.dto.theme.ThemeResult;
 
 @Service
 @Transactional(readOnly = true)

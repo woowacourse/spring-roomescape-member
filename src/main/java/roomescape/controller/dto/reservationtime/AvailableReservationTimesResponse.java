@@ -2,7 +2,7 @@ package roomescape.controller.dto.reservationtime;
 
 import java.util.List;
 import roomescape.controller.dto.theme.ThemeResponse;
-import roomescape.service.dto.AvailableReservationTimesResult;
+import roomescape.service.dto.reservationtime.AvailableReservationTimesResult;
 
 public record AvailableReservationTimesResponse(
         ThemeResponse theme,

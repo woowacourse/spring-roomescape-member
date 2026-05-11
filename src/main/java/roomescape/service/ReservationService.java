@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservedTimes;
-import roomescape.service.dto.CreateReservationCommand;
+import roomescape.service.dto.reservation.CreateReservationCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -14,8 +14,8 @@ import roomescape.global.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.service.dto.ReservationPagingCondition;
-import roomescape.service.dto.ReservationResult;
+import roomescape.service.dto.reservation.ReservationPagingCondition;
+import roomescape.service.dto.reservation.ReservationResult;
 
 @Service
 @Transactional(readOnly = true)

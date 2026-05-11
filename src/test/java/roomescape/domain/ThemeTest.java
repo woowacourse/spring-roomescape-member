@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.global.exception.InvalidThemeException;
 
 class ThemeTest {
 
@@ -27,11 +28,11 @@ class ThemeTest {
     @DisplayName("테마 이름, 설명, URL이 null이거나 공백이면 예외가 발생한다.")
     void validate_NullOrBlank(String invalidInput) {
         assertThatThrownBy(() -> Theme.createNew(invalidInput, "설명", "url"))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidThemeException.class)
                 .hasMessageContaining("비어있을 수 없습니다");
 
         assertThatThrownBy(() -> Theme.createNew("이름", invalidInput, "url"))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidThemeException.class)
                 .hasMessageContaining("비어있을 수 없습니다");
     }
 
@@ -45,7 +46,7 @@ class ThemeTest {
                 .doesNotThrowAnyException();
 
         assertThatThrownBy(() -> Theme.createNew(overBoundary, "설명", "url"))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidThemeException.class)
                 .hasMessageContaining("255자를 초과할 수 없습니다");
     }
 }

@@ -18,8 +18,8 @@ import roomescape.controller.dto.reservationtime.AvailableReservationTimesRespon
 import roomescape.controller.dto.reservationtime.ReservationTimeRequest;
 import roomescape.controller.dto.reservationtime.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.AvailableReservationTimesResult;
-import roomescape.service.dto.ReservationTimeResult;
+import roomescape.service.dto.reservationtime.AvailableReservationTimesResult;
+import roomescape.service.dto.reservationtime.ReservationTimeResult;
 
 @RestController
 @RequestMapping("/times")

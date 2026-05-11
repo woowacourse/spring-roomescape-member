@@ -1,6 +1,6 @@
 package roomescape.controller.dto.theme;
 
-import roomescape.service.dto.ThemeRankResult;
+import roomescape.service.dto.theme.ThemeRankResult;
 
 public record ThemeRankResponse(
         int rank,

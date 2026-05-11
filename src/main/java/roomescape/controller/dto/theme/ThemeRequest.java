@@ -2,7 +2,7 @@ package roomescape.controller.dto.theme;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import roomescape.service.dto.CreateThemeCommand;
+import roomescape.service.dto.theme.CreateThemeCommand;
 
 public record ThemeRequest(
         @NotBlank(message = "테마 이름은 필수입니다.")
