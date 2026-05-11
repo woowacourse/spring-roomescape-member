@@ -105,9 +105,7 @@ class JdbcReservationRepositoryTest {
     void existsByDateAndTimeIdAndThemeId() {
         Theme theme = savedTheme;
         Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, theme);
-        System.out.println(jdbcReservationRepository.findAll());
-        System.out.println(jdbcReservationRepository.save(reservation));
-
+        jdbcReservationRepository.save(reservation);
         boolean exists = jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(LocalDate.now(), savedTimeSlot.id(), 1L);
         assertThat(exists).isTrue();
     }
