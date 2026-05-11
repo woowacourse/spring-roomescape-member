@@ -34,8 +34,6 @@ public class ThemeQueryService {
     }
 
     public List<PopularThemeResult> findPopularThemes(LocalDate today) {
-        return popularThemeDao.findTop10PopularThemes(PopularThemePeriod.from(today))
-                .stream()
-                .toList();
+        return popularThemeDao.findTop10PopularThemes(PopularThemePeriod.from(today));
     }
 }

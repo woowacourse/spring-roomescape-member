@@ -12,8 +12,8 @@ import roomescape.reservation.application.query.ReservationDetailDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.application.query.ReservationDetail;
 import roomescape.reservation.domain.repository.ReservationRepository;
-import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
-import roomescape.reservationtime.application.service.ReservationTimeService;
+import roomescape.reservationtime.application.dto.ReservationTimeResult;
+import roomescape.reservationtime.application.service.ReservationTimeQueryService;
 import roomescape.theme.application.dto.ThemeResult;
 import roomescape.theme.application.service.ThemeQueryService;
 
@@ -25,7 +25,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationDetailDao reservationDetailDao;
     private final ThemeQueryService themeQueryService;
-    private final ReservationTimeService timeService;
+    private final ReservationTimeQueryService timeQueryService;
 
     @Transactional(readOnly = true)
     public List<ReservationQueryResult> findAll() {
@@ -37,14 +37,14 @@ public class ReservationService {
 
     public ReservationQueryResult save(ReservationCreateCommand request, LocalDateTime currentDateTime) {
         ThemeResult themeResult = themeQueryService.findById(request.themeId());
-        ReservationTimeQueryResult timeQueryResult = timeService.findById(request.timeId());
+        ReservationTimeResult timeResult = timeQueryService.findById(request.timeId());
 
-        Reservation reservation = request.toEntity(themeResult.id(), timeQueryResult.id());
-        reservation.validateNotPast(timeQueryResult.startAt(), currentDateTime);
+        Reservation reservation = request.toEntity(themeResult.id(), timeResult.id());
+        reservation.validateNotPast(timeResult.startAt(), currentDateTime);
 
         validateDuplicateReservation(reservation);
 
-        return ReservationQueryResult.from(reservationRepository.save(reservation), themeResult, timeQueryResult);
+        return ReservationQueryResult.from(reservationRepository.save(reservation), themeResult, timeResult);
     }
 
     public int delete(Long id) {

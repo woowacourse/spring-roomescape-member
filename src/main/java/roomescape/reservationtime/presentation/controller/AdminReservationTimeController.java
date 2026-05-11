@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservationtime.application.service.ReservationTimeService;
+import roomescape.reservationtime.application.service.ReservationTimeQueryService;
+import roomescape.reservationtime.application.service.ReservationTimeCommandService;
 import roomescape.reservationtime.presentation.dto.ReservationTimeCreateRequest;
 import roomescape.reservationtime.presentation.dto.ReservationTimeResponse;
 
@@ -21,12 +22,13 @@ import roomescape.reservationtime.presentation.dto.ReservationTimeResponse;
 @RestController
 public class AdminReservationTimeController {
 
-    private final ReservationTimeService timeService;
+    private final ReservationTimeCommandService timeCommandService;
+    private final ReservationTimeQueryService timeQueryService;
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
         return ResponseEntity.ok(
-                timeService.findAll().stream()
+                timeQueryService.findAll().stream()
                         .map(ReservationTimeResponse::from)
                         .toList()
         );
@@ -37,12 +39,12 @@ public class AdminReservationTimeController {
             @Valid @RequestBody ReservationTimeCreateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ReservationTimeResponse.from(timeService.save(request.toCommand())));
+                .body(ReservationTimeResponse.from(timeCommandService.save(request.toCommand())));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        int deletedCount = timeService.delete(id);
+        int deletedCount = timeCommandService.delete(id);
 
         if (deletedCount == 0) {
             return ResponseEntity.notFound().build();

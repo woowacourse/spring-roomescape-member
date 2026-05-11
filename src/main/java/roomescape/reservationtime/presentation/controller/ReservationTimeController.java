@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservationtime.application.service.ReservationTimeService;
+import roomescape.reservationtime.application.service.ReservationTimeQueryService;
 import roomescape.reservationtime.presentation.dto.AvailableReservationTimeResponse;
 
 @RequiredArgsConstructor
@@ -16,7 +16,7 @@ import roomescape.reservationtime.presentation.dto.AvailableReservationTimeRespo
 @RestController
 public class ReservationTimeController {
 
-    private final ReservationTimeService timeService;
+    private final ReservationTimeQueryService timeQueryService;
 
     @GetMapping
     public ResponseEntity<List<AvailableReservationTimeResponse>> findAvailableTimes(
@@ -24,7 +24,7 @@ public class ReservationTimeController {
             @RequestParam LocalDate date
     ) {
         return ResponseEntity.ok(
-                timeService.findAvailableTimes(themeId, date).stream()
+                timeQueryService.findAvailableTimes(themeId, date).stream()
                         .map(AvailableReservationTimeResponse::from)
                         .toList()
         );

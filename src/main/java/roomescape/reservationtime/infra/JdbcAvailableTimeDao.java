@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import roomescape.reservationtime.application.query.AvailableReservationTime;
-import roomescape.reservationtime.application.query.AvailableTimeDao;
+import roomescape.reservationtime.application.dto.AvailableReservationTimeResult;
+import roomescape.reservationtime.application.dao.AvailableTimeDao;
 
 @Repository
 public class JdbcAvailableTimeDao implements AvailableTimeDao {
@@ -17,7 +17,7 @@ public class JdbcAvailableTimeDao implements AvailableTimeDao {
     }
 
     @Override
-    public List<AvailableReservationTime> findByThemeAndDate(Long themeId, LocalDate date) {
+    public List<AvailableReservationTimeResult> findByThemeAndDate(Long themeId, LocalDate date) {
         String sql = """
                 SELECT rt.id, rt.start_at,
                     NOT EXISTS (
@@ -32,7 +32,7 @@ public class JdbcAvailableTimeDao implements AvailableTimeDao {
                 """;
 
         return jdbcTemplate.query(sql,
-                (rs, rowNum) -> new AvailableReservationTime(
+                (rs, rowNum) -> new AvailableReservationTimeResult(
                         rs.getLong("id"),
                         rs.getTime("start_at").toLocalTime(),
                         rs.getBoolean("available")

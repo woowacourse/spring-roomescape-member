@@ -3,7 +3,7 @@ package roomescape.reservation.application.dto;
 import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.application.query.ReservationDetail;
-import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
+import roomescape.reservationtime.application.dto.ReservationTimeResult;
 import roomescape.theme.application.dto.ThemeResult;
 
 public record ReservationQueryResult(
@@ -11,17 +11,17 @@ public record ReservationQueryResult(
         String name,
         LocalDate date,
         ThemeResult theme,
-        ReservationTimeQueryResult time
+        ReservationTimeResult time
 ) {
 
     public static ReservationQueryResult from(Reservation reservation, ThemeResult themeResult,
-                                              ReservationTimeQueryResult timeQueryResult) {
+                                              ReservationTimeResult timeResult) {
         return new ReservationQueryResult(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
                 themeResult,
-                timeQueryResult
+                timeResult
         );
     }
 
@@ -36,7 +36,7 @@ public record ReservationQueryResult(
                         reservationDetail.themeDescription(),
                         reservationDetail.thumbnailImgUrl()
                 ),
-                ReservationTimeQueryResult.from(
+                ReservationTimeResult.from(
                         reservationDetail.timeId(),
                         reservationDetail.startAt()
                 )
