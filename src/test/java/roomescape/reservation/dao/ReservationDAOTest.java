@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.response.ReservationTimeCreateResponse;
+import roomescape.reservation.dto.response.ThemeSimpleResponse;
+import roomescape.reservation.dto.response.TimeResponse;
 import roomescape.theme.dao.ThemeDAO;
 import roomescape.theme.domain.Theme;
 
@@ -36,7 +39,9 @@ class ReservationDAOTest {
     }
 
     private ReservationTimeCreateResponse createTime() {
-        return reservationTimeDAO.insert(new ReservationTime(LocalTime.of(10, 0)));
+        Long id = reservationTimeDAO.insert(new ReservationTime(LocalTime.of(10, 0)));
+
+        return ReservationTimeCreateResponse.of(id, LocalTime.of(10, 10, 10));
     }
 
     private Theme createTheme() {
@@ -70,7 +75,14 @@ class ReservationDAOTest {
             reservationDAO.insert("브라운", LocalDate.of(2023, 8, 5), time.id(), theme.getId());
 
             // then
-            List<ReservationResponse> all = reservationDAO.findAll();
+            List<ReservationResponse> all = reservationDAO.findAll().stream()
+                    .map(reservation -> ReservationResponse.of(
+                            reservation.getId(),
+                            reservation.getName(),
+                            reservation.getDate(),
+                            TimeResponse.from(reservation.getTime()),
+                            ThemeSimpleResponse.from(reservation.getTheme())
+                    )).toList();
             assertThat(all).hasSize(1);
         }
     }
@@ -84,7 +96,14 @@ class ReservationDAOTest {
         reservationDAO.insert("리사", LocalDate.of(2023, 8, 6), time.id(), theme.getId());
 
         // when
-        List<ReservationResponse> all = reservationDAO.findAll();
+        List<ReservationResponse> all = reservationDAO.findAll().stream()
+                .map(reservation -> ReservationResponse.of(
+                        reservation.getId(),
+                        reservation.getName(),
+                        reservation.getDate(),
+                        TimeResponse.from(reservation.getTime()),
+                        ThemeSimpleResponse.from(reservation.getTheme())
+                )).toList();
 
         // then
         assertThat(all).hasSize(2);
@@ -101,7 +120,14 @@ class ReservationDAOTest {
         reservationDAO.delete(saved.getId());
 
         // then
-        List<ReservationResponse> all = reservationDAO.findAll();
+        List<ReservationResponse> all = reservationDAO.findAll().stream()
+                .map(reservation -> ReservationResponse.of(
+                        reservation.getId(),
+                        reservation.getName(),
+                        reservation.getDate(),
+                        TimeResponse.from(reservation.getTime()),
+                        ThemeSimpleResponse.from(reservation.getTheme())
+                )).toList();
         assertThat(all).isEmpty();
     }
 

@@ -37,7 +37,8 @@ class ReservationTimeDAOTest {
             ReservationTime time = new ReservationTime(LocalTime.of(10, 0));
 
             // when
-            ReservationTimeCreateResponse saved = reservationTimeDAO.insert(time);
+            Long id = reservationTimeDAO.insert(time);
+            ReservationTimeCreateResponse saved = ReservationTimeCreateResponse.of(id, LocalTime.of(10, 0));
 
             // then
             assertThat(saved.id()).isNotNull();
@@ -50,7 +51,9 @@ class ReservationTimeDAOTest {
             reservationTimeDAO.insert(new ReservationTime(LocalTime.of(10, 0)));
 
             // when
-            List<ReservationTimeFindAllResponse> all = reservationTimeDAO.findAll();
+            List<ReservationTimeFindAllResponse> all = reservationTimeDAO.findAll().stream()
+                    .map(it -> ReservationTimeFindAllResponse.of(it.getId(), it.getStartAt()))
+                    .toList();
 
             // then
             assertThat(all).hasSize(1);
@@ -65,7 +68,9 @@ class ReservationTimeDAOTest {
         reservationTimeDAO.insert(new ReservationTime(LocalTime.of(12, 0)));
 
         // when
-        List<ReservationTimeFindAllResponse> all = reservationTimeDAO.findAll();
+        List<ReservationTimeFindAllResponse> all = reservationTimeDAO.findAll().stream()
+                .map(it -> ReservationTimeFindAllResponse.of(it.getId(), it.getStartAt()))
+                .toList();
 
         // then
         assertThat(all).hasSize(3);
@@ -77,7 +82,8 @@ class ReservationTimeDAOTest {
         @Test
         void 존재하는_시간을_조회한다() {
             // given
-            ReservationTimeCreateResponse saved = reservationTimeDAO.insert(new ReservationTime(LocalTime.of(10, 0)));
+            Long id = reservationTimeDAO.insert(new ReservationTime(LocalTime.of(10, 0)));
+            ReservationTimeCreateResponse saved = ReservationTimeCreateResponse.of(id, LocalTime.of(10, 10, 10));
 
             // when
             ReservationTime found = reservationTimeDAO.findById(saved.id());
@@ -98,13 +104,16 @@ class ReservationTimeDAOTest {
     @Test
     void ID로_시간을_삭제한다() {
         // given
-        ReservationTimeCreateResponse saved = reservationTimeDAO.insert(new ReservationTime(LocalTime.of(10, 0)));
+        Long id = reservationTimeDAO.insert(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTimeCreateResponse saved = ReservationTimeCreateResponse.of(id, LocalTime.of(10, 10, 10));
 
         // when
         reservationTimeDAO.delete(saved.id());
 
         // then
-        List<ReservationTimeFindAllResponse> all = reservationTimeDAO.findAll();
+        List<ReservationTimeFindAllResponse> all = reservationTimeDAO.findAll().stream()
+                .map(it -> ReservationTimeFindAllResponse.of(it.getId(), it.getStartAt()))
+                .toList();
         assertThat(all).isEmpty();
     }
 }

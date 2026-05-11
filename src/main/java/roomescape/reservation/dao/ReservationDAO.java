@@ -14,6 +14,7 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.response.ThemeSimpleResponse;
 import roomescape.reservation.dto.response.TimeResponse;
+import roomescape.theme.domain.Theme;
 
 @Component
 public class ReservationDAO {
@@ -44,24 +45,45 @@ public class ReservationDAO {
                 timeId
         );
 
-        return Reservation.of(keyHolder.getKey().longValue(), name, date, time);
+        Theme theme = jdbcTemplate.queryForObject(
+                "select * from theme where id = ?",
+                (resultSet, rowNum) -> Theme.of(resultSet.getLong("id"),
+                        resultSet.getString("name"), resultSet.getString("description"),
+                        resultSet.getString("image_url")),
+                themeId
+        );
+
+        return Reservation.of(keyHolder.getKey().longValue(), name, date, time, theme);
     }
 
-    public List<ReservationResponse> findAll() {
+    public List<Reservation> findAll() {
         String sql = "select r.id, r.name, r.date, "
                 + "t.id as time_id, t.start_at, "
-                + "th.id as theme_id, th.name as theme_name "
+                + "th.id as theme_id, th.name as theme_name, "
+                + "th.description as theme_description, th.image_url as theme_image_url "
                 + "from reservation r "
                 + "inner join reservation_time t on r.time_id = t.id "
                 + "inner join theme th on r.theme_id = th.id";
 
-        RowMapper<ReservationResponse> rowMapper = (resultSet, rowNum) -> ReservationResponse.of(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                LocalDate.parse(resultSet.getString("date")),
-                new TimeResponse(resultSet.getLong("time_id"), LocalTime.parse(resultSet.getString("start_at"))),
-                new ThemeSimpleResponse(resultSet.getLong("theme_id"), resultSet.getString("theme_name"))
-        );
+        RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> {
+            ReservationTime time = ReservationTime.of(
+                    resultSet.getLong("time_id"),
+                    LocalTime.parse(resultSet.getString("start_at"))
+            );
+            Theme theme = Theme.of(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_image_url")
+            );
+            return Reservation.of(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    LocalDate.parse(resultSet.getString("date")),
+                    time,
+                    theme
+            );
+        };
 
         return jdbcTemplate.query(sql, rowMapper);
     }

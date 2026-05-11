@@ -19,27 +19,23 @@ public class ReservationTimeDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public ReservationTimeCreateResponse insert(ReservationTime reservationTime) {
+    public Long insert(ReservationTime reservationTime) {
         jdbcTemplate.update("insert into reservation_time (start_at) values (?)", reservationTime.getStartAt());
 
         Long id = jdbcTemplate.queryForObject("select t.id from reservation_time t where t.start_at = ?", Long.class,
                 reservationTime.getStartAt());
 
-        return ReservationTimeCreateResponse.of(id, reservationTime.getStartAt());
+        return id;
     }
 
-    public List<ReservationTimeFindAllResponse> findAll() {
+    public List<ReservationTime> findAll() {
         String sql = "select id, start_at from reservation_time";
         RowMapper<ReservationTime> rowMapper = (resultSet, rowNum) -> ReservationTime.of(
                 resultSet.getLong("id"),
                 LocalTime.parse(resultSet.getString("start_at"))
         );
 
-        List<ReservationTime> reservationTimes = jdbcTemplate.query(sql, rowMapper);
-        List<ReservationTimeFindAllResponse> response = reservationTimes.stream()
-                .map(it -> ReservationTimeFindAllResponse.of(it.getId(), it.getStartAt()))
-                .toList();
-        return response;
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     public ReservationTime findById(Long id) {

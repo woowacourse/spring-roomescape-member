@@ -17,11 +17,14 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeCreateResponse create(ReservationTime reservationTime) {
-        return reservationTimeDAO.insert(reservationTime);
+        Long id = reservationTimeDAO.insert(reservationTime);
+        return ReservationTimeCreateResponse.of(id, reservationTime.getStartAt());
     }
 
     public List<ReservationTimeFindAllResponse> findAll() {
-        return reservationTimeDAO.findAll();
+        return reservationTimeDAO.findAll().stream()
+                .map(it -> ReservationTimeFindAllResponse.of(it.getId(), it.getStartAt()))
+                .toList();
     }
 
     public void delete(Long id) {
