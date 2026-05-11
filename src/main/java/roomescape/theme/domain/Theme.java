@@ -8,6 +8,7 @@ public class Theme {
     private String thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
+        validateName(name);
         this.id = id;
         this.name = name;
         this.description = description;
@@ -15,9 +16,16 @@ public class Theme {
     }
 
     public Theme(String name, String description, String thumbnail) {
+        validateName(name);
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("테마 이름은 비어 있을 수 없습니다.");
+        }
     }
 
     public Long getId() {
