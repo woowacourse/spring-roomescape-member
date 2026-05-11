@@ -193,11 +193,10 @@ period=7&limit=10
 
 #### 응답
 
-- 409 Conflict
+- 유효하지 않은 예약자 이름
+- 400 Bad Request
 
 ```json
-
-//유효하지 않은 예약자 이름
 {
   "errorCode": "RESERVATION_00X",
   "message": "예약자 이름이 유효하지 않습니다.",
@@ -205,9 +204,11 @@ period=7&limit=10
 }
 ```
 
+- 유효하지 않은 날짜 형식
+- 400 Bad Request
+
 ```json
 
-//유효하지 않은 날짜 형식
 {
   "errorCode": "RESERVATION_00X",
   "message": "예약 날짜 형식이 유효하지 않습니다.",
@@ -215,9 +216,10 @@ period=7&limit=10
 }
 ```
 
-```json
+- 유효하지 않은 시간 형식
+- 400 Bad Request
 
-//유효하지 않은 시간 형식
+```json
 {
   "errorCode": "TIME_00X",
   "message": "예약 시간 형식이 유효하지 않습니다.",
@@ -225,9 +227,10 @@ period=7&limit=10
 }
 ```
 
-```json
+- 유효하지 않은 테마 이름
+- 400 Bad Request
 
-//유효하지 않은 테마 이름
+```json
 {
   "errorCode": "THEME_00X",
   "message": "테마 이름이 유효하지 않습니다.",
@@ -235,9 +238,10 @@ period=7&limit=10
 }
 ```
 
-```json
+- 유효하지 않은 테마 설명
+- 400 Bad Request
 
-//유효하지 않은 테마 설명
+```json
 {
   "errorCode": "THEME_00X",
   "message": "테마 설명이 유효하지 않습니다.",
@@ -245,9 +249,10 @@ period=7&limit=10
 }
 ```
 
-```json
+- 유효하지 않은 테마 썸네일 url
+- 400 Bad Request
 
-//유효하지 않은 테마 썸네일 url
+```json
 {
   "errorCode": "THEME_00X",
   "message": "테마 썸네일 url이 유효하지 않습니다.",
