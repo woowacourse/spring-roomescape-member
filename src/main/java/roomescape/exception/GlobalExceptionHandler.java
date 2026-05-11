@@ -1,6 +1,7 @@
 package roomescape.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +31,13 @@ public class GlobalExceptionHandler {
         log.warn("비즈니스 로직 에러: {}", ex.getMessage());
 
         return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationExceptions(DataIntegrityViolationException ex) {
+        log.warn("데이터베이스 제약 조건 위반 발생: {}", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(new ErrorResponse("중복된 데이터이거나 유효하지 않은 요청입니다."));
     }
 
     @ExceptionHandler(Exception.class)
