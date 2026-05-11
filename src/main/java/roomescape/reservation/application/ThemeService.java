@@ -8,6 +8,7 @@ import roomescape.reservation.presentation.dto.request.ThemeSaveRequest;
 import roomescape.reservation.presentation.dto.response.ThemeFindResponse;
 import roomescape.reservation.presentation.dto.response.ThemeSaveResponse;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class ThemeService {
     private final ThemeRepository themeRepository;
     private final ScheduleService scheduleService;
+    private final Clock clock;
 
     public ThemeSaveResponse save(ThemeSaveRequest body) {
         Theme newTheme = themeRepository.save(body.toDomain());
@@ -33,7 +35,8 @@ public class ThemeService {
     }
 
     public List<ThemeFindResponse> findPopularTheme() {
-        List<Theme> themes = themeRepository.findPopularThemeByCurrentDate(LocalDate.now());
+        LocalDate today = LocalDate.now(clock);
+        List<Theme> themes = themeRepository.findPopularThemeByCurrentDate(today);
         return ThemeFindResponse.from(themes);
     }
 

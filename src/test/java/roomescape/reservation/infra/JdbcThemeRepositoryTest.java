@@ -8,7 +8,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Theme;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,8 +61,11 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 최근_7일_예약_개수에_따른_인기_테마_조회_레포지토리_테스트() {
+        // given
+        LocalDate currentDate = LocalDate.of(2026, 5, 10);
+
         // when
-        List<Theme> themes = repository.findPopularThemeByCurrentDate(LocalDate.of(2026, 5, 9));
+        List<Theme> themes = repository.findPopularThemeByCurrentDate(currentDate);
 
         assertThat(themes).hasSize(3);
         assertThat(themes).extracting(Theme::getId)
