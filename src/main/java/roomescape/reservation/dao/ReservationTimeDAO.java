@@ -2,9 +2,12 @@ package roomescape.reservation.dao;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationTimeCreateRequest;
@@ -14,19 +17,21 @@ import roomescape.reservation.dto.response.ReservationTimeFindAllResponse;
 @Component
 public class ReservationTimeDAO {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationTimeDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
     }
 
-    public Long insert(ReservationTimeCreateRequest reservationTimeCreateRequest) {
-        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", reservationTimeCreateRequest.startAt());
-
-        Long id = jdbcTemplate.queryForObject("select t.id from reservation_time t where t.start_at = ?", Long.class,
-                reservationTimeCreateRequest.startAt());
-
-        return id;
+    public ReservationTime insert(ReservationTimeCreateRequest reservationTimeCreateRequest) {
+        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
+                "start_at", reservationTimeCreateRequest.startAt()
+        )).longValue();
+        return ReservationTime.of(id, reservationTimeCreateRequest.startAt());
     }
 
     public List<ReservationTime> findAll() {

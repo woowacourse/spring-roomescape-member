@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationTimeCreateRequest;
@@ -41,9 +42,9 @@ class ReservationDAOTest {
     }
 
     private ReservationTimeCreateResponse createTime() {
-        Long id = reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+        ReservationTime reservationTime = reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
-        return ReservationTimeCreateResponse.of(id, LocalTime.of(10, 10, 10));
+        return ReservationTimeCreateResponse.of(reservationTime.getId(), LocalTime.of(10, 10, 10));
     }
 
     private Theme createTheme() {

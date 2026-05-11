@@ -18,8 +18,8 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeCreateResponse create(ReservationTimeCreateRequest reservationTimeCreateRequest) {
-        Long id = reservationTimeDAO.insert(reservationTimeCreateRequest);
-        return ReservationTimeCreateResponse.of(id, reservationTimeCreateRequest.startAt());
+        ReservationTime reservationTime = reservationTimeDAO.insert(reservationTimeCreateRequest);
+        return ReservationTimeCreateResponse.of(reservationTime.getId(), reservationTime.getStartAt());
     }
 
     public List<ReservationTimeFindAllResponse> findAll() {

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservation.dto.response.ReservationTimeCreateResponse;
@@ -38,8 +39,8 @@ class ReservationTimeDAOTest {
             ReservationTimeCreateRequest time = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
 
             // when
-            Long id = reservationTimeDAO.insert(time);
-            ReservationTimeCreateResponse saved = ReservationTimeCreateResponse.of(id, LocalTime.of(10, 0));
+            ReservationTime reservationTime = reservationTimeDAO.insert(time);
+            ReservationTimeCreateResponse saved = ReservationTimeCreateResponse.of(reservationTime.getId(), LocalTime.of(10, 0));
 
             // then
             assertThat(saved.id()).isNotNull();
@@ -83,8 +84,8 @@ class ReservationTimeDAOTest {
         @Test
         void 존재하는_시간을_조회한다() {
             // given
-            Long id = reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
-            ReservationTimeCreateResponse saved = ReservationTimeCreateResponse.of(id, LocalTime.of(10, 10, 10));
+            ReservationTime reservationTime = reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+            ReservationTimeCreateResponse saved = ReservationTimeCreateResponse.of(reservationTime.getId(), LocalTime.of(10, 10, 10));
 
             // when
             ReservationTime found = reservationTimeDAO.findById(saved.id());
@@ -105,8 +106,8 @@ class ReservationTimeDAOTest {
     @Test
     void ID로_시간을_삭제한다() {
         // given
-        Long id = reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
-        ReservationTimeCreateResponse saved = ReservationTimeCreateResponse.of(id, LocalTime.of(10, 10, 10));
+        ReservationTime reservationTime = reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+        ReservationTimeCreateResponse saved = ReservationTimeCreateResponse.of(reservationTime.getId(), LocalTime.of(10, 10, 10));
 
         // when
         reservationTimeDAO.delete(saved.id());
