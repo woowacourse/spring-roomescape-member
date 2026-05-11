@@ -1,13 +1,13 @@
 package roomescape.controller.admin;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -31,6 +31,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
 import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.response.ReservationResponseDto;
 import roomescape.fixture.ReservationRequestDtoFixture;
 import roomescape.service.ReservationService;
 
@@ -40,8 +41,6 @@ class AdminReservationControllerTest {
     private final Time time = new Time(1L, LocalTime.of(13, 0));
     private final Theme theme = new Theme(1L, new Name("방탈출테마"), "http://example.com/img.jpg", "방탈출 테마 설명");
     private final Reservation reservation = new Reservation(1L, "유저1", LocalDate.now().plusDays(1), time, theme);
-    private final ReservationRequestDto requestDto =
-            new ReservationRequestDto(reservation.getName(), reservation.getDate(), time.getId(), theme.getId());
 
     @Autowired
     private MockMvc mockMvc;
@@ -59,27 +58,34 @@ class AdminReservationControllerTest {
         @Test
         void 전체_예약_목록을_조회한다() {
             List<Reservation> reservations = List.of(reservation);
-            given(reservationService.findAll())
-                    .willReturn(reservations);
+            given(reservationService.findAll()).willReturn(reservations);
+            List<ReservationResponseDto> expected = reservations.stream()
+                    .map(ReservationResponseDto::from)
+                    .toList();
 
-            RestAssuredMockMvc.given()
+            List<ReservationResponseDto> actual = RestAssuredMockMvc.given()
                     .when().get("/admin/reservations")
                     .then()
                     .status(HttpStatus.OK)
-                    .body("$", hasSize(reservations.size()));
+                    .extract().as(new TypeRef<>() {
+                    });
 
+            assertThat(actual).isEqualTo(expected);
             then(reservationService).should().findAll();
         }
 
         @Test
         void 존재하는_예약_id를_조회하면_200을_반환한다() {
             given(reservationService.findById(reservation.getId())).willReturn(reservation);
+            ReservationResponseDto expected = ReservationResponseDto.from(reservation);
 
-            RestAssuredMockMvc.given().log().all()
+            ReservationResponseDto actual = RestAssuredMockMvc.given()
                     .when().get("/admin/reservations/" + reservation.getId())
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.OK)
-                    .body("id", equalTo(reservation.getId().intValue()));
+                    .extract().as(ReservationResponseDto.class);
+
+            assertThat(actual).isEqualTo(expected);
         }
 
         @Test
@@ -87,9 +93,9 @@ class AdminReservationControllerTest {
             long notExistsId = -1;
             given(reservationService.findById(notExistsId)).willThrow(new NotFoundException("존재하지 않는 예약입니다."));
 
-            RestAssuredMockMvc.given().log().all()
+            RestAssuredMockMvc.given()
                     .when().get("/admin/reservations/" + notExistsId)
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.NOT_FOUND);
         }
     }
@@ -109,26 +115,33 @@ class AdminReservationControllerTest {
 
         @Test
         void 유효한_요청으로_예약을_생성하면_201을_반환한다() {
-            given(reservationService.create(any(ReservationRequestDto.class))).willReturn(reservation);
+            ReservationRequestDto requestDto = new ReservationRequestDto(reservation.getName(), reservation.getDate(),
+                    time.getId(),
+                    theme.getId());
 
-            RestAssuredMockMvc.given().log().all()
+            given(reservationService.create(any(ReservationRequestDto.class))).willReturn(reservation);
+            ReservationResponseDto expected = ReservationResponseDto.from(reservation);
+
+            ReservationResponseDto actual = RestAssuredMockMvc.given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(requestDto)
                     .when().post("/admin/reservations")
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.CREATED)
-                    .header("Location", ("http://localhost/admin/reservations/" + reservation.getId()))
-                    .body("id", equalTo(reservation.getId().intValue()));
+                    .header("Location", "http://localhost/admin/reservations/" + reservation.getId())
+                    .extract().as(ReservationResponseDto.class);
+
+            assertThat(actual).isEqualTo(expected);
         }
 
         @ParameterizedTest(name = "{0}")
         @MethodSource("유효하지_않은_예약_요청_목록")
         void 유효하지_않은_요청으로_예약을_생성하면_400을_반환한다(String description, ReservationRequestDto invalidRequest) {
-            RestAssuredMockMvc.given().log().all()
+            RestAssuredMockMvc.given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(invalidRequest)
                     .when().post("/admin/reservations")
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.BAD_REQUEST);
         }
     }
@@ -140,9 +153,9 @@ class AdminReservationControllerTest {
         void 예약을_삭제하면_204를_반환한다() {
             willDoNothing().given(reservationService).delete(reservation.getId());
 
-            RestAssuredMockMvc.given().log().all()
+            RestAssuredMockMvc.given()
                     .when().delete("/admin/reservations/" + reservation.getId())
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.NO_CONTENT);
         }
 
@@ -151,9 +164,9 @@ class AdminReservationControllerTest {
             Long notExistsId = 1L;
             willThrow(new NotFoundException("존재하지 않는 예약입니다.")).given(reservationService).delete(notExistsId);
 
-            RestAssuredMockMvc.given().log().all()
+            RestAssuredMockMvc.given()
                     .when().delete("/admin/reservations/" + notExistsId.intValue())
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.NOT_FOUND);
         }
     }

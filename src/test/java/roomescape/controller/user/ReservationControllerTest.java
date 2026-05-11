@@ -1,6 +1,6 @@
 package roomescape.controller.user;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -26,6 +26,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
 import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.response.ReservationResponseDto;
 import roomescape.fixture.ReservationRequestDtoFixture;
 import roomescape.service.ReservationService;
 
@@ -50,25 +51,27 @@ class ReservationControllerTest {
     void 유효한_요청으로_예약을_생성하면_200을_반환한다() {
         ReservationRequestDto requestDto = new ReservationRequestDto("유저1", LocalDate.of(2026, 5, 10), 1L, 1L);
         given(reservationService.create(any())).willReturn(reservation);
+        ReservationResponseDto expected = ReservationResponseDto.from(reservation);
 
-        RestAssuredMockMvc.given().log().all()
+        ReservationResponseDto actual = RestAssuredMockMvc.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(requestDto)
                 .when().post("/reservations")
-                .then().log().all()
+                .then()
                 .status(HttpStatus.OK)
-                .body("id", equalTo(1))
-                .body("name", equalTo("유저1"));
+                .extract().as(ReservationResponseDto.class);
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("유효하지_않은_예약_요청_목록")
     void 유효하지_않은_요청으로_예약을_생성하면_400을_반환한다(String description, ReservationRequestDto invalidRequest) {
-        RestAssuredMockMvc.given().log().all()
+        RestAssuredMockMvc.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(invalidRequest)
                 .when().post("/reservations")
-                .then().log().all()
+                .then()
                 .status(HttpStatus.BAD_REQUEST);
     }
 
@@ -87,11 +90,11 @@ class ReservationControllerTest {
         ReservationRequestDto requestDto = new ReservationRequestDto("유저1", LocalDate.of(2026, 5, 10), 999L, 1L);
         given(reservationService.create(any())).willThrow(new NotFoundException("존재하지 않는 시간입니다."));
 
-        RestAssuredMockMvc.given().log().all()
+        RestAssuredMockMvc.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(requestDto)
                 .when().post("/reservations")
-                .then().log().all()
+                .then()
                 .status(HttpStatus.NOT_FOUND);
     }
 
@@ -100,11 +103,11 @@ class ReservationControllerTest {
         ReservationRequestDto requestDto = new ReservationRequestDto("유저1", LocalDate.of(2026, 5, 10), 1L, 1L);
         given(reservationService.create(any())).willThrow(new ConflictException("이미 존재하는 예약이 있습니다."));
 
-        RestAssuredMockMvc.given().log().all()
+        RestAssuredMockMvc.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(requestDto)
                 .when().post("/reservations")
-                .then().log().all()
+                .then()
                 .status(HttpStatus.CONFLICT);
     }
 }

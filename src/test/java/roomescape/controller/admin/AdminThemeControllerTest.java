@@ -1,13 +1,12 @@
 package roomescape.controller.admin;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.util.List;
 import java.util.stream.Stream;
@@ -28,6 +27,7 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
 import roomescape.dto.request.ThemeRequestDto;
+import roomescape.dto.response.ThemeResponseDto;
 import roomescape.fixture.ThemeRequestDtoFixture;
 import roomescape.service.ThemeService;
 
@@ -52,35 +52,38 @@ class AdminThemeControllerTest {
         @Test
         void 전체_테마_목록을_조회하면_200을_반환한다() {
             given(themeService.findAll()).willReturn(List.of(theme));
+            List<ThemeResponseDto> expected = List.of(ThemeResponseDto.from(theme));
 
-            RestAssuredMockMvc.given().log().all()
+            List<ThemeResponseDto> actual = RestAssuredMockMvc.given()
                     .when().get("/admin/themes")
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.OK)
-                    .body("$", hasSize(1))
-                    .body("id", hasItem(theme.getId().intValue()))
-                    .body("name", hasItem(theme.getName().getValue()));
+                    .extract().as(new TypeRef<>() {});
+
+            assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 존재하는_테마_id를_조회하면_200을_반환한다() {
             given(themeService.findById(theme.getId())).willReturn(theme);
+            ThemeResponseDto expected = ThemeResponseDto.from(theme);
 
-            RestAssuredMockMvc.given().log().all()
+            ThemeResponseDto actual = RestAssuredMockMvc.given()
                     .when().get("/admin/themes/" + theme.getId())
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.OK)
-                    .body("id", equalTo(theme.getId().intValue()))
-                    .body("name", equalTo(theme.getName().getValue()));
+                    .extract().as(ThemeResponseDto.class);
+
+            assertThat(actual).isEqualTo(expected);
         }
 
         @Test
         void 존재하지_않는_테마_id를_조회하면_404를_반환한다() {
             given(themeService.findById(999L)).willThrow(new NotFoundException("존재하지 않는 테마입니다."));
 
-            RestAssuredMockMvc.given().log().all()
+            RestAssuredMockMvc.given()
                     .when().get("/admin/themes/999")
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.NOT_FOUND);
         }
     }
@@ -102,25 +105,28 @@ class AdminThemeControllerTest {
             ThemeRequestDto requestDto = new ThemeRequestDto(
                     theme.getName().getValue(), theme.getThumbnailUrl(), theme.getDescription());
             given(themeService.create(any())).willReturn(theme);
+            ThemeResponseDto expected = ThemeResponseDto.from(theme);
 
-            RestAssuredMockMvc.given().log().all()
+            ThemeResponseDto actual = RestAssuredMockMvc.given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(requestDto)
                     .when().post("/admin/themes")
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.CREATED)
                     .header("Location", "http://localhost/admin/themes/" + theme.getId())
-                    .body("id", equalTo(theme.getId().intValue()));
+                    .extract().as(ThemeResponseDto.class);
+
+            assertThat(actual).isEqualTo(expected);
         }
 
         @ParameterizedTest(name = "{0}")
         @MethodSource("유효하지_않은_테마_요청_목록")
         void 유효하지_않은_요청으로_테마를_생성하면_400을_반환한다(String description, ThemeRequestDto invalidRequest) {
-            RestAssuredMockMvc.given().log().all()
+            RestAssuredMockMvc.given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(invalidRequest)
                     .when().post("/admin/themes")
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.BAD_REQUEST);
         }
 
@@ -130,11 +136,11 @@ class AdminThemeControllerTest {
                     theme.getName().getValue(), theme.getThumbnailUrl(), theme.getDescription());
             given(themeService.create(any())).willThrow(new ConflictException("이미 존재하는 테마명입니다."));
 
-            RestAssuredMockMvc.given().log().all()
+            RestAssuredMockMvc.given()
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(requestDto)
                     .when().post("/admin/themes")
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.CONFLICT);
         }
     }
@@ -146,9 +152,9 @@ class AdminThemeControllerTest {
         void 테마를_삭제하면_204를_반환한다() {
             willDoNothing().given(themeService).delete(theme.getId());
 
-            RestAssuredMockMvc.given().log().all()
+            RestAssuredMockMvc.given()
                     .when().delete("/admin/themes/" + theme.getId())
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.NO_CONTENT);
         }
 
@@ -156,9 +162,9 @@ class AdminThemeControllerTest {
         void 예약이_있는_테마를_삭제하면_409를_반환한다() {
             willThrow(new ConflictException("해당 테마에 예약이 존재합니다.")).given(themeService).delete(theme.getId());
 
-            RestAssuredMockMvc.given().log().all()
+            RestAssuredMockMvc.given()
                     .when().delete("/admin/themes/" + theme.getId())
-                    .then().log().all()
+                    .then()
                     .status(HttpStatus.CONFLICT);
         }
     }
