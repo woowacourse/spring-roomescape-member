@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{fragments/site :: head('예약 명부')}"></head>
+<body>
+
+<header th:replace="~{fragments/site :: header('reservations')}"></header>
+
+<main>
+
+    <section id="gate-section" style="display: none;">
+        <div class="page-head" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+            <span class="eyebrow">DOSSIER · ARCHIVE</span>
+            <h1>예약 명부</h1>
+            <p class="lead">
+                예약은 본인의 탐정 이름으로 조회·폐기할 수 있습니다.
+                예약 시 입력한 이름을 그대로 입력해 주세요.
+            </p>
+        </div>
+
+        <div class="gate-card">
+            <h2>이름으로 조회</h2>
+            <p>예약 시 입력한 탐정 이름을 그대로 입력하세요.</p>
+            <form method="get" action="/reservations">
+                <input type="text" name="user" required minlength="1"
+                       placeholder="예: 동키" autofocus>
+                <button type="submit" class="btn btn-primary">조회</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="ledger-section" style="display: none;">
+        <div class="page-head">
+            <span class="eyebrow">DOSSIER · <span data-bind="user"></span></span>
+            <h1><span data-bind="user"></span> 의 기록</h1>
+            <p class="lead">
+                <strong data-bind="user"></strong> 이름으로 등록된 예약 목록입니다.
+                필요 없는 예약은 이 페이지에서 폐기할 수 있습니다.
+            </p>
+            <div style="display: flex; gap: 0.6rem; margin-top: 1.4rem; flex-wrap: wrap;">
+                <a href="/reservations" class="btn btn-ghost btn-sm">← 다른 이름으로 조회</a>
+                <a href="/" class="btn btn-ghost btn-sm">새 사건 예약</a>
+            </div>
+        </div>
+
+        <div class="section-label">
+            <span class="num">§ 명부</span>
+            <h2><span id="ledger-count">0</span>건의 예약</h2>
+            <span class="meta">FILED · <span id="ledger-count-meta">0</span></span>
+        </div>
+
+        <div class="ledger-wrap" id="ledger-table" style="display: none;">
+            <table class="ledger">
+                <thead>
+                <tr>
+                    <th class="col-id">REF</th>
+                    <th>사건</th>
+                    <th>일자</th>
+                    <th>시각</th>
+                    <th class="col-actions">조치</th>
+                </tr>
+                </thead>
+                <tbody id="ledger-body"></tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" id="ledger-empty" style="display: none;">
+            ※ <strong data-bind="user"></strong> 이름의 예약이 없습니다
+        </div>
+    </section>
+
+</main>
+
+<footer th:replace="~{fragments/site :: footer}"></footer>
+
+<script th:src="@{/js/reservations.js}"></script>
+
+</body>
+</html>

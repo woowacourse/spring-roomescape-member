@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' · Roomescape Bureau'">Roomescape Bureau</title>
+    <link rel="stylesheet" th:href="@{/css/dossier.css}">
+    <link rel="icon"
+          href="data:image/svg+xml;utf8,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' fill='%23f0e3c9'/&gt;&lt;text x='50' y='72' text-anchor='middle' font-family='Georgia' font-size='80' fill='%23b22e22'&gt;R&lt;/text&gt;&lt;/svg&gt;">
+</head>
+
+<body>
+
+<header th:fragment="header(active)" class="bureau-bar">
+    <div class="bureau-inner">
+        <a th:href="@{/}" class="bureau-mark" style="background-image:none;">
+            <span class="mark-line">ROOMESCAPE</span>
+            <span class="mark-sub">BUREAU OF MYSTERIES · EST. 1974</span>
+        </a>
+        <nav class="bureau-nav">
+            <a th:href="@{/}"
+               th:classappend="${active == 'home'} ? 'is-active' : ''">사건 일람</a>
+            <a th:href="@{/reservations}"
+               th:classappend="${active == 'reservations'} ? 'is-active' : ''">예약 명부</a>
+            <a th:href="@{/console}"
+               th:classappend="${active == 'console'} ? 'is-active' : ''">관리국</a>
+            <span class="case-no"
+                  th:text="'FILE · ' + ${#dates.format(#dates.createNow(), 'yyyy.MM.dd')}">FILE · DATE</span>
+        </nav>
+    </div>
+</header>
+
+<th:block th:fragment="footer">
+    <footer class="bureau-foot">
+        <div class="foot-inner">
+            <div>
+                <div class="foot-mark">Roomescape&nbsp;<em style="color:var(--blood); font-style: italic;">Bureau</em>
+                </div>
+                <p class="foot-typewriter">
+                    "사건은 닫혀도, 미스터리는 끝나지 않는다."<br>
+                    — 무명 탐정의 일지에서
+                </p>
+            </div>
+            <div class="foot-meta">
+                서울 종로 · 추리 사무소 03-7714<br>
+                JDBC + H2 in-mem · Spring Boot 3.4<br>
+                영업: 매일 10:00 — 23:00
+            </div>
+        </div>
+    </footer>
+
+    <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title">
+        <form method="dialog" style="margin: 0;">
+            <div class="dialog-head">
+                <span class="dialog-tag">CONFIRMATION</span>
+                <button type="button" class="dialog-close" data-action="cancel" aria-label="닫기">×</button>
+            </div>
+            <div class="dialog-body">
+                <h3 id="confirm-title" data-role="title">확인이 필요합니다</h3>
+                <p data-role="message">계속하시겠습니까?</p>
+            </div>
+            <div class="dialog-foot">
+                <button type="button" class="btn btn-ghost btn-sm" data-action="cancel">취소</button>
+                <button type="button" class="btn btn-primary btn-sm" data-action="confirm">확정</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/confirm-modal.js}"></script>
+</th:block>
+
+</body>
+</html>

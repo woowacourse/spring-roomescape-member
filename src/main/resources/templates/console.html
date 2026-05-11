@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{fragments/site :: head('관리국')}"></head>
+<body>
+
+<header th:replace="~{fragments/site :: header('console')}"></header>
+
+<main>
+
+    <section class="page-head">
+        <span class="eyebrow">RESTRICTED · BUREAU CONSOLE</span>
+        <h1>관리국</h1>
+        <p class="lead">
+            새로운 사건 등록, 시간 슬롯 추가, 예약 명부 관리를 한 곳에서 처리합니다.
+        </p>
+    </section>
+
+    <div class="section-label">
+        <span class="num">§ 01</span>
+        <h2>예약 명부 (전체)</h2>
+        <span class="meta">FILED · <span id="res-count">0</span></span>
+    </div>
+
+    <div class="ledger-wrap" id="res-wrap" style="display: none;">
+        <table class="ledger">
+            <thead>
+            <tr>
+                <th class="col-id">REF</th>
+                <th>탐정</th>
+                <th>사건</th>
+                <th>일자</th>
+                <th>시각</th>
+                <th class="col-actions">조치</th>
+            </tr>
+            </thead>
+            <tbody id="res-body"></tbody>
+        </table>
+    </div>
+    <div class="empty-state" id="res-empty" style="display: none;">※ 등록된 예약이 없습니다</div>
+    <div id="res-pagination"
+         style="display:flex; align-items:center; gap:0.8rem; margin:1rem 0 2rem; justify-content:flex-end;">
+    </div>
+
+    <div class="section-label">
+        <span class="num">§ 02</span>
+        <h2>사건 (테마)</h2>
+        <span class="meta">REGISTERED · <span id="theme-count-section">0</span></span>
+    </div>
+
+    <div class="split-2">
+        <section class="form-card">
+            <h3>새 사건 등록 <span class="count">FORM · T-01</span></h3>
+            <form id="theme-form">
+                <div class="field">
+                    <label for="theme-name">사건 명</label>
+                    <input type="text" id="theme-name" name="name" required
+                           placeholder="예: 깊은 밤의 도서관">
+                </div>
+                <div class="field">
+                    <label for="theme-desc">사건 개요</label>
+                    <textarea id="theme-desc" name="description" required
+                              placeholder="60분 안에 단서를 모아 사건을 풀어내는 미스터리…"></textarea>
+                </div>
+                <div class="field">
+                    <label for="theme-thumb">썸네일 URL</label>
+                    <input type="url" id="theme-thumb" name="thumbnail" required
+                           placeholder="https://...">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">등록</button>
+                </div>
+            </form>
+        </section>
+
+        <section>
+            <h3 style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: baseline;">
+                등록된 사건
+                <span style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.26em; color: var(--blood); text-transform: uppercase;">
+                    <span id="theme-count">0</span> 건
+                </span>
+            </h3>
+            <div class="empty-state" id="theme-empty" style="display: none;">※ 등록된 사건 없음</div>
+            <div class="ledger-wrap" id="theme-wrap" style="display: none;">
+                <table class="ledger">
+                    <thead>
+                    <tr>
+                        <th class="col-id">REF</th>
+                        <th>사건 명</th>
+                        <th class="col-actions">조치</th>
+                    </tr>
+                    </thead>
+                    <tbody id="theme-body"></tbody>
+                </table>
+            </div>
+            <div id="theme-pagination"
+                 style="display:flex; align-items:center; gap:0.8rem; margin:0.8rem 0; justify-content:flex-end;">
+            </div>
+        </section>
+    </div>
+
+    <div class="section-label">
+        <span class="num">§ 03</span>
+        <h2>시간 슬롯</h2>
+        <span class="meta">REGISTERED · <span id="time-count-section">0</span></span>
+    </div>
+
+    <div class="split-2">
+        <section class="form-card">
+            <h3>새 시간 추가 <span class="count">FORM · S-02</span></h3>
+            <form id="time-form">
+                <div class="field">
+                    <label for="time-start">시각</label>
+                    <input type="time" id="time-start" name="startAt" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">추가</button>
+                </div>
+            </form>
+        </section>
+
+        <section>
+            <h3 style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: baseline;">
+                등록된 시간
+                <span style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.26em; color: var(--blood); text-transform: uppercase;">
+                    <span id="time-count">0</span> 건
+                </span>
+            </h3>
+            <div class="empty-state" id="time-empty" style="display: none;">※ 등록된 시간 없음</div>
+            <div class="ledger-wrap" id="time-wrap" style="display: none;">
+                <table class="ledger">
+                    <thead>
+                    <tr>
+                        <th class="col-id">REF</th>
+                        <th>시각</th>
+                        <th class="col-actions">조치</th>
+                    </tr>
+                    </thead>
+                    <tbody id="time-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/site :: footer}"></footer>
+
+<script th:src="@{/js/console.js}"></script>
+
+</body>
+</html>
