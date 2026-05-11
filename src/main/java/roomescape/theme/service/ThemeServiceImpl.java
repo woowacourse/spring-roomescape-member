@@ -24,23 +24,23 @@ public class ThemeServiceImpl implements ThemeService {
     private final TimeService timeService;
     private final HolidayRepository holidayRepository;
     private final ReservationRepository reservationRepository;
-
-    @Value("${theme.dayCount:7}")
-    private int dayCount;
-
-    @Value("${theme.rankCount:10}")
-    private int rankCount;
+    private final int dayCount;
+    private final int rankCount;
 
     public ThemeServiceImpl(
             ThemeRepository themeRepository,
             TimeService timeService,
             HolidayRepository holidayRepository,
-            ReservationRepository reservationRepository
+            ReservationRepository reservationRepository,
+            @Value("${theme.dayCount:7}") int dayCount,
+            @Value("${theme.rankCount:10}") int rankCount
     ) {
         this.themeRepository = themeRepository;
         this.timeService = timeService;
         this.holidayRepository = holidayRepository;
         this.reservationRepository = reservationRepository;
+        this.dayCount = dayCount;
+        this.rankCount = rankCount;
     }
 
     @Override
