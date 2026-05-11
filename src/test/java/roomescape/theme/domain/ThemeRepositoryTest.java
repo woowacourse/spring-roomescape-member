@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.domain.Status;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeRepository;
 
@@ -122,6 +123,7 @@ class ThemeRepositoryTest {
                     .theme(theme)
                     .date(date)
                     .time(time)
+                    .status(Status.ACTIVE)
                     .build());
     }
 }

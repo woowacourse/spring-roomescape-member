@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.domain.Status;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.time.domain.exception.ReservationTimeNotFoundException;
@@ -45,6 +46,7 @@ class ReservationTimeRepositoryTest {
                         .date(LocalDate.now())
                         .time(time)
                         .theme(theme)
+                        .status(Status.ACTIVE)
                 .build());
 
         Assertions.assertThat(reservation.getId()).isNotNull();

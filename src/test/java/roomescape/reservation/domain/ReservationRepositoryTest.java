@@ -48,6 +48,7 @@ class ReservationRepositoryTest {
                 .date(LocalDate.now())
                 .time(savedTime)
                 .theme(savedTheme)
+                .status(Status.ACTIVE)
                 .build();
 
         Reservation savedReservation = reservationRepository.save(reservation);
