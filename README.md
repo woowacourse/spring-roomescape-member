@@ -82,9 +82,7 @@
 | 테마 추가 | `POST /themes` | `{name, description}` | `{id, name, description}` |
 | 테마 삭제 | `DELETE /themes/{id}` | — | `204 No Content` |
 | 사용 가능 날짜 | `GET /available-dates?month=YYYY-MM` | — | `["yyyy-MM-dd", ...]` |
-| 테마별 가능 시간 | `GET /themes/{themeId}/times?date=yyyy-MM-dd` | — | `[{id, startAt}, ...]` |
-| 사용자 예약 추가 | `POST /users/reservations` | `{name, date, themeId, timeId}` | `{id, name, date, time, theme}` |
-| 사용자 예약 취소 | `DELETE /users/reservations/{id}` | — | `204 No Content` |
+| 테마별 가능 시간 | `GET /times?themeId=&date=yyyy-MM-dd` | — | `[{id, startAt, endAt}, ...]` |
 | 인기 테마 조회 | `GET /themes/best?date=yyyy-MM-dd` | — | `[{id, name}, ...]` |
 
 ---
@@ -296,12 +294,12 @@ Content-Type: application/json
 
 ---
 
-### GET /themes/{themeId}/times — 테마별 가능한 시간
+### GET /times?themeId=&date= — 테마별 가능한 시간
 
 **요청 예시**
 
 ```http
-GET /themes/1/times?date=2025-05-10 HTTP/1.1
+GET /times?themeId=1&date=2025-05-10 HTTP/1.1
 ```
 
 **응답 예시**
@@ -313,11 +311,13 @@ Content-Type: application/json
 [
     {
         "id": 1,
-        "startAt": "10:00"
+        "startAt": "10:00",
+        "endAt": "12:00"
     },
     {
         "id": 2,
-        "startAt": "12:00"
+        "startAt": "12:00",
+        "endAt": "14:00"
     }
 ]
 ```
