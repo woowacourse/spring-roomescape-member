@@ -24,7 +24,8 @@ public class ThemeService {
 
     public List<ThemeResponseDTO> getPopularThemes() {
         return convertThemesToDTO(
-            themeRepository.findPopularThemesDateBetween(LocalDate.now().minusDays(6), LocalDate.now(), 10));
+            themeRepository.findPopularThemesDateBetween(LocalDate.now().minusDays(7), LocalDate.now().minusDays(1),
+                10));
     }
 
     private List<ThemeResponseDTO> convertThemesToDTO(List<Theme> themes) {
