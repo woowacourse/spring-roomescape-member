@@ -1,8 +1,8 @@
 package roomescape.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import roomescape.dto.TimeAllResponse;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
 import roomescape.model.ReservationTime;
@@ -20,18 +20,20 @@ public class TimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<TimeResponse> readAll() {
+    public TimeAllResponse readAll() {
         List<ReservationTime> times = timeRepository.findAll();
-        return times.stream()
+        List<TimeResponse> responses = times.stream()
                 .map(TimeResponse::from)
-                .collect(Collectors.toList());
+                .toList();
+        return new TimeAllResponse(responses);
     }
 
-    public List<TimeResponse> readAllByThemeIdAndDate(Long themeId, String date) {
+    public TimeAllResponse readAllByThemeIdAndDate(Long themeId, String date) {
         List<ReservationTime> times = timeRepository.findAllByThemeIdAndDate(themeId, date);
-        return times.stream()
+        List<TimeResponse> responses = times.stream()
                 .map(TimeResponse::from)
-                .collect(Collectors.toList());
+                .toList();
+        return new TimeAllResponse(responses);
     }
 
     public void removeById(Long id) {
@@ -48,7 +50,6 @@ public class TimeService {
         if (timeRepository.existsByStartAt(timeRequest.startAt())) {
             throw new IllegalArgumentException("이미 존재하는 시간입니다.");
         }
-
         ReservationTime reservationTime = timeRepository.save(timeRequest.startAt());
         return TimeResponse.from(reservationTime);
     }

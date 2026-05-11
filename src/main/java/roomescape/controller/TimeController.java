@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import java.net.URI;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.TimeAllResponse;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
 import roomescape.service.TimeService;
@@ -26,15 +26,15 @@ public class TimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TimeResponse>> readAll() {
-        List<TimeResponse> reservationTimes = timeService.readAll();
+    public ResponseEntity<TimeAllResponse> readAll() {
+        TimeAllResponse reservationTimes = timeService.readAll();
         return ResponseEntity.ok().body(reservationTimes);
     }
 
     @GetMapping("/{themeId}")
-    public ResponseEntity<List<TimeResponse>> readAllByThemeIdAndDate(@PathVariable Long themeId,
-                                                                      @RequestParam("date") String date) {
-        List<TimeResponse> reservationTimes = timeService.readAllByThemeIdAndDate(themeId, date);
+    public ResponseEntity<TimeAllResponse> readAllByThemeIdAndDate(@PathVariable Long themeId,
+                                                                   @RequestParam("date") String date) {
+        TimeAllResponse reservationTimes = timeService.readAllByThemeIdAndDate(themeId, date);
         return ResponseEntity.ok().body(reservationTimes);
     }
 
