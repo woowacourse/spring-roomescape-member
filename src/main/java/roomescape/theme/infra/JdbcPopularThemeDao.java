@@ -4,8 +4,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import roomescape.theme.application.query.PopularThemeResult;
-import roomescape.theme.application.query.PopularThemeDao;
+import roomescape.theme.application.dto.PopularThemeResult;
+import roomescape.theme.application.dao.PopularThemeDao;
 import roomescape.theme.domain.PopularThemePeriod;
 
 @RequiredArgsConstructor

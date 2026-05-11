@@ -4,23 +4,23 @@ import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.application.query.ReservationDetail;
 import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
-import roomescape.theme.application.dto.ThemeQueryResult;
+import roomescape.theme.application.dto.ThemeResult;
 
 public record ReservationQueryResult(
         Long id,
         String name,
         LocalDate date,
-        ThemeQueryResult theme,
+        ThemeResult theme,
         ReservationTimeQueryResult time
 ) {
 
-    public static ReservationQueryResult from(Reservation reservation, ThemeQueryResult themeQueryResult,
+    public static ReservationQueryResult from(Reservation reservation, ThemeResult themeResult,
                                               ReservationTimeQueryResult timeQueryResult) {
         return new ReservationQueryResult(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                themeQueryResult,
+                themeResult,
                 timeQueryResult
         );
     }
@@ -30,7 +30,7 @@ public record ReservationQueryResult(
                 reservationDetail.reservationId(),
                 reservationDetail.username(),
                 reservationDetail.date(),
-                ThemeQueryResult.from(
+                ThemeResult.from(
                         reservationDetail.themeId(),
                         reservationDetail.themeName(),
                         reservationDetail.themeDescription(),

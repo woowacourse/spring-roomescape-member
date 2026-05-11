@@ -1,6 +1,6 @@
 package roomescape.theme.presentation.dto;
 
-import roomescape.theme.application.query.PopularThemeResult;
+import roomescape.theme.application.dto.PopularThemeResult;
 
 public record PopularThemeResponse(Long id, String name, String description, String thumbnailImgUrl, int reservedCount) {
 

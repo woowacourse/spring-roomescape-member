@@ -14,8 +14,8 @@ import roomescape.reservation.application.query.ReservationDetail;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservationtime.application.dto.ReservationTimeQueryResult;
 import roomescape.reservationtime.application.service.ReservationTimeService;
-import roomescape.theme.application.dto.ThemeQueryResult;
-import roomescape.theme.application.service.ThemeService;
+import roomescape.theme.application.dto.ThemeResult;
+import roomescape.theme.application.service.ThemeQueryService;
 
 @RequiredArgsConstructor
 @Transactional
@@ -24,7 +24,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationDetailDao reservationDetailDao;
-    private final ThemeService themeService;
+    private final ThemeQueryService themeQueryService;
     private final ReservationTimeService timeService;
 
     @Transactional(readOnly = true)
@@ -36,15 +36,15 @@ public class ReservationService {
     }
 
     public ReservationQueryResult save(ReservationCreateCommand request, LocalDateTime currentDateTime) {
-        ThemeQueryResult themeQueryResult = themeService.findById(request.themeId());
+        ThemeResult themeResult = themeQueryService.findById(request.themeId());
         ReservationTimeQueryResult timeQueryResult = timeService.findById(request.timeId());
 
-        Reservation reservation = request.toEntity(themeQueryResult.id(), timeQueryResult.id());
+        Reservation reservation = request.toEntity(themeResult.id(), timeQueryResult.id());
         reservation.validateNotPast(timeQueryResult.startAt(), currentDateTime);
 
         validateDuplicateReservation(reservation);
 
-        return ReservationQueryResult.from(reservationRepository.save(reservation), themeQueryResult, timeQueryResult);
+        return ReservationQueryResult.from(reservationRepository.save(reservation), themeResult, timeQueryResult);
     }
 
     public int delete(Long id) {

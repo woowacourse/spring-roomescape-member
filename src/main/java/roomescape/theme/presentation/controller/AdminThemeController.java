@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.application.service.ThemeService;
+import roomescape.theme.application.service.ThemeCommandService;
 import roomescape.theme.presentation.dto.ThemeCreateRequest;
 import roomescape.theme.presentation.dto.ThemeResponse;
 
@@ -19,21 +19,21 @@ import roomescape.theme.presentation.dto.ThemeResponse;
 @RestController
 public class AdminThemeController {
 
-    private final ThemeService themeService;
+    private final ThemeCommandService themeCommandService;
 
     @PostMapping
     public ResponseEntity<ThemeResponse> create(
             @Valid @RequestBody ThemeCreateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ThemeResponse.from(themeService.save(request.toCommand())));
+                .body(ThemeResponse.from(themeCommandService.save(request.toCommand())));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id
     ) {
-        int deletedCount = themeService.delete(id);
+        int deletedCount = themeCommandService.delete(id);
 
         if (deletedCount == 0) {
             return ResponseEntity.notFound().build();

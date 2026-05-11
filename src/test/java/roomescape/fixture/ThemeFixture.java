@@ -2,7 +2,7 @@ package roomescape.fixture;
 
 import java.util.Map;
 import roomescape.theme.application.dto.ThemeCreateCommand;
-import roomescape.theme.application.dto.ThemeQueryResult;
+import roomescape.theme.application.dto.ThemeResult;
 
 public class ThemeFixture {
 
@@ -34,8 +34,8 @@ public class ThemeFixture {
         );
     }
 
-    public static ThemeQueryResult horrorThemeQueryResult(Long id) {
-        return new ThemeQueryResult(
+    public static ThemeResult horrorThemeQueryResult(Long id) {
+        return new ThemeResult(
                 id,
                 "공포 테마",
                 "공포 테마 설명",
@@ -43,8 +43,8 @@ public class ThemeFixture {
         );
     }
 
-    public static ThemeQueryResult themeQueryResult(int index, Long id) {
+    public static ThemeResult themeQueryResult(int index, Long id) {
         ThemeCreateCommand command = themeCreateCommand(index);
-        return new ThemeQueryResult(id, command.name(), command.description(), command.thumbnailImgUrl());
+        return new ThemeResult(id, command.name(), command.description(), command.thumbnailImgUrl());
     }
 }

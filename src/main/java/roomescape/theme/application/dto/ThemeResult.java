@@ -2,9 +2,9 @@ package roomescape.theme.application.dto;
 
 import roomescape.theme.domain.Theme;
 
-public record ThemeQueryResult(Long id, String name, String description, String thumbnailImgUrl) {
-    public static ThemeQueryResult from(Theme theme) {
-        return new ThemeQueryResult(
+public record ThemeResult(Long id, String name, String description, String thumbnailImgUrl) {
+    public static ThemeResult from(Theme theme) {
+        return new ThemeResult(
                 theme.getId(),
                 theme.getName(),
                 theme.getDescription(),
@@ -12,8 +12,8 @@ public record ThemeQueryResult(Long id, String name, String description, String 
         );
     }
 
-    public static ThemeQueryResult from(Long id, String name, String description, String thumbnailImgUrl) {
-        return new ThemeQueryResult(
+    public static ThemeResult from(Long id, String name, String description, String thumbnailImgUrl) {
+        return new ThemeResult(
                 id,
                 name,
                 description,
