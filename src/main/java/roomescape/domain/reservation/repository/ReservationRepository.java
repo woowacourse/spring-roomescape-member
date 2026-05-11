@@ -1,6 +1,5 @@
 package roomescape.domain.reservation.repository;
 
-import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.domain.Reservation;
 import roomescape.domain.reservation.domain.Reservations;
 
@@ -8,7 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface ReservationRepository {
 
     List<Reservation> findAll(int offset, int limit);
