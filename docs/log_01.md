@@ -89,8 +89,8 @@ MappingJackson2HttpMessageConverter — 객체 → JSON
 ## 결론
 
 @ResponseBody는 메타 데이터이고, ReturnValueHandler에서 RequestResponseBodyMethodProcessor가 선택된다.
-그리고 MessageConverter에서 협상 우선순위에 따라 조회를 하면서 보낸다.
-만약 우선순위가 없다면, 위 순서대로 Content-Type을 선택해서 전달한다.
+그리고 협상 우선순위에 따라 HttpMessageConverter가 실행된다.
+만약 우선순위가 없다면, 위 순서대로 HttpMessageConverter를 선택하고 해당되는 Content-Type을 전달한다.
 
 ## 3. 전략 평가
 
