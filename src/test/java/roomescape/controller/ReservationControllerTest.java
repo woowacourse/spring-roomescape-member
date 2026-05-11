@@ -69,6 +69,7 @@ public class ReservationControllerTest {
                 .when().post("/api/v1/reservations")
                 .then().log().all()
                 .statusCode(201)
+                .header("Location", "/api/v1/reservations/1")
                 .body("id", is(1));
     }
 

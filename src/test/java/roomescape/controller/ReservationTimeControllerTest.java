@@ -64,6 +64,21 @@ public class ReservationTimeControllerTest {
     }
 
     @Test
+    void 시간_추가() {
+        Map<String, String> time = new HashMap<>();
+        time.put("startAt", "13:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(time)
+                .when().post("/api/v1/times")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", "/api/v1/times/4")
+                .body("id", is(4));
+    }
+
+    @Test
     void 시간_관리_API() {
         RestAssured.given().log().all()
                 .when().get("/api/v1/times")
@@ -109,7 +124,8 @@ public class ReservationTimeControllerTest {
                 .body(reservationParams(Map.of("timeId", 2)))
                 .when().post("/api/v1/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .header("Location", "/api/v1/reservations/2");
     }
 
     @Test
@@ -140,7 +156,8 @@ public class ReservationTimeControllerTest {
                 .body(reservationParams(Map.of("themeId", 2)))
                 .when().post("/api/v1/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .header("Location", "/api/v1/reservations/2");
     }
 
     @Test

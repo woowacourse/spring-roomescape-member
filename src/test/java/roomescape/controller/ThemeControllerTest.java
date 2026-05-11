@@ -44,6 +44,7 @@ public class ThemeControllerTest {
                 .when().post("/api/v1/themes")
                 .then().log().all()
                 .statusCode(201)
+                .header("Location", "/api/v1/themes/1")
                 .body("id", is(1));
     }
 
