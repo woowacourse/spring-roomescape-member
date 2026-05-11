@@ -6,15 +6,14 @@ VALUES ('10:00'),
        ('16:00');
 
 INSERT INTO reservation_date (play_day)
-VALUES ('2026-05-01'),
-       ('2026-05-02'),
-       ('2026-05-03'),
-       ('2026-05-04'),
-       ('2026-05-05'),
-       ('2026-05-06'),
-       ('2026-05-07'),
-       ('2026-05-08'),
-       ('2026-05-09');
+VALUES (CURRENT_DATE - 7),
+       (CURRENT_DATE - 6),
+       (CURRENT_DATE - 5),
+       (CURRENT_DATE - 4),
+       (CURRENT_DATE - 3),
+       (CURRENT_DATE - 2),
+       (CURRENT_DATE - 1),
+       (CURRENT_DATE);
 
 INSERT INTO theme (name, content, url)
 VALUES ('공포', '오금이 저리는 공포입니다.', '/themes/scary'),
