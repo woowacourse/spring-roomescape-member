@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.exception.NotFoundException;
-import roomescape.policy.ReservationSavePolicy;
+import roomescape.policy.UserReservationSavePolicy;
 import roomescape.request.ReservationRequest;
 import roomescape.response.ReservationResponse;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -26,13 +28,13 @@ import java.util.List;
 public class ReservationController {
     private static final String DEFAULT_PATH = "/reservations/";
     private final ReservationService reservationService;
-    private final ReservationSavePolicy savePolicy;
+    private final Clock clock;
 
     public ReservationController(
             ReservationService reservationService,
-            ReservationSavePolicy savePolicy) {
+            Clock clock) {
         this.reservationService = reservationService;
-        this.savePolicy = savePolicy;
+        this.clock = clock;
     }
 
     @GetMapping
@@ -43,7 +45,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest request) {
-        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand(), savePolicy);
+        UserReservationSavePolicy policy = new UserReservationSavePolicy(LocalDate.now(clock));
+        Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand(), policy);
         ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
 
         return ResponseEntity.created(getLocation(reservationResponse.id())).body(reservationResponse);

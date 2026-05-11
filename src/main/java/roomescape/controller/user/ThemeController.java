@@ -43,7 +43,7 @@ public class ThemeController {
             @RequestParam(value = "date", required = false) LocalDate date) {
 
         List<ReservationTimeResponse> reservationTimeResponses =
-                ReservationTimeResponse.from(reservationTimeService.getAvailableTimes(themeId, date));
+                ReservationTimeResponse.from(reservationTimeService.getAvailableTimes(themeId, resolveDate(date)));
 
         return ResponseEntity.ok(reservationTimeResponses);
     }
@@ -53,5 +53,12 @@ public class ThemeController {
         List<Theme> themes = themeService.findPopularThemes(Period.lastWeek(clock));
 
         return ResponseEntity.ok(ThemeResponse.from(themes));
+    }
+
+    private LocalDate resolveDate(LocalDate date) {
+        if (date == null) {
+            return LocalDate.now(clock);
+        }
+        return date;
     }
 }

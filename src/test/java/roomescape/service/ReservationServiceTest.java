@@ -15,10 +15,8 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,10 +33,7 @@ class ReservationServiceTest {
 
     private static final long TIME_ID = 1L;
     private static final long THEME_ID = 1L;
-    private static final ZoneId ZONE = ZoneId.of("Asia/Seoul");
-    private static final Clock FIXED_CLOCK = Clock.fixed(
-            LocalDate.of(2026, 5, 1).atStartOfDay(ZONE).toInstant(),
-            ZONE);
+    private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 5, 1);
 
     @Mock
     private ReservationRepository reservationRepository;
@@ -49,7 +44,7 @@ class ReservationServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
-    private final UserReservationSavePolicy userPolicy = new UserReservationSavePolicy(FIXED_CLOCK);
+    private final UserReservationSavePolicy userPolicy = new UserReservationSavePolicy(FIXED_TODAY);
 
     private ReservationService reservationService;
 
