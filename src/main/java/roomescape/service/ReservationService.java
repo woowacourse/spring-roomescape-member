@@ -44,7 +44,7 @@ public class ReservationService {
         return reservationRepository.existsByThemeId(themeId);
     }
 
-    public Reservations findOn(LocalDate date, Long themeId) {
-        return reservationRepository.findOn(date, themeId);
+    public Reservations findByDateAndThemeId(LocalDate date, Long themeId) {
+        return reservationRepository.findByDateAndThemeId(date, themeId);
     }
 }

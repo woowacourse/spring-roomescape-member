@@ -23,5 +23,5 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
-    Reservations findOn(LocalDate date, Long themeId);
+    Reservations findByDateAndThemeId(LocalDate date, Long themeId);
 }

@@ -57,7 +57,7 @@ public class ReservationFacade {
         ReservationTime reservationTime = reservationTimeService.findById(request.timeId());
         Theme theme = themeService.findById(request.themeId());
 
-        Reservations existing = reservationService.findOn(request.date(), theme.getId());
+        Reservations existing = reservationService.findByDateAndThemeId(request.date(), theme.getId());
         if (existing.isOccupied(reservationTime)) {
             throw new IllegalArgumentException(ALREADY_EXISTS_ADD_RESERVATION);
         }
@@ -73,7 +73,7 @@ public class ReservationFacade {
 
     public List<TimeWithStatusResponse> getTimesWithAvailability(LocalDate date, Long themeId) {
         List<ReservationTime> times = reservationTimeService.getReservationTimes();
-        Reservations reservations = reservationService.findOn(date, themeId);
+        Reservations reservations = reservationService.findByDateAndThemeId(date, themeId);
 
         return times.stream()
                 .map(time -> TimeWithStatusResponse.from(time, reservations.isOccupied(time)))

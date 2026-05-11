@@ -111,7 +111,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         return results.stream().findFirst();
     }
 
-    public Reservations findOn(LocalDate date, Long themeId) {
+    public Reservations findByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = SELECT_BASE + " WHERE r.date = ? AND r.theme_id = ?";
         return new Reservations(jdbcTemplate.query(sql, reservationRowMapper, date, themeId));
     }
