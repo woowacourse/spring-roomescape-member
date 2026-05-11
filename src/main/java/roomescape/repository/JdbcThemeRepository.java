@@ -2,7 +2,7 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -79,7 +79,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Long> findPopularThemeIds() {
-        List<Long> popularThemeIds = new LinkedList<>();
+        List<Long> popularThemeIds = new ArrayList<>();
         String sql = """
                     SELECT t.id AS theme_id, t.name, COUNT(r.id) AS reservation_count
                     FROM theme AS t
