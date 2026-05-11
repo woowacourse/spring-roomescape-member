@@ -4,9 +4,12 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.CustomException;
+import roomescape.exception.ErrorCode;
 import roomescape.service.dto.ServiceReservationTimeAvailabilityResponse;
 import roomescape.service.dto.ServiceReservationTimeRequest;
 import roomescape.service.dto.ServiceReservationTimeResponse;
@@ -16,10 +19,13 @@ import roomescape.service.dto.ServiceReservationTimeResponse;
 public class ReservationTimeService {
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final ReservationDao reservationDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ThemeDao themeDao,
+                                  ReservationDao reservationDao) {
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.reservationDao = reservationDao;
     }
 
     @Transactional
@@ -53,6 +59,9 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(Long id) {
+        if (reservationDao.existByTimeId(id)) {
+            throw new CustomException(ErrorCode.REFERENCED_TIME);
+        }
         reservationTimeDao.delete(id);
     }
 }
