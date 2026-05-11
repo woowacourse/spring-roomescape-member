@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,6 +39,7 @@ class MissionStepTest {
     }
 
     @Test
+    @DisplayName("예약 조회")
     void 예약_조회() {
         RestAssured.given().log().all()
                 .when().get("/admin/reservations")
@@ -47,6 +49,7 @@ class MissionStepTest {
     }
 
     @Test
+    @DisplayName("데이터베이스 연동")
     void 데이터베이스_연동() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
@@ -58,6 +61,7 @@ class MissionStepTest {
     }
 
     @Test
+    @DisplayName("DB 조회 API 전환")
     void DB_조회_API_전환() {
         String reservationName = "브라운";
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
@@ -78,6 +82,7 @@ class MissionStepTest {
     }
 
     @Test
+    @DisplayName("시간 관리 API")
     void 시간_관리_API() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
@@ -100,7 +105,9 @@ class MissionStepTest {
                 .then().log().all()
                 .statusCode(204);
     }
+
     @Test
+    @DisplayName("예약과 시간 연결")
     void 예약과_시간_연결() {
         Map<String, String> time = new HashMap<>();
         time.put("startAt", "10:00");
@@ -147,6 +154,7 @@ class MissionStepTest {
     private ReservationAdminController reservationAdminController;
 
     @Test
+    @DisplayName("계층화 리팩터링")
     void 계층화_리팩터링() {
         boolean isJdbcTemplateInjected = false;
 
