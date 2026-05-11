@@ -8,7 +8,8 @@ public record ReservationTimeResponse(
         Long id,
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
-        LocalTime startAt) {
+        LocalTime startAt
+) {
     public static ReservationTimeResponse from(ReservationTime reservationTime) {
         return new ReservationTimeResponse(
                 reservationTime.id(),
