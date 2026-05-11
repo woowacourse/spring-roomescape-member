@@ -38,7 +38,7 @@ class ReservationServiceTest {
     private ReservationService reservationService;
 
     @Test
-    void 예약_목록을_조회하면_Repository_findAllWithTime_결과를_반환한다() {
+    void 예약_목록을_조회하면_Repository_findAll_결과를_반환한다() {
         List<Reservation> reservations = List.of(
                 new Reservation(
                         1L,
@@ -48,11 +48,11 @@ class ReservationServiceTest {
                         new Theme(1L, "공포방", "무서운방입니다.", "image-url")
                 )
         );
-        when(reservationRepository.findAllWithTime()).thenReturn(reservations);
+        when(reservationRepository.findAll()).thenReturn(reservations);
 
         List<Reservation> result = reservationService.findReservations();
 
-        verify(reservationRepository).findAllWithTime();
+        verify(reservationRepository).findAll();
         assertThat(result).isSameAs(reservations);
     }
 

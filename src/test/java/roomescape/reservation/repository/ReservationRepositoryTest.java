@@ -61,11 +61,11 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    void 예약_전체_조회시_예약_시간_테마를_함께_반환한다() {
+    void 예약_전체를_조회한다() {
         reservationRepository.save(new Reservation(
                 null, "브라운", LocalDate.of(2026, 5, 10), time, theme));
 
-        List<Reservation> result = reservationRepository.findAllWithTime();
+        List<Reservation> result = reservationRepository.findAll();
 
         assertThat(result).hasSize(1);
         Reservation reservation = result.get(0);

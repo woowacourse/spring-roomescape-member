@@ -28,7 +28,7 @@ public class ReservationService {
     }
 
     public List<Reservation> findReservations() {
-        return reservationRepository.findAllWithTime();
+        return reservationRepository.findAll();
     }
 
     @Transactional

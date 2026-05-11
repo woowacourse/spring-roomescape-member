@@ -23,7 +23,7 @@ public class ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Reservation> findAllWithTime() {
+    public List<Reservation> findAll() {
         String sql = """
                 SELECT r.id          AS reservation_id,
                        r.name        AS reservation_name,
