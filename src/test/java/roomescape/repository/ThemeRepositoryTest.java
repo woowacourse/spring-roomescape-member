@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -71,7 +72,8 @@ public class ThemeRepositoryTest {
         // then
         Assertions.assertEquals(themeId, theme.get().getId());
         Assertions.assertEquals("루팡의 예고장", theme.get().getName());
-        Assertions.assertEquals("세계 최고의 보석 '여신의 눈물'이 전시된 박물관. 당신은 예고된 시간에 맞춰 보석을 훔쳐낼 수 있을까요?", theme.get().getDescription());
+        Assertions.assertEquals("세계 최고의 보석 '여신의 눈물'이 전시된 박물관. 당신은 예고된 시간에 맞춰 보석을 훔쳐낼 수 있을까요?",
+                theme.get().getDescription());
         Assertions.assertEquals("https://picsum.photos/seed/lupin/400/300", theme.get().getUrl());
 
     }
@@ -79,12 +81,13 @@ public class ThemeRepositoryTest {
     @Test
     public void 지난_일주일간_가장_예약이_많았던_상위_10개_테마를_가져온다() {
         // given
-        String currentDate = "2026-05-05";
-        String lastWeekDate = "2026-04-28";
+        LocalDate currentDate = LocalDate.now().minusDays(1);
+        LocalDate lastWeekDate = LocalDate.now().minusDays(8);
         int limit = 10;
 
         // when
-        List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(currentDate, lastWeekDate, limit);
+        List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(currentDate.toString(),
+                lastWeekDate.toString(), limit);
 
         // then
         Assertions.assertEquals(themes.get(0).getId(), 5);

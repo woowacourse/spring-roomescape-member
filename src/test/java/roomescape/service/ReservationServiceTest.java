@@ -32,7 +32,8 @@ public class ReservationServiceTest {
     @Test
     void 존재하는_예약을_추가할_경우_예외가_발생한다() {
         // given
-        ReservationRequest reservationRequest = new ReservationRequest("포비", LocalDate.of(2026, 5, 1), 1L, 1L);
+        LocalDate date = LocalDate.now().minusDays(1);
+        ReservationRequest reservationRequest = new ReservationRequest("구바", date, 4L, 6L);
 
         // when
         Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
