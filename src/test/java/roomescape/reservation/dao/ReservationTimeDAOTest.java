@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservation.dto.response.ReservationTimeCreateResponse;
 import roomescape.reservation.dto.response.ReservationTimeFindAllResponse;
 
@@ -34,7 +35,7 @@ class ReservationTimeDAOTest {
         @Test
         void 새로운_시간을_저장한다() {
             // given
-            ReservationTime time = new ReservationTime(LocalTime.of(10, 0));
+            ReservationTimeCreateRequest time = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
 
             // when
             Long id = reservationTimeDAO.insert(time);
@@ -48,7 +49,7 @@ class ReservationTimeDAOTest {
         @Test
         void 저장_후_전체_조회에_포함된다() {
             // given
-            reservationTimeDAO.insert(new ReservationTime(LocalTime.of(10, 0)));
+            reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
             // when
             List<ReservationTimeFindAllResponse> all = reservationTimeDAO.findAll().stream()
@@ -63,9 +64,9 @@ class ReservationTimeDAOTest {
     @Test
     void 저장된_모든_시간을_조회한다() {
         // given
-        reservationTimeDAO.insert(new ReservationTime(LocalTime.of(10, 0)));
-        reservationTimeDAO.insert(new ReservationTime(LocalTime.of(11, 0)));
-        reservationTimeDAO.insert(new ReservationTime(LocalTime.of(12, 0)));
+        reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
+        reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(11, 0)));
+        reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(12, 0)));
 
         // when
         List<ReservationTimeFindAllResponse> all = reservationTimeDAO.findAll().stream()
@@ -82,7 +83,7 @@ class ReservationTimeDAOTest {
         @Test
         void 존재하는_시간을_조회한다() {
             // given
-            Long id = reservationTimeDAO.insert(new ReservationTime(LocalTime.of(10, 0)));
+            Long id = reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
             ReservationTimeCreateResponse saved = ReservationTimeCreateResponse.of(id, LocalTime.of(10, 10, 10));
 
             // when
@@ -104,7 +105,7 @@ class ReservationTimeDAOTest {
     @Test
     void ID로_시간을_삭제한다() {
         // given
-        Long id = reservationTimeDAO.insert(new ReservationTime(LocalTime.of(10, 0)));
+        Long id = reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
         ReservationTimeCreateResponse saved = ReservationTimeCreateResponse.of(id, LocalTime.of(10, 10, 10));
 
         // when

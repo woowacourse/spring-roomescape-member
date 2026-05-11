@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationRequest;
+import roomescape.reservation.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.response.ReservationTimeCreateResponse;
 import roomescape.reservation.dto.response.ReservationTimeFindAllResponse;
@@ -34,8 +35,8 @@ public class ReservationFacade {
         reservationTimeService.delete(id);
     }
 
-    public ReservationTimeCreateResponse createReservationTime(ReservationTime reservationTime) {
-        return reservationTimeService.create(reservationTime);
+    public ReservationTimeCreateResponse createReservationTime(ReservationTimeCreateRequest reservationTimeCreateRequest) {
+        return reservationTimeService.create(reservationTimeCreateRequest);
     }
 
     public List<ReservationTimeFindAllResponse> findAllReservationTime() {

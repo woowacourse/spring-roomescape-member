@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dao.ReservationTimeDAO;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservation.dto.response.ReservationTimeCreateResponse;
 import roomescape.reservation.dto.response.ReservationTimeFindAllResponse;
 
@@ -16,9 +17,9 @@ public class ReservationTimeService {
         this.reservationTimeDAO = reservationTimeDAO;
     }
 
-    public ReservationTimeCreateResponse create(ReservationTime reservationTime) {
-        Long id = reservationTimeDAO.insert(reservationTime);
-        return ReservationTimeCreateResponse.of(id, reservationTime.getStartAt());
+    public ReservationTimeCreateResponse create(ReservationTimeCreateRequest reservationTimeCreateRequest) {
+        Long id = reservationTimeDAO.insert(reservationTimeCreateRequest);
+        return ReservationTimeCreateResponse.of(id, reservationTimeCreateRequest.startAt());
     }
 
     public List<ReservationTimeFindAllResponse> findAll() {

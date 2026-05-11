@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservation.dto.response.ReservationTimeCreateResponse;
 import roomescape.reservation.dto.response.ReservationTimeFindAllResponse;
 
@@ -19,11 +20,11 @@ public class ReservationTimeDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long insert(ReservationTime reservationTime) {
-        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", reservationTime.getStartAt());
+    public Long insert(ReservationTimeCreateRequest reservationTimeCreateRequest) {
+        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", reservationTimeCreateRequest.startAt());
 
         Long id = jdbcTemplate.queryForObject("select t.id from reservation_time t where t.start_at = ?", Long.class,
-                reservationTime.getStartAt());
+                reservationTimeCreateRequest.startAt());
 
         return id;
     }

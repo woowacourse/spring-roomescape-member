@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.response.ReservationTimeCreateResponse;
 import roomescape.reservation.dto.response.ThemeSimpleResponse;
@@ -39,7 +40,7 @@ class ReservationDAOTest {
     }
 
     private ReservationTimeCreateResponse createTime() {
-        Long id = reservationTimeDAO.insert(new ReservationTime(LocalTime.of(10, 0)));
+        Long id = reservationTimeDAO.insert(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
         return ReservationTimeCreateResponse.of(id, LocalTime.of(10, 10, 10));
     }
