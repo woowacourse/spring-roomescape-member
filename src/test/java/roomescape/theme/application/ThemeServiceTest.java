@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.exception.ThemeNotFoundException;
 import roomescape.theme.presentation.dto.ThemeRequest;
-import roomescape.theme.presentation.dto.ThemeResponse;
 
 @Transactional
 @SpringBootTest
@@ -42,8 +42,8 @@ class ThemeServiceTest {
                 .thumbnailImageUrl("https://~~~~")
                 .durationTime(LocalTime.of(1, 0))
                 .build();
-        ThemeResponse response = service.addTheme(ThemeRequest.toEntity(request));
-        Assertions.assertThatCode(() -> service.deleteTheme(response.id()))
+        Theme theme = service.addTheme(ThemeRequest.toEntity(request));
+        Assertions.assertThatCode(() -> service.deleteTheme(theme.getId()))
                 .doesNotThrowAnyException();
     }
 }

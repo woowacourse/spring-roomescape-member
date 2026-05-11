@@ -22,8 +22,8 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
 
-    public ThemeResponse addTheme(Theme theme) {
-        return ThemeResponse.from(themeRepository.save(theme));
+    public Theme addTheme(Theme theme) {
+        return themeRepository.save(theme);
     }
 
     public void deleteTheme(Long id) {

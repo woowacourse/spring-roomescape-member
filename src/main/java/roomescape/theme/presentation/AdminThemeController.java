@@ -23,7 +23,7 @@ public class AdminThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody ThemeRequest request) {
-        ThemeResponse response = service.addTheme(ThemeRequest.toEntity(request));
+        ThemeResponse response = ThemeResponse.from(service.addTheme(ThemeRequest.toEntity(request)));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

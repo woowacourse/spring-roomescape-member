@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.theme.application.ThemeService;
+import roomescape.theme.domain.Theme;
 import roomescape.theme.presentation.dto.ThemeRequest;
-import roomescape.theme.presentation.dto.ThemeResponse;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.presentation.dto.AvailableReservationTimeRequest;
 import roomescape.time.presentation.dto.ReservationTimeRequest;
@@ -41,13 +41,13 @@ class ReservationTimeServiceTest {
                 .description("추리 테마")
                 .durationTime(LocalTime.of(1, 30))
                 .build();
-        ThemeResponse themeResponse = themeService.addTheme(ThemeRequest.toEntity(theme));
+        Theme savedTheme = themeService.addTheme(ThemeRequest.toEntity(theme));
         ReservationTime time = timeService.addReservationTime(ReservationTimeRequest.toEntity(new ReservationTimeRequest(LocalTime.now())));
         timeService.addReservationTime(ReservationTimeRequest.toEntity(new ReservationTimeRequest(LocalTime.now().plusHours(1))));
         timeService.addReservationTime(ReservationTimeRequest.toEntity(new ReservationTimeRequest(LocalTime.now().plusHours(2))));
-        reservationService.addReservation(new ReservationCreateCommand("포비", LocalDate.now(), time.getId(), themeResponse.id()));
+        reservationService.addReservation(new ReservationCreateCommand("포비", LocalDate.now(), time.getId(), savedTheme.getId()));
         AvailableReservationTimeRequest availableReservationTimeRequest = new AvailableReservationTimeRequest(
-                themeResponse.id(), LocalDate.now());
+                savedTheme.getId(), LocalDate.now());
         Assertions.assertThat(reservationTimeService.getAvailableReservationTime(availableReservationTimeRequest.toCommand())
                 .times()
         ).hasSize(2);
