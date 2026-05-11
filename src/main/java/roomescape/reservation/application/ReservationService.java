@@ -30,6 +30,11 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<Reservation> getReservationsByName(String username) {
+        return reservationRepository.findAllByName(username);
+    }
+
     public Reservation addReservation(ReservationCreateCommand command) {
         ReservationTime time = timeRepository.getById(command.timeId());
         Theme theme = themeRepository.getById(command.themeId());

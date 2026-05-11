@@ -33,6 +33,15 @@ public class ReservationController {
         return ResponseEntity.ok(responses);
     }
 
+    @GetMapping("/{username}")
+    public ResponseEntity<List<ReservationResponse>> getReservationsByName(@PathVariable String username) {
+        List<ReservationResponse> responses = reservationService.getReservationsByName(username)
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return ResponseEntity.ok(responses);
+    }
+
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
         ReservationResponse response = ReservationResponse.from(reservationService.addReservation(request.toCommand()));

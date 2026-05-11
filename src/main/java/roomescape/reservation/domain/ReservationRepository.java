@@ -7,6 +7,7 @@ public interface ReservationRepository {
     Reservation save(Reservation reservation);
     List<Reservation> findAll();
     List<Reservation> findByThemeAndDate(Long themeId, LocalDate date);
+    List<Reservation> findAllByName(String username);
     boolean existsByReservationTime(Long timeId);
     boolean existsByReservationTimeAndThemeAndDate(Long timeId, Long themeId, LocalDate date);
     boolean existsByIdAndUsernameAndActive(Long id, String username);

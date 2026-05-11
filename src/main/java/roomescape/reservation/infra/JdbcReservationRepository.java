@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.domain.Status;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -40,6 +41,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .id(resultSet.getLong("r_id"))
                 .name(resultSet.getString("r_name"))
                 .date(resultSet.getDate("r_date").toLocalDate())
+                .status(Status.valueOf(resultSet.getString("r_status")))
                 .time(time)
                 .theme(theme)
                 .build();
@@ -68,7 +70,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = "SELECT "
-                + "r.id AS r_id, r.name AS r_name, r.date AS r_date, "
+                + "r.id AS r_id, r.name AS r_name, r.date AS r_date, r.status AS r_status, "
                 + "t.id AS t_id, t.name AS t_name, t.thumbnail_image_url AS t_thumbnail_image_url, "
                 + "t.description AS t_description, t.duration_time AS t_duration_time, "
                 + "rt.id AS rt_id, rt.start_at AS rt_start_at "
@@ -83,7 +85,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findByThemeAndDate(Long themeId, LocalDate date) {
         String sql = "SELECT "
-                + "r.id AS r_id, r.name AS r_name, r.date AS r_date, "
+                + "r.id AS r_id, r.name AS r_name, r.date AS r_date, r.status AS r_status, "
                 + "t.id AS t_id, t.name AS t_name, t.thumbnail_image_url AS t_thumbnail_image_url, "
                 + "t.description AS t_description, t.duration_time AS t_duration_time, "
                 + "rt.id AS rt_id, rt.start_at AS rt_start_at "
@@ -97,6 +99,20 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("date", date);
 
         return jdbcTemplate.query(sql, params, rowMapper);
+    }
+
+    @Override
+    public List<Reservation> findAllByName(String username) {
+        String sql = "SELECT "
+                + "r.id AS r_id, r.name AS r_name, r.date AS r_date, r.status AS r_status, "
+                + "t.id AS t_id, t.name AS t_name, t.thumbnail_image_url AS t_thumbnail_image_url, "
+                + "t.description AS t_description, t.duration_time AS t_duration_time, "
+                + "rt.id AS rt_id, rt.start_at AS rt_start_at "
+                + "FROM reservation r "
+                + "INNER JOIN theme t ON r.theme_id = t.id "
+                + "INNER JOIN reservation_time rt ON r.time_id = rt.id "
+                + "WHERE r.name = :username";
+        return jdbcTemplate.query(sql, Map.of("username", username), rowMapper);
     }
 
     @Override
