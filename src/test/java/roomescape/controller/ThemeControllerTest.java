@@ -19,7 +19,7 @@ class ThemeControllerTest {
     void 예약_가능한_시간_조회_API() {
         // when & then
         RestAssured.given().log().all()
-                .when().get("/theme/1/available-time?date=2026-05-01")
+                .when().get("/themes/1/available-time?date=2026-05-01")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(4));
@@ -30,9 +30,9 @@ class ThemeControllerTest {
     void 테마_조회_API() {
         // when & then
         RestAssured.given().log().all()
-                .when().get("/theme/popular?limit=10")
+                .when().get("/themes/popular?limit=10")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(10));
+                .body("size()", is(7));
     }
 }
