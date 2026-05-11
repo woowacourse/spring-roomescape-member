@@ -53,8 +53,6 @@ public class JdbcScheduleRepository implements ScheduleRepository {
     public Optional<Long> findScheduleIdByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
         String sql = "SELECT s.id " +
                 "FROM schedule s " +
-                "JOIN reservation_time rt ON rt.id = s.time_id " +
-                "JOIN theme t ON s.theme_id = t.id " +
                 "WHERE s.date = :date AND s.time_id = :timeId AND s.theme_id = :themeId";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
