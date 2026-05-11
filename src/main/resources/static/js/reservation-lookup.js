@@ -17,7 +17,7 @@ async function searchReservations() {
         return;
     }
 
-    const response = await fetch(`/reservations/${encodeURIComponent(name)}`);
+    const response = await fetch(`/reservations?name=${encodeURIComponent(name)}`);
 
     if (!response.ok) {
         alert("예약 내역을 불러오지 못했습니다.");
