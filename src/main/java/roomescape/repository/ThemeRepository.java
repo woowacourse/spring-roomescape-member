@@ -18,4 +18,6 @@ public interface ThemeRepository {
     List<Theme> findAllActiveThemes();
 
     List<Theme> findTop10ByReservationCount(LocalDate startDate, LocalDate endDate);
+
+    List<Theme> findAll();
 }

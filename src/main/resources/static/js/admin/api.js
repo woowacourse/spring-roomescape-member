@@ -1,4 +1,4 @@
-import { requestJson } from "../common/http.js";
+import {requestJson} from "../common/http.js";
 
 const ADMIN_HEADERS = {
   "Content-Type": "application/json",
@@ -10,7 +10,9 @@ const ADMIN_ONLY_HEADERS = {
 };
 
 export function fetchThemes() {
-  return requestJson("/api/themes");
+  return requestJson("/api/admin/themes", {
+    headers: ADMIN_ONLY_HEADERS
+  });
 }
 
 export function createTheme(payload) {
@@ -21,9 +23,16 @@ export function createTheme(payload) {
   });
 }
 
-export function deleteTheme(id) {
-  return requestJson(`/api/admin/themes/${id}`, {
-    method: "DELETE",
+export function activateTheme(id) {
+  return requestJson(`/api/admin/themes/${id}/activate`, {
+    method: "PATCH",
+    headers: ADMIN_ONLY_HEADERS
+  });
+}
+
+export function deactivateTheme(id) {
+  return requestJson(`/api/admin/themes/${id}/deactivate`, {
+    method: "PATCH",
     headers: ADMIN_ONLY_HEADERS
   });
 }

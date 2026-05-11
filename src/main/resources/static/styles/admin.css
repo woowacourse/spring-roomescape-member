@@ -188,7 +188,7 @@ tbody td {
   white-space: nowrap;
 }
 
-.btn-delete {
+.btn-delete, .btn-toggle {
   border: 0;
   border-radius: 7px;
   background: #fff5f5;
@@ -196,13 +196,36 @@ tbody td {
   cursor: pointer;
   padding: 5px 12px;
   white-space: nowrap;
-  transition: background 0.15s;
+  transition: all 0.15s;
   font-size: 13px;
   font-weight: 600;
 }
 
 .btn-delete:hover {
   background: #ffe0e0;
+}
+.btn-activate {
+  background: #e6fcf5;
+  color: #0ca678;
+}
+
+.btn-activate:hover {
+  background: #c3fae8;
+}
+
+.btn-deactivate {
+  background: #fff5f5;
+  color: var(--danger);
+}
+
+.btn-deactivate:hover {
+  background: #ffe0e0;
+}
+
+.text-gray {
+  color: var(--text-tertiary);
+  opacity: 0.6;
+  text-decoration: line-through;
 }
 
 .empty-row td,

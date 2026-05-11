@@ -56,6 +56,7 @@ public class ReservationService {
 
     private Theme findThemeWithThrow(Long themeId) {
         return themeRepository.findById(themeId)
+                .filter(Theme::isActive)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마 정보입니다."));
     }
 

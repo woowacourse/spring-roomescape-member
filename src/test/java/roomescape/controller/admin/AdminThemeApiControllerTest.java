@@ -17,7 +17,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
@@ -77,28 +76,46 @@ class AdminThemeApiControllerTest extends BaseControllerUnitTest {
     }
 
     @Test
-    void 관리자가_특정_테마_삭제_요청_시_204_NoContent를_응답한다() {
+    void 관리자가_특정_테마_비활성화_요청_시_204_NoContent를_응답한다() {
         // when & then: 관리자 헤더를 포함해서 요청했을 때, 삭제 로직을 수행한다.
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("role", "ADMIN")
-                .when().delete("/api/admin/themes/1")
+                .when().patch("/api/admin/themes/{id}/deactivate", 1L)
                 .then().log().all()
                 .status(HttpStatus.NO_CONTENT);
 
-        verify(themeService, times(1)).remove(anyLong());
+        verify(themeService, times(1)).deactivate(anyLong());
     }
 
     @ParameterizedTest
     @ValueSource(longs = {0, -1})
-    void 관리자가_잘못된_테마_식별자로_삭제_요청_시_예외가_발생한다(Long invalidId) {
+    void 관리자가_잘못된_테마_식별자로_비활성화_요청_시_예외가_발생한다(Long invalidId) {
         // when & then: 관리자 헤더를 포함해서 음수 식별자로 요청했을 때, 예외 발생
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("role", "ADMIN")
-                .when().delete("/api/admin/themes/" + invalidId)
+                .when().patch("/api/admin/themes/{id}/deactivate", invalidId)
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("테마 삭제 식별자는 양수여야 합니다."));
+                .body(containsString("테마 비활성화 식별자는 양수여야 합니다."));
+    }
+
+    @Test
+    void 관리자가_특정_테마_활성화_요청_시_204_NoContent를_응답한다() {
+        // when & then: 관리자 헤더를 포함해서 요청했을 때, 삭제 로직을 수행한다.
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .when().patch("/api/admin/themes/{id}/activate", 1L)
+                .then().log().all()
+                .status(HttpStatus.NO_CONTENT);
+
+        verify(themeService, times(1)).activate(anyLong());
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {0, -1})
+    void 관리자가_잘못된_테마_식별자로_활성화_요청_시_예외가_발생한다(Long invalidId) {
+        // when & then: 관리자 헤더를 포함해서 음수 식별자로 요청했을 때, 예외 발생
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .when().patch("/api/admin/themes/{id}/activate", invalidId)
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("테마 활성화 식별자는 양수여야 합니다."));
     }
 }

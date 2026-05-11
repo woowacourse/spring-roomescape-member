@@ -78,8 +78,8 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAllActiveThemes() {
-        String sql = "SELECT * FROM theme WHERE is_active = 1";
-        return jdbcTemplate.query(sql, THEME_MAPPER);
+        String sql = "SELECT * FROM theme WHERE is_active = ?";
+        return jdbcTemplate.query(sql, THEME_MAPPER, 1);
     }
 
     @Override
@@ -102,5 +102,11 @@ public class JdbcThemeRepository implements ThemeRepository {
         """;
 
         return jdbcTemplate.query(sql, THEME_MAPPER, startDate, endDate);
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+        return jdbcTemplate.query(sql, THEME_MAPPER);
     }
 }

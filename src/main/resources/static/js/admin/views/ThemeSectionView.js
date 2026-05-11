@@ -20,11 +20,12 @@ export default class ThemeSectionView extends View {
       });
     });
 
-    delegate(this.tableBody, "click", ".btn-delete", (event) => {
-      const button = event.target.closest(".btn-delete");
-      emit(this.element, "@delete-theme", {
-        id: Number(button.dataset.id)
-      });
+    delegate(this.tableBody, "click", ".btn-toggle", (event) => {
+      const button = event.target.closest(".btn-toggle");
+      const id = Number(button.dataset.id);
+      const status = button.dataset.status === "true";
+
+      emit(this.element, "@toggle-theme", { id, status });
     });
   }
 
@@ -41,12 +42,20 @@ export default class ThemeSectionView extends View {
     }
 
     themes.forEach((theme) => {
+      const isActive = theme.isActive;
       const row = document.createElement("tr");
       row.innerHTML = `
         <td><span class="badge badge-gray">${theme.id}</span></td>
-        <td class="td-name">${theme.name}</td>
+        <td class="td-name ${isActive ? '' : 'text-gray'}">${theme.name}</td>
         <td class="td-description">${theme.description}</td>
-        <td><button class="btn-delete" type="button" data-id="${theme.id}">삭제</button></td>
+        <td>
+          <button class="btn-toggle ${isActive ? 'btn-deactivate' : 'btn-activate'}" 
+                  type="button" 
+                  data-id="${theme.id}" 
+                  data-status="${theme.isActive}">
+            ${isActive ? "비활성화" : "활성화"}
+          </button>
+        </td>
       `;
       this.tableBody.appendChild(row);
     });

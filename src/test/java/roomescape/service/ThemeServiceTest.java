@@ -78,16 +78,30 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 테마_식별자로_테마를_삭제_할_수_있다() {
+    void 테마_식별자로_테마를_비활성화_할_수_있다() {
         // given
         ThemeRegisterCommand command = new ThemeRegisterCommand("공포테마", "설명", "http://image.png");
         ThemeRegisterResult registerResult = themeService.register(command);
 
         // when
-        themeService.remove(registerResult.id());
+        themeService.deactivate(registerResult.id());
 
         // then: 같은 테마명으로 재등록 가능
         assertThat(themeService.getAllActiveThemes()).isEmpty();
+    }
+
+    @Test
+    void 테마_식별자로_테마를_활성화_할_수_있다() {
+        // given
+        ThemeRegisterCommand command = new ThemeRegisterCommand("공포테마", "설명", "http://image.png");
+        ThemeRegisterResult registerResult = themeService.register(command);
+        themeService.deactivate(registerResult.id());
+
+        // when
+        themeService.activate(registerResult.id());
+
+        // then: 같은 테마명으로 재등록 가능
+        assertThat(themeService.getAllActiveThemes()).hasSize(1);
     }
 
     @ParameterizedTest

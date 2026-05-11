@@ -20,14 +20,14 @@ VALUES ('화이트노이즈', '실험실에 남겨진 단서를 수집해 기묘
        ('더스트 팩토리', '버려진 공장의 생산 라인을 재가동하며 숨겨진 실험 기록을 찾는 산업 스릴러 테마', 'https://picsum.photos/seed/dustfactory/800/600', 1);
 
 
-INSERT INTO reservation_time (start_at)
-VALUES ('10:00:00'),
-       ('11:30:00'),
-       ('13:00:00'),
-       ('14:30:00'),
-       ('16:00:00'),
-       ('18:00:00'),
-       ('19:30:00');
+INSERT INTO reservation_time (start_at, status)
+VALUES ('10:00:00', 'ACTIVE'),
+       ('11:30:00', 'ACTIVE'),
+       ('13:00:00', 'ACTIVE'),
+       ('14:30:00', 'ACTIVE'),
+       ('16:00:00', 'ACTIVE'),
+       ('18:00:00', 'ACTIVE'),
+       ('19:30:00', 'ACTIVE');
 
 INSERT INTO reservation (name, date, theme_id, time_id)
 VALUES ('민서', DATEADD('DAY', 1, CURRENT_DATE), 1, 1),

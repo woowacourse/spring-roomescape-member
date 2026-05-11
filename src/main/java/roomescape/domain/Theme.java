@@ -67,4 +67,11 @@ public class Theme {
         }
         this.isActive = false;
     }
+
+    public void activate() {
+        if (isActive) {
+            throw new IllegalArgumentException("이미 활성화 된 테마입니다.");
+        }
+        this.isActive = true;
+    }
 }

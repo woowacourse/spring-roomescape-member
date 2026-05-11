@@ -18,7 +18,6 @@ import roomescape.domain.fixture.ReservationTimeFixture;
 import roomescape.domain.fixture.ThemeFixture;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
 import roomescape.service.command.ReservationCommand;
 import roomescape.service.fake.FakeReservationRepository;
 import roomescape.service.fake.FakeReservationTimeRepository;
@@ -30,7 +29,7 @@ class ReservationServiceTest {
 
     private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
-    private ThemeRepository themeRepository;
+    private FakeThemeRepository themeRepository;
     private ReservationService reservationService;
 
     @BeforeEach
@@ -62,6 +61,20 @@ class ReservationServiceTest {
                         ReservationResult::time
                 )
                 .containsExactly(1L, "이프", reservationDate, timeResult);
+    }
+
+    @Test
+    void 비활성화된_테마_정보로_등록_했을_떄_예약하면_예외가_발생한다() {
+        // given: 테마 ID가 등록되지 않음
+        Theme theme = ThemeFixture.createDefaultTheme();
+        theme.deactivate();
+        themeRepository.save(theme);
+        ReservationCommand command = new ReservationCommand("이프", LocalDate.now().plusDays(1), 1L, 1L);
+
+        // when & then: EntityNotFoundException 발생 확인
+        assertThatThrownBy(() -> reservationService.reserve(command))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("존재하지 않는 테마 정보입니다.");
     }
 
     @Test

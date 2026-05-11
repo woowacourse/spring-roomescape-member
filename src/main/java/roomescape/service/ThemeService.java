@@ -33,10 +33,19 @@ public class ThemeService {
     }
 
     @Transactional
-    public void remove(long id) {
+    public void deactivate(long id) {
         themeRepository.findById(id)
                 .ifPresent(existingTheme -> {
                     existingTheme.deactivate();
+                    themeRepository.update(existingTheme);
+                });
+    }
+
+    @Transactional
+    public void activate(long id) {
+        themeRepository.findById(id)
+                .ifPresent(existingTheme -> {
+                    existingTheme.activate();
                     themeRepository.update(existingTheme);
                 });
     }
@@ -48,9 +57,17 @@ public class ThemeService {
                 .toList();
     }
 
+    public List<ThemeResult> getAllThemes() {
+        return themeRepository.findAll()
+                .stream()
+                .map(ThemeResult::from)
+                .toList();
+    }
+
     public List<ThemeResult> getAllActiveThemes() {
         return themeRepository.findAllActiveThemes()
-                .stream().map(ThemeResult::from)
+                .stream()
+                .map(ThemeResult::from)
                 .toList();
     }
 

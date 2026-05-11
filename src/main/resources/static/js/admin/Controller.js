@@ -1,4 +1,4 @@
-import { TabType } from "./Store.js";
+import {TabType} from "./Store.js";
 
 export default class Controller {
   constructor(store, views) {
@@ -15,7 +15,7 @@ export default class Controller {
 
     this.views.themeSectionView
       .on("@create-theme", (event) => this.createTheme(event.detail))
-      .on("@delete-theme", (event) => this.deleteTheme(event.detail.id));
+      .on("@toggle-theme", (event) => this.toggleTheme(event.detail.id, event.detail.status));
 
     this.views.reservationSectionView
       .on("@create-reservation", (event) => this.createReservation(event.detail))
@@ -57,10 +57,15 @@ export default class Controller {
     }
   }
 
-  async deleteTheme(id) {
+  async toggleTheme(id, currentStatus) {
     try {
-      await this.store.removeTheme(id);
-      this.views.toastView.show("테마가 삭제되었습니다.");
+      await this.store.toggleThemeStatus(id, currentStatus);
+      if (currentStatus) {
+        this.views.toastView.show("테마가 비활성화되었습니다.");
+      } else {
+        this.views.toastView.show("테마가 활성화되었습니다.", "success");
+      }
+
       await this.refreshAll();
     } catch (error) {
       this.views.toastView.show(error.message, "error");

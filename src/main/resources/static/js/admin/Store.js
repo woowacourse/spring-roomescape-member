@@ -1,9 +1,10 @@
 import {
+  activateTheme,
   createReservation,
   createTheme,
   createTime,
+  deactivateTheme,
   deleteReservation,
-  deleteTheme,
   deleteTime,
   fetchReservations,
   fetchThemes,
@@ -44,8 +45,13 @@ export default class Store {
     return createTheme(payload);
   }
 
-  removeTheme(id) {
-    return deleteTheme(id);
+  async toggleThemeStatus(id, currentStatus) {
+    console.log(id, currentStatus);
+    if (currentStatus) {
+      await deactivateTheme(id);
+    } else {
+      await activateTheme(id);
+    }
   }
 
   addReservation(payload) {
