@@ -74,7 +74,7 @@ public class ReservationTimeAcceptanceTest {
     }
 
     @Test
-    @DisplayName("예약된 시간은 예약 가능 시간 목록에서 unavailable로 내려온다")
+    @DisplayName("특정 날짜와 테마의 예약 가능한 시간을 조회한다")
     public void scenario3() throws JsonProcessingException {
         LocalDate date = LocalDate.of(2026, 10, 14);
         ReservationTimeCreateRequest timeRequest = new ReservationTimeCreateRequest(LocalTime.of(21, 30));
