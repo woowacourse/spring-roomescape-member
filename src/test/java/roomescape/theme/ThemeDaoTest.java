@@ -16,13 +16,12 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ThemeDaoTest {
     private static final RowMapper<Theme> rowMapper =
-            (rs, rowNum) -> {
-                return new Theme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("image"));
-            };
+            (rs, rowNum) ->
+                    new Theme(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            rs.getString("image"));
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

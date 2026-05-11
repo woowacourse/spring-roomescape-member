@@ -11,13 +11,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ThemeDao {
     private static final RowMapper<Theme> rowMapper =
-            (rs, rowNum) -> {
-                return new Theme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("image"));
-            };
+            (rs, rowNum) ->
+                    new Theme(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            rs.getString("image"));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;

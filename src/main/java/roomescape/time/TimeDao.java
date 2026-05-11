@@ -10,17 +10,15 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class TimeDao {
-    private static final RowMapper<ReservationTime> timeRowMapper = (rs, rowNum) -> {
-        return new ReservationTime(rs.getLong("id")
-                , rs.getTime("start_at").toLocalTime());
-    };
+    private static final RowMapper<ReservationTime> timeRowMapper = (rs, rowNum) ->
+            new ReservationTime(rs.getLong("id")
+                    , rs.getTime("start_at").toLocalTime());
 
-    private static final RowMapper<AvailableTime> availableTimeRowMapper = (rs, rowNum) -> {
-        return new AvailableTime(
-                rs.getTime("start_at").toLocalTime(),
-                rs.getBoolean("is_available")
-        );
-    };
+    private static final RowMapper<AvailableTime> availableTimeRowMapper = (rs, rowNum) ->
+            new AvailableTime(
+                    rs.getTime("start_at").toLocalTime(),
+                    rs.getBoolean("is_available")
+            );
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;

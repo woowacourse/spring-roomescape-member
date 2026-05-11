@@ -15,10 +15,9 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TimeDaoTest {
-    private static final RowMapper<ReservationTime> timeRowMapper = (rs, rowNum) -> {
-        return new ReservationTime(rs.getLong("id")
-                , rs.getTime("start_at").toLocalTime());
-    };
+    private static final RowMapper<ReservationTime> timeRowMapper = (rs, rowNum) ->
+            new ReservationTime(rs.getLong("id")
+                    , rs.getTime("start_at").toLocalTime());
 
     @Autowired
     private TimeDao timeDao;

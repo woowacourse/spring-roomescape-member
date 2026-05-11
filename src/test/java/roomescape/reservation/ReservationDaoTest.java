@@ -15,16 +15,15 @@ import roomescape.time.ReservationTime;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationDaoTest {
-    private static final RowMapper<Reservation> rowMapper = (rs, rowNum) -> {
-        return new Reservation(
-                rs.getLong("reservation_id"),
-                rs.getString("name"),
-                rs.getLong("theme_id"),
-                rs.getDate("date").toLocalDate(),
-                new ReservationTime(rs.getLong("time_id"),
-                        rs.getTime("start_at").toLocalTime())
-        );
-    };
+    private static final RowMapper<Reservation> rowMapper = (rs, rowNum) ->
+            new Reservation(
+                    rs.getLong("reservation_id"),
+                    rs.getString("name"),
+                    rs.getLong("theme_id"),
+                    rs.getDate("date").toLocalDate(),
+                    new ReservationTime(rs.getLong("time_id"),
+                            rs.getTime("start_at").toLocalTime())
+            );
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

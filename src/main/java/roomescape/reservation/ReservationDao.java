@@ -11,16 +11,15 @@ import roomescape.time.ReservationTime;
 
 @Repository
 public class ReservationDao {
-    private static final RowMapper<Reservation> rowMapper = (rs, rowNum) -> {
-        return new Reservation(
-                rs.getLong("reservation_id"),
-                rs.getString("name"),
-                rs.getLong("theme_id"),
-                rs.getDate("date").toLocalDate(),
-                new ReservationTime(rs.getLong("time_id"),
-                        rs.getTime("start_at").toLocalTime())
-        );
-    };
+    private static final RowMapper<Reservation> rowMapper = (rs, rowNum) ->
+            new Reservation(
+                    rs.getLong("reservation_id"),
+                    rs.getString("name"),
+                    rs.getLong("theme_id"),
+                    rs.getDate("date").toLocalDate(),
+                    new ReservationTime(rs.getLong("time_id"),
+                            rs.getTime("start_at").toLocalTime())
+            );
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
