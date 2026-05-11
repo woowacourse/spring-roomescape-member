@@ -55,7 +55,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                             rs.getString("theme_name"),
                             rs.getString("description"),
                             rs.getString("thumbnail_url"),
-                            Duration.ofHours(rs.getLong("runtime"))
+                            Duration.ofMinutes(rs.getLong("runtime"))
                     )
             );
 

@@ -60,7 +60,8 @@ class ReservationControllerTest {
                 .statusCode(200)
                 .body("name", hasItem("밀란"))
                 .body("date", hasItem("2026-05-03"))
-                .body("time.id", hasItem(1));
+                .body("time.id", hasItem(1))
+                .body("theme.runtime", hasItem(60));
     }
 
     @Test
