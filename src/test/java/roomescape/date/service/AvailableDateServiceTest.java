@@ -4,29 +4,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import roomescape.closeddate.domain.ClosedDate;
-import roomescape.closeddate.repository.JdbcClosedDateRepository;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.closeddate.service.ClosedDateService;
 
-@JdbcTest
+@SpringBootTest
+@Transactional
 class AvailableDateServiceTest {
 
-    private JdbcClosedDateRepository closedDateRepository;
+    @Autowired
     private AvailableDateService availableDateService;
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        closedDateRepository = new JdbcClosedDateRepository(jdbcTemplate);
-        availableDateService = new AvailableDateService(closedDateRepository);
-    }
+    private ClosedDateService closedDateService;
 
     @Test
     @DisplayName("오늘부터 30일치 날짜를 반환한다.")
@@ -43,7 +36,7 @@ class AvailableDateServiceTest {
     void readAvailableDates_excludes_closed_dates() {
         // given
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        closedDateRepository.save(ClosedDate.create(tomorrow));
+        closedDateService.register(tomorrow);
 
         // when
         List<LocalDate> actual = availableDateService.readAvailableDates();
@@ -57,9 +50,9 @@ class AvailableDateServiceTest {
     @DisplayName("휴무일이 여러개이면 모두 제외된다.")
     void readAvailableDates_excludes_multiple_closed_dates() {
         // given
-        closedDateRepository.save(ClosedDate.create(LocalDate.now().plusDays(1)));
-        closedDateRepository.save(ClosedDate.create(LocalDate.now().plusDays(2)));
-        closedDateRepository.save(ClosedDate.create(LocalDate.now().plusDays(3)));
+        closedDateService.register(LocalDate.now().plusDays(1));
+        closedDateService.register(LocalDate.now().plusDays(2));
+        closedDateService.register(LocalDate.now().plusDays(3));
 
         // when
         List<LocalDate> actual = availableDateService.readAvailableDates();

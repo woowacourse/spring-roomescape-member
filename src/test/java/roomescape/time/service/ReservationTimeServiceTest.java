@@ -9,25 +9,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.JdbcReservationTimeRepository;
 
-@JdbcTest
+@SpringBootTest
+@Transactional
 class ReservationTimeServiceTest {
-    private ReservationTimeService reservationTimeService;
-
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setup() {
-        JdbcReservationTimeRepository reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
-        this.reservationTimeService = new ReservationTimeService(reservationTimeRepository);
-
         reservationTimeService.create(LocalTime.of(15, 40));
         reservationTimeService.create(LocalTime.of(16, 0));
     }

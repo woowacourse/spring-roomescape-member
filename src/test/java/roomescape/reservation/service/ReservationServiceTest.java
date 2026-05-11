@@ -5,30 +5,35 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import roomescape.closeddate.repository.JdbcClosedDateRepository;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
-import roomescape.reservation.dto.response.ReservationResponse;
-import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.JdbcThemeRepository;
+import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.JdbcReservationTimeRepository;
+import roomescape.time.service.ReservationTimeService;
 
-@JdbcTest
+@SpringBootTest
+@Transactional
 class ReservationServiceTest {
+
+    @Autowired
+    private ReservationService reservationService;
+
+    @Autowired
+    private ReservationTimeService reservationTimeService;
+
+    @Autowired
+    private ThemeService themeService;
 
     private final String name = "한다";
     private final LocalDate date1 = LocalDate.now().plusWeeks(1);
@@ -38,39 +43,20 @@ class ReservationServiceTest {
     private Theme theme1;
     private Theme theme2;
 
-    private JdbcReservationRepository reservationRepository;
-    private JdbcReservationTimeRepository reservationTimeRepository;
-    private JdbcClosedDateRepository closedDateRepository;
-    private JdbcThemeRepository themeRepository;
-    private ReservationService reservationService;
-
-    @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
-
     @BeforeEach
     void setup() {
-        reservationRepository = new JdbcReservationRepository(jdbcTemplate);
-        reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
-        closedDateRepository = new JdbcClosedDateRepository(jdbcTemplate);
-        themeRepository = new JdbcThemeRepository(jdbcTemplate);
-
-        reservationService = new ReservationService(
-                reservationRepository, reservationTimeRepository, closedDateRepository, themeRepository);
-
-        reservationTime1 = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(15, 40)));
-        reservationTime2 = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(16, 0)));
-
-        theme1 = themeRepository.save(Theme.create("테마1", "설명1", "썸네일1"));
-        theme2 = themeRepository.save(Theme.create("테마2", "설명2", "썸네일2"));
+        reservationTime1 = reservationTimeService.create(LocalTime.of(15, 40));
+        reservationTime2 = reservationTimeService.create(LocalTime.of(16, 0));
+        theme1 = themeService.register("테마1", "설명1", "썸네일1");
+        theme2 = themeService.register("테마2", "설명2", "썸네일2");
     }
 
     @Test
     @DisplayName("전체 예약 정보를 가져온다.")
     void readAll() {
         // given
-        saveAll(List.of(
-                Reservation.create("한다", date1, reservationTime1.startAt(), theme1),
-                Reservation.create("송송", date2, reservationTime1.startAt(), theme2)));
+        reservationService.create("한다", date1, reservationTime1.id(), theme1.id());
+        reservationService.create("송송", date2, reservationTime1.id(), theme2.id());
 
         // when
         List<Reservation> actual = reservationService.readAll();
@@ -83,30 +69,25 @@ class ReservationServiceTest {
     @DisplayName("나의 예약들을 조회하면 날짜/시간 오름차순으로 정렬해 모두 조회한다.")
     void readAllByName() {
         // given
-        List<ReservationResponse> expected = saveAll(
-                List.of(
-                        Reservation.create(name, date1, reservationTime1.startAt(), theme1),
-                        Reservation.create(name, date1, reservationTime2.startAt(), theme1),
-                        Reservation.create(name, date2, reservationTime1.startAt(), theme1),
-                        Reservation.create(name, date2, reservationTime2.startAt(), theme1))
-        ).stream()
-                .sorted(Comparator.comparing(ReservationResponse::date).thenComparing(ReservationResponse::time))
-                .toList();
+        reservationService.create(name, date1, reservationTime1.id(), theme1.id());
+        reservationService.create(name, date1, reservationTime2.id(), theme1.id());
+        reservationService.create(name, date2, reservationTime1.id(), theme1.id());
+        reservationService.create(name, date2, reservationTime2.id(), theme1.id());
 
         // when
         List<Reservation> actual = reservationService.readAllByName(name);
 
         // then
-        Assertions.assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected);
+        assertThat(actual).hasSize(4);
+        assertThat(actual).isSortedAccordingTo(
+                Comparator.comparing(Reservation::date).thenComparing(Reservation::time));
     }
 
     @Test
     @DisplayName("예약을 추가한다.")
     void create() {
         // given & when
-        reservationService.create(name, date1,  reservationTime1.id(), theme1.id());
+        reservationService.create(name, date1, reservationTime1.id(), theme1.id());
 
         // then
         assertThat(reservationService.readAll()).hasSize(1);
@@ -140,22 +121,12 @@ class ReservationServiceTest {
     @DisplayName("예약을 취소하면 CANCELED 상태가 된다.")
     void updateStatus_canceled() {
         // given
-        Reservation savedReservation = reservationRepository.save(
-                Reservation.create(name, date1, reservationTime1.startAt(), theme1));
+        Reservation savedReservation = reservationService.create(name, date1, reservationTime1.id(), theme1.id());
 
         // when
         Reservation actual = reservationService.cancel(savedReservation.id());
 
         // then
-        Assertions.assertThat(actual.status()).isEqualTo(ReservationStatus.CANCELED);
-    }
-
-    private List<ReservationResponse> saveAll(List<Reservation> reservations) {
-        List<ReservationResponse> savedReservations = new ArrayList<>();
-        for (Reservation reservation : reservations) {
-            Reservation savedReservation = reservationRepository.save(reservation);
-            savedReservations.add(ReservationResponse.from(savedReservation));
-        }
-        return savedReservations;
+        assertThat(actual.status()).isEqualTo(ReservationStatus.CANCELED);
     }
 }

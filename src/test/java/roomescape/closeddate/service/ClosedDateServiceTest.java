@@ -4,40 +4,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.closeddate.domain.ClosedDate;
-import roomescape.closeddate.repository.JdbcClosedDateRepository;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 
-@JdbcTest
+@SpringBootTest
+@Transactional
 class ClosedDateServiceTest {
-    private static final LocalDate DEFAULT_DATE = LocalDate.of(2099, 1, 1);
-
-    private JdbcClosedDateRepository closedDateRepository;
-    private ClosedDateService closedDateService;
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private ClosedDateService closedDateService;
 
-    @BeforeEach
-    void setUp() {
-        closedDateRepository = new JdbcClosedDateRepository(jdbcTemplate);
-        closedDateService = new ClosedDateService(closedDateRepository);
-    }
+    private static final LocalDate DEFAULT_DATE = LocalDate.of(2099, 1, 1);
 
     @Test
     @DisplayName("등록된 휴무일과 조회된 휴무일의 모든 필드는 일치한다.")
     void readClosedDate() {
         // given
-        ClosedDate saved = closedDateRepository.save(ClosedDate.create(DEFAULT_DATE));
+        ClosedDate saved = closedDateService.register(DEFAULT_DATE);
 
         // when
         List<ClosedDate> actual = closedDateService.readClosedDates();
@@ -52,9 +42,8 @@ class ClosedDateServiceTest {
     @DisplayName("등록된 휴무일이 여러개이면 조회 시 등록된 개수만큼 반환한다.")
     void readClosedDates() {
         // given
-        saveAll(List.of(
-                ClosedDate.create(DEFAULT_DATE),
-                ClosedDate.create(DEFAULT_DATE.plusDays(1))));
+        closedDateService.register(DEFAULT_DATE);
+        closedDateService.register(DEFAULT_DATE.plusDays(1));
 
         // when
         List<ClosedDate> actual = closedDateService.readClosedDates();
@@ -70,7 +59,7 @@ class ClosedDateServiceTest {
         closedDateService.register(DEFAULT_DATE);
 
         // then
-        assertThat(closedDateRepository.findAll()).hasSize(1);
+        assertThat(closedDateService.readClosedDates()).hasSize(1);
     }
 
     @Test
@@ -80,9 +69,9 @@ class ClosedDateServiceTest {
         ClosedDate registered = closedDateService.register(DEFAULT_DATE);
 
         // then
-        assertThat(registered)
+        assertThat(closedDateService.readClosedDates())
                 .usingRecursiveComparison()
-                .isEqualTo(closedDateRepository.findById(registered.id()).get());
+                .isEqualTo(List.of(registered));
     }
 
     @Test
@@ -101,15 +90,14 @@ class ClosedDateServiceTest {
     @DisplayName("등록된 휴무일 2개 중 한 개를 삭제하면 데이터 수는 1개가 된다.")
     void deregister() {
         // given
-        List<ClosedDate> saved = saveAll(List.of(
-                ClosedDate.create(DEFAULT_DATE),
-                ClosedDate.create(DEFAULT_DATE.plusDays(1))));
+        ClosedDate saved1 = closedDateService.register(DEFAULT_DATE);
+        closedDateService.register(DEFAULT_DATE.plusDays(1));
 
         // when
-        closedDateService.deregister(saved.get(0).id());
+        closedDateService.deregister(saved1.id());
 
         // then
-        assertThat(closedDateRepository.findAll()).hasSize(1);
+        assertThat(closedDateService.readClosedDates()).hasSize(1);
     }
 
     @Test
@@ -122,13 +110,5 @@ class ClosedDateServiceTest {
         assertThatThrownBy(() -> closedDateService.deregister(wrongId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 휴무일입니다.");
-    }
-
-    private List<ClosedDate> saveAll(List<ClosedDate> closedDates) {
-        List<ClosedDate> saved = new ArrayList<>();
-        for (ClosedDate closedDate : closedDates) {
-            saved.add(closedDateRepository.save(closedDate));
-        }
-        return saved;
     }
 }

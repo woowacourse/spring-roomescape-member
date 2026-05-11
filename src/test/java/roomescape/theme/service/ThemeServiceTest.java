@@ -4,35 +4,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.JdbcThemeRepository;
 
-@JdbcTest
+@SpringBootTest
+@Transactional
 class ThemeServiceTest {
     private static final String DEFAULT_DESCRIPTION = "테마 설명";
     private static final String DEFAULT_THUMBNAIL_URL = "테마 썸네일";
 
-    private ThemeService themeService;
-    private JdbcThemeRepository themeRepository;
-
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setup() {
-        this.themeRepository = new JdbcThemeRepository(jdbcTemplate);
-        this.themeService = new ThemeService(themeRepository);
-    }
+    private ThemeService themeService;
 
     @Test
     @DisplayName("등록된 테마가 여러개이면 조회 시 등록된 갯수만큼 반환한다.")
@@ -56,7 +44,7 @@ class ThemeServiceTest {
     @DisplayName("등록된 테마와 조회되는 테마의 모든 필드가 일치한다.")
     void readTheme() {
         // given
-        Theme savedTheme = themeRepository.save(Theme.create("테마1", "테마1 설명", "테마1 썸네일"));
+        Theme savedTheme = themeService.register("테마1", "테마1 설명", "테마1 썸네일");
 
         // when
         Theme actual = themeService.readTheme(savedTheme.id());
@@ -88,7 +76,7 @@ class ThemeServiceTest {
         String name3 = "가테마";
 
         List<Theme> themes = saveAll(generateActiveThemesByName(List.of(name1, name2, name3)));
-        Collections.sort(themes, Comparator.comparing(Theme::name));
+        themes.sort(Comparator.comparing(Theme::name));
 
         // when
         List<Theme> actual = themeService.readActiveThemes();
@@ -136,13 +124,13 @@ class ThemeServiceTest {
     @DisplayName("테마를 활성화한다.")
     void updateStatus_active() {
         // given
-        Theme savedTheme = themeRepository.save(Theme.create("테마1", "테마1 설명", "테마1 썸네일"));
+        Theme savedTheme = themeService.register("테마1", "테마1 설명", "테마1 썸네일");
 
         // when
         themeService.updateStatus(savedTheme.id(), true);
 
         // then
-        assertThat(themeRepository.findById(savedTheme.id()).get().isActive())
+        assertThat(themeService.readTheme(savedTheme.id()).isActive())
                 .isTrue();
     }
 
@@ -150,28 +138,28 @@ class ThemeServiceTest {
     @DisplayName("테마를 비활성화한다.")
     void updateStatus_deactivate() {
         // given
-        Theme theme = Theme.create("테마1", "테마1 설명", "테마1 썸네일");
-        theme.updateStatus(true);
-        Theme savedTheme = themeRepository.save(theme);
+        Theme savedTheme = themeService.register("테마1", "테마1 설명", "테마1 썸네일");
+        savedTheme.updateStatus(true);
 
         // when
         themeService.updateStatus(savedTheme.id(), false);
 
         // then
-        assertThat(themeRepository.findById(savedTheme.id()).get().isActive())
+        assertThat(themeService.readTheme(savedTheme.id()).isActive())
                 .isFalse();
     }
 
     private List<Theme> saveAll(List<Theme> themes) {
         List<Theme> savedThemes = new ArrayList<>();
         for (Theme theme : themes) {
-            Theme savedTheme = themeRepository.save(theme);
-            savedThemes.add(savedTheme);
+            Theme savedTheme = themeService.register(theme.name(), theme.description(), theme.thumbnailUrl());
+            themeService.updateStatus(savedTheme.id(), theme.isActive()); // 활성화 상태 반영
+            savedThemes.add(themeService.readTheme(savedTheme.id()));
         }
         return savedThemes;
     }
 
-    private List<Theme> generateActiveThemesByName(List<String> names) {
+        private List<Theme> generateActiveThemesByName(List<String> names) {
         List<Theme> themes = new ArrayList<>();
         for (String name : names) {
             Theme theme = Theme.create(name, DEFAULT_DESCRIPTION, DEFAULT_THUMBNAIL_URL);
