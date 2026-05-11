@@ -30,7 +30,7 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES
 ('김규빈', FORMATDATETIME(DATEADD(DAY, -9, CURRENT_DATE), 'yyyy-MM-dd'), 1, 1),
 ('이효리', FORMATDATETIME(DATEADD(DAY, -9, CURRENT_DATE), 'yyyy-MM-dd'), 2, 1),
 ('하하', FORMATDATETIME(DATEADD(DAY, -9, CURRENT_DATE), 'yyyy-MM-dd'), 6, 1),
-('김종국', FORMATDATETIME(DATEADD(DAY, -9, CURRENT_DATE), 'yyyy-MM-dd'), 2, 1),
+('김종국', FORMATDATETIME(DATEADD(DAY, -8, CURRENT_DATE), 'yyyy-MM-dd'), 2, 1),
 ('전소민', FORMATDATETIME(DATEADD(DAY, -8, CURRENT_DATE), 'yyyy-MM-dd'), 3, 1),
 ('유재석', FORMATDATETIME(DATEADD(DAY, -8, CURRENT_DATE), 'yyyy-MM-dd'), 7, 1),
 ('아이유', FORMATDATETIME(DATEADD(DAY, -7, CURRENT_DATE), 'yyyy-MM-dd'), 1, 1),
