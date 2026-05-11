@@ -28,12 +28,12 @@ class AdminThemeControllerTest {
                 .multiPart("name", name)
                 .multiPart("description", description)
                 .multiPart("file", "test.png", fileContent, "image/png")
-                .when().post("/admin/theme")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().delete("/admin/theme/16")
+                .when().delete("/admin/themes/16")
                 .then().log().all()
                 .statusCode(204);
     }
