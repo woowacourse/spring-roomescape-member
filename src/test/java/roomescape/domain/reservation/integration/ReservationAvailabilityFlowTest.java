@@ -1,56 +1,52 @@
 package roomescape.domain.reservation.integration;
 
+import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDTO;
-import roomescape.domain.reservation.repository.JdbcReservationRepository;
-import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservation.service.ReservationService;
 import roomescape.domain.theme.entity.Theme;
-import roomescape.domain.theme.repository.JdbcThemeRepository;
 import roomescape.domain.theme.repository.ThemeRepository;
-import roomescape.domain.time.dto.response.TimeResponseDTO;
 import roomescape.domain.time.entity.Time;
-import roomescape.domain.time.repository.JdbcTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
-import roomescape.domain.time.service.TimeService;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationAvailabilityFlowTest {
 
-    private ReservationService reservationService;
-    private TimeService timeService;
+    @LocalServerPort
+    private int port;
+
+    @Autowired
     private TimeRepository timeRepository;
+
+    @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        DataSource dataSource = new DriverManagerDataSource(
-            "jdbc:h2:mem:" + System.nanoTime() + ";MODE=MySQL;DB_CLOSE_DELAY=-1",
-            "sa",
-            ""
-        );
+        RestAssured.port = port;
 
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator(new ClassPathResource("schema.sql"));
-        populator.execute(dataSource);
-
-        ReservationRepository reservationRepository = new JdbcReservationRepository(dataSource);
-        timeRepository = new JdbcTimeRepository(dataSource);
-        themeRepository = new JdbcThemeRepository(dataSource);
-        reservationService = new ReservationService(reservationRepository, timeRepository, themeRepository);
-        timeService = new TimeService(reservationRepository, timeRepository);
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
     }
 
     @Test
-    void 예약을_생성하면_같은_날짜와_테마의_예약_가능_시간에서_제외된다() {
+    void 예약_가능_시간_조회_후_예약을_생성하면_다시_조회할_때_예약된_시간이_제외된다() {
         // given
         LocalDate date = LocalDate.of(2026, 5, 10);
         Time time1 = timeRepository.save(Time.create(LocalTime.of(10, 0)));
@@ -58,16 +54,42 @@ class ReservationAvailabilityFlowTest {
         Theme theme = themeRepository.save(Theme.create("테마1", "설명1", "image1.png"));
 
         // when
-        List<TimeResponseDTO> beforeReservation = timeService.getAvailableTimes(date, theme.getId());
-        reservationService.saveReservation(new ReservationCreateRequestDTO("예약자", date, time1.getId(), theme.getId()));
-        List<TimeResponseDTO> afterReservation = timeService.getAvailableTimes(date, theme.getId());
+        List<Integer> beforeReservationTimeIds = given()
+            .queryParam("date", date.toString())
+            .queryParam("themeId", theme.getId())
+            .when().get("/api/times")
+            .then()
+            .statusCode(200)
+            .extract()
+            .jsonPath()
+            .getList("id");
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(new ReservationCreateRequestDTO("예약자", date, time1.getId(), theme.getId()))
+            .when().post("/api/reservations")
+            .then()
+            .statusCode(201)
+            .body("name", equalTo("예약자"))
+            .body("date", equalTo(date.toString()))
+            .body("timeId", equalTo(time1.getId().intValue()))
+            .body("themeId", equalTo(theme.getId().intValue()));
+
+        List<Integer> afterReservationTimeIds = given()
+            .queryParam("date", date.toString())
+            .queryParam("themeId", theme.getId())
+            .when().get("/api/times")
+            .then()
+            .statusCode(200)
+            .extract()
+            .jsonPath()
+            .getList("id");
 
         // then
-        assertThat(beforeReservation)
-            .extracting(TimeResponseDTO::id)
-            .containsExactly(time1.getId(), time2.getId());
-        assertThat(afterReservation)
-            .extracting(TimeResponseDTO::id)
-            .containsExactly(time2.getId());
+        assertThat(beforeReservationTimeIds)
+            .containsExactly(time1.getId().intValue(), time2.getId().intValue());
+
+        assertThat(afterReservationTimeIds)
+            .containsExactly(time2.getId().intValue());
     }
 }
