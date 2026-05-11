@@ -7,7 +7,7 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(long id, Name name, ReservationDate date, ReservationTime time, Theme theme) {
+    private Reservation(long id, Name name, ReservationDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
