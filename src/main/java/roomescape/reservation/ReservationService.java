@@ -1,7 +1,9 @@
 package roomescape.reservation;
 
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.reservation.dto.ReservationRequest;
@@ -26,6 +28,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public ReservationResponse create(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
@@ -39,8 +42,13 @@ public class ReservationService {
                 reservationRequest.date(),
                 reservationTime
         );
-        Reservation saved = reservationRepository.save(reservation);
-        return ReservationResponse.from(saved);
+
+        try {
+            Reservation saved = reservationRepository.save(reservation);
+            return ReservationResponse.from(saved);
+        } catch (DataIntegrityViolationException e) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
+        }
     }
 
     public List<ReservationResponse> read() {
