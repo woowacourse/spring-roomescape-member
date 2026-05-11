@@ -1,6 +1,7 @@
 package roomescape.domain.reservationdate;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class AdminReservationDateController {
 
     @PostMapping("/admin/reservation-dates")
     public ResponseEntity<CreateReservationDateResponse> createReservationDate(
-        @RequestBody ReservationDateCreationRequest createReservationDateRequest
+        @Valid @RequestBody ReservationDateCreationRequest createReservationDateRequest
     ) {
         CreateReservationDateResponse response = reservationDateService
             .createReservationDate(createReservationDateRequest);

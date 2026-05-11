@@ -1,6 +1,7 @@
 package roomescape.domain.reservationtime;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,9 +33,8 @@ public class AdminReservationTimeController {
 
     @PostMapping("/admin/times")
     public ResponseEntity<TimeCreationResponse> createReservationTime(
-        @RequestBody TimeCreationRequest createTimeRequest
+        @Valid @RequestBody TimeCreationRequest createTimeRequest
     ) {
-        createTimeRequest.validate();
         TimeCreationResponse response = reservationTimeService.createReservationTime(createTimeRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
