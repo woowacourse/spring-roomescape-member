@@ -11,15 +11,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
+    @LocalServerPort
+    private int port;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -32,6 +36,7 @@ public class MissionStepTest {
 
     @BeforeEach
     void init() {
+        RestAssured.port = port;
         savedTime = reservationTimeRepository.save(ReservationTime.of("10:00"));
         savedTheme = themeRepository.save(Theme.of("공포", "무서워요", "https://zeze.com"));
     }
