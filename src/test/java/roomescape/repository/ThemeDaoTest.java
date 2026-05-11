@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,13 @@ class ThemeDaoTest {
     @Autowired
     private ThemeDao themeDao;
 
-    private final RowMapper<Theme> rowMapper = (rs, rowNum) -> {
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM theme");
+    }
 
+    private final RowMapper<Theme> rowMapper = (rs, rowNum) -> {
         Theme theme = Theme.of(
                 rs.getLong("id"),
                 rs.getString("name"),
@@ -40,7 +46,7 @@ class ThemeDaoTest {
 
     @Test
     @DisplayName("테마 생성 테스트")
-    void ofReservationTimeTest() {
+    void CreateReservationTest() {
         Theme theme = Theme.pending("새 테마", "test.url", "테스트용 테마");
         Theme saved = themeDao.save(theme);
 
@@ -55,7 +61,7 @@ class ThemeDaoTest {
 
     @Test
     @DisplayName("테마 삭제 테스트")
-    void deleteReservationTimeTest() {
+    void DeleteReservationTest() {
         Theme theme = Theme.pending("새 테마", "test.url", "테스트용 테마");
         Theme saved = themeDao.save(theme);
 
