@@ -82,7 +82,7 @@ public class ReservationTimeRepository {
         return reservationTime.getId();
     }
 
-    public void remove(long id) {
+    public void delete(long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 }

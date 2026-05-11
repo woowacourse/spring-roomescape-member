@@ -34,7 +34,7 @@ public class ReservationTimeService {
         if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
         }
-        reservationTimeRepository.remove(id);
+        reservationTimeRepository.delete(id);
     }
 
     public ReservationTime getTime(long reservationId) {

@@ -15,6 +15,6 @@ public class AdminThemeService {
     }
 
     public void deleteTheme(long id) {
-        themeRepository.remove(id);
+        themeRepository.delete(id);
     }
 }

@@ -39,6 +39,6 @@ class AdminThemeServiceTest {
     void deleteTheme() {
         adminThemeService.deleteTheme(1L);
 
-        verify(themeRepository).remove(1L);
+        verify(themeRepository).delete(1L);
     }
 }

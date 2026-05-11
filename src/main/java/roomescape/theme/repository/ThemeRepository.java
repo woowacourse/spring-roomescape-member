@@ -95,7 +95,7 @@ public class ThemeRepository {
         return theme.getId();
     }
 
-    public void remove(long id) {
+    public void delete(long id) {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 }

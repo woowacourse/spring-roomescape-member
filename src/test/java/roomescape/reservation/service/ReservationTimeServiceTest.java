@@ -78,7 +78,7 @@ class ReservationTimeServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약에 사용 중인 시간은 삭제할 수 없습니다.");
 
-        verify(reservationTimeRepository, never()).remove(1L);
+        verify(reservationTimeRepository, never()).delete(1L);
     }
 
     @DisplayName("예약에 사용되지 않은 시간은 삭제할 수 있다.")
@@ -88,7 +88,7 @@ class ReservationTimeServiceTest {
 
         reservationTimeService.deleteTime(1L);
 
-        verify(reservationTimeRepository).remove(1L);
+        verify(reservationTimeRepository).delete(1L);
     }
 
     @DisplayName("아이디로 예약 시간을 조회할 수 있다.")

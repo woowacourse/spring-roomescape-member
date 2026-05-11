@@ -19,6 +19,7 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
+
     public long createReservation(String name,
                                   LocalDate date,
                                   long timeId,
@@ -37,7 +38,7 @@ public class ReservationService {
     }
 
     public void deleteReservation(long id) {
-        reservationRepository.remove(id);
+        reservationRepository.delete(id);
     }
 
     public List<Reservation> getReservationsByUsername(String username) {
