@@ -60,7 +60,7 @@ async function loadPopularThemes() {
 }
 
 async function loadDates() {
-    const response = await fetch("/dates");
+    const response = await fetch("/available-dates");
 
     if (!response.ok) {
         alert("날짜 목록을 불러오지 못했습니다.");
