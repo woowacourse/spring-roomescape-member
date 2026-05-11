@@ -70,7 +70,7 @@ public class ReservationTimeAcceptanceTest {
                 .post("/admin/times")
         .then()
                 .log().all()
-                .statusCode(400);
+                .statusCode(409);
     }
 
     @Test
