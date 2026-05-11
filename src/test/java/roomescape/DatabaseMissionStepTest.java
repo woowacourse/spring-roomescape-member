@@ -99,7 +99,7 @@ public class DatabaseMissionStepTest {
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
         params.put("themeId", 1);
-        params.put("time", "10:00");
+        params.put("timeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

@@ -12,7 +12,5 @@ public interface TimeService {
 
   ReservationTime findById(Long id);
 
-  ReservationTime findByStartAt(LocalTime startAt);
-
   void deleteById(Long id);
 }
