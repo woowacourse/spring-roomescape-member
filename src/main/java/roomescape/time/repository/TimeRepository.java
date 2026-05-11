@@ -13,9 +13,5 @@ public interface TimeRepository {
 
   Optional<ReservationTime> findById(Long id);
 
-  Optional<ReservationTime> findByStartAt(LocalTime startAt);
-
-  boolean existsById(Long id);
-
   boolean deleteById(Long id);
 }

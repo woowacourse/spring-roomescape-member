@@ -34,20 +34,10 @@ public class TimeServiceImpl implements TimeService {
   }
 
   @Override
-  public ReservationTime findByStartAt(LocalTime startAt) {
-    if (startAt == null) {
-      throw new IllegalArgumentException("예약 시간은 필수입니다.");
-    }
-    return timeRepository.findByStartAt(startAt)
-        .orElseThrow(() -> new IllegalArgumentException("예약 시간이 존재하지 않습니다. startAt=" + startAt));
-  }
-
-  @Override
   public void deleteById(Long id) {
     boolean deleted = timeRepository.deleteById(id);
     if (!deleted) {
       throw new TimeNotFoundException(id);
     }
   }
-
 }
