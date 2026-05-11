@@ -2,16 +2,13 @@ package roomescape.time.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.time.AvailableTime;
 import roomescape.time.ReservationTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -26,17 +23,6 @@ public class TimeDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @Test
-    void 예약_시간_조회_테스트() {
-
-        Long themeId = 2L;
-        LocalDate date = LocalDate.parse("2026-05-05");
-        List<AvailableTime> availableTimes = timeDao.selectByThemeIdAndDate(themeId, date);
-
-        assertThat(availableTimes.size()).isEqualTo(11);
-        assertThat(availableTimes.getFirst().getIsAvailable()).isFalse();
-    }
 
     @Test
     void 시간_생성_테스트() {

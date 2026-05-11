@@ -50,10 +50,13 @@ INSERT INTO reservation_time (start_at) VALUES ('18:00');
 INSERT INTO reservation_time (start_at) VALUES ('19:00');
 INSERT INTO reservation_time (start_at) VALUES ('20:00');
 
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 1L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 1L, '2026-05-05', 4L);
 INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('워넬', 2L, '2026-05-05', 1L);
 INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('도우너', 2L, '2026-05-05', 2L);
-INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 1L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 2L, '2026-05-05', 4L);
 INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 3L, '2026-05-05', 1L);
+INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 3L, '2026-05-05', 4L);
 INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 4L, '2026-05-05', 1L);
 INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 5L, '2026-05-05', 1L);
 INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 6L, '2026-05-05', 1L);
@@ -62,6 +65,3 @@ INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 8L, '2
 INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 9L, '2026-05-05', 1L);
 INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 10L, '2026-05-05', 1L);
 INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 11L, '2026-05-05', 1L);
-INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 1L, '2026-05-05', 4L);
-INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 2L, '2026-05-05', 4L);
-INSERT INTO reservation (name, theme_id, date, time_id) VALUES ('로치', 3L, '2026-05-05', 4L);

@@ -70,4 +70,15 @@ public class ReservationDao {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    public List<Long> findTimeIdByThemeIdAndDate(Long themeId, LocalDate date) {
+        String sql =
+                """
+                        select time_id
+                        from reservation
+                        where theme_id = ?
+                        and date = ?
+                        """;
+        return jdbcTemplate.queryForList(sql, Long.class, themeId, date);
+    }
 }

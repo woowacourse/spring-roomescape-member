@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,4 +54,15 @@ public class ReservationDaoTest {
         assertThat(expected.getTime().getStartAt()).isEqualTo(actual.getTime().getStartAt());
         assertThat(expected.getThemeId()).isEqualTo(actual.getThemeId());
     }
+
+    @Test
+    void 예약_시간_조회_성공() {
+
+        Long themeId = 2L;
+        LocalDate date = LocalDate.parse("2026-05-05");
+        List<Long> times = reservationDao.findTimeIdByThemeIdAndDate(themeId, date);
+
+        assertThat(times.size()).isEqualTo(3);
+    }
+
 }
