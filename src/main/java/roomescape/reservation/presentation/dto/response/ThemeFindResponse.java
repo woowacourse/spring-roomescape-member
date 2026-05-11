@@ -10,7 +10,7 @@ public record ThemeFindResponse(
         String description,
         String thumbnailUrl
 ) {
-    public static List<ThemeFindResponse> of(List<Theme> themes) {
+    public static List<ThemeFindResponse> from(List<Theme> themes) {
         return themes.stream()
                 .map(theme -> new ThemeFindResponse(
                         theme.getId(),

@@ -29,16 +29,16 @@ public class ThemeService {
 
     public List<ThemeFindResponse> findScheduledThemesByDate(LocalDate date) {
         List<Theme> themes = themeRepository.findScheduledThemesByDate(date);
-        return ThemeFindResponse.of(themes);
+        return ThemeFindResponse.from(themes);
     }
 
     public List<ThemeFindResponse> findPopularTheme() {
         List<Theme> themes = themeRepository.findPopularThemeByCurrentDate(LocalDate.now());
-        return ThemeFindResponse.of(themes);
+        return ThemeFindResponse.from(themes);
     }
 
     public List<ThemeFindResponse> findAll() {
         List<Theme> themes = themeRepository.findAll();
-        return ThemeFindResponse.of(themes);
+        return ThemeFindResponse.from(themes);
     }
 }
