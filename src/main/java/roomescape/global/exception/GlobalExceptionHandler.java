@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
         log.info(e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return ResponseEntity.status(errorCode.getStatus())
-                .body(new ErrorResponse(errorCode.getCode(), e.getMessage()));
+                .body(new ErrorResponse(errorCode.name(), e.getMessage()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
         log.info(e.getMessage());
         ErrorCode errorCode = ErrorCode.REFERENCED_DATA;
         return ResponseEntity.status(errorCode.getStatus())
-                .body(new ErrorResponse(errorCode.getCode(), "현재 다른 데이터에서 참조 중이어서 삭제할 수 없습니다."));
+                .body(new ErrorResponse(errorCode.name(), "현재 다른 데이터에서 참조 중이어서 삭제할 수 없습니다."));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -61,6 +61,6 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage());
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
         return ResponseEntity.status(errorCode.getStatus())
-                .body(new ErrorResponse(errorCode.getCode(), "일시적인 서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
+                .body(new ErrorResponse(errorCode.name(), "일시적인 서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
     }
 }
