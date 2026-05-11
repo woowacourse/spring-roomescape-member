@@ -12,7 +12,7 @@ public record AvailableReservationTimesQuery(
 
     public static AvailableReservationTimesQuery toQuery(Long themeId, String date, Boolean available) {
         if (themeId == null) {
-            throw new IllegalArgumentException("테마 ID는 필수입니다.");
+            throw new InvalidReservationTimeException("테마 ID는 필수입니다.");
         }
         return new AvailableReservationTimesQuery(themeId, parseDate(date), available);
     }
