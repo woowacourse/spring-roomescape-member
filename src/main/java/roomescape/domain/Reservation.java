@@ -23,15 +23,17 @@ public class Reservation {
     }
 
     @Override
-    public final boolean equals(Object o) {
-        if (!(o instanceof Reservation that)) return false;
-
-        return Objects.equals(id, that.id);
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
+    public boolean equals(Object o) {
+        if (!(o instanceof Reservation that) || that.id == null) {
+            return false;
+        }
+
+        return Objects.equals(id, that.id);
     }
 
     public Long getId() {
