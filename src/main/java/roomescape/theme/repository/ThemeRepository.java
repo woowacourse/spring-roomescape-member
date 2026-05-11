@@ -1,5 +1,6 @@
 package roomescape.theme.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ThemeRepository {
@@ -60,15 +62,20 @@ public class ThemeRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    public Theme findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, description, image_url, required_time FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("image_url"),
-                rs.getObject("required_time", LocalTime.class)
-        ), id);
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Theme(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("image_url"),
+                    rs.getObject("required_time", LocalTime.class)
+            ), id);
+            return Optional.of(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public List<PopularThemeResponse> findPopularThemes(String sort, int limit, int days) {

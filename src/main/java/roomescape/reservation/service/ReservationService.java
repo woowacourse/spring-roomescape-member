@@ -39,7 +39,8 @@ public class ReservationService {
     public ReservationIdResponse create(ReservationCreateInfo info) {
         User user = userService.getUserById(info.userId());
 
-        Theme theme = themeRepository.findById(info.themeId());
+        Theme theme = themeRepository.findById(info.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
         LocalDateTime startAt = LocalDateTime.of(LocalDate.parse(info.date()), LocalTime.parse(info.time()));
 
