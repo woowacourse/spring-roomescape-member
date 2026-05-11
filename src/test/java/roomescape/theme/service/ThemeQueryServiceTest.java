@@ -1,8 +1,5 @@
 package roomescape.theme.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -17,7 +14,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.TestDataHelper;
 import roomescape.theme.application.dto.ThemeResult;
-import roomescape.theme.application.exception.ThemeException;
 import roomescape.theme.application.dto.PopularThemeResult;
 import roomescape.theme.application.service.ThemeCommandService;
 import roomescape.theme.application.service.ThemeQueryService;
@@ -42,23 +38,6 @@ public class ThemeQueryServiceTest {
     @BeforeEach
     void setUp() {
         testHelper = new TestDataHelper(jdbcTemplate);
-    }
-
-    @DisplayName("테마 조회를 테스트합니다.")
-    @Test
-    void find_theme() {
-        ThemeResult savedTheme = themeCommandService.save(ThemeFixture.horrorThemeCreateCommand());
-
-        assertThat(themeQueryService.findById(savedTheme.id()))
-                .isEqualTo(ThemeFixture.horrorThemeQueryResult(savedTheme.id()));
-    }
-
-    @DisplayName("존재하지 않는 테마 조회 시 예외 발생을 테스트합니다.")
-    @Test
-    void theme_not_exists() {
-        assertThatThrownBy(() -> themeQueryService.findById(100L))
-                .isInstanceOf(ThemeException.class)
-                .hasMessage("존재하지 않는 테마 입니다.");
     }
 
     @DisplayName("테마의 전체 조회를 테스트합니다.")

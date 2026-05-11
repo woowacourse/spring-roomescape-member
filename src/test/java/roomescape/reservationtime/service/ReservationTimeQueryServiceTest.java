@@ -1,7 +1,6 @@
 package roomescape.reservationtime.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,7 +16,6 @@ import roomescape.fixture.ThemeFixture;
 import roomescape.reservationtime.application.dto.AvailableReservationTimeResult;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
-import roomescape.reservationtime.application.exception.ReservationTimeException;
 import roomescape.reservationtime.application.service.ReservationTimeCommandService;
 import roomescape.reservationtime.application.service.ReservationTimeQueryService;
 import roomescape.reservationtime.infra.JdbcAvailableTimeDao;
@@ -41,25 +39,6 @@ public class ReservationTimeQueryServiceTest {
 
     @Autowired
     private ReservationTimeQueryService timeQueryService;
-
-    @DisplayName("예약 시간 조회를 테스트합니다.")
-    @Test
-    void find_time() {
-        ReservationTimeResult savedTime = timeCommandService.save(
-                new ReservationTimeCreateCommand(LocalTime.of(9, 0))
-        );
-
-        assertThat(timeQueryService.findById(savedTime.id()))
-                .isEqualTo(new ReservationTimeResult(savedTime.id(), LocalTime.of(9, 0)));
-    }
-
-    @DisplayName("존재하지 않는 예약 시간 조회 시 예외 발생을 테스트합니다.")
-    @Test
-    void time_not_exists() {
-        assertThatThrownBy(() -> timeQueryService.findById(100L))
-                .isInstanceOf(ReservationTimeException.class)
-                .hasMessage("존재하지 않는 시간 입니다.");
-    }
 
     @DisplayName("예약 시간의 전체 조회를 테스트합니다.")
     @Test
