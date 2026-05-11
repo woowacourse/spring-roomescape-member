@@ -4,18 +4,18 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.controller.dto.reservationtime.AvailableReservationTimeResponse;
-import roomescape.controller.dto.reservationtime.AvailableReservationTimesQuery;
-import roomescape.controller.dto.reservationtime.AvailableReservationTimesResponse;
-import roomescape.controller.dto.reservationtime.ReservationTimeResponse;
-import roomescape.controller.dto.theme.ThemeResponse;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservedTimes;
 import roomescape.global.exception.DuplicateReservationTimeException;
 import roomescape.global.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.AvailableReservationTimesCondition;
+import roomescape.service.dto.AvailableReservationTimeResult;
+import roomescape.service.dto.AvailableReservationTimesResult;
 import roomescape.service.dto.CreateReservationTimeCommand;
+import roomescape.service.dto.ReservationTimeResult;
+import roomescape.service.dto.ThemeResult;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,19 +26,19 @@ public class ReservationTimeService {
     private final ThemeRepository themeRepository;
 
     @Transactional
-    public ReservationTimeResponse createReservationTime(CreateReservationTimeCommand command) {
+    public ReservationTimeResult createReservationTime(CreateReservationTimeCommand command) {
         if (reservationTimeRepository.existsByStartAt(command.startAt())) {
             throw new DuplicateReservationTimeException();
         }
         ReservationTime savedReservationTime = reservationTimeRepository.save(
                 ReservationTime.createNew(command.startAt()));
 
-        return ReservationTimeResponse.from(savedReservationTime);
+        return ReservationTimeResult.from(savedReservationTime);
     }
 
-    public List<ReservationTimeResponse> getReservationTimes() {
+    public List<ReservationTimeResult> getReservationTimes() {
         return reservationTimeRepository.findAll().stream()
-                .map(ReservationTimeResponse::from)
+                .map(ReservationTimeResult::from)
                 .toList();
     }
 
@@ -47,25 +47,25 @@ public class ReservationTimeService {
         reservationTimeRepository.deleteById(id);
     }
 
-    public AvailableReservationTimesResponse getAvailableReservationTimes(AvailableReservationTimesQuery request) {
-        ThemeResponse theme = ThemeResponse.from(themeRepository.findById(request.themeId())
+    public AvailableReservationTimesResult getAvailableReservationTimes(AvailableReservationTimesCondition condition) {
+        ThemeResult theme = ThemeResult.from(themeRepository.findById(condition.themeId())
                 .orElseThrow(ThemeNotFoundException::new));
 
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         ReservedTimes reservedTimes = new ReservedTimes(
-                reservationTimeRepository.findReservedTimeIds(request.themeId(), request.date())
+                reservationTimeRepository.findReservedTimeIds(condition.themeId(), condition.date())
         );
 
-        List<AvailableReservationTimeResponse> availableTimes = reservationTimes.stream()
+        List<AvailableReservationTimeResult> availableTimes = reservationTimes.stream()
                 .map(time -> createResponse(time, reservedTimes))
-                .filter(response -> isMatchCondition(request.available(), response.available()))
+                .filter(response -> isMatchCondition(condition.available(), response.available()))
                 .toList();
 
-        return AvailableReservationTimesResponse.from(theme, availableTimes);
+        return new AvailableReservationTimesResult(theme, availableTimes);
     }
 
-    private AvailableReservationTimeResponse createResponse(ReservationTime time, ReservedTimes reservedTimes) {
-        return new AvailableReservationTimeResponse(
+    private AvailableReservationTimeResult createResponse(ReservationTime time, ReservedTimes reservedTimes) {
+        return new AvailableReservationTimeResult(
                 time.getId(),
                 time.getStartAt(),
                 reservedTimes.isAvailable(time.getId())

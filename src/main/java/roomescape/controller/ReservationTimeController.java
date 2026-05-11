@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.reservationtime.ReservationTimeRequest;
 import roomescape.controller.dto.reservationtime.AvailableReservationTimesQuery;
-import roomescape.controller.dto.reservationtime.ReservationTimeResponse;
 import roomescape.controller.dto.reservationtime.AvailableReservationTimesResponse;
+import roomescape.controller.dto.reservationtime.ReservationTimeRequest;
+import roomescape.controller.dto.reservationtime.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.dto.AvailableReservationTimesResult;
+import roomescape.service.dto.ReservationTimeResult;
 
 @RestController
 @RequestMapping("/times")
@@ -27,7 +30,10 @@ public class ReservationTimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
-        return ResponseEntity.ok(reservationTimeService.getReservationTimes());
+        List<ReservationTimeResponse> reservationTimes = reservationTimeService.getReservationTimes().stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+        return ResponseEntity.ok(reservationTimes);
     }
 
     @GetMapping(params = {"themeId", "date"})
@@ -36,15 +42,16 @@ public class ReservationTimeController {
             @RequestParam String date,
             @RequestParam(required = false) Boolean available
     ) {
-        return ResponseEntity.ok(reservationTimeService.getAvailableReservationTimes(
-                AvailableReservationTimesQuery.toQuery(themeId, date, available)
-        ));
+        AvailableReservationTimesResult result = reservationTimeService.getAvailableReservationTimes(
+                AvailableReservationTimesQuery.toQuery(themeId, date, available).toCondition());
+        return ResponseEntity.ok(AvailableReservationTimesResponse.from(result));
     }
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
-            @RequestBody ReservationTimeRequest request) {
-        ReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(request.toCommand());
+            @Valid @RequestBody ReservationTimeRequest request) {
+        ReservationTimeResult reservationTimeResult = reservationTimeService.createReservationTime(request.toCommand());
+        ReservationTimeResponse reservationTime = ReservationTimeResponse.from(reservationTimeResult);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(reservationTime);
     }

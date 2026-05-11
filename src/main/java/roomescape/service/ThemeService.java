@@ -6,12 +6,12 @@ import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.controller.dto.theme.ThemeRankResponse;
-import roomescape.controller.dto.theme.ThemeRankingQuery;
-import roomescape.controller.dto.theme.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.CreateThemeCommand;
+import roomescape.service.dto.ThemeRankResult;
+import roomescape.service.dto.ThemeRankingCondition;
+import roomescape.service.dto.ThemeResult;
 
 @Service
 @Transactional(readOnly = true)
@@ -21,7 +21,7 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
 
     @Transactional
-    public ThemeResponse createTheme(CreateThemeCommand command) {
+    public ThemeResult createTheme(CreateThemeCommand command) {
         Theme theme = Theme.createNew(
                 command.name(),
                 command.description(),
@@ -29,12 +29,12 @@ public class ThemeService {
         );
         Theme savedTheme = themeRepository.save(theme);
 
-        return ThemeResponse.from(savedTheme);
+        return ThemeResult.from(savedTheme);
     }
 
-    public List<ThemeResponse> getThemes() {
+    public List<ThemeResult> getThemes() {
         return themeRepository.findAll().stream()
-                .map(ThemeResponse::from)
+                .map(ThemeResult::from)
                 .toList();
     }
 
@@ -43,16 +43,16 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeRankResponse> getThemeRankings(ThemeRankingQuery query, LocalDate today) {
-        LocalDate fromDate = today.minusDays(query.days());
+    public List<ThemeRankResult> getThemeRankings(ThemeRankingCondition condition, LocalDate today) {
+        LocalDate fromDate = today.minusDays(condition.days());
         LocalDate toDate = today.minusDays(1L);
-        List<Theme> themes = themeRepository.findThemesOrderByReservationCount(fromDate, toDate, query.limit());
+        List<Theme> themes = themeRepository.findThemesOrderByReservationCount(fromDate, toDate, condition.limit());
 
         return IntStream.range(0, themes.size())
                 .mapToObj(index -> {
                     int rank = index + 1;
-                    ThemeResponse theme = ThemeResponse.from(themes.get(index));
-                    return new ThemeRankResponse(rank, theme);
+                    ThemeResult theme = ThemeResult.from(themes.get(index));
+                    return new ThemeRankResult(rank, theme);
                 })
                 .toList();
     }

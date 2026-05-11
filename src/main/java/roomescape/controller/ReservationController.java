@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,10 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.reservation.ReservationPagingQuery;
 import roomescape.controller.dto.reservation.ReservationRequest;
 import roomescape.controller.dto.reservation.ReservationResponse;
 import roomescape.service.ReservationService;
+import roomescape.service.dto.ReservationPagingCondition;
+import roomescape.service.dto.ReservationResult;
 
 @RestController
 @RequestMapping("/reservations")
@@ -29,15 +31,18 @@ public class ReservationController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        ReservationPagingQuery query = new ReservationPagingQuery(page, size);
-        List<ReservationResponse> reservations = reservationService.getReservations(query);
+        ReservationPagingCondition condition = new ReservationPagingCondition(page, size);
+        List<ReservationResponse> reservations = reservationService.getReservations(condition).stream()
+                .map(ReservationResponse::from)
+                .toList();
         return ResponseEntity.ok(reservations);
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            @RequestBody ReservationRequest request) {
-        ReservationResponse reservation = reservationService.createReservation(request.toCommand());
+            @Valid @RequestBody ReservationRequest request) {
+        ReservationResult reservationResult = reservationService.createReservation(request.toCommand());
+        ReservationResponse reservation = ReservationResponse.from(reservationResult);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(reservation);
     }

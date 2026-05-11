@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import roomescape.controller.dto.theme.ThemeRankResponse;
 import roomescape.controller.dto.theme.ThemeResponse;
 import roomescape.controller.dto.theme.ThemeRankingQuery;
 import roomescape.service.ThemeService;
+import roomescape.service.dto.ThemeResult;
 
 @RestController
 @RequestMapping("/themes")
@@ -28,7 +30,10 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes() {
-        return ResponseEntity.ok(themeService.getThemes());
+        List<ThemeResponse> themes = themeService.getThemes().stream()
+                .map(ThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok(themes);
     }
 
     @GetMapping("/rank")
@@ -37,12 +42,17 @@ public class ThemeController {
             @RequestParam(defaultValue = "10") int limit
     ) {
         ThemeRankingQuery query = new ThemeRankingQuery(days, limit);
-        return ResponseEntity.ok(themeService.getThemeRankings(query, LocalDate.now()));
+        List<ThemeRankResponse> themeRankings = themeService.getThemeRankings(query.toCondition(), LocalDate.now())
+                .stream()
+                .map(ThemeRankResponse::from)
+                .toList();
+        return ResponseEntity.ok(themeRankings);
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
-        ThemeResponse theme = themeService.createTheme(request.toCommand());
+    public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody ThemeRequest request) {
+        ThemeResult themeResult = themeService.createTheme(request.toCommand());
+        ThemeResponse theme = ThemeResponse.from(themeResult);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(theme);
     }

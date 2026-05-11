@@ -1,9 +1,11 @@
 package roomescape.global.exception;
 
+import java.time.format.DateTimeParseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.global.exception.dto.ErrorResponse;
@@ -33,6 +35,24 @@ public class GlobalExceptionHandler {
         log.info(e.getMessage());
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse("INVALID_REQUEST", "요청 본문 형식이 올바르지 않습니다."));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.info(e.getMessage());
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(fieldError -> fieldError.getDefaultMessage())
+                .orElse("요청 값이 올바르지 않습니다.");
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse("INVALID_REQUEST", message));
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<ErrorResponse> handleDateTimeParseException(DateTimeParseException e) {
+        log.info(e.getMessage());
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse("INVALID_REQUEST", "날짜 또는 시간 형식이 올바르지 않습니다."));
     }
 
     @ExceptionHandler(Exception.class)

@@ -1,8 +1,8 @@
-package roomescape.controller.dto.reservation;
+package roomescape.service.dto;
 
 import roomescape.global.exception.InvalidReservationPagingException;
 
-public record ReservationPagingQuery(
+public record ReservationPagingCondition(
         int page,
         int size
 ) {
@@ -11,7 +11,7 @@ public record ReservationPagingQuery(
     private static final int MIN_PAGE_SIZE = 1;
     private static final int MAX_PAGE_SIZE = 100;
 
-    public ReservationPagingQuery {
+    public ReservationPagingCondition {
         validatePage(page);
         validateSize(size);
         validateOffset(page, size);

@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservedTimes;
 import roomescape.service.dto.CreateReservationCommand;
-import roomescape.controller.dto.reservation.ReservationPagingQuery;
-import roomescape.controller.dto.reservation.ReservationResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -16,6 +14,8 @@ import roomescape.global.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.dto.ReservationPagingCondition;
+import roomescape.service.dto.ReservationResult;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,14 +26,14 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public List<ReservationResponse> getReservations(ReservationPagingQuery query) {
-        return reservationRepository.findAll(query.size(), query.offset()).stream()
-                .map(ReservationResponse::from)
+    public List<ReservationResult> getReservations(ReservationPagingCondition condition) {
+        return reservationRepository.findAll(condition.size(), condition.offset()).stream()
+                .map(ReservationResult::from)
                 .toList();
     }
 
     @Transactional
-    public ReservationResponse createReservation(CreateReservationCommand command) {
+    public ReservationResult createReservation(CreateReservationCommand command) {
         ReservationTime time = reservationTimeRepository.findById(command.timeId())
                 .orElseThrow(ReservationTimeNotFoundException::new);
         Theme theme = themeRepository.findById(command.themeId())
@@ -47,7 +47,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.save(
                 Reservation.createNew(command.name(), command.date(), time, theme));
 
-        return ReservationResponse.from(reservation);
+        return ReservationResult.from(reservation);
     }
 
     @Transactional

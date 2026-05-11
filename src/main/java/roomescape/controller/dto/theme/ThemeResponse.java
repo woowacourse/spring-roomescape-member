@@ -1,6 +1,7 @@
 package roomescape.controller.dto.theme;
 
 import roomescape.domain.Theme;
+import roomescape.service.dto.ThemeResult;
 
 public record ThemeResponse(
         Long id,
@@ -15,6 +16,15 @@ public record ThemeResponse(
                 theme.getName(),
                 theme.getDescription(),
                 theme.getImageUrl()
+        );
+    }
+
+    public static ThemeResponse from(ThemeResult result) {
+        return new ThemeResponse(
+                result.id(),
+                result.name(),
+                result.description(),
+                result.imageUrl()
         );
     }
 }
