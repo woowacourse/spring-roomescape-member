@@ -37,14 +37,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                     theme.name AS theme_name,
                     theme.description AS theme_description,
                     theme.thumbnail_url AS theme_thumbnail_url
-                FROM 
-                    reservation r 
-                        INNER JOIN 
-                        time_slot t 
-                            INNER JOIN 
-                        theme theme
-                            ON r.time_id = t.id 
-                                   AND r.theme_id = theme.id
+                FROM reservation r 
+                INNER JOIN time_slot t ON r.time_id = t.id 
+                INNER JOIN theme theme  ON r.theme_id = theme.id
                 """;
         return jdbcTemplate.query(sql, rowMapper());
     }
