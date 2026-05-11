@@ -30,7 +30,7 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> saveReservationTime(@RequestBody ReservationTimeRequest request) {
-        ReservationTime reservationTime = reservationTimeService.saveReservationTime(request.toDomain());
+        ReservationTime reservationTime = reservationTimeService.saveReservationTime(request.toDomainForSave());
         ReservationTimeResponse reservationTimeResponse = ReservationTimeResponse.from(reservationTime);
         return ResponseEntity.created(getLocation(reservationTimeResponse.id())).body(reservationTimeResponse);
     }

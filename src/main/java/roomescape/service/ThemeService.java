@@ -1,26 +1,21 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.Period;
 import roomescape.domain.Theme;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
 
-import java.time.Clock;
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class ThemeService {
     private static final int TOP_NUMBERS = 10;
-    private static final int POPULAR_PERIOD_START_DAYS_AGO = 7;
-    private static final int POPULAR_PERIOD_END_DAYS_AGO = 1;
 
     private final ThemeRepository themeRepository;
-    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository, Clock clock) {
+    public ThemeService(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
-        this.clock = clock;
     }
 
 
@@ -41,11 +36,7 @@ public class ThemeService {
         themeRepository.delete(id);
     }
 
-    public List<Theme> findPopularThemes() {
-        LocalDate currentDate = LocalDate.now(clock);
-        LocalDate startInclusive = currentDate.minusDays(POPULAR_PERIOD_START_DAYS_AGO);
-        LocalDate endInclusive = currentDate.minusDays(POPULAR_PERIOD_END_DAYS_AGO);
-
-        return themeRepository.findPopularThemes(startInclusive, endInclusive, TOP_NUMBERS);
+    public List<Theme> findPopularThemes(Period period) {
+        return themeRepository.findPopularThemes(period.startInclusive(), period.endInclusive(), TOP_NUMBERS);
     }
 }

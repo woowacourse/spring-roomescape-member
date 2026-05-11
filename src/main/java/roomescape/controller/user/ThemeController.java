@@ -6,12 +6,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.Period;
 import roomescape.domain.Theme;
 import roomescape.response.ReservationTimeResponse;
 import roomescape.response.ThemeResponse;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,10 +22,12 @@ import java.util.List;
 public class ThemeController {
     private final ThemeService themeService;
     private final ReservationTimeService reservationTimeService;
+    private final Clock clock;
 
-    public ThemeController(ThemeService themeService, ReservationTimeService reservationTimeService) {
+    public ThemeController(ThemeService themeService, ReservationTimeService reservationTimeService, Clock clock) {
         this.themeService = themeService;
         this.reservationTimeService = reservationTimeService;
+        this.clock = clock;
     }
 
     @GetMapping
@@ -46,8 +50,8 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
-        List<Theme> themeResponses = themeService.findPopularThemes();
+        List<Theme> themes = themeService.findPopularThemes(Period.lastWeek(clock));
 
-        return ResponseEntity.ok(ThemeResponse.from(themeResponses));
+        return ResponseEntity.ok(ThemeResponse.from(themes));
     }
 }

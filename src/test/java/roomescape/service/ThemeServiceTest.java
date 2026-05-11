@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.domain.Period;
 import roomescape.domain.Theme;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
@@ -33,7 +34,7 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setUp() {
-        themeService = new ThemeService(themeRepository, Clock.systemDefaultZone());
+        themeService = new ThemeService(themeRepository);
     }
 
     @Test
@@ -103,7 +104,6 @@ class ThemeServiceTest {
         Clock fixedClock = Clock.fixed(
                 fixedToday.atStartOfDay(zone).toInstant(),
                 zone);
-        ThemeService timeRelatedThemeService = new ThemeService(themeRepository, fixedClock);
 
         List<Theme> themes = List.of(
                 new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg"),
@@ -111,7 +111,7 @@ class ThemeServiceTest {
         );
 
         when(themeRepository.findPopularThemes(any(), any(), anyInt())).thenReturn(themes);
-        List<Theme> result = timeRelatedThemeService.findPopularThemes();
+        List<Theme> result = themeService.findPopularThemes(Period.lastWeek(fixedClock));
 
         assertThat(result.size()).isEqualTo(2);
         assertThat(result).isEqualTo(themes);
