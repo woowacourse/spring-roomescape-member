@@ -1,6 +1,5 @@
 package roomescape.domain.reservationdate;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.admin.AdminRequestValidator;
 import roomescape.domain.reservationdate.dto.AdminReservationDateResponse;
-import roomescape.domain.reservationdate.dto.CreateReservationDateResponse;
 import roomescape.domain.reservationdate.dto.ReservationDateCreationRequest;
+import roomescape.domain.reservationdate.dto.ReservationDateCreationResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,10 +29,10 @@ public class AdminReservationDateController {
     }
 
     @PostMapping("/admin/reservation-dates")
-    public ResponseEntity<CreateReservationDateResponse> createReservationDate(
+    public ResponseEntity<ReservationDateCreationResponse> createReservationDate(
         @Valid @RequestBody ReservationDateCreationRequest createReservationDateRequest
     ) {
-        CreateReservationDateResponse response = reservationDateService
+        ReservationDateCreationResponse response = reservationDateService
             .createReservationDate(createReservationDateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

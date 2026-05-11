@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservationdate.dto.AdminReservationDateResponse;
 import roomescape.domain.reservationdate.dto.ReservationDateCreationRequest;
-import roomescape.domain.reservationdate.dto.CreateReservationDateResponse;
+import roomescape.domain.reservationdate.dto.ReservationDateCreationResponse;
 import roomescape.domain.reservationdate.dto.ReservationDateResponse;
 import roomescape.support.exception.ReservationDateErrorCode;
 import roomescape.support.exception.RoomescapeException;
@@ -26,9 +26,9 @@ public class ReservationDateService {
             .toList();
     }
 
-    public CreateReservationDateResponse createReservationDate(ReservationDateCreationRequest request) {
+    public ReservationDateCreationResponse createReservationDate(ReservationDateCreationRequest request) {
         ReservationDate reservationDate = reservationDateRepository.save(request.toEntity());
-        return CreateReservationDateResponse.from(reservationDate);
+        return ReservationDateCreationResponse.from(reservationDate);
     }
 
     public void deleteReservationDate(Long id) {

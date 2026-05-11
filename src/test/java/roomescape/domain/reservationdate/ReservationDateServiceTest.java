@@ -12,7 +12,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservationdate.dto.AdminReservationDateResponse;
 import roomescape.domain.reservationdate.dto.ReservationDateCreationRequest;
-import roomescape.domain.reservationdate.dto.CreateReservationDateResponse;
+import roomescape.domain.reservationdate.dto.ReservationDateCreationResponse;
 import roomescape.support.exception.RoomescapeException;
 
 class ReservationDateServiceTest {
@@ -28,7 +28,7 @@ class ReservationDateServiceTest {
         );
 
         // when
-        CreateReservationDateResponse response = reservationDateService.createReservationDate(
+        ReservationDateCreationResponse response = reservationDateService.createReservationDate(
             new ReservationDateCreationRequest(LocalDate.of(2026, 5, 4))
         );
 
