@@ -24,7 +24,7 @@ class AvailabilityFlowTest {
 
         // 1) 가용 시간 조회 - 모두 reserved=false
         RestAssured.given().log().all()
-                .when().get("/times?date=" + date + "&themeId=" + themeId)
+                .when().get("/times/availability?date=" + date + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("times.size()", is(3))
@@ -48,7 +48,7 @@ class AvailabilityFlowTest {
 
         // 3) 가용 시간 재조회 - 11시만 reserved=true
         RestAssured.given().log().all()
-                .when().get("/times?date=" + date + "&themeId=" + themeId)
+                .when().get("/times/availability?date=" + date + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("times.size()", is(3))

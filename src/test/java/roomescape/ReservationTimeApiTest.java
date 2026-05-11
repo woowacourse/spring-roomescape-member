@@ -104,7 +104,7 @@ class ReservationTimeApiTest {
         Integer themeId = createTheme("공포", "무서운 테마", "https://example.com/horror.jpg");
 
         RestAssured.given().log().all()
-                .when().get("/times?date=2026-08-05&themeId=" + themeId)
+                .when().get("/times/availability?date=2026-08-05&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("times.size()", is(0));
@@ -117,7 +117,7 @@ class ReservationTimeApiTest {
         createTime("11:00");
 
         RestAssured.given().log().all()
-                .when().get("/times?date=2026-08-05&themeId=" + themeId)
+                .when().get("/times/availability?date=2026-08-05&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("times.size()", is(2))
@@ -132,7 +132,7 @@ class ReservationTimeApiTest {
         createReservation("브라운", "2026-08-05", reservedTimeId, themeId);
 
         RestAssured.given().log().all()
-                .when().get("/times?date=2026-08-05&themeId=" + themeId)
+                .when().get("/times/availability?date=2026-08-05&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("times.size()", is(2))
@@ -148,7 +148,7 @@ class ReservationTimeApiTest {
         createReservation("브라운", "2026-08-05", timeId, themeB);
 
         RestAssured.given().log().all()
-                .when().get("/times?date=2026-08-05&themeId=" + themeA)
+                .when().get("/times/availability?date=2026-08-05&themeId=" + themeA)
                 .then().log().all()
                 .statusCode(200)
                 .body("times.size()", is(1))
@@ -162,7 +162,7 @@ class ReservationTimeApiTest {
         createReservation("브라운", "2026-08-05", timeId, themeId);
 
         RestAssured.given().log().all()
-                .when().get("/times?date=2026-08-06&themeId=" + themeId)
+                .when().get("/times/availability?date=2026-08-06&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("times.size()", is(1))

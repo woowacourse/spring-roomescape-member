@@ -125,7 +125,7 @@ async function refreshAvailableTimes(date, themeId, timeSelect) {
 
     try {
         const data = await fetchJson(
-            `${TIMES_API}?date=${encodeURIComponent(date)}&themeId=${encodeURIComponent(themeId)}`
+            `${TIMES_API}/availability?date=${encodeURIComponent(date)}&themeId=${encodeURIComponent(themeId)}`
         );
         const times = data.times;
 
