@@ -1,5 +1,6 @@
 package roomescape.time.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,8 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import roomescape.theme.service.ThemeService;
 import roomescape.time.controller.dto.TimeResponseDto;
 import roomescape.time.controller.dto.TimeSaveRequestDto;
 import roomescape.time.service.TimeService;
@@ -19,9 +22,11 @@ import roomescape.time.service.TimeService;
 @RestController
 public class TimeController {
   private final TimeService timeService;
+  private final ThemeService themeService;
 
-  public TimeController(TimeService timeService) {
+  public TimeController(TimeService timeService, ThemeService themeService) {
     this.timeService = timeService;
+    this.themeService = themeService;
   }
 
   @PostMapping("/times")
@@ -34,6 +39,17 @@ public class TimeController {
   public ResponseEntity<List<TimeResponseDto>> findAll() {
     List<TimeResponseDto> body = timeService.findAll()
         .stream()
+        .map(TimeResponseDto::from)
+        .collect(Collectors.toList());
+    return ResponseEntity.ok(body);
+  }
+
+  @GetMapping(value = "/times", params = {"themeId", "date"})
+  public ResponseEntity<List<TimeResponseDto>> getAvailableTimes(
+      @RequestParam Long themeId,
+      @RequestParam LocalDate date
+  ) {
+    List<TimeResponseDto> body = themeService.getAvailableTimes(themeId, date).stream()
         .map(TimeResponseDto::from)
         .collect(Collectors.toList());
     return ResponseEntity.ok(body);
