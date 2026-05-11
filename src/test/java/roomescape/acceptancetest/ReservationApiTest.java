@@ -5,13 +5,12 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.acceptancetest.fixture.AcceptanceTestFixture;
 import roomescape.reservation.domain.Reservation;
 
 @RoomecapeAcceptanceTest
@@ -31,13 +30,10 @@ class ReservationApiTest {
 
     @Test
     void 예약_추가_및_삭제() {
-        createTheme();
-        createReservationTime("15:40", 1L);
+        AcceptanceTestFixture.createTheme();
+        AcceptanceTestFixture.createReservationTime("15:40", 1L);
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", String.valueOf(LocalDate.now()));
-        reservation.put("timeId", 1);
+        Map<String, Object> reservation = AcceptanceTestFixture.reservationRequest("브라운", AcceptanceTestFixture.reservationDate(), 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -87,13 +83,10 @@ class ReservationApiTest {
 
     @Test
     void DB_추가_삭제_API_전환() {
-        createTheme();
-        createReservationTime("10:00", 1L);
+        AcceptanceTestFixture.createTheme();
+        AcceptanceTestFixture.createReservationTime("10:00", 1L);
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", String.valueOf(LocalDate.now()));
-        reservation.put("timeId", 1);
+        Map<String, Object> reservation = AcceptanceTestFixture.reservationRequest("브라운", AcceptanceTestFixture.reservationDate(), 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -116,13 +109,10 @@ class ReservationApiTest {
 
     @Test
     void 예약과_시간_연결() {
-        createTheme();
-        createReservationTime("10:00", 1L);
+        AcceptanceTestFixture.createTheme();
+        AcceptanceTestFixture.createReservationTime("10:00", 1L);
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", String.valueOf(LocalDate.now()));
-        reservation.put("timeId", 1);
+        Map<String, Object> reservation = AcceptanceTestFixture.reservationRequest("브라운", AcceptanceTestFixture.reservationDate(), 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -136,36 +126,6 @@ class ReservationApiTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
-    }
-
-    private void createTheme() {
-        createTheme("미술관의 밤");
-    }
-
-    private void createTheme(final String name) {
-        Map<String, String> theme = new HashMap<>();
-        theme.put("name", name);
-        theme.put("description", "추리 테마");
-        theme.put("thumbnailUrl", "https://example.com/theme.png");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201);
-    }
-
-    private void createReservationTime(final String startAt, final Long themeId) {
-        Map<String, String> time = new HashMap<>();
-        time.put("startAt", startAt);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(time)
-                .when().post("/admin/themes/" + themeId + "/times")
-                .then().log().all()
-                .statusCode(201);
     }
 
 }
