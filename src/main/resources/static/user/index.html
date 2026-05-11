@@ -230,7 +230,7 @@
     }
 
     async function loadThemes() {
-        const res = await fetch('/admin/themes');
+        const res = await fetch('/themes');
         const themes = await res.json();
         const grid = document.getElementById('themeGrid');
         grid.innerHTML = themes.map(t => `
@@ -310,8 +310,18 @@
     }
 
     async function loadPopularThemes() {
-        const today = new Date().toISOString().slice(0, 10);
-        const res = await fetch(`/themes?limit=10&date=${today}`);
+        const today = new Date();
+
+        const endDate = new Date(today);
+        endDate.setDate(today.getDate() - 1); // endAt: 어제 날짜
+
+        const startDate = new Date(today);
+        startDate.setDate(today.getDate() - 7);
+
+        const endAt = endDate.toISOString().slice(0, 10);
+        const startAt = startDate.toISOString().slice(0, 10);
+
+        const res = await fetch(`/themes/popular?startAt=${startAt}&endAt=${endAt}&limit=10`);
         const themes = await res.json();
         const grid = document.getElementById('popularGrid');
         grid.innerHTML = themes.map((t, i) => `

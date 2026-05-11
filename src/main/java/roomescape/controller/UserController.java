@@ -46,10 +46,16 @@ public class UserController {
     }
 
     @GetMapping("/themes")
+    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
+        return ResponseEntity.ok(themeQueryService.findAllThemes());
+    }
+
+    @GetMapping("/themes/popular")
     public ResponseEntity<List<ThemeResponse>> getSortedPopularThemesAtPeriod(
-            @RequestParam("date") LocalDate today,
+            @RequestParam("startAt") LocalDate startAt,
+            @RequestParam("endAt") LocalDate endAt,
             @RequestParam("limit") int limit) {
-        List<ThemeResponse> popularThemesBy = themeQueryService.findPopularThemesByPeriod(today, limit);
+        List<ThemeResponse> popularThemesBy = themeQueryService.findPopularThemesByPeriod(startAt, endAt, limit);
 
         return ResponseEntity.ok(popularThemesBy);
     }
