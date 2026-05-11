@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.repository.dto.PopularThemeDto;
+import roomescape.repository.result.PopularThemeResult;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,7 +41,7 @@ public class ThemeService {
         themeRepository.delete(id);
     }
 
-    public List<PopularThemeDto> findWeeklyTopTen() {
+    public List<PopularThemeResult> findWeeklyTopTen() {
         LocalDate startDate = LocalDate.now().minusWeeks(1);
         LocalDate endDate = startDate.plusDays(6);
         return themeRepository.findPopular(startDate, endDate, 10);
