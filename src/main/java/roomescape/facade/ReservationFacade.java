@@ -2,15 +2,15 @@ package roomescape.facade;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.reservation.domain.Reservation;
-import roomescape.domain.reservation.domain.Reservations;
-import roomescape.domain.reservation.dto.ReservationRequest;
-import roomescape.domain.reservation.dto.TimeWithStatusResponse;
-import roomescape.domain.reservation.service.ReservationService;
-import roomescape.domain.reservationtime.domain.ReservationTime;
-import roomescape.domain.reservationtime.service.ReservationTimeService;
-import roomescape.domain.theme.domain.Theme;
-import roomescape.domain.theme.service.ThemeService;
+import roomescape.domain.Reservation;
+import roomescape.domain.Reservations;
+import roomescape.dto.ReservationRequest;
+import roomescape.dto.TimeWithStatusResponse;
+import roomescape.service.ReservationService;
+import roomescape.domain.ReservationTime;
+import roomescape.service.ReservationTimeService;
+import roomescape.domain.Theme;
+import roomescape.service.ThemeService;
 
 import java.time.LocalDate;
 import java.util.List;

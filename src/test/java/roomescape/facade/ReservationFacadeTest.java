@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.reservation.dto.ReservationRequest;
-import roomescape.domain.reservationtime.domain.ReservationTime;
-import roomescape.domain.reservationtime.service.ReservationTimeService;
-import roomescape.domain.theme.domain.Theme;
-import roomescape.domain.theme.service.ThemeService;
+import roomescape.dto.ReservationRequest;
+import roomescape.domain.ReservationTime;
+import roomescape.service.ReservationTimeService;
+import roomescape.domain.Theme;
+import roomescape.service.ThemeService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
