@@ -1,6 +1,7 @@
 package roomescape.ui.controller;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -154,8 +155,8 @@ public class RoomescapePageController {
 
     @PostMapping("/dashboard/times")
     public String createTime(
-            @RequestParam String startAt,
-            @RequestParam String endAt,
+            @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime startAt,
+            @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime endAt,
             RedirectAttributes redirectAttributes
     ) {
         try {

@@ -1,17 +1,18 @@
 package roomescape.time.service;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import roomescape.reservation.domain.ReservationTime;
 
 public interface TimeService {
-  ReservationTime create(String startAt, String endAt);
+  ReservationTime create(LocalTime startAt, LocalTime endAt);
 
   List<ReservationTime> findAll();
 
   ReservationTime findById(Long id);
 
-  ReservationTime findByStartAt(String startAt);
+  ReservationTime findByStartAt(LocalTime startAt);
 
   void deleteById(Long id);
 }
