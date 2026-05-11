@@ -1,4 +1,7 @@
-package roomescape.global.exception;
+package roomescape.global.exception.reservation;
+
+import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.RoomescapeException;
 
 public class InvalidReservationException extends RoomescapeException {
 

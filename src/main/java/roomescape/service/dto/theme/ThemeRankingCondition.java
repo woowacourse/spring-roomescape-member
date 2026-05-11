@@ -1,6 +1,6 @@
 package roomescape.service.dto.theme;
 
-import roomescape.global.exception.InvalidRankingConditionException;
+import roomescape.global.exception.theme.InvalidRankingConditionException;
 
 public record ThemeRankingCondition(
         int days,

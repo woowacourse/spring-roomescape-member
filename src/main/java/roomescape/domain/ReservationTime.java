@@ -2,7 +2,7 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import lombok.Getter;
-import roomescape.global.exception.InvalidReservationTimeException;
+import roomescape.global.exception.reservationtime.InvalidReservationTimeException;
 
 @Getter
 public class ReservationTime {

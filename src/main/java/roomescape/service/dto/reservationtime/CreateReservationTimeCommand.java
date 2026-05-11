@@ -1,7 +1,7 @@
 package roomescape.service.dto.reservationtime;
 
 import java.time.LocalTime;
-import roomescape.global.exception.InvalidReservationTimeException;
+import roomescape.global.exception.reservationtime.InvalidReservationTimeException;
 
 public record CreateReservationTimeCommand(
         LocalTime startAt

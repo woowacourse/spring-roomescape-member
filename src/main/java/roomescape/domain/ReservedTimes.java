@@ -2,7 +2,7 @@ package roomescape.domain;
 
 import java.util.List;
 import java.util.Set;
-import roomescape.global.exception.DuplicateReservationException;
+import roomescape.global.exception.reservation.DuplicateReservationException;
 
 public class ReservedTimes {
 

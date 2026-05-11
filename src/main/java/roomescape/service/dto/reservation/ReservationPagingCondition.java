@@ -1,6 +1,6 @@
 package roomescape.service.dto.reservation;
 
-import roomescape.global.exception.InvalidReservationPagingException;
+import roomescape.global.exception.reservation.InvalidReservationPagingException;
 
 public record ReservationPagingCondition(
         int page,

@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.global.exception.DuplicateReservationException;
+import roomescape.global.exception.reservation.DuplicateReservationException;
 
 class ReservedTimesTest {
 

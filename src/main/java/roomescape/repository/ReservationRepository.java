@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.global.exception.ReservationNotFoundException;
+import roomescape.global.exception.reservation.ReservationNotFoundException;
 
 @Repository
 public class ReservationRepository {

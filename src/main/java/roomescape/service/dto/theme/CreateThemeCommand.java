@@ -1,6 +1,6 @@
 package roomescape.service.dto.theme;
 
-import roomescape.global.exception.InvalidThemeException;
+import roomescape.global.exception.theme.InvalidThemeException;
 
 public record CreateThemeCommand(
         String name,

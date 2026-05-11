@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import lombok.Getter;
-import roomescape.global.exception.InvalidThemeException;
+import roomescape.global.exception.theme.InvalidThemeException;
 
 @Getter
 public class Theme {
