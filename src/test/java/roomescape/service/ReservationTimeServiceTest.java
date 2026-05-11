@@ -3,16 +3,19 @@ package roomescape.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.common.exception.DomainException;
 import roomescape.common.exception.ErrorCode;
+import roomescape.repository.JdbcReservationRepository;
+import roomescape.repository.JdbcReservationTimeRepository;
+import roomescape.repository.JdbcThemeRepository;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -21,8 +24,13 @@ import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcTest
+@Import({
+        ReservationTimeService.class,
+        JdbcReservationRepository.class,
+        JdbcReservationTimeRepository.class,
+        JdbcThemeRepository.class,
+})
 class ReservationTimeServiceTest {
 
     @Autowired

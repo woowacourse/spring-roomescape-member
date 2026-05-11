@@ -3,16 +3,20 @@ package roomescape.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.test.annotation.DirtiesContext;
 import roomescape.common.exception.DomainException;
 import roomescape.common.exception.ErrorCode;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.*;
+import roomescape.test_config.MutableClock;
+import roomescape.test_config.TestClockConfig;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -21,8 +25,14 @@ import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcTest
+@Import({
+        TestClockConfig.class,
+        ReservationService.class,
+        JdbcReservationRepository.class,
+        JdbcReservationTimeRepository.class,
+        JdbcThemeRepository.class
+})
 class ReservationServiceTest {
 
     @Autowired
@@ -31,9 +41,13 @@ class ReservationServiceTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    MutableClock clock;
+
+
     @Test
     @DisplayName("이미 같은 날짜, 시간, 테마의 예약이 존재하면 예외가 발생한다.")
-    public void create_fail() {
+    public void create_fail1() {
         // given
         ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
         Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
@@ -45,6 +59,24 @@ class ReservationServiceTest {
                 .isInstanceOf(DomainException.class)
                 .hasMessage(ErrorCode.RESERVATION_ALREADY_EXISTS.message());
     }
+
+    @Test
+    @DisplayName("이미 지난 날짜 및 시간으로 예약하려는 경우 예외가 발생한다.")
+    public void create_fail2() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        LocalDate pastDate = LocalDate.of(2023, 8, 5);
+        LocalDate currentDate = LocalDate.of(2025, 5, 11);
+
+        clock.setFixed(currentDate);
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.create("포비", pastDate, time.getId(), theme.getId()))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(ErrorCode.PAST_RESERVATION_NOT_ALLOWED.message());
+    }
+
 
     @Test
     @DisplayName("해당 예약이 존재하지 않으면 삭제할 수 없기 때문에 예외가 발생한다.")
