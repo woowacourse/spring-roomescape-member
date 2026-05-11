@@ -15,7 +15,7 @@ public interface ClosedDateRepository {
 
     ClosedDate save(ClosedDate reservationDate);
 
-    boolean delete(Long id);
+    void delete(Long id);
 
     boolean existsByDate(LocalDate date);
 

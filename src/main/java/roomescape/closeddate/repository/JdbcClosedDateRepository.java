@@ -55,11 +55,10 @@ public class JdbcClosedDateRepository implements ClosedDateRepository {
     }
 
     @Override
-    public boolean delete(Long id) {
+    public void delete(Long id) {
         String sql = "DELETE FROM closed_date WHERE id = :id";
         SqlParameterSource params = new MapSqlParameterSource("id", id);
-        int deletedCount = jdbcTemplate.update(sql, params);
-        return deletedCount > 0;
+        jdbcTemplate.update(sql, params);
     }
 
     @Override
