@@ -72,13 +72,13 @@ class ThemeApiTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("")).hasSizeGreaterThanOrEqualTo(2);
+        assertThat(response.jsonPath().getList("themes")).hasSizeGreaterThanOrEqualTo(2);
 
         // JSON 응답 구조 검증
-        assertThat(response.jsonPath().getList("id")).doesNotContainNull();
-        assertThat(response.jsonPath().getList("name")).contains("귀신의 집", "물고기");
-        assertThat(response.jsonPath().getList("description")).contains("무서워요", "어푸");
-        assertThat(response.jsonPath().getList("imageUrl")).doesNotContainNull();
+        assertThat(response.jsonPath().getList("themes.id")).doesNotContainNull();
+        assertThat(response.jsonPath().getList("themes.name")).contains("귀신의 집", "물고기");
+        assertThat(response.jsonPath().getList("themes.description")).contains("무서워요", "어푸");
+        assertThat(response.jsonPath().getList("themes.imageUrl")).doesNotContainNull();
     }
 
     @Test
@@ -142,8 +142,8 @@ class ThemeApiTest {
                 .when().get("/themes/rank")
                 .then().log().all()
                 .statusCode(200)
-                .body("theme.name", contains("A 테마", "C 테마", "B 테마"))
-                .body("size()", is(3));
+                .body("themeRankings.theme.name", contains("A 테마", "C 테마", "B 테마"))
+                .body("themeRankings.size()", is(3));
     }
 
     @Test
@@ -157,8 +157,8 @@ class ThemeApiTest {
                 .when().get("/themes/rank")
                 .then().log().all()
                 .statusCode(200)
-                .body("theme.name", contains("A 테마"))
-                .body("size()", is(1));
+                .body("themeRankings.theme.name", contains("A 테마"))
+                .body("themeRankings.size()", is(1));
     }
 
     @Test
@@ -182,8 +182,8 @@ class ThemeApiTest {
                 .when().get("/themes/rank")
                 .then().log().all()
                 .statusCode(200)
-                .body("theme.name", contains("시작일 포함 테마", "종료일 포함 테마"))
-                .body("size()", is(2));
+                .body("themeRankings.theme.name", contains("시작일 포함 테마", "종료일 포함 테마"))
+                .body("themeRankings.size()", is(2));
     }
 
     @ParameterizedTest

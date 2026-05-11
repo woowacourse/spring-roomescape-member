@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.dto.theme.ThemeRankResponses;
 import roomescape.controller.dto.theme.ThemeRequest;
 import roomescape.controller.dto.theme.ThemeRankResponse;
 import roomescape.controller.dto.theme.ThemeResponse;
 import roomescape.controller.dto.theme.ThemeRankingQuery;
+import roomescape.controller.dto.theme.ThemeResponses;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.theme.ThemeResult;
 
@@ -29,15 +31,15 @@ public class ThemeController {
     private final ThemeService themeService;
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getThemes() {
+    public ResponseEntity<ThemeResponses> getThemes() {
         List<ThemeResponse> themes = themeService.getThemes().stream()
                 .map(ThemeResponse::from)
                 .toList();
-        return ResponseEntity.ok(themes);
+        return ResponseEntity.ok(new ThemeResponses(themes));
     }
 
     @GetMapping("/rank")
-    public ResponseEntity<List<ThemeRankResponse>> getThemeRankings(
+    public ResponseEntity<ThemeRankResponses> getThemeRankings(
             @RequestParam(defaultValue = "7") int days,
             @RequestParam(defaultValue = "10") int limit
     ) {
@@ -46,7 +48,7 @@ public class ThemeController {
                 .stream()
                 .map(ThemeRankResponse::from)
                 .toList();
-        return ResponseEntity.ok(themeRankings);
+        return ResponseEntity.ok(new ThemeRankResponses(themeRankings));
     }
 
     @PostMapping

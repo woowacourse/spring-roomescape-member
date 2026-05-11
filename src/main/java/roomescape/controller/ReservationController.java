@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.reservation.ReservationRequest;
 import roomescape.controller.dto.reservation.ReservationResponse;
+import roomescape.controller.dto.reservation.ReservationResponses;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.reservation.ReservationPagingCondition;
 import roomescape.service.dto.reservation.ReservationResult;
@@ -27,12 +28,12 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations(
+    public ResponseEntity<ReservationResponses> getReservations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
         ReservationPagingCondition condition = new ReservationPagingCondition(page, size);
-        List<ReservationResponse> reservations = reservationService.getReservations(condition).stream()
+        List<ReservationResponse> responses = reservationService.getReservations(condition).stream()
                 .map(ReservationResponse::from)
                 .toList();
         return ResponseEntity.ok(reservations);
@@ -42,9 +43,9 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(
             @Valid @RequestBody ReservationRequest request) {
         ReservationResult reservationResult = reservationService.createReservation(request.toCommand());
-        ReservationResponse reservation = ReservationResponse.from(reservationResult);
+        ReservationResponse response = ReservationResponse.from(reservationResult);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(reservation);
+                .body(response);
     }
 
     @DeleteMapping("/{id}")

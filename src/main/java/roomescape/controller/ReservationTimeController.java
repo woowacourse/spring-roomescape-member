@@ -17,6 +17,7 @@ import roomescape.controller.dto.reservationtime.AvailableReservationTimesQuery;
 import roomescape.controller.dto.reservationtime.AvailableReservationTimesResponse;
 import roomescape.controller.dto.reservationtime.ReservationTimeRequest;
 import roomescape.controller.dto.reservationtime.ReservationTimeResponse;
+import roomescape.controller.dto.reservationtime.ReservationTimeResponses;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.reservationtime.AvailableReservationTimesResult;
 import roomescape.service.dto.reservationtime.ReservationTimeResult;
@@ -29,11 +30,11 @@ public class ReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
+    public ResponseEntity<ReservationTimeResponses> getReservationTimes() {
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.getReservationTimes().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
-        return ResponseEntity.ok(reservationTimes);
+        return ResponseEntity.ok(new ReservationTimeResponses(reservationTimes));
     }
 
     @GetMapping(params = {"themeId", "date"})
