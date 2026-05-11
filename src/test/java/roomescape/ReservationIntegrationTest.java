@@ -1,87 +1,96 @@
 package roomescape;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.dto.ReservationResponse;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class MissionStep2Test {
+class ReservationIntegrationTest {
+
+    @LocalServerPort
+    private int port;
+
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @BeforeEach
-    void init() {
-        jdbcTemplate.update("insert into reservation_time(start_at) values ('10:00')");
-        jdbcTemplate.update(
-                "insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
+    void setUp() {
+        RestAssured.port = port;
     }
 
     @Test
-    void 데이터베이스_연동() throws RuntimeException {
-        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-            assertThat(connection).isNotNull();
-            assertThat(connection.getCatalog()).isEqualTo("DATABASE");
-            assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    void 예약_목록을_조회한다() {
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
+        reservationRepository.save(Reservation.of("아이큐", "2025-06-01", time, theme));
 
-    @Test
-    void DB_조회_API_전환() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
-                "2023-08-05",
-                1, 1);
-
-        List<ReservationResponse> reservations = RestAssured.given().log().all()
+        List<Map<String, Object>> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationResponse.class);
+                .statusCode(200)
+                .extract().jsonPath().getList(".");
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-
-        assertThat(reservations.size()).isEqualTo(count);
+        assertThat(reservations).hasSize(1);
+        assertThat(reservations.get(0).get("name")).isEqualTo("아이큐");
     }
 
     @Test
-    void DB_추가_삭제_API_전환() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2023-08-05");
-        params.put("timeId", 1);
-        params.put("themeId", 1);
+    void 예약을_추가한다() {
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
 
-        RestAssured.given().log().all()
+        Map<String, Object> params = Map.of(
+                "name", "아이큐",
+                "date", "2025-06-01",
+                "timeId", time.getId(),
+                "themeId", theme.getId()
+        );
+
+        Map<String, Object> result = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getMap(".");
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
+        assertThat(result.get("name")).isEqualTo("아이큐");
+    }
+
+    @Test
+    void 예약을_삭제한다() {
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        Theme theme = themeRepository.save(Theme.of("공포", "desc", "url"));
+        Reservation saved = reservationRepository.save(Reservation.of("아이큐", "2025-06-01", time, theme));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/" + saved.getId())
                 .then().log().all()
                 .statusCode(200);
 
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
+        List<Reservation> reservations = reservationRepository.findAll();
+        assertThat(reservations).isEmpty();
     }
 }
