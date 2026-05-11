@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.InvalidRequestException;
+import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -27,9 +28,6 @@ class ReservationServiceTest {
     private ReservationService reservationService;
 
     @Autowired
-    private ReservationRepository reservationRepository;
-
-    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
@@ -46,7 +44,7 @@ class ReservationServiceTest {
         Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 8), time.getId(), theme.getId());
 
         // then
-        assertThat(reservationRepository.findAll()).containsExactly(reservation);
+        assertThat(reservationService.findAll()).containsExactly(reservation);
     }
 
     @Test
@@ -64,5 +62,54 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.create(name, date, time.getId(), theme.getId()))
                 .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("이미 예약된 시간입니다.");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간으로 예약하면 예외가 발생한다.")
+    public void create_fail_whenReservationTimeNotFound() {
+        // given
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.create(
+                "브라운",
+                LocalDate.of(2026, 5, 8),
+                37L,
+                theme.getId()
+        ))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 예약 시간입니다.");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마로 예약하면 예외가 발생한다.")
+    public void create_fail_whenThemeNotFound() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.create(
+                "브라운",
+                LocalDate.of(2026, 5, 8),
+                time.getId(),
+                37L
+        ))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 테마입니다.");
+    }
+
+    @Test
+    @DisplayName("예약을 삭제한다.")
+    public void delete_success() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 8), time.getId(), theme.getId());
+
+        // when
+        reservationService.delete(reservation.getId());
+
+        // then
+        assertThat(reservationService.findAll()).isEmpty();
     }
 }

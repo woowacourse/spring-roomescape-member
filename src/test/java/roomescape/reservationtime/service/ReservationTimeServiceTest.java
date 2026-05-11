@@ -39,6 +39,16 @@ class ReservationTimeServiceTest {
     private ReservationRepository reservationRepository;
 
     @Test
+    @DisplayName("예약 시간을 생성한다.")
+    public void create_success() {
+        // when
+        ReservationTime reservationTime = reservationTimeService.create(LocalTime.of(10, 0));
+
+        // then
+        assertThat(reservationTimeService.findAll()).containsExactly(reservationTime);
+    }
+
+    @Test
     @DisplayName("이미 존재하는 예약 시간을 생성하면 예외가 발생한다.")
     public void create_fail() {
         // given
@@ -49,6 +59,19 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.create(startAt))
                 .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("이미 존재하는 예약 시간입니다.");
+    }
+
+    @Test
+    @DisplayName("예약 시간을 삭제한다.")
+    public void delete_success() {
+        // given
+        ReservationTime reservationTime = reservationTimeService.create(LocalTime.of(10, 0));
+
+        // when
+        reservationTimeService.delete(reservationTime.getId());
+
+        // then
+        assertThat(reservationTimeService.findAll()).isEmpty();
     }
 
     @Test
