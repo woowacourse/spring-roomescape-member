@@ -39,7 +39,7 @@ public class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(17));
+                .body("themes.size()", is(17));
     }
 
     @Test

@@ -41,7 +41,7 @@ public class ReservationTimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(14));
+                .body("times.size()", is(14));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class ReservationTimeControllerTest {
                 .when().get("/times/2?date=2026-05-04")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(12));
+                .body("times.size()", is(12));
     }
 
     @Test

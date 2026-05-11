@@ -40,7 +40,7 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(17));
+                .body("reservations.size()", is(17));
     }
 
     @Test
