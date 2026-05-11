@@ -1,5 +1,6 @@
 package roomescape;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -10,20 +11,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
+
+    private ReservationTime savedTime;
+    private Theme savedTheme;
 
     @BeforeEach
     void init() {
-        jdbcTemplate.update("insert into reservation_time(start_at) values ('10:00')");
-        jdbcTemplate.update(
-                "insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
+        savedTime = reservationTimeRepository.save(ReservationTime.of("10:00"));
+        savedTheme = themeRepository.save(Theme.of("공포", "무서워요", "https://zeze.com"));
     }
 
     @Test
@@ -32,25 +42,24 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 0개
+                .body("size()", is(0));
     }
-
 
     @Test
     void 예약_추가_및_삭제() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
-        params.put("timeId", 1);
-        params.put("themeId", 1);
+        params.put("timeId", savedTime.getId());
+        params.put("themeId", savedTheme.getId());
 
-        RestAssured.given().log().all()
+        int createdId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .extract().path("id");
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -59,7 +68,7 @@ public class MissionStepTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/" + createdId)
                 .then().log().all()
                 .statusCode(200);
 
