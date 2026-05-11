@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
+import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationInfo;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
@@ -24,6 +25,10 @@ import roomescape.repository.reservationTime.ReservationTimeRepository;
 public class ReservationTimeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTime) {
         return new ReservationRepository() {
+            @Override
+            public Reservation getReservation(long id) {
+                return null;
+            }
 
             @Override
             public ReservationInfo addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {

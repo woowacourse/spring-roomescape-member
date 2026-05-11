@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
+import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationInfo;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.theme.PopularThemeCondition;
@@ -24,6 +25,10 @@ import roomescape.repository.reservation.ReservationRepository;
 public class ThemeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTheme) {
         return new ReservationRepository() {
+            @Override
+            public Reservation getReservation(long id) {
+                return null;
+            }
 
             @Override
             public ReservationInfo addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {

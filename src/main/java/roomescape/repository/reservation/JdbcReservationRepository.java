@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.QueryWithParams;
+import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationInfo;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
@@ -32,6 +33,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final String ALIAS_THEME_NAME = "themeName";
     private static final String ALIAS_THEME_DESCRIPTION = "themeDescription";
     private static final String ALIAS_THEME_IMAGE_URL = "themeImageUrl";
+
+    private static final String SELECT_BY_ID_SQL = "SELECT id, name, date, timeId, themeId FROM reservation WHERE id = ?";
 
     private static final String SELECT_ALL_SQL = """
         SELECT\s
@@ -76,6 +79,13 @@ public class JdbcReservationRepository implements ReservationRepository {
                     AND date = ?\s
             )
             """;
+    private static final RowMapper<Reservation> RESERVATION_MAPPER = (rs, rowNumber) -> new Reservation(
+            rs.getLong(COLUMN_ID),
+            rs.getString(COLUMN_NAME),
+            rs.getDate(COLUMN_DATE).toLocalDate(),
+            rs.getLong(COLUMN_TIME_ID),
+            rs.getLong(COLUMN_TIME_ID)
+    );
 
     private static final RowMapper<ReservationInfo> MAPPER = (rs, rowNumber) -> new ReservationInfo(
             rs.getLong(COLUMN_ID),
@@ -108,6 +118,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<ReservationInfo> getAllReservation(String name) {
         QueryWithParams queryWithParams = getReservationsQuery(name);
         return Collections.unmodifiableList(jdbcTemplate.query(queryWithParams.query(), MAPPER, queryWithParams.params().toArray()));
+    }
+
+    @Override
+    public Reservation getReservation(long id) {
+        return jdbcTemplate.queryForObject(SELECT_BY_ID_SQL, RESERVATION_MAPPER, id);
     }
 
     @Override

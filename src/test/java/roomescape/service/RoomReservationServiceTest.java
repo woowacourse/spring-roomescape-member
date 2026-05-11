@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationInfo;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.theme.PopularThemeCondition;
@@ -29,6 +30,11 @@ import roomescape.repository.reservationTime.ReservationTimeRepository;
 public class RoomReservationServiceTest {
     private ReservationRepository createReservationRepository(boolean isExist) {
         return new ReservationRepository() {
+            @Override
+            public Reservation getReservation(long id) {
+                return null;
+            }
+
             @Override
             public List<ReservationInfo> getAllReservation(String name) {
                 return List.of();
