@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -20,10 +21,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError().body("일시적인 서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
     }
 
-    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
-    public ResponseEntity<String> handleValidationException(Exception e) {
-        log.error("Validation Exception 발생 : {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("필수 파라미터가 누락되었거나 형식이 잘못되었습니다.");
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<String> handleValidationException(BindException e) {
+        log.error("Bind Exception 발생 : {}", e.getMessage());
+        return getStringResponseEntity(e.getBindingResult());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error("MethodArgumentNotValid Exception 발생 : {}", e.getMessage());
+        return getStringResponseEntity(e.getBindingResult());
     }
 
     @ExceptionHandler(NotFoundException.class)
@@ -36,5 +43,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleReservationTimeInUseException(AlreadyInUseException e) {
         log.error("Reservatin Already In Use Exception 발생 : {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    private static ResponseEntity<String> getStringResponseEntity(BindingResult e) {
+        String message = e
+                .getAllErrors()
+                .getFirst()
+                .getDefaultMessage();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 }
