@@ -109,8 +109,6 @@ class ReservationServiceTest {
                 .hasMessageContaining("해당 id의 ReservationTime이 존재하지 않습니다.");
     }
 
-    // TODO: 존재하지 않는 테마로 예약 시 예외 발생 (사이클 2)
-
     @Test
     @DisplayName("모든 예약을 조회한다.")
     void findAllReservations() {

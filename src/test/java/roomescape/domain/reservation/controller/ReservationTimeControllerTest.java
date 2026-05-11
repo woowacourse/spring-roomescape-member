@@ -73,6 +73,4 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(204);
     }
-
-    // TODO: 예약이 존재하는 경우 삭제 시 409 반환 테스트 추가
 }

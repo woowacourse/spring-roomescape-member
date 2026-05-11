@@ -37,7 +37,6 @@ public class ThemeService {
     }
 
     public ThemeReservationTimesResponse findAllThemeReservationTimes(Long themeId, LocalDate date) {
-        // TODO: 잘못된 입력 예외 처리 (사이클 2)
         List<ThemeReservationTimeResponse> times = themeRepository.findAllThemeReservationTimesByThemeIdAndDate(
                 themeId,
                 date
