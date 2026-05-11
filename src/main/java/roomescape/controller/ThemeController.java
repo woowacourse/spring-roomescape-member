@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.controller.dto.ThemeFamousFindRequest;
-import roomescape.domain.Theme;
+import roomescape.controller.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -26,33 +26,37 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @DeleteMapping({"/{id}"})
-    @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable long id) {
-        themeService.delete(id);
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Theme create(@RequestBody ThemeCreateRequest request) {
-        return themeService.create(request);
+    public ThemeResponse create(@RequestBody ThemeCreateRequest request) {
+        return ThemeResponse.toDto(themeService.create(request));
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Theme find(@PathVariable Long id) {
-        return themeService.find(id);
+    public ThemeResponse find(@PathVariable Long id) {
+        return ThemeResponse.toDto(themeService.find(id));
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Theme> findAll() {
-        return themeService.findAll();
+    public List<ThemeResponse> findAll() {
+        return themeService.findAll().stream()
+                .map(ThemeResponse::toDto)
+                .toList();
     }
 
     @GetMapping("/famous")
     @ResponseStatus(HttpStatus.OK)
-    public List<Theme> findFamous(@ModelAttribute ThemeFamousFindRequest request) {
-        return themeService.findFamous(request);
+    public List<ThemeResponse> findFamous(@ModelAttribute ThemeFamousFindRequest request) {
+        return themeService.findFamous(request).stream()
+                .map(ThemeResponse::toDto)
+                .toList();
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable long id) {
+        themeService.delete(id);
     }
 }
