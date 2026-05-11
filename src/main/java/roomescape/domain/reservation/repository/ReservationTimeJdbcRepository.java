@@ -80,12 +80,13 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt());
 
-        Number key = simpleJdbcInsert.executeAndReturnKey(parameters);
-        Long generatedId = key.longValue();
+        Long generatedId = simpleJdbcInsert.executeAndReturnKey(parameters)
+                .longValue();
 
-        reservationTime.setId(generatedId);
-
-        return reservationTime;
+        return new ReservationTime(
+                generatedId,
+                reservationTime.getStartAt()
+        );
     }
 
     @Override

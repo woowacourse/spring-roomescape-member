@@ -73,12 +73,16 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId());
 
-        Number key = simpleJdbcInsert.executeAndReturnKey(parameters);
-        Long generatedId = key.longValue();
+        Long generatedId = simpleJdbcInsert.executeAndReturnKey(parameters)
+                .longValue();
 
-        reservation.setId(generatedId);
-
-        return reservation;
+        return new Reservation(
+                generatedId,
+                reservation.getUsername(),
+                reservation.getTheme(),
+                reservation.getDate(),
+                reservation.getTime()
+        );
     }
 
     @Override
