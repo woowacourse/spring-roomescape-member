@@ -2,8 +2,6 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
@@ -42,9 +40,8 @@ public class ReservationTimeService {
         List<Reservation> reservations = reservationDao.selectByThemeIdAndDate(themeId, date);
         List<ReservationTime> reservationTimes = reservationTimeDao.selectAll();
 
-        Set<Long> reservedTimeIds = extractReservedTimeIds(reservations);
         return reservationTimes.stream()
-                .map(time -> ReservationTimeResponse.from(time, isNotReserved(time, reservedTimeIds)))
+                .map(time -> ReservationTimeResponse.from(time, time.isNotReserved(reservations)))
                 .toList();
     }
 
@@ -53,16 +50,6 @@ public class ReservationTimeService {
         if (!exists) {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
         }
-    }
-
-    private Set<Long> extractReservedTimeIds(List<Reservation> reservations) {
-        return reservations.stream()
-                .map(reservation -> reservation.getTime().getId())
-                .collect(Collectors.toSet());
-    }
-
-    private boolean isNotReserved(ReservationTime time, Set<Long> reservedTimeIds) {
-        return !reservedTimeIds.contains(time.getId());
     }
 
     public void deleteReservationTime(long reservationTimeId) {
