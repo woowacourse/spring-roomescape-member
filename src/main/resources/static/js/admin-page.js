@@ -199,7 +199,7 @@ reservationList.addEventListener("click", async (event) => {
     clearFeedback(reservationFeedback);
 
     try {
-        await request(`/reservations/${target.dataset.id}`, { method: "DELETE" });
+        await request(`/admin/reservations/${target.dataset.id}`, { method: "DELETE" });
         await refreshReservations();
         showFeedback(reservationFeedback, "success", "예약이 취소되었습니다.");
     } catch (error) {
