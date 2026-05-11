@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.ThemeRequest;
-import roomescape.controller.dto.ThemeRankResponse;
-import roomescape.controller.dto.ThemeResponse;
-import roomescape.controller.dto.ThemeRankingQuery;
+import roomescape.controller.dto.theme.ThemeRequest;
+import roomescape.controller.dto.theme.ThemeRankResponse;
+import roomescape.controller.dto.theme.ThemeResponse;
+import roomescape.controller.dto.theme.ThemeRankingQuery;
 import roomescape.service.ThemeService;
 
 @RestController

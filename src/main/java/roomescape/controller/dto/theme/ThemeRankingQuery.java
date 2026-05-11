@@ -1,4 +1,4 @@
-package roomescape.controller.dto;
+package roomescape.controller.dto.theme;
 
 import roomescape.global.exception.InvalidRankingConditionException;
 
