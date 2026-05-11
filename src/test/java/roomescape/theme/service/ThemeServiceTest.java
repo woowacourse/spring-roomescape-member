@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.reservation.domain.ReservationTime;
 import roomescape.theme.doamin.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.repository.ThemeTimeQueryRepository;
@@ -72,8 +73,8 @@ class ThemeServiceTest {
     void getThemeTimeAvailability() {
         LocalDate date = LocalDate.of(2026, 5, 10);
         List<ThemeTimeAvailability> availabilities = List.of(
-                new ThemeTimeAvailability(1L, LocalTime.of(10, 0), true),
-                new ThemeTimeAvailability(2L, LocalTime.of(11, 0), false)
+                new ThemeTimeAvailability(new ReservationTime(1L, LocalTime.of(10, 0)), true),
+                new ThemeTimeAvailability(new ReservationTime(2L, LocalTime.of(11, 0)), false)
         );
         when(themeTimeQueryRepository.findThemeAvailableTime(1L, date)).thenReturn(availabilities);
 

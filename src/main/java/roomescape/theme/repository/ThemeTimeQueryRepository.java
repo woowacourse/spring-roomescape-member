@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.domain.ReservationTime;
 import roomescape.theme.service.dto.ThemeTimeAvailability;
 
 @Repository
@@ -17,8 +18,10 @@ public class ThemeTimeQueryRepository {
 
     private final RowMapper<ThemeTimeAvailability> availableReservationTimeRowMapper =
             (rs, rowNum) -> new ThemeTimeAvailability(
-                    rs.getLong("id"),
-                    rs.getTime("start_at").toLocalTime(),
+                    new ReservationTime(
+                            rs.getLong("id"),
+                            rs.getTime("start_at").toLocalTime()
+                    ),
                     rs.getBoolean("available")
             );
 

@@ -1,10 +1,9 @@
 package roomescape.theme.service.dto;
 
-import java.time.LocalTime;
+import roomescape.reservation.domain.ReservationTime;
 
 public record ThemeTimeAvailability(
-        long id,
-        LocalTime startAt,
+        ReservationTime reservationTime,
         boolean isAvailable
 ) {
 }

@@ -17,8 +17,8 @@ public record ThemeTimeAvailabilityResponse(
 
     public static ThemeTimeAvailabilityResponse from(ThemeTimeAvailability availability) {
         return new ThemeTimeAvailabilityResponse(
-                availability.id(),
-                formatStartAt(availability.startAt()),
+                availability.reservationTime().getId(),
+                formatStartAt(availability.reservationTime().getStartAt()),
                 availability.isAvailable()
         );
     }
