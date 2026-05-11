@@ -28,7 +28,7 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     @Operation(summary = "Create a reservation", description = "예약을 생성하는 api")
-    public ResponseEntity<ReservationResponse> create(
+    public ResponseEntity<ReservationResponse> createReservation(
             @Valid @RequestBody ReservationSaveDto dto
     ) {
         ReservationResponse responseData = ReservationResponse.from(
@@ -47,7 +47,7 @@ public class ReservationController {
 
     @PatchMapping("/reservations/{id}")
     @Operation(summary = "Cancel a reservation", description = "예약을 취소하는 api")
-    public ResponseEntity<ReservationResponse> cancel(@PathVariable Long id) {
+    public ResponseEntity<ReservationResponse> cancelReservation(@PathVariable Long id) {
         ReservationResponse responseData = ReservationResponse.from(reservationService.cancel(id));
         return ResponseEntity.ok(responseData);
     }

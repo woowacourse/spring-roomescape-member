@@ -30,7 +30,7 @@ public class ReservationTimeAdminController {
 
     @GetMapping("/times")
     @Operation(summary = "Read reservation times", description = "예약 시간을 조회하는 api")
-    public ResponseEntity<List<ReservationTimeDetailDto>> read() {
+    public ResponseEntity<List<ReservationTimeDetailDto>> getReservationTimes() {
         List<ReservationTimeDetailDto> responseData = reservationTimeService.findAll().stream()
                 .map(ReservationTimeDetailDto::from)
                 .toList();
@@ -39,7 +39,7 @@ public class ReservationTimeAdminController {
 
     @PostMapping("/times")
     @Operation(summary = "Create reservation time", description = "예약 시간을 생성하는 api")
-    public ResponseEntity<ReservationTimeDetailDto> create(
+    public ResponseEntity<ReservationTimeDetailDto> createReservationTime(
             @Valid @RequestBody ReservationTimeSaveDto reservationTimeSaveDto) {
         ReservationTimeDetailDto responseData = ReservationTimeDetailDto.from(
                 reservationTimeService.create(reservationTimeSaveDto.startAt()));
@@ -48,7 +48,7 @@ public class ReservationTimeAdminController {
 
     @DeleteMapping("/times/{id}")
     @Operation(summary = "Delete reservation time", description = "예약 시간을 삭제하는 api")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();
     }

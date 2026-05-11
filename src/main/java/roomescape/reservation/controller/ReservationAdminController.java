@@ -28,7 +28,7 @@ public class ReservationAdminController {
 
     @GetMapping("/reservations")
     @Operation(summary = "Read all reservations", description = "예약 전체 목록을 조회하는 api")
-    public ResponseEntity<List<ReservationResponse>> read() {
+    public ResponseEntity<List<ReservationResponse>> getReservations() {
         List<ReservationResponse> responseData = reservationService.findAll().stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -37,7 +37,7 @@ public class ReservationAdminController {
 
     @PostMapping("/reservations")
     @Operation(summary = "Create a reservation", description = "예약을 생성하는 api")
-    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody ReservationSaveDto dto) {
+    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationSaveDto dto) {
         ReservationResponse responseData = ReservationResponse.from(
                 reservationService.create(dto.name(), dto.date(), dto.timeId(), dto.themeId()));
         return ResponseEntity.status(CREATED).body(responseData);
@@ -45,7 +45,7 @@ public class ReservationAdminController {
 
     @PatchMapping("/reservations/{id}")
     @Operation(summary = "Cancel a reservation", description = "예약을 취소하는 api")
-    public ResponseEntity<ReservationResponse> cancel(@PathVariable Long id) {
+    public ResponseEntity<ReservationResponse> cancelReservation(@PathVariable Long id) {
         ReservationResponse responseData = ReservationResponse.from(reservationService.cancel(id));
         return ResponseEntity.ok(responseData);
     }
