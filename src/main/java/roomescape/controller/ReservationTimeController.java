@@ -45,14 +45,16 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable long id) {
         reservationTimeService.delete(id);
     }
 
     @GetMapping("/available")
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationTime> findAvailable(@ModelAttribute AvailableTimeFindRequest request) {
-        return reservationTimeService.findAvailable(request);
+    public List<ReservationTimeResponse> findAvailable(@ModelAttribute AvailableTimeFindRequest request) {
+        return reservationTimeService.findAvailable(request).stream()
+                .map(ReservationTimeResponse::toDto)
+                .toList();
     }
 }
