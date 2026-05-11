@@ -21,7 +21,7 @@ public class ClosedDateService {
     }
 
     @Transactional(readOnly = true)
-    public List<ClosedDate> readClosedDates() {
+    public List<ClosedDate> findClosedDates() {
         return closedDateRepository.findAll();
     }
 

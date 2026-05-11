@@ -30,7 +30,7 @@ class ClosedDateServiceTest {
         ClosedDate saved = closedDateService.register(DEFAULT_DATE);
 
         // when
-        List<ClosedDate> actual = closedDateService.readClosedDates();
+        List<ClosedDate> actual = closedDateService.findClosedDates();
 
         // then
         assertThat(actual)
@@ -40,13 +40,13 @@ class ClosedDateServiceTest {
 
     @Test
     @DisplayName("등록된 휴무일이 여러개이면 조회 시 등록된 개수만큼 반환한다.")
-    void readClosedDates() {
+    void findClosedDates() {
         // given
         closedDateService.register(DEFAULT_DATE);
         closedDateService.register(DEFAULT_DATE.plusDays(1));
 
         // when
-        List<ClosedDate> actual = closedDateService.readClosedDates();
+        List<ClosedDate> actual = closedDateService.findClosedDates();
 
         // then
         assertThat(actual).hasSize(2);
@@ -59,7 +59,7 @@ class ClosedDateServiceTest {
         closedDateService.register(DEFAULT_DATE);
 
         // then
-        assertThat(closedDateService.readClosedDates()).hasSize(1);
+        assertThat(closedDateService.findClosedDates()).hasSize(1);
     }
 
     @Test
@@ -69,7 +69,7 @@ class ClosedDateServiceTest {
         ClosedDate registered = closedDateService.register(DEFAULT_DATE);
 
         // then
-        assertThat(closedDateService.readClosedDates())
+        assertThat(closedDateService.findClosedDates())
                 .usingRecursiveComparison()
                 .isEqualTo(List.of(registered));
     }
@@ -97,7 +97,7 @@ class ClosedDateServiceTest {
         closedDateService.deregister(saved1.id());
 
         // then
-        assertThat(closedDateService.readClosedDates()).hasSize(1);
+        assertThat(closedDateService.findClosedDates()).hasSize(1);
     }
 
     @Test

@@ -24,7 +24,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("등록된 테마가 여러개이면 조회 시 등록된 갯수만큼 반환한다.")
-    void readThemes() {
+    void findThemes() {
         // given
         List<Theme> themes = List.of(
                 Theme.create("테마1", "테마1 설명", "테마1 썸네일"),
@@ -34,7 +34,7 @@ class ThemeServiceTest {
         saveAll(themes);
 
         // when
-        List<Theme> actual = themeService.readThemes();
+        List<Theme> actual = themeService.findThemes();
 
         // then
         assertThat(actual).hasSize(themes.size());
@@ -42,12 +42,12 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("등록된 테마와 조회되는 테마의 모든 필드가 일치한다.")
-    void readTheme() {
+    void findTheme() {
         // given
         Theme savedTheme = themeService.register("테마1", "테마1 설명", "테마1 썸네일");
 
         // when
-        Theme actual = themeService.readTheme(savedTheme.id());
+        Theme actual = themeService.findTheme(savedTheme.id());
 
         // then
         assertThat(actual)
@@ -57,19 +57,19 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("등록되지 않은 테마 조회 시 예외가 발생한다.")
-    void readTheme_unregistered() {
+    void findTheme_unregistered() {
         // given
         Long unregisteredId = Long.MIN_VALUE;
 
         // when & then
-        assertThatThrownBy(() -> themeService.readTheme(unregisteredId))
+        assertThatThrownBy(() -> themeService.findTheme(unregisteredId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 테마가 존재하지 않습니다.");
     }
 
     @Test
     @DisplayName("활성화된 테마 목록을 가나다순으로 조회한다.")
-    void readActiveThemes() {
+    void findActiveThemes() {
         // given
         String name1 = "다테마";
         String name2 = "나테마";
@@ -79,7 +79,7 @@ class ThemeServiceTest {
         themes.sort(Comparator.comparing(Theme::name));
 
         // when
-        List<Theme> actual = themeService.readActiveThemes();
+        List<Theme> actual = themeService.findActiveThemes();
 
         // then
         assertThat(actual)
@@ -99,7 +99,7 @@ class ThemeServiceTest {
         themeService.register(name, description, thumbnail);
 
         // then
-        assertThat(themeService.readThemes())
+        assertThat(themeService.findThemes())
                 .hasSize(1);
     }
 
@@ -117,7 +117,7 @@ class ThemeServiceTest {
         // then
         assertThat(registeredTheme)
                 .usingRecursiveComparison()
-                .isEqualTo(themeService.readTheme(registeredTheme.id()));
+                .isEqualTo(themeService.findTheme(registeredTheme.id()));
     }
 
     @Test
@@ -130,7 +130,7 @@ class ThemeServiceTest {
         themeService.updateStatus(savedTheme.id(), true);
 
         // then
-        assertThat(themeService.readTheme(savedTheme.id()).isActive())
+        assertThat(themeService.findTheme(savedTheme.id()).isActive())
                 .isTrue();
     }
 
@@ -145,7 +145,7 @@ class ThemeServiceTest {
         themeService.updateStatus(savedTheme.id(), false);
 
         // then
-        assertThat(themeService.readTheme(savedTheme.id()).isActive())
+        assertThat(themeService.findTheme(savedTheme.id()).isActive())
                 .isFalse();
     }
 
@@ -154,7 +154,7 @@ class ThemeServiceTest {
         for (Theme theme : themes) {
             Theme savedTheme = themeService.register(theme.name(), theme.description(), theme.thumbnailUrl());
             themeService.updateStatus(savedTheme.id(), theme.isActive()); // 활성화 상태 반영
-            savedThemes.add(themeService.readTheme(savedTheme.id()));
+            savedThemes.add(themeService.findTheme(savedTheme.id()));
         }
         return savedThemes;
     }

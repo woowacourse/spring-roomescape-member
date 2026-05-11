@@ -20,7 +20,7 @@ public class ThemeController {
     @GetMapping("/themes")
     @Operation(summary = "Read active themes", description = "활성화된 테마를 조회하는 api")
     public ResponseEntity<List<ThemeDetailDto>> getActiveThemes(){
-        List<ThemeDetailDto> responseData = themeService.readActiveThemes().stream()
+        List<ThemeDetailDto> responseData = themeService.findActiveThemes().stream()
                 .map(ThemeDetailDto::from)
                 .toList();
         return ResponseEntity.ok(responseData);
@@ -29,7 +29,7 @@ public class ThemeController {
     @GetMapping("/themes/popular")
     @Operation(summary = "Read popular themes", description = "인기 테마를 조회하는 api")
     public ResponseEntity<List<ThemeDetailDto>> getPopularThemes(@RequestParam int top){
-        List<ThemeDetailDto> responseData = themeService.readPopularThemes(top).stream()
+        List<ThemeDetailDto> responseData = themeService.findPopularThemes(top).stream()
                 .map(ThemeDetailDto::from)
                 .toList();
         return ResponseEntity.ok(responseData);

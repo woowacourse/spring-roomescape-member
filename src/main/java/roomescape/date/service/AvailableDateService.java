@@ -20,7 +20,7 @@ public class AvailableDateService {
     }
 
     @Transactional(readOnly = true)
-    public List<LocalDate> readAvailableDates() {
+    public List<LocalDate> findAvailableDates() {
         LocalDate today = LocalDate.now();
         Set<LocalDate> closedDates = closedDateRepository.findAll().stream()
                 .map(ClosedDate::date)

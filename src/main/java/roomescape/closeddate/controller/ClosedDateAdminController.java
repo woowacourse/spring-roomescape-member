@@ -29,7 +29,7 @@ public class ClosedDateAdminController {
     @GetMapping("/closed-dates")
     @Operation(summary = "Get all closed dates", description = "휴무일 전체 목록을 조회하는 api")
     public ResponseEntity<List<ClosedDateDetailDto>> getClosedDates() {
-        List<ClosedDateDetailDto> responseData = closedDateService.readClosedDates().stream()
+        List<ClosedDateDetailDto> responseData = closedDateService.findClosedDates().stream()
                 .map(ClosedDateDetailDto::from)
                 .toList();
         return ResponseEntity.ok(responseData);

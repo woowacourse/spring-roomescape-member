@@ -53,13 +53,13 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("전체 예약 정보를 가져온다.")
-    void readAll() {
+    void findAll() {
         // given
         reservationService.create("한다", date1, reservationTime1.id(), theme1.id());
         reservationService.create("송송", date2, reservationTime1.id(), theme2.id());
 
         // when
-        List<Reservation> actual = reservationService.readAll();
+        List<Reservation> actual = reservationService.findAll();
 
         // then
         assertThat(actual).hasSize(2);
@@ -67,7 +67,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("나의 예약들을 조회하면 날짜/시간 오름차순으로 정렬해 모두 조회한다.")
-    void readAllByName() {
+    void findAllByName() {
         // given
         reservationService.create(name, date1, reservationTime1.id(), theme1.id());
         reservationService.create(name, date1, reservationTime2.id(), theme1.id());
@@ -75,7 +75,7 @@ class ReservationServiceTest {
         reservationService.create(name, date2, reservationTime2.id(), theme1.id());
 
         // when
-        List<Reservation> actual = reservationService.readAllByName(name);
+        List<Reservation> actual = reservationService.findAllByName(name);
 
         // then
         assertThat(actual).hasSize(4);
@@ -90,7 +90,7 @@ class ReservationServiceTest {
         reservationService.create(name, date1, reservationTime1.id(), theme1.id());
 
         // then
-        assertThat(reservationService.readAll()).hasSize(1);
+        assertThat(reservationService.findAll()).hasSize(1);
     }
 
     @Test

@@ -21,7 +21,7 @@ public class ReservationTimeController {
     @GetMapping("/times")
     @Operation(summary = "Read available reservation times", description = "예약 가능한 시간을 조회하는 api")
     public ResponseEntity<List<ReservationTimeDetailDto>> readAvailableTimes(@RequestParam("date") LocalDate date, @RequestParam("themeId") Long themeId){
-        List<ReservationTimeDetailDto> responseData = reservationTimeService.readAvailableTimes(date, themeId).stream()
+        List<ReservationTimeDetailDto> responseData = reservationTimeService.findAvailableTimes(date, themeId).stream()
                 .map(ReservationTimeDetailDto::from)
                 .toList();
         return ResponseEntity.ok(responseData);

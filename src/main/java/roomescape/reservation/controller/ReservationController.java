@@ -39,7 +39,7 @@ public class ReservationController {
     @GetMapping("/reservations")
     @Operation(summary = "Read reservations by name", description = "예약자 이름으로 예약 목록을 조회하는 api")
     public ResponseEntity<List<ReservationResponse>> getMyReservations(@RequestParam String name) {
-        List<ReservationResponse> responseData = reservationService.readAllByName(name).stream()
+        List<ReservationResponse> responseData = reservationService.findAllByName(name).stream()
                 .map(ReservationResponse::from)
                 .toList();
         return ResponseEntity.ok(responseData);

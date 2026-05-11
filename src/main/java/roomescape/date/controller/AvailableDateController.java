@@ -19,7 +19,7 @@ public class AvailableDateController {
     @GetMapping("/available-dates")
     @Operation(summary = "Get all available dates", description = "예약 가능한 날짜 전체 목록을 조회하는 api")
     public ResponseEntity<List<AvailableDateDetailDto>> getAvailableDates() {
-        List<AvailableDateDetailDto> responseData = availableDateService.readAvailableDates()
+        List<AvailableDateDetailDto> responseData = availableDateService.findAvailableDates()
                 .stream()
                 .map(AvailableDateDetailDto::from)
                 .toList();

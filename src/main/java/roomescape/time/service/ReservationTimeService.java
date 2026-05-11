@@ -52,7 +52,7 @@ public class ReservationTimeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationTime> readAvailableTimes(LocalDate date, Long themeId) {
+    public List<ReservationTime> findAvailableTimes(LocalDate date, Long themeId) {
         return reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId);
     }
 }

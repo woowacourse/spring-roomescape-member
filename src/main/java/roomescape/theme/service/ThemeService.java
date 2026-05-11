@@ -19,22 +19,22 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> readThemes() {
+    public List<Theme> findThemes() {
         return themeRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public Theme readTheme(Long id) {
+    public Theme findTheme(Long id) {
         return getTheme(id);
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> readActiveThemes() {
+    public List<Theme> findActiveThemes() {
         return themeRepository.findByStatus(true);
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> readPopularThemes(int top) {
+    public List<Theme> findPopularThemes(int top) {
         LocalDate today = LocalDate.now();
 
         LocalDate startDate = today.minusDays(7);

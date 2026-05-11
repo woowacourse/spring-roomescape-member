@@ -38,12 +38,12 @@ public class ReservationService {
 
 
     @Transactional(readOnly = true)
-    public List<Reservation> readAll() {
+    public List<Reservation> findAll() {
         return reservationRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public List<Reservation> readAllByName(String name) {
+    public List<Reservation> findAllByName(String name) {
         return reservationRepository.findAllByNameOrderByDateAndTime(name);
     }
 

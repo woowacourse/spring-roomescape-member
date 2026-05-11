@@ -29,7 +29,7 @@ public class ReservationAdminController {
     @GetMapping("/reservations")
     @Operation(summary = "Read all reservations", description = "예약 전체 목록을 조회하는 api")
     public ResponseEntity<List<ReservationResponse>> read() {
-        List<ReservationResponse> responseData = reservationService.readAll().stream()
+        List<ReservationResponse> responseData = reservationService.findAll().stream()
                 .map(ReservationResponse::from)
                 .toList();
         return ResponseEntity.ok(responseData);

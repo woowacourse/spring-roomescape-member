@@ -33,7 +33,7 @@ public class ThemeAdminController {
     @GetMapping("/themes")
     @Operation(summary = "Read all themes", description = "모든 테마를 조회하는 api")
     public ResponseEntity<List<ThemeDetailDto>> getThemes() {
-        List<ThemeDetailDto> responseData = themeService.readThemes().stream()
+        List<ThemeDetailDto> responseData = themeService.findThemes().stream()
                 .map(ThemeDetailDto::from)
                 .toList();
         return ResponseEntity.ok(responseData);
@@ -42,7 +42,7 @@ public class ThemeAdminController {
     @GetMapping("/themes/{id}")
     @Operation(summary = "Read a theme by id", description = "테마 id로 테마를 조회하는 api")
     public ResponseEntity<ThemeDetailDto> getTheme(@PathVariable Long id) {
-        ThemeDetailDto responseData = ThemeDetailDto.from(themeService.readTheme(id));
+        ThemeDetailDto responseData = ThemeDetailDto.from(themeService.findTheme(id));
         return ResponseEntity.ok(responseData);
     }
 
