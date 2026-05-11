@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.controller.dto.ThemeFamousFindRequest;
@@ -40,19 +41,9 @@ public class ThemeService {
     }
 
     public List<Theme> findFamous(ThemeFamousFindRequest request) {
-        Long days = request.getDays();
-        LocalDate date = request.getDate();
-        Long limit = request.getLimit();
-
-        if (days == null) {
-            days = DEFAULT_DAYS;
-        }
-        if (limit == null) {
-            limit = DEFAULT_LIMIT;
-        }
-        if (date == null) {
-            date = LocalDate.now();
-        }
+        long days = Optional.ofNullable(request.getDays()).orElse(DEFAULT_DAYS);
+        long limit = Optional.ofNullable(request.getLimit()).orElse(DEFAULT_LIMIT);
+        LocalDate date = Optional.ofNullable(request.getDate()).orElseGet(LocalDate::now);
 
         return themeRepository.findFamous(days, date, limit);
     }
