@@ -116,10 +116,15 @@
 
     datePicker.addEventListener('change', () => {
       const selectedDate = datePicker.value;
+
       fetch(`/reservations/booked-times?themeId=${themeId}&selectedDate=${selectedDate}`)
       .then(res => res.json())
-      .then(bookedTimes => {
-        const bookedTimeIds = bookedTimes.map(t => t.id);
+      .then(times => {
+        const bookedTimeIds = times
+        .filter(t => t.reserved === true)
+        .map(t => t.timeId);
+
+        console.log("예약된 ID들:", bookedTimeIds);
         renderTimeButtons(bookedTimeIds);
       });
     });

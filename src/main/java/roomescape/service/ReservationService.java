@@ -9,7 +9,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
-import roomescape.dto.ReservationTimeResponseDTO;
+import roomescape.dto.ReservedTimeResponseDTO;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -50,22 +50,9 @@ public class ReservationService {
         return ReservationResponseDTO.from(savedReservation);
     }
 
-    public List<ReservationTimeResponseDTO> findReservedTimes(LocalDate targetDate,
+    public List<ReservedTimeResponseDTO> findReservedTimes(LocalDate targetDate,
             Long targetThemeId) {
-        List<Long> reservedTimesOfTargetThemeOnTargetDate = reservationRepository.findAll()
-                .stream()
-                .filter(reservation -> reservation.getDate().equals(targetDate))
-                .filter(reservation -> reservation.getTheme().getId().equals(targetThemeId))
-                .map(Reservation::getTimeId)
-                .toList();
-
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-
-        return reservationTimes.stream()
-                .filter(reservationTime -> reservedTimesOfTargetThemeOnTargetDate.contains(
-                        reservationTime.getId()))
-                .map(ReservationTimeResponseDTO::from)
-                .toList();
+        return reservationTimeRepository.findReservedTimes(targetDate, targetThemeId);
     }
 
     public void deleteReservation(Long id) {
