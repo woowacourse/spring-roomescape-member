@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,11 @@ public class ThemeService {
     }
 
     public List<ThemeResponseDTO> getPopularThemes() {
-        List<Long> popularThemeIds = themeRepository.findPopularThemeIds();
+        List<Long> popularThemeIds = themeRepository.findPopularThemeIds(
+                LocalDate.now().minusWeeks(1),
+                LocalDate.now(),
+                10L
+        );
 
         return popularThemeIds.stream()
                 .map(id -> themeRepository.findById(id).get())
