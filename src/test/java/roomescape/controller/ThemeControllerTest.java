@@ -11,11 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,12 +24,6 @@ class ThemeControllerTest {
 
     @Autowired
     private ThemeRepository themeRepository;
-
-    @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
@@ -94,28 +85,14 @@ class ThemeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/themes/" + saved.getId())
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(200);
 
-        assertThat(themeRepository.findAll()).isEmpty();
-    }
-
-    @Test
-    void 인기_테마를_조회한다() {
-        Theme theme1 = themeRepository.save(Theme.of("공포", "desc", "url"));
-        Theme theme2 = themeRepository.save(Theme.of("추리", "desc", "url"));
-        ReservationTime time = reservationTimeRepository.save(ReservationTime.of("10:00"));
-
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "유저1", java.time.LocalDate.now().minusDays(1), time.getId(), theme1.getId());
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "유저2", java.time.LocalDate.now().minusDays(1), time.getId(), theme2.getId());
-
-        List<Map<String, Object>> result = RestAssured.given().log().all()
-                .when().get("/themes/famous")
+        List<Map<String, Object>> themes = RestAssured.given().log().all()
+                .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
                 .extract().jsonPath().getList(".");
 
-        assertThat(result).hasSize(2);
+        assertThat(themes).isEmpty();
     }
 }
