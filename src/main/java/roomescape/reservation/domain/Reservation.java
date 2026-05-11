@@ -31,6 +31,7 @@ public class Reservation {
     }
 
     public Reservation(String name, LocalDate date, ReservationTime time) {
+        validateName(name);
         this.name = name;
         this.date = date;
         this.time = time;
