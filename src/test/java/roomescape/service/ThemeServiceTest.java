@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.config.PopularPeriodProperties;
 import roomescape.domain.Theme;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
@@ -27,8 +26,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
 
-    private static final PopularPeriodProperties DEFAULT_PERIOD = new PopularPeriodProperties(7, 1);
-
     @Mock
     private ThemeRepository themeRepository;
 
@@ -36,7 +33,7 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setUp() {
-        themeService = new ThemeService(themeRepository, Clock.systemDefaultZone(), DEFAULT_PERIOD);
+        themeService = new ThemeService(themeRepository, Clock.systemDefaultZone());
     }
 
     @Test
@@ -106,7 +103,7 @@ class ThemeServiceTest {
         Clock fixedClock = Clock.fixed(
                 fixedToday.atStartOfDay(zone).toInstant(),
                 zone);
-        ThemeService timeRelatedThemeService = new ThemeService(themeRepository, fixedClock, DEFAULT_PERIOD);
+        ThemeService timeRelatedThemeService = new ThemeService(themeRepository, fixedClock);
 
         List<Theme> themes = List.of(
                 new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg"),
