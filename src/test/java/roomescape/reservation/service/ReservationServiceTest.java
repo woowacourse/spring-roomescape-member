@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.dto.ReservationCreateInfo;
 import roomescape.reservation.dto.ReservationIdResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationsResponse;
@@ -65,9 +66,9 @@ class ReservationServiceTest {
 
     @Test
     void 새로운_예약을_생성한다() {
-        ReservationRequest request = new ReservationRequest("2026-12-10", "15:00", 1L, "user1");
+        ReservationCreateInfo info = new ReservationCreateInfo("user1", "2026-12-10", "15:00", 1L);
 
-        ReservationIdResponse response = reservationService.create(request);
+        ReservationIdResponse response = reservationService.create(info);
 
         assertThat(response.getId()).isNotNull();
         assertThat(reservationService.findAll().getReservationsResponse()).hasSize(2);

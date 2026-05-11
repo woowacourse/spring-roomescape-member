@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.dto.ReservationCreateInfo;
 import roomescape.reservation.dto.ReservationIdResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationsResponse;
@@ -37,17 +38,17 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationIdResponse create(ReservationRequest request) {
-        User user = userRepository.findByName(request.name())
+    public ReservationIdResponse create(ReservationCreateInfo info) {
+        User user = userRepository.findByName(info.name())
                 .orElseGet(() -> {
-                    User newUser = new User(request.name(), Role.USER);
+                    User newUser = new User(info.name(), Role.USER);
                     Long newUserId = userRepository.create(newUser);
-                    return new User(newUserId, request.name(), Role.USER);
+                    return new User(newUserId, info.name(), Role.USER);
                 });
 
-        Theme theme = themeRepository.findById(request.themeId());
+        Theme theme = themeRepository.findById(info.themeId());
 
-        LocalDateTime startAt = LocalDateTime.of(LocalDate.parse(request.date()), LocalTime.parse(request.time()));
+        LocalDateTime startAt = LocalDateTime.of(LocalDate.parse(info.date()), LocalTime.parse(info.time()));
 
         Schedule schedule = scheduleRepository.findByThemeIdAndStartAt(theme.getId(), startAt)
                 .orElseThrow(() -> new IllegalArgumentException("등록된 스케줄이 없습니다."));
