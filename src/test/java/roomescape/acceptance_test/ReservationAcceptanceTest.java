@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.dto.ReservationCreateRequest;
-import roomescape.controller.dto.ReservationTimeCreateRequest;
-import roomescape.controller.dto.ThemeCreateRequest;
+import roomescape.reservation.controller.dto.ReservationCreateRequest;
+import roomescape.reservationtime.controller.dto.ReservationTimeCreateRequest;
+import roomescape.theme.controller.dto.ThemeCreateRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
