@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.TimeWithStatusResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -31,22 +30,27 @@ public class ReservationTimeController {
     public ResponseEntity<List<ReservationTimeResponse>> search() {
         List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes()
                 .stream()
-                .map(ReservationTimeResponse::from)
+                .map(time -> ReservationTimeResponse.from(time, false))
                 .toList();
 
         return ResponseEntity.ok().body(responses);
     }
 
     @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<TimeWithStatusResponse>> searchAvailableReservationTime(@RequestParam LocalDate date,
-                                                                                       @RequestParam Long themeId) {
-        return ResponseEntity.ok().body(reservationTimeService.getReservationTimesWithAvailability(date, themeId));
+    public ResponseEntity<List<ReservationTimeResponse>> searchAvailableReservationTime(@RequestParam LocalDate date,
+                                                                                        @RequestParam Long themeId) {
+        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.getReservationTimesWithAvailability(
+                        date, themeId)
+                .stream()
+                .map(ReservationTimeResponse::of)
+                .toList();
+        return ResponseEntity.ok().body(reservationTimeResponses);
     }
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> add(@RequestBody ReservationTimeRequest request) {
         ReservationTimeResponse response = ReservationTimeResponse.from(
-                reservationTimeService.addReservationTime(request));
+                reservationTimeService.addReservationTime(request), false);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.ReservationTimeStatus;
 import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.TimeWithStatusResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,12 +32,12 @@ public class ReservationTimeService {
         return reservationtimeRepository.getById(id);
     }
 
-    public List<TimeWithStatusResponse> getReservationTimesWithAvailability(LocalDate date, Long themeId) {
+    public List<ReservationTimeStatus> getReservationTimesWithAvailability(LocalDate date, Long themeId) {
         List<ReservationTime> times = getReservationTimes();
         Set<Long> reservedTimeIds = reservationRepository.findReservedTimeIdsByDateAndThemeId(date, themeId);
 
         return times.stream()
-                .map(time -> TimeWithStatusResponse.from(time, reservedTimeIds.contains(time.getId())))
+                .map(time -> new ReservationTimeStatus(time, reservedTimeIds.contains(time.getId())))
                 .toList();
     }
 

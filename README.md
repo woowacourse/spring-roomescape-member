@@ -51,7 +51,8 @@ Content-Type: application/json
    "date": "2026-05-03",
    "time": {
       "id": 1,
-      "startAt": "10:00"
+      "startAt": "10:00",
+      "reserved" : false
    },
    "theme": { 
       "id": 1,
@@ -86,7 +87,8 @@ Content-Type: application/json
    "date": "2026-05-03",
    "time": {
       "id": 1,
-      "startAt": "10:00"
+      "startAt": "10:00",
+      "reserved" : false
    },
    "theme": { 
       "id": 1,
@@ -123,11 +125,13 @@ Content-Type: application/json
 [
     {
         "id": 1,
-        "startAt": "15:30"
+        "startAt": "15:30",
+        "reserved" : false
     },
     {
         "id": 2,
-        "startAt": "16:30"
+        "startAt": "16:30",
+        "reserved" : false
     }
 ]
 
@@ -147,7 +151,8 @@ Content-Type: application/json
 
 {
     "id": 1,
-    "startAt": "15:30"
+    "startAt": "15:30",
+    "reserved" : false
 }
 
 ---
