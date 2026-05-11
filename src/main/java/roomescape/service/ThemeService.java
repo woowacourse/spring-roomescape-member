@@ -42,8 +42,9 @@ public class ThemeService {
     }
 
     public List<PopularThemeResult> findWeeklyTopTen() {
-        LocalDate startDate = LocalDate.now().minusWeeks(1);
-        LocalDate endDate = startDate.plusDays(6);
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusWeeks(1);
+        LocalDate endDate = today.minusDays(1);
         return themeRepository.findPopular(startDate, endDate, 10);
     }
 
