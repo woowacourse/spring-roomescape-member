@@ -1,6 +1,8 @@
 package roomescape.exception.handler;
 
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.*;
@@ -17,5 +19,12 @@ public class GlobalExceptionHandler {
     })
     public ResponseEntity<String> handleCustomException(CustomException customException) {
         return new ResponseEntity<>(customException.getMessage(), HttpErrorMapping.getHttpStatus(customException.getErrorMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
+
+        return ResponseEntity.badRequest().body(Map.of("message", errorMessage));
     }
 }
