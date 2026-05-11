@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationResponses;
 import roomescape.reservation.service.ReservationService;
 
 import java.util.List;
@@ -21,12 +22,12 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
+    public ResponseEntity<ReservationResponses> getReservations() {
         List<Reservation> reservations = reservationService.findReservations();
         List<ReservationResponse> response = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(new ReservationResponses(response));
     }
 
     @PostMapping

@@ -49,14 +49,14 @@ class ReservationControllerTest {
 
         mockMvc.perform(get("/reservations"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].name").value("레서"))
-                .andExpect(jsonPath("$[0].date").value("2026-05-06"))
-                .andExpect(jsonPath("$[0].time.startAt").value("18:00"))
-                .andExpect(jsonPath("$[0].theme.name").value("공포방"))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].name").value("어셔"));
+                .andExpect(jsonPath("$.reservations.length()").value(2))
+                .andExpect(jsonPath("$.reservations[0].id").value(1))
+                .andExpect(jsonPath("$.reservations[0].name").value("레서"))
+                .andExpect(jsonPath("$.reservations[0].date").value("2026-05-06"))
+                .andExpect(jsonPath("$.reservations[0].time.startAt").value("18:00"))
+                .andExpect(jsonPath("$.reservations[0].theme.name").value("공포방"))
+                .andExpect(jsonPath("$.reservations[1].id").value(2))
+                .andExpect(jsonPath("$.reservations[1].name").value("어셔"));
     }
 
     @Test

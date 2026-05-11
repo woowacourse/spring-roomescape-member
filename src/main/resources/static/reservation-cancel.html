@@ -289,7 +289,8 @@
     async function load() {
         const c = document.getElementById('res-list');
         try {
-            const reservations = await fetch('/reservations').then(r => r.json());
+            const data = await fetch('/reservations').then(r => r.json());
+            const reservations = data.reservations;
             if (!reservations.length) {
                 c.innerHTML = '<p class="state-msg">예약 내역이 없습니다.</p>';
                 return;

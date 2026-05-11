@@ -51,12 +51,12 @@ class ReservationE2ETest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1))
-                .body("[0].name", is("브라운"))
-                .body("[0].date", is("2025-12-25"))
-                .body("[0].time.id", is(1))
-                .body("[0].theme.id", is(1))
-                .body("[0].theme.name", is("공포"));
+                .body("reservations.size()", is(1))
+                .body("reservations[0].name", is("브라운"))
+                .body("reservations[0].date", is("2025-12-25"))
+                .body("reservations[0].time.id", is(1))
+                .body("reservations[0].theme.id", is(1))
+                .body("reservations[0].theme.name", is("공포"));
     }
 
     @Test
@@ -96,7 +96,7 @@ class ReservationE2ETest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("reservations.size()", is(0));
     }
 
     @Test
