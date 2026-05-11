@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.global.exception.BusinessException;
-import roomescape.global.exception.ErrorCode;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationRepository;
