@@ -27,8 +27,8 @@ public class ReservationController {
     @ResponseBody
     @PostMapping("/reservations")
     public ResponseEntity<Object> create(@RequestBody ReservationRequest request) {
-        Reservation reservation = reservationFacade.createReservation(request);
-        return ResponseEntity.ok(ReservationCreateResponse.from(reservation));
+        ReservationCreateResponse reservationCreateResponse = reservationFacade.createReservation(request);
+        return ResponseEntity.ok(reservationCreateResponse);
     }
 
     @ResponseBody

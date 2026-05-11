@@ -7,6 +7,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.request.ReservationTimeCreateRequest;
+import roomescape.reservation.dto.response.ReservationCreateResponse;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.dto.response.ReservationTimeCreateResponse;
 import roomescape.reservation.dto.response.ReservationTimeFindAllResponse;
@@ -22,7 +23,7 @@ public class ReservationFacade {
         this.reservationTimeService = reservationTimeService;
     }
 
-    public Reservation createReservation(ReservationRequest request) {
+    public ReservationCreateResponse createReservation(ReservationRequest request) {
         reservationTimeService.findById(request.timeId());
         return reservationService.create(request);
     }

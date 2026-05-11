@@ -45,9 +45,7 @@ public class ThemeController {
     public ResponseEntity<ThemeResponse> create(
             @RequestBody ThemeCreateRequest themeCreateRequest
     ) {
-        Theme theme = themeService.create(themeCreateRequest);
-        ThemeResponse response = ThemeResponse.from(theme);
-
+        ThemeResponse response = themeService.create(themeCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

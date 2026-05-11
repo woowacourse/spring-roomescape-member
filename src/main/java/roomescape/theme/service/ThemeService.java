@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.theme.dao.ThemeDAO;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.request.ThemeCreateRequest;
+import roomescape.theme.dto.response.ThemeResponse;
 
 @Service
 public class ThemeService {
@@ -19,14 +20,8 @@ public class ThemeService {
         return themeDAO.findAll();
     }
 
-    public Theme create(ThemeCreateRequest request) {
-        Theme theme = new Theme(
-                request.name(),
-                request.description(),
-                request.imageUrl()
-        );
-
-        return themeDAO.insert(theme);
+    public ThemeResponse create(ThemeCreateRequest request) {
+        return ThemeResponse.from(themeDAO.insert(request));
     }
 
     public void delete(long id) {

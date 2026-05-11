@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.request.ThemeCreateRequest;
 import roomescape.theme.dto.response.ReservedThemeResponse;
 
 @Component
@@ -25,14 +26,14 @@ public class ThemeDAO {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Theme insert(Theme theme) {
-        Number id = simpleJdbcInsert.executeAndReturnKey(Map.of(
-                "name", theme.getName(),
-                "description", theme.getDescription(),
-                "image_url", theme.getImageUrl()
-        ));
+    public Theme insert(ThemeCreateRequest themeCreateRequest) {
+        Long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
+                "name", themeCreateRequest.name(),
+                "description", themeCreateRequest.description(),
+                "image_url", themeCreateRequest.imageUrl()
+        )).longValue();
 
-        return Theme.of(id.longValue(), theme.getName(), theme.getDescription(), theme.getImageUrl());
+        return Theme.of(id, themeCreateRequest.name(), themeCreateRequest.description(), themeCreateRequest.imageUrl());
     }
 
     public List<Theme> findAll() {

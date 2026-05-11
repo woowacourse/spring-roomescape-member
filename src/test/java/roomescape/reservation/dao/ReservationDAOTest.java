@@ -21,6 +21,7 @@ import roomescape.reservation.dto.response.ThemeSimpleResponse;
 import roomescape.reservation.dto.response.TimeResponse;
 import roomescape.theme.dao.ThemeDAO;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.request.ThemeCreateRequest;
 
 @JdbcTest
 class ReservationDAOTest {
@@ -46,7 +47,7 @@ class ReservationDAOTest {
     }
 
     private Theme createTheme() {
-        return themeDAO.insert(new Theme("테마이름", "테마설명", "https://image.url"));
+        return themeDAO.insert(new ThemeCreateRequest("테마이름", "테마설명", "https://image.url"));
     }
 
     @Nested

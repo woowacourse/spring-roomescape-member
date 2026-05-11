@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.request.ThemeCreateRequest;
 
 @JdbcTest
 class ThemeDAOTest {
@@ -34,7 +35,7 @@ class ThemeDAOTest {
             Theme theme = new Theme("테마이름", "테마설명", "https://image.url");
 
             // when
-            Theme saved = themeDAO.insert(theme);
+            Theme saved = themeDAO.insert(new ThemeCreateRequest("테마이름", "테마설명", "https://image.url"));
 
             // then
             assertThat(saved.getId()).isNotNull();
@@ -47,7 +48,7 @@ class ThemeDAOTest {
             Theme theme = new Theme("테마이름", "테마설명", "https://image.url");
 
             // when
-            Theme saved = themeDAO.insert(theme);
+            Theme saved = themeDAO.insert(new ThemeCreateRequest("테마이름", "테마설명", "https://image.url"));
 
             // then
             List<Theme> allThemes = themeDAO.findAll();
@@ -59,9 +60,9 @@ class ThemeDAOTest {
     @Test
     void 저장된_모든_테마를_조회한다() {
         // given
-        themeDAO.insert(new Theme("테마1", "설명1", "url1"));
-        themeDAO.insert(new Theme("테마2", "설명2", "url2"));
-        themeDAO.insert(new Theme("테마3", "설명3", "url3"));
+        themeDAO.insert(new ThemeCreateRequest("테마이름1", "테마설명1", "https://image.url1"));
+        themeDAO.insert(new ThemeCreateRequest("테마이름2", "테마설명2", "https://image.url2"));
+        themeDAO.insert(new ThemeCreateRequest("테마이름3", "테마설명3", "https://image.url3"));
 
         // when
         List<Theme> themes = themeDAO.findAll();
@@ -76,7 +77,7 @@ class ThemeDAOTest {
         @Test
         void 존재하는_테마를_조회한다() {
             // given
-            Theme saved = themeDAO.insert(new Theme("테마이름", "설명", "url"));
+            Theme saved = themeDAO.insert(new ThemeCreateRequest("테마이름", "테마설명", "https://image.url"));
 
             // when
             Theme found = themeDAO.findById(saved.getId());
@@ -100,7 +101,7 @@ class ThemeDAOTest {
         @Test
         void ID로_테마를_삭제한다() {
             // given
-            Theme saved = themeDAO.insert(new Theme("테마이름", "설명", "url"));
+            Theme saved = themeDAO.insert(new ThemeCreateRequest("테마이름", "테마설명", "https://image.url"));
 
             // when
             boolean deleted = themeDAO.delete(saved.getId());
