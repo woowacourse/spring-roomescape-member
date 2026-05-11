@@ -23,7 +23,7 @@ export default class Controller {
 
     this.views.timeSectionView
       .on("@create-time", (event) => this.createTime(event.detail))
-      .on("@delete-time", (event) => this.deleteTime(event.detail.id));
+      .on("@toggle-time", (event) => this.toggleTime(event.detail.id, event.detail.status));
   }
 
   async initialize() {
@@ -114,10 +114,16 @@ export default class Controller {
     }
   }
 
-  async deleteTime(id) {
+  async toggleTime(id, currentStatus) {
     try {
-      await this.store.removeTime(id);
-      this.views.toastView.show("시간이 삭제되었습니다.");
+      await this.store.toggleTimeStatus(id, currentStatus);
+
+      if (currentStatus === "ACTIVE") {
+        this.views.toastView.show("시간이 비활성화되었습니다.");
+      } else {
+        this.views.toastView.show("시간이 활성화되었습니다.", "success");
+      }
+
       await this.refreshAll();
     } catch (error) {
       this.views.toastView.show(error.message, "error");

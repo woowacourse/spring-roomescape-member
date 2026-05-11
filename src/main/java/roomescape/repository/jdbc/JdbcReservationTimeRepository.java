@@ -46,11 +46,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void deleteById(long id) {
-        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
-    }
-
-    @Override
     public Optional<ReservationTime> findById(long id) {
         try {
             String sql = "SELECT * FROM reservation_time WHERE id = ?";
@@ -69,9 +64,9 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findActiveTimes() {
-        String sql = "SELECT * FROM reservation_time where status = ?";
-        return jdbcTemplate.query(sql, RESERVATION_TIME_MAPPER, TimeStatus.ACTIVE.toString());
+    public List<ReservationTime> findAllTimes() {
+        String sql = "SELECT * FROM reservation_time";
+        return jdbcTemplate.query(sql, RESERVATION_TIME_MAPPER);
     }
 
     @Override
@@ -86,10 +81,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                                 ON rt.id = r.time_id
                                 AND r.theme_id = ?
                                 AND r.date = ?
+                        WHERE rt.status = ?
                         ORDER BY rt.start_at ASC;
                 """;
 
-        return jdbcTemplate.query(sql, TIME_SLOT_PROJECTION_MAPPER, themeId, date);
+        return jdbcTemplate.query(sql, TIME_SLOT_PROJECTION_MAPPER, themeId, date, TimeStatus.ACTIVE.toString());
     }
 
     @Override
@@ -99,6 +95,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     SET start_at = ?, status = ?
                     WHERE id = ?
                 """;
-        jdbcTemplate.update(sql, time.getStartAt(), time.getStatus());
+        jdbcTemplate.update(sql, time.getStartAt(), time.getStatus().toString(), time.getId());
     }
 }

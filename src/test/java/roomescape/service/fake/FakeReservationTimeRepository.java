@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.TimeStatus;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.dto.TimeSlotProjection;
 
@@ -29,11 +28,6 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void deleteById(long id) {
-        reservationTimes.values().removeIf(time -> time.getId().equals(id));
-    }
-
-    @Override
     public Optional<ReservationTime> findById(long id) {
         return reservationTimes.values()
                 .stream()
@@ -49,10 +43,9 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findActiveTimes() {
+    public List<ReservationTime> findAllTimes() {
         return reservationTimes.values()
                 .stream()
-                .filter(reservationTime -> reservationTime.getStatus() == TimeStatus.ACTIVE)
                 .toList();
     }
 
@@ -67,5 +60,9 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public void update(ReservationTime time) {
         reservationTimes.put(time.getId(), time);
+    }
+
+    public ReservationTime get(long id) {
+        return reservationTimes.get(id);
     }
 }

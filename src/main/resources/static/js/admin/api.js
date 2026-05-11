@@ -72,9 +72,16 @@ export function createTime(payload) {
   });
 }
 
-export function deleteTime(id) {
-  return requestJson(`/api/admin/times/${id}`, {
-    method: "DELETE",
+export function activateTime(id) {
+  return requestJson(`/api/admin/times/${id}/activate`, {
+    method: "PATCH",
+    headers: ADMIN_ONLY_HEADERS
+  });
+}
+
+export function deactivateTime(id) {
+  return requestJson(`/api/admin/times/${id}/deactivate`, {
+    method: "PATCH",
     headers: ADMIN_ONLY_HEADERS
   });
 }

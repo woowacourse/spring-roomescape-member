@@ -61,7 +61,7 @@ class AdminReservationApiControllerTest extends BaseControllerUnitTest {
     void 예약_요청에_성공하면_201_Created_상태와_정상_응답이_반환된다() {
         // given
         AdminReservationRequest body = AdminReservationApiRequestFixture.reserveSuccessRequestFixture();
-        ReservationTimeResult timeResult = new ReservationTimeResult(1L, LocalTime.now());
+        ReservationTimeResult timeResult = new ReservationTimeResult(1L, LocalTime.now(), "ACTIVE");
         ReservationResult result = new ReservationResult(1L, "이프", LocalDate.now(), timeResult);
         when(reservationService.reserve(any(ReservationCommand.class))).thenReturn(result);
 

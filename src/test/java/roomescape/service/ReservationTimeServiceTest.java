@@ -9,14 +9,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.DuplicateEntityException;
 import roomescape.domain.ReservationTime;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.domain.TimeStatus;
 import roomescape.service.command.ReservationTimeCommand;
 import roomescape.service.fake.FakeReservationTimeRepository;
 import roomescape.service.result.ReservationTimeResult;
 
 class ReservationTimeServiceTest {
 
-    private ReservationTimeRepository reservationTimeRepository;
+    private FakeReservationTimeRepository reservationTimeRepository;
     private ReservationTimeService reservationTimeService;
 
     @BeforeEach
@@ -55,16 +55,32 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 식별자를_이용해_예약_시간을_삭제한다() {
+    void 식별자를_이용해_예약_시간을_비활성화_한다() {
         // given: 삭제할 예약 시간이 저장되어 있음
         ReservationTime saved = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         Long id = saved.getId();
 
-        // when: 해당 ID로 삭제를 요청함
-        reservationTimeService.remove(id);
+        // when: 해당 ID로 비활성화를 요청함
+        reservationTimeService.deactivate(id);
 
-        // then: 전체 조회 시 해당 데이터가 존재하지 않음
-        assertThat(reservationTimeRepository.findActiveTimes()).isEmpty();
+        // then: 비활성화 상태로 저장됨
+        ReservationTime reservationTime = reservationTimeRepository.get(id);
+        assertThat(reservationTime.getStatus()).isEqualTo(TimeStatus.INACTIVE);
+    }
+
+    @Test
+    void 식별자를_이용해_예약_시간을_다시_활성화한다() {
+        // given: 삭제할 예약 시간이 저장되어 있음
+        ReservationTime saved = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        Long id = saved.getId();
+        reservationTimeService.deactivate(id);
+
+        // when: 해당 ID로 활성화를 요청함
+        reservationTimeService.activate(id);
+
+        // then: 활성화 상태로 저장됨
+        ReservationTime reservationTime = reservationTimeRepository.get(id);
+        assertThat(reservationTime.getStatus()).isEqualTo(TimeStatus.ACTIVE);
     }
 
     @Test

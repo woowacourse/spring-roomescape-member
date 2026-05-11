@@ -69,4 +69,28 @@ class ReservationTimeTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 비활성화 된 시간 정보입니다.");
     }
+
+    @Test
+    void 예약_시간을_활성화_할_수_있다() {
+        // given
+        ReservationTime time = new ReservationTime(LocalTime.of(11, 0));
+        time.deactivate();
+
+        // when
+        time.activate();
+
+        // then
+        assertThat(time.getStatus()).isEqualTo(TimeStatus.ACTIVE);
+    }
+
+    @Test
+    void 활성화된_예약_시간에_활성화를_시도하면_예외가_발생한다() {
+        // given
+        ReservationTime time = new ReservationTime(LocalTime.of(11, 0));
+
+        // when
+        assertThatThrownBy(time::activate)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("이미 활성화 된 시간 정보입니다.");
+    }
 }

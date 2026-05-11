@@ -1,11 +1,12 @@
 import {
   activateTheme,
+  activateTime,
   createReservation,
   createTheme,
   createTime,
   deactivateTheme,
+  deactivateTime,
   deleteReservation,
-  deleteTime,
   fetchReservations,
   fetchThemes,
   fetchTimes
@@ -36,6 +37,7 @@ export default class Store {
       fetchTimes()
     ]);
 
+    console.log(" +==========", times);
     this.themes = themes;
     this.reservations = reservations;
     this.times = times;
@@ -46,7 +48,6 @@ export default class Store {
   }
 
   async toggleThemeStatus(id, currentStatus) {
-    console.log(id, currentStatus);
     if (currentStatus) {
       await deactivateTheme(id);
     } else {
@@ -66,7 +67,12 @@ export default class Store {
     return createTime(payload);
   }
 
-  removeTime(id) {
-    return deleteTime(id);
+  async toggleTimeStatus(id, currentStatus) {
+    console.log(id, currentStatus);
+    if (currentStatus === "ACTIVE") {
+      await deactivateTime(id);
+    } else {
+      await activateTime(id);
+    }
   }
 }

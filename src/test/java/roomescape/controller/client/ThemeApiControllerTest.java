@@ -48,7 +48,7 @@ class ThemeApiControllerTest extends BaseControllerUnitTest {
         // when & then
         List<ThemeTimesResponse> response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .queryParam("date", "2026-05-06")
-                .when().get("/api/themes/1")
+                .when().get("/api/themes/{id}/times", 1L)
                 .then().log().all()
                 .status(HttpStatus.OK)
                 .extract().as(new TypeRef<>() {
@@ -63,7 +63,7 @@ class ThemeApiControllerTest extends BaseControllerUnitTest {
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
                 .queryParam("date", "2026-05-06")
-                .when().get("/api/themes/" + invalidThemeId)
+                .when().get("/api/themes/{id}/times", invalidThemeId)
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body(containsString("테마 조회 식별자는 양수여야 합니다."));

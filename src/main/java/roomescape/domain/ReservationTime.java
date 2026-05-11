@@ -39,4 +39,11 @@ public class ReservationTime {
         }
         this.status = TimeStatus.INACTIVE;
     }
+
+    public void activate() {
+        if (this.status == TimeStatus.ACTIVE) {
+            throw new IllegalArgumentException("이미 활성화 된 시간 정보입니다.");
+        }
+        this.status = TimeStatus.ACTIVE;
+    }
 }

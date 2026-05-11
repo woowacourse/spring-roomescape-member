@@ -1,11 +1,11 @@
-import { requestJson } from "../common/http.js";
+import {requestJson} from "../common/http.js";
 
 export function fetchThemes() {
   return requestJson("/api/themes");
 }
 
 export function fetchThemeSlots(themeId, date) {
-  return requestJson(`/api/themes/${themeId}?date=${date}`);
+  return requestJson(`/api/themes/${themeId}/times?date=${date}`);
 }
 
 export function createReservation(payload) {

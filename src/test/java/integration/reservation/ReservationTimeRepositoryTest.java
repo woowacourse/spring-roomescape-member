@@ -58,18 +58,6 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    void 시간을_삭제한다() {
-        // given
-        ReservationTime saved = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-
-        // when
-        reservationTimeRepository.deleteById(saved.getId());
-
-        // then
-        assertThat(reservationTimeRepository.findById(saved.getId())).isEmpty();
-    }
-
-    @Test
     void 특정_시간이_존재하는지_확인한다() {
         // given
         LocalTime targetTime = LocalTime.of(10, 0);
@@ -88,7 +76,7 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
         reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
 
         // when
-        List<ReservationTime> times = reservationTimeRepository.findActiveTimes();
+        List<ReservationTime> times = reservationTimeRepository.findAllTimes();
 
         // then
         assertThat(times).hasSize(2);

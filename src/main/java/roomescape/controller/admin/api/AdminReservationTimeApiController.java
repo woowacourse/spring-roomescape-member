@@ -8,8 +8,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,12 +36,21 @@ public class AdminReservationTimeApiController {
         return ResponseEntity.status(CREATED).body(AdminReservationTimeResponse.from(result));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> remove(
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<Void> deactivate(
             @PathVariable
-            @Positive(message = "예약 시간 제거 식별자는 양수여야 합니다.") Long id
+            @Positive(message = "예약 시간 비활성화 식별자는 양수여야 합니다.") Long id
     ) {
-        reservationTimeService.remove(id);
+        reservationTimeService.deactivate(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<Void> activate(
+            @PathVariable
+            @Positive(message = "예약 시간 활성화 식별자는 양수여야 합니다.") Long id
+    ) {
+        reservationTimeService.activate(id);
         return ResponseEntity.noContent().build();
     }
 

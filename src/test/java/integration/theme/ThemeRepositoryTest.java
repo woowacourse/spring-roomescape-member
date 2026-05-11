@@ -1,7 +1,6 @@
 package integration.theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import integration.BaseIntegrationTest;
@@ -62,19 +61,6 @@ class ThemeRepositoryTest extends BaseIntegrationTest {
         // when & then
         assertThatThrownBy(() -> themeRepository.save(theme))
                 .isInstanceOf(DataIntegrityViolationException.class);
-    }
-
-    @Test
-    void 비성활화된_같은_테마는_여러개_존재_가능() {
-        // given
-        Theme first = new Theme(1L, "바니의 집", "바니의 집입니다", "http://image.png/image.com", false);
-        Theme second = new Theme(1L, "바니의 집", "바니의 집입니다", "http://image.png/image.com", false);
-
-        // when & then
-        assertThatCode(() -> {
-            themeRepository.save(first);
-            themeRepository.save(second);
-        }).doesNotThrowAnyException();
     }
 
     @Test

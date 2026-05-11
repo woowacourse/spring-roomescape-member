@@ -28,7 +28,7 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public void remove(long id) {
+    public void deactivate(long id) {
         reservationTimeRepository.findById(id)
                 .ifPresent(time -> {
                     time.deactivate();
@@ -36,8 +36,17 @@ public class ReservationTimeService {
                 });
     }
 
+    @Transactional
+    public void activate(long id) {
+        reservationTimeRepository.findById(id)
+                .ifPresent(time -> {
+                    time.activate();
+                    reservationTimeRepository.update(time);
+                });
+    }
+
     public List<ReservationTimeResult> getAllReservationTimes() {
-        return reservationTimeRepository.findActiveTimes()
+        return reservationTimeRepository.findAllTimes()
                 .stream()
                 .map(ReservationTimeResult::from)
                 .toList();

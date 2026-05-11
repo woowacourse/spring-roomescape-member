@@ -11,13 +11,11 @@ public interface ReservationTimeRepository {
 
     ReservationTime save(ReservationTime reservationTime);
 
-    void deleteById(long id);
-
     Optional<ReservationTime> findById(long id);
 
     boolean existsByStartAt(LocalTime time);
 
-    List<ReservationTime> findActiveTimes();
+    List<ReservationTime> findAllTimes();
 
     List<TimeSlotProjection> findTimesByThemeWithReservationStatus(long themeId, LocalDate date);
 

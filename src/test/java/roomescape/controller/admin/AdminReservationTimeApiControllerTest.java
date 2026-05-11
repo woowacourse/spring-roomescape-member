@@ -55,7 +55,7 @@ class AdminReservationTimeApiControllerTest extends BaseControllerUnitTest {
     void 시간_등록에_성공하면_201_Created_상태와_정상_응답이_반환된다() {
         // given
         ReservationTimeCommand body = AdminReservationTimeApiRequestFixture.registerSuccessRequestFixture();
-        ReservationTimeResult result = new ReservationTimeResult(1L, body.startAt());
+        ReservationTimeResult result = new ReservationTimeResult(1L, body.startAt(), "ACTIVE");
         when(reservationTimeService.register(any(ReservationTimeCommand.class))).thenReturn(result);
 
         // when & then
@@ -71,29 +71,50 @@ class AdminReservationTimeApiControllerTest extends BaseControllerUnitTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, -1})
-    void 시간_삭제를_요청하는_식별자가_양수가_아니라면_예외가_발생한다(int timeId) {
+    void 시간_비활성화를_요청하는_식별자가_양수가_아니라면_예외가_발생한다(int timeId) {
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
-                .when().delete("/api/admin/times/" + timeId)
+                .when().patch("/api/admin/times/{id}/deactivate", timeId)
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("예약 시간 제거 식별자는 양수여야 합니다."));
+                .body(containsString("예약 시간 비활성화 식별자는 양수여야 합니다."));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void 시간_활성화를_요청하는_식별자가_양수가_아니라면_예외가_발생한다(int timeId) {
+        // when & then
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .when().patch("/api/admin/times/{id}/activate", timeId)
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body(containsString("예약 시간 활성화 식별자는 양수여야 합니다."));
     }
 
     @Test
-    void 정상적인_ID로_시간_삭제_요청시_204_응답을_한다() {
+    void 정상적인_ID로_시간_비활성화_요청시_204_응답을_한다() {
         // when & then
         RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
-                .when().delete("/api/admin/times/1")
+                .when().patch("/api/admin/times/{id}/deactivate", 1L)
                 .then().log().all()
                 .status(HttpStatus.NO_CONTENT);
-        verify(reservationTimeService, times(1)).remove(anyLong());
+        verify(reservationTimeService, times(1)).deactivate(anyLong());
+    }
+
+    @Test
+    void 정상적인_ID로_시간_활성화_요청시_204_응답을_한다() {
+        // when & then
+        RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .when().patch("/api/admin/times/{id}/activate", 1L)
+                .then().log().all()
+                .status(HttpStatus.NO_CONTENT);
+        verify(reservationTimeService, times(1)).activate(anyLong());
     }
 
     @Test
     void 전체_시간_조회_요청시_200OK와_시간_정보들을_응답한다() {
         // given
-        List<ReservationTimeResult> result = List.of(new ReservationTimeResult(1L, LocalTime.of(10, 0)));
+        List<ReservationTimeResult> result = List.of(new ReservationTimeResult(1L, LocalTime.of(10, 0), "ACTIVE"));
         when(reservationTimeService.getAllReservationTimes()).thenReturn(result);
         List<AdminReservationTimeResponse> expected = result.stream().map(AdminReservationTimeResponse::from).toList();
 
