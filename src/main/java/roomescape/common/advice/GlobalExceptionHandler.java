@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AlreadyInUseException.class)
     public ResponseEntity<String> handleReservationTimeInUseException(AlreadyInUseException e) {
-        log.error("Reservatin Already In Use Exception 발생 : {}", e.getMessage());
+        log.error("Reservation Already In Use Exception 발생 : {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
