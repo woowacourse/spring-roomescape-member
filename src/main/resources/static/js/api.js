@@ -26,7 +26,10 @@ window.api = (function () {
 
     async function toError(res) {
         let message = '';
-        try { message = await res.text(); } catch (_) {}
+        try {
+            message = await res.text();
+        } catch (_) {
+        }
         const err = new Error(message || ('HTTP ' + res.status));
         err.status = res.status;
         return err;

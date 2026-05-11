@@ -126,5 +126,7 @@
         ));
     }
 
-    function escapeAttr(s) { return escapeHtml(s); }
+    function escapeAttr(s) {
+        return escapeHtml(s);
+    }
 })();

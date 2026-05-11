@@ -196,9 +196,9 @@
 
     async function onDelete(kind, id) {
         const map = {
-            reservation: {title: '예약 폐기',      msg: '이 예약을 폐기하면 복구할 수 없습니다.',            call: api.deleteReservation},
-            theme:       {title: '사건 폐기',       msg: '이 사건(테마)을 폐기하면 복구할 수 없습니다.',      call: api.deleteTheme},
-            time:        {title: '시간 슬롯 폐기',  msg: '이 시간 슬롯을 폐기합니다. 진행 중인 예약이 있으면 차단됩니다.', call: api.deleteTime}
+            reservation: {title: '예약 폐기', msg: '이 예약을 폐기하면 복구할 수 없습니다.', call: api.deleteReservation},
+            theme: {title: '사건 폐기', msg: '이 사건(테마)을 폐기하면 복구할 수 없습니다.', call: api.deleteTheme},
+            time: {title: '시간 슬롯 폐기', msg: '이 시간 슬롯을 폐기합니다. 진행 중인 예약이 있으면 차단됩니다.', call: api.deleteTime}
         };
         const m = map[kind];
         const ok = await modal.confirm({title: m.title, message: m.msg, okText: '폐기 확정', danger: true});
