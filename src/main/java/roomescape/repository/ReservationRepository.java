@@ -71,12 +71,12 @@ public class ReservationRepository {
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
+        String sql = "SELECT COUNT(id) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId) > 0;
     }
 
     public boolean existsByTimeId(Long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
+        String sql = "SELECT COUNT(id) FROM reservation WHERE time_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, timeId) > 0;
     }
 

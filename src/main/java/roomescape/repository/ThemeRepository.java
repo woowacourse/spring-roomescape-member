@@ -47,7 +47,7 @@ public class ThemeRepository {
     }
 
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT * FROM THEME WHERE ID = ?";
+        String sql = "SELECT id, name, description, url FROM THEME WHERE ID = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, themeRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
@@ -56,7 +56,7 @@ public class ThemeRepository {
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT * FROM THEME";
+        String sql = "SELECT id, name, description, url FROM THEME";
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 

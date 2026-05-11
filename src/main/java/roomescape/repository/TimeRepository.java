@@ -26,7 +26,7 @@ public class TimeRepository {
     }
 
     public List<ReservationTime> findAll() {
-        String sql = "select * from reservation_time";
+        String sql = "select id, start_at from reservation_time";
         return jdbcTemplate.query(sql, timeRowMapper);
     }
 
@@ -60,7 +60,7 @@ public class TimeRepository {
     }
 
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "select * from reservation_time where id = ?";
+        String sql = "select id, start_at from reservation_time where id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
@@ -69,7 +69,7 @@ public class TimeRepository {
     }
 
     public boolean existsByStartAt(LocalTime startAt) {
-        String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
+        String sql = "SELECT COUNT(id) FROM reservation_time WHERE start_at = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, startAt) > 0;
     }
 }
