@@ -31,19 +31,24 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> create(
             @Valid @RequestBody ReservationSaveDto dto
     ) {
-        return ResponseEntity.status(CREATED).body(reservationService.create(dto));
+        ReservationResponse responseData = ReservationResponse.from(
+                reservationService.create(dto.name(), dto.date(), dto.timeId(), dto.themeId()));
+        return ResponseEntity.status(CREATED).body(responseData);
     }
 
     @GetMapping("/reservations")
     @Operation(summary = "Read reservations by name", description = "예약자 이름으로 예약 목록을 조회하는 api")
     public ResponseEntity<List<ReservationResponse>> getMyReservations(@RequestParam String name) {
-        List<ReservationResponse> responseData = reservationService.readAllByName(name);
+        List<ReservationResponse> responseData = reservationService.readAllByName(name).stream()
+                .map(ReservationResponse::from)
+                .toList();
         return ResponseEntity.ok(responseData);
     }
 
     @PatchMapping("/reservations/{id}")
     @Operation(summary = "Cancel a reservation", description = "예약을 취소하는 api")
     public ResponseEntity<ReservationResponse> cancel(@PathVariable Long id) {
-        return ResponseEntity.ok(reservationService.cancel(id));
+        ReservationResponse responseData = ReservationResponse.from(reservationService.cancel(id));
+        return ResponseEntity.ok(responseData);
     }
 }

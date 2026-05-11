@@ -12,7 +12,7 @@ public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(Long id);
 
-    Long save(ReservationTime reservationTime);
+    ReservationTime save(ReservationTime reservationTime);
 
     void delete(Long id);
 

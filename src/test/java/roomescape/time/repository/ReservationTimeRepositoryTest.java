@@ -108,7 +108,7 @@ class ReservationTimeRepositoryTest {
         // given
         LocalTime duplicatedTime = LocalTime.of(15, 0);
         LocalTime nonSavedTime = LocalTime.of(12, 0);
-        savedTime(ReservationTime.create(duplicatedTime));
+        jdbcReservationTimeRepository.save(ReservationTime.create(duplicatedTime));
 
         // when & then
         assertThat(jdbcReservationTimeRepository.existsByStartAt(duplicatedTime)).isTrue();
@@ -119,9 +119,9 @@ class ReservationTimeRepositoryTest {
     @DisplayName("예약 가능한 시간을 조회한다.")
     void findAvailableTimes() {
         // given
-        ReservationTime time1 = savedTime(ReservationTime.create(LocalTime.of(12, 0)));
-        ReservationTime time2 = savedTime(ReservationTime.create(LocalTime.of(13, 0)));
-        ReservationTime time3 = savedTime(ReservationTime.create(LocalTime.of(14, 0)));
+        ReservationTime time1 = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(12, 0)));
+        ReservationTime time2 = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(13, 0)));
+        ReservationTime time3 = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(14, 0)));
         LocalDate date = LocalDate.of(2099, 10, 10);
         Theme theme1 = Theme.create("테마1", "테마 설명", "테마 썸네일");
         theme1.updateStatus(true);
@@ -141,13 +141,8 @@ class ReservationTimeRepositoryTest {
     private List<ReservationTime> savedAll(List<ReservationTime> reservationTimes) {
         List<ReservationTime> savedTimes = new ArrayList<>();
         for (ReservationTime reservationTime : reservationTimes) {
-            savedTimes.add(savedTime(reservationTime));
+            savedTimes.add(jdbcReservationTimeRepository.save(reservationTime));
         }
         return savedTimes;
-    }
-
-    private ReservationTime savedTime(ReservationTime reservationTime) {
-        Long savedId = jdbcReservationTimeRepository.save(reservationTime);
-        return ReservationTime.load(savedId, reservationTime.startAt());
     }
 }

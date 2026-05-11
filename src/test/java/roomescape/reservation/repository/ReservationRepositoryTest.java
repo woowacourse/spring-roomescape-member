@@ -45,10 +45,8 @@ class ReservationRepositoryTest {
         jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
         jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
 
-        Long time1Id = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(12, 00)));
-        Long time2Id = jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(20, 00)));
-        reservationTime1 = jdbcReservationTimeRepository.findById(time1Id).get();
-        reservationTime2 = jdbcReservationTimeRepository.findById(time2Id).get();
+        reservationTime1= jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(12, 00)));
+        reservationTime2= jdbcReservationTimeRepository.save(ReservationTime.create(LocalTime.of(20, 00)));
 
         theme = jdbcThemeRepository.save(Theme.create("테마", "설명", "썸네일"));
     }
@@ -57,7 +55,7 @@ class ReservationRepositoryTest {
     @DisplayName("id로 특정 예약 정보를 조횧한다.")
     void findById() {
         // given
-        Reservation savedReservation = save(
+        Reservation savedReservation = jdbcReservationRepository.save(
                 Reservation.create(name, date1, reservationTime1.startAt(), theme));
         Long savedId = savedReservation.id();
 
@@ -128,7 +126,7 @@ class ReservationRepositoryTest {
     @DisplayName("예약 날짜와 시간 ID 정보로 존재하는지 확인한다.")
     void exitsByDateAndTimeId() {
         // given
-        save(Reservation.create(name, date1, reservationTime1.startAt(), theme));
+        jdbcReservationRepository.save(Reservation.create(name, date1, reservationTime1.startAt(), theme));
         LocalDate wrongDate = LocalDate.now().plusWeeks(3);
 
         // when & then
@@ -144,7 +142,7 @@ class ReservationRepositoryTest {
     @DisplayName("예약을 취소하면 상태가 CANCELED가 된다.")
     void updateState_canceled() {
         // given
-        Reservation beforeReservation = save(
+        Reservation beforeReservation =  jdbcReservationRepository.save(
                 Reservation.create(name, date1, reservationTime1.startAt(), theme));
         ReservationStatus cancelled = ReservationStatus.CANCELED;
         updateStatus(beforeReservation);
@@ -160,16 +158,10 @@ class ReservationRepositoryTest {
     private List<Reservation> saveAll(List<Reservation> reservations) {
         List<Reservation> savedReservations = new ArrayList<>();
         for (Reservation reservation : reservations) {
-            Reservation saved = save(reservation);
+            Reservation saved =  jdbcReservationRepository.save(reservation);
             savedReservations.add(saved);
         }
         return savedReservations;
-    }
-
-    private Reservation save(Reservation reservation) {
-        Long savedId = jdbcReservationRepository.save(reservation);
-        return Reservation.load(savedId, reservation.name(), reservation.date(), reservation.time(), reservation.theme(),
-                reservation.status());
     }
 
     private void updateStatus(Reservation beforeReservation) {

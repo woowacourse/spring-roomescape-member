@@ -31,14 +31,19 @@ public class ReservationTimeAdminController {
     @GetMapping("/times")
     @Operation(summary = "Read reservation times", description = "예약 시간을 조회하는 api")
     public ResponseEntity<List<ReservationTimeDetailDto>> read() {
-        return ResponseEntity.ok(reservationTimeService.findAll());
+        List<ReservationTimeDetailDto> responseData = reservationTimeService.findAll().stream()
+                .map(ReservationTimeDetailDto::from)
+                .toList();
+        return ResponseEntity.ok(responseData);
     }
 
     @PostMapping("/times")
     @Operation(summary = "Create reservation time", description = "예약 시간을 생성하는 api")
     public ResponseEntity<ReservationTimeDetailDto> create(
             @Valid @RequestBody ReservationTimeSaveDto reservationTimeSaveDto) {
-        return ResponseEntity.status(CREATED).body(reservationTimeService.create(reservationTimeSaveDto));
+        ReservationTimeDetailDto responseData = ReservationTimeDetailDto.from(
+                reservationTimeService.create(reservationTimeSaveDto.startAt()));
+        return ResponseEntity.status(CREATED).body(responseData);
     }
 
     @DeleteMapping("/times/{id}")

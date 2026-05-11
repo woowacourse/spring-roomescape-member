@@ -1,7 +1,6 @@
 package roomescape.reservation.service;
 
 import static roomescape.reservation.domain.ReservationStatus.CANCELED;
-import static roomescape.reservation.domain.ReservationStatus.RESERVED;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,11 +12,8 @@ import roomescape.closeddate.repository.ClosedDateRepository;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.request.ReservationSaveDto;
-import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.response.ThemeDetailDto;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
@@ -42,54 +38,43 @@ public class ReservationService {
 
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> readAll() {
-        return reservationRepository.findAll().stream()
-                .map(ReservationResponse::from)
-                .toList();
+    public List<Reservation> readAll() {
+        return reservationRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> readAllByName(String name) {
-        return reservationRepository.findAllByNameOrderByDateAndTime(name).stream()
-                .map(ReservationResponse::from)
-                .toList();
+    public List<Reservation> readAllByName(String name) {
+        return reservationRepository.findAllByNameOrderByDateAndTime(name);
     }
 
     @Transactional
-    public ReservationResponse create(ReservationSaveDto dto) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
+    public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> {
-                    log.warn("Reservation time not found: id={}", dto.timeId());
+                    log.warn("Reservation time not found: id={}", timeId);
                     return new NotFoundException("존재하지 않는 예약 시간입니다.");
                 });
 
-        Theme theme = themeRepository.findById(dto.themeId())
+        Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> {
-                    log.warn("Theme not found: id={}", dto.themeId());
+                    log.warn("Theme not found: id={}", themeId);
                     return new NotFoundException("해당 테마가 존재하지 않습니다.");
                 });
 
-        if (closedDateRepository.existsByDate(dto.date())) {
-            log.warn("Closed date exists: date={}", dto.date());
+        if (closedDateRepository.existsByDate(date)) {
+            log.warn("Closed date exists: date={}", date);
             throw new IllegalArgumentException("예약 불가능한 날짜입니다.");
         }
 
-        validateNotAlreadyBookedByOthers(dto.date(), reservationTime.startAt(), theme);
-        validateUserHasNoReservationAtSameTime(dto.name(), dto.date(), reservationTime);
+        LocalTime startAt = reservationTime.startAt();
+        validateNotAlreadyBookedByOthers(date, startAt, theme);
+        validateUserHasNoReservationAtSameTime(name, date, reservationTime);
 
-        Long id = reservationRepository.save(
-                Reservation.create(dto.name(), dto.date(), reservationTime.startAt(), theme));
+        Reservation savedReservation = reservationRepository.save(
+                Reservation.create(name, date, startAt, theme));
 
-        log.info("Reservation created: name={}, date={}", dto.name(), dto.date());
-
-        return new ReservationResponse(
-                id,
-                dto.name(),
-                dto.date(),
-                reservationTime.startAt(),
-                ThemeDetailDto.from(theme),
-                RESERVED
-        );
+        log.info("Reservation created: name={}, date={}", name, date);
+        return savedReservation;
     }
 
     private void validateNotAlreadyBookedByOthers(LocalDate date, LocalTime time, Theme theme) {
@@ -107,12 +92,12 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse cancel(Long id) {
+    public Reservation cancel(Long id) {
         Reservation reservation = getReservation(id);
         reservation.updateStatus(CANCELED);
         reservationRepository.updateStatus(reservation);
         log.info("Reservation canceled: id={}, name={}, date={}, time={}, theme={}", reservation.id(), reservation.name(), reservation.date(), reservation.time(), reservation.theme().name());
-        return ReservationResponse.from(reservation);
+        return reservation;
     }
 
     private Reservation getReservation(Long id) {

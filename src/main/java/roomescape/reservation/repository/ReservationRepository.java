@@ -13,7 +13,7 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
-    Long save(Reservation reservation);
+    Reservation save(Reservation reservation);
 
     boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId);
 

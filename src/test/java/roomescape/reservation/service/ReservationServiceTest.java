@@ -20,7 +20,6 @@ import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationStatus;
-import roomescape.reservation.dto.request.ReservationSaveDto;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -58,11 +57,8 @@ class ReservationServiceTest {
         reservationService = new ReservationService(
                 reservationRepository, reservationTimeRepository, closedDateRepository, themeRepository);
 
-        Long timeId1 = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(15, 40)));
-        reservationTime1 = reservationTimeRepository.findById(timeId1).get();
-
-        Long timeId2 = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(16, 0)));
-        reservationTime2 = reservationTimeRepository.findById(timeId2).get();
+        reservationTime1 = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(15, 40)));
+        reservationTime2 = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(16, 0)));
 
         theme1 = themeRepository.save(Theme.create("테마1", "설명1", "썸네일1"));
         theme2 = themeRepository.save(Theme.create("테마2", "설명2", "썸네일2"));
@@ -77,7 +73,7 @@ class ReservationServiceTest {
                 Reservation.create("송송", date2, reservationTime1.startAt(), theme2)));
 
         // when
-        List<ReservationResponse> actual = reservationService.readAll();
+        List<Reservation> actual = reservationService.readAll();
 
         // then
         assertThat(actual).hasSize(2);
@@ -98,7 +94,7 @@ class ReservationServiceTest {
                 .toList();
 
         // when
-        List<ReservationResponse> actual = reservationService.readAllByName(name);
+        List<Reservation> actual = reservationService.readAllByName(name);
 
         // then
         Assertions.assertThat(actual)
@@ -110,7 +106,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다.")
     void create() {
         // given & when
-        reservationService.create(new ReservationSaveDto("브라운", date1, reservationTime1.id(), theme1.id()));
+        reservationService.create(name, date1,  reservationTime1.id(), theme1.id());
 
         // then
         assertThat(reservationService.readAll()).hasSize(1);
@@ -121,10 +117,9 @@ class ReservationServiceTest {
     void create_does_not_exist_reservation_time() {
         // given
         Long wrongTimeId = Long.MIN_VALUE;
-        ReservationSaveDto command = new ReservationSaveDto(name, date1, wrongTimeId, theme1.id());
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(command))
+        assertThatThrownBy(() -> reservationService.create(name, date1, wrongTimeId, theme1.id()))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
     }
@@ -133,11 +128,10 @@ class ReservationServiceTest {
     @DisplayName("예약 생성 시 예약 날짜/시간/테마가 중복되면 예외를 발생한다.")
     void create_duplicate_reservation() {
         // given
-        reservationService.create(new ReservationSaveDto("브라운", date1, reservationTime1.id(), theme1.id()));
-        ReservationSaveDto duplicateCommand = new ReservationSaveDto("한다", date1, reservationTime1.id(), theme1.id());
+        reservationService.create("브라운", date1, reservationTime1.id(), theme1.id());
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(duplicateCommand))
+        assertThatThrownBy(() -> reservationService.create("한다", date1, reservationTime1.id(), theme1.id()))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("해당 날짜/시간/테마는 이미 예약되었습니다.");
     }
@@ -146,11 +140,11 @@ class ReservationServiceTest {
     @DisplayName("예약을 취소하면 CANCELED 상태가 된다.")
     void updateStatus_canceled() {
         // given
-        Long savedId = reservationRepository.save(
+        Reservation savedReservation = reservationRepository.save(
                 Reservation.create(name, date1, reservationTime1.startAt(), theme1));
 
         // when
-        ReservationResponse actual = reservationService.cancel(savedId);
+        Reservation actual = reservationService.cancel(savedReservation.id());
 
         // then
         Assertions.assertThat(actual.status()).isEqualTo(ReservationStatus.CANCELED);
@@ -159,10 +153,8 @@ class ReservationServiceTest {
     private List<ReservationResponse> saveAll(List<Reservation> reservations) {
         List<ReservationResponse> savedReservations = new ArrayList<>();
         for (Reservation reservation : reservations) {
-            Long savedId = reservationRepository.save(reservation);
-            Reservation saved = Reservation.load(savedId, reservation.name(), reservation.date(),
-                    reservation.time(), reservation.theme(), reservation.status());
-            savedReservations.add(ReservationResponse.from(saved));
+            Reservation savedReservation = reservationRepository.save(reservation);
+            savedReservations.add(ReservationResponse.from(savedReservation));
         }
         return savedReservations;
     }

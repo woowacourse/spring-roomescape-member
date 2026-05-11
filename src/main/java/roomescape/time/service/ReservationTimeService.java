@@ -9,8 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.dto.request.ReservationTimeSaveDto;
-import roomescape.time.dto.response.ReservationTimeDetailDto;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Slf4j
@@ -23,19 +21,16 @@ public class ReservationTimeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationTimeDetailDto> findAll() {
-        return reservationTimeRepository.findAll().stream()
-                .map(ReservationTimeDetailDto::from)
-                .toList();
+    public List<ReservationTime> findAll() {
+        return reservationTimeRepository.findAll();
     }
 
     @Transactional
-    public ReservationTimeDetailDto create(ReservationTimeSaveDto reservationTimeSaveDto) {
-        LocalTime startAt = reservationTimeSaveDto.startAt();
+    public ReservationTime create(LocalTime startAt) {
         validateDuplicateTimeExist(startAt);
-        Long id = reservationTimeRepository.save(ReservationTime.create(startAt));
-        log.info("Reservation time created: id={}, startAt={}", id, startAt);
-        return new ReservationTimeDetailDto(id, startAt);
+        ReservationTime reservationTime = reservationTimeRepository.save(ReservationTime.create(startAt));
+        log.info("Reservation time created: id={}, startAt={}", reservationTime.id(), startAt);
+        return reservationTime;
     }
 
     private void validateDuplicateTimeExist(LocalTime startAt) {
@@ -46,7 +41,7 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTimeDetailDto delete(Long id) {
+    public void delete(Long id) {
         ReservationTime reservationTime = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Reservation time not found: id={}", id);
@@ -54,7 +49,6 @@ public class ReservationTimeService {
                 });
         reservationTimeRepository.delete(id);
         log.info("Reservation time deleted: id={}, startAt={}", id, reservationTime.startAt());
-        return ReservationTimeDetailDto.from(reservationTime);
     }
 
     @Transactional(readOnly = true)

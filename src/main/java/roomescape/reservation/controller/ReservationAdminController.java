@@ -29,18 +29,24 @@ public class ReservationAdminController {
     @GetMapping("/reservations")
     @Operation(summary = "Read all reservations", description = "예약 전체 목록을 조회하는 api")
     public ResponseEntity<List<ReservationResponse>> read() {
-        return ResponseEntity.ok(reservationService.readAll());
+        List<ReservationResponse> responseData = reservationService.readAll().stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return ResponseEntity.ok(responseData);
     }
 
     @PostMapping("/reservations")
     @Operation(summary = "Create a reservation", description = "예약을 생성하는 api")
     public ResponseEntity<ReservationResponse> create(@Valid @RequestBody ReservationSaveDto dto) {
-        return ResponseEntity.status(CREATED).body(reservationService.create(dto));
+        ReservationResponse responseData = ReservationResponse.from(
+                reservationService.create(dto.name(), dto.date(), dto.timeId(), dto.themeId()));
+        return ResponseEntity.status(CREATED).body(responseData);
     }
 
     @PatchMapping("/reservations/{id}")
     @Operation(summary = "Cancel a reservation", description = "예약을 취소하는 api")
     public ResponseEntity<ReservationResponse> cancel(@PathVariable Long id) {
-        return ResponseEntity.ok(reservationService.cancel(id));
+        ReservationResponse responseData = ReservationResponse.from(reservationService.cancel(id));
+        return ResponseEntity.ok(responseData);
     }
 }
