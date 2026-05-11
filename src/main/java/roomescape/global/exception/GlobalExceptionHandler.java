@@ -2,6 +2,7 @@ package roomescape.global.exception;
 
 import java.time.format.DateTimeParseException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -42,7 +43,7 @@ public class GlobalExceptionHandler {
         log.info(e.getMessage());
         String message = e.getBindingResult().getFieldErrors().stream()
                 .findFirst()
-                .map(fieldError -> fieldError.getDefaultMessage())
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .orElse("요청 값이 올바르지 않습니다.");
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse("INVALID_REQUEST", message));
