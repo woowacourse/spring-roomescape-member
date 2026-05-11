@@ -51,7 +51,7 @@ public class MissionStep3Test {
         RestAssured.given().log().all()
                 .when().delete("/times/" + createdId)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     @Test

@@ -88,7 +88,7 @@ class ReservationIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + saved.getId())
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         List<Reservation> reservations = reservationRepository.findAll();
         assertThat(reservations).isEmpty();

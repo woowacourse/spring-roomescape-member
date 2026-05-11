@@ -85,7 +85,7 @@ class ThemeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/themes/" + saved.getId())
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         List<Map<String, Object>> themes = RestAssured.given().log().all()
                 .when().get("/themes")
