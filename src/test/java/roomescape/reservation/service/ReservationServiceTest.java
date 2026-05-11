@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.InvalidReservationTimeException;
-import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -103,10 +102,11 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_예약을_삭제하면_예외가_발생한다() {
+    void 존재하지_않는_예약을_삭제해도_예외가_발생하지_않는다() {
         when(reservationRepository.deleteById(any())).thenReturn(0);
 
-        assertThatThrownBy(() -> reservationService.deleteReservation(999L))
-                .isInstanceOf(ReservationNotFoundException.class);
+        reservationService.deleteReservation(999L);
+
+        verify(reservationRepository).deleteById(999L);
     }
 }
