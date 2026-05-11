@@ -10,11 +10,12 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.NotFoundException;
-import roomescape.policy.ReservationSavePolicy;
+import roomescape.policy.UserReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -34,6 +35,10 @@ class ReservationServiceTest {
 
     private static final long TIME_ID = 1L;
     private static final long THEME_ID = 1L;
+    private static final ZoneId ZONE = ZoneId.of("Asia/Seoul");
+    private static final Clock FIXED_CLOCK = Clock.fixed(
+            LocalDate.of(2026, 5, 1).atStartOfDay(ZONE).toInstant(),
+            ZONE);
 
     @Mock
     private ReservationRepository reservationRepository;
@@ -44,7 +49,7 @@ class ReservationServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
-    private final ReservationSavePolicy DUMMY_POLICY = CMD -> {};
+    private final UserReservationSavePolicy userPolicy = new UserReservationSavePolicy(FIXED_CLOCK);
 
     private ReservationService reservationService;
 
@@ -67,7 +72,7 @@ class ReservationServiceTest {
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
         given(reservationRepository.addReservation(any(Reservation.class))).willReturn(persisted);
 
-        Reservation saved = reservationService.saveReservation(saveCommand, DUMMY_POLICY);
+        Reservation saved = reservationService.saveReservation(saveCommand, userPolicy);
 
         assertThat(saved.id()).isEqualTo(99L);
         assertThat(saved.name()).isEqualTo("브라운");
@@ -81,7 +86,7 @@ class ReservationServiceTest {
         ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 10), TIME_ID, THEME_ID);
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, DUMMY_POLICY))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, userPolicy))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -92,7 +97,7 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, DUMMY_POLICY))
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, userPolicy))
                 .isInstanceOf(NotFoundException.class);
     }
 
