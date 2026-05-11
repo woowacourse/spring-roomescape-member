@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -84,5 +85,35 @@ class ReservationServiceTest {
         reservationService.delete(targetId);
 
         assertThat(reservationService.findAll().getReservationsResponse()).isEmpty();
+    }
+
+    @Test
+    void 존재하지_않는_테마로_예약을_시도하면_예외가_발생한다() {
+        ReservationCreateInfo info = new ReservationCreateInfo(1L,
+                LocalDateTime.of(2026, 12, 10, 15, 0), 999L);
+
+        assertThatThrownBy(() -> reservationService.create(info))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 테마입니다.");
+    }
+
+    @Test
+    void 등록된_스케줄이_없는_시간에_예약을_시도하면_예외가_발생한다() {
+        ReservationCreateInfo info = new ReservationCreateInfo(1L,
+                LocalDateTime.of(2026, 12, 10, 10, 0), 1L);
+
+        assertThatThrownBy(() -> reservationService.create(info))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("등록된 스케줄이 없습니다.");
+    }
+
+    @Test
+    void 이미_예약이_완료된_스케줄에_중복_예약을_시도하면_예외가_발생한다() {
+        ReservationCreateInfo info = new ReservationCreateInfo(1L,
+                LocalDateTime.of(2026, 12, 10, 12, 0), 1L); 
+
+        assertThatThrownBy(() -> reservationService.create(info))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 시간은 이미 예약이 완료되었습니다.");
     }
 }
