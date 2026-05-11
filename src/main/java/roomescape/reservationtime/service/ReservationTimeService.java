@@ -16,7 +16,6 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.theme.service.ThemeService;
 
 @Service
 @Transactional(readOnly = true)
@@ -48,7 +47,7 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteById(final long timeId) {
-        if(reservationRepository.existsByTimeId(timeId)) {
+        if (reservationRepository.existsByTimeId(timeId)) {
             throw new ReservationTimeConstraintException(
                     ReservationTimeErrorCode.RESERVATION_TIME_CONSTRAINT.getMessage()
             );

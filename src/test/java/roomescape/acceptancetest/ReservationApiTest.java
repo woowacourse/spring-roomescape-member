@@ -36,7 +36,7 @@ class ReservationApiTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", String.valueOf(LocalDate.now()));
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -92,7 +92,7 @@ class ReservationApiTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", String.valueOf(LocalDate.now()));
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -121,7 +121,7 @@ class ReservationApiTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", String.valueOf(LocalDate.now()));
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()

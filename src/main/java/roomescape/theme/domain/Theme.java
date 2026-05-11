@@ -24,6 +24,14 @@ public class Theme {
         this.thumbnailUrl = thumbnailUrl;
     }
 
+    public static Theme createNew(final String name, final String description, final String thumbnailUrl) {
+        return new Theme(null, name, description, thumbnailUrl);
+    }
+
+    public static Theme of(final long id, final String name, final String description, final String thumbnailUrl) {
+        return new Theme(id, name, description, thumbnailUrl);
+    }
+
     private void validateName(final String name) {
         List<String> errors = new ArrayList<>();
 
@@ -31,17 +39,9 @@ public class Theme {
             errors.add(ThemeErrorCode.THEME_NAME_NOT_BLANK.getMessage());
         }
 
-        if(!errors.isEmpty()){
+        if (!errors.isEmpty()) {
             throw new InValidThemeException(errors);
         }
-    }
-
-    public static Theme createNew(final String name, final String description, final String thumbnailUrl) {
-        return new Theme(null, name, description, thumbnailUrl);
-    }
-
-    public static Theme of(final long id, final String name, final String description, final String thumbnailUrl) {
-        return new Theme(id, name, description, thumbnailUrl);
     }
 
     public Theme withId(final long id) {

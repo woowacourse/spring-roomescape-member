@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import roomescape.reservation.exception.InvalidReservationException;
-import roomescape.reservation.exception.ReservationErrorCode;
 import roomescape.reservationtime.exception.InValidReservationTimeException;
 import roomescape.reservationtime.exception.ReservationTimeErrorCode;
 import roomescape.theme.domain.Theme;
@@ -27,6 +25,14 @@ public class ReservationTime {
         this.theme = theme;
     }
 
+    public static ReservationTime createNew(final LocalTime startAt, final Theme theme) {
+        return new ReservationTime(null, startAt, theme);
+    }
+
+    public static ReservationTime of(final long id, final LocalTime startAt, final Theme theme) {
+        return new ReservationTime(id, startAt, theme);
+    }
+
     private void validateStartAt(LocalTime startAt) {
         List<String> errors = new ArrayList<>();
 
@@ -37,14 +43,6 @@ public class ReservationTime {
         if (!errors.isEmpty()) {
             throw new InValidReservationTimeException(errors);
         }
-    }
-
-    public static ReservationTime createNew(final LocalTime startAt, final Theme theme) {
-        return new ReservationTime(null, startAt, theme);
-    }
-
-    public static ReservationTime of(final long id, final LocalTime startAt, final Theme theme) {
-        return new ReservationTime(id, startAt, theme);
     }
 
     public ReservationTime withId(final long id) {

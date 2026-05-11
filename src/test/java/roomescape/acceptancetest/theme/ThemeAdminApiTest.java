@@ -1,7 +1,6 @@
 package roomescape.acceptancetest.theme;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

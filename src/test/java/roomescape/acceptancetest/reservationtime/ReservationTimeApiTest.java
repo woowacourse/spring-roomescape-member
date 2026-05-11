@@ -24,7 +24,7 @@ public class ReservationTimeApiTest {
         createReservation("브라운", date, 1L);
 
         RestAssured.given().log().all()
-                .queryParam("date",date)
+                .queryParam("date", date)
                 .when().get("/themes/1/available-times")
                 .then().log().all()
                 .statusCode(200)
