@@ -12,11 +12,10 @@ import roomescape.fixture.ThemeFixture;
 import roomescape.theme.application.dto.ThemeResult;
 import roomescape.theme.application.exception.ThemeException;
 import roomescape.theme.application.service.ThemeCommandService;
-import roomescape.theme.infra.JdbcPopularThemeDao;
 import roomescape.theme.infra.JdbcThemeRepository;
 
 @JdbcTest
-@Import({ThemeCommandService.class, JdbcThemeRepository.class, JdbcPopularThemeDao.class})
+@Import({ThemeCommandService.class, JdbcThemeRepository.class})
 public class ThemeCommandServiceTest {
 
     @Autowired

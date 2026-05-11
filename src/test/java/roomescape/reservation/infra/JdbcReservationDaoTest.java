@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.reservation.application.query.ReservationDetail;
-import roomescape.reservation.application.query.ReservationDetailDao;
+import roomescape.reservation.application.dto.ReservationDetail;
+import roomescape.reservation.application.dao.ReservationDetailDao;
 import roomescape.support.TestDataHelper;
 
 @JdbcTest

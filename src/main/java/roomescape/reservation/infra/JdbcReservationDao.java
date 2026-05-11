@@ -4,8 +4,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.application.query.ReservationDetail;
-import roomescape.reservation.application.query.ReservationDetailDao;
+import roomescape.reservation.application.dto.ReservationDetail;
+import roomescape.reservation.application.dao.ReservationDetailDao;
 
 @RequiredArgsConstructor
 @Repository

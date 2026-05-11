@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
-import roomescape.reservation.application.service.ReservationService;
+import roomescape.reservation.application.service.ReservationCommandService;
+import roomescape.reservation.application.service.ReservationQueryService;
 import roomescape.reservation.presentation.dto.ReservationCreateRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 
@@ -25,11 +26,12 @@ import roomescape.reservation.presentation.dto.ReservationResponse;
 public class ReservationController {
 
     private final Clock clock;
-    private final ReservationService reservationService;
+    private final ReservationCommandService reservationCommandService;
+    private final ReservationQueryService reservationQueryService;
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAll() {
-        List<ReservationResponse> responses = reservationService.findAll().stream()
+        List<ReservationResponse> responses = reservationQueryService.findAll().stream()
                 .map(ReservationResponse::from)
                 .toList();
 
@@ -43,14 +45,14 @@ public class ReservationController {
         ReservationCreateCommand createCommand = request.toCommand();
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ReservationResponse.from(reservationService.save(createCommand, LocalDateTime.now(clock))));
+                .body(ReservationResponse.from(reservationCommandService.save(createCommand, LocalDateTime.now(clock))));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id
     ) {
-        int deletedCount = reservationService.delete(id);
+        int deletedCount = reservationCommandService.delete(id);
 
         if (deletedCount == 0) {
             return ResponseEntity.notFound().build();

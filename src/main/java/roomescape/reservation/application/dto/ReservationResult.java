@@ -2,11 +2,10 @@ package roomescape.reservation.application.dto;
 
 import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.application.query.ReservationDetail;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
 import roomescape.theme.application.dto.ThemeResult;
 
-public record ReservationQueryResult(
+public record ReservationResult(
         Long id,
         String name,
         LocalDate date,
@@ -14,9 +13,9 @@ public record ReservationQueryResult(
         ReservationTimeResult time
 ) {
 
-    public static ReservationQueryResult from(Reservation reservation, ThemeResult themeResult,
-                                              ReservationTimeResult timeResult) {
-        return new ReservationQueryResult(
+    public static ReservationResult from(Reservation reservation, ThemeResult themeResult,
+                                         ReservationTimeResult timeResult) {
+        return new ReservationResult(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
@@ -25,8 +24,8 @@ public record ReservationQueryResult(
         );
     }
 
-    public static ReservationQueryResult from(ReservationDetail reservationDetail) {
-        return new ReservationQueryResult(
+    public static ReservationResult from(ReservationDetail reservationDetail) {
+        return new ReservationResult(
                 reservationDetail.reservationId(),
                 reservationDetail.username(),
                 reservationDetail.date(),
