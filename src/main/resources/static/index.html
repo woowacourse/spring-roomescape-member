@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방탈출 예약 시스템</title>
+    <!-- CSS 파일 연결 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- 로그인(이름 입력) 섹션 -->
+    <div id="login-section" class="container">
+        <h1>환영합니다 👋</h1>
+        <div class="form-group">
+            <label for="login-name">이름을 입력하세요</label>
+            <input type="text" id="login-name" placeholder="예: 루크, 소낙눈, 포비">
+        </div>
+        <button id="login-btn" class="primary-btn">시작하기</button>
+    </div>
+
+    <!-- 예약 섹션 (처음에는 숨겨둠) -->
+    <div id="reservation-section" class="container hidden">
+        <h1>방탈출 예약하기 🗝️</h1>
+
+        <!-- 인기 테마 통계 영역 -->
+        <section style="background-color: #fffbeb; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+            <h2 style="margin-top: 0; margin-bottom: 10px; color: #d35400;">🔥 최근 1주 인기 테마 Top 10</h2>
+            <ol id="popular-themes-list" style="margin: 0; padding-left: 20px; color: #555; line-height: 1.6;">
+                <li class="empty-message" style="list-style: none; margin-left: -20px;">인기 테마를 불러오는 중입니다...</li>
+            </ol>
+        </section>
+
+        <!-- 테마 및 날짜 선택 영역 -->
+        <section class="selection-section">
+            <div class="form-group">
+                <label>테마 선택</label>
+                <!-- 테마 카드들이 여기에 동적으로 생성됩니다. -->
+                <div id="theme-list-container" class="theme-cards-container"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="date-input">날짜 선택</label>
+                <input type="date" id="date-input" min="">
+            </div>
+
+            <button id="search-schedule-btn" class="primary-btn">스케줄 조회</button>
+        </section>
+
+        <hr>
+
+        <!-- 스케줄 선택 영역 (이름 입력칸 삭제됨) -->
+        <section class="reservation-form">
+            <h2>예약 가능한 시간</h2>
+            <ul id="schedule-list" class="schedule-list">
+                <li class="empty-message">테마와 날짜를 선택한 후 조회해주세요.</li>
+            </ul>
+
+            <button id="reserve-btn" class="success-btn">예약하기</button>
+        </section>
+    </div>
+
+<!-- 자바스크립트 파일 연결 -->
+<script src="app.js"></script>
+</body>
+</html>
