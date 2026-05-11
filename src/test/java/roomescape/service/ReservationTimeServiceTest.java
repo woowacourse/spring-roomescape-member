@@ -28,18 +28,20 @@ public class ReservationTimeServiceTest {
         ReservationTimeResponseDto responseDto = reservationTimeService.create(
                 new ReservationTimeRequestDto(LocalTime.of(10, 0)));
 
-        assertThat(responseDto).isEqualTo(new ReservationTimeResponseDto(1L, LocalTime.of(10, 0)));
+        assertThat(responseDto).isEqualTo(new ReservationTimeResponseDto(responseDto.id(), LocalTime.of(10, 0)));
     }
 
     @Test
     void readAllTest() {
-        reservationTimeService.create(new ReservationTimeRequestDto(LocalTime.of(10, 0)));
-        reservationTimeService.create(new ReservationTimeRequestDto(LocalTime.of(11, 0)));
+        ReservationTimeResponseDto firstResponse = reservationTimeService.create(
+                new ReservationTimeRequestDto(LocalTime.of(10, 0)));
+        ReservationTimeResponseDto secondResponse = reservationTimeService.create(
+                new ReservationTimeRequestDto(LocalTime.of(11, 0)));
 
         List<ReservationTimeResponseDto> responseDtos = reservationTimeService.readAll();
 
-        assertThat(responseDtos.getFirst()).isEqualTo(new ReservationTimeResponseDto(1L, LocalTime.of(10, 0)));
-        assertThat(responseDtos.get(1)).isEqualTo(new ReservationTimeResponseDto(2L, LocalTime.of(11, 0)));
+        assertThat(responseDtos.getFirst()).isEqualTo(firstResponse);
+        assertThat(responseDtos.get(1)).isEqualTo(secondResponse);
     }
 
     @Test
@@ -54,8 +56,9 @@ public class ReservationTimeServiceTest {
 
     @Test
     void deleteTest() {
-        reservationTimeService.create(new ReservationTimeRequestDto(LocalTime.of(10, 0)));
-        reservationTimeService.delete(1L);
+        ReservationTimeResponseDto responseDto = reservationTimeService.create(
+                new ReservationTimeRequestDto(LocalTime.of(10, 0)));
+        reservationTimeService.delete(responseDto.id());
 
         List<ReservationTimeResponseDto> responseDtos = reservationTimeService.readAll();
 

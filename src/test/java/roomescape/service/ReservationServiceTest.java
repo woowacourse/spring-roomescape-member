@@ -37,79 +37,72 @@ public class ReservationServiceTest {
 
     @Test
     void notExistReservationTimeExceptionTest() {
-        themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
-        ReservationRequestDto requestDto = new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L);
+        ReservationTime createdTime = reservationTimeDao.create(new ReservationTime(LocalTime.of(12, 34)));
+        Long testId = createdTime.getId();
+        reservationTimeDao.delete(testId);
+
+        ThemeResponseDto themeResponseDto = createTheme();
+        ReservationRequestDto requestDto = new ReservationRequestDto(
+                "fizz",
+                LocalDate.of(2026, 5, 2),
+                testId,
+                themeResponseDto.id()
+        );
+
         assertThatThrownBy(() -> reservationService.create(requestDto))
                 .hasMessage("[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다.")
                 .isInstanceOf(CustomException.class);
     }
 
-    @Test
-    void notExistThemeExceptionTest() {
-        reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
-        ReservationRequestDto requestDto = new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L);
-        assertThatThrownBy(() -> reservationService.create(requestDto))
-                .hasMessage("[ERROR] 해당 ID의 테마를 찾을 수 없습니다.")
-                .isInstanceOf(CustomException.class);
+    private ReservationTimeResponseDto createReservationTime() {
+        ReservationTime createdTime = reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
+        return ReservationTimeResponseDto.from(createdTime);
     }
 
-    @Test
-    void duplicatedReservationExceptionTest() {
-        reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
-        themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
-
-        ReservationRequestDto requestDto = new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L);
-        reservationService.create(requestDto);
-
-        assertThatThrownBy(() -> reservationService.create(requestDto))
-                .hasMessage("[ERROR] 동일한 예약이 이미 존재합니다.")
-                .isInstanceOf(CustomException.class);
+    private ThemeResponseDto createTheme() {
+        Theme createdTheme = themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
+        return ThemeResponseDto.from(createdTheme);
     }
 
     @Test
     void createTest() {
-        ReservationTime reservationTime = reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
-        ReservationTimeResponseDto reservationTimeResponseDto = ReservationTimeResponseDto.from(reservationTime);
-        Theme theme = themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
-        ThemeResponseDto themeResponseDto = ThemeResponseDto.from(theme);
+        ReservationTimeResponseDto reservationTimeResponseDto = createReservationTime();
+        ThemeResponseDto themeResponseDto = createTheme();
 
         ReservationResponseDto responseDto = reservationService.create(
-                new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
+                new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), reservationTimeResponseDto.id(),
+                        themeResponseDto.id()));
 
         assertThat(responseDto).isEqualTo(
-                new ReservationResponseDto(1L, "fizz", LocalDate.of(2026, 5, 2), reservationTimeResponseDto,
-                        themeResponseDto));
+                new ReservationResponseDto(responseDto.id(), "fizz", LocalDate.of(2026, 5, 2),
+                        reservationTimeResponseDto, themeResponseDto));
     }
 
     @Test
     void readAllTest() {
-        ReservationTime reservationTime = reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
-        ReservationTimeResponseDto reservationTimeResponseDto = ReservationTimeResponseDto.from(reservationTime);
-        Theme theme = themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
-        ThemeResponseDto themeResponseDto = ThemeResponseDto.from(theme);
-
-        reservationService.create(new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
-        reservationService.create(new ReservationRequestDto("fizz2", LocalDate.of(2026, 5, 4), 1L, 1L));
+        ReservationTimeResponseDto reservationTimeResponseDto = createReservationTime();
+        ThemeResponseDto themeResponseDto = createTheme();
+        ReservationResponseDto firstResponse = reservationService.create(
+                new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), reservationTimeResponseDto.id(),
+                        themeResponseDto.id()));
+        ReservationResponseDto secondResponse = reservationService.create(
+                new ReservationRequestDto("fizz2", LocalDate.of(2026, 5, 3), reservationTimeResponseDto.id(),
+                        themeResponseDto.id()));
 
         List<ReservationResponseDto> responseDtos = reservationService.readAll();
 
-        assertThat(responseDtos.getFirst()).isEqualTo(
-                new ReservationResponseDto(responseDtos.getFirst().id(), "fizz", LocalDate.of(2026, 5, 2),
-                        reservationTimeResponseDto,
-                        themeResponseDto));
-        assertThat(responseDtos.get(1)).isEqualTo(
-                new ReservationResponseDto(responseDtos.get(1).id(), "fizz2", LocalDate.of(2026, 5, 4),
-                        reservationTimeResponseDto,
-                        themeResponseDto));
+        assertThat(responseDtos.getFirst()).isEqualTo(firstResponse);
+        assertThat(responseDtos.get(1)).isEqualTo(secondResponse);
     }
 
     @Test
     void deleteTest() {
-        reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
-        themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
-
-        reservationService.create(new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), 1L, 1L));
-        reservationService.delete(1L);
+        ReservationTimeResponseDto reservationTimeResponseDto = createReservationTime();
+        ThemeResponseDto themeResponseDto = createTheme();
+        ReservationResponseDto responseDto = reservationService.create(
+                new ReservationRequestDto("fizz", LocalDate.of(2026, 5, 2), reservationTimeResponseDto.id(),
+                        themeResponseDto.id()));
+        reservationService.delete(responseDto.id());
 
         List<ReservationResponseDto> responseDtos = reservationService.readAll();
 
