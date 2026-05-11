@@ -46,71 +46,24 @@
 
 ## 🌐 API 명세
 
-### 예약 API
+### 관리자 API
 
-#### 예약 추가 API
+#### 예약
 
-**Request**
-
-```
-POST /reservations HTTP/1.1
-content-type: application/json
-
-{
-    "date": "2023-08-05",
-    "name": "브라운",
-    "timeId": 1,
-    "themeId": 1
-}
-
-```
-
-**Response**
-
-```
-HTTP/1.1 201
-Content-Type: application/json
-
-{
-    "id": 1,
-    "name": "브라운",
-    "date": "2023-08-05",
-    "time" : {
-        "id": 1,
-        "startAt" : "10:00"
-    },
-    "theme" : {
-        "id": 1,
-        "name": "레벨2 탈출",
-        "description": "우테코 레벨2를 탈출하는 내용입니다.",
-        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-    }
-}
-
-```
-
-에러 상황:
-
-| 에러 상황                       | 상태코드  | 구현여부
-|-----------------------------|-------| --- |
-| 유효하지 않는 입력값                 | `400` | ✅
-| 시간이 존재하지 않을 때               | `404` | ✅
-| 테마가 존재하지 않을 때               | `404` | ✅
-| 이미 해당 날짜,시간,테마에 예약이 존재하는 경우 | `409` | ✅
-| 이미 지난 시간에 예약하려는 경우          | `422` | 
-
-
-#### 예약 조회 API ✅
+##### 관리자 예약 목록 조회 API ✅
 
 **Request**
 
-```
+```http
 GET /admin/reservations HTTP/1.1
 ```
 
 **Response**
 
-```
+```http
+HTTP/1.1 200
+Content-Type: application/json
+
 {
   "reservations": [
     {
@@ -127,155 +80,168 @@ GET /admin/reservations HTTP/1.1
         "description": "우테코 레벨2를 탈출하는 내용입니다.",
         "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
       }
-    }, ...
+    }
   ]
 }
 ```
 
-#### 예약 수정 API
-> 예약 날짜, 시간을 변경한다. (테마 X)
+##### 관리자 예약 삭제 API ✅
 
 **Request**
 
-```
-PATCH /reservations/{id} HTTP/1.1
-content-type: application/json
-
-{
-    "date": "2023-08-05",
-    "timeId": 1
-}
-
-```
-
-**Response**
-
-```
-HTTP/1.1 201
-Content-Type: application/json
-
-{
-    "id": 1,
-    "name": "브라운",
-    "date": "2023-08-05",
-    "time" : {
-        "id": 1,
-        "startAt" : "10:00"
-    },
-    "theme" : {
-        "id": 1,
-        "name": "레벨2 탈출",
-        "description": "우테코 레벨2를 탈출하는 내용입니다.",
-        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-    }
-}
-
-```
-에러 상황: 
-
-| 에러 상황               | 상태코드  | 구현여부
-|---------------------|-------| --- |
-| 유효하지 않는 입력값         | `400` | 
-| 본인의 예약이 아닌 경우       | `403` |
-| 예약이 존재하지 않을 때       | `404` |
-| 이미 취소된 예약인 경우       | `409` |
-| 해당 시간에 이미 예약이 있는 경우 | `409` |
-| 이미 지난 시간에 예약하려는 경우  | `422` |
-| 이미 시작된 예약을 수정하려는 경우 | `422` |
-
-#### 예약 삭제 API
-
-**Request**
-
-```
-DELETE /reservations/1 HTTP/1.1
-```
-
-**Response**
-
-```
-HTTP/1.1 204
-```
-에러 상황:
-
-| 에러 상황 | 상태코드 | 구현여부
-| --- | --- | --- |
-| 유효하지 않는 입력값 | `400` | 
-| 본인의 예약이 아닌 경우 | `403` |
-| 예약이 존재하지 않을 때 | `404` |
-| 이미 취소된 예약인 경우 | `409` |
-| 이미 시작된 예약을 취소하려는 경우 | `422` |
-
-
-#### 관리자 예약 삭제 API
-
-**Request**
-
-```
+```http
 DELETE /admin/reservations/1 HTTP/1.1
 ```
 
 **Response**
 
-```
+```http
 HTTP/1.1 204
 ```
 
-에러 상황:
+#### 예약 시간
 
-| 에러 상황 | 상태코드 | 구현여부
-| --- | --- | --- |
-| 유효하지 않는 입력값 | `400` | ✅
-| 예약이 존재하지 않을 때 | `404` | ✅
-| 이미 취소된 예약인 경우 | `409` |
-| 이미 시작된 예약을 취소하려는 경우 | `422` |
-
-
-### 시간 API
-
-#### 시간 추가 API ✅
+##### 관리자 예약 시간 추가 API ✅
 
 **Request**
 
-```
+```http
 POST /admin/times HTTP/1.1
-content-type: application/json
+Content-Type: application/json
 
 {
-    "startAt": "10:00"
+  "startAt": "10:00"
 }
 ```
 
 **Response**
 
-```
+```http
 HTTP/1.1 201
 Content-Type: application/json
 
 {
-    "id": 1,
-    "startAt": "10:00"
+  "id": 1,
+  "startAt": "10:00"
 }
 ```
-에러 상황:
 
-| 에러 상황 | 상태코드 | 구현여부
-| --- | --- | --- |
-| 유효하지 않는 입력값  | `400` | ✅
-| 시간이 이미 존재할 때 | `409` |✅
-
-#### 시간 조회 API ✅
+##### 관리자 예약 시간 삭제 API ✅
 
 **Request**
 
+```http
+DELETE /admin/times/1 HTTP/1.1
 ```
+
+**Response**
+
+```http
+HTTP/1.1 204
+```
+
+#### 테마
+
+##### 관리자 테마 추가 API ✅
+
+**Request**
+
+```http
+POST /admin/themes HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "공포",
+  "description": "무서움",
+  "thumbnail": "url"
+}
+```
+
+**Response**
+
+```http
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "공포",
+  "description": "무서움",
+  "thumbnail": "url"
+}
+```
+
+##### 관리자 테마 삭제 API ✅
+
+**Request**
+
+```http
+DELETE /admin/themes/1 HTTP/1.1
+```
+
+**Response**
+
+```http
+HTTP/1.1 204
+```
+
+### 사용자 API
+
+#### 예약
+
+##### 예약 추가 API ✅
+
+**Request**
+
+```http
+POST /reservations HTTP/1.1
+Content-Type: application/json
+
+{
+  "date": "2023-08-05",
+  "name": "브라운",
+  "timeId": 1,
+  "themeId": 1
+}
+```
+
+**Response**
+
+```http
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "브라운",
+  "date": "2023-08-05",
+  "time": {
+    "id": 1,
+    "startAt": "10:00"
+  },
+  "theme": {
+    "id": 1,
+    "name": "레벨2 탈출",
+    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+  }
+}
+```
+
+#### 예약 시간
+
+##### 예약 시간 목록 조회 API ✅
+
+**Request**
+
+```http
 GET /times HTTP/1.1
 ```
 
 **Response**
 
-```
-HTTP/1.1 200 
+```http
+HTTP/1.1 200
 Content-Type: application/json
 
 {
@@ -288,38 +254,17 @@ Content-Type: application/json
 }
 ```
 
-#### 시간 삭제 API ✅
+##### 예약 가능 시간 조회 API ✅
 
 **Request**
 
-```
-DELETE /admin/times/1 HTTP/1.1
-```
-
-**Response**
-
-```
-HTTP/1.1 204
-```
-
-에러 상황:
-
-| 에러 상황 | 상태코드 | 구현여부
-| --- | --- | --- |
-| 유효하지 않는 입력값        | `400` |✅
-| 시간이 존재하지 않을 때      | `404` |✅
-| 해당 시간으로 된 예약이 있을 때 | `409` |✅
-
-#### 예약 가능한 시간 조회 API ✅
-
-**Request**
-```
+```http
 GET /times/availability?date=2026-05-04&themeId=1 HTTP/1.1
 ```
 
 **Response**
 
-```
+```http
 HTTP/1.1 200
 Content-Type: application/json
 
@@ -328,131 +273,65 @@ Content-Type: application/json
     {
       "id": 1,
       "startAt": "10:00",
-      "isAvailable" : true
+      "isAvailable": true
     }
   ]
 }
 ```
-에러 상황:
 
-| 에러 상황 | 상태코드 | 구현여부
-| --- | --- | --- |
-| 유효하지 않는 입력값       | `400` |✅
+#### 테마
 
-### 테마 API
-
-#### 테마 추가 ✅
+##### 테마 목록 조회 API ✅
 
 **Request**
 
-```
-POST /admin/themes HTTP/1.1
-content-type: application/json
-
-{
-    "name": "공포",
-    "description" : "무서움",
-    "thumbnail" : "url"
-}
-```
-
-**Response**
-
-```
-HTTP/1.1 201
-Content-Type: application/json
-
-{
-    "id": 1,
-    "name": "공포",
-    "description" : "무서움",
-    "thumbnail" : "url"
-}
-```
-에러 상황:
-
-| 에러 상황 | 상태코드 | 구현여부
-| --- | --- | --- |
-| 유효하지 않는 입력값  | `400` | ✅
-
-
-#### 테마 목록 조회 ✅
-
-**Request**
-
-```
+```http
 GET /themes HTTP/1.1
 ```
 
 **Response**
 
-```
+```http
 HTTP/1.1 200
 Content-Type: application/json
 
 {
   "themes": [
     {
-    "id": 1,
-    "name": "공포",
-    "description" : "무서움",
-    "thumbnail" : "url"
-		}
+      "id": 1,
+      "name": "공포",
+      "description": "무서움",
+      "thumbnail": "url"
+    }
   ]
 }
 ```
 
-#### 테마 삭제 ✅
+##### 인기 테마 조회 API ✅
 
 **Request**
 
-```
-DELETE /admin/themes/1 HTTP/1.1
-```
-
-**Response**
-
-```
-HTTP/1.1 204
-```
-에러 상황:
-
-| 에러 상황 | 상태코드 | 구현여부
-| --- | --- | --- |
-| 유효하지 않는 입력값       | `400` |✅
-| 테마가 존재하지 않을 때     | `404` |✅
-| 해당 테마로 된 예약이 있을 때 | `409` |✅
-
-#### 인기 테마 조회 ✅
-
-**Request**
-
-```
+```http
 GET /themes/popularity?days=7&size=10 HTTP/1.1
 ```
 
 **Response**
 
-```
+```http
 HTTP/1.1 200
 Content-Type: application/json
 
 {
   "themes": [
     {
-    "id": 1,
-    "name": "공포",
-    "description" : "무서움",
-    "thumbnail" : "url"
-		}
+      "id": 1,
+      "name": "공포",
+      "description": "무서움",
+      "thumbnail": "url"
+    }
   ]
 }
 ```
-에러 상황:
-
-| 에러 상황 | 상태코드 | 구현여부
-| --- | --- | --- |
-| 유효하지 않는 입력값       | `400` |✅
 
 ## 🖥️ 프론트엔드 페이지
 
