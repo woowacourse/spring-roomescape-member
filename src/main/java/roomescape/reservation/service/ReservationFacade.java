@@ -50,4 +50,8 @@ public class ReservationFacade {
     public void deleteReservation(Long id) {
         reservationService.delete(id);
     }
+
+    public ReservationResponse findReservationById(Long id) {
+        return reservationService.findById(id);
+    }
 }

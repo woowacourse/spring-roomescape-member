@@ -40,6 +40,11 @@ public class ReservationService {
                 )).toList();
     }
 
+    public ReservationResponse findById(Long id) {
+        Reservation reservation = reservationDAO.findById(id);
+        return ReservationResponse.of(reservation.getId(), reservation.getName(), reservation.getDate(), TimeResponse.from(reservation.getTime()), ThemeSimpleResponse.from(reservation.getTheme()));
+    }
+
     public void delete(Long id) {
         reservationDAO.delete(id);
     }

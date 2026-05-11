@@ -37,6 +37,12 @@ public class ReservationController {
         return ResponseEntity.ok(reservationFacade.findAllReservation());
     }
 
+    @ResponseBody
+    @GetMapping("/reservations/{id}")
+    public ResponseEntity<ReservationResponse> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(reservationFacade.findReservationById(id));
+    }
+
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationFacade.deleteReservation(id);
