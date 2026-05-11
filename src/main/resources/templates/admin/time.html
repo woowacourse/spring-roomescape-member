@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('시간 관리')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <h1>시간 관리</h1>
+
+    <div class="form-inline">
+        <div class="form-row">
+            <label for="t-start-at">시작 시간 (HH:mm)</label>
+            <input type="time" id="t-start-at"/>
+        </div>
+        <button id="add-btn" class="btn" type="button">추가</button>
+    </div>
+
+    <table class="data-table">
+        <thead><tr><th>번호</th><th>시작 시간</th><th></th></tr></thead>
+        <tbody id="rows">
+        <tr th:each="t : ${times}" th:attr="data-id=${t.id()}">
+            <td th:text="${t.id()}"></td>
+            <td th:text="${t.startAt()}"></td>
+            <td><button class="btn btn-danger btn-sm delete-btn" type="button">삭제</button></td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<script th:src="@{/js/admin-time.js}"></script>
+</body>
+</html>
