@@ -2,8 +2,8 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import roomescape.dto.ThemeAllResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.model.Theme;
@@ -39,21 +39,24 @@ public class ThemeService {
         }
     }
 
-    public List<ThemeResponse> readAll() {
+    public ThemeAllResponse readAll() {
         List<Theme> themes = themeRepository.findAll();
-        return themes.stream()
+        List<ThemeResponse> responses = themes.stream()
                 .map(ThemeResponse::from)
-                .collect(Collectors.toList());
+                .toList();
+        return new ThemeAllResponse(responses);
     }
 
-    public List<ThemeResponse> readRanks() {
+    public ThemeAllResponse readRanks() {
         LocalDate currentDay = LocalDate.now().minusDays(1);
         LocalDate lastWeekDay = LocalDate.now().minusWeeks(1);
         List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(currentDay.toString(),
                 lastWeekDay.toString(),
                 RANKS_LIMIT_COUNT);
-        return themes.stream()
+
+        List<ThemeResponse> responses = themes.stream()
                 .map(ThemeResponse::from)
-                .collect(Collectors.toList());
+                .toList();
+        return new ThemeAllResponse(responses);
     }
 }
