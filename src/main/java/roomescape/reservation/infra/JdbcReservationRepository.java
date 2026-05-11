@@ -55,7 +55,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
                 .addValue("timeId", reservation.getTime().getId())
-                .addValue("themeId", reservation.getTheme().getId());
+                .addValue("themeId", reservation.getTheme().getId())
+                .addValue("status", reservation.getStatus().name());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -111,8 +112,20 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByIdAndUsernameAndActive(Long reservationId, String username) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id=:reservationId AND name=:username AND status='ACTIVE')";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Map.of("reservationId", reservationId, "username", username), Boolean.class));
+    }
+
+    @Override
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id=:id";
         return jdbcTemplate.update(sql, Map.of("id", id));
+    }
+
+    @Override
+    public void cancelById(Long id) {
+        String sql = "UPDATE reservation SET status = 'CANCELED' WHERE id = :id AND status='ACTIVE'";
+        jdbcTemplate.update(sql, Map.of("id", id));
     }
 }

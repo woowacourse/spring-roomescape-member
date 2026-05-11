@@ -3,6 +3,7 @@ package roomescape.reservation.application.dto;
 import java.time.LocalDate;
 import lombok.Builder;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.Status;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -19,6 +20,7 @@ public record ReservationCreateCommand(
                 .date(this.date)
                 .time(time)
                 .theme(theme)
+                .status(Status.ACTIVE)
                 .build();
     }
 }

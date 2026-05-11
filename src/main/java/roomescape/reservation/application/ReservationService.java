@@ -46,7 +46,7 @@ public class ReservationService {
     }
 
     public void cancelReservation(Long id, String username) {
-        if (!reservationRepository.existsByIdAndUsername(id, username)) {
+        if (!reservationRepository.existsByIdAndUsernameAndActive(id, username)) {
             throw new ReservationNotFoundException("해당 예약을 찾을 수 없거나 취소할 권한이 없습니다.");
         }
         reservationRepository.cancelById(id);
