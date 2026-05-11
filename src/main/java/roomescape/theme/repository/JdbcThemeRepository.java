@@ -71,8 +71,7 @@ public class JdbcThemeRepository implements ThemeRepository{
     public boolean updateStatus(Theme theme) {
         String sql = """
                     UPDATE theme 
-                    SET name = :name, description = :description,
-                        thumbnail_url = :thumbnail_url, is_active = :is_active
+                    SET name = :name, description = :description, thumbnail_url = :thumbnail_url, is_active = :is_active
                     WHERE id = :id
                     """;
 
