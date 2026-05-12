@@ -3,7 +3,6 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -34,18 +33,17 @@ public class ReservationServiceTest {
 
     @Test
     void 지난_날짜및시간_예약_하는_경우_예외발생() {
-        ReservationTime mockTime = new ReservationTime(LocalTime.parse("10:00"));
-
+        ReservationTime mockTime = new ReservationTime(17L, LocalTime.now().minusMinutes(10));
         when(timeDao.selectById(anyLong())).thenReturn(mockTime);
 
         List<Reservation> reservations = List.of();
-        when(reservationDao.selectByThemeIdAndDate(anyLong(),any(LocalDate.class))).thenReturn(reservations);
+        when(reservationDao.selectByThemeIdAndDate(anyLong(), any(LocalDate.class))).thenReturn(reservations);
 
         assertThatThrownBy(() -> reservationService.add("브라운", 1L, LocalDate.of(2026, 5, 10), 1L))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 지난 날짜는 예약할 수 없습니다.");
+                .hasMessage("[ERROR] 지난 시간은 예약할 수 없습니다.");
 
-        assertThatThrownBy(() -> reservationService.add("브라운", 1L, LocalDate.now(), 1L))
+        assertThatThrownBy(() -> reservationService.add("브라운", 1L, LocalDate.now(), mockTime.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 지난 시간은 예약할 수 없습니다.");
     }
@@ -60,7 +58,7 @@ public class ReservationServiceTest {
         reservations.add(reservation);
         when(reservationDao.selectByThemeIdAndDate(anyLong(), any(LocalDate.class))).thenReturn(reservations);
 
-        assertThatThrownBy(() -> reservationService.add("브라운", 1L, LocalDate.of(2026, 5, 20), 1L))
+        assertThatThrownBy(() -> reservationService.add("브라운", 1L, LocalDate.of(2026, 5, 20), mockTime.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이미 예약이 존재합니다.");
     }

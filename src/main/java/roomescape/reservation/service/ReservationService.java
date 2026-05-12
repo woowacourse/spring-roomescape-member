@@ -53,12 +53,15 @@ public class ReservationService {
     }
 
     private void validateDateTime(LocalDate date, ReservationTime time) {
-        if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("[ERROR] 지난 날짜는 예약할 수 없습니다.");
-        }
-
-        if (date.equals(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now())) {
+        if (isBeforeDateTime(date, time)) {
             throw new IllegalArgumentException("[ERROR] 지난 시간은 예약할 수 없습니다.");
         }
+    }
+
+    private boolean isBeforeDateTime(LocalDate date, ReservationTime time) {
+        if (date.isBefore(LocalDate.now())) {
+            return true;
+        }
+        return date.equals(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now());
     }
 }

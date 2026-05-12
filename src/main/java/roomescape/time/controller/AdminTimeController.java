@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.time.ReservationTime;
-import roomescape.time.service.TimeService;
 import roomescape.time.dto.TimeRequest;
 import roomescape.time.dto.TimeResponse;
+import roomescape.time.service.TimeService;
 
 @RestController
 @RequestMapping("/admin")
@@ -32,7 +32,7 @@ public class AdminTimeController {
 
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        timeService.delete(id);
+        timeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -44,26 +44,49 @@ public class ReservationDao {
     public Reservation selectById(Long id) {
         String sql =
                 """
-                select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id
-                from reservation r
-                inner join reservation_time t
-                on r.time_id = t.id
-                and r.id = ?
-                """;
+                        select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id
+                        from reservation r
+                        inner join reservation_time t
+                        on r.time_id = t.id
+                        and r.id = ?
+                        """;
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
     public List<Reservation> selectByThemeIdAndDate(Long themeId, LocalDate date) {
         String sql =
                 """
-                select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id
-                from reservation r
-                inner join reservation_time t
-                on r.time_id = t.id
-                and r.theme_id = ?
-                and r.date = ?
-                """;
+                        select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id
+                        from reservation r
+                        inner join reservation_time t
+                        on r.time_id = t.id
+                        and r.theme_id = ?
+                        and r.date = ?
+                        """;
         return jdbcTemplate.query(sql, rowMapper, themeId, date);
+    }
+
+    public List<Reservation> selectByTimeId(Long timeId) {
+        String sql =
+                """
+                        select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id
+                        from reservation r
+                        inner join reservation_time t
+                        on r.time_id = t.id
+                        and r.time_id = ?
+                        """;
+        return jdbcTemplate.query(sql, rowMapper, timeId);
+    }
+
+    public List<Long> selectTimeIdByThemeIdAndDate(Long themeId, LocalDate date) {
+        String sql =
+                """
+                        select time_id
+                        from reservation
+                        where theme_id = ?
+                        and date = ?
+                        """;
+        return jdbcTemplate.queryForList(sql, Long.class, themeId, date);
     }
 
     public Reservation insert(Reservation reservation) {
@@ -81,16 +104,5 @@ public class ReservationDao {
     public void delete(Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    public List<Long> findTimeIdByThemeIdAndDate(Long themeId, LocalDate date) {
-        String sql =
-                """
-                        select time_id
-                        from reservation
-                        where theme_id = ?
-                        and date = ?
-                        """;
-        return jdbcTemplate.queryForList(sql, Long.class, themeId, date);
     }
 }

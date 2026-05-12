@@ -28,7 +28,7 @@ public class ReservationControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "초록");
         params.put("themeId", 2L);
-        params.put("date", "2026-05-05");
+        params.put("date", "2027-05-12");
         params.put("timeId", 7L);
 
         RestAssured.given().log().all()

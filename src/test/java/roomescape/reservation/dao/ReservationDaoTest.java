@@ -57,12 +57,10 @@ public class ReservationDaoTest {
 
     @Test
     void 예약_시간_조회_성공() {
-
         Long themeId = 2L;
         LocalDate date = LocalDate.parse("2026-05-05");
-        List<Long> times = reservationDao.findTimeIdByThemeIdAndDate(themeId, date);
+        List<Long> times = reservationDao.selectTimeIdByThemeIdAndDate(themeId, date);
 
         assertThat(times.size()).isEqualTo(3);
     }
-
 }
