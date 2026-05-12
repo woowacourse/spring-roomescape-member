@@ -81,19 +81,19 @@ public class ReservationService {
                 .isPresent();
 
         if (exists) {
-            throw new BusinessException(HttpStatus.NOT_ACCEPTABLE, "이미 예약된 시간입니다.");
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "이미 예약된 시간입니다.");
         }
     }
 
     private void validatePastDateReservation(LocalDate date) {
         if (date.isBefore(LocalDate.now())) {
-            throw new BusinessException(HttpStatus.NOT_ACCEPTABLE, "이미 지난 날짜입니다.");
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "이미 지난 날짜입니다.");
         }
     }
 
     private void validatePastTimeReservation(LocalDate date, ReservationTime time) {
         if (date.isEqual(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now())) {
-            throw new BusinessException(HttpStatus.NOT_ACCEPTABLE, "예약 시간이 현재보다 이전일 수 없습니다.");
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "예약 시간이 현재보다 이전일 수 없습니다.");
         }
     }
 }
