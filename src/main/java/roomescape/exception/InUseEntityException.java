@@ -1,12 +1,8 @@
 package roomescape.exception;
 
-public class InUseEntityException extends SecureException {
+public class InUseEntityException extends RuntimeException {
 
-    public InUseEntityException(
-            String message,
-            String sensitiveInformation,
-            Throwable cause
-    ) {
-        super(message, sensitiveInformation, cause);
+    public InUseEntityException(String message) {
+        super(message);
     }
 }

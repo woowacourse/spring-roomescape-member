@@ -85,10 +85,7 @@ public class ThemeService {
 
     private void validateDeleted(boolean deleted, EntityId themeId) {
         if (!deleted) {
-            throw new EntityNotFoundException(
-                    "삭제할 테마를 조회하지 못했습니다.",
-                    "themeId = " + themeId
-            );
+            throw new EntityNotFoundException("삭제할 테마를 조회하지 못했습니다. themeId = " + themeId);
         }
     }
 
@@ -108,10 +105,7 @@ public class ThemeService {
         Theme theme = themes.get(themeId);
 
         if (theme == null) {
-            throw new EntityNotFoundException(
-                    "테마를 조회할 수 없습니다.",
-                    "themeId = " + themeId
-            );
+            throw new EntityNotFoundException("테마를 조회할 수 없습니다. themeId = " + themeId);
         }
 
         return new ReservedTheme(

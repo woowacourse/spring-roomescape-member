@@ -61,10 +61,7 @@ public class ReservationService {
         boolean deleted = reservationRepository.delete(reservationId);
 
         if (!deleted) {
-            throw new EntityNotFoundException(
-                    "삭제할 예약을 조회하지 못했습니다.",
-                    "reservationId = " + reservationId
-            );
+            throw new EntityNotFoundException("삭제할 예약을 조회하지 못했습니다. reservationId = " + reservationId);
         }
     }
 
@@ -77,17 +74,11 @@ public class ReservationService {
 
     private ReservationTime findTimeById(EntityId timeId) {
         return timeRepository.findById(timeId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "예약 시간을 조회할 수 없습니다.",
-                        "timeId = " + timeId
-                ));
+                .orElseThrow(() -> new EntityNotFoundException("예약 시간을 조회할 수 없습니다. timeId = " + timeId));
     }
 
     private Theme findThemeById(EntityId themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "테마를 조회할 수 없습니다.",
-                        "themeId = " + themeId
-                ));
+                .orElseThrow(() -> new EntityNotFoundException("테마를 조회할 수 없습니다. themeId = " + themeId));
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.InUseEntityException;
-import roomescape.exception.SecureException;
 
 @RestControllerAdvice
 @Slf4j
@@ -80,28 +79,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             IllegalArgumentException.class,
-            IllegalStateException.class
+            IllegalStateException.class,
+            EntityNotFoundException.class,
+            InUseEntityException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequest(Exception exception) {
         log.warn("[Bad Request]", exception);
         ErrorResponse response = new ErrorResponse(exception.getMessage());
-
-        return ResponseEntity.badRequest()
-                .body(response);
-    }
-
-    @ExceptionHandler({
-            EntityNotFoundException.class,
-            InUseEntityException.class
-    })
-    public ResponseEntity<ErrorResponse> handleSecureBadRequest(SecureException secureException) {
-        log.warn(
-                "[Secure Bad Request]: {} ({})",
-                secureException.getMessage(),
-                secureException.getSensitiveInformation(),
-                secureException
-        );
-        ErrorResponse response = new ErrorResponse(secureException.getMessage());
 
         return ResponseEntity.badRequest()
                 .body(response);

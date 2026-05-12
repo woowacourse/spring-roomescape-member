@@ -80,10 +80,7 @@ public class ReservationTimeService {
 
     private void validateDeleted(boolean deleted, EntityId timeId) {
         if (!deleted) {
-            throw new EntityNotFoundException(
-                    "삭제할 시간을 조회하지 못했습니다.",
-                    "timeId = " + timeId
-            );
+            throw new EntityNotFoundException("삭제할 시간을 조회하지 못했습니다. timeId = " + timeId);
         }
     }
 }
