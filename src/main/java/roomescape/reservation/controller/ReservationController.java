@@ -3,13 +3,11 @@ package roomescape.reservation.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.dto.ReservationCreateInfo;
 import roomescape.reservation.dto.ReservationIdResponse;
 import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -28,5 +26,11 @@ public class ReservationController {
                 request.userId(), request.startAt(), request.themeId());
         ReservationIdResponse response = reservationService.create(info);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<ReservationsResponse> findAllByUserId(@RequestHeader("X-User-Id") @Valid Long id) {
+        ReservationsResponse response = reservationService.findAllByUserId(id);
+        return ResponseEntity.ok(response);
     }
 }
