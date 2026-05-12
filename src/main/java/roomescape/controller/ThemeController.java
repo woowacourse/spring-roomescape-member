@@ -20,7 +20,7 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping("/{id}/available-time")
+    @GetMapping("/{id}/available-times")
     public ResponseEntity<List<ReservationTimeResponse>> getAvailableTime(
             @PathVariable long id,
             @RequestParam String date
