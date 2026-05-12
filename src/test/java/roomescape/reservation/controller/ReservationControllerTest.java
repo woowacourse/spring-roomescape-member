@@ -12,6 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import roomescape.reservation.controller.dto.ReservationCreateRequest;
+import roomescape.reservation.controller.dto.ReservationListResponse;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservationtime.controller.dto.ReservationTimeResponse;
 import roomescape.theme.controller.dto.ThemeResponse;
@@ -22,6 +23,7 @@ import roomescape.reservation.service.ReservationService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,6 +31,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -153,6 +156,46 @@ class ReservationControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("예약자 이름으로 된 예약을 조회하는 요청을 하면 특정 사용자의 예약 정보가 응답으로 반환된다.")
+    public void getListByGuestName_success() throws Exception {
+        // given
+        String guestName = "브라운";
+
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Theme theme = new Theme(1L, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme-1.png");
+        Reservation reservation = new Reservation(1L, guestName, LocalDate.of(2023, 8, 5), time, theme);
+
+        given(reservationService.findByGuestName(guestName))
+                .willReturn(List.of(reservation));
+
+        // when then
+        MvcResult result = mockMvc.perform(
+                        get("/reservations")
+                                .param("guestName", guestName))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ReservationListResponse reservationListResponse = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                ReservationListResponse.class
+        );
+
+        List<ReservationResponse> reservations = reservationListResponse.reservations();
+        assertThat(reservations).hasSize(1);
+
+        for (ReservationResponse response : reservations) {
+            assertReservation(response, reservation);
+            assertTime(response, time);
+            assertTheme(response, theme);
+        }
+
+        then(reservationService)
+                .should()
+                .findByGuestName(guestName);
     }
 
 }

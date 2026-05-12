@@ -39,36 +39,54 @@ public class ReservationAcceptanceTest {
     @Test
     @DisplayName("예약 생성 후 관리자 페이지에서 예약 목록을 조회한다.")
     public void scenario1() throws JsonProcessingException {
-        LocalTime startAt = LocalTime.of(10, 30);
-        ReservationTimeCreateRequest timeRequest = new ReservationTimeCreateRequest(startAt);
-        Integer reservationTimeId = createReservationTime(timeRequest);
+        ReservationCreateRequest reservationRequest = createScenario1Fixture();
+        Integer reservationId = createReservation(reservationRequest);
 
-        ThemeCreateRequest themeRequest = new ThemeCreateRequest("테마1", "설명", "섬네일");
-        Integer themeId = createTheme(themeRequest);
+        given().log().all()
+                .when()
+                .get("/admin/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.id", hasItem(reservationId))
+                .body("reservations.guestName", hasItem(reservationRequest.guestName()))
+                .body("reservations.date", hasItem(reservationRequest.date().toString()))
+                .body("reservations.time.id", hasItem(reservationRequest.timeId().intValue()))
+                .body("reservations.theme.id", hasItem(reservationRequest.themeId().intValue()));
+    }
 
-        ReservationCreateRequest reservationRequest = new ReservationCreateRequest(
+    private ReservationCreateRequest createScenario1Fixture() throws JsonProcessingException {
+        Integer reservationTimeId = createReservationTime(
+                new ReservationTimeCreateRequest(LocalTime.of(10, 30)));
+        Integer themeId = createTheme(
+                new ThemeCreateRequest("테마1", "설명", "섬네일"));
+        return new ReservationCreateRequest(
                 "brown",
                 LocalDate.of(2026, 10, 14),
                 reservationTimeId.longValue(),
                 themeId.longValue());
-
-        Integer reservationId = createReservation(reservationRequest, reservationTimeId, themeId);
-
-        given().log().all()
-        .when()
-            .get("/admin/reservations")
-        .then().log().all()
-            .statusCode(200)
-            .body("reservations.id", hasItem(reservationId))
-            .body("reservations.guestName", hasItem(reservationRequest.guestName()))
-            .body("reservations.date", hasItem(reservationRequest.date().toString()))
-            .body("reservations.time.id", hasItem(reservationTimeId))
-            .body("reservations.theme.id", hasItem(themeId));
     }
 
     @Test
     @DisplayName("예약 삭제 후 관리자 예약 목록에서 사라진다.")
     public void scenario2() throws JsonProcessingException {
+        Integer reservationId = createScenario2Fixture();
+
+        given().log().all()
+                .pathParam("id", reservationId)
+                .when()
+                .delete("/admin/reservations/{id}")
+                .then().log().all()
+                .statusCode(204);
+
+        given().log().all()
+                .when()
+                .get("/admin/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.id", not(hasItem(reservationId)));
+    }
+
+    private Integer createScenario2Fixture() throws JsonProcessingException {
         LocalTime startAt = LocalTime.of(10, 30);
         ReservationTimeCreateRequest timeRequest = new ReservationTimeCreateRequest(startAt);
         Integer reservationTimeId = createReservationTime(timeRequest);
@@ -82,21 +100,40 @@ public class ReservationAcceptanceTest {
                 reservationTimeId.longValue(),
                 themeId.longValue());
 
-        Integer reservationId = createReservation(reservationRequest, reservationTimeId, themeId);
+        Integer reservationId = createReservation(reservationRequest);
+        return reservationId;
+    }
+
+    @Test
+    @DisplayName("특정 사용자의 이름을 입력해 예약을 조회한다.")
+    public void scenario3() throws JsonProcessingException {
+        String guestName = "brown";
+        createScenario3Fixture(guestName);
 
         given().log().all()
-                .pathParam("id", reservationId)
-        .when()
-                .delete("/admin/reservations/{id}")
-        .then().log().all()
-                .statusCode(204);
-
-        given().log().all()
-        .when()
-                .get("/admin/reservations")
-        .then().log().all()
+                .queryParam("guestName", guestName)
+                .when()
+                .get("/reservations")
+                .then().log().all()
                 .statusCode(200)
-                .body("reservations.id", not(hasItem(reservationId)));
+                .body("reservations.guestName", hasItem(guestName));
+    }
+
+    private void createScenario3Fixture(String guestName) throws JsonProcessingException {
+        LocalTime startAt = LocalTime.of(10, 30);
+        ReservationTimeCreateRequest timeRequest = new ReservationTimeCreateRequest(startAt);
+        Integer reservationTimeId = createReservationTime(timeRequest);
+
+        ThemeCreateRequest themeRequest = new ThemeCreateRequest("테마1", "설명", "섬네일");
+        Integer themeId = createTheme(themeRequest);
+
+        ReservationCreateRequest reservationRequest = new ReservationCreateRequest(
+                guestName,
+                LocalDate.of(2026, 10, 14),
+                reservationTimeId.longValue(),
+                themeId.longValue());
+
+        createReservation(reservationRequest);
     }
 
     private Integer createReservationTime(ReservationTimeCreateRequest request) throws JsonProcessingException {
@@ -126,9 +163,7 @@ public class ReservationAcceptanceTest {
     }
 
     private Integer createReservation(
-            ReservationCreateRequest request,
-            Integer reservationTimeId,
-            Integer themeId
+            ReservationCreateRequest request
     ) throws JsonProcessingException {
         return given().log().all()
                 .contentType(ContentType.JSON)
@@ -140,8 +175,8 @@ public class ReservationAcceptanceTest {
                 .body("id", notNullValue())
                 .body("guestName", equalTo(request.guestName()))
                 .body("date", equalTo(request.date().toString()))
-                .body("time.id", equalTo(reservationTimeId))
-                .body("theme.id", equalTo(themeId))
+                .body("time.id", equalTo(request.timeId().intValue()))
+                .body("theme.id", equalTo(request.themeId().intValue()))
                 .extract().path("id");
     }
 

@@ -46,6 +46,28 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByGuestName(String guestName) {
+        return jdbcTemplate.query("""
+                SELECT
+                    r.id AS reservation_id,
+                    r.guest_name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme th
+                    ON r.theme_id = th.id
+                WHERE r.guest_name = ?
+                """, reservationRowMapper, guestName);
+    }
+
+    @Override
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)

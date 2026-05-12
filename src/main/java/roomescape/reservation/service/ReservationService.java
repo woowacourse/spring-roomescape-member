@@ -68,4 +68,8 @@ public class ReservationService {
             throw new DomainException(ErrorCode.RESERVATION_NOT_FOUND);
         }
     }
+
+    public List<Reservation> findByGuestName(String guestName) {
+        return reservationRepository.findByGuestName(guestName);
+    }
 }
