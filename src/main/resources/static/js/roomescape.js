@@ -742,8 +742,9 @@ const API_BASE = "";
       setEditReservationMessage("예약을 수정하는 중입니다.");
 
       try {
+        const authorizationHeader = encodeURIComponent(authorizationName);
         const editedReservation = state.mode === "live"
-          ? await patchJson(`/reservations/${reservationId}`, payload, { Authorization: authorizationName })
+          ? await patchJson(`/reservations/${reservationId}`, payload, { Authorization: authorizationHeader })
           : editDemoReservation(reservationId, payload, authorizationName);
 
         if (state.mode === "demo") {

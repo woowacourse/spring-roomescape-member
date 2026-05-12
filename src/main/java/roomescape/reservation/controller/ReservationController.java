@@ -12,6 +12,8 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.ReservationService;
 
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -54,7 +56,11 @@ public class ReservationController {
     ) {
         return ResponseEntity.ok(
                 ReservationResponse.from(
-                        reservationService.editDateTime(id, request.date(), request.timeId(), guestName)));
+                        reservationService.editDateTime(id, request.date(), request.timeId(), decode(guestName))));
+    }
+
+    private String decode(String value) {
+        return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
 
 }

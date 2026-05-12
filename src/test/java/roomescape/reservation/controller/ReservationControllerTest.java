@@ -22,6 +22,8 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 import roomescape.reservation.service.ReservationService;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -218,7 +220,7 @@ class ReservationControllerTest {
         );
 
         // when then
-        String guestNameHeader = "브라운";
+        String guestNameHeader = URLEncoder.encode("브라운", StandardCharsets.UTF_8);
         MvcResult result = mockMvc.perform(
                         patch("/reservations/{id}", reservationId)
                                 .content(objectMapper.writeValueAsString(request))
@@ -240,7 +242,7 @@ class ReservationControllerTest {
 
         then(reservationService)
                 .should()
-                .editDateTime(reservationId, request.date(), request.timeId(), guestNameHeader);
+                .editDateTime(reservationId, request.date(), request.timeId(), "브라운");
     }
 
     @ParameterizedTest
@@ -259,7 +261,8 @@ class ReservationControllerTest {
         mockMvc.perform(
                         patch("/reservations/{id}", reservationId)
                                 .content(objectMapper.writeValueAsString(request))
-                                .contentType(MediaType.APPLICATION_JSON))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "브라운"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -280,7 +283,8 @@ class ReservationControllerTest {
         mockMvc.perform(
                         patch("/reservations/{id}", reservationId)
                                 .content(request)
-                                .contentType(MediaType.APPLICATION_JSON))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "브라운"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
