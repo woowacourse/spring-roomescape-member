@@ -16,12 +16,19 @@ public class Reservation {
     private LocalDateTime createdAt;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt) {
+        validateName(name);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.createdAt = createdAt;
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("예약자명은 필수입니다.");
+        }
     }
 
     public Long getId() {
