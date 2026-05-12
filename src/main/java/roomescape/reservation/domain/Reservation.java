@@ -38,18 +38,18 @@ public class Reservation {
     }
 
     public void validateNotPast(LocalTime startAt, LocalDateTime currentDateTime) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
-
-        if (reservationDateTime.isBefore(currentDateTime)) {
-            throw new RoomEscapeException("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
-        }
+        validateNotBefore(startAt, currentDateTime, "현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
     }
 
     public void validateDeletable(LocalTime startAt, LocalDateTime currentDateTime) {
+        validateNotBefore(startAt, currentDateTime, "이미 지나간 예약은 삭제할 수 없습니다.");
+    }
+
+    private void validateNotBefore(LocalTime startAt, LocalDateTime currentDateTime, String errorMessage) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
 
         if (reservationDateTime.isBefore(currentDateTime)) {
-            throw new RoomEscapeException("이미 지나간 예약은 삭제할 수 없습니다.");
+            throw new RoomEscapeException(errorMessage);
         }
     }
 
