@@ -25,9 +25,7 @@ public class Reservation {
 
     public Reservation(String userName, Theme theme, LocalDate date, ReservationTime time, LocalDateTime now) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-        if (reservationDateTime.isBefore(now)) {
-            throw new RoomescapeException(ErrorCode.PAST_RESERVATION);
-        }
+        validateReservationTime(reservationDateTime, now);
         this.userName = userName;
         this.theme = theme;
         this.date = date;
@@ -52,5 +50,11 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    private void validateReservationTime(LocalDateTime reservationDateTime, LocalDateTime now) {
+        if (reservationDateTime.isBefore(now)) {
+            throw new RoomescapeException(ErrorCode.PAST_RESERVATION);
+        }
     }
 }
