@@ -57,7 +57,7 @@ class ReservationControllerTest {
                     .body(requestDto)
                     .when().post("/reservations")
                     .then()
-                    .status(HttpStatus.OK)
+                    .status(HttpStatus.CREATED)
                     .extract().as(ReservationResponseDto.class);
 
             assertThat(actual).isEqualTo(expected);

@@ -2,6 +2,7 @@ package roomescape.controller.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -26,6 +27,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
 import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.request.ReservationUpdateDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.service.ReservationService;
 
@@ -62,7 +64,8 @@ class AdminReservationControllerTest {
                     .when().get("/admin/reservations")
                     .then()
                     .status(HttpStatus.OK)
-                    .extract().as(new TypeRef<>() {});
+                    .extract().as(new TypeRef<>() {
+                    });
 
             assertThat(actual).isEqualTo(expected);
             then(reservationService).should().findAll();
@@ -102,6 +105,29 @@ class AdminReservationControllerTest {
                     .then()
                     .status(HttpStatus.CREATED)
                     .header("Location", "http://localhost/admin/reservations/" + reservation.getId())
+                    .extract().as(ReservationResponseDto.class);
+
+            assertThat(actual).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class Patch {
+
+        @Test
+        @DisplayName("유효한 요청으로 예약을 수정하면 200을 반환한다")
+        void updatesReservation() {
+            ReservationUpdateDto requestDto = new ReservationUpdateDto(LocalDate.now().plusDays(2), time.getId());
+            given(reservationService.update(eq(reservation.getId()), any(ReservationUpdateDto.class)))
+                    .willReturn(reservation);
+            ReservationResponseDto expected = ReservationResponseDto.from(reservation);
+
+            ReservationResponseDto actual = RestAssuredMockMvc.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(requestDto)
+                    .when().patch("/admin/reservations/" + reservation.getId())
+                    .then()
+                    .status(HttpStatus.OK)
                     .extract().as(ReservationResponseDto.class);
 
             assertThat(actual).isEqualTo(expected);

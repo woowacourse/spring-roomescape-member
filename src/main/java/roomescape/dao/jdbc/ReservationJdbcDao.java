@@ -112,6 +112,22 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
+    public int update(Reservation reservation) {
+        String sql = """
+                UPDATE reservations
+                SET name = :name, date = :date, time_id = :timeId, theme_id = :themeId
+                WHERE id = :id
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTime().getId())
+                .addValue("themeId", reservation.getTheme().getId())
+                .addValue("id", reservation.getId());
+        return jdbcTemplate.update(sql, params);
+    }
+
+    @Override
     public int delete(Long id) {
         String sql = """
                 DELETE FROM reservations

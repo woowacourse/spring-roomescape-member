@@ -12,6 +12,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.request.ReservationUpdateDto;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,6 +50,18 @@ public class ReservationService {
         Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), timeById,
                 themeById);
         return reservationDao.insert(reservation);
+    }
+
+    @Transactional
+    public Reservation update(Long id, ReservationUpdateDto reservationUpdateDto) {
+        Reservation reservation = findById(id);
+        Time time = timeDao.findById(reservationUpdateDto.timeId())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
+
+        reservation.update(reservationUpdateDto.date(), time);
+        reservationDao.update(reservation);
+
+        return reservation;
     }
 
     @Transactional

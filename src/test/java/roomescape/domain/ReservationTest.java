@@ -15,25 +15,49 @@ class ReservationTest {
     private static final LocalDateTime NOW = LocalDateTime.of(2026, 5, 12, 12, 0);
 
     @Nested
-    class ValidateDate {
+    class ValidateCreate {
 
         @Test
-        @DisplayName("예약 시간이 현재 예외를 던지지 않는다")
+        @DisplayName("예약 시간이 현재이면 예외를 던지지 않는다")
         void doesNotThrowWhenJustFuture() {
             Time time = new Time(1L, NOW.toLocalTime());
             Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
 
-            assertThatCode(() -> reservation.validateDate(NOW))
+            assertThatCode(() -> reservation.validateCreate(NOW))
                     .doesNotThrowAnyException();
         }
 
         @Test
-        @DisplayName("예약 시간이 현재보다 전이면 예외를 던진다")
+        @DisplayName("예약 시간이 현재보다 1나노초 전이면 예외를 던진다")
         void throwsWhenJustPast() {
             Time time = new Time(1L, NOW.minusNanos(1).toLocalTime());
             Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
 
-            assertThatThrownBy(() -> reservation.validateDate(NOW))
+            assertThatThrownBy(() -> reservation.validateCreate(NOW))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Nested
+    class ValidateCancel {
+
+        @Test
+        @DisplayName("예약 시간이 현재이면 예외를 던지지 않는다")
+        void doesNotThrowWhenJustFuture() {
+            Time time = new Time(1L, NOW.toLocalTime());
+            Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
+
+            assertThatCode(() -> reservation.validateCancel(NOW))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("예약 시간이 현재보다 1나노초 전이면 예외를 던진다")
+        void throwsWhenJustPast() {
+            Time time = new Time(1L, NOW.minusNanos(1).toLocalTime());
+            Reservation reservation = new Reservation("유저", NOW.toLocalDate(), time, THEME);
+
+            assertThatThrownBy(() -> reservation.validateCancel(NOW))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }

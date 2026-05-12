@@ -65,6 +65,19 @@ public class TimeJdbcDao implements TimeDao {
     }
 
     @Override
+    public int update(Time time) {
+        String sql = """
+                UPDATE times
+                SET start_at = :startAt
+                WHERE id = :id
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("startAt", time.getStartAt())
+                .addValue("id", time.getId());
+        return jdbcTemplate.update(sql, params);
+    }
+
+    @Override
     public int delete(Long id) {
         String sql = """
                 DELETE FROM times
