@@ -16,6 +16,7 @@ import roomescape.reservationtime.exception.ReservationTimeConstraintException;
 import roomescape.reservationtime.exception.ReservationTimeDuplicateException;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.reservationtime.service.ReservationTimeService;
+import roomescape.reservationtime.service.dto.ReservationTimeResult;
 import roomescape.service.stub.FakeReservationRepository;
 import roomescape.service.stub.FakeReservationTimeRepository;
 import roomescape.service.stub.FakeThemeRepository;
@@ -28,10 +29,11 @@ class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
     private ReservationRepository reservationRepository;
     private ThemeRepository themeRepository;
+    private ReservationTimeRepository reservationTimeRepository;
 
     @BeforeEach
     void setUp() {
-        ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+        reservationTimeRepository = new FakeReservationTimeRepository();
         reservationRepository = new FakeReservationRepository();
         themeRepository = new FakeThemeRepository();
         reservationTimeService = new ReservationTimeService(
@@ -51,10 +53,12 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("같은 테마 내 같은 시작 시간 중복 생성 예외")
     void save_whenDuplicateStartAtInTheme_throws() {
+        // given
         Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
 
-        reservationTimeService.save(LocalTime.of(10, 0), theme.getId());
+        reservationTimeRepository.save(ReservationTime.createNew(LocalTime.of(10, 0), theme));
 
+        // when & then
         assertThatThrownBy(() -> reservationTimeService.save(LocalTime.of(10, 0), theme.getId()))
                 .isInstanceOf(ReservationTimeDuplicateException.class);
     }
@@ -62,13 +66,15 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("예약이 있는 시간 삭제 예외")
     void delete_whenReserved_throws() {
+        // given
         Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
-        ReservationTime time = reservationTimeService.save(LocalTime.of(10, 0), theme.getId());
+        ReservationTime time = reservationTimeRepository.save(ReservationTime.createNew(LocalTime.of(10, 0), theme));
 
         reservationRepository.save(
                 Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time)
         );
 
+        // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(time.getId()))
                 .isInstanceOf(ReservationTimeConstraintException.class);
     }
@@ -76,17 +82,22 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("예약 가능 시간 조회 시 이미 예약된 시간 제외")
     void findAvailableTimes_excludesReservedTimes() {
+        // given
         Theme theme = themeRepository.save(Theme.createNew("미술관의 밤", "설명", "thumb"));
-        ReservationTime time1 = reservationTimeService.save(LocalTime.of(10, 0), theme.getId());
-        ReservationTime time2 = reservationTimeService.save(LocalTime.of(11, 0), theme.getId());
+
+        ReservationTime time1 = reservationTimeRepository.save(ReservationTime.createNew(LocalTime.of(10, 0), theme));
+        ReservationTime time2 = reservationTimeRepository.save(ReservationTime.createNew(LocalTime.of(11, 0), theme));
+
 
         LocalDate date = LocalDate.now().plusDays(1);
         reservationRepository.save(Reservation.createNew("쿠다", date, time1));
 
-        List<ReservationTime> availableTimes = reservationTimeService.findAvailableTimes(date, theme.getId());
+        // when
+        List<ReservationTimeResult> availableTimes = reservationTimeService.findAvailableTimes(date, theme.getId());
 
+        // then
         assertThat(availableTimes).hasSize(1);
-        assertThat(availableTimes.get(0).getId()).isEqualTo(time2.getId());
+        assertThat(availableTimes.get(0).id()).isEqualTo(time2.getId());
     }
 
 }

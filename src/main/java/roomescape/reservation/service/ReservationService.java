@@ -13,6 +13,7 @@ import roomescape.reservation.exception.ReservationDuplicateException;
 import roomescape.reservation.exception.ReservationErrorCode;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.service.dto.ReservationResult;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
@@ -25,32 +26,32 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public List<Reservation> getAll() {
-        return reservationRepository.findAll();
+    public List<ReservationResult> getAll() {
+        return reservationRepository.findAll().stream()
+                .map(ReservationResult::from)
+                .toList();
     }
 
-    public List<Reservation> getAllByName(final String name) {
-        return reservationRepository.findAllByName(name);
+    public List<ReservationResult> getAllByName(final String name) {
+        return reservationRepository.findAllByName(name).stream()
+                .map(ReservationResult::from)
+                .toList();
     }
 
     @Transactional
-    public Reservation save(final String name, final LocalDate date, final Long timeId) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(ReservationTimeNotFoundException::new);
+    public ReservationResult save(final String name, final LocalDate date, final Long timeId) {
+        ReservationTime reservationTime = findReservationTime(timeId);
 
         validateDateTime(date, reservationTime.getStartAt());
-        existsByDateAndTimeId(date, timeId);
+        validateDuplicate(date, timeId);
 
         Reservation reservation =
                 Reservation.createNew(name, date, reservationTime);
 
-        return reservationRepository.save(reservation);
-    }
+        Reservation savedReservation =
+                reservationRepository.save(reservation);
 
-    private void existsByDateAndTimeId(final LocalDate date, final Long timeId) {
-        if (reservationRepository.existsByDateAndTimeId(date, timeId)) {
-            throw new ReservationDuplicateException();
-        }
+        return ReservationResult.from(savedReservation);
     }
 
     @Transactional
@@ -60,8 +61,7 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(final long id, final String name) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(ReservationNotFoundException::new);
+        Reservation reservation = findReservation(id);
 
         validateOwner(name, reservation);
 
@@ -70,22 +70,39 @@ public class ReservationService {
 
     @Transactional
     public void update(final long id, final String name, final LocalDate date, final Long timeId) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(ReservationNotFoundException::new);
+        Reservation reservation = findReservation(id);
 
         validateOwner(name, reservation);
 
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(ReservationTimeNotFoundException::new);
+        ReservationTime reservationTime = findReservationTime(timeId);
 
         validateDateTime(date, reservationTime.getStartAt());
-        existsByDateAndTimeId(date, timeId);
+        validateDuplicate(date, timeId);
 
-        reservationRepository.update(reservation.modify(date, reservationTime));
+        reservationRepository.update(
+                reservation.modify(date, reservationTime)
+        );
+    }
+
+    private Reservation findReservation(final long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(ReservationNotFoundException::new);
+    }
+
+    private ReservationTime findReservationTime(final Long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(ReservationTimeNotFoundException::new);
+    }
+
+    private void validateDuplicate(final LocalDate date, final Long timeId) {
+        if (reservationRepository.existsByDateAndTimeId(date, timeId)) {
+            throw new ReservationDuplicateException();
+        }
     }
 
     private void validateDateTime(final LocalDate date, final LocalTime time) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
+        LocalDateTime reservationDateTime =
+                LocalDateTime.of(date, time);
 
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
             throw new ReservationBadRequestException(
@@ -94,13 +111,12 @@ public class ReservationService {
         }
     }
 
-    private void validateOwner(String name, Reservation reservation) {
+    private void validateOwner(final String name, final Reservation reservation) {
         if (!reservation.getName().equals(name)) {
             throw new ReservationBadRequestException(
                     ReservationErrorCode.RESERVATION_NAME_MISMATCH.getMessage()
             );
         }
     }
-
 
 }

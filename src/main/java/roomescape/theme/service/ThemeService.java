@@ -10,6 +10,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeConstraintException;
 import roomescape.theme.exception.ThemeDuplicateException;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.service.dto.ThemeResult;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,34 +21,47 @@ public class ThemeService {
     private final ReservationRepository reservationRepository;
 
     @Transactional
-    public Theme save(final String name, final String description, final String thumbnailUrl) {
-        Theme nonIdTheme = Theme.createNew(name, description, thumbnailUrl);
+    public ThemeResult save(final String name, final String description, final String thumbnailUrl) {
+        validateDuplicate(name);
 
-        if (themeRepository.existsByName(name)) {
-            throw new ThemeDuplicateException();
-        }
+        Theme theme = Theme.createNew(name, description, thumbnailUrl);
 
-        return themeRepository.save(nonIdTheme);
+        Theme savedTheme = themeRepository.save(theme);
+
+        return ThemeResult.from(savedTheme);
     }
 
     @Transactional
     public void deleteById(final long themeId) {
-        if (reservationRepository.existsByThemeId(themeId)) {
-            throw new ThemeConstraintException();
-        }
+        validateReservationExists(themeId);
         themeRepository.deleteById(themeId);
     }
 
-    public List<Theme> getAll() {
-        return themeRepository.findAll();
+    public List<ThemeResult> getAll() {
+        return themeRepository.findAll().stream()
+                .map(ThemeResult::from)
+                .toList();
     }
 
-    public List<Theme> getPopularThemes(final int period, final int limit) {
+    public List<ThemeResult> getPopularThemes(final int period, final int limit) {
         return themeRepository.findPopularThemes(
-                period,
-                limit,
-                LocalDate.now()
-        );
+                        period,
+                        limit,
+                        LocalDate.now()
+                ).stream()
+                .map(ThemeResult::from)
+                .toList();
     }
 
+    private void validateDuplicate(final String name) {
+        if (themeRepository.existsByName(name)) {
+            throw new ThemeDuplicateException();
+        }
+    }
+
+    private void validateReservationExists(final long themeId) {
+        if (reservationRepository.existsByThemeId(themeId)) {
+            throw new ThemeConstraintException();
+        }
+    }
 }

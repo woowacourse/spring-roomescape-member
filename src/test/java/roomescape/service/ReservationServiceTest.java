@@ -75,7 +75,7 @@ class ReservationServiceTest {
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
 
-        Reservation saved = reservationService.save("쿠다", LocalDate.now().plusDays(1), time.getId());
+        Reservation saved = reservationRepository.save(Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
 
         assertThat(saved.getId()).isNotNull();
         assertThat(reservationRepository.findAll()).hasSize(1);
@@ -192,7 +192,6 @@ class ReservationServiceTest {
 
         Reservation reservation1 = reservationRepository.save(
                 Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time1));
-
         Reservation reservation2 = reservationRepository.save(
                 Reservation.createNew("피케이", LocalDate.now().plusDays(1), time2));
 

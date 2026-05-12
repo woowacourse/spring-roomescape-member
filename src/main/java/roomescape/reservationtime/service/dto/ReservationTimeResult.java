@@ -1,0 +1,16 @@
+package roomescape.reservationtime.service.dto;
+
+import java.time.LocalTime;
+import roomescape.reservationtime.domain.ReservationTime;
+
+public record ReservationTimeResult(
+        Long id,
+        LocalTime startAt
+) {
+    public static ReservationTimeResult from(ReservationTime reservationTime) {
+        return new ReservationTimeResult(
+                reservationTime.getId(),
+                reservationTime.getStartAt()
+        );
+    }
+}
