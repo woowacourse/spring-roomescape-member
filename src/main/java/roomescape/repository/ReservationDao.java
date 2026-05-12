@@ -81,6 +81,12 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    public boolean existsByTimeId(Long timeId) {
+        String sql = "SELECT COUNT(1) FROM reservation WHERE time_id = ?";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, timeId);
+        return count != null && count > 0;
+    }
+
     public List<Reservation> findAllByUserId(Long userId) {
         String sql = """
                 SELECT r.id, r.date,
