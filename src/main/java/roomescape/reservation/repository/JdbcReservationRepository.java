@@ -25,7 +25,7 @@ import roomescape.theme.entity.Theme;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private static final String SELECT_RESERVATION_WITH_TIME = """
+    private static final String SELECT_RESERVATION_WITH_TIME_AND_THEME = """
             SELECT
                 r.id AS reservation_id,
                 r.name AS reservation_name,
@@ -70,12 +70,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         ReservationTime time = reservation.getTime();
         Theme theme = reservation.getTheme();
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", time.getId())
+                .addValue("themeId", theme.getId());
         try {
-            SqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("name", reservation.getName())
-                    .addValue("date", reservation.getDate())
-                    .addValue("timeId", time.getId())
-                    .addValue("themeId", theme.getId());
             Long id = jdbcInsert.executeAndReturnKey(params).longValue();
             return Reservation.toEntity(reservation, id);
         } catch (DuplicateKeyException e) {
@@ -85,7 +85,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        String sql = SELECT_RESERVATION_WITH_TIME + "WHERE r.id = :id";
+        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "WHERE r.id = :id";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
@@ -98,8 +98,25 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Optional<Reservation> findByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME
+                + "WHERE r.date = :date AND r.time_id = :timeId AND r.theme_id = :themeId";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("timeId", timeId)
+                .addValue("themeId", themeId);
+
+        try {
+            Reservation reservation = namedParameterJdbcTemplate.queryForObject(sql, params, reservationRowMapper);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public List<Reservation> findAll() {
-        String sql = SELECT_RESERVATION_WITH_TIME + "ORDER BY r.id";
+        String sql = SELECT_RESERVATION_WITH_TIME_AND_THEME + "ORDER BY r.id";
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 

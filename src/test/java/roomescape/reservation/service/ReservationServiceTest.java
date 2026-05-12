@@ -67,7 +67,6 @@ class ReservationServiceTest {
                 .isInstanceOf(ReservationDuplicatedException.class);
     }
 
-
     @Test
     void 예약목록을_올바르게_조회하는지_확인하는_테스트() {
         ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2026, 5, 6), 1L, 1L);

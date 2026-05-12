@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -77,4 +78,35 @@ class JdbcReservationRepositoryTest {
         assertThat(reservations).doesNotContain(reservation);
     }
 
+    @Test
+    void 있는_예약을_날짜_시간_테마로_조회하는_경우_예약을_반환한다() {
+        String name = "봉구스";
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        long time_id = 1L;
+        ReservationTime reservationTime = reservationTimeRepository.findById(time_id)
+                .orElseThrow(() -> new ReservationTimeNotFoundException(time_id));
+        long theme_id = 1L;
+        Theme theme = themeRepository.findById(theme_id)
+                .orElseThrow(() -> new ThemeNotFoundException(theme_id));
+
+        reservationRepository.save(Reservation.of(name, date, reservationTime, theme));
+        Optional<Reservation> reservation = reservationRepository.findByDateAndTimeIdAndThemeId(date,
+                time_id,
+                theme_id);
+
+        assertThat(reservation).isPresent();
+    }
+
+    @Test
+    void 없는_예약을_날짜_시간_테마로_조회하는_경우_Empty를_반환한다() {
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        long time_id = 1L;
+        long theme_id = 1L;
+
+        Optional<Reservation> reservation = reservationRepository.findByDateAndTimeIdAndThemeId(date,
+                time_id,
+                theme_id);
+
+        assertThat(reservation).isEmpty();
+    }
 }
