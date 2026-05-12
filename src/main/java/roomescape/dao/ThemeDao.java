@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -83,7 +84,7 @@ public class ThemeDao {
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
     }

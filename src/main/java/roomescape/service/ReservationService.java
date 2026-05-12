@@ -26,7 +26,7 @@ public class ReservationService {
     }
 
     public List<Reservation> findAll(int page, int size) {
-        return reservationDao.findAll(page,size);
+        return reservationDao.findAll(page, size);
     }
 
     public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {
