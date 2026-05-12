@@ -1,5 +1,8 @@
 package roomescape.service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -13,6 +16,8 @@ import roomescape.dto.response.ReservationResponse;
 
 @Service
 public class ReservationService {
+    private static final String LOCATION = "Asia/Seoul";
+
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
@@ -31,18 +36,18 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse save(ReservationRequest request) {
-        ReservationTime time = reservationTimeDao.findTimeById(request.timeId());
+    public ReservationResponse save(ReservationRequest request, Instant clockInstant) {
+        ReservationTime time = reservationTimeDao.findTimeById(request.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
 
-        if (time == null) {
-            throw new IllegalArgumentException("요청하신 시간 ID가 존재하지 않습니다.");
+        LocalDateTime now = LocalDateTime.ofInstant(clockInstant, ZoneId.of(LOCATION));
+        LocalDateTime requestDateTime = LocalDateTime.of(request.date(), time.getStartAt());
+        if (requestDateTime.isBefore(now)) {
+            throw new IllegalArgumentException("이미 지난 시간입니다.");
         }
 
-        Theme theme = themeDao.findThemeById(request.themeId());
-
-        if (theme == null) {
-            throw new IllegalArgumentException("요청하신 테마 ID가 존재하지 않습니다.");
-        }
+        Theme theme = themeDao.findThemeById(request.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
         if (reservationDao.existsBy(request.date(), theme, time)) {
             throw new IllegalArgumentException("이미 존재하는 예약 건입니다.");
