@@ -5,14 +5,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
 @JdbcTest
@@ -23,10 +28,14 @@ class JdbcTimeSlotRepositoryTest {
     private JdbcTemplate jdbcTemplate;
 
     private JdbcTimeSlotRepository timeRepository;
+    private JdbcThemeRepository themeRepository;
+    private JdbcReservationRepository reservationRepository;
 
     @BeforeEach
     void setUp() {
         timeRepository = new JdbcTimeSlotRepository(jdbcTemplate);
+        themeRepository = new JdbcThemeRepository(jdbcTemplate);
+        reservationRepository = new JdbcReservationRepository(jdbcTemplate);
     }
 
     @Test
@@ -74,5 +83,16 @@ class JdbcTimeSlotRepositoryTest {
     void updateNonExisting() {
         TimeSlot updateTime = new TimeSlot(999L, LocalTime.of(12, 0));
         assertThat(timeRepository.update(updateTime)).isZero();
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 시간을 삭제할 수 없다.")
+    void deleteTimeSlot_WithReservation() {
+        TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
+        Theme savedTheme = themeRepository.save(Theme.transientOf("공포", "설명", "url"));
+        reservationRepository.save(Reservation.transientOf("브라운", LocalDate.now().plusDays(1), savedTimeSlot, savedTheme));
+
+        assertThatThrownBy(() -> timeRepository.deleteById(savedTimeSlot.id()))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 }
