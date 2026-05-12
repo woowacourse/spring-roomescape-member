@@ -1,7 +1,6 @@
 package roomescape.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -36,10 +35,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(NoSuchElementException e,
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e,
                                                         HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ErrorResponse.of(HttpStatus.NOT_FOUND, e.getMessage(), request));
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflict(ConflictException e, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.of(HttpStatus.CONFLICT, e.getMessage(), request));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

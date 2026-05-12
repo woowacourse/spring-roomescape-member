@@ -47,7 +47,7 @@ public class ReservationTimeService {
             throw new NotFoundException("존재하지 않는 예약 시간대입니다.");
         }
         if (reservationRepository.existsByTimeId(id)) {
-            throw new ConflictException("해당 시간에 예약이 존재합니다.");
+            throw new ConflictException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
         }
         reservationTimeRepository.delete(id);
     }
