@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +27,14 @@ class ReservationTimeServiceTest {
     @BeforeEach
     void setUp() {
         reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+    }
+
+    @Test
+    void 예약이_존재하는_시간은_삭제할_수_없다() {
+        Long timeId = 1L;
+
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test

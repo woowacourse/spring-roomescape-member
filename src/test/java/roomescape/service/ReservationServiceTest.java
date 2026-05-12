@@ -9,6 +9,7 @@ import roomescape.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.DuplicationException;
 import roomescape.exception.NotFoundException;
 import roomescape.policy.UserReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
@@ -134,5 +135,47 @@ class ReservationServiceTest {
         reservationService.deleteById(1L);
 
         verify(reservationRepository).deleteById(eq(1L));
+    }
+
+    @Test
+    void 오늘_날짜의_지난_시간으로_예약하면_예외가_발생한다() {
+        ReservationTime pastTime = new ReservationTime(TIME_ID, LocalTime.of(0, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", FIXED_TODAY, TIME_ID, THEME_ID);
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(pastTime));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, userPolicy))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 같은_날짜_시간_테마에_이미_예약이_있으면_중복_예외가_발생한다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", date, TIME_ID, THEME_ID);
+        Reservation existing = new Reservation(1L, "조이", date, time, theme);
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+        given(reservationRepository.findAllReservations()).willReturn(List.of(existing));
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, userPolicy))
+                .isInstanceOf(DuplicationException.class);
+    }
+
+    @Test
+    void 빈_이름으로_예약하면_예외가_발생한다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand(" ", LocalDate.of(2026, 5, 10), TIME_ID, THEME_ID);
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, userPolicy))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
