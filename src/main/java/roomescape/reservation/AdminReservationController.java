@@ -22,7 +22,7 @@ public class AdminReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteForceReservation(@PathVariable long id) {
+    public ResponseEntity<?> forceDeleteReservation(@PathVariable long id) {
         adminReservationService.forceDeleteReservation(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
