@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.holiday.controller.dto.HolidayResponseDto;
 import roomescape.holiday.controller.dto.HolidaySaveRequestDto;
@@ -16,10 +17,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-public class HolidayController {
+@RequestMapping("/admin")
+public class AdminHolidayController {
     private final HolidayService holidayService;
 
-    public HolidayController(HolidayService holidayService) {
+    public AdminHolidayController(HolidayService holidayService) {
         this.holidayService = holidayService;
     }
 

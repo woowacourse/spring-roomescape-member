@@ -19,8 +19,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(HolidayController.class)
-class HolidayControllerTest {
+@WebMvcTest(AdminHolidayController.class)
+class AdminHolidayControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -37,7 +37,7 @@ class HolidayControllerTest {
 
         Mockito.when(holidayService.getAll()).thenReturn(holidayList);
 
-        mockMvc.perform(get("/holidays")
+        mockMvc.perform(get("/admin/holidays")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -52,7 +52,7 @@ class HolidayControllerTest {
 
         String requestBody = String.format("{\"id\":%d,\"date\":\"%s\"}", 1L, date);
 
-        mockMvc.perform(post("/holidays")
+        mockMvc.perform(post("/admin/holidays")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isCreated());
@@ -62,7 +62,7 @@ class HolidayControllerTest {
     void deleteById() throws Exception {
         Long id = 1L;
 
-        mockMvc.perform(delete("/holidays/{id}", id))
+        mockMvc.perform(delete("/admin/holidays/{id}", id))
                 .andExpect(status().isNoContent());
 
         Mockito.verify(holidayService).delete(id);
