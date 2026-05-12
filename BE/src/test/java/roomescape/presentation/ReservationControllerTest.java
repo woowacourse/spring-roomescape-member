@@ -151,4 +151,22 @@ class ReservationControllerTest {
 
         then(reservationService).should().deleteById(1L);
     }
+
+    @Test
+    @DisplayName("POST /reservations - 예약 시간이 누락된 경우 400 에러와 명확한 메시지를 반환한다.")
+    void createReservation_fail_when_timeId_is_null() throws Exception {
+        // given
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "브라운");
+        body.put("date", "2026-05-05");
+        body.put("themeId", 1);
+        // timeId is missing
+
+        // when & then
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("예약 시간이 비어있습니다."));
+    }
 }
