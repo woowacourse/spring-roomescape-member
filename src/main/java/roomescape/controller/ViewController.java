@@ -15,4 +15,19 @@ public class ViewController {
     public String getReservation() {
         return "reservation";
     }
+
+    @GetMapping("/admin/reservation")
+    public String getAdminReservation() {
+        return "admin-reservation";
+    }
+
+    @GetMapping("/admin/time")
+    public String getAdminTime() {
+        return "admin-time";
+    }
+
+    @GetMapping("/admin/theme")
+    public String getAdminTheme() {
+        return "admin-theme";
+    }
 }

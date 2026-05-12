@@ -288,5 +288,28 @@ public class MissionStepTest {
                 .when().get("/reservation")
                 .then().log().all()
                 .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().get("/admin/reservation")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().get("/admin/time")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    void 존재하지_않는_이미지_요청() {
+        RestAssured.given().log().all()
+                .when().get("/images/themes/not-found.png")
+                .then().log().all()
+                .statusCode(404);
     }
 }

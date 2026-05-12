@@ -6,6 +6,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -28,8 +29,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body("[ERROR] 필수 요청값이 누락되었습니다.");
     }
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<String> handleNoResource() {
+        return ResponseEntity.notFound().build();
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException() {
+    public ResponseEntity<String> handleException(Exception e) {
         return ResponseEntity.internalServerError().body("[ERROR] 서버에 문제가 발생했습니다.");
     }
 }
