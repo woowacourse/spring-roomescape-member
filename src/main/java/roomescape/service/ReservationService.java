@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +9,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
+import roomescape.exception.ReservationByPastDateTimeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -43,6 +45,8 @@ public class ReservationService {
         Theme theme = themeRepository.findById(reservationRequestDTO.themeId())
                 .orElseThrow();
 
+        validateNotPast(LocalDateTime.of(reservationRequestDTO.date(), time.getStartAt()));
+
         Reservation reservation = Reservation.withoutId(
                 reservationRequestDTO.name(),
                 reservationRequestDTO.date(),
@@ -56,5 +60,12 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         reservationRepository.delete(id);
+    }
+
+    private static void validateNotPast(LocalDateTime targetDateTime) {
+        LocalDateTime now = LocalDateTime.now();
+        if (targetDateTime.isBefore(now)) {
+            throw new ReservationByPastDateTimeException(now, targetDateTime);
+        }
     }
 }

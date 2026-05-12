@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
+import roomescape.exception.ReservationByPastDateTimeException;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
 import roomescape.repository.JdbcThemeRepository;
@@ -28,7 +30,9 @@ class ReservationServiceTest {
     @DisplayName("예약을 생성한다")
     @Test
     void ReservationRequestDTO를_받아_ReservationResponseDTO를_리턴한다() {
-        ReservationRequestDTO reservationRequestDTO = new ReservationRequestDTO("루드비코", LocalDate.now(), 1L, 1L);
+        ReservationRequestDTO reservationRequestDTO = new ReservationRequestDTO(
+                "루드비코", LocalDate.now().plusDays(1), 1L, 1L
+        );
 
         ReservationResponseDTO addedReservation = reservationService.addReservation(reservationRequestDTO);
 
@@ -42,14 +46,28 @@ class ReservationServiceTest {
                 .isEqualTo(reservationRequestDTO);
     }
 
+    @DisplayName("지나간 날짜/시간에 대한 예약은 거부한다")
+    @Test
+    void 지나간_시점에_대한_예약_요청에는_ReservationByPastDateTimeException_예외를_던진다() {
+        ReservationRequestDTO outdatedRequest = new ReservationRequestDTO(
+                "sample",
+                LocalDate.now().minusDays(1),
+                1L,
+                1L
+        );
+
+        assertThatThrownBy(() -> reservationService.addReservation(outdatedRequest))
+                .isExactlyInstanceOf(ReservationByPastDateTimeException.class);
+    }
+
     @DisplayName("모든 예약을 조회한다")
     @Test
     void 존재하는_모든_예약의_ReservationResponseDTO가_담긴_리스트를_리턴한다() {
         // given
         ReservationRequestDTO rudevicoReservationRequestDTO =
-                new ReservationRequestDTO("루드비코", LocalDate.now(), 1L, 1L);
+                new ReservationRequestDTO("루드비코", LocalDate.now().plusDays(1), 1L, 1L);
         ReservationRequestDTO echoReservationRequestDTO =
-                new ReservationRequestDTO("에코", LocalDate.now(), 2L, 1L);
+                new ReservationRequestDTO("에코", LocalDate.now().plusDays(1), 2L, 1L);
 
         ReservationResponseDTO rudevicoReservation = reservationService.addReservation(rudevicoReservationRequestDTO);
         ReservationResponseDTO echoReservation = reservationService.addReservation(echoReservationRequestDTO);
@@ -67,7 +85,7 @@ class ReservationServiceTest {
     @Test
     void 예약의_id로_예약을_삭제한다() {
         ReservationResponseDTO addedReservation = reservationService.addReservation(
-                new ReservationRequestDTO("루드비코", LocalDate.now(), 1L, 1L)
+                new ReservationRequestDTO("루드비코", LocalDate.now().plusDays(1), 1L, 1L)
         );
 
         reservationService.deleteReservation(addedReservation.id());
