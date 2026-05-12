@@ -51,7 +51,6 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    // compact constructor에서 던진 예외가 Jackson에 의해 감싸지는 케이스 처리
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
@@ -65,6 +64,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleAll(Exception e) {
+        e.printStackTrace();
         return new ErrorResponse("서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
     }
 }
