@@ -1,8 +1,6 @@
 package roomescape.presentation.dto;
 
 import java.time.LocalDate;
-import org.springframework.http.HttpStatus;
-import roomescape.global.exception.BusinessException;
 import roomescape.global.exception.EntityNotFoundException;
 
 public record ReservationRequest(

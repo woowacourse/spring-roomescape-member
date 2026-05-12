@@ -31,6 +31,7 @@ public class MissionStepTest {
     @Test
     void 예약_조회() {
         RestAssured.given().log().all()
+                .header("Authorization", "ADMIN")
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
@@ -79,7 +80,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", TODAY.toString());
+        reservation.put("date", TODAY.plusDays(1).toString());
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
@@ -91,6 +92,7 @@ public class MissionStepTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
+                .header("Authorization", "ADMIN")
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)

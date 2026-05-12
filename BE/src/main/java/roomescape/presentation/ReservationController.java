@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ReservationService;
-import roomescape.domain.Reservation;
+import roomescape.global.auth.Admin;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
 
@@ -41,29 +42,67 @@ public class ReservationController {
                 .body(response);
     }
 
+    @Admin
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations(
+    public ResponseEntity<List<ReservationResponse>> getAdminReservations(
             @RequestParam(required = false) LocalDate date,
             @RequestParam(required = false) Long themeId
     ) {
-        List<ReservationResponse> response = findReservations(date, themeId).stream()
-                .map(ReservationResponse::from)
-                .toList();
+        List<ReservationResponse> response = findAdminReservations(date, themeId);
         return ResponseEntity.ok(response);
     }
 
-    private List<Reservation> findReservations(LocalDate date, Long themeId) {
-        if (date != null || themeId != null) {
-            return service.getReservationsByDateAndTheme(date, themeId);
-        }
-        return service.getReservations();
+    @GetMapping("/me")
+    public ResponseEntity<List<ReservationResponse>> getUserReservations(
+            @RequestParam String name
+    ) {
+        List<ReservationResponse> response = findUserReservations(name);
+        return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/me/{id}")
+    public ResponseEntity<Void> updateUserReservation(
+            @PathVariable Long id,
+            @RequestParam LocalDate date,
+            @RequestParam Long timeId,
+            @RequestParam String name
+    ) {
+        service.updateReservationSchedule(date, timeId, id, name);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Admin
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(
+    public ResponseEntity<Void> deleteAdminReservation(
             @PathVariable Long id
     ) {
         service.deleteReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/me/{id}")
+    public ResponseEntity<Void> deleteUserReservation(
+            @PathVariable Long id,
+            @RequestParam String name
+    ) {
+        service.deleteReservationByName(id, name);
+        return ResponseEntity.noContent().build();
+    }
+
+    private List<ReservationResponse> findAdminReservations(LocalDate date, Long themeId) {
+        if (date != null || themeId != null) {
+            return service.getReservationsByDateAndTheme(date, themeId).stream()
+                    .map(ReservationResponse::from)
+                    .toList();
+        }
+        return service.getReservations().stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    private List<ReservationResponse> findUserReservations(String name) {
+        return service.getReservationsByName(name).stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 }

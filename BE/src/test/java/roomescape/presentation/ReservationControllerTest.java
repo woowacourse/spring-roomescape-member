@@ -107,7 +107,8 @@ class ReservationControllerTest {
         given(reservationService.getReservations()).willReturn(reservations);
 
         // when & then
-        mockMvc.perform(get("/reservations"))
+        mockMvc.perform(get("/reservations")
+                        .header("Authorization", "ADMIN"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].name").value("브라운"))
@@ -129,6 +130,7 @@ class ReservationControllerTest {
 
         // when & then
         mockMvc.perform(get("/reservations")
+                        .header("Authorization", "ADMIN")
                         .param("date", "2026-05-05")
                         .param("themeId", "1"))
                 .andExpect(status().isOk())
@@ -147,7 +149,8 @@ class ReservationControllerTest {
     @DisplayName("DELETE /reservations/{id} - 정상 삭제 시 204와 빈 본문을 반환한다.")
     void deleteReservation_success() throws Exception {
         // when & then
-        mockMvc.perform(delete("/reservations/1"))
+        mockMvc.perform(delete("/reservations/1")
+                        .header("Authorization", "ADMIN"))
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
 
