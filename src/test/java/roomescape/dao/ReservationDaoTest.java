@@ -7,6 +7,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 class ReservationDaoTest extends DaoTest {
 
@@ -38,9 +40,14 @@ class ReservationDaoTest extends DaoTest {
 
     @Test
     void save_예약_저장() {
-        long id = reservationDao.save("브라운", LocalDate.of(2026, 12, 31), 1L, 1L);
+        ReservationTime time = new ReservationTime(1L, java.time.LocalTime.of(10, 0));
+        Theme theme = new Theme(1L, "공포의 저택", "설명", "https://example.com/img.jpg");
+        Reservation reservation = Reservation.create("브라운", LocalDate.of(2026, 12, 31), LocalDate.now(), time, theme);
 
-        assertThat(id).isEqualTo(20L);
+        Reservation saved = reservationDao.save(reservation);
+
+        assertThat(saved.getId()).isNotNull();
+        assertThat(saved.getName()).isEqualTo("브라운");
     }
 
     @Test

@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -38,7 +39,8 @@ class ReservationServiceTest {
         given(reservationTimeDao.findById(1L)).willReturn(Optional.of(sampleTime));
         given(themeDao.findById(1L)).willReturn(Optional.of(sampleTheme));
         given(reservationDao.existsByDateAndTimeIdAndThemeId(futureDate, 1L, 1L)).willReturn(false);
-        given(reservationDao.save("브라운", futureDate, 1L, 1L)).willReturn(10L);
+        given(reservationDao.save(any(Reservation.class)))
+                .willReturn(Reservation.restore(10L, "브라운", futureDate, LocalDate.now(), sampleTime, sampleTheme));
 
         Reservation result = reservationService.save("브라운", futureDate, 1L, 1L);
 
@@ -88,7 +90,7 @@ class ReservationServiceTest {
     @Test
     void findAllByName_이름으로_조회() {
         List<Reservation> reservations = List.of(
-                new Reservation(1L, "김철수", LocalDate.of(2026, 5, 15), null, sampleTime, sampleTheme)
+                Reservation.restore(1L, "김철수", LocalDate.of(2026, 5, 15), LocalDate.of(2026, 5, 1), sampleTime, sampleTheme)
         );
         given(reservationDao.findByName("김철수")).willReturn(reservations);
 
@@ -101,8 +103,8 @@ class ReservationServiceTest {
     @Test
     void findAll_전체_조회() {
         List<Reservation> reservations = List.of(
-                new Reservation(1L, "김철수", LocalDate.of(2026, 5, 15), null, sampleTime, sampleTheme),
-                new Reservation(2L, "이영희", LocalDate.of(2026, 5, 16), null, sampleTime, sampleTheme)
+                Reservation.restore(1L, "김철수", LocalDate.of(2026, 5, 15), LocalDate.of(2026, 5, 1), sampleTime, sampleTheme),
+                Reservation.restore(2L, "이영희", LocalDate.of(2026, 5, 16), LocalDate.of(2026, 5, 1), sampleTime, sampleTheme)
         );
         given(reservationDao.findAll()).willReturn(reservations);
 

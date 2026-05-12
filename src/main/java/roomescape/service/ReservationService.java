@@ -32,9 +32,8 @@ public class ReservationService {
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
-        new Reservation(null, name, date, LocalDate.now(), time, theme);
-        final long id = reservationDao.save(name, date, timeId, themeId);
-        return new Reservation(id, name, date, null, time, theme);
+        final Reservation reservation = Reservation.create(name, date, LocalDate.now(), time, theme);
+        return reservationDao.save(reservation);
     }
 
     @Transactional

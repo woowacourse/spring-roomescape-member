@@ -11,7 +11,7 @@
     - `ReservationTimeController` → `ReservationTimesResponse`
     - `ThemeController` → `ThemesResponse`, `AvailableReservationTimesResponse`
   - 이유: 배열을 직접 반환하면 이후 `totalCount`, `page` 등 필드 추가 시 API 스펙이 깨짐
-- [ ] **2. `Reservation` 생성/복원 분리 + `created_at` 테이블 추가**
+- [x] **2. `Reservation` 생성/복원 분리 + `created_at` 테이블 추가**
     1. `reservation` 테이블에 `created_at` 컬럼 추가 — `createdAt`을 실제 도메인 데이터로 저장
     2. `Reservation.create()` (신규 생성, `date >= createdAt` 검증) / `Reservation.restore()` (DB 복원, 검증 없음) 정적 팩토리로 분리
     3. DAO가 `Reservation`을 받아 저장 후 ID 포함된 `Reservation` 반환 — 서비스에서 검증용 객체를 따로 만들고 버리는 구문 제거

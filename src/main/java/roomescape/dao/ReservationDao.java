@@ -16,11 +16,11 @@ public class ReservationDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    private final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) -> new Reservation(
+    private final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) -> Reservation.restore(
             rs.getLong("reservation_id"),
             rs.getString("name"),
             rs.getDate("date").toLocalDate(),
-            null,
+            rs.getDate("created_at").toLocalDate(),
             new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
             new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"),
                     rs.getString("theme_thumbnail"))
@@ -35,7 +35,7 @@ public class ReservationDao {
 
     public List<Reservation> findAll() {
         final String sql = """
-                SELECT r.id AS reservation_id, r.name, r.date,
+                SELECT r.id AS reservation_id, r.name, r.date, r.created_at,
                        t.id AS time_id, t.start_at AS time_value,
                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail_url AS theme_thumbnail
                 FROM reservation AS r
@@ -45,13 +45,16 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
-    public long save(String name, LocalDate date, long timeId, long themeId) {
-        return jdbcInsert.executeAndReturnKey(Map.of(
-                "name", name,
-                "date", date,
-                "time_id", timeId,
-                "theme_id", themeId
+    public Reservation save(Reservation reservation) {
+        final long id = jdbcInsert.executeAndReturnKey(Map.of(
+                "name", reservation.getName(),
+                "date", reservation.getDate(),
+                "created_at", reservation.getCreatedAt(),
+                "time_id", reservation.getTime().getId(),
+                "theme_id", reservation.getTheme().getId()
         )).longValue();
+        return Reservation.restore(id, reservation.getName(), reservation.getDate(),
+                reservation.getCreatedAt(), reservation.getTime(), reservation.getTheme());
     }
 
     public boolean existsByTimeId(long timeId) {
@@ -79,7 +82,7 @@ public class ReservationDao {
 
     public List<Reservation> findByName(String username) {
         final String sql = """
-                SELECT r.id AS reservation_id, r.name, r.date,
+                SELECT r.id AS reservation_id, r.name, r.date, r.created_at,
                        t.id AS time_id, t.start_at AS time_value,
                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail_url AS theme_thumbnail
                 FROM reservation AS r

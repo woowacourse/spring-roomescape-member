@@ -11,17 +11,25 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, LocalDate createdAt, ReservationTime time, Theme theme) {
+    private Reservation(Long id, String name, LocalDate date, LocalDate createdAt, ReservationTime time, Theme theme) {
         validate(name, date, time, theme);
-        if (createdAt != null && date.isBefore(createdAt)) {
-            throw new IllegalArgumentException("과거 날짜로는 예약할 수 없습니다.");
-        }
         this.id = id;
         this.name = name;
         this.date = date;
         this.createdAt = createdAt;
         this.time = time;
         this.theme = theme;
+    }
+
+    public static Reservation create(String name, LocalDate date, LocalDate createdAt, ReservationTime time, Theme theme) {
+        if (date.isBefore(createdAt)) {
+            throw new IllegalArgumentException("과거 날짜로는 예약할 수 없습니다.");
+        }
+        return new Reservation(null, name, date, createdAt, time, theme);
+    }
+
+    public static Reservation restore(Long id, String name, LocalDate date, LocalDate createdAt, ReservationTime time, Theme theme) {
+        return new Reservation(id, name, date, createdAt, time, theme);
     }
 
     public Long getId() {
@@ -34,6 +42,10 @@ public class Reservation {
 
     public LocalDate getDate() {
         return date;
+    }
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
     }
 
     public ReservationTime getTime() {
