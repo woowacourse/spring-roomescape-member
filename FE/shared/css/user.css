@@ -942,3 +942,276 @@ button:disabled {
     transform: none;
   }
 }
+
+/* My Page */
+.mypage-hero {
+  padding: 86px 0 70px;
+  color: #fffaf0;
+  background:
+    linear-gradient(110deg, rgba(7, 6, 5, 0.96), rgba(22, 16, 14, 0.9)),
+    url('https://commons.wikimedia.org/wiki/Special:FilePath/Hotel%20Hallway.jpeg?width=1600');
+  background-size: cover;
+  background-position: center;
+}
+
+.mypage-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 430px);
+  gap: 48px;
+  align-items: end;
+}
+
+.name-gate {
+  padding: 22px;
+  border: 1px solid rgba(255, 252, 244, 0.16);
+  border-radius: 8px;
+  background: rgba(8, 7, 6, 0.58);
+  backdrop-filter: blur(18px);
+  box-shadow: rgba(0, 0, 0, 0.32) 0 26px 70px;
+}
+
+.name-gate label,
+.my-edit-grid label {
+  display: grid;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.name-gate label {
+  color: rgba(255, 252, 244, 0.7);
+}
+
+.name-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.name-row input,
+.my-edit-grid input,
+.my-edit-grid select {
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: #f7f6f2;
+  font: inherit;
+}
+
+.name-row input {
+  color: #fffaf0;
+  border-color: rgba(255, 252, 244, 0.16);
+  background: rgba(255, 252, 244, 0.08);
+}
+
+.name-row input::placeholder {
+  color: rgba(255, 252, 244, 0.44);
+}
+
+.inline-error {
+  min-height: 20px;
+  margin-top: 10px;
+  color: #f0b3bb;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.inline-error[data-type="success"] {
+  color: #a8d9be;
+}
+
+.mypage-section {
+  padding: 62px 0 98px;
+  background: var(--color-paper);
+}
+
+.my-toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.mypage-ghost {
+  color: var(--color-near-black);
+  border-color: var(--color-line);
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.mypage-ghost:hover {
+  color: var(--color-near-black);
+  background: #ffffff;
+}
+
+.my-reservation-list {
+  display: grid;
+  gap: 18px;
+}
+
+.my-empty {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  padding: 58px 20px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  text-align: center;
+  background: #fffdfa;
+  box-shadow: rgba(20, 18, 16, 0.08) 0 16px 42px;
+}
+
+.my-empty strong {
+  font-size: 22px;
+}
+
+.my-empty span {
+  color: var(--color-tertiary-text);
+}
+
+.my-empty .btn-primary {
+  margin-top: 14px;
+}
+
+.my-reservation-card {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  min-height: 260px;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: #fffdfa;
+  box-shadow: rgba(20, 18, 16, 0.08) 0 16px 42px;
+}
+
+.my-thumb {
+  min-height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.my-reservation-body {
+  min-width: 0;
+  padding: 24px;
+}
+
+.my-card-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.my-card-head h3 {
+  font-size: 28px;
+  line-height: 1.14;
+  margin-top: 8px;
+  word-break: keep-all;
+}
+
+.my-card-head strong {
+  flex: 0 0 auto;
+  color: var(--color-apple-blue);
+  font-size: 15px;
+}
+
+.my-status {
+  display: inline-flex;
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.my-status.active {
+  color: #1f6f4a;
+  background: rgba(31, 143, 95, 0.12);
+}
+
+.my-status.past {
+  color: rgba(21, 20, 18, 0.54);
+  background: var(--color-light-gray);
+}
+
+.my-reservation-body > p {
+  color: var(--color-secondary-text);
+  line-height: 1.62;
+  margin: 16px 0 20px;
+  word-break: keep-all;
+}
+
+.my-edit-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 0.7fr);
+  gap: 12px;
+}
+
+.card-message {
+  min-height: 20px;
+  margin: 13px 0 0;
+  color: var(--color-apple-blue);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.card-message[data-type="success"] {
+  color: #1f8f5f;
+}
+
+.my-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.my-actions .btn-link:disabled {
+  color: var(--color-tertiary-text);
+}
+
+@media (max-width: 860px) {
+  .mypage-hero-grid,
+  .my-reservation-card {
+    grid-template-columns: 1fr;
+  }
+
+  .my-thumb {
+    min-height: 220px;
+  }
+
+  .my-toolbar,
+  .my-card-head {
+    align-items: start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  .mypage-hero {
+    padding: 58px 0 50px;
+  }
+
+  .name-row,
+  .my-edit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .my-reservation-body {
+    padding: 20px;
+  }
+
+  .my-card-head h3 {
+    font-size: 24px;
+  }
+
+  .my-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

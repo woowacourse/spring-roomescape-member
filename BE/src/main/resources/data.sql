@@ -14,7 +14,7 @@ INSERT INTO theme (id, name, description, thumbnail_url) VALUES
 (5, '심야열차 마지막 칸', '새벽에 멈춰 선 열차 객실에서 남겨진 승차권과 수하물 단서를 따라 사건을 풀어야 합니다.', 'https://commons.wikimedia.org/wiki/Special:FilePath/Passenger%20Compartment%20on%20a%20train%28GN04216%29.jpg?width=1200');
 
 INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES
-(1, '김민준', CURRENT_DATE, 1, 1),
+(1, '강민준', CURRENT_DATE, 1, 1),
 (2, '이서연', CURRENT_DATE, 2, 2),
 (3, '박도윤', CURRENT_DATE, 3, 3),
 (4, '최하린', DATEADD('DAY', 1, CURRENT_DATE), 4, 4),
