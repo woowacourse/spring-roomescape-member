@@ -18,6 +18,9 @@ public class ReservationTimeService {
     }
 
     public TimeResponse createTime(TimeRequest request) {
+        if (timeRepository.existsByStartAt(request.startAt())) {
+            throw new RoomescapeException(ErrorCode.DUPLICATE_TIME);
+        }
         ReservationTime time = ReservationTime.of(
                 request.startAt(),
                 request.finishAt()

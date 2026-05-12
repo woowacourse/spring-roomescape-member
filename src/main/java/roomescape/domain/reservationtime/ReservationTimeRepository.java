@@ -1,6 +1,7 @@
 package roomescape.domain.reservationtime;
 
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,6 +63,16 @@ public class ReservationTimeRepository {
                 WHERE id = ?
                 """;
         Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
+        return count != null && count > 0;
+    }
+
+    public boolean existsByStartAt(LocalTime startAt) {
+        String query = """
+                SELECT COUNT(*)
+                FROM reservation_time
+                WHERE start_at = ?
+                """;
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, startAt);
         return count != null && count > 0;
     }
 }
