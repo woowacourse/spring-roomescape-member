@@ -110,4 +110,45 @@ class ReservationServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지난 시간으로 예약하실 수 없습니다.");
     }
+
+    @Test
+    @DisplayName("이미 지난 예약을 삭제하려고 시도하면 예외가 발생한다.")
+    void removeReservation_Past() {
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+        Reservation pastReservation = reservationRepository.save(
+                Reservation.transientOf("브라운", pastDate, savedTimeSlot, savedTheme)
+        );
+
+        assertThatThrownBy(() -> reservationService.removeReservation(pastReservation.id()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 지난 예약은 수정/삭제할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 전체 수정(PUT)하려고 시도하면 예외가 발생한다.")
+    void putReservation_Past() {
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+        Reservation pastReservation = reservationRepository.save(
+                Reservation.transientOf("브라운", pastDate, savedTimeSlot, savedTheme)
+        );
+
+        assertThatThrownBy(() -> reservationService.putReservation(
+                pastReservation.id(), "네오", LocalDate.now().plusDays(1), savedTimeSlot.id(), savedTheme.id()
+        )).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 지난 예약은 수정/삭제할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 부분 수정(PATCH)하려고 시도하면 예외가 발생한다.")
+    void patchReservation_Past() {
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+        Reservation pastReservation = reservationRepository.save(
+                Reservation.transientOf("브라운", pastDate, savedTimeSlot, savedTheme)
+        );
+
+        assertThatThrownBy(() -> reservationService.patchReservation(
+                pastReservation.id(), "네오", null, null, null
+        )).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 지난 예약은 수정/삭제할 수 없습니다.");
+    }
 }

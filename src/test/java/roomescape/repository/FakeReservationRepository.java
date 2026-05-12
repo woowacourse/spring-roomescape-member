@@ -24,6 +24,11 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByName(String name) {
+        return List.copyOf(storage.values());
+    }
+
+    @Override
     public List<Long> findByThemeIdAndDate(long themeId, LocalDate date) {
         return List.of();
     }
