@@ -34,7 +34,7 @@ async function request(url, options = {}) {
     });
 
     if (!response.ok) {
-        const message = await response.text();
+        const message = await extractErrorMessage(response);
         throw new Error(message || "요청 처리 중 문제가 발생했습니다.");
     }
 
@@ -54,6 +54,24 @@ async function request(url, options = {}) {
     }
 
     return response.json();
+}
+
+async function extractErrorMessage(response) {
+    const contentType = response.headers.get("content-type") ?? "";
+
+    if (contentType.includes("application/json")) {
+        try {
+            const body = await response.json();
+            if (body?.message) {
+                return body.message;
+            }
+        } catch (error) {
+            return "요청 처리 중 문제가 발생했습니다.";
+        }
+    }
+
+    const message = await response.text();
+    return message || "요청 처리 중 문제가 발생했습니다.";
 }
 
 function formatTime(time) {
