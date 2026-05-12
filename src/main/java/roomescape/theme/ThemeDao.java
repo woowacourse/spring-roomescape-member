@@ -66,7 +66,7 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public List<Theme> findRanked(ThemeSort sort, SortOrder order, LocalDate startDate, LocalDate endDate, Long limit) {
+    public List<Theme> findRanked(LocalDate startDate, LocalDate endDate, ThemeSort sort, SortOrder order, Long limit) {
         String sql = getReservationSortSql(sort, order, limit);
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
     }
@@ -82,7 +82,7 @@ public class ThemeDao {
                 """.formatted(sort.getColumn(), order.name());
 
         if (limit != null) {
-            sql += "LIMIT " + limit;
+            sql += " LIMIT " + limit;
         }
 
         return sql;

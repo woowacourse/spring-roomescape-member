@@ -87,8 +87,8 @@ class ThemeDaoTest {
 
         insertReservation(themeD.id(), time1, date1, "User10");
 
-        List<Theme> ranked = themeDao.findRanked("reservationCount", "DESC", LocalDate.of(2026, 5, 1),
-                LocalDate.of(2026, 5, 6), 10L);
+        List<Theme> ranked = themeDao.findRanked(LocalDate.of(2026, 5, 1),
+                LocalDate.of(2026, 5, 6), ThemeSort.RESERVATION_COUNT, SortOrder.DESC, 10L);
 
         assertThat(ranked).hasSize(4);
         assertThat(ranked.get(0).name()).isEqualTo("Theme A");

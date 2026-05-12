@@ -23,8 +23,8 @@ public class ThemeRepository {
         themeDao.delete(id);
     }
 
-    public List<Theme> findRanked(ThemeSort sort, SortOrder order, LocalDate startDate, LocalDate endDate, Long limit) {
-        return themeDao.findRanked(sort, order, startDate, endDate, limit);
+    public List<Theme> findRanked(LocalDate startDate, LocalDate endDate, ThemeSort sort, SortOrder order, Long limit) {
+        return themeDao.findRanked(startDate, endDate, sort, order, limit);
     }
 
     public List<Theme> findAll() {
