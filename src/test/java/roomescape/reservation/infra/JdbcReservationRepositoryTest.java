@@ -10,23 +10,26 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.support.TestDataHelper;
 
 @JdbcTest
+@Import(JdbcReservationRepository.class)
 class JdbcReservationRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    ReservationRepository reservationRepository;
-    TestDataHelper testHelper;
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    private TestDataHelper testHelper;
 
     @BeforeEach
     void setUp() {
-        reservationRepository = new JdbcReservationRepository(jdbcTemplate);
         testHelper = new TestDataHelper(jdbcTemplate);
     }
 

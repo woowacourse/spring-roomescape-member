@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.fixture.ThemeFixture;
 import roomescape.reservationtime.application.dao.AvailableTimeDao;
@@ -17,17 +18,19 @@ import roomescape.reservationtime.application.dto.AvailableReservationTimeResult
 import roomescape.support.TestDataHelper;
 
 @JdbcTest
+@Import(JdbcAvailableTimeDao.class)
 class JdbcAvailableTimeDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
     private AvailableTimeDao availableTimeDao;
+
     private TestDataHelper testHelper;
 
     @BeforeEach
     void setUp() {
-        availableTimeDao = new JdbcAvailableTimeDao(jdbcTemplate);
         testHelper = new TestDataHelper(jdbcTemplate);
     }
 
