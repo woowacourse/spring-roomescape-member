@@ -59,7 +59,7 @@
   ```
 - [ ] 예약이 존재하는 시간을 삭제할 수 없다.
   ```
-  422 Unprocessable Entity
+  409 Conflict
   {
     "message": "예약이 존재하는 시간은 삭제할 수 없습니다."
   }
