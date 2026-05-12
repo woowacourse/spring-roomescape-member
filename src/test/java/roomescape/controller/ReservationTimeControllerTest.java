@@ -37,9 +37,9 @@ public class ReservationTimeControllerTest {
                 .getList(".", AvailableReservationTimeResponse.class);
 
         assertThat(responses)
-                .extracting("startAt", "isNotReserved")
+                .extracting("startAt", "isReserved")
                 .contains(
-                        tuple(LocalTime.of(9, 0), false)
+                        tuple(LocalTime.of(9, 0), true)
                 );
     }
 

@@ -6,12 +6,12 @@ import roomescape.domain.ReservationTime;
 public record AvailableReservationTimeResponse(
         Long id,
         LocalTime startAt,
-        boolean isNotReserved
+        boolean isReserved
 ) {
-    public static AvailableReservationTimeResponse from(ReservationTime reservationTime, boolean isNotReserved) {
+    public static AvailableReservationTimeResponse from(ReservationTime reservationTime, boolean isReserved) {
         return new AvailableReservationTimeResponse(
                 reservationTime.getId(),
                 reservationTime.getStartAt(),
-                isNotReserved);
+                isReserved);
     }
 }

@@ -89,11 +89,11 @@ class ReservationTimeServiceTest {
                 .extracting(
                         AvailableReservationTimeResponse::id,
                         AvailableReservationTimeResponse::startAt,
-                        AvailableReservationTimeResponse::isNotReserved
+                        AvailableReservationTimeResponse::isReserved
                 )
                 .containsExactlyInAnyOrder(
-                        tuple(reservedTime.getId(), reservedTime.getStartAt(), false),
-                        tuple(notReservedTime.getId(), notReservedTime.getStartAt(), true)
+                        tuple(reservedTime.getId(), reservedTime.getStartAt(), true),
+                        tuple(notReservedTime.getId(), notReservedTime.getStartAt(), false)
                 );
     }
 

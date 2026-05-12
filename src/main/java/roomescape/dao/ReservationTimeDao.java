@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,19 @@ public class ReservationTimeDao {
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }
+    }
+
+    public List<ReservationTime> findByThemeIdAndDate(long themeId, LocalDate date) {
+        String sql = """
+                SELECT rt.id,
+                       rt.start_at
+                FROM reservation_time AS rt
+                INNER JOIN reservation AS r
+                    ON r.time_id = rt.id
+                WHERE r.theme_id = ?
+                  AND r.date = ?
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, themeId, date);
     }
 
     public int delete(long id) {

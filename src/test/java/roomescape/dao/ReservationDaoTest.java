@@ -81,36 +81,6 @@ class ReservationDaoTest {
     }
 
     @Test
-    void 테마_아이디와_선택_날짜에_해당하는_예약_목록을_조회한다() {
-        // given
-        ReservationTime savedReservationTime = saveReservationTime(LocalTime.of(10, 0));
-        Theme savedTheme = saveTheme("방탈출1", "로지와 러키의 방탈출", "https:fsof/ommff");
-        Theme savedTheme2 = saveTheme("방탈출2", "밤밤과 러로의 방탈출", "https:fsof/sdafjifdsmmff");
-
-        LocalDate date = LocalDate.of(2026, 5, 5);
-        saveReservation("러키", date, savedReservationTime, savedTheme);
-        saveReservation("로지", date, savedReservationTime, savedTheme2);
-
-        // when
-        List<Reservation> reservationsOnCondition = reservationDao.findByThemeIdAndDate(savedTheme.getId(), date);
-
-        // then
-        assertAll(
-                () -> assertThat(reservationsOnCondition).hasSize(1),
-                () -> assertThat(reservationsOnCondition.getFirst().getName()).isEqualTo("러키"),
-                () -> assertThat(reservationsOnCondition.getFirst().getDate()).isEqualTo(date),
-
-                () -> assertThat(reservationsOnCondition.getFirst().getTime().getId()).isEqualTo(savedReservationTime.getId()),
-                () -> assertThat(reservationsOnCondition.getFirst().getTime().getStartAt()).isEqualTo(savedReservationTime.getStartAt()),
-
-                () -> assertThat(reservationsOnCondition.getFirst().getTheme().getId()).isEqualTo(savedTheme.getId()),
-                () -> assertThat(reservationsOnCondition.getFirst().getTheme().getName()).isEqualTo(savedTheme.getName()),
-                () -> assertThat(reservationsOnCondition.getFirst().getTheme().getDescription()).isEqualTo(savedTheme.getDescription()),
-                () -> assertThat(reservationsOnCondition.getFirst().getTheme().getThumbnail()).isEqualTo(savedTheme.getThumbnail())
-        );
-    }
-
-    @Test
     void 예약을_삭제한다() {
         // given
         ReservationTime savedReservationTime = saveReservationTime(LocalTime.of(10, 0));

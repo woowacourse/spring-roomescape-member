@@ -2,21 +2,16 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.exception.code.ReservationErrorCode;
 import roomescape.exception.code.ReservationTimeErrorCode;
 import roomescape.exception.code.ThemeErrorCode;
-import roomescape.exception.domain.ReservationException;
 import roomescape.exception.domain.ReservationTimeException;
 import roomescape.exception.domain.ThemeException;
 
@@ -43,12 +38,11 @@ public class ReservationTimeService {
     public List<AvailableReservationTimeResponse> getReservationTimes(long themeId, LocalDate date) {
         validateTheme(themeId);
 
-        List<Reservation> reservations = reservationDao.findByThemeIdAndDate(themeId, date);
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        List<ReservationTime> reservedTimes = reservationTimeDao.findByThemeIdAndDate(themeId, date);
+        List<ReservationTime> allTimes = reservationTimeDao.findAll();
 
-        Set<Long> reservedTimeIds = extractReservedTimeIds(reservations);
-        return reservationTimes.stream()
-                .map(time -> AvailableReservationTimeResponse.from(time, isNotReserved(time, reservedTimeIds)))
+        return allTimes.stream()
+                .map(time -> AvailableReservationTimeResponse.from(time, isReserved(time, reservedTimes)))
                 .toList();
     }
 
@@ -59,14 +53,8 @@ public class ReservationTimeService {
         }
     }
 
-    private Set<Long> extractReservedTimeIds(List<Reservation> reservations) {
-        return reservations.stream()
-                .map(reservation -> reservation.getTime().getId())
-                .collect(Collectors.toSet());
-    }
-
-    private boolean isNotReserved(ReservationTime time, Set<Long> reservedTimeIds) {
-        return !reservedTimeIds.contains(time.getId());
+    private boolean isReserved(ReservationTime time, List<ReservationTime> reservedTimes) {
+        return reservedTimes.contains(time);
     }
 
     public void delete(long reservationTimeId) {
