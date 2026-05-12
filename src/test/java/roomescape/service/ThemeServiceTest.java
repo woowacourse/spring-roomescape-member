@@ -59,7 +59,7 @@ class ThemeServiceTest {
         reservationService.save("브라운", LocalDate.of(2030, 5, 5), otherDateTime.getId(), targetTheme.getId());
         reservationService.save("포비", targetDate, otherThemeTime.getId(), otherTheme.getId());
 
-        assertThat(themeService.findReservationTimeByDateAndThemeId(targetDate, targetTheme.getId()))
+        assertThat(reservationTimeService.findReservationTimeByDateAndThemeId(targetDate, targetTheme.getId()))
                 .extracting(ReservationTimeStatusResponse::available)
                 .containsExactlyInAnyOrder(true, true, false, false);
     }
