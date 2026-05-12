@@ -64,12 +64,9 @@ class RoomescapeApplicationTest {
     }
 
     @Test
-    void 예약자의_이름_JSON을_전송하여_예약을_삭제할_수_있다() {
-        Map<String, String> deleteRequest = Map.of("name", "User1");
-
+    void 예약자의_이름을_헤더로_전송하여_예약을_삭제할_수_있다() {
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(deleteRequest)
+                .header("X-User-Name", "User1")
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
@@ -163,8 +160,7 @@ class RoomescapeApplicationTest {
         RestAssured.given().log().all()
                 .when().get("/themes/rank")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .body("size()", is(4))
+                .statusCode(HttpStatus.OK.value()).body("size()", is(4))
                 .body("[0].id", is(1))
                 .body("[1].id", is(2))
                 .body("[2].id", is(3))

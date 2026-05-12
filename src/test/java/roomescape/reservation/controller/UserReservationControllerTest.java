@@ -83,11 +83,8 @@ class UserReservationControllerTest {
 
     @Test
     void 예약을_삭제할_수_있다() throws Exception {
-        ReservationDeleteRequest request = new ReservationDeleteRequest("브라운");
-
         mockMvc.perform(delete("/reservations/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .header("X-User-Name", "브라운"))
                 .andExpect(status().isNoContent());
     }
 }

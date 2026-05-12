@@ -38,9 +38,29 @@ VALUES (11, 'User11', '2026-05-06', 1, 3),
 INSERT INTO reservation (id, name, date, time_id, theme_id)
 VALUES (13, 'User13', '2026-05-05', 3, 4);
 
+-- 최근 7일 기준 랭킹 테스트를 위한 예약 (2026-05-06 이후)
+-- Theme A: +3건 → 총 4건 (1위)
+INSERT INTO reservation (id, name, date, time_id, theme_id)
+VALUES (14, 'RankA1', '2026-05-07', 3, 1),
+       (15, 'RankA2', '2026-05-08', 1, 1),
+       (16, 'RankA3', '2026-05-08', 2, 1);
+
+-- Theme B: +2건 → 총 3건 (2위)
+INSERT INTO reservation (id, name, date, time_id, theme_id)
+VALUES (17, 'RankB1', '2026-05-07', 1, 2),
+       (18, 'RankB2', '2026-05-07', 2, 2);
+
+-- Theme C: +1건 → 총 2건 (3위)
+INSERT INTO reservation (id, name, date, time_id, theme_id)
+VALUES (19, 'RankC1', '2026-05-07', 1, 3);
+
+-- Theme D: +1건 → 총 1건 (4위)
+INSERT INTO reservation (id, name, date, time_id, theme_id)
+VALUES (20, 'RankD1', '2026-05-07', 1, 4);
+
 ALTER TABLE themes
     ALTER COLUMN id RESTART WITH 10;
 ALTER TABLE reservation_time
     ALTER COLUMN id RESTART WITH 10;
 ALTER TABLE reservation
-    ALTER COLUMN id RESTART WITH 20;
+    ALTER COLUMN id RESTART WITH 30;
