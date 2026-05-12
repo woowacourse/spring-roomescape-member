@@ -1,5 +1,7 @@
 package roomescape.infrastructure;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -220,5 +222,67 @@ class ReservationJdbcTemplateRepositoryTest {
         // then
         Assertions.assertTrue(exists);
         Assertions.assertFalse(notExists);
+    }
+
+    @Test
+    @DisplayName("이름을 기반으로 모든 예약 가져오는 기능")
+    void findByName_success() {
+        // given
+        Reservation savedReservation1 = reservationRepository.save(
+                Reservation.create(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1)
+        );
+        Reservation savedReservation2 = reservationRepository.save(
+                Reservation.create(TEST_NAME, DATE_TOMORROW, savedTime2, savedTheme2)
+        );
+
+        // when
+        List<Reservation> result = reservationRepository.findByName(TEST_NAME);
+
+        // then
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertTrue(result.stream().anyMatch(r -> r.getId().equals(savedReservation1.getId())));
+        Assertions.assertTrue(result.stream().anyMatch(r -> r.getId().equals(savedReservation2.getId())));
+    }
+
+    @Test
+    @DisplayName("이름과 예약 ID를 기반으로 예약 스케쥴 수정 기능")
+    void updateScheduleByIdAndName_success() {
+        // given
+        Reservation savedReservation = reservationRepository.save(
+                Reservation.create(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1)
+        );
+
+        // when
+        reservationRepository.updateScheduleByIdAndName(
+                DATE_TOMORROW,
+                savedTime2.getId(),
+                savedReservation.getId(),
+                TEST_NAME
+        );
+
+        // then
+        Reservation updatedReservation = reservationRepository.findById(savedReservation.getId())
+                .orElseThrow();
+
+        assertThat(updatedReservation.getDate()).isEqualTo(DATE_TOMORROW);
+        assertThat(updatedReservation.getTime().getId()).isEqualTo(savedTime2.getId());
+        assertThat(updatedReservation.getName()).isEqualTo(TEST_NAME);
+        assertThat(updatedReservation.getTheme().getId()).isEqualTo(savedTheme1.getId());
+    }
+
+    @Test
+    @DisplayName("이름과 예약 ID를 기반으로 자신의 예약 건수 삭제 기능")
+    void deleteByIdAndName() {
+        // given
+        Reservation savedReservation = reservationRepository.save(
+                Reservation.create(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1)
+        );
+
+        // when
+        reservationRepository.deleteByIdAndName(savedReservation.getId(), TEST_NAME);
+
+        // then
+        Optional<Reservation> result = reservationRepository.findById(savedReservation.getId());
+        Assertions.assertTrue(result.isEmpty());
     }
 }
