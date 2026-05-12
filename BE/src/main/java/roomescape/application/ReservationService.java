@@ -82,6 +82,11 @@ public class ReservationService {
     public void deleteReservationByName(Long id, String name) {
         validateId(id);
         validateName(name);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("예약 ID를 찾을 수 없습니다."));
+
+        validateOwnerForDelete(reservation, name);
+        validateNotPastReservation(reservation);
         reservationRepository.deleteByIdAndName(id, name);
     }
 
@@ -170,4 +175,24 @@ public class ReservationService {
                     throw new BusinessException("이미 예약된 시간입니다.");
                 });
     }
+
+    private void validateOwnerForDelete(Reservation reservation, String name) {
+        if (!reservation.getName().equals(name)) {
+            throw new BusinessException("자신의 예약이 아닙니다.");
+        }
+    }
+
+    private void validateNotPastReservation(Reservation reservation) {
+        LocalDate date = reservation.getDate();
+        LocalTime time = reservation.getTime().getStartAt();
+
+        if (date.isBefore(LocalDate.now())) {
+            throw new BusinessException("이미 지난 예약은 취소할 수 없습니다.");
+        }
+
+        if (date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
+            throw new BusinessException("이미 지난 예약은 취소할 수 없습니다.");
+        }
+    }
+
 }
