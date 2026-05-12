@@ -196,6 +196,121 @@ class ReservationServiceTest {
             .hasMessage("예약 날짜는 오늘 이후여야 합니다. 오늘 날짜:" + LocalDate.of(2026, 5, 12));
     }
 
+    @Test
+    void 오늘_예약일_경우_현재_시간_이전은_예약할_수_없다() {
+        // given
+        Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
+        ReservationTime beforeNow = reservationTimeRepository.save(
+            ReservationTime.createWithoutId(LocalTime.of(12, 59))
+        );
+        ReservationDate today = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.of(2026, 5, 12))
+        );
+        Theme theme = themeRepository.save(Theme.createWithoutId("공포", "무서운 테마", "theme-url"));
+        ReservationService reservationService = new ReservationService(
+            reservationRepository,
+            reservationTimeRepository,
+            reservationDateRepository,
+            themeRepository,
+            now
+        );
+        CreateReservationRequest request = new CreateReservationRequest(
+            "보예",
+            today.getId(),
+            beforeNow.getId(),
+            theme.getId()
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+            .isInstanceOf(BadRequestException.class)
+            .hasMessage("예약 시간은 현재 이후여야 합니다. 현재 시각:" + LocalTime.of(13, 0));
+    }
+
+    @Test
+    void 오늘_예약이지만_현재_시간은_예약할_수_있다() {
+        // given
+        Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
+        ReservationTime nowTime = reservationTimeRepository.save(
+            ReservationTime.createWithoutId(LocalTime.of(13, 0))
+        );
+        ReservationDate today = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.of(2026, 5, 12))
+        );
+        Theme theme = themeRepository.save(Theme.createWithoutId("공포", "무서운 테마", "theme-url"));
+        ReservationService reservationService = new ReservationService(
+            reservationRepository,
+            reservationTimeRepository,
+            reservationDateRepository,
+            themeRepository,
+            now
+        );
+        CreateReservationRequest request = new CreateReservationRequest(
+            "보예",
+            today.getId(),
+            nowTime.getId(),
+            theme.getId()
+        );
+
+        // when
+        CreateReservationResponse response = reservationService.createReservation(request);
+        Reservation reservation = reservationRepository.findById(response.id()).orElseThrow();
+
+        // then
+        assertSoftly(softly -> {
+                assertThat(response.id()).isEqualTo(reservation.getId());
+                assertThat(response.date()).isEqualTo(LocalDate.of(2026, 5, 12));
+                assertThat(response.time()).isEqualTo(LocalTime.of(13, 0));
+                assertThat(response.name()).isEqualTo("보예");
+                assertThat(response.theme().name()).isEqualTo("공포");
+                assertThat(response.theme().content()).isEqualTo("무서운 테마");
+                assertThat(response.theme().url()).isEqualTo("theme-url");
+            }
+        );
+    }
+
+    @Test
+    void 날짜가_오늘_이후이고_현재_시간보다_이전이면_정상_예약_된다() {
+        // given
+        Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
+        ReservationTime reservationTime = reservationTimeRepository.save(
+            ReservationTime.createWithoutId(LocalTime.of(10, 0))
+        );
+        ReservationDate today = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.of(2026, 5, 13))
+        );
+        Theme theme = themeRepository.save(Theme.createWithoutId("공포", "무서운 테마", "theme-url"));
+        ReservationService reservationService = new ReservationService(
+            reservationRepository,
+            reservationTimeRepository,
+            reservationDateRepository,
+            themeRepository,
+            now
+        );
+        CreateReservationRequest request = new CreateReservationRequest(
+            "보예",
+            today.getId(),
+            reservationTime.getId(),
+            theme.getId()
+        );
+
+        // when
+        CreateReservationResponse response = reservationService.createReservation(request);
+        Reservation reservation = reservationRepository.findById(response.id()).orElseThrow();
+
+        // then
+        assertSoftly(softly -> {
+                assertThat(response.id()).isEqualTo(reservation.getId());
+                assertThat(response.date()).isEqualTo(LocalDate.of(2026, 5, 13));
+                assertThat(response.time()).isEqualTo(LocalTime.of(10, 0));
+                assertThat(response.name()).isEqualTo("보예");
+                assertThat(response.theme().name()).isEqualTo("공포");
+                assertThat(response.theme().content()).isEqualTo("무서운 테마");
+                assertThat(response.theme().url()).isEqualTo("theme-url");
+            }
+        );
+    }
+
     private Clock fixedClockAt(LocalDateTime dateTime) {
         return Clock.fixed(dateTime.atZone(ZONE_ID).toInstant(), ZONE_ID);
     }

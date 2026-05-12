@@ -36,4 +36,8 @@ public class ReservationTime {
             throw new BadRequestException(ReservationTimeErrorCode.INVALID_RESERVATION_TIME);
         }
     }
+
+    public boolean isBefore(LocalTime compareTime) {
+        return startAt.isBefore(compareTime);
+    }
 }

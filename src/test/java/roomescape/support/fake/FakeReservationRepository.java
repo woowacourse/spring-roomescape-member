@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.theme.Theme;
@@ -13,6 +14,10 @@ public class FakeReservationRepository implements ReservationRepository {
 
     private final Map<Long, Reservation> storage = new LinkedHashMap<>();
     private long sequence = 1L;
+
+    public Optional<Reservation> findById(Long id) {
+        return Optional.ofNullable(storage.get(id));
+    }
 
     @Override
     public Reservation save(Reservation reservation) {
