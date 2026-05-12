@@ -10,7 +10,7 @@
 - [ ] 잘못된 요청
     - [ ] 존재하지 않는 예약 조회 `NoSuchElementException`
     - [x] 필수 값이 빠진 예약 생성 `IllegalArgumentException`
-    - [ ] 같은 시간·테마에 중복 예약 시도 `DuplicateKeyException`
+    - [x] 같은 시간·테마에 중복 예약 시도 `DuplicateKeyException`
     - [x] 잘못된 값 `IllegalArgumentException`
         - [x] 필요한 값 존재하지 않음
         - [x] 값이 형식과 일치하지 않음

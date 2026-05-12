@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
@@ -64,7 +65,7 @@ public class ReservationService {
 
     private void validDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new IllegalArgumentException("선택하신 시간과 테마는 이미 예약되었습니다.");
+            throw new DuplicateKeyException("선택하신 시간과 테마는 이미 예약되었습니다.");
         }
     }
 }
