@@ -2,6 +2,7 @@ package roomescape.schedule.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.schedule.dto.AdminScheduleRequest;
 import roomescape.schedule.dto.ScheduleRequest;
 import roomescape.schedule.dto.SchedulesResponse;
@@ -18,14 +19,16 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ScheduleService {
 
-    public static final LocalTime OPENING_TIME = LocalTime.of(20, 0);
+    public static final LocalTime OPENING_TIME = LocalTime.of(10, 0);
     public static final LocalTime CLOSE_TIME = LocalTime.of(20, 0);
 
     private final ScheduleRepository scheduleRepository;
+    private final ReservationRepository reservationRepository;
     private final ThemeService themeService;
 
-    public ScheduleService(ScheduleRepository scheduleRepository, ThemeService themeService) {
+    public ScheduleService(ScheduleRepository scheduleRepository, ReservationRepository reservationRepository, ThemeService themeService) {
         this.scheduleRepository = scheduleRepository;
+        this.reservationRepository = reservationRepository;
         this.themeService = themeService;
     }
 
@@ -74,5 +77,13 @@ public class ScheduleService {
 
         Schedule newSchedule = new Schedule(newStartAt, theme);
         return scheduleRepository.create(newSchedule);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        if (reservationRepository.existsByScheduleId(id)) {
+            throw new IllegalArgumentException("해당 스케줄에 예약이 존재하여 삭제할 수 없습니다.");
+        }
+        scheduleRepository.delete(id);
     }
 }
