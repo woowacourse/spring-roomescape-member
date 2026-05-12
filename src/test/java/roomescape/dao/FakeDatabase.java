@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class FakeDatabase {
+
     private final Map<String, Map<Long, Object>> database = new HashMap<>();
 
     public FakeDatabase() {

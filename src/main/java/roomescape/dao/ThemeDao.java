@@ -5,6 +5,7 @@ import java.util.List;
 import roomescape.domain.Theme;
 
 public interface ThemeDao {
+
     Theme create(Theme themeWithoutId);
 
     Theme read(Long id);

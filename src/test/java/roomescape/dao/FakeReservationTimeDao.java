@@ -8,6 +8,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
 public class FakeReservationTimeDao implements ReservationTimeDao {
+
     public static final String RESERVATION_TIME_TABLE = "reservationTime";
 
     private final FakeDatabase fakeDatabase;

@@ -19,19 +19,11 @@ import roomescape.service.dto.ServiceReservationResponse;
 @RestController
 @RequestMapping(value = "/reservations")
 public class ReservationController {
+
     private final ReservationService reservationService;
 
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ControllerReservationResponse>> readAll() {
-        List<ServiceReservationResponse> serviceResponses = reservationService.readAll();
-        List<ControllerReservationResponse> controllerResponse = serviceResponses.stream()
-                .map(ControllerReservationResponse::from)
-                .toList();
-        return ResponseEntity.ok(controllerResponse);
     }
 
     @PostMapping
@@ -43,6 +35,15 @@ public class ReservationController {
         return ResponseEntity.
                 status(HttpStatus.CREATED)
                 .body(controllerResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ControllerReservationResponse>> readAll() {
+        List<ServiceReservationResponse> serviceResponses = reservationService.readAll();
+        List<ControllerReservationResponse> controllerResponse = serviceResponses.stream()
+                .map(ControllerReservationResponse::from)
+                .toList();
+        return ResponseEntity.ok(controllerResponse);
     }
 
     @DeleteMapping("/{id}")

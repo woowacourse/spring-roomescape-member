@@ -16,6 +16,7 @@ import roomescape.exception.ErrorCode;
 @Primary
 @Repository
 public class JdbcThemeDao implements ThemeDao {
+
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcThemeDao(JdbcTemplate jdbcTemplate) {

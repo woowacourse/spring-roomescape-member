@@ -15,6 +15,7 @@ import roomescape.service.dto.ServiceThemeResponse;
 @Service
 @Transactional(readOnly = true)
 public class ThemeService {
+
     public static final int RANKING_LIMIT = 10;
 
     private final ThemeDao themeDao;
@@ -24,7 +25,6 @@ public class ThemeService {
         this.themeDao = themeDao;
         this.reservationDao = reservationDao;
     }
-
 
     @Transactional
     public ServiceThemeResponse create(ServiceThemeRequest requestDto) {
@@ -38,17 +38,17 @@ public class ThemeService {
                 .toList();
     }
 
+    public List<ServiceThemeResponse> readRanking(LocalDate startDate, LocalDate endDate) {
+        return themeDao.readRanking(startDate, endDate, RANKING_LIMIT).stream()
+                .map(ServiceThemeResponse::from)
+                .toList();
+    }
+
     @Transactional
     public void delete(Long id) {
         if (reservationDao.existByThemeId(id)) {
             throw new CustomException(ErrorCode.REFERENCED_THEME);
         }
         themeDao.delete(id);
-    }
-
-    public List<ServiceThemeResponse> readRanking(LocalDate startDate, LocalDate endDate) {
-        return themeDao.readRanking(startDate, endDate, RANKING_LIMIT).stream()
-                .map(ServiceThemeResponse::from)
-                .toList();
     }
 }

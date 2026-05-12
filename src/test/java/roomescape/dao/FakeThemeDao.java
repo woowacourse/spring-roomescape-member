@@ -11,6 +11,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 
 public class FakeThemeDao implements ThemeDao {
+
     public static final String THEME_TABLE = "theme";
 
     private final FakeDatabase fakeDatabase;

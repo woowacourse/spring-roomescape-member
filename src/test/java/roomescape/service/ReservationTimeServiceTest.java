@@ -26,9 +26,7 @@ public class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
 
     private ReservationDao reservationDao;
-
     private ReservationTimeDao reservationTimeDao;
-
     private ThemeDao themeDao;
 
     @BeforeEach

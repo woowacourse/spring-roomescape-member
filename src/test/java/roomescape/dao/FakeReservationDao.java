@@ -5,6 +5,7 @@ import java.util.List;
 import roomescape.domain.Reservation;
 
 public class FakeReservationDao implements ReservationDao {
+
     public static final String RESERVATION_TABLE = "reservation";
 
     private final FakeDatabase fakeDatabase;

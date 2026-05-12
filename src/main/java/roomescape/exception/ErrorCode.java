@@ -3,6 +3,7 @@ package roomescape.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
+
     NOT_FOUND_RESERVATION(HttpStatus.NOT_FOUND, "[ERROR] 해당 ID의 예약을 찾을 수 없습니다."),
     DUPLICATED_RESERVATION(HttpStatus.BAD_REQUEST, "[ERROR] 동일한 예약이 이미 존재합니다."),
 

@@ -17,6 +17,7 @@ import roomescape.service.dto.ServiceThemeResponse;
 @RestController
 @RequestMapping("/admin/themes")
 public class AdminThemeController {
+
     private final ThemeService themeService;
 
     public AdminThemeController(ThemeService themeService) {

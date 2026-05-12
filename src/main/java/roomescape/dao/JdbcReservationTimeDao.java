@@ -18,6 +18,7 @@ import roomescape.exception.ErrorCode;
 @Primary
 @Repository
 public class JdbcReservationTimeDao implements ReservationTimeDao {
+
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcReservationTimeDao(JdbcTemplate jdbcTemplate) {
