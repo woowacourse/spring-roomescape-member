@@ -85,11 +85,25 @@ public class JdbcReservationRepository implements ReservationRepository {
             from reservation
             where theme_id = ?
             """;
-    private static final String COUNT_RESERVATION_BY_TIME_AND_DATE_AND_THEME =
+    private static final String COUNT_RESERVATION_BY_TIME_AND_DATE_AND_THEME_SQL =
         """
             select count(*)
             from reservation r
             where time_id = ? and date_id = ? and theme_id = ?
+            """;
+
+    private static final String FIND_BY_NAME_SQL =
+        """
+            select r.id, r.name,
+                   rd.id as date_id, rd.date,
+                   rt.id as time_id, rt.start_at,
+                   th.id as theme_id, th.name as theme_name, th.content as theme_content, th.url as theme_url
+            from reservation r
+            join reservation_date rd on r.date_id = rd.id
+            join reservation_time rt on r.time_id = rt.id
+            join theme th on r.theme_id = th.id
+            where r.name = ?
+            order by rd.date desc, rt.start_at desc, r.id desc
             """;
 
     private final JdbcTemplate jdbcTemplate;
@@ -159,13 +173,18 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public boolean existsReservation(Long timeId, Long dateId, Long themeId) {
         Integer count = jdbcTemplate.queryForObject(
-            COUNT_RESERVATION_BY_TIME_AND_DATE_AND_THEME,
+            COUNT_RESERVATION_BY_TIME_AND_DATE_AND_THEME_SQL,
             Integer.class,
             timeId,
-            themeId,
-            dateId
+            dateId,
+            themeId
         );
         return count != null && count > 0;
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        return jdbcTemplate.query(FIND_BY_NAME_SQL, reservationRowMapper(), name);
     }
 
     private RowMapper<Reservation> reservationRowMapper() {

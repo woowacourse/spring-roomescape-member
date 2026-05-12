@@ -2,6 +2,7 @@ package roomescape.support.fake;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,5 +106,21 @@ public class FakeReservationRepository implements ReservationRepository {
             }
         }
         return false;
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        List<Reservation> reservations = new ArrayList<>(storage.values().stream()
+            .filter(reservation -> name.equals(reservation.getName()))
+            .toList());
+        reservations.sort(latestReservationFirst());
+        return reservations;
+    }
+
+    private Comparator<Reservation> latestReservationFirst() {
+        return Comparator.comparing((Reservation reservation) -> reservation.getDate().getDate())
+            .reversed()
+            .thenComparing(reservation -> reservation.getTime().getStartAt(), Comparator.reverseOrder())
+            .thenComparing(Reservation::getId, Comparator.reverseOrder());
     }
 }

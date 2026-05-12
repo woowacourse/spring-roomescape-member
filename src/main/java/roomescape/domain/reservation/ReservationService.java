@@ -7,9 +7,10 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import roomescape.domain.reservation.admin.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.CreateReservationRequest;
 import roomescape.domain.reservation.dto.CreateReservationResponse;
-import roomescape.domain.reservation.dto.ReservationResponse;
+import roomescape.domain.reservation.dto.UserReservationResponse;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationdate.ReservationDateRepository;
 import roomescape.domain.reservationtime.ReservationTime;
@@ -84,5 +85,10 @@ public class ReservationService {
         if (reservationRepository.existsReservation(reservationTime.getId(), reservationDate.getId(), theme.getId())) {
             throw new BadRequestException(ReservationErrorCode.DUPLICATED_RESERVATION);
         }
+    }
+
+    public UserReservationResponse getUserReservations(String name) {
+        List<Reservation> reservations = reservationRepository.findByName(name);
+        return UserReservationResponse.of(name, reservations);
     }
 }

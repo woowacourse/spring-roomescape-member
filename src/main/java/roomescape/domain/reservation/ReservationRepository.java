@@ -23,4 +23,6 @@ public interface ReservationRepository {
     int countByThemeId(Long id);
 
     boolean existsReservation(Long timeId, Long dateId, Long themeId);
+
+    List<Reservation> findByName(String name);
 }

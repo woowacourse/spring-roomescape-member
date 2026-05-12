@@ -2,6 +2,7 @@ package roomescape.domain.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.BDDAssertions.tuple;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.Clock;
@@ -12,9 +13,10 @@ import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.reservation.admin.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.CreateReservationRequest;
 import roomescape.domain.reservation.dto.CreateReservationResponse;
-import roomescape.domain.reservation.dto.ReservationResponse;
+import roomescape.domain.reservation.dto.UserReservationResponse;
 import roomescape.domain.reservationdate.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -124,7 +126,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약_목록을_조회한다() {
+    void 예약_목록을_전체_조회한다() {
         // given
         Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
         ReservationDate savedReservationDate = reservationDateRepository.save(
@@ -162,6 +164,65 @@ class ReservationServiceTest {
             assertThat(responses.getFirst().time().startAt()).isEqualTo(LocalTime.of(10, 0));
             assertThat(responses.getFirst().theme().id()).isEqualTo(theme.getId());
             assertThat(responses.getFirst().theme().name()).isEqualTo("공포");
+        });
+    }
+
+    @Test
+    void 사용자가_이름으로_예약을_조회한다() {
+        // given
+        String name = "보예짱";
+        Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
+        ReservationDate firstReservationDate = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.of(2026, 5, 13))
+        );
+        ReservationDate secondReservationDate = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.of(2026, 5, 14))
+        );
+        ReservationTime reservationTime = reservationTimeRepository.save(
+            ReservationTime.createWithoutId(LocalTime.of(10, 0))
+        );
+        Theme theme = themeRepository.save(Theme.createWithoutId("공포", "무서운테마", "theme-url"));
+        reservationRepository.save(
+            Reservation.createWithoutId(
+                name,
+                secondReservationDate,
+                reservationTime,
+                theme
+            )
+        );
+        reservationRepository.save(
+            Reservation.createWithoutId(
+                name,
+                firstReservationDate,
+                reservationTime,
+                theme
+            )
+        );
+        ReservationService reservationService = new ReservationService(
+            reservationRepository,
+            reservationTimeRepository,
+            reservationDateRepository,
+            themeRepository,
+            now
+        );
+
+        // when
+        UserReservationResponse userReservations = reservationService.getUserReservations(name);
+
+        // then
+        assertSoftly(softly -> {
+            assertThat(userReservations.reservation().size()).isEqualTo(2);
+            assertThat(userReservations.name()).isEqualTo("보예짱");
+            assertThat(userReservations.reservation())
+                .extracting(
+                    reservationPayload -> reservationPayload.date().startWhen(),
+                    reservationPayload -> reservationPayload.time().startAt(),
+                    reservationPayload -> reservationPayload.theme().name()
+                )
+                .containsExactly(
+                    tuple(LocalDate.of(2026, 5, 14), LocalTime.of(10, 0), "공포"),
+                    tuple(LocalDate.of(2026, 5, 13), LocalTime.of(10, 0), "공포")
+                );
         });
     }
 

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.reservation.ReservationService;
-import roomescape.domain.reservation.dto.ReservationResponse;
+import roomescape.domain.reservation.admin.dto.ReservationResponse;
 import roomescape.support.auth.AdminRequestValidator;
 
 @RestController
