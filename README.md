@@ -143,7 +143,7 @@
 
 ### 2단계 - 에러 응답 설계
 - [x] 에러 응답 형식 통일: `{"message": "..."}`
-- [ ] `GlobalExceptionHandler` 보강
+- [x] `GlobalExceptionHandler` 보강
   - `MethodArgumentNotValidException` → 400
   - `HttpMessageNotReadableException` (잘못된 JSON/날짜 형식) → 400
   - 존재하지 않는 엔드포인트 → 404
