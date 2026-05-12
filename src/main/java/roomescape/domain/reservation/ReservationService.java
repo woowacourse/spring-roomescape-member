@@ -40,7 +40,7 @@ public class ReservationService {
             .orElseThrow(() -> new NotFoundException(ReservationTimeErrorCode.RESERVATION_TIME_NOT_EXIST));
         ReservationDate reservationDate = reservationDateRepository.findById(request.dateId())
             .orElseThrow(() -> new NotFoundException(ReservationDateErrorCode.RESERVATION_DATE_NOT_EXIST));
-        checkReservationDateAndReservationTime(reservationDate, reservationTime);
+        validateReservationScheduleToCreate(reservationDate, reservationTime);
         Theme theme = themeRepository.findById(request.themeId())
             .orElseThrow(() -> new NotFoundException(ThemeErrorCode.THEME_NOT_EXIST));
         checkDuplicated(reservationTime, reservationDate, theme);
@@ -53,6 +53,11 @@ public class ReservationService {
         return reservationRepository.findAll().stream()
             .map(ReservationResponse::from)
             .toList();
+    }
+
+    public UserReservationResponse getUserReservations(String name) {
+        List<Reservation> reservations = reservationRepository.findByName(name);
+        return UserReservationResponse.of(name, reservations);
     }
 
     public void deleteReservationByAdmin(Long id) {
@@ -69,8 +74,7 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    //TODO: 메서드명 변경
-    private void checkReservationDateAndReservationTime(
+    private void validateReservationScheduleToCreate(
         ReservationDate reservationDate,
         ReservationTime reservationTime
     ) {
@@ -112,10 +116,5 @@ public class ReservationService {
         LocalTime now
     ) {
         return reservationDate.isSame(today) && reservationTime.isBefore(now);
-    }
-
-    public UserReservationResponse getUserReservations(String name) {
-        List<Reservation> reservations = reservationRepository.findByName(name);
-        return UserReservationResponse.of(name, reservations);
     }
 }
