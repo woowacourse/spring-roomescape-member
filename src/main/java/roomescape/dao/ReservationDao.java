@@ -5,7 +5,7 @@ import java.util.List;
 import roomescape.domain.Reservation;
 
 public interface ReservationDao {
-    Reservation create(Reservation reservation);
+    Reservation create(Reservation reservationWithoutId);
 
     List<Reservation> readAll();
 
