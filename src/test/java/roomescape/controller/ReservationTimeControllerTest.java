@@ -13,6 +13,7 @@ import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.service.ReservationTimeService;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -35,7 +36,7 @@ class ReservationTimeControllerTest {
 
     @BeforeEach
     void setUp() {
-        reservationTime = new ReservationTime(1L, "10:00");
+        reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
     }
 
     @Test
@@ -105,8 +106,8 @@ class ReservationTimeControllerTest {
     @DisplayName("날짜와 테마로 예약 가능 시간 조회 시 200과 바디를 반환한다")
     void getReservationTimeWithAvailable() throws Exception {
         List<ReservationTimeWithAvailable> timesWithAvailable = List.of(
-                new ReservationTimeWithAvailable(1L, "10:00", true),
-                new ReservationTimeWithAvailable(2L, "12:00", false)
+                new ReservationTimeWithAvailable(1L, LocalTime.parse("10:00"), true),
+                new ReservationTimeWithAvailable(2L, LocalTime.parse("12:00"), false)
         );
         given(reservationTimeService.getAvailableReservationTimeByDateAndTheme(any()))
                 .willReturn(timesWithAvailable);

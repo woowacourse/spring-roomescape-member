@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 public abstract class BaseRepositoryTest {
@@ -58,7 +59,7 @@ public abstract class BaseRepositoryTest {
         );
     }
 
-    protected void insertReservationTime(String time) {
+    protected void insertReservationTime(LocalTime time) {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", time);
     }
 

@@ -3,6 +3,7 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
             1L,
             "브라운",
             LocalDate.parse("2023-08-05"),
-            new ReservationTime(1, "10:00"),
+            new ReservationTime(1, LocalTime.parse("10:00")),
             new Theme(1, "테마1", "테마 설명", "image url")
     );
 
@@ -32,7 +33,7 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
         createThemeTable();
         createReservationTable();
 
-        insertReservationTime("10:00");
+        insertReservationTime(LocalTime.parse("10:00"));
         insertTheme("테마1", "테마 설명", "image url");
         insertReservation("브라운", LocalDate.parse("2023-08-05"), 1, 1);
         this.reservationRepository = new JdbcReservationRepository(jdbcTemplate);
@@ -68,7 +69,7 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
                 null,
                 "테스트",
                 LocalDate.parse("2023-08-15"),
-                new ReservationTime(1, "15:14"),
+                new ReservationTime(1, LocalTime.parse("15:14")),
                 new Theme(1, "theme", "description", "imageUrl")
         );
 
@@ -76,7 +77,7 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
 
         List<Reservation> reservations = reservationRepository.getAllReservation();
 
-        Reservation expectedReservation = new Reservation(2L, "테스트", LocalDate.parse("2023-08-15"), new ReservationTime(1, "10:00"), new Theme(1, "테마1", "테마 설명", "image url"));
+        Reservation expectedReservation = new Reservation(2L, "테스트", LocalDate.parse("2023-08-15"), new ReservationTime(1, LocalTime.parse("10:00")), new Theme(1, "테마1", "테마 설명", "image url"));
 
         assertThat(reservations.size()).isEqualTo(2);
         assertThat(reservations).contains(expectedReservation);
@@ -98,14 +99,14 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
                         2L,
                         "테스트",
                         LocalDate.parse("2023-09-15"),
-                        new ReservationTime(1, "10:00"),
+                        new ReservationTime(1, LocalTime.parse("10:00")),
                         new Theme(1, "테마1", "테마 설명", "image url")
                 ),
                 new Reservation(
                         4L,
                         "테스트",
                         LocalDate.parse("2023-11-15"),
-                        new ReservationTime(1, "10:00"),
+                        new ReservationTime(1, LocalTime.parse("10:00")),
                         new Theme(1, "테마1", "테마 설명", "image url")
                 )
         );
@@ -126,7 +127,7 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
     @Test
     @DisplayName("정상적으로 해당 예약 timeId 존재하는 지 테스트")
     void existByThemeIdTest() {
-        insertReservationTime("11:00");
+        insertReservationTime(LocalTime.parse("11:00"));
 
         assertThat(reservationRepository.existsByTimeId(1)).isTrue();
         assertThat(reservationRepository.existsByTimeId(2)).isFalse();

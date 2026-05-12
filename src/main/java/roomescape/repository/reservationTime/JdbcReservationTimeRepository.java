@@ -1,10 +1,5 @@
 package roomescape.repository.reservationTime;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -13,6 +8,12 @@ import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
+
+import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -41,12 +42,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     private static final RowMapper<ReservationTime> MAPPER = (rs, rowNumber) -> new ReservationTime(
             rs.getLong(COLUMN_ID),
-            rs.getString(COLUMN_START_AT)
+            rs.getObject(COLUMN_START_AT, LocalTime.class)
     );
 
     private static final RowMapper<ReservationTimeWithAvailable> CONDITION_MAPPER = (rs, rowNumber) -> new ReservationTimeWithAvailable(
             rs.getLong(COLUMN_ID),
-            rs.getString(COLUMN_START_AT),
+            rs.getObject(COLUMN_START_AT, LocalTime.class),
             rs.getBoolean(COLUMN_AVAILABLE)
     );
 

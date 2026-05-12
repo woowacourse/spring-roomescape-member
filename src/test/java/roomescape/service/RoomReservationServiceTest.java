@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -134,7 +135,7 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("예약 생성 시 유효한 시간 ID, 테마 ID인 경우 정상 작동 테스트")
     void addReservationTest() {
-        ReservationTime reservationTime = new ReservationTime(1, "10:00");
+        ReservationTime reservationTime = new ReservationTime(1, LocalTime.parse("10:00"));
         Theme theme = new Theme(1, "name", "description", "image");
 
         RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(reservationTime), createThemeRepository(
@@ -169,7 +170,7 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 테마 ID인 경우 예외 테스트")
     void addReservationFailByInvalidThemeIdTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(new ReservationTime(1, "10:00")), createThemeRepository(null));
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(new ReservationTime(1, LocalTime.parse("10:00"))), createThemeRepository(null));
         AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", LocalDate.parse("2023-08-05"), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(addReservationRequest))
@@ -180,7 +181,7 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("같은 시간, 날짜, themeId가 존재하는 경우, 예약 생성 시 예외 테스트")
     void test() {
-        ReservationTime reservationTime = new ReservationTime(1, "10:00");
+        ReservationTime reservationTime = new ReservationTime(1, LocalTime.parse("10:00"));
         Theme theme = new Theme(1, "name", "description", "image");
 
         RoomReservationService reservationService = new RoomReservationService(

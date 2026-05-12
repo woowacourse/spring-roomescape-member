@@ -15,6 +15,7 @@ import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.service.RoomReservationService;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -37,7 +38,7 @@ class ReservationControllerTest {
 
     @BeforeEach
     void setUp() {
-        ReservationTime reservationTime = new ReservationTime(1L, "10:00");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, "테마1", "테마 설명", "image url");
 
         reservation = new Reservation(

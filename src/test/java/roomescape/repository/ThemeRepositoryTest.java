@@ -9,6 +9,7 @@ import roomescape.domain.theme.ThemeWithCount;
 import roomescape.repository.theme.JdbcThemeRepository;
 import roomescape.repository.theme.ThemeRepository;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,7 +92,7 @@ public class ThemeRepositoryTest extends BaseRepositoryTest {
         insertTheme("name2", "description2", "imageUrl2");
         insertTheme("name3", "description3", "imageUrl3");
 
-        insertReservationTime("16:29");
+        insertReservationTime(LocalTime.parse("16:29"));
 
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id, created_at) VALUES (?, ?, ?, ?, ?)", "reservation1", "2026-04-04", 1, 1, "2026-04-04");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id, created_at) VALUES (?, ?, ?, ?, ?)", "reservation2", "2026-04-04", 1, 2, "2026-04-04");

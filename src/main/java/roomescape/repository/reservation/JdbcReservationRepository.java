@@ -9,6 +9,7 @@ import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             rs.getObject(COLUMN_DATE, LocalDate.class),
             new ReservationTime(
                     rs.getLong(ALIAS_TIME_ID),
-                    rs.getString(ALIAS_START_AT)
+                    rs.getObject(ALIAS_START_AT, LocalTime.class)
             ),
             new Theme(
                     rs.getLong(ALIAS_THEME_ID),
