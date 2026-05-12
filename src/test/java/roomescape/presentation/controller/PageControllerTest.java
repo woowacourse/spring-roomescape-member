@@ -13,8 +13,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import roomescape.config.TestTimeConfig;
 import roomescape.presentation.PageController;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.domain.Reservation;
@@ -24,10 +26,14 @@ import roomescape.time.application.ReservationTimeService;
 import roomescape.time.domain.ReservationTime;
 
 @WebMvcTest(PageController.class)
+@Import(TestTimeConfig.class)
 class PageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private Clock clock;
 
     @MockitoBean
     private ThemeService themeService;
@@ -37,9 +43,6 @@ class PageControllerTest {
 
     @MockitoBean
     private ReservationTimeService reservationTimeService;
-
-    @MockitoBean
-    private Clock clock;
 
     @Test
     void reservationPageReturnsTemplateAndModel() throws Exception {

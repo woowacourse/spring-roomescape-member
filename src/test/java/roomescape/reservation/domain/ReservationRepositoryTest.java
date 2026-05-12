@@ -10,7 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.config.TestTimeConfig;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
@@ -18,19 +20,20 @@ import roomescape.time.domain.ReservationTimeRepository;
 
 @Transactional
 @SpringBootTest
+@Import(TestTimeConfig.class)
 class ReservationRepositoryTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
     @Autowired
     private ThemeRepository themeRepository;
+
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
-    private final Clock fixedClock = Clock.fixed(
-            Instant.parse("2026-05-12T01:00:00Z"),
-            ZoneId.of("Asia/Seoul")
-    );
+    @Autowired
+    private Clock clock;
 
     @Test
     @DisplayName("예약을 추가하면 테마id가 부여된다.")
@@ -38,21 +41,21 @@ class ReservationRepositoryTest {
         Theme theme = Theme.builder()
                 .name("포비")
                 .description("포비가 나와요")
-                .durationTime(LocalTime.now(fixedClock))
+                .durationTime(LocalTime.now(clock))
                 .thumbnailImageUrl("http://~~~")
                 .build();
 
         Theme savedTheme = themeRepository.save(theme);
 
         ReservationTime reservationTime = ReservationTime.builder()
-                .startAt(LocalTime.now(fixedClock))
+                .startAt(LocalTime.now(clock))
                 .build();
 
         ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
 
         Reservation reservation = Reservation.builder()
                 .name("포비")
-                .date(LocalDate.now(fixedClock))
+                .date(LocalDate.now(clock))
                 .time(savedTime)
                 .theme(savedTheme)
                 .status(Status.ACTIVE)
