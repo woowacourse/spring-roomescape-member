@@ -2,7 +2,6 @@ package roomescape.reservationtime;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -11,27 +10,19 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 @Repository
 public class ReservationTimeDao {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<ReservationTime> rowMapper = (rs, rowNum) -> new ReservationTime(
-            rs.getLong("id"),
-            rs.getObject("start_at", LocalTime.class)
-    );
-    private final RowMapper<AvailableTime> availableTimeRowMapper = (rs, rowNum) -> new AvailableTime(
-            rs.getLong("timeId"),
-            rs.getObject("time", LocalTime.class),
-            rs.getBoolean("isAvailable")
-    );
 
     public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    ReservationTime save(LocalTime startAt) {
+    public long save(LocalTime startAt) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -41,38 +32,34 @@ public class ReservationTimeDao {
             return ps;
         }, keyHolder);
 
-        long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new ReservationTime(generatedId, startAt);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    List<ReservationTime> findAll() {
-        String sql = "SELECT * FROM reservation_time";
-        return jdbcTemplate.query(sql, rowMapper);
+    public List<Map<String, Object>> findAll() {
+        String sql = "SELECT id, start_at FROM reservation_time";
+        return jdbcTemplate.queryForList(sql);
     }
 
-    void delete(long id) {
+    public void delete(long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public Optional<ReservationTime> findById(long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id = ?";
-
+    public Optional<Map<String, Object>> findById(long id) {
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
-            ReservationTime time = jdbcTemplate.queryForObject(sql, rowMapper, id);
-            return Optional.ofNullable(time);
-        } catch (EmptyResultDataAccessException exception) {
+            return Optional.ofNullable(jdbcTemplate.queryForMap(sql, id));
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    public List<AvailableTime> findAvailableTimes(LocalDate date, Long themeId) {
+    public List<Map<String, Object>> findAvailableTimes(LocalDate date, Long themeId) {
         String sql =
                 "SELECT rt.id AS timeId, rt.start_at AS time, CASE WHEN r.id IS NULL THEN true ELSE false END AS isAvailable "
                         + "FROM reservation_time rt "
                         + "LEFT JOIN reservation AS r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? "
                         + "ORDER BY rt.id";
-
-        return jdbcTemplate.query(sql, availableTimeRowMapper, date, themeId);
+        return jdbcTemplate.queryForList(sql, date, themeId);
     }
 }
