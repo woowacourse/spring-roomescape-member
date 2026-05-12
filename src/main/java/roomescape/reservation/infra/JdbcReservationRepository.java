@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -65,6 +66,36 @@ public class JdbcReservationRepository implements ReservationRepository {
         jdbcTemplate.update(sql, params, keyHolder);
         long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return reservation.withId(generatedId);
+    }
+
+    @Override
+    public void updateByIdAndUsername(Long id, String username, Reservation reservation) {
+        String sql = "UPDATE reservation "
+                + "SET date = :date, time_id = :timeId, theme_id = :themeId "
+                + "WHERE id = :id AND name = :username";
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTime().getId())
+                .addValue("themeId", reservation.getTheme().getId())
+                .addValue("id", id)
+                .addValue("username", username);
+
+        jdbcTemplate.update(sql, params);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        String sql = "SELECT "
+                + "r.id AS r_id, r.name AS r_name, r.date AS r_date, r.status AS r_status, "
+                + "t.id AS t_id, t.name AS t_name, t.thumbnail_image_url AS t_thumbnail_image_url, "
+                + "t.description AS t_description, t.duration_time AS t_duration_time, "
+                + "rt.id AS rt_id, rt.start_at AS rt_start_at "
+                + "FROM reservation r "
+                + "INNER JOIN theme t ON r.theme_id = t.id "
+                + "INNER JOIN reservation_time rt ON r.time_id = rt.id "
+                + "WHERE r.id = :id AND r.status='ACTIVE'";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, Map.of("id", id), rowMapper));
     }
 
     @Override

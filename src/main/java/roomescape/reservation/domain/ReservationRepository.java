@@ -2,9 +2,13 @@ package roomescape.reservation.domain;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import roomescape.reservation.application.exception.ReservationNotFoundException;
 
 public interface ReservationRepository {
     Reservation save(Reservation reservation);
+    void updateByIdAndUsername(Long id, String username, Reservation reservation);
+    Optional<Reservation> findById(Long id);
     List<Reservation> findAll();
     List<Reservation> findByThemeAndDate(Long themeId, LocalDate date);
     List<Reservation> findAllByName(String username);
@@ -13,4 +17,8 @@ public interface ReservationRepository {
     boolean existsByIdAndUsernameAndActive(Long id, String username);
     int deleteById(Long id);
     void cancelById(Long id);
+
+    default Reservation getById(Long id) {
+        return findById(id).orElseThrow(() -> new ReservationNotFoundException("해당 ID의 예약을 찾을 수 없습니다."));
+    }
 }
