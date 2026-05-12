@@ -54,7 +54,7 @@ class ReservationControllerTest {
         long timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeRequest)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201)
                 .extract().jsonPath().getLong("id");

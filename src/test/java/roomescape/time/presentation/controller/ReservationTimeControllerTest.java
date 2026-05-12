@@ -26,7 +26,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body("{}")
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(400);
     }
