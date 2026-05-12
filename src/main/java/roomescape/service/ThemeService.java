@@ -24,9 +24,19 @@ public class ThemeService {
     }
 
     public ThemeResponse register(ThemeRequest themeRequest) {
+        themeRequestValidate(themeRequest);
         Theme theme = new Theme(null, themeRequest.name(), themeRequest.description(), themeRequest.url());
         Theme saved = themeRepository.save(theme);
         return ThemeResponse.from(saved);
+    }
+
+    private void themeRequestValidate(ThemeRequest themeRequest) {
+        if (themeRequest.name() == null) {
+            throw new RoomescapeException(ErrorCode.THEME_BLANK_NAME);
+        }
+        if (themeRequest.url() == null) {
+            throw new RoomescapeException(ErrorCode.THEME_BLANK_URL);
+        }
     }
 
     public void removeById(Long id) {

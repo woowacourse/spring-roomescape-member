@@ -134,9 +134,9 @@
 
 ### POST /themes
 
-- [ ] THEME_BLANK_NAME — 이름 빈 값
-- [ ] THEME_WRONG_NAME — 이름 길이 초과
-- [ ] THEME_BLANK_URL — url 누락/빈 값
+- [x] THEME_BLANK_NAME — 이름 빈 값
+- [x] THEME_WRONG_NAME — 이름 길이 초과
+- [x] THEME_BLANK_URL — url 누락/빈 값
 
 ### DELETE /themes/{id}
 
@@ -145,8 +145,8 @@
 ### GET /themes/ranks
 
 - [ ] THEME_RANK_BLANK_LIMIT — limit 누락
-- [ ] THEME_RANK_INVALID_LIMIT — limit 음수 또는 0
-- [ ] THEME_RANK_INVALID_LIMIT — limit 범위 초과 (30 초과)
+- [x] THEME_RANK_INVALID_LIMIT — limit 음수 또는 0
+- [x] THEME_RANK_INVALID_LIMIT — limit 범위 초과 (30 초과)
 
 ### 공통
 

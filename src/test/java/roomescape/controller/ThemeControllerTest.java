@@ -67,14 +67,25 @@ public class ThemeControllerTest {
                 .body("code", is("THEME_NOT_FOUND"));
     }
 
-
     @Test
-    public void 인기_테마_조회_API_예외() {
+    public void 인기_테마_조회_API의_limit값_1() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .queryParam("limit", 31)
                 .when().get("/themes/ranks")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .body("code", is("THEME_RANK_INVALID_LIMIT"));
+    }
+
+    @Test
+    public void 인기_테마_조회_API의_limit값_2() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .queryParam("limit", 0)
+                .when().get("/themes/ranks")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("THEME_RANK_INVALID_LIMIT"));
     }
 }
