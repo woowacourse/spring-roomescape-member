@@ -39,9 +39,7 @@ public class ReservationService {
         ReservationTime time = findReservationTime(timeId);
         Theme theme = findTheme(themeId);
         Reservation reservation = new Reservation(name, date, time, theme, LocalDateTime.now());
-        Long id = reservationRepository.insert(reservation);
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 ID입니다."));
+        return reservationRepository.insert(reservation);
     }
 
     private void validateDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
@@ -59,7 +57,7 @@ public class ReservationService {
     }
 
     private ReservationTime findReservationTime(Long timeId) {
-        return reservationTimeRepository.findBy(timeId)
+        return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
     }
 

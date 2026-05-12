@@ -42,28 +42,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
-    public Optional<Reservation> findById(Long id) {
-        String sql = "SELECT\n" +
-                "    r.id as reservation_id,\n" +
-                "    r.name as username,\n" +
-                "    r.date,\n" +
-                "    rt.id as time_id,\n" +
-                "    rt.start_at as time_value,\n" +
-                "    t.id as theme_id,\n" +
-                "    t.name as theme_name,\n" +
-                "    t.description,\n" +
-                "    t.thumbnail\n" +
-                "FROM reservation as r\n" +
-                "INNER JOIN reservation_time as rt\n" +
-                "  ON r.time_id = rt.id\n" +
-                "INNER JOIN theme as t\n" +
-                "  ON r.theme_id = t.id\n" +
-                "WHERE r.id = ?";
-        List<Reservation> result = jdbcTemplate.query(sql, reservationRowMapper, id);
-        return result.stream().findAny();
-    }
-
-    public Long insert(Reservation reservation) {
+    public Reservation insert(Reservation reservation) {
         String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -77,7 +56,8 @@ public class ReservationRepository {
             return pstmt;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return new Reservation(keyHolder.getKey().longValue(), reservation.getName(), reservation.getDate(),
+                reservation.getTime(), reservation.getTheme());
     }
 
     public int delete(Long id) {

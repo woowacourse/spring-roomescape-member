@@ -51,11 +51,17 @@ public class Theme {
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("테마 설명은 비어 있을 수 없습니다.");
         }
+        if (description.length() > 255) {
+            throw new IllegalArgumentException("테마 설명은 255자를 넘을 수 없습니다.");
+        }
     }
 
     private void validateThumbnail(String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
             throw new IllegalArgumentException("썸네일 경로는 비어 있을 수 없습니다.");
+        }
+        if (thumbnail.length() > 255) {
+            throw new IllegalArgumentException("썸네일 경로는 255자를 넘을 수 없습니다.");
         }
     }
 }

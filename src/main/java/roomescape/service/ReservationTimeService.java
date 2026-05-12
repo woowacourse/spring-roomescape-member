@@ -30,9 +30,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTime create(LocalTime startAt) {
         validateDuplicateStartAt(startAt);
-        Long id = reservationTimeRepository.insert(new ReservationTime(startAt));
-        return reservationTimeRepository.findBy(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간대입니다."));
+        return reservationTimeRepository.insert(new ReservationTime(startAt));
     }
 
     private void validateDuplicateStartAt(LocalTime startAt) {
