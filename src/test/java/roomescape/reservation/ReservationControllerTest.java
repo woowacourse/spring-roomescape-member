@@ -75,4 +75,52 @@ public class ReservationControllerTest {
                 .statusCode(200)
                 .body("size()", is(4));
     }
+
+    @Test
+    void 내_이름으로_나의_특정_예약_삭제_및_나의_예약_목록_조회() {
+        RestAssured.given().log().all()
+                .queryParams("name", "a")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+
+        RestAssured.given().log().all()
+                .pathParam("id", 1)
+                .queryParams("name", "a")
+                .when().delete("/reservations/{id}")
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .queryParams("name", "a")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
+
+//    @Test
+//    void 내_이름이_아니면_나의_특정_예약_삭제_및_나의_예약_목록_조회_실패() {
+//        RestAssured.given().log().all()
+//                .queryParams("name", "a")
+//                .when().get("/reservations")
+//                .then().log().all()
+//                .statusCode(200)
+//                .body("size()", is(1));
+//
+//        RestAssured.given().log().all()
+//                .pathParam("id", 1)
+//                .queryParams("name", "a")
+//                .when().delete("/reservations/{id}")
+//                .then().log().all()
+//                .statusCode(204);
+//
+//        RestAssured.given().log().all()
+//                .queryParams("name", "a")
+//                .when().get("/reservations")
+//                .then().log().all()
+//                .statusCode(200)
+//                .body("size()", is(0));
+//    }
 }

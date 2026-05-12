@@ -44,8 +44,8 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable @Positive long id) {
-        reservationService.delete(id);
+    public ResponseEntity<Void> deleteById(@PathVariable @Positive long id) {
+        reservationService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -55,5 +55,14 @@ public class ReservationController {
     ) {
         List<ReservationDetailFindResponse> responses = reservationService.findDetailByName(name);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
+    }
+
+    @DeleteMapping(value = "/{id}", params = "name")
+    public ResponseEntity<Void> deleteByIdAndName(
+            @PathVariable @Positive long id,
+            @RequestParam @NotBlank String name
+    ) {
+        reservationService.deleteByIdAndName(id, name);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

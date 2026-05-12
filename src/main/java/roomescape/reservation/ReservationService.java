@@ -28,8 +28,18 @@ public class ReservationService {
         return ReservationDetailFindResponse.from(reservationRepository.findAllDetails());
     }
 
-    public void delete(long id) {
-        reservationRepository.deleteById(id);
+    public void deleteById(long id) {
+        if (reservationRepository.deleteById(id) <= 1) {
+            return;
+        }
+        throw new IllegalStateException("예약 삭제에 실패했습니다. reservationId=" + id);
+    }
+
+    public void deleteByIdAndName(long id, String name) {
+        if (reservationRepository.deleteByIdAndName(id, name) <= 1) {
+            return;
+        }
+        throw new IllegalStateException("예약 삭제에 실패했습니다. reservationId=" + id + ", name=" + name);
     }
 
     public List<ReservationDetailFindResponse> findDetailByName(String name) {

@@ -84,12 +84,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(long id) {
+    public int deleteById(long id) {
         String sql = "DELETE FROM reservation WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
-        template.update(sql, params);
+        return template.update(sql, params);
     }
 
     @Override
@@ -135,5 +135,16 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("name", name);
 
         return template.query(sql, params, reservationDetailFindRowMapper);
+    }
+
+    @Override
+    public int deleteByIdAndName(long id, String name) {
+        String sql = "DELETE FROM reservation WHERE id = :id AND name = :name";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("name", name);
+
+        return template.update(sql, params);
     }
 }
