@@ -39,7 +39,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 저장한다")
     void saveReservation_success() {
         // given
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
         Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
         ReservationRequest request = new ReservationRequest(
                 "흑곰",
@@ -96,7 +96,7 @@ class ReservationServiceTest {
     //메서드명-성공 혹은 실패 - (이유)
     void saveReservation_fail_with_not_found_theme() {
         // given
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
         Long notExistThemeId = 999L;
 
         ReservationRequest request = new ReservationRequest(
@@ -122,7 +122,7 @@ class ReservationServiceTest {
     @DisplayName("예약 목록을 조회한다")
     void getReservations_success() {
         // given
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
         Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
         Reservation savedReservation = reservationRepository.save(Reservation.create(
                 "인직",
@@ -143,7 +143,7 @@ class ReservationServiceTest {
     void getReservations_success_with_date_and_theme() {
         // given
         LocalDate date = LocalDate.now();
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
         Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
         Reservation savedReservation = reservationRepository.save(Reservation.create(
                 "인직",
@@ -163,7 +163,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 삭제한다")
     void deleteReservation_success() {
         // given
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
         Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
         Reservation savedReservation = reservationRepository.save(Reservation.create(
                 "인직",
@@ -183,7 +183,7 @@ class ReservationServiceTest {
     @DisplayName("중복 예약이 있으면 예외를 반환한다")
     void saveReservation_fail_with_duplicate_reservation() {
         // given
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
         Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
         ReservationRequest request = new ReservationRequest(
                 "흑곰",
@@ -205,5 +205,53 @@ class ReservationServiceTest {
                 request.timeId(),
                 request.themeId())
         ).isInstanceOf(BusinessException.class);
+    }
+
+    @Test
+    @DisplayName("이미 지난 날짜로 예약 시 예외 반환")
+    void saveReservation_fail_with_past_date() {
+        // given
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
+        Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
+        ReservationRequest request = new ReservationRequest(
+                "흑곰",
+                LocalDate.now().minusDays(1),
+                savedTime.getId(),
+                savedTheme.getId()
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.saveReservation(
+                request.name(),
+                request.date(),
+                request.timeId(),
+                request.themeId())
+        )
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("이미 지난 날짜입니다.");
+    }
+
+    @Test
+    @DisplayName("현재 시간보다 이전인 날짜로 예외 반환")
+    void saveReservation_fail_with_past_time() {
+        // given
+        ReservationTime savedPastTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().minusHours(1)));
+        Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
+        ReservationRequest request = new ReservationRequest(
+                "흑곰",
+                LocalDate.now(),
+                savedPastTime.getId(),
+                savedTheme.getId()
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.saveReservation(
+                request.name(),
+                request.date(),
+                request.timeId(),
+                request.themeId())
+        )
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("예약 시간이 현재보다 이전일 수 없습니다.");
     }
 }
