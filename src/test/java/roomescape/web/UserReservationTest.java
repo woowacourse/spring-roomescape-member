@@ -34,10 +34,11 @@ public class UserReservationTest {
         createReservationTime("11:00");
         createReservationTime("12:00");
         createReservationTime("13:00");
+
         createTheme("우아한 테마", "우아한테크코스 전용 테마입니다.", "https://example.com/image.png");
         createTheme("페어 테마", "페어 전용 테마입니다.", "https://example.com/pair.png");
 
-        List<ReservationTime> beforeReservationResults = getAvailableTimes(LocalDate.of(2026, 5, 1), 1L);
+        List<ReservationTime> beforeReservationResults = getAvailableTimes(LocalDate.of(2026, 5, 5), 1L);
 
         assertThat(beforeReservationResults).hasSize(4);
         assertThat(beforeReservationResults.stream().map(ReservationTime::getId).toList())
@@ -50,13 +51,13 @@ public class UserReservationTest {
                 LocalTime.of(13, 0)
         );
 
-        createReservation("브라운", LocalDate.of(2026, 5, 1), 1L, 1L);
-        createReservation("포비", LocalDate.of(2026, 5, 2), 2L, 2L);
+        createReservation("브라운", LocalDate.of(2026, 5, 5), 1L, 1L);
+        createReservation("포비", LocalDate.of(2026, 5, 6), 2L, 2L);
 
-        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 1), 1L)).hasSize(3);
-        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 2), 1L)).hasSize(4);
-        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 1), 2L)).hasSize(4);
-        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 2), 2L)).hasSize(3);
+        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 5), 1L)).hasSize(3);
+        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 6), 1L)).hasSize(4);
+        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 5), 2L)).hasSize(4);
+        assertThat(getAvailableTimes(LocalDate.of(2026, 5, 6), 2L)).hasSize(3);
     }
 
     private void createReservationTime(String startAt) {

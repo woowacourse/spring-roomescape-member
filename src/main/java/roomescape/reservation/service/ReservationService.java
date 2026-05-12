@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import roomescape.reservation.service.dto.ReservationCommand;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.exception.InvalidTimeStartAtException;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
@@ -43,13 +45,13 @@ public class ReservationService {
 
         LocalDate nowDate = LocalDate.now(clock);
 
-        System.out.println("startAt = " + time.getStartAt());
-        System.out.println("date = " + command.date());
-
         if (nowDate.isAfter(command.date())) {
             throw new InvalidReservationDateException();
         }
 
+        if (nowDate.equals(command.date()) && LocalTime.now(clock).isAfter(time.getStartAt())) {
+            throw new InvalidTimeStartAtException();
+        }
 
         return reservationRepository.save(
                 Reservation.of(command.name(), command.date(), time, theme)
