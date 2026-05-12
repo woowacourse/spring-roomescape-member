@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleReservationNotFoundException(NotFoundException e) {
         log.error("Reservation Not Found Exception 발생 : {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler(AlreadyInUseException.class)
@@ -56,6 +56,6 @@ public class GlobalExceptionHandler {
                 .getAllErrors()
                 .getFirst()
                 .getDefaultMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+        return ResponseEntity.badRequest().body(message);
     }
 }
