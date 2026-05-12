@@ -1,4 +1,4 @@
 package roomescape.exception;
 
-public class ReservationTimeNotFoundException extends RuntimeException {
+public class ReservationTimeNotFoundException extends NotFoundException {
 }

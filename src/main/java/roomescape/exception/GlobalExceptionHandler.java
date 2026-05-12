@@ -8,13 +8,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ReservationNotFoundException.class)
-    public ResponseEntity<Void> handleReservationNotFound() {
-        return ResponseEntity.notFound().build();
-    }
-
-    @ExceptionHandler(ReservationTimeNotFoundException.class)
-    public ResponseEntity<Void> handleReservationTimeNotFound() {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Void> handleNotFound() {
         return ResponseEntity.notFound().build();
     }
 
@@ -31,11 +26,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<Void> handleUnauthorized() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    @ExceptionHandler(ThemeNotFoundException.class)
-    public ResponseEntity<Void> handleThemeNotFound() {
-        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(Exception.class)

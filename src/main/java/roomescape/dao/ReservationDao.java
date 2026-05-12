@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.NotFoundException;
 import roomescape.exception.ReservationAlreadyExistsException;
 
 @Repository
@@ -86,6 +88,8 @@ public class ReservationDao {
             }, keyHolder);
         } catch (DuplicateKeyException e) {
             throw new ReservationAlreadyExistsException();
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException();
         }
 
         return keyHolder.getKey().longValue();

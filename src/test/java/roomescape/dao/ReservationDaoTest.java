@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Reservation;
+import roomescape.exception.NotFoundException;
 import roomescape.exception.ReservationAlreadyExistsException;
 
 import java.time.LocalDate;
@@ -56,7 +56,7 @@ public class ReservationDaoTest {
 
         assertThatThrownBy(() ->
                 reservationDao.insertReservation("이든", LocalDate.of(2026, 5, 6), timeId, nonExistentThemeId)
-        ).isInstanceOf(DataIntegrityViolationException.class);
+        ).isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -66,7 +66,7 @@ public class ReservationDaoTest {
 
         assertThatThrownBy(() ->
                 reservationDao.insertReservation("이든", LocalDate.of(2026, 5, 6), nonExistentTimeId, themeId)
-        ).isInstanceOf(DataIntegrityViolationException.class);
+        ).isInstanceOf(NotFoundException.class);
     }
 
     @Test
