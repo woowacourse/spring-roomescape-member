@@ -15,8 +15,6 @@ public interface ReservationTimeRepository {
 
     boolean updateStatus(ReservationTime reservationTime);
 
-    boolean delete(Long id);
-
     boolean existsByStartAt(LocalTime startAt);
 
     List<ReservationTime> findAvailableByDateIdAndThemeId(Long dateId, Long themeId);

@@ -10,15 +10,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.fixture.ReservationDateFixture;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @JdbcTest
 class ReservationDateRepositoryTest {
-
-    private static final LocalDate DEFAULT_DATE = LocalDate.of(2099, 1, 1);
 
     private JdbcReservationDateRepository reservationDateRepository;
 
@@ -35,8 +32,9 @@ class ReservationDateRepositoryTest {
     void findAll() {
         // given
         List<ReservationDate> reservationDates = List.of(
-                ReservationDate.create(DEFAULT_DATE),
-                ReservationDate.create(DEFAULT_DATE.plusDays(1)));
+                ReservationDateFixture.oneWeekLater(),
+                ReservationDateFixture.twoWeeksLater()
+        );
         saveAll(reservationDates);
 
         // when
@@ -51,7 +49,7 @@ class ReservationDateRepositoryTest {
     @DisplayName("등록된 예약날짜와 조회된 예약날짜의 모든 필드는 일치한다")
     void findById() {
         // given
-        ReservationDate saved = save(ReservationDate.create(DEFAULT_DATE));
+        ReservationDate saved = save(ReservationDateFixture.oneWeekLater());
 
         // when
         ReservationDate actual = reservationDateRepository.findById(saved.id()).get();
@@ -91,10 +89,10 @@ class ReservationDateRepositoryTest {
     }
 
     @Test
-    @DisplayName("")
-    void updateStatus() {
+    @DisplayName("등록된 날짜를 활성화할 수 있다.")
+    void updateStatus_active() {
         // given
-        ReservationDate saved = save(ReservationDate.create(DEFAULT_DATE));
+        ReservationDate saved = save(ReservationDateFixture.oneWeekLater());
         saved.updateStatus(true);
 
         // when
@@ -106,20 +104,18 @@ class ReservationDateRepositoryTest {
     }
 
     @Test
-    @DisplayName("등록된 예약 날짜 2개 중 한 개를 삭제하면 데이터 수는 1개가 된다.")
-    void delete() {
+    @DisplayName("등록된 날짜를 비활성화할 수 있다.")
+    void updateStatus_inactive() {
         // given
-        List<ReservationDate> reservationDates = saveAll(List.of(
-                ReservationDate.create(DEFAULT_DATE),
-                ReservationDate.create(DEFAULT_DATE.plusDays(1)))
-        );
+        ReservationDate saved = save(ReservationDateFixture.activeOneWeekLater());
+        saved.updateStatus(false);
 
         // when
-        reservationDateRepository.delete(reservationDates.getFirst().id());
+        reservationDateRepository.updateStatus(saved);
 
         // then
-        Assertions.assertThat(reservationDateRepository.findAll())
-                .hasSize(reservationDates.size() - 1);
+        Assertions.assertThat(reservationDateRepository.findById(saved.id()).get().isActive())
+                .isFalse();
     }
 
     private List<ReservationDate> saveAll(List<ReservationDate> reservationDates) {

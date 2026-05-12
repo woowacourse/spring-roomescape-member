@@ -55,7 +55,7 @@ class ReservationDateControllerTest {
     }
 
     @Test
-    @DisplayName("사용자는 오늘 이전의 예약 날짜는 조회할 수 없다.")
+    @DisplayName("사용자는 오늘 이전의 예약 날짜를 조회할 수 없다.")
     @Sql(
             scripts = "classpath:past-reservation-date.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -71,6 +71,20 @@ class ReservationDateControllerTest {
                 .statusCode(200)
                 .body("size()", is(1))
                 .body("date", contains(tomorrow));
+    }
+
+    @Test
+    @DisplayName("사용자는 비활성화된 날짜를 조회할 수 없다.")
+    void getReservationDatesExcludeInactiveDates() {
+        Integer activeDateId = createReservationDate(LocalDate.now().plusDays(1).toString());
+        Integer inactiveDateId = createReservationDate(LocalDate.now().plusDays(2).toString());
+        updateDateStatus(activeDateId, true);
+
+        RestAssured.given().log().all()
+                .when().get("/member/dates")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
     }
 
 }

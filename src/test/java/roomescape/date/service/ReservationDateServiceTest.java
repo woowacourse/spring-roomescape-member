@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.fixture.FakeReservationDateRepository;
 import roomescape.date.fixture.ReservationDateFixture;
-import roomescape.reservation.fixture.FakeReservationRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,14 +19,12 @@ class ReservationDateServiceTest {
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2099, 1, 1);
 
     private FakeReservationDateRepository reservationDateRepository;
-    private FakeReservationRepository reservationRepository;
     private ReservationDateService reservationDateService;
 
     @BeforeEach
     void setUp() {
         reservationDateRepository = new FakeReservationDateRepository();
-        reservationRepository = new FakeReservationRepository();
-        reservationDateService = new ReservationDateService(reservationDateRepository, reservationRepository);
+        reservationDateService = new ReservationDateService(reservationDateRepository);
     }
 
     @Test
@@ -102,30 +99,13 @@ class ReservationDateServiceTest {
     }
 
     @Test
-    @DisplayName("등록된 예약 날짜 2개 중 한 개를 삭제하면 데이터 수는 1개가 된다.")
-    void delete() {
-        // given
-        List<ReservationDate> reservationDates = saveAll(List.of(
-                ReservationDateFixture.oneWeekLater(),
-                ReservationDateFixture.twoWeeksLater()
-        ));
-
-        // when
-        reservationDateService.deregister(reservationDates.get(0).id());
-
-        // then
-        Assertions.assertThat(reservationDateRepository.findAll())
-                .hasSize(reservationDates.size() - 1);
-    }
-
-    @Test
-    @DisplayName("등록되지않은 예약날짜를 삭제하면 예외가 발생한다.")
-    void delete_deregistered() {
+    @DisplayName("등록되지않은 예약날짜의 상태를 변경하면 예외가 발생한다.")
+    void updateStatus_deregistered() {
         // given
         Long deregisteredId = Long.MIN_VALUE;
 
         // when  & then
-        Assertions.assertThatThrownBy(() -> reservationDateService.deregister(deregisteredId))
+        Assertions.assertThatThrownBy(() -> reservationDateService.updateStatus(deregisteredId, false))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("등록되지 않은 예약날짜입니다.");
     }

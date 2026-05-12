@@ -54,11 +54,6 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean delete(Long id) {
-        return store.remove(id) != null;
-    }
-
-    @Override
     public boolean existsByStartAt(LocalTime startAt) {
         return store.values().stream()
                 .anyMatch(time -> time.startAt().equals(startAt));

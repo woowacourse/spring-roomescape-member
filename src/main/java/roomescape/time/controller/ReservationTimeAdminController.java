@@ -46,11 +46,4 @@ public class ReservationTimeAdminController {
         return ResponseEntity.ok(responseData);
     }
 
-    @DeleteMapping("/times/{id}")
-    public ResponseEntity<ReservationTimeDetailDto> delete(@PathVariable Long id) {
-        ReservationTime reservationTime = reservationTimeService.delete(id);
-        ReservationTimeDetailDto responseData = ReservationTimeDetailDto.from(reservationTime);
-        return ResponseEntity.ok(responseData);
-    }
-
 }

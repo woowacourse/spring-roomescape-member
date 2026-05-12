@@ -69,32 +69,6 @@ class ReservationDateAdminControllerTest {
     }
 
     @Test
-    @DisplayName("예약 날짜를 삭제한다.")
-    void delete_reservation_date() {
-        Map<String, String> params = new HashMap<>();
-        params.put("date", date);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/dates")
-                .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().delete("/admin/dates/1")
-                .then().log().all()
-                .statusCode(200)
-                .body("date", is(date));
-
-        RestAssured.given().log().all()
-                .when().get("/admin/dates")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-    }
-
-    @Test
     @DisplayName("예약 날짜를 생성한 뒤 조회한다.")
     void createAndGetReservationDates() {
         Map<String, String> params = new HashMap<>();
@@ -129,7 +103,7 @@ class ReservationDateAdminControllerTest {
     }
 
     @Test
-    @DisplayName("사용자는 오늘 이후의 예약 날짜 목록을 조회한다.")
+    @DisplayName("관리자는 활성화/비활성화된 날짜 목록을 조회한다.")
     @Sql(
             scripts = "classpath:past-reservation-date.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -147,7 +121,7 @@ class ReservationDateAdminControllerTest {
     }
 
     @Test
-    @DisplayName("예약이 이미 된 날짜를 관리자가 삭제하는 경우 400 예외가 발생한다.")
+    @DisplayName("예약이 이미 된 날짜를 관리자가 비활성화할 수 있다.")
     void shouldThrowException_WhenDeleteDate_AboutAlreadyReserved() {
         Integer dateId = createReservationDate(date);
         Integer timeId = createReservationTime("10:00");
@@ -155,10 +129,15 @@ class ReservationDateAdminControllerTest {
         String name = "송송";
         createReservation(name, dateId, timeId, themeId);
 
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("isActive", false);
+
         RestAssured.given().log().all()
-                .when().delete("/admin/dates/" + dateId)
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/admin/dates/" + dateId + "/status")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(200);
     }
 
 }

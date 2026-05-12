@@ -56,16 +56,6 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
         return true;
     }
 
-    @Override
-    public boolean delete(Long id) {
-        Optional<ReservationDate> findDate = findById(id);
-        if (findDate.isEmpty()) {
-            return false;
-        }
-
-        return reservationDates.remove(findDate.get());
-    }
-
     private void autoIncrement() {
         autoIncrement = autoIncrement + 1;
     }

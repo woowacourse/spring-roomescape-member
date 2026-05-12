@@ -77,14 +77,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean delete(Long id) {
-        String sql = "DELETE FROM reservation_time WHERE id=:id";
-        MapSqlParameterSource params = new MapSqlParameterSource("id", id);
-        int deleteCount = jdbcTemplate.update(sql, params);
-        return deleteCount > 0;
-    }
-
-    @Override
     public boolean existsByStartAt(LocalTime startAt) {
         String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = :start_at";
         MapSqlParameterSource params = new MapSqlParameterSource("start_at", startAt);

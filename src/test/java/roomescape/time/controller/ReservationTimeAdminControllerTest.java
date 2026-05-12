@@ -80,25 +80,6 @@ class ReservationTimeAdminControllerTest {
     }
 
     @Test
-    @DisplayName("관리자는 예약 시간을 삭제한다.")
-    void delete_reservation_time() {
-        Integer timeId = createReservationTime(startAt1);
-
-        RestAssured.given().log().all()
-                .when().delete("/admin/times/" + timeId)
-                .then().log().all()
-                .statusCode(200)
-                .body("id", is(timeId))
-                .body("startAt", is(startAt1));
-
-        RestAssured.given().log().all()
-                .when().get("/admin/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-    }
-
-    @Test
     @DisplayName("startAt이 없으면 예약 시간 생성에 실패한다.")
     void create_reservation_time_without_start_at() {
         Map<String, Object> params = new HashMap<>();
@@ -113,7 +94,7 @@ class ReservationTimeAdminControllerTest {
     }
 
     @Test
-    @DisplayName("이미 예약된 시간을 관리자가 삭제하는 경우 400 예외가 발생한다.")
+    @DisplayName("이미 예약된 시간이어도 관리자가 비활성화할 수 있다.")
     void shouldThrowException_WhenDeleteDate_AboutAlreadyReserved() {
         Integer dateId = createReservationDate(LocalDate.of(2099, 1, 1).toString());
         Integer timeId = createReservationTime("10:00");
@@ -121,10 +102,15 @@ class ReservationTimeAdminControllerTest {
         String name = "송송";
         createReservation(name, dateId, timeId, themeId);
 
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("isActive", false);
+
         RestAssured.given().log().all()
-                .when().delete("/admin/times/" + timeId)
+                .contentType(ContentType.JSON)
+                .body(updateParams)
+                .when().patch("/admin/times/" + timeId + "/status")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(200);
     }
 
 }

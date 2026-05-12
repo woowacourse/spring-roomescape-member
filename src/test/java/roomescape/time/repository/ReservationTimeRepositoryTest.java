@@ -27,6 +27,7 @@ import roomescape.time.fixture.ReservationTimeFixture;
 
 @JdbcTest
 class ReservationTimeRepositoryTest {
+
     private JdbcReservationTimeRepository jdbcReservationTimeRepository;
     private JdbcReservationDateRepository jdbcReservationDateRepository;
     private JdbcThemeRepository jdbcThemeRepository;
@@ -109,25 +110,6 @@ class ReservationTimeRepositoryTest {
     }
 
     @Test
-    @DisplayName("예약 시간을 삭제한다.")
-    void delete() {
-        // given
-        List<ReservationTime> reservationTimes = List.of(
-                ReservationTimeFixture.time15(),
-                ReservationTimeFixture.time16(),
-                ReservationTimeFixture.time17()
-        );
-        List<ReservationTime> savedTimes = saveAll(reservationTimes);
-
-        // when
-        jdbcReservationTimeRepository.delete(savedTimes.getFirst().id());
-
-        // then
-        assertThat(jdbcReservationTimeRepository.findAll())
-                .hasSize(savedTimes.size() - 1);
-    }
-
-    @Test
     @DisplayName("예약 시작 시간 값으로 예약 시간이 존재하는지 확인한다.")
     void existsByStartAt() {
         // given
@@ -141,7 +123,7 @@ class ReservationTimeRepositoryTest {
     }
 
     @Test
-    @DisplayName("예약 가능한 시간을 조회한다. ")
+    @DisplayName("예약 가능한 시간을 조회한다.")
     void findAvailableTimes() {
         // given
         ReservationTime reservedTime15 = saveTime(ReservationTimeFixture.activeTime15());

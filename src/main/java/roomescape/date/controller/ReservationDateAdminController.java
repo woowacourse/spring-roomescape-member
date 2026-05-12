@@ -38,13 +38,6 @@ public class ReservationDateAdminController {
         return ResponseEntity.ok(responseData);
     }
 
-    @DeleteMapping("/dates/{id}")
-    public ResponseEntity<ReservationDateDetailDto> delete(@PathVariable Long id) {
-        ReservationDate reservationDate = reservationDateService.deregister(id);
-        ReservationDateDetailDto responseData = ReservationDateDetailDto.from(reservationDate);
-        return ResponseEntity.ok(responseData);
-    }
-
     @PatchMapping("/dates/{id}/status")
     public ResponseEntity<ReservationDateDetailDto> updateStatus(
             @PathVariable Long id, @RequestBody ReservationDateStatusUpdateDto dto) {

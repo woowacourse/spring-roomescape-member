@@ -14,4 +14,16 @@ public class ReservationDateFixture {
         return ReservationDate.create(LocalDate.now().plusWeeks(2));
     }
 
+    public static ReservationDate activeOneWeekLater() {
+        ReservationDate reservationDate = ReservationDate.create(LocalDate.now().plusWeeks(1));
+        reservationDate.updateStatus(true);
+        return reservationDate;
+    }
+
+    public static ReservationDate activeTwoWeekLater() {
+        ReservationDate reservationDate = ReservationDate.create(LocalDate.now().plusWeeks(2));
+        reservationDate.updateStatus(true);
+        return reservationDate;
+    }
+
 }

@@ -90,12 +90,4 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
         return updateCount > 0;
     }
 
-    @Override
-    public boolean delete(Long id) {
-        String sql = "DELETE FROM reservation_date WHERE id = :id";
-        SqlParameterSource params = new MapSqlParameterSource("id", id);
-        int deletedCount = jdbcTemplate.update(sql, params);
-        return deletedCount > 0;
-    }
-
 }

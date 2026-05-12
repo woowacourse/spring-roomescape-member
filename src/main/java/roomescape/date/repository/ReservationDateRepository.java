@@ -19,6 +19,4 @@ public interface ReservationDateRepository {
 
     boolean updateStatus(ReservationDate reservationDate);
 
-    boolean delete(Long id);
-
 }
