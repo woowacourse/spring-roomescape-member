@@ -20,7 +20,7 @@ INSERT INTO reservation_time (id, start_at) VALUES
     (5, '18:00:00'),
     (6, '20:00:00');
 
-INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES
+INSERT INTO reservation (id, guest_name, date, time_id, theme_id) VALUES
     (1, 'guest-1', '2026-04-29', 1, 1),
     (2, 'guest-2', '2026-04-29', 2, 1),
     (3, 'guest-3', '2026-04-30', 1, 1),

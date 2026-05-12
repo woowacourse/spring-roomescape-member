@@ -45,7 +45,7 @@ class JdbcReservationRepositoryTest {
 
         Reservation found = reservations.getFirst();
         assertThat(found.getId()).isEqualTo(reservation.getId());
-        assertThat(found.getName()).isEqualTo("브라운");
+        assertThat(found.getGuestName()).isEqualTo("브라운");
         assertThat(found.getDate()).isEqualTo(LocalDate.of(2023, 8, 5));
 
         assertThat(found.getTime().getId()).isEqualTo(time.getId());

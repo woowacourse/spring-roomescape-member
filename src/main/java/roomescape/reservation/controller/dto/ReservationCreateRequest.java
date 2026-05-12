@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 public record ReservationCreateRequest(
         @NotBlank(message = "예약자 이름은 비어 있을 수 없습니다.")
-        String name,
+        String guestName,
         @NotNull(message = "예약 날짜는 비어 있을 수 없습니다.")
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,

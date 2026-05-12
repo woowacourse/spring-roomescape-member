@@ -60,7 +60,7 @@ public class ReservationAcceptanceTest {
         .then().log().all()
             .statusCode(200)
             .body("reservations.id", hasItem(reservationId))
-            .body("reservations.name", hasItem(reservationRequest.name()))
+            .body("reservations.guestName", hasItem(reservationRequest.guestName()))
             .body("reservations.date", hasItem(reservationRequest.date().toString()))
             .body("reservations.time.id", hasItem(reservationTimeId))
             .body("reservations.theme.id", hasItem(themeId));
@@ -138,7 +138,7 @@ public class ReservationAcceptanceTest {
                 .then().log().all()
                 .statusCode(201)
                 .body("id", notNullValue())
-                .body("name", equalTo(request.name()))
+                .body("guestName", equalTo(request.guestName()))
                 .body("date", equalTo(request.date().toString()))
                 .body("time.id", equalTo(reservationTimeId))
                 .body("theme.id", equalTo(themeId))

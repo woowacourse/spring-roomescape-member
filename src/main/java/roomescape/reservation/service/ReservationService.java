@@ -32,13 +32,13 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
+    public Reservation create(String guestName, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new DomainException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new DomainException(ErrorCode.THEME_NOT_FOUND));
 
-        Reservation reservation = new Reservation(name, date, time, theme);
+        Reservation reservation = new Reservation(guestName, date, time, theme);
 
         validateNotDuplicated(reservation);
         validateNotPast(reservation);
@@ -47,7 +47,7 @@ public class ReservationService {
     }
 
     private void validateNotPast(Reservation reservation) {
-        if(reservation.isPast(LocalDateTime.now(clock))) {
+        if (reservation.isPast(LocalDateTime.now(clock))) {
             throw new DomainException(ErrorCode.PAST_RESERVATION_NOT_ALLOWED);
         }
     }

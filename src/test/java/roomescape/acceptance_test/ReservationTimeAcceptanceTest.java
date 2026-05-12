@@ -143,7 +143,7 @@ public class ReservationTimeAcceptanceTest {
                 .post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("name", equalTo(request.name()))
+                .body("guestName", equalTo(request.guestName()))
                 .body("date", equalTo(request.date().toString()))
                 .body("time.id", equalTo(reservationTimeId))
                 .body("theme.id", equalTo(themeId))

@@ -26,7 +26,7 @@ class ReservationTest {
     void create_fail_when_name_is_blank() {
         assertDomainException(
                 () -> new Reservation(" ", LocalDate.of(2023, 8, 5), time, theme),
-                ErrorCode.INVALID_RESERVATION_NAME
+                ErrorCode.INVALID_RESERVATION_GUEST_NAME
         );
     }
 

@@ -75,7 +75,7 @@ class AdminReservationControllerTest {
         assertThat(response.reservations()).hasSize(3)
                 .extracting(
                         ReservationResponse::id,
-                        ReservationResponse::name,
+                        ReservationResponse::guestName,
                         ReservationResponse::date
                 )
                 .containsExactly(

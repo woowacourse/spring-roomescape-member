@@ -11,13 +11,13 @@ const API_BASE = "";
       reservations: [],
       availableTimes: [],
       demoReservations: [
-        { id: 1, name: "guest-8", date: "2026-05-05", themeId: 1, timeId: 1 },
-        { id: 2, name: "guest-9", date: "2026-05-05", themeId: 1, timeId: 2 },
-        { id: 3, name: "guest-10", date: "2026-05-05", themeId: 1, timeId: 3 },
-        { id: 4, name: "guest-18", date: "2026-05-05", themeId: 2, timeId: 1 },
-        { id: 5, name: "guest-19", date: "2026-05-05", themeId: 2, timeId: 2 },
-        { id: 6, name: "guest-56", date: "2026-05-06", themeId: 11, timeId: 1 },
-        { id: 7, name: "guest-57", date: "2026-05-06", themeId: 11, timeId: 2 }
+        { id: 1, guestName: "guest-8", date: "2026-05-05", themeId: 1, timeId: 1 },
+        { id: 2, guestName: "guest-9", date: "2026-05-05", themeId: 1, timeId: 2 },
+        { id: 3, guestName: "guest-10", date: "2026-05-05", themeId: 1, timeId: 3 },
+        { id: 4, guestName: "guest-18", date: "2026-05-05", themeId: 2, timeId: 1 },
+        { id: 5, guestName: "guest-19", date: "2026-05-05", themeId: 2, timeId: 2 },
+        { id: 6, guestName: "guest-56", date: "2026-05-06", themeId: 11, timeId: 1 },
+        { id: 7, guestName: "guest-57", date: "2026-05-06", themeId: 11, timeId: 2 }
       ],
       selectedThemeId: null,
       selectedTimeId: null,
@@ -450,7 +450,7 @@ const API_BASE = "";
       }
 
       const payload = {
-        name,
+        guestName: name,
         date: elements.dateInput.value,
         timeId: time.id,
         themeId: theme.id
@@ -463,7 +463,7 @@ const API_BASE = "";
         } else {
           createdReservation = {
             id: getNextId(state.demoReservations),
-            name: payload.name,
+            guestName: payload.guestName,
             date: payload.date,
             themeId: payload.themeId,
             timeId: payload.timeId
@@ -611,7 +611,7 @@ const API_BASE = "";
           row.className = "list-row";
           row.innerHTML = `
             <div class="list-main">
-              <span class="list-title">${escapeHtml(reservation.name || "예약자")}</span>
+              <span class="list-title">${escapeHtml(reservation.guestName || "예약자")}</span>
               <span class="list-meta">${escapeHtml(formatDate(reservation.date))} · ${escapeHtml(theme?.name || "-")} · ${escapeHtml(normalizeTime(time?.startAt || "-"))}</span>
             </div>
             <button class="danger-button" type="button" data-delete-reservation-id="${reservation.id}">삭제</button>
@@ -739,7 +739,7 @@ const API_BASE = "";
       }
 
       const payload = {
-        name,
+        guestName: name,
         date: elements.adminReserveDate.value,
         timeId: time.id,
         themeId: theme.id
@@ -752,7 +752,7 @@ const API_BASE = "";
         } else {
           createdReservation = {
             id: getNextId(state.demoReservations),
-            name: payload.name,
+            guestName: payload.guestName,
             date: payload.date,
             themeId: payload.themeId,
             timeId: payload.timeId

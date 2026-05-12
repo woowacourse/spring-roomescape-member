@@ -29,7 +29,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query("""
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
+                    r.guest_name,
                     r.date,
                     t.id AS time_id,
                     t.start_at,
@@ -99,12 +99,12 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(
                     """
-                            INSERT INTO reservation (name, date, time_id, theme_id)
+                            INSERT INTO reservation (guest_name, date, time_id, theme_id)
                             VALUES (?, ?, ?, ?)
                             """,
                     new String[]{"id"}
             );
-            preparedStatement.setString(1, reservation.getName());
+            preparedStatement.setString(1, reservation.getGuestName());
             preparedStatement.setDate(2, Date.valueOf(reservation.getDate()));
             preparedStatement.setLong(3, reservation.getTime().getId());
             preparedStatement.setLong(4, reservation.getTheme().getId());
@@ -141,7 +141,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return new Reservation(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
+                resultSet.getString("guest_name"),
                 resultSet.getDate("date").toLocalDate(),
                 reservationTime,
                 theme

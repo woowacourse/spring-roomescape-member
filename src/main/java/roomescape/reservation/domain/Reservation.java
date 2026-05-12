@@ -13,22 +13,22 @@ import java.util.Objects;
 @Getter
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final String guestName;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(String guestName, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, guestName, date, time, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
+    public Reservation(Long id, String guestName, LocalDate date, ReservationTime time, Theme theme) {
+        validateGuestName(guestName);
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
         this.id = id;
-        this.name = name;
+        this.guestName = guestName;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -40,7 +40,7 @@ public class Reservation {
             throw new DomainException(ErrorCode.RESERVATION_ALREADY_HAS_ID);
         }
 
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, guestName, date, time, theme);
     }
 
     private void validateId(Long id) {
@@ -49,9 +49,9 @@ public class Reservation {
         }
     }
 
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_NAME);
+    private void validateGuestName(String guestName) {
+        if (guestName == null || guestName.isBlank()) {
+            throw new DomainException(ErrorCode.INVALID_RESERVATION_GUEST_NAME);
         }
     }
 

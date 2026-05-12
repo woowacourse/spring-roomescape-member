@@ -68,7 +68,7 @@ Content-Type: application/json
   "reservations": [
     {
       "id": 1,
-      "name": "브라운",
+      "guestName": "브라운",
       "date": "2023-08-05",
       "time": {
         "id": 1,
@@ -237,7 +237,7 @@ Content-Type: application/json
 
 {
   "date": "2023-08-05",
-  "name": "브라운",
+  "guestName": "브라운",
   "timeId": 1,
   "themeId": 1
 }
@@ -251,7 +251,7 @@ Content-Type: application/json
 
 {
   "id": 1,
-  "name": "브라운",
+  "guestName": "브라운",
   "date": "2023-08-05",
   "time": {
     "id": 1,
@@ -281,7 +281,7 @@ Content-Type: application/json
 **Request**
 
 ```http
-GET /reservations?names=*** HTTP/1.1
+GET /reservations?guestName=브라운 HTTP/1.1
 ```
 
 **Response**
@@ -294,7 +294,7 @@ Content-Type: application/json
   "reservations": [
     {
       "id": 1,
-      "name": "브라운",
+      "guestName": "브라운",
       "date": "2023-08-05",
       "time": {
         "id": 1,
@@ -315,7 +315,7 @@ Content-Type: application/json
 
 | 에러 상황                | 상태코드 | 구현여부 |
 |----------------------| --- | --- |
-| 유효하지 않는 입력값(name 누락) | `400` | ✅ |
+| 유효하지 않는 입력값(guestName 누락) | `400` | ✅ |
 
 #### 예약 시간
 

@@ -70,7 +70,7 @@ class ThemeServiceTest {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement("""
-                    INSERT INTO reservation (name, date, time_id, theme_id)
+                    INSERT INTO reservation (guest_name, date, time_id, theme_id)
                     VALUES (?, ?, ?, ?)
                     """, new String[]{"id"});
             preparedStatement.setString(1, name);

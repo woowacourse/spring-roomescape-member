@@ -83,15 +83,15 @@ class ReservationControllerTest {
 
         then(reservationService)
                 .should()
-                .create(request.name(), request.date(), request.timeId(), request.themeId());
+                .create(request.guestName(), request.date(), request.timeId(), request.themeId());
     }
 
     private static void assertReservation(ReservationResponse reservationResponse, Reservation reservation) {
         assertThat(reservationResponse).extracting(
                 ReservationResponse::id,
-                ReservationResponse::name,
+                ReservationResponse::guestName,
                 ReservationResponse::date
-        ).containsExactly(reservation.getId(), reservation.getName(), reservation.getDate().toString());
+        ).containsExactly(reservation.getId(), reservation.getGuestName(), reservation.getDate().toString());
     }
 
     private static void assertTime(ReservationResponse reservationResponse, ReservationTime time) {
@@ -118,10 +118,10 @@ class ReservationControllerTest {
             "브라운,2023-08-05,1,",
     })
     @DisplayName("예약을 생성하는 요청을 할 때 특정 요청값이 비어있으면 에러가 발생한다.")
-    public void create_fail1(String name, String date, Long timeId, Long themeId) throws Exception {
+    public void create_fail1(String guestName, String date, Long timeId, Long themeId) throws Exception {
         // given
         LocalDate reservationDate = date == null ? null : LocalDate.parse(date);
-        ReservationCreateRequest request = new ReservationCreateRequest(name, reservationDate, timeId, themeId);
+        ReservationCreateRequest request = new ReservationCreateRequest(guestName, reservationDate, timeId, themeId);
 
         // when then
         mockMvc.perform(
@@ -139,7 +139,7 @@ class ReservationControllerTest {
         // given
         String request = """
                 {
-                    "name": "브라운",
+                    "guestName": "브라운",
                     "date": "2023/08/05",
                     "timeId": 1,
                     "themeId": 1
