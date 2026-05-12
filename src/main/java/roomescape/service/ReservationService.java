@@ -42,10 +42,17 @@ public class ReservationService {
         ReservationTime reservationTime = findReservationTime(command);
         validateReservableDateTime(command.date(), reservationTime.startAt());
         Theme theme = findTheme(command);
+        validateDuplicatedReservation(command.date(), command.timeId(), command.themeId());
 
         Reservation reservation = new Reservation(null, command.name(), command.date(), reservationTime, theme);
 
         return reservationRepository.addReservation(reservation);
+    }
+
+    private void validateDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new IllegalArgumentException("이미 존재하는 예약입니다.");
+        }
     }
 
     private void validateReservableDateTime(LocalDate date, LocalTime startAt) {

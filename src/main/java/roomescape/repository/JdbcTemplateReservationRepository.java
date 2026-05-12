@@ -1,5 +1,9 @@
 package roomescape.repository;
 
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,10 +12,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Objects;
 
 @Repository
 public class JdbcTemplateReservationRepository implements ReservationRepository {
@@ -98,5 +98,21 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 reservationRowMapper(),
                 name
         );
+    }
+
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) "
+                        + "FROM reservation "
+                        + "WHERE date = ? "
+                        + "AND time_id = ? "
+                        + "AND theme_id = ?",
+                Integer.class,
+                date,
+                timeId,
+                themeId
+        );
+
+        return Objects.nonNull(count) && count > 0;
     }
 }
