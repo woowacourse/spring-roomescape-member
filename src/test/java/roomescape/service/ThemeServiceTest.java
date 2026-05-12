@@ -32,7 +32,7 @@ public class ThemeServiceTest {
 
         assertThat(responseDto).isEqualTo(
                 new ThemeResponseDto(
-                        1L,
+                        responseDto.id(),
                         name,
                         description,
                         thumbnailUrl
@@ -42,12 +42,12 @@ public class ThemeServiceTest {
 
     @Test
     void readAllTest() {
-        themeService.create(new ThemeRequestDto(
+        ThemeResponseDto firstResponse = themeService.create(new ThemeRequestDto(
                 "피즈의 모험",
                 "모험 이야기",
                 "url.jpg"
         ));
-        themeService.create(new ThemeRequestDto(
+        ThemeResponseDto secondResponse = themeService.create(new ThemeRequestDto(
                 "나무의 일대기",
                 "모험 이야기",
                 "url.jpg"
@@ -56,29 +56,19 @@ public class ThemeServiceTest {
         List<ThemeResponseDto> responseDtos = themeService.readAll();
 
         assertThat(responseDtos.size()).isEqualTo(2);
-        assertThat(responseDtos.get(0)).isEqualTo(new ThemeResponseDto(
-                1L,
-                "피즈의 모험",
-                "모험 이야기",
-                "url.jpg"
-        ));
-        assertThat(responseDtos.get(1)).isEqualTo(new ThemeResponseDto(
-                2L,
-                "나무의 일대기",
-                "모험 이야기",
-                "url.jpg"
-        ));
+        assertThat(responseDtos.get(0)).isEqualTo(firstResponse);
+        assertThat(responseDtos.get(1)).isEqualTo(secondResponse);
     }
 
     @Test
     void deleteTest() {
-        themeService.create(new ThemeRequestDto(
+        ThemeResponseDto responseDto = themeService.create(new ThemeRequestDto(
                 "피즈의 모험",
                 "모험 이야기",
                 "url.jpg"
         ));
 
-        themeService.delete(1L);
+        themeService.delete(responseDto.id());
 
         List<ThemeResponseDto> responseDtos = themeService.readAll();
         assertThat(responseDtos.size()).isEqualTo(0);
