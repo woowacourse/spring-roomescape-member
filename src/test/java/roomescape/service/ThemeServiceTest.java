@@ -1,74 +1,106 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.mockito.ArgumentCaptor;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.repository.result.PopularThemeResult;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
-@JdbcTest
 class ThemeServiceTest {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-    private ThemeService themeService;
-
-    @BeforeEach
-    void setup() {
-        this.themeService = new ThemeService(
-                new ThemeRepository(jdbcTemplate),
-                new ReservationRepository(jdbcTemplate));
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM theme");
-    }
-
-    @Test
-    void 테마_생성_테스트() {
-        // when
-        Theme result = themeService.create("테스트테마", "테스트용 테마입니다.", "/썸네일");
-
-        // then
-        assertAll(
-                () -> assertThat(result.getId()).isNotNull(),
-                () -> assertThat(result.getName()).isEqualTo("테스트테마")
-        );
-    }
+    private final ThemeRepository themeRepository = mock();
+    private final ReservationRepository reservationRepository = mock();
+    private final ThemeService service = new ThemeService(themeRepository, reservationRepository);
 
     @Test
     void 전체_테마_조회_테스트() {
         // given
-        themeService.create("테스트테마1", "테스트용 테마1입니다.", "/썸네일1");
-        themeService.create("테스트테마2", "테스트용 테마2입니다.", "/썸네일2");
+        List<Theme> themes = List.of(
+                new Theme(1L, "테스트 테마1", null, null),
+                new Theme(2L, "테스트 테마2", null, null));
+        when(themeRepository.findAll())
+                .thenReturn(themes);
 
         // when
-        List<Theme> result = themeService.findAll();
+        List<Theme> result = service.findAll();
 
         // then
-        assertThat(result).hasSize(2);
+        assertThat(result).isEqualTo(themes);
+        verify(themeRepository).findAll();
+    }
+
+    @Test
+    void 테마_생성_테스트() {
+        // given
+        Long id = 1L;
+        String name = "테스트 테마";
+        String description = "테마 설명";
+        String thumbnail = "썸네일 주소";
+        Theme theme = new Theme(id, name, description, thumbnail);
+
+        when(themeRepository.insert(any(Theme.class)))
+                .thenReturn(id);
+        when(themeRepository.findBy(id))
+                .thenReturn(Optional.of(theme));
+
+        // when
+        Theme result = service.create(name, description, thumbnail);
+
+        // then
+        ArgumentCaptor<Theme> captor = ArgumentCaptor.forClass(Theme.class);
+
+        assertAll(
+                () -> assertThat(result.getId()).isEqualTo(id),
+                () -> assertThat(result.getName()).isEqualTo(name),
+                () -> assertThat(result.getDescription()).isEqualTo(description),
+                () -> assertThat(result.getThumbnail()).isEqualTo(thumbnail));
+
+        verify(themeRepository).insert(captor.capture());
+        Theme captured = captor.getValue();
+
+        assertAll(
+                () -> assertThat(captured.getId()).isNull(),
+                () -> assertThat(captured.getName()).isEqualTo(name),
+                () -> assertThat(captured.getDescription()).isEqualTo(description),
+                () -> assertThat(captured.getThumbnail()).isEqualTo(thumbnail));
+
+        verify(themeRepository).findBy(id);
+        verifyNoInteractions(reservationRepository);
     }
 
     @Test
     void 테마_삭제_테스트() {
         // given
-        Theme created = themeService.create("테스트테마", "테스트용 테마입니다.", "/썸네일");
+        Long id = 1L;
+        when(reservationRepository.existsByThemeId(id))
+                .thenReturn(false);
 
         // when
-        themeService.delete(created.getId());
+        service.delete(id);
 
         // then
-        assertThat(themeService.findAll()).isEmpty();
+        verify(reservationRepository).existsByThemeId(id);
+        verify(themeRepository).delete(id);
     }
 
     @ParameterizedTest
@@ -76,25 +108,44 @@ class ThemeServiceTest {
     @ValueSource(longs = {0, -1})
     void 삭제하려는_id가_양수가_아니면_예외_발생(Long id) {
         // when & then
-        assertThatThrownBy(() -> themeService.delete(id))
+        assertThatThrownBy(() -> service.delete(id))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] id는 양수이어야 합니다.");
+
+        verify(reservationRepository, never()).existsByThemeId(anyLong());
+        verify(themeRepository, never()).delete(anyLong());
     }
 
     @Test
     void 예약이_존재하는_테마는_삭제시_예외_발생() {
         // given
-        Theme created = themeService.create("테스트테마", "테스트용 테마입니다.", "/썸네일");
-        jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운",
-                "2023-08-05",
-                1,
-                created.getId());
+        Long id = 1L;
+        when(reservationRepository.existsByThemeId(id))
+                .thenReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> themeService.delete(created.getId()))
+        assertThatThrownBy(() -> service.delete(id))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
+
+        verify(reservationRepository).existsByThemeId(id);
+        verify(themeRepository, never()).delete(anyLong());
+    }
+
+    @Test
+    void 인기_테마_조회_테스트() {
+        // given
+        List<PopularThemeResult> popularThemes = List.of(
+                new PopularThemeResult(1L, "테스트 테마1", "테마 설명1", "썸네일 주소1", 2L),
+                new PopularThemeResult(2L, "테스트 테마2", "테마 설명2", "썸네일 주소2", 1L));
+        when(themeRepository.findPopular(any(LocalDate.class), any(LocalDate.class), eq(10)))
+                .thenReturn(popularThemes);
+
+        // when
+        List<PopularThemeResult> result = service.findWeeklyTopTen();
+
+        // then
+        assertThat(result).isEqualTo(popularThemes);
+        verify(themeRepository).findPopular(any(LocalDate.class), any(LocalDate.class), eq(10));
     }
 }

@@ -42,12 +42,6 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 ID입니다."));
     }
 
-    private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existWith(date, timeId, themeId)) {
-            throw new IllegalArgumentException("[ERROR] 이미 예약된 시간입니다.");
-        }
-    }
-
     @Transactional
     public void delete(Long id) {
         validateId(id);
@@ -65,6 +59,12 @@ public class ReservationService {
                         isAvailable(time, reservations)
                 ))
                 .toList();
+    }
+
+    private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existWith(date, timeId, themeId)) {
+            throw new IllegalArgumentException("[ERROR] 이미 예약된 시간입니다.");
+        }
     }
 
     private boolean isAvailable(ReservationTime time, List<Reservation> reservations) {
