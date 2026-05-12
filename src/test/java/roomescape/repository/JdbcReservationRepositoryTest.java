@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
+@Sql(scripts = "/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class JdbcReservationRepositoryTest {
 
     @Autowired
@@ -30,20 +32,7 @@ class JdbcReservationRepositoryTest {
     @BeforeEach
     void setUp() {
         jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate);
-        executeSchema();
         insertDependencyData();
-    }
-
-    private void executeSchema() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute(
-                "CREATE TABLE IF NOT EXISTS time_slot (id BIGINT AUTO_INCREMENT PRIMARY KEY, start_at TIME)");
-        jdbcTemplate.execute(
-                "CREATE TABLE IF NOT EXISTS reservation (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), date DATE, time_id BIGINT, theme_id BIGINT)");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation RESTART IDENTITY");
-        jdbcTemplate.execute("TRUNCATE TABLE time_slot RESTART IDENTITY");
-        jdbcTemplate.execute("TRUNCATE TABLE theme RESTART IDENTITY");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     private void insertDependencyData() {
@@ -101,12 +90,11 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("특정 날짜, 테마, 시간에 해당하는 예약이 이미 존재하면 true를 반환한다.")
+    @DisplayName("특정 날짜, 시간, 테마에 해당하는 예약이 이미 존재하면 true를 반환한다.")
     void existsByDateAndTimeIdAndThemeId() {
-        Theme theme = savedTheme;
-        Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, theme);
+        Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, savedTheme);
         jdbcReservationRepository.save(reservation);
-        boolean exists = jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(LocalDate.now(), savedTimeSlot.id(), 1L);
+        boolean exists = jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(LocalDate.now(), savedTimeSlot.id(), savedTheme.id());
         assertThat(exists).isTrue();
     }
 }

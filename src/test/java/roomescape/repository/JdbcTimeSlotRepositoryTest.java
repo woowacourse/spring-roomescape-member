@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.TimeSlot;
 
 import java.time.LocalTime;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
+@Sql(scripts = "/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class JdbcTimeSlotRepositoryTest {
 
     @Autowired
@@ -25,15 +27,6 @@ class JdbcTimeSlotRepositoryTest {
     @BeforeEach
     void setUp() {
         timeRepository = new JdbcTimeSlotRepository(jdbcTemplate);
-        executeSchema();
-    }
-
-    private void executeSchema() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute(
-                "CREATE TABLE IF NOT EXISTS time_slot (id BIGINT AUTO_INCREMENT PRIMARY KEY, start_at TIME)");
-        jdbcTemplate.execute("TRUNCATE TABLE time_slot");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     @Test

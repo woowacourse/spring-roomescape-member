@@ -16,7 +16,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-@Sql("/test-setup.sql")
+@Sql(scripts = "/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class JdbcThemeRepositoryTest {
 
     @Autowired
@@ -58,10 +58,16 @@ class JdbcThemeRepositoryTest {
     @DisplayName("기간 내 인기 테마를 예약 건수 기반으로 조회한다.")
     void findPopularThemes() {
         Theme savedTheme = jdbcThemeRepository.save(Theme.transientOf("공포", "귀신의 집", "https://url"));
+        insertTimeSlot();
         insertReservation(savedTheme.id());
         List<Theme> themes = jdbcThemeRepository.findPopularThemes(10L, LocalDate.now().minusDays(1),
                 LocalDate.now().plusDays(1));
         assertThat(themes).hasSize(1);
+    }
+
+    private void insertTimeSlot() {
+        String sql = "INSERT INTO time_slot (start_at) VALUES ('10:00:00')";
+        jdbcTemplate.execute(sql);
     }
 
     private void insertReservation(long themeId) {

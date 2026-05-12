@@ -49,6 +49,11 @@ public class FakeReservationRepository implements ReservationRepository {
                 .anyMatch(reservation -> isDuplicate(reservation, date, timeId, themeId));
     }
 
+    @Override
+    public int update(Reservation reservation) {
+        return 1;
+    }
+
     private boolean isDuplicate(Reservation reservation, LocalDate date, Long timeId, Long themeId) {
         return reservation.date().equals(date)
                 && reservation.timeSlot().id().equals(timeId)
