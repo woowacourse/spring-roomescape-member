@@ -45,7 +45,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public Long createByAdmin(AdminScheduleRequest request) {
+    public Long create(AdminScheduleRequest request) {
         Theme theme = themeService.findById(request.themeId());
 
         LocalDateTime newStartAt = LocalDateTime.of(request.date(), request.time());

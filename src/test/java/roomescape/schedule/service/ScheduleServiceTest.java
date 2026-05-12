@@ -51,7 +51,7 @@ class ScheduleServiceTest {
         when(scheduleRepository.create(any(Schedule.class))).thenReturn(1L);
 
         // when
-        Long createdId = scheduleService.createByAdmin(request);
+        Long createdId = scheduleService.create(request);
 
         // then
         assertThat(createdId).isEqualTo(1L);
@@ -72,7 +72,7 @@ class ScheduleServiceTest {
                 .thenReturn(List.of(existingSchedule));
 
         // when & then
-        assertThatThrownBy(() -> scheduleService.createByAdmin(request))
+        assertThatThrownBy(() -> scheduleService.create(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("선택하신 시간은 다른 예약 시간과 겹쳐서 추가할 수 없습니다.");
     }
