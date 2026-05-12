@@ -23,9 +23,10 @@ import roomescape.repository.ThemeRepository;
 import roomescape.repository.fake.FakeReservationRepository;
 import roomescape.repository.fake.FakeReservationTimeRepository;
 import roomescape.repository.fake.FakeThemeRepository;
-import roomescape.web.dto.ReservationRequest;
-import roomescape.web.dto.ReservationResponse;
-import roomescape.web.dto.ReservationTimeResponse;
+import roomescape.web.dto.reservation.ReservationRequest;
+import roomescape.web.dto.reservation.ReservationResponse;
+import roomescape.web.dto.reservationTime.ReservationTimeResponse;
+import roomescape.web.dto.theme.ThemeResponse;
 
 class ReservationServiceTest {
 
@@ -56,14 +57,16 @@ class ReservationServiceTest {
 
         // then: 등록된 예약 정보가 입력값과 일치함
         ReservationTimeResponse timeResponse = ReservationTimeResponse.from(time);
+        ThemeResponse themeResponse = ThemeResponse.from(theme);
         assertThat(response)
                 .extracting(
                         ReservationResponse::id,
                         ReservationResponse::name,
                         ReservationResponse::date,
-                        ReservationResponse::time
+                        ReservationResponse::time,
+                        ReservationResponse::theme
                 )
-                .containsExactly(1L, "이프", reservationDate, timeResponse);
+                .containsExactly(1L, "이프", reservationDate, timeResponse, themeResponse);
     }
 
     @Test

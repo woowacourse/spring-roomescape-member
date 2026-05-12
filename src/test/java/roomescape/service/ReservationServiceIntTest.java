@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.repository.ReservationDataSource;
-import roomescape.web.dto.ReservationRequest;
+import roomescape.web.dto.reservation.ReservationRequest;
 
 class ReservationServiceIntTest extends BaseIntegrationTest {
 

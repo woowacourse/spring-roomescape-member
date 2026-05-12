@@ -1,4 +1,4 @@
-package roomescape.web.dto;
+package roomescape.web.dto.theme;
 
 import java.time.LocalTime;
 import roomescape.domain.ReservationTime;

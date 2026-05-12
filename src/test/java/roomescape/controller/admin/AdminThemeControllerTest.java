@@ -23,8 +23,8 @@ import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
 import roomescape.service.ThemeService;
 import roomescape.web.controller.admin.AdminThemeController;
-import roomescape.web.dto.ThemeRequest;
-import roomescape.web.dto.ThemeResponse;
+import roomescape.web.dto.theme.ThemeRequest;
+import roomescape.web.dto.theme.ThemeResponse;
 
 @WebMvcTest(AdminThemeController.class)
 class AdminThemeControllerTest extends BaseControllerUnitTest {

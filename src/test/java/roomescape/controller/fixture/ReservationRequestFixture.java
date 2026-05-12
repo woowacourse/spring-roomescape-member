@@ -3,7 +3,7 @@ package roomescape.controller.fixture;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.provider.Arguments;
-import roomescape.web.dto.ReservationRequest;
+import roomescape.web.dto.reservation.ReservationRequest;
 
 public class ReservationRequestFixture {
 

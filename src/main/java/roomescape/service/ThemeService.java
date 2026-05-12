@@ -13,9 +13,9 @@ import roomescape.global.exception.DuplicateEntityException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.web.dto.ThemeRequest;
-import roomescape.web.dto.ThemeResponse;
-import roomescape.web.dto.ThemeTimesResponse;
+import roomescape.web.dto.theme.ThemeRequest;
+import roomescape.web.dto.theme.ThemeResponse;
+import roomescape.web.dto.theme.ThemeTimesResponse;
 
 @Service
 @Transactional(readOnly = true)

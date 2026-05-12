@@ -21,9 +21,10 @@ import roomescape.controller.BaseControllerUnitTest;
 import roomescape.controller.fixture.ReservationRequestFixture;
 import roomescape.service.ReservationService;
 import roomescape.web.controller.user.ReservationController;
-import roomescape.web.dto.ReservationRequest;
-import roomescape.web.dto.ReservationResponse;
-import roomescape.web.dto.ReservationTimeResponse;
+import roomescape.web.dto.reservation.ReservationRequest;
+import roomescape.web.dto.reservation.ReservationResponse;
+import roomescape.web.dto.reservationTime.ReservationTimeResponse;
+import roomescape.web.dto.theme.ThemeResponse;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest extends BaseControllerUnitTest {
@@ -54,8 +55,9 @@ class ReservationControllerTest extends BaseControllerUnitTest {
         // given
         ReservationRequest request = ReservationRequestFixture.reserveSuccessRequestFixture();
         ReservationTimeResponse timeResponse = new ReservationTimeResponse(1L, LocalTime.now());
+        ThemeResponse themeResponse = new ThemeResponse(1L, "바니의 집", "바니의 테마입니다.", "http://image.png.image.com");
 
-        ReservationResponse expected = new ReservationResponse(1L, "이프", LocalDate.now(), timeResponse);
+        ReservationResponse expected = new ReservationResponse(1L, "이프", LocalDate.now(), timeResponse, themeResponse);
         when(reservationService.reserve(any(ReservationRequest.class))).thenReturn(expected);
 
         // when & then

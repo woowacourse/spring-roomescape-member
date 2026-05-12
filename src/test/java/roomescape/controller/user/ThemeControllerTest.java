@@ -22,10 +22,10 @@ import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
 import roomescape.service.ThemeService;
 import roomescape.web.controller.user.ThemeController;
-import roomescape.web.dto.ThemeResponse;
-import roomescape.web.dto.ThemeResponses;
-import roomescape.web.dto.ThemeTimeResponses;
-import roomescape.web.dto.ThemeTimesResponse;
+import roomescape.web.dto.theme.ThemeResponse;
+import roomescape.web.dto.theme.ThemeResponses;
+import roomescape.web.dto.theme.ThemeTimeResponses;
+import roomescape.web.dto.theme.ThemeTimesResponse;
 
 @WebMvcTest(ThemeController.class)
 class ThemeControllerTest extends BaseControllerUnitTest {

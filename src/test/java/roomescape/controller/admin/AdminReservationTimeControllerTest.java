@@ -25,9 +25,9 @@ import roomescape.controller.BaseControllerUnitTest;
 import roomescape.controller.fixture.ReservationTimeRequestFixture;
 import roomescape.service.ReservationTimeService;
 import roomescape.web.controller.admin.AdminReservationTimeController;
-import roomescape.web.dto.ReservationTimeRequest;
-import roomescape.web.dto.ReservationTimeResponse;
-import roomescape.web.dto.ReservationTimeResponses;
+import roomescape.web.dto.reservationTime.ReservationTimeRequest;
+import roomescape.web.dto.reservationTime.ReservationTimeResponse;
+import roomescape.web.dto.reservationTime.ReservationTimeResponses;
 
 @WebMvcTest(AdminReservationTimeController.class)
 class AdminReservationTimeControllerTest extends BaseControllerUnitTest {

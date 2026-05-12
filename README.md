@@ -153,6 +153,12 @@ Location: /api/reservations/1
   "time": {
     "id": 2,
     "startAt": "12:00:00"
+  },
+  "theme": {
+    "id": 1,
+    "name": "공포",
+    "description": "공포 방탈출입니다.",
+    "thumbnailImageUrl": "http://image.url/horror"
   }
 }
 ```
@@ -229,6 +235,12 @@ role: ADMIN
       "time": {
         "id": 2,
         "startAt": "12:00:00"
+      },
+      "theme": {
+        "id": 1,
+        "name": "공포",
+        "description": "공포 방탈출입니다.",
+        "thumbnailImageUrl": "http://image.url/horror"
       }
     }
   ]
@@ -265,6 +277,12 @@ Location: /api/admin/reservations/1
   "time": {
     "id": 2,
     "startAt": "12:00:00"
+  },
+  "theme": {
+    "id": 1,
+    "name": "공포",
+    "description": "공포 방탈출입니다.",
+    "thumbnailImageUrl": "http://image.url/horror"
   }
 }
 ```

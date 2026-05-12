@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.global.exception.DuplicateEntityException;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.web.dto.ReservationTimeRequest;
-import roomescape.web.dto.ReservationTimeResponse;
+import roomescape.web.dto.reservationTime.ReservationTimeRequest;
+import roomescape.web.dto.reservationTime.ReservationTimeResponse;
 
 @Service
 @Transactional(readOnly = true)

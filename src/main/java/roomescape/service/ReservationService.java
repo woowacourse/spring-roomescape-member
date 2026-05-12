@@ -14,8 +14,8 @@ import roomescape.global.exception.InactiveException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.web.dto.ReservationRequest;
-import roomescape.web.dto.ReservationResponse;
+import roomescape.web.dto.reservation.ReservationRequest;
+import roomescape.web.dto.reservation.ReservationResponse;
 
 @Service
 @Transactional(readOnly = true)
