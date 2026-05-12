@@ -38,7 +38,10 @@ public class FakeTimeRepository implements TimeRepository {
     }
 
     @Override
-    public void deleteTimeById(Long id) {
+    public int deleteTimeById(Long id) {
+        int beforeSize = times.size();
         times.removeIf(time -> Objects.equals(time.getId(), id));
+
+        return beforeSize - times.size();
     }
 }

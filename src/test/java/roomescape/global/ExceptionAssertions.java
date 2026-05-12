@@ -26,7 +26,24 @@ public final class ExceptionAssertions {
 
     }
 
+    public static <E extends BaseException, T> void assertErrorCode(Runnable runnable,
+        Class<E> type, ErrorCode expected) {
+        Throwable throwable = toThrowable(runnable);
+        assertAll(
+            () -> assertThat(throwable).isInstanceOf(type),
+            () -> {
+                E exception = type.cast(throwable);
+                assertThat(exception.getErrorCode()).isEqualTo(expected);
+            }
+        );
+
+    }
+
     private static <T> Throwable toThrowable(Supplier<T> supplier) {
         return catchThrowable(supplier::get);
+    }
+
+    private static Throwable toThrowable(Runnable runnable) {
+        return catchThrowable(runnable::run);
     }
 }

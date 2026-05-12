@@ -12,6 +12,7 @@ public enum ErrorCode {
 
     TIME_NOT_FOUND("요청한 시간을 찾을 수 없습니다."),
     TIME_DUPLICATE("이미 존재하는 시간입니다."),
+    TIME_REFERENCED_BY_RESERVATION("요청한 시간을 참조하는 예약이 존재합니다."),
 
     THEME_NOT_FOUND("요청한 테마를 찾을 수 없습니다.");
 

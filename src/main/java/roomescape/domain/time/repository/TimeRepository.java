@@ -15,5 +15,5 @@ public interface TimeRepository {
 
     boolean existsByStartAt(LocalTime startAt);
 
-    void deleteTimeById(Long id);
+    int deleteTimeById(Long id);
 }

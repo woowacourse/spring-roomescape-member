@@ -1,7 +1,6 @@
 package roomescape.domain.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -200,10 +199,11 @@ class TimeServiceTest {
             reservationRepository.save(
                 Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, fixedClock));
 
-            assertThatThrownBy(() -> timeService.deleteTimeById(time.getId()))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("요청된 시간을 참조하는 예약이 존재합니다.");
-
+            ExceptionAssertions.assertErrorCode(
+                () -> timeService.deleteTimeById(time.getId()),
+                ConflictException.class,
+                ErrorCode.TIME_REFERENCED_BY_RESERVATION
+            );
         }
     }
 }

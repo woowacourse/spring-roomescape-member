@@ -290,7 +290,7 @@ DELETE /api/admin/times/{id}
 
 없음
 
-#### Response Body - Failure
+#### Error Responses
 
 | 상태 코드 | 메시지                     | 설명                           |  
 |:-----:|:------------------------|:-----------------------------|  

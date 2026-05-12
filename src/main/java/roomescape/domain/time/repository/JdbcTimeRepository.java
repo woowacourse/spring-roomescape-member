@@ -67,10 +67,10 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     @Override
-    public void deleteTimeById(Long id) {
+    public int deleteTimeById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        jdbcTemplate.update(sql, parameters);
+        return jdbcTemplate.update(sql, parameters);
     }
 
     private Time mapTime(ResultSet resultSet, int rowNum) throws SQLException {

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.global.exception.ConflictException;
 import roomescape.domain.global.exception.ErrorCode;
+import roomescape.domain.global.exception.NotFoundException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.time.dto.request.TimeCreateRequestDto;
 import roomescape.domain.time.dto.response.TimeResponseDto;
@@ -50,8 +51,10 @@ public class TimeService {
 
     public void deleteTimeById(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
-            throw new IllegalStateException("요청된 시간을 참조하는 예약이 존재합니다.");
+            throw new ConflictException(ErrorCode.TIME_REFERENCED_BY_RESERVATION);
         }
-        timeRepository.deleteTimeById(id);
+        if (timeRepository.deleteTimeById(id) == 0) {
+            throw new NotFoundException(ErrorCode.TIME_NOT_FOUND);
+        }
     }
 }
