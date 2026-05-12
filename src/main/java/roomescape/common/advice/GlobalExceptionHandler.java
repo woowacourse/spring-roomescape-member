@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.unprocessableEntity().body(e.getMessage());
     }
 
-    private static ResponseEntity<String> getStringResponseEntity(BindingResult e) {
+    private ResponseEntity<String> getStringResponseEntity(BindingResult e) {
         String message = e
                 .getAllErrors()
                 .getFirst()
