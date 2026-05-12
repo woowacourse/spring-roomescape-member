@@ -88,4 +88,14 @@ public class ThemeControllerTest {
                 .statusCode(400)
                 .body("code", is("THEME_RANK_INVALID_LIMIT"));
     }
+
+    @Test
+    public void 인기_테마_조회_API의_limit값이_없을_때() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/themes/ranks")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_QUERY_STRING"));
+    }
 }

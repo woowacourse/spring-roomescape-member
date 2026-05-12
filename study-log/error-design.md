@@ -144,7 +144,7 @@
 
 ### GET /themes/ranks
 
-- [ ] THEME_RANK_BLANK_LIMIT — limit 누락
+- [x] THEME_RANK_BLANK_LIMIT — limit 누락
 - [x] THEME_RANK_INVALID_LIMIT — limit 음수 또는 0
 - [x] THEME_RANK_INVALID_LIMIT — limit 범위 초과 (30 초과)
 
