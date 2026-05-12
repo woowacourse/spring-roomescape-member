@@ -3,6 +3,7 @@ package roomescape.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,7 +40,7 @@ public class TimeController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> createTime(@RequestBody TimeRequest timeRequest) {
+    public ResponseEntity<TimeResponse> createTime(@Valid @RequestBody TimeRequest timeRequest) {
         Time time = timeService.saveTime(timeRequest.startAt());
         return ResponseEntity.status(HttpStatus.CREATED).body(TimeResponse.from(time));
     }
