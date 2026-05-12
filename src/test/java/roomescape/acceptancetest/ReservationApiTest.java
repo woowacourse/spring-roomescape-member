@@ -18,7 +18,7 @@ class ReservationApiTest {
     @Test
     void 예약_조회() {
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -41,65 +41,23 @@ class ReservationApiTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
     }
 
-    @Test
-    void DB_추가_삭제_API_전환() {
-        acceptanceTestFixture.createTheme();
-        acceptanceTestFixture.createReservationTime("10:00", 1L);
 
-        Map<String, Object> reservation = acceptanceTestFixture.reservationRequest("브라운",
-                acceptanceTestFixture.reservationDate(), 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(204);
-
-    }
-
-    @Test
-    void 예약과_시간_연결() {
-        acceptanceTestFixture.createTheme();
-        acceptanceTestFixture.createReservationTime("10:00", 1L);
-
-        Map<String, Object> reservation = acceptanceTestFixture.reservationRequest("브라운",
-                acceptanceTestFixture.reservationDate(), 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-    }
 
 }

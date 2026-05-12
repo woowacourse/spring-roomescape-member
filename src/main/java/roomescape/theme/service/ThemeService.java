@@ -37,11 +37,6 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public Theme getById(final long themeId) {
-        return themeRepository.findById(themeId)
-                .orElseThrow(ThemeNotFoundException::new);
-    }
-
     public List<Theme> getPopularThemes(final int period, final int limit) {
         return themeRepository.findPopularThemes(
                 period,

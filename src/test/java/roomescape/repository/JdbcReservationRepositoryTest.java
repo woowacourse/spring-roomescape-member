@@ -141,8 +141,7 @@ class JdbcReservationRepositoryTest {
         LocalTime newTime = LocalTime.parse("11:00");
         ReservationTime newReservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(newTime, theme));
 
-        reservation.modify(newDate, newReservationTime);
-        jdbcReservationRepository.update(reservation);
+        jdbcReservationRepository.update(reservation.modify(newDate, newReservationTime));
 
         Reservation updated = jdbcReservationRepository.findById(reservation.getId())
                 .orElseThrow();

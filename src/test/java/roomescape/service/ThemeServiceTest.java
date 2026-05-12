@@ -30,11 +30,4 @@ class ThemeServiceTest {
                 .isInstanceOf(ThemeDuplicateException.class);
     }
 
-    @Test
-    @DisplayName("없는 테마 ID 조회 시 예외")
-    void getById_whenNotFound_throws() {
-        assertThatThrownBy(() -> themeService.getById(999L))
-                .isInstanceOf(ThemeNotFoundException.class);
-    }
-
 }
