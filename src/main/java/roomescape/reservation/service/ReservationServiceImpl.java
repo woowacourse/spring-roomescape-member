@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.holiday.service.HolidayService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.time.service.TimeService;
@@ -85,8 +84,6 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void cancel(Long id) {
-        if (!reservationRepository.deleteById(id)) {
-            throw new ReservationNotFoundException(id);
-        }
+        reservationRepository.deleteById(id);
     }
 }
