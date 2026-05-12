@@ -152,10 +152,14 @@
       const chunk = dates.slice(i, i + CHUNK);
       const results = await Promise.all(
           chunk.map(async (dateStr) => {
-            const slots = await fetchJson(
-                `/themes/${themeId}/available-times?date=${dateStr}`
-            );
-            return Array.isArray(slots) && slots.length > 0 ? dateStr : null;
+            try {
+              const slots = await fetchJson(
+                  `/themes/${themeId}/available-times?date=${dateStr}`
+              );
+              return Array.isArray(slots) && slots.length > 0 ? dateStr : null;
+            } catch {
+              return null;
+            }
           })
       );
       results.forEach((d) => {
@@ -164,7 +168,6 @@
     }
     return available;
   }
-
   async function onSelectTheme(theme) {
     state.selectedTheme = theme;
     state.selectedDate = null;
