@@ -81,9 +81,7 @@
 ```json
 {
   "status": 409,
-  "code": "RESERVATION_CONFLICT",
-  "message": "선택한 시간은 이미 예약되어 있습니다.",
-  "hint": "다른 시간을 선택해 주세요."
+  "message": "선택한 시간은 이미 예약되어 있습니다."
 }
 ```
 
