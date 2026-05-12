@@ -1,5 +1,6 @@
 package roomescape.domain.time.repository;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +29,12 @@ public class FakeTimeRepository implements TimeRepository {
         return times.stream()
             .filter(time -> Objects.equals(time.getId(), id))
             .findFirst();
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        return times.stream()
+            .anyMatch(time -> Objects.equals(time.getStartAt(), startAt));
     }
 
     @Override

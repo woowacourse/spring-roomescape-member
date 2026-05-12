@@ -59,6 +59,14 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservations WHERE start_at = :startAt)";
+        SqlParameterSource parameters = new MapSqlParameterSource("startAt", startAt);
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, parameters, Boolean.class));
+    }
+
+    @Override
     public void deleteTimeById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);

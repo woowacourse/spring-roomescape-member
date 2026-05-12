@@ -14,6 +14,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.global.exception.ConflictException;
+import roomescape.domain.global.exception.ErrorCode;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.FakeReservationRepository;
 import roomescape.domain.reservation.repository.ReservationRepository;
@@ -25,6 +27,7 @@ import roomescape.domain.time.dto.response.TimeResponseDto;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.FakeTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
+import roomescape.global.ExceptionAssertions;
 
 class TimeServiceTest {
 
@@ -149,6 +152,19 @@ class TimeServiceTest {
                 () -> assertEquals(1L, actual.id()),
                 () -> assertEquals(LocalTime.of(15, 30), actual.startAt()),
                 () -> assertEquals(List.of(actual), timeService.getTimes())
+            );
+        }
+
+        @Test
+        @DisplayName("저장하려는 시간이 이미 존재하는 경우 예외가 발생한다.")
+        void 실패() {
+            timeRepository.save(Time.create(LocalTime.of(15, 30)));
+            TimeCreateRequestDto request = new TimeCreateRequestDto(LocalTime.of(15, 30));
+
+            ExceptionAssertions.assertErrorCode(
+                () -> timeService.saveTime(request),
+                ConflictException.class,
+                ErrorCode.TIME_DUPLICATE
             );
         }
     }

@@ -3,6 +3,8 @@ package roomescape.domain.time.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.global.exception.ConflictException;
+import roomescape.domain.global.exception.ErrorCode;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.time.dto.request.TimeCreateRequestDto;
 import roomescape.domain.time.dto.response.TimeResponseDto;
@@ -39,6 +41,9 @@ public class TimeService {
 
     public TimeResponseDto saveTime(TimeCreateRequestDto requestDto) {
         Time time = Time.create(requestDto.startAt());
+        if (timeRepository.existsByStartAt(time.getStartAt())) {
+            throw new ConflictException(ErrorCode.TIME_DUPLICATE);
+        }
 
         return TimeResponseDto.from(timeRepository.save(time));
     }
