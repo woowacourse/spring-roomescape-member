@@ -1,6 +1,7 @@
 package roomescape.reservation.presentation;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -55,6 +56,48 @@ class ReservationApiTest {
     }
 
     @Test
+    @DisplayName("예약 생성 요청에 이름이 없으면 400과 공통 에러 응답을 반환한다")
+    void createReservationWithoutName() {
+        Long themeId = createTheme();
+        Long timeId = createTime();
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "",
+                        "date", "2026-12-31",
+                        "timeId", timeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("status", equalTo(400))
+                .body("message", containsString("이름은 필수입니다."));
+    }
+
+    @Test
+    @DisplayName("예약 생성 요청의 날짜 형식이 잘못되면 400과 공통 에러 응답을 반환한다")
+    void createReservationWithInvalidDateFormat() {
+        Long themeId = createTheme();
+        Long timeId = createTime();
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2026/12/31",
+                        "timeId", timeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("status", equalTo(400))
+                .body("message", equalTo("날짜는 yyyy-MM-dd 형식이어야 합니다."));
+    }
+
+    @Test
     @DisplayName("예약 목록을 조회하면 200과 예약 목록을 반환한다")
     void getReservations() {
         Long themeId = createTheme();
@@ -98,6 +141,43 @@ class ReservationApiTest {
                 .when().delete("/reservations/" + id)
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약을 삭제하면 404와 공통 에러 응답을 반환한다")
+    void deleteReservationWhenNotFound() {
+        given().log().all()
+                .when().delete("/reservations/999")
+                .then().log().all()
+                .statusCode(404)
+                .body("status", equalTo(404))
+                .body("message", equalTo("존재하지 않는 예약ID 입니다."));
+    }
+
+    @Test
+    @DisplayName("중복 예약을 생성하면 409와 공통 에러 응답을 반환한다")
+    void createDuplicateReservation() {
+        Long themeId = createTheme();
+        Long timeId = createTime();
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "포비");
+        body.put("date", "2026-12-31");
+        body.put("timeId", timeId);
+        body.put("themeId", themeId);
+
+        given().contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/reservations");
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("status", equalTo(409))
+                .body("message", equalTo("이미 해당 시간에 예약이 존재합니다."));
     }
 
     private Long createTheme() {
