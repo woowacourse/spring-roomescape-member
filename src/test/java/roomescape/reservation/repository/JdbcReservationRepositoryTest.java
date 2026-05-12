@@ -147,6 +147,20 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
+    @DisplayName("id에 해당하는 예외를 조회한다.")
+    void findById() {
+        // given
+        ReservationTime time = createTime(LocalTime.of(10, 0));
+        Theme theme = createTheme("우테코", "우테코 전용 테마", "https://example.com");
+
+        Reservation saved = saveReservation("브라운", LocalDate.of(2024, 5, 1), time, theme);
+
+        // when & then
+        assertThat(reservationRepository.findById(saved.getId())).isPresent();
+        assertThat(reservationRepository.findById(999L)).isEmpty();
+    }
+
+    @Test
     @DisplayName("모든 예약 목록을 조회한다.")
     void findAll() {
         // given
@@ -174,7 +188,7 @@ class JdbcReservationRepositoryTest {
 
         Reservation saved1 = saveReservation("브라운", LocalDate.of(2024, 5, 1), time, theme);
         Reservation saved2 = saveReservation("브라운", LocalDate.of(2024, 5, 2), time, theme);
-        Reservation saved3 = saveReservation("포피", LocalDate.of(2024, 5, 3), time, theme);
+        saveReservation("포피", LocalDate.of(2024, 5, 3), time, theme);
 
         // when
         List<Reservation> reservations = reservationRepository.findAllByName("브라운");

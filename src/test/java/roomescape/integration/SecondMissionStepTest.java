@@ -1,4 +1,4 @@
-package roomescape.web;
+package roomescape.integration;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.web.support.SpringWebTest;
+import roomescape.integration.support.SpringWebTest;
 
 @SpringWebTest
 public class SecondMissionStepTest {

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.InvalidReservationDateException;
+import roomescape.reservation.exception.NotReservationOwnerException;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.PopularThemesResult;
 import roomescape.reservation.service.dto.ReservationCommand;
@@ -60,6 +62,20 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservationById(Long id) {
+        reservationRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteMyReservationById(String name, Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(ReservationNotFoundException::new);
+
+        if (!reservation.getName().equals(name)) {
+            System.out.println("name: " + name);
+            System.out.println("getName(): " + reservation.getName());
+            throw new NotReservationOwnerException();
+        }
+
         reservationRepository.deleteById(id);
     }
 

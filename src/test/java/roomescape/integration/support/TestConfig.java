@@ -1,4 +1,4 @@
-package roomescape.web.support;
+package roomescape.integration.support;
 
 import java.time.Clock;
 import java.time.Instant;

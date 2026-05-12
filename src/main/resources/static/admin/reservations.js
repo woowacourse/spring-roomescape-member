@@ -55,7 +55,7 @@ $("#reservations").addEventListener("click", async (event) => {
   if (!button) return;
 
   try {
-    await api(`/reservations/${button.dataset.id}`, { method: "DELETE" });
+    await api(`/admin/reservations/${button.dataset.id}`, { method: "DELETE" });
     await refresh();
     setMessage("예약을 삭제했습니다.");
   } catch (error) {

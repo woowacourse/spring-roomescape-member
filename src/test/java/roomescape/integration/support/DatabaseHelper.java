@@ -1,4 +1,4 @@
-package roomescape.web.support;
+package roomescape.integration.support;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 

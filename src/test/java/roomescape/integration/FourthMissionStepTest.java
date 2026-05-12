@@ -1,4 +1,4 @@
-package roomescape.web;
+package roomescape.integration;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -6,8 +6,8 @@ import java.lang.reflect.Field;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.integration.support.SpringWebTest;
 import roomescape.reservation.controller.ReservationController;
-import roomescape.web.support.SpringWebTest;
 
 @SpringWebTest
 public class FourthMissionStepTest {

@@ -238,6 +238,7 @@ period=7&limit=10
 
 - GET /reservations
   - 전체 예약 중 특정 예약자의 예약만 필터링 하는 것이기 때문에, 쿼리 파라미터로 이름을 넘긴다.
+  - 또한 단순 조회이기 때문에, 별도의 인증/인가는 수행하지 않는다.
 
 #### 요청
 
@@ -260,20 +261,21 @@ name=브라운
 ### 2. 본인 예약 취소 기능
 
 #### 구현
-- [ ] 구현 완료
+- [x] 구현 완료
 
 #### 메서드 / URL
 
-- POST /reservations/{id}/cancel
-  - 비록 에약을 삭제하는 것이지만, 사용자 이름을 넘겨받아 검증을 해야하기 때문에 POST로 둔다.
-    - 메시지 바디에 name을 담아 전달할 수 있다.
+- DELETE /reservations/{id}
+  - 예약을 삭제하는 것이기 때문에, DELETE으로 둔다.
+  - 본인만 취소가 가능하기 때문에, name을 통한 인증/인가를 수행한다.
+  - 인증 정보를 보호하고 추후 로그인 기능 확장을 고려하고자, 인증/인가는 `Authorization` 헤더에 name을 담아서 수행한다.
 
 #### 요청
 
-```json
-{
-  name
-}
+- header
+
+```text
+Authorization: 브라운
 ```
 
 #### 응답
@@ -293,11 +295,18 @@ name=브라운
 
 #### 요청
 
+- header
+
+```text
+Authorization: 브라운
+```
+
+- body
+
 ```json
 {
-  name,
-  date(optional),
-  time(optional)
+  date,
+  time
 }
 ```
 

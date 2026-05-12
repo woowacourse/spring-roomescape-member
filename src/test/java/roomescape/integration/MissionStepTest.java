@@ -1,4 +1,4 @@
-package roomescape.web;
+package roomescape.integration;
 
 import static org.hamcrest.Matchers.is;
 
@@ -6,8 +6,8 @@ import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.web.support.DatabaseHelper;
-import roomescape.web.support.SpringWebTest;
+import roomescape.integration.support.DatabaseHelper;
+import roomescape.integration.support.SpringWebTest;
 
 @SpringWebTest
 public class MissionStepTest {

@@ -1,4 +1,4 @@
-package roomescape.web;
+package roomescape.integration;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,9 +13,9 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import roomescape.integration.support.DatabaseHelper;
+import roomescape.integration.support.SpringWebTest;
 import roomescape.time.domain.ReservationTime;
-import roomescape.web.support.DatabaseHelper;
-import roomescape.web.support.SpringWebTest;
 
 @SpringWebTest
 public class UserReservationTest {

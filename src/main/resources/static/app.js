@@ -6,8 +6,13 @@ const state = {
 };
 
 async function api(path, options = {}) {
+  const mergedHeaders = {
+    "Content-Type": "application/json",
+    ...(options.headers ?? {})
+  };
+
   const response = await fetch(path, {
-    headers: { "Content-Type": "application/json" },
+    headers: mergedHeaders,
     ...options
   });
 
@@ -62,9 +67,17 @@ function renderReservations(reservations) {
     return;
   }
 
-  root.innerHTML = reservations
-    .map((r) => `${r.id}. [${r.theme?.name ?? "테마 없음"}] ${r.date} ${r.time.startAt} - ${r.name}`)
-    .join("<br>");
+  root.innerHTML = "";
+
+  reservations.forEach((reservation) => {
+    const row = document.createElement("div");
+    row.className = "reservation-row";
+    row.innerHTML = `
+      <span class="reservation-text">${reservation.id}. [${reservation.theme?.name ?? "테마 없음"}] ${reservation.date} ${reservation.time.startAt} - ${reservation.name}</span>
+      <button class="danger reservation-delete" data-id="${reservation.id}" type="button">내 예약 취소</button>
+    `;
+    root.appendChild(row);
+  });
 }
 
 function renderPopularThemes(popularThemes) {
@@ -180,6 +193,14 @@ $("#loadPopular").addEventListener("click", async () => {
   } catch (error) {
     setMessage(error.message);
   }
+});
+
+$("#reservations").addEventListener("click", async (event) => {
+  const button = event.target.closest("button[data-id]");
+  if (!button) return;
+
+  const reservationId = button.dataset.id;
+  window.location.href = `/reservation-cancel.html?id=${encodeURIComponent(reservationId)}`;
 });
 
 async function init() {

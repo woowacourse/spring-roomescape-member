@@ -1,4 +1,4 @@
-package roomescape.web;
+package roomescape.integration;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -15,8 +15,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.web.support.DatabaseHelper;
-import roomescape.web.support.SpringWebTest;
+import roomescape.integration.support.DatabaseHelper;
+import roomescape.integration.support.SpringWebTest;
 
 @SpringWebTest
 public class PopularThemesTest {

@@ -93,6 +93,20 @@ button:hover { filter: brightness(1.05); }
 .card p { margin: 0 0 10px; color: var(--muted); font-size: 0.92rem; }
 .danger { background: var(--danger); width: 100%; }
 .reservation-delete { width: auto; }
+.reservation-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+.reservation-text {
+  color: var(--muted);
+}
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .chip { background: #0369a1; }
