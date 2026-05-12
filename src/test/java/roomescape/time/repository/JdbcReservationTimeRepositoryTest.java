@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.exception.TimeInUseException;
 
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
@@ -93,8 +94,7 @@ class JdbcReservationTimeRepositoryTest {
         //when & then
         assertThatThrownBy(
                 () -> reservationTimeRepository.deleteById(time.getId())
-        ).isInstanceOf(DataIntegrityViolationException.class)
-                .hasMessage("예약에 사용 중인 시간은 삭제할 수 없습니다.");
+        ).isInstanceOf(TimeInUseException.class);
     }
 
     @Test

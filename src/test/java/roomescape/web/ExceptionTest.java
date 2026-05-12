@@ -175,4 +175,76 @@ public class ExceptionTest {
                 .then().log().all()
                 .statusCode(422);
     }
+
+    @DisplayName("기존에 예약이 있으면 예외가 발생한다.")
+    @Test
+    void makeReservation_duplicate_reservation() {
+        //given
+        jdbcTemplate.update(
+                "INSERT INTO reservation_time (start_at) VALUES (?)",
+                Time.valueOf(LocalTime.of(10, 0))
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
+                "테마", "설명", "thumbnailUrl"
+        );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2026-05-01");
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @DisplayName("예약에 사용 중인 예외를 삭제하면 예외가 발생한다.")
+    @Test
+    void delete_time_in_use() {
+        //given
+        jdbcTemplate.update(
+                "INSERT INTO reservation_time (start_at) VALUES (?)",
+                Time.valueOf(LocalTime.of(10, 0))
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
+                "테마", "설명", "thumbnailUrl"
+        );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2026-05-01");
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().delete("/admin/times/1")
+                .then().log().all()
+                .statusCode(409);
+    }
 }

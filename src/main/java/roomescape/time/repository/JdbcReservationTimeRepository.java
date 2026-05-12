@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.exception.TimeInUseException;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -65,7 +66,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 throw new IllegalArgumentException("해당 id의 시간이 존재하지 않습니다.");
             }
         } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("예약에 사용 중인 시간은 삭제할 수 없습니다.");
+            throw new TimeInUseException();
         }
     }
 
