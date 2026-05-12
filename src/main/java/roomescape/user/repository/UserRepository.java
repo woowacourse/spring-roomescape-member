@@ -20,7 +20,7 @@ public class UserRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long create(User user) {
+    public User create(User user) {
         String sql = "INSERT INTO  `user` (name, role) VALUES (?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -32,7 +32,9 @@ public class UserRepository {
                     ps.setString(2, user.getRole().name());
                     return ps;
                 }, keyHolder);
-        return  keyHolder.getKey().longValue();
+        Long generatedId = keyHolder.getKey().longValue();
+
+        return new User(generatedId, user.getName(), user.getRole());
     }
 
     public Optional<User> findById(Long id) {
@@ -43,6 +45,20 @@ public class UserRepository {
                     rs.getString("name"),
                     Role.valueOf(rs.getString("role"))
             ), id);
+            return Optional.of(user);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<User> findByName(String name) {
+        String sql = "SELECT id, name, role FROM \"USER\" WHERE name=?";
+        try {
+            User user = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new User(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    Role.valueOf(rs.getString("role"))
+            ), name);
             return Optional.of(user);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
