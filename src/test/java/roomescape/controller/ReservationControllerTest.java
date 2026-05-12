@@ -45,6 +45,16 @@ public class ReservationControllerTest {
     }
 
     @Test
+    public void 존재하지_않는_예약_삭제_API() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/reservations/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("RESERVATION_NOT_FOUND"));
+    }
+
+    @Test
     public void 예약_생성_API() {
         ReservationRequest reservationRequest = new ReservationRequest("포비", LocalDate.of(2026, 5, 6), 2L, 2L);
 

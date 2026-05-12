@@ -39,7 +39,7 @@ public class ReservationService {
     public void removeById(Long id) {
         int deleteCnt = reservationRepository.deleteById(id);
         if (deleteCnt == 0) {
-            throw new IllegalArgumentException("존재하지 않는 예약의 ID 입니다.");
+            throw new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND);
         }
     }
 
