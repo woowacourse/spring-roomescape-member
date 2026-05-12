@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS reservation
     theme_id  BIGINT       NOT NULL,
     date      DATE         NOT NULL,
     time_id   BIGINT       NOT NULL,
+    deleted_at TIMESTAMP NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
-    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    UNIQUE (date, theme_id, time_id)
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id)
 );
