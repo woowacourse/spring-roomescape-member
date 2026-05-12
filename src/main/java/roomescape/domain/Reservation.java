@@ -17,9 +17,9 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        validateNameFormat(name);
         this.id = id;
         this.theme = theme;
-        validateNameFormat(name);
         this.name = name;
         this.date = date;
         this.time = time;
@@ -29,8 +29,8 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
-    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime now) {
-        validateNotPast(date, time, now);
+    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime reservedAt) {
+        validateNotPast(date, time, reservedAt);
         return new Reservation(name, date, time, theme);
     }
 
@@ -52,10 +52,10 @@ public class Reservation {
         }
     }
 
-    private static void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime now) {
+    private static void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime reservedAt) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
 
-        if (reservationDateTime.isBefore(now)) {
+        if (reservationDateTime.isBefore(reservedAt)) {
             throw new IllegalArgumentException("지난 날짜 또는 시간은 예약할 수 없습니다.");
         }
     }
