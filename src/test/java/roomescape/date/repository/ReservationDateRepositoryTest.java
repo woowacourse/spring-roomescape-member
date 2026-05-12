@@ -13,6 +13,7 @@ import roomescape.date.fixture.ReservationDateFixture;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @JdbcTest
 class ReservationDateRepositoryTest {
@@ -59,6 +60,20 @@ class ReservationDateRepositoryTest {
         Assertions.assertThat(actual)
                 .usingRecursiveComparison()
                 .isEqualTo(saved);
+    }
+
+    @Test
+    @DisplayName("등록되지 않은 날짜를 조회하면 빈 값을 반환한다.")
+    void findById_wrongId() {
+        // given
+        Long wrongId = Long.MIN_VALUE;
+
+        // when
+        Optional<ReservationDate> actual = reservationDateRepository.findById(wrongId);
+
+        // then
+        Assertions.assertThat(actual)
+                .isEmpty();
     }
 
     @Test

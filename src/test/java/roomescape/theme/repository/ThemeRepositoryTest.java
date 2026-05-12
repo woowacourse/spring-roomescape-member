@@ -2,11 +2,9 @@ package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -61,6 +59,20 @@ class ThemeRepositoryTest {
         assertThat(actual)
                 .usingRecursiveComparison()
                 .isEqualTo(savedTheme);
+    }
+
+    @Test
+    @DisplayName("등록되지 않은 테마를 조회하면 빈 값을 반환한다.")
+    void findById_wrongId() {
+        // given
+        Long wrongId = Long.MIN_VALUE;
+
+        // when
+        Optional<Theme> actual = jdbcThemeRepository.findById(wrongId);
+
+        // then
+        Assertions.assertThat(actual)
+                .isEmpty();
     }
 
     @Test
