@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -40,7 +41,8 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
-    void 예약을_저장하면_id가_채워진_도메인을_반환한다() {
+    @DisplayName("예약을 저장하면 id가 포함된 예약을 반환한다")
+    void saveReservation() {
         Reservation saved = addReservation("브라운", LocalDate.of(2026, 5, 3));
 
         assertThat(saved.id()).isNotNull();
@@ -50,7 +52,8 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
-    void 모든_예약을_조인_조회한다() {
+    @DisplayName("모든 예약을 시간과 테마 정보와 함께 조회한다")
+    void findAllReservations() {
         addReservation("브라운", LocalDate.of(2026, 5, 3));
         addReservation("조이", LocalDate.of(2026, 5, 4));
 
@@ -61,7 +64,8 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
-    void 특정_사용자의_예약을_조회한다() {
+    @DisplayName("사용자 이름으로 예약을 조회한다")
+    void findReservationsByName() {
         addReservation("브라운", LocalDate.of(2026, 5, 3));
         addReservation("브라운", LocalDate.of(2026, 5, 4));
         addReservation("조이", LocalDate.of(2026, 5, 4));
@@ -72,14 +76,16 @@ class JdbcTemplateReservationRepositoryTest {
     }
 
     @Test
-    void 예약이_없으면_빈_리스트를_반환한다() {
+    @DisplayName("예약이 없으면 빈 목록을 반환한다")
+    void findEmptyReservations() {
         List<Reservation> reservations = reservationRepository.findAllReservations();
 
         assertThat(reservations).isEmpty();
     }
 
     @Test
-    void id로_예약을_삭제한다() {
+    @DisplayName("id로 예약을 삭제한다")
+    void deleteReservationById() {
         long reservationId = addReservation("브라운", LocalDate.of(2026, 5, 3)).id();
 
         reservationRepository.deleteById(reservationId);

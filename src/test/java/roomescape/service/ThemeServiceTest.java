@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,7 +30,8 @@ class ThemeServiceTest {
     private ThemeService themeService;
 
     @Test
-    void 테마가_없으면_빈리스트_반환() {
+    @DisplayName("테마가 없으면 빈 목록을 반환한다")
+    void findEmptyThemes() {
         when(themeRepository.findAll()).thenReturn(Collections.emptyList());
         List<Theme> themes = themeService.getThemes();
 
@@ -37,7 +39,8 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 테마가_3개면_결과_반환() {
+    @DisplayName("저장된 테마 목록을 반환한다")
+    void findThemes() {
         List<Theme> themes = List.of(
                 new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg"),
                 new Theme(2L, "escape2", "방탈출2", "http://example.com/img2.jpg"),
@@ -52,7 +55,8 @@ class ThemeServiceTest {
     }
 
     @Test
-    void id로_테마를_조회한다() {
+    @DisplayName("id로 테마를 조회한다")
+    void findThemeById() {
         Theme theme = new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg");
 
         when(themeRepository.findById(1L)).thenReturn(Optional.of(theme));
@@ -62,7 +66,8 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 없는_id로_조회하면_예외() {
+    @DisplayName("존재하지 않는 id로 테마를 조회하면 예외가 발생한다")
+    void throwException_WhenThemeNotFoundById() {
         when(themeRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> themeService.findById(1L))
@@ -70,7 +75,8 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 테마를_저장하면_저장된_테마_반환() {
+    @DisplayName("테마를 저장하면 저장된 테마를 반환한다")
+    void saveTheme() {
         Theme theme = new Theme(null, "escape1", "방탈출1", "http://example.com/img1.jpg");
         Theme savedTheme = new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg");
 
@@ -81,14 +87,16 @@ class ThemeServiceTest {
     }
 
     @Test
-    void id로_테마를_삭제한다() {
+    @DisplayName("id로 테마를 삭제한다")
+    void deleteThemeById() {
         themeService.deleteTheme(1L);
 
         verify(themeRepository).delete(1L);
     }
 
     @Test
-    void 날짜가_있으면_예약_가능_시간을_조회한다() {
+    @DisplayName("테마와 날짜로 예약 가능 시간을 조회한다")
+    void findAvailableTimesByThemeAndDate() {
         LocalDate date = LocalDate.of(2026, 5, 3);
         List<ReservationTime> times = List.of(
                 new ReservationTime(1L, LocalTime.of(10, 0)),
@@ -103,7 +111,8 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 인기_테마를_조회한다() {
+    @DisplayName("인기 테마를 조회한다")
+    void findPopularThemes() {
         LocalDate today = LocalDate.now();
         List<Theme> themes = List.of(
                 new Theme(1L, "escape1", "방탈출1", "http://example.com/img1.jpg"),

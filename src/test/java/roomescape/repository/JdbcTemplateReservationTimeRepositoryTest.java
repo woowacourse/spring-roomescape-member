@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -27,7 +28,8 @@ class JdbcTemplateReservationTimeRepositoryTest {
     }
 
     @Test
-    void 시간을_저장하면_id가_채워진_도메인을_반환한다() {
+    @DisplayName("예약 시간을 저장하면 id가 포함된 예약 시간을 반환한다")
+    void saveReservationTime() {
         ReservationTime saved = reservationTimeRepository.addTime(new ReservationTime(null, LocalTime.of(10, 0)));
 
         assertThat(saved.id()).isNotNull();
@@ -35,7 +37,8 @@ class JdbcTemplateReservationTimeRepositoryTest {
     }
 
     @Test
-    void 모든_시간을_조회한다() {
+    @DisplayName("모든 예약 시간을 조회한다")
+    void findAllReservationTimes() {
         addTime(LocalTime.of(10, 0));
         addTime(LocalTime.of(11, 0));
 
@@ -45,14 +48,16 @@ class JdbcTemplateReservationTimeRepositoryTest {
     }
 
     @Test
-    void 시간이_없으면_빈_리스트를_반환한다() {
+    @DisplayName("예약 시간이 없으면 빈 목록을 반환한다")
+    void findEmptyReservationTimes() {
         List<ReservationTime> times = reservationTimeRepository.findAllReservationTimes();
 
         assertThat(times).isEmpty();
     }
 
     @Test
-    void id로_시간을_조회한다() {
+    @DisplayName("id로 예약 시간을 조회한다")
+    void findReservationTimeById() {
         long id = addTime(LocalTime.of(10, 0));
 
         ReservationTime time = reservationTimeRepository.findById(id).get();
@@ -62,7 +67,8 @@ class JdbcTemplateReservationTimeRepositoryTest {
     }
 
     @Test
-    void id로_시간을_삭제한다() {
+    @DisplayName("id로 예약 시간을 삭제한다")
+    void deleteReservationTimeById() {
         long id = addTime(LocalTime.of(10, 0));
 
         reservationTimeRepository.deleteTime(id);

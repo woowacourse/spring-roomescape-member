@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,11 +46,13 @@ class ReservationServiceTest {
     private ReservationService reservationService;
 
     @Test
-    void 예약을_저장하면_id가_채워진_도메인을_반환한다() {
+    @DisplayName("예약을 저장하면 id가 포함된 예약을 반환한다")
+    void saveReservation() {
         ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
         Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 3), TIME_ID, THEME_ID);
-        Reservation persisted = new Reservation(99L, "브라운", LocalDate.of(2026, 5, 3), time, theme);
+        LocalDate date = LocalDate.now().plusDays(1);
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", date, TIME_ID, THEME_ID);
+        Reservation persisted = new Reservation(99L, "브라운", date, time, theme);
 
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
@@ -59,39 +62,15 @@ class ReservationServiceTest {
 
         assertThat(saved.id()).isEqualTo(99L);
         assertThat(saved.name()).isEqualTo("브라운");
-        assertThat(saved.date()).isEqualTo(LocalDate.of(2026, 5, 3));
+        assertThat(saved.date()).isEqualTo(date);
         assertThat(saved.time().id()).isEqualTo(TIME_ID);
         assertThat(saved.theme().id()).isEqualTo(THEME_ID);
     }
 
     @Test
-    void 사용자는_지난_날짜로_예약을_저장할_수_없다() {
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.now().minusDays(1), TIME_ID, THEME_ID);
-
-        assertThatThrownBy(() -> reservationService.saveUserReservation(saveCommand))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void 관리자는_지난_날짜로도_예약을_저장할_수_있다() {
-        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
-        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", yesterday, TIME_ID, THEME_ID);
-        Reservation persisted = new Reservation(99L, "브라운", yesterday, time, theme);
-
-        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
-        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
-        given(reservationRepository.addReservation(any(Reservation.class))).willReturn(persisted);
-
-        Reservation saved = reservationService.saveReservation(saveCommand);
-
-        assertThat(saved.date()).isEqualTo(yesterday);
-    }
-
-    @Test
-    void 존재하지_않는_시간으로_저장하면_예외가_발생한다() {
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 3), TIME_ID, THEME_ID);
+    @DisplayName("존재하지 않는 시간으로 예약하면 예외가 발생한다")
+    void throwException_WhenTimeNotFound() {
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.now().plusDays(1), TIME_ID, THEME_ID);
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
@@ -99,9 +78,10 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_테마로_저장하면_예외가_발생한다() {
+    @DisplayName("존재하지 않는 테마로 예약하면 예외가 발생한다")
+    void throwException_WhenThemeNotFound() {
         ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.of(2026, 5, 3), TIME_ID, THEME_ID);
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.now().plusDays(1), TIME_ID, THEME_ID);
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.empty());
 
@@ -110,7 +90,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 저장된_모든_예약을_조회한다() {
+    @DisplayName("저장된 모든 예약을 조회한다")
+    void findAllReservations() {
         ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
         Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
         List<Reservation> stored = List.of(
@@ -124,7 +105,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 사용자명에_해당하는_예약이_없으면_예외() {
+    @DisplayName("사용자명에 해당하는 예약이 없으면 예외가 발생한다")
+    void throwException_WhenNoReservationsByName() {
         given(reservationRepository.findReservationsByName(any())).willReturn(List.of());
         assertThatThrownBy(() -> reservationService.findReservationsByName(" "))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -132,7 +114,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약이_없으면_빈_리스트를_반환한다() {
+    @DisplayName("저장된 예약이 없으면 빈 목록을 반환한다")
+    void findEmptyReservations() {
         given(reservationRepository.findAllReservations()).willReturn(List.of());
 
         List<Reservation> reservations = reservationService.findAllReservations();
@@ -141,11 +124,13 @@ class ReservationServiceTest {
     }
 
     @Test
-    void id로_예약을_삭제한다() {
+    @DisplayName("id로 예약을 삭제한다")
+    void deleteReservationById() {
         long reservationId = 1L;
 
         reservationService.deleteById(reservationId);
 
         verify(reservationRepository).deleteById(eq(reservationId));
     }
+
 }

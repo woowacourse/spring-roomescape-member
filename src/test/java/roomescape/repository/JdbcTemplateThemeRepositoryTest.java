@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -32,14 +33,16 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
-    void 모든_테마_조회() {
+    @DisplayName("모든 테마를 조회한다")
+    void findAllThemes() {
         List<Theme> themes = themeRepository.findAll();
 
         assertThat(themes.size()).isEqualTo(DEFAULT_THEME_SIZE);
     }
 
     @Test
-    void 테마를_저장한다() {
+    @DisplayName("테마를 저장한다")
+    void saveTheme() {
         Theme theme = new Theme(null, "마법 학교", "마법 학교의 마지막 시험을 통과하세요.", "https://example.com/theme10.jpg");
 
         Theme savedTheme = themeRepository.save(theme);
@@ -51,7 +54,8 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
-    void 테마를_삭제한다() {
+    @DisplayName("테마를 삭제한다")
+    void deleteThemeById() {
         Theme theme = new Theme(null, "마법 학교", "마법 학교의 마지막 시험을 통과하세요.", "https://example.com/theme10.jpg");
         long id = themeRepository.save(theme).id();
 
@@ -60,9 +64,10 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
+    @DisplayName("예약되지 않은 시간을 조회한다")
     @Sql("/test-reservation-time.sql")
     @Sql("/test-reservation.sql")
-    void 예약_가능한_시간_조회() {
+    void findAvailableTimes_WhenReservedTimesExist() {
         LocalDate date = LocalDate.of(2021, 1, 1);
 
         List<ReservationTime> reservationTimes = themeRepository.findAvailableTimes(1L, date);
@@ -71,8 +76,9 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
+    @DisplayName("예약 건수가 많은 순서로 인기 테마를 반환한다")
     @Sql("/test-reservation-time.sql")
-    void 예약_건수가_많은_순서로_인기_테마를_반환한다() {
+    void findPopularThemesInOrder_WhenReservationsExist() {
         LocalDate inRange = LocalDate.of(2026, 5, 1);
         addReservation("A", inRange, 1, 1);
         addReservation("B", inRange, 2, 1);
@@ -96,8 +102,9 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
+    @DisplayName("인기 테마를 limit 개수만큼 반환한다")
     @Sql("/test-reservation-time.sql")
-    void limit_개수만큼만_반환한다() {
+    void findPopularThemesWithLimit() {
         LocalDate inRange = LocalDate.of(2026, 5, 1);
         addReservation("A", inRange, 1, 1);
         addReservation("B", inRange, 1, 2);
@@ -109,8 +116,9 @@ class JdbcTemplateThemeRepositoryTest {
     }
 
     @Test
+    @DisplayName("기간 밖 예약은 인기 테마 집계에서 제외한다")
     @Sql("/test-reservation-time.sql")
-    void 기간_밖_예약은_인기_집계에서_제외한다() {
+    void excludeReservations_WhenOutOfRange() {
         LocalDate inRange = LocalDate.of(2026, 5, 1);
         LocalDate outOfRange = LocalDate.of(2026, 4, 1);
 
