@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +13,6 @@ import roomescape.time.dao.TimeDao;
 @Service
 public class ReservationService {
     private final ReservationDao reservationDao;
-
     private final TimeDao timeDao;
 
     public ReservationService(ReservationDao reservationDao, TimeDao timeDao) {
@@ -33,6 +33,7 @@ public class ReservationService {
         ReservationTime time = timeDao.selectById(timeId);
         List<Reservation> reservedList = reservationDao.selectByThemeIdAndDate(themeId, date);
 
+        validateDateTime(date, time);
         for (Reservation reserved : reservedList) {
             validateReserved(timeId, reserved.getTime());
         }
@@ -47,7 +48,17 @@ public class ReservationService {
 
     private void validateReserved(Long timeId, ReservationTime reservedTime) {
         if (timeId.equals(reservedTime.getId())) {
-            throw new IllegalArgumentException("[ERROR] 예약할 수 없습니다.");
+            throw new IllegalArgumentException("[ERROR] 이미 예약이 존재합니다.");
+        }
+    }
+
+    private void validateDateTime(LocalDate date, ReservationTime time) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("[ERROR] 지난 날짜는 예약할 수 없습니다.");
+        }
+
+        if (date.equals(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now())) {
+            throw new IllegalArgumentException("[ERROR] 지난 시간은 예약할 수 없습니다.");
         }
     }
 }
