@@ -1,5 +1,7 @@
 package roomescape.reservation.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -61,5 +63,43 @@ public class ReservationControllerTest {
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @Test
+    void 이름_빈칸으로_예약추가_예외발생() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", " ");
+        params.put("themeId", 2L);
+        params.put("date", "2027-05-12");
+        params.put("timeId", 7L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then()
+                .statusCode(400)
+                .body("message", equalTo("검증 실패"))
+                .body("errors.field", hasItem("name"))
+                .body("errors.reason", hasItem("이름은 필수입니다."));
+    }
+
+    @Test
+    void 날짜_형식_오류로_예약추가_예외발생() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "워넬");
+        params.put("themeId", 2L);
+        params.put("date", "2026/05/12");
+        params.put("timeId", 7L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then()
+                .statusCode(400)
+                .body("message", equalTo("검증 실패"))
+                .body("errors.field", hasItem("date"))
+                .body("errors.reason", hasItem("이름은 필수입니다."));
     }
 }

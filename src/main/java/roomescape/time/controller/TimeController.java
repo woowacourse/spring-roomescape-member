@@ -1,5 +1,6 @@
 package roomescape.time.controller;
 
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class TimeController {
 
     @GetMapping(value = "/times/available-time", params = {"themeId", "date"})
     public ResponseEntity<List<AvailableTimeResponse>> readByThemeIdAndDate(@RequestParam Long themeId,
-                                                                            @RequestParam LocalDate date) {
+                                                                            @Valid @RequestParam LocalDate date) {
         List<AvailableTimeResponse> availableTimes = timeService.findByThemeIdAndDate(themeId, date).stream()
                 .map(AvailableTimeResponse::from)
                 .collect(Collectors.toList());

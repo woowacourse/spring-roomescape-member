@@ -1,5 +1,6 @@
 package roomescape.theme.controller;
 
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,8 +37,8 @@ public class ThemeController {
     }
 
     @GetMapping(value = "/themes/trending", params = {"startDate", "endDate", "limit"})
-    public ResponseEntity<List<ThemeResponse>> readByTrend(@RequestParam LocalDate startDate,
-                                                           @RequestParam LocalDate endDate,
+    public ResponseEntity<List<ThemeResponse>> readByTrend(@Valid @RequestParam LocalDate startDate,
+                                                           @Valid @RequestParam LocalDate endDate,
                                                            @RequestParam int limit) {
         List<ThemeResponse> themes = themeService.findByTrend(startDate, endDate, limit).stream()
                 .map(ThemeResponse::from)

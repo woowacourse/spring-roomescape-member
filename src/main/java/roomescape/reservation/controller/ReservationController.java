@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,7 +41,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<?> create(@RequestBody ReservationRequest request) {
+    public ResponseEntity<?> create(@Valid @RequestBody ReservationRequest request) {
         try {
             Reservation reservation = reservationService.add(
                     request.name(),

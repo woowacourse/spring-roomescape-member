@@ -1,9 +1,11 @@
 package roomescape.theme.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import roomescape.theme.Theme;
 
 public record ThemeResponse(
         Long id,
+        @NotBlank(message = "이름은 필수입니다.")
         String name,
         String description,
         String image
