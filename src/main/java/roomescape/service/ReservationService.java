@@ -9,6 +9,7 @@ import roomescape.dto.CreateReservationRequest;
 import roomescape.dto.UpdateReservationRequest;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.PastReservationException;
+import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.UnauthorizedReservationException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
@@ -29,7 +30,8 @@ public class ReservationService {
     }
 
     public Reservation getReservation(Long id) {
-        return reservationDao.findById(id);
+        return reservationDao.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
     }
 
     public List<Reservation> getMyReservations(Long userId) {
@@ -41,7 +43,8 @@ public class ReservationService {
         checkNotPast(request);
 
         Long newReservationId = reservationDao.save(request);
-        return reservationDao.findById(newReservationId);
+        return reservationDao.findById(newReservationId)
+                .orElseThrow(() -> new ReservationNotFoundException("예약 저장에 실패했습니다."));
     }
 
     private void checkDuplicateReservation(CreateReservationRequest request) {
@@ -61,7 +64,8 @@ public class ReservationService {
     }
 
     public Reservation updateReservation(Long reservationId, Long userId, UpdateReservationRequest request) {
-        Reservation reservation = reservationDao.findById(reservationId);
+        Reservation reservation = reservationDao.findById(reservationId)
+                .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
         if (!reservation.getUser().getId().equals(userId)) {
             throw new UnauthorizedReservationException("본인의 예약만 변경할 수 있습니다.");
         }
@@ -79,11 +83,13 @@ public class ReservationService {
         }
 
         reservationDao.updateDateAndTime(reservationId, request.date(), request.timeId());
-        return reservationDao.findById(reservationId);
+        return reservationDao.findById(reservationId)
+                .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
     }
 
     public void deleteMyReservation(Long reservationId, Long userId) {
-        Reservation reservation = reservationDao.findById(reservationId);
+        Reservation reservation = reservationDao.findById(reservationId)
+                .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
         if (!reservation.getUser().getId().equals(userId)) {
             throw new UnauthorizedReservationException("본인의 예약만 삭제할 수 있습니다.");
         }

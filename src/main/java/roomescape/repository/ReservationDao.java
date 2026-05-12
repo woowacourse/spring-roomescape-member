@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -52,7 +53,7 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = """
                 SELECT r.id, r.date,
                        u.id as user_id, u.name as user_name, u.email,
@@ -64,7 +65,8 @@ public class ReservationDao {
                 JOIN theme th ON r.theme_id = th.id
                 WHERE r.id = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        List<Reservation> results = jdbcTemplate.query(sql, rowMapper, id);
+        return results.stream().findFirst();
     }
 
     public List<Reservation> findAll() {
