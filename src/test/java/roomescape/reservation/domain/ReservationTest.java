@@ -12,7 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.reservation.domain.exception.InvalidReservationException;
+import roomescape.global.exception.RoomEscapeException;
 
 class ReservationTest {
 
@@ -27,7 +27,7 @@ class ReservationTest {
                 .themeId(1L)
                 .timeId(1L)
                 .build())
-                .isInstanceOf(InvalidReservationException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("이름은 비어있을 수 없습니다.");
     }
 
@@ -40,7 +40,7 @@ class ReservationTest {
                 .themeId(1L)
                 .timeId(1L)
                 .build())
-                .isInstanceOf(InvalidReservationException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("날짜는 비어있을 수 없습니다.");
     }
 
@@ -55,7 +55,7 @@ class ReservationTest {
                 .themeId(themeId)
                 .timeId(1L)
                 .build())
-                .isInstanceOf(InvalidReservationException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("테마ID는 올바른 값이어야 합니다.");
     }
 
@@ -70,7 +70,7 @@ class ReservationTest {
                 .themeId(1L)
                 .timeId(timeId)
                 .build())
-                .isInstanceOf(InvalidReservationException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("시간ID는 올바른 값이어야 합니다.");
     }
 
@@ -88,7 +88,7 @@ class ReservationTest {
                 LocalTime.of(10, 0),
                 LocalDateTime.of(2026, 5, 6, 11, 0)
         ))
-                .isInstanceOf(InvalidReservationException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
     }
 

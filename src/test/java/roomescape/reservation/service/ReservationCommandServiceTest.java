@@ -1,6 +1,6 @@
 package roomescape.reservation.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
@@ -15,11 +15,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ThemeFixture;
+import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationResult;
-import roomescape.reservation.application.exception.ReservationException;
+import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservation.application.service.ReservationCommandService;
-import roomescape.reservation.domain.exception.InvalidReservationException;
 import roomescape.reservation.infra.JdbcReservationRepository;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
 import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
@@ -81,7 +81,7 @@ class ReservationCommandServiceTest {
                 ReservationFixture.kayaCreateCommand(themeId, timeId),
                 LocalDateTime.of(2000, 1, 1, 0, 0)
         ))
-                .isInstanceOf(ReservationException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("이미 해당 날짜와 시간에 예약이 존재합니다.");
     }
 
@@ -95,7 +95,7 @@ class ReservationCommandServiceTest {
                 ReservationFixture.starkCreateCommand(themeId, timeId),
                 LocalDateTime.of(2026, 5, 6, 11, 0)
         ))
-                .isInstanceOf(InvalidReservationException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
     }
 
@@ -109,6 +109,14 @@ class ReservationCommandServiceTest {
                 LocalDateTime.of(2000, 1, 1, 0, 0)
         );
 
-        assertThat(reservationCommandService.delete(result.id())).isEqualTo(1);
+        assertThatNoException().isThrownBy(() -> reservationCommandService.delete(result.id()));
+    }
+
+    @DisplayName("삭제할 예약이 없을 시 예외 발생을 테스트합니다.")
+    @Test
+    void fail_to_delete_theme() {
+        assertThatThrownBy(() -> reservationCommandService.delete(1L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 예약입니다.");
     }
 }

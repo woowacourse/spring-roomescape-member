@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservationtime.domain.exception.InvalidReservationTimeException;
+import roomescape.global.exception.RoomEscapeException;
 
 class ReservationTimeTest {
 
@@ -14,7 +14,7 @@ class ReservationTimeTest {
         assertThatThrownBy(() -> ReservationTime.builder()
                 .startAt(null)
                 .build())
-                .isInstanceOf(InvalidReservationTimeException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("시간은 비어있을 수 없습니다.");
     }
 }

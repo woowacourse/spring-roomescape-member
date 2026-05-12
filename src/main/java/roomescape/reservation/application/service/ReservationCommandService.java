@@ -5,16 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.NotFoundException;
+import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationResult;
-import roomescape.reservation.application.exception.ReservationException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
-import roomescape.reservationtime.application.exception.ReservationTimeException;
 import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 import roomescape.theme.application.dto.ThemeResult;
-import roomescape.theme.application.exception.ThemeException;
 import roomescape.theme.domain.repository.ThemeRepository;
 
 @RequiredArgsConstructor
@@ -28,10 +26,10 @@ public class ReservationCommandService {
 
     public ReservationResult save(ReservationCreateCommand request, LocalDateTime currentDateTime) {
         ThemeResult themeResult = ThemeResult.from(themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new ThemeException("존재하지 않는 테마입니다.")));
+                .orElseThrow(() -> new RoomEscapeException("존재하지 않는 테마입니다.")));
 
         ReservationTimeResult timeResult = ReservationTimeResult.from(timeRepository.findById(request.timeId())
-                .orElseThrow(() -> new ReservationTimeException("존재하지 않는 시간입니다.")));
+                .orElseThrow(() -> new RoomEscapeException("존재하지 않는 시간입니다.")));
 
         Reservation reservation = request.toEntity(themeResult.id(), timeResult.id());
         reservation.validateNotPast(timeResult.startAt(), currentDateTime);
@@ -55,7 +53,7 @@ public class ReservationCommandService {
         );
 
         if (existsByDateAndTime) {
-            throw new ReservationException("이미 해당 날짜와 시간에 예약이 존재합니다.");
+            throw new RoomEscapeException("이미 해당 날짜와 시간에 예약이 존재합니다.");
         }
     }
 }

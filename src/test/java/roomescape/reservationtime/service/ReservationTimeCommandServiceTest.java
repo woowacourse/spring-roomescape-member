@@ -1,6 +1,6 @@
 package roomescape.reservationtime.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
@@ -10,9 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.global.exception.NotFoundException;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
-import roomescape.reservationtime.application.exception.ReservationTimeException;
+import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservationtime.application.service.ReservationTimeCommandService;
 import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 
@@ -42,7 +43,7 @@ public class ReservationTimeCommandServiceTest {
         timeCommandService.save(new ReservationTimeCreateCommand(LocalTime.of(9, 0)));
 
         assertThatThrownBy(() -> timeCommandService.save(new ReservationTimeCreateCommand(LocalTime.of(9, 0))))
-                .isInstanceOf(ReservationTimeException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("시간 09:00이(가) 이미 존재합니다.");
     }
 
@@ -53,6 +54,14 @@ public class ReservationTimeCommandServiceTest {
                 new ReservationTimeCreateCommand(LocalTime.of(9, 0))
         );
 
-        assertThat(timeCommandService.delete(result.id())).isEqualTo(1);
+        assertThatNoException().isThrownBy(() -> timeCommandService.delete(result.id()));
+    }
+
+    @DisplayName("삭제할 예약 시간이 없을 시 예외 발생을 테스트합니다.")
+    @Test
+    void fail_to_delete_theme() {
+        assertThatThrownBy(() -> timeCommandService.delete(1L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 시간입니다.");
     }
 }

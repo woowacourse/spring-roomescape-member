@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.theme.domain.exception.InvalidThemeException;
+import roomescape.global.exception.RoomEscapeException;
 
 class ThemeTest {
 
@@ -20,7 +20,7 @@ class ThemeTest {
                 .description("공포 테마 설명")
                 .thumbnailImgUrl("http://img.url")
                 .build())
-                .isInstanceOf(InvalidThemeException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("테마 이름은 비어있을 수 없습니다.");
     }
 
@@ -34,7 +34,7 @@ class ThemeTest {
                 .description(description)
                 .thumbnailImgUrl("http://img.url")
                 .build())
-                .isInstanceOf(InvalidThemeException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("테마 설명은 비어있을 수 없습니다.");
     }
 
@@ -48,7 +48,7 @@ class ThemeTest {
                 .description("공포 테마 설명")
                 .thumbnailImgUrl(thumbnailImgUrl)
                 .build())
-                .isInstanceOf(InvalidThemeException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("썸네일 이미지 URL은 비어있을 수 없습니다.");
     }
 }

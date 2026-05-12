@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.NotFoundException;
+import roomescape.global.exception.RoomEscapeException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.application.dto.ThemeCreateCommand;
 import roomescape.theme.application.dto.ThemeResult;
-import roomescape.theme.application.exception.ThemeException;
 import roomescape.theme.domain.repository.ThemeRepository;
 
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class ThemeCommandService {
 
     private void validateDuplicateTheme(Theme theme) {
         if (themeRepository.existsByNameAndDescription(theme)) {
-            throw new ThemeException("이름과 설명이 같은 테마가 이미 존재합니다.");
+            throw new RoomEscapeException("이름과 설명이 같은 테마가 이미 존재합니다.");
         }
     }
 }

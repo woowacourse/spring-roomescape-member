@@ -1,6 +1,7 @@
 package roomescape.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
@@ -9,8 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.fixture.ThemeFixture;
+import roomescape.global.exception.NotFoundException;
 import roomescape.theme.application.dto.ThemeResult;
-import roomescape.theme.application.exception.ThemeException;
+import roomescape.global.exception.RoomEscapeException;
 import roomescape.theme.application.service.ThemeCommandService;
 import roomescape.theme.infra.JdbcThemeRepository;
 
@@ -36,7 +38,7 @@ public class ThemeCommandServiceTest {
         themeCommandService.save(ThemeFixture.horrorThemeCreateCommand());
 
         assertThatThrownBy(() -> themeCommandService.save(ThemeFixture.horrorThemeCreateCommand()))
-                .isInstanceOf(ThemeException.class)
+                .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("이름과 설명이 같은 테마가 이미 존재합니다.");
     }
 
@@ -45,6 +47,14 @@ public class ThemeCommandServiceTest {
     void delete_theme() {
         ThemeResult result = themeCommandService.save(ThemeFixture.horrorThemeCreateCommand());
 
-        assertThat(themeCommandService.delete(result.id())).isEqualTo(1);
+        assertThatNoException().isThrownBy(() -> themeCommandService.delete(result.id()));
+    }
+
+    @DisplayName("삭제할 테마가 없을 시 예외 발생을 테스트합니다.")
+    @Test
+    void fail_to_delete_theme() {
+        assertThatThrownBy(() -> themeCommandService.delete(1L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 테마입니다.");
     }
 }
