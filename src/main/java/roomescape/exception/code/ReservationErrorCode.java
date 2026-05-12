@@ -5,23 +5,21 @@ import roomescape.exception.ErrorCode;
 
 public enum ReservationErrorCode implements ErrorCode {
 
-    RESERVATION_ALREADY_EXISTS("R-409-001", HttpStatus.CONFLICT, "해당 시간 또는 테마를 선택한 예약이 존재합니다."),
-    RESERVATION_NOT_FOUND("R-404-002", HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."),
+    RESERVATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "해당 시간 또는 테마를 선택한 예약이 존재합니다."),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."),
     ;
 
-    private final String code;
     private final HttpStatus httpStatus;
     private final String message;
 
-    ReservationErrorCode(String code, HttpStatus httpStatus, String message) {
-        this.code = code;
+    ReservationErrorCode(HttpStatus httpStatus, String message) {
         this.httpStatus = httpStatus;
         this.message = message;
     }
 
     @Override
     public String getCode() {
-        return code;
+        return name();
     }
 
     @Override
