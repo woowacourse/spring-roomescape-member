@@ -51,7 +51,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpServletRequest request) {
         return ResponseEntity.badRequest()
-                .body(ErrorResponse.of(HttpStatus.BAD_REQUEST, "올바르지 않은 날짜/시간 형식입니다.", request));
+                .body(ErrorResponse.of(HttpStatus.BAD_REQUEST, "올바르지 않은 날짜 또는 시간 형식입니다.", request));
+    }
+
+    @ExceptionHandler(UnprocessableException.class)
+    public ResponseEntity<ErrorResponse> handleUnprocessable(UnprocessableException e, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(ErrorResponse.of(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage(), request));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

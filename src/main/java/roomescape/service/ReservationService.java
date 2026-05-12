@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,7 @@ public class ReservationService {
         validateDuplicateReservation(date, timeId, themeId);
         ReservationTime time = findReservationTime(timeId);
         Theme theme = findTheme(themeId);
-        Reservation reservation = new Reservation(name, date, time, theme);
+        Reservation reservation = new Reservation(name, date, time, theme, LocalDateTime.now());
         Long id = reservationRepository.insert(reservation);
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 ID입니다."));

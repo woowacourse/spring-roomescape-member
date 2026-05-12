@@ -1,6 +1,8 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import roomescape.exception.UnprocessableException;
 
 public class Reservation {
 
@@ -23,8 +25,9 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime now) {
         this(null, name, date, time, theme);
+        validateDateTime(date, time, now);
     }
 
     public Long getId() {
@@ -65,6 +68,13 @@ public class Reservation {
     private void validateTime(ReservationTime time) {
         if (time == null) {
             throw new IllegalArgumentException("예약 시간은 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateDateTime(LocalDate date, ReservationTime time, LocalDateTime now) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new UnprocessableException("지난 시간으로는 예약할 수 없습니다.");
         }
     }
 
