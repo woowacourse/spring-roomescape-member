@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -7,7 +8,6 @@ import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.request.ReservationTimeCreateRequest;
 import roomescape.service.dto.response.ReservationTimeResponse;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -28,7 +28,7 @@ public class ReservationTimeController {
             @RequestBody ReservationTimeCreateRequest request
     ) {
         final ReservationTimeResponse result = reservationTimeService.create(request);
-        return ResponseEntity.created(URI.create("/times"))
+        return ResponseEntity.created(URI.create("/times/" + result.id()))
                 .body(result);
     }
 
