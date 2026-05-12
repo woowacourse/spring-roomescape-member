@@ -121,3 +121,12 @@
     - `PATCH /reservations/{id}`
   - 검증
     - `403 Forbidden`이 반환된다.
+
+- [x] **9. 본인의 예약을 삭제한다.**
+  - 요청 흐름
+    - 특정 사용자 이름으로 예약 생성
+    - `Authorization` 헤더에 사용자 이름을 담아 `DELETE /reservations/{id}`
+    - `GET /reservations?guestName=<사용자 이름>`
+  - 검증
+    - 삭제 요청 시 `204 No Content`가 반환된다.
+    - 삭제한 예약이 사용자 예약 목록에 포함되지 않는다.

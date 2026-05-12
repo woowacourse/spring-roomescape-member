@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import roomescape.common.exception.DomainException;
-import roomescape.common.exception.ErrorCode;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
@@ -29,6 +28,8 @@ import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.reservation.exeption.ReservationErrorCode.*;
+import static roomescape.reservationtime.exeption.ReservationTimeErrorCode.*;
 
 @JdbcTest
 @Import({
@@ -62,7 +63,7 @@ class ReservationServiceTest {
         // when, then
         assertThatThrownBy(() -> reservationService.create("포비", date, time.getId(), theme.getId()))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.RESERVATION_ALREADY_EXISTS.message());
+                .hasMessage(RESERVATION_ALREADY_EXISTS.message());
     }
 
     @Test
@@ -79,9 +80,8 @@ class ReservationServiceTest {
         // when, then
         assertThatThrownBy(() -> reservationService.create("포비", pastDate, time.getId(), theme.getId()))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.PAST_RESERVATION_NOT_ALLOWED.message());
+                .hasMessage(PAST_RESERVATION_NOT_ALLOWED.message());
     }
-
 
     @Test
     @DisplayName("해당 예약이 존재하지 않으면 삭제할 수 없기 때문에 예외가 발생한다.")
@@ -92,7 +92,70 @@ class ReservationServiceTest {
         // when, then
         assertThatThrownBy(() -> reservationService.delete(id))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.RESERVATION_NOT_FOUND.message());
+                .hasMessage(RESERVATION_NOT_FOUND.message());
+    }
+
+    @Test
+    @DisplayName("본인의 예약을 삭제한다.")
+    public void deleteMine_success() {
+        // given
+        clock.setFixed(LocalDate.of(2023, 7, 6));
+
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Reservation reservation = insertReservation(LocalDate.of(2023, 8, 10), time, "브라운");
+
+        // when
+        reservationService.deleteMine(reservation.getId(), reservation.getGuestName());
+
+        // then
+        Integer count = jdbcTemplate.queryForObject("""
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE id = ?
+                """, Integer.class, reservation.getId());
+        assertThat(count).isZero();
+    }
+
+    @Test
+    @DisplayName("해당 예약이 존재하지 않으면 본인의 예약을 삭제할 수 없기 때문에 예외가 발생한다.")
+    public void deleteMine_fail1() {
+        // given
+        Long id = 1L;
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.deleteMine(id, "브라운"))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(RESERVATION_NOT_FOUND.message());
+    }
+
+    @Test
+    @DisplayName("이미 시작된 예약은 삭제할 수 없다.")
+    public void deleteMine_fail2() {
+        // given
+        clock.setFixed(LocalDate.of(2023, 8, 11));
+
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Reservation reservation = insertReservation(LocalDate.of(2023, 8, 10), time, "브라운");
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.deleteMine(reservation.getId(), reservation.getGuestName()))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(CANNOT_EDIT_ALREADY_STARTED_RESERVATION.message());
+    }
+
+    @Test
+    @DisplayName("본인의 예약이 아니면 삭제할 수 없기 때문에 예외가 발생한다.")
+    public void deleteMine_fail3() {
+        // given
+        clock.setFixed(LocalDate.of(2023, 7, 6));
+
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Reservation reservation = insertReservation(LocalDate.of(2023, 8, 10), time, "브라운");
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.deleteMine(reservation.getId(), "포비"))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(CANNOT_EDIT_OTHER_GUEST_RESERVATION.message());
     }
 
     @Test
@@ -129,7 +192,7 @@ class ReservationServiceTest {
         // when then
         assertThatThrownBy(() -> reservationService.editDateTime(reservationId, editedDate, editedTime.getId(), "브라운"))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.RESERVATION_NOT_FOUND.message());
+                .hasMessage(RESERVATION_NOT_FOUND.message());
     }
 
     @Test
@@ -148,7 +211,7 @@ class ReservationServiceTest {
         // when then
         assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTimeId, reservation.getGuestName()))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.RESERVATION_TIME_NOT_FOUND.message());
+                .hasMessage(RESERVATION_TIME_NOT_FOUND.message());
     }
 
     @Test
@@ -167,7 +230,7 @@ class ReservationServiceTest {
         // when then
         assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTime.getId(), reservation.getGuestName()))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.CANNOT_EDIT_ALREADY_STARTED_RESERVATION.message());
+                .hasMessage(CANNOT_EDIT_ALREADY_STARTED_RESERVATION.message());
     }
 
     @Test
@@ -190,7 +253,7 @@ class ReservationServiceTest {
         // when then
         assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTime.getId(), reservation.getGuestName()))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.RESERVATION_ALREADY_EXISTS.message());
+                .hasMessage(RESERVATION_ALREADY_EXISTS.message());
     }
 
     @ParameterizedTest
@@ -211,7 +274,7 @@ class ReservationServiceTest {
         // when then
         assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), ed, editedTime.getId(), reservation.getGuestName()))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.PAST_RESERVATION_NOT_ALLOWED.message());
+                .hasMessage(PAST_RESERVATION_NOT_ALLOWED.message());
     }
 
     @Test
@@ -230,7 +293,7 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.editDateTime(
                 reservation.getId(), reservation.getDate(), time.getId(), "other_guest"))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.CANNOT_EDIT_OTHER_GUEST_RESERVATION.message());
+                .hasMessage(CANNOT_EDIT_OTHER_GUEST_RESERVATION.message());
     }
 
     private Reservation insertReservation(LocalDate existDate, ReservationTime existTime, String guestName) {

@@ -34,6 +34,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -287,6 +288,25 @@ class ReservationControllerTest {
                                 .header("Authorization", "브라운"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("본인의 예약을 삭제하는 요청을 하면 응답으로 204 상태코드를 반환한다.")
+    public void delete_success() throws Exception {
+        // given
+        Long reservationId = 1L;
+        String guestNameHeader = URLEncoder.encode("브라운", StandardCharsets.UTF_8);
+
+        // when then
+        mockMvc.perform(
+                        delete("/reservations/{id}", reservationId)
+                                .header("Authorization", guestNameHeader))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        then(reservationService)
+                .should()
+                .deleteMine(reservationId, "브라운");
     }
 
 }

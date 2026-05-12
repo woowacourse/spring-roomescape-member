@@ -59,6 +59,15 @@ public class ReservationController {
                         reservationService.editDateTime(id, request.date(), request.timeId(), decode(guestName))));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable("id") Long id,
+            @RequestHeader("Authorization") String guestName
+    ) {
+        reservationService.deleteMine(id, decode(guestName));
+        return ResponseEntity.noContent().build();
+    }
+
     private String decode(String value) {
         return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }

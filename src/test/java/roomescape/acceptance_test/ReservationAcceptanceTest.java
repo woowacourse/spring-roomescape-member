@@ -334,6 +334,39 @@ public class ReservationAcceptanceTest {
                 .statusCode(403);
     }
 
+    @Test
+    @DisplayName("본인의 예약을 삭제한다.")
+    public void scenario9() throws JsonProcessingException {
+        String guestName = "brown";
+        Integer reservationTimeId = createReservationTime(
+                new ReservationTimeCreateRequest(LocalTime.of(10, 30)));
+        Integer themeId = createTheme(
+                new ThemeCreateRequest("테마1", "설명", "섬네일"));
+
+        ReservationCreateRequest reservationRequest = new ReservationCreateRequest(
+                guestName,
+                LocalDate.of(2026, 10, 14),
+                reservationTimeId.longValue(),
+                themeId.longValue());
+        Integer reservationId = createReservation(reservationRequest);
+
+        given().log().all()
+                .pathParam("id", reservationId)
+                .header("Authorization", guestName)
+                .when()
+                .delete("/reservations/{id}")
+                .then().log().all()
+                .statusCode(204);
+
+        given().log().all()
+                .queryParam("guestName", guestName)
+                .when()
+                .get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("reservations.id", not(hasItem(reservationId)));
+    }
+
     private Integer createReservationTime(ReservationTimeCreateRequest request) throws JsonProcessingException {
         return given().log().all()
                 .contentType(ContentType.JSON)
