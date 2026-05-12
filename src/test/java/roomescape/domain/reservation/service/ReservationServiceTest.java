@@ -1,5 +1,6 @@
 package roomescape.domain.reservation.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -127,6 +128,25 @@ class ReservationServiceTest {
                 () -> assertEquals(1L, actual.themeId()),
                 () -> assertEquals(1, reservationRepository.findAllReservations().size())
             );
+        }
+
+        @Test
+        @DisplayName("날짜, 시간과 테마가 모두 같은 예약이 존재하는 경우 예외가 발생한다.")
+        void 실패() {
+            Time time = timeRepository.save(Time.create(LocalTime.of(15, 30)));
+            Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명",
+                "https://roomescape.com/images/themes/ring-banner.png"));
+            ReservationCreateRequestDto request = new ReservationCreateRequestDto(
+                "보예",
+                LocalDate.of(2026, 5, 1),
+                time.getId(),
+                theme.getId()
+            );
+            reservationRepository.save(Reservation.create(request.name(), request.date(), time, theme, fixedClock));
+
+            assertThatThrownBy(() -> reservationService.saveReservation(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("요청된 날짜와 테마, 시간에 중복된 데이터가 있습니다.");
         }
     }
 

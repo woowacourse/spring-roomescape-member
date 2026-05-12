@@ -6,7 +6,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -39,6 +41,29 @@ public class JdbcReservationRepository implements ReservationRepository {
                 JOIN theme t ON r.theme_id = t.id
                 """;
         return jdbcTemplate.query(sql, this::mapReservation);
+    }
+
+    @Override
+    public Optional<Reservation> findReservationByDateTimeAndThemeId(LocalDate date, Long timeId,
+        Long themeId) {
+        String sql = """
+                SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at, t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
+                FROM reservation r
+                JOIN reservation_time rt ON r.time_id = rt.id
+                JOIN theme t ON r.theme_id = t.id
+                WHERE r.date = :date AND time_id = :timeId AND theme_id = :themeId
+                """;
+        SqlParameterSource parameters = new MapSqlParameterSource(Map.of(
+            "date", date,
+            "timeId", timeId,
+            "themeId", themeId
+        ));
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(sql, parameters, this::mapReservation);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

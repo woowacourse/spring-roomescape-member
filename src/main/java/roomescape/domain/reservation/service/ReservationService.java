@@ -2,6 +2,7 @@ package roomescape.domain.reservation.service;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.global.exception.ErrorCode;
 import roomescape.domain.global.exception.NotFoundException;
@@ -44,7 +45,12 @@ public class ReservationService {
 
     public ReservationCreateResponseDto saveReservation(ReservationCreateRequestDto requestDto) {
         Reservation reservation = createReservation(requestDto);
+        Optional<Reservation> duplicatedReservation =
+            reservationRepository.findReservationByDateTimeAndThemeId(requestDto.date(), requestDto.timeId(), requestDto.themeId());
 
+        if (duplicatedReservation.isPresent()) {
+            throw new IllegalArgumentException("요청된 날짜와 테마, 시간에 중복된 데이터가 있습니다.");
+        }
         return ReservationCreateResponseDto.from(reservationRepository.save(reservation));
     }
 
