@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>예약 관리 — RoomEscape Admin</title>
+    <meta content="방탈출 예약 관리 - 관리자 대시보드" name="description">
+    <link href="../style.css" rel="stylesheet">
+</head>
+<body>
+<div class="layout">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-text">🔐 RoomEscape</div>
+            <div class="logo-sub">Admin Panel</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">관리</div>
+            <a class="nav-item active" href="reservation.html">
+                <span class="icon">📋</span> 예약 관리
+            </a>
+            <a class="nav-item" href="time.html">
+                <span class="icon">🕐</span> 시간 관리
+            </a>
+            <a class="nav-item" href="theme.html">
+                <span class="icon">🎭</span> 테마 관리
+            </a>
+        </div>
+        <div class="sidebar-section" style="margin-top: auto;">
+            <div class="sidebar-section-label">사용자</div>
+            <a class="nav-item" href="../index.html">
+                <span class="icon">🏠</span> 사용자 페이지
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+        <div class="page-header">
+            <h1 class="page-title">예약 관리</h1>
+            <p class="page-subtitle">전체 예약 현황을 조회하고 관리합니다.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card blue">
+                <div class="stat-value" id="total-count">–</div>
+                <div class="stat-label">전체 예약</div>
+            </div>
+        </div>
+
+        <!-- Add Reservation -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">새 예약 추가</span>
+                <button class="btn btn-ghost btn-sm" onclick="toggleForm('add-form')">펼치기 / 접기</button>
+            </div>
+            <div id="add-form">
+                <div class="form-grid form-grid-2" style="margin-bottom: 14px;">
+                    <div class="form-group">
+                        <label for="res-name">예약자 이름</label>
+                        <input id="res-name" placeholder="홍길동" type="text">
+                    </div>
+                    <div class="form-group">
+                        <label for="res-date">날짜</label>
+                        <input id="res-date" type="date">
+                    </div>
+                    <div class="form-group">
+                        <label for="res-theme">테마</label>
+                        <select id="res-theme" onchange="loadTimes()">
+                            <option value="">테마 선택</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="res-time">시간</label>
+                        <select id="res-time">
+                            <option value="">시간 선택</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="createReservation()">
+                    <span>➕</span> 예약 추가
+                </button>
+            </div>
+        </div>
+
+        <!-- Reservation List -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">예약 목록</span>
+                <button class="btn btn-ghost btn-sm" onclick="loadReservations()">
+                    🔄 새로고침
+                </button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>예약자</th>
+                        <th>테마</th>
+                        <th>날짜</th>
+                        <th>시간</th>
+                        <th>액션</th>
+                    </tr>
+                    </thead>
+                    <tbody id="reservation-table-body">
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <div class="spinner"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+    // ── Utils ─────────────────────────────────────────
+    function toast(msg, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+        el.className = `toast toast-${type}`;
+        el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+        container.appendChild(el);
+        setTimeout(() => el.remove(), 3200);
+    }
+
+    async function api(method, url, body) {
+        const opts = {method, headers: {'Content-Type': 'application/json'}};
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(url, opts);
+        if (!res.ok) {
+            const text = await res.text().catch(() => '');
+            throw new Error(text || `HTTP ${res.status}`);
+        }
+        const ct = res.headers.get('Content-Type') || '';
+        return ct.includes('json') ? res.json() : null;
+    }
+
+    function toggleForm(id) {
+        const el = document.getElementById(id);
+        el.style.display = el.style.display === 'none' ? '' : 'none';
+    }
+
+    // ── Load ──────────────────────────────────────────
+    async function loadReservations() {
+        try {
+            const data = (await api('GET', '/reservations')).reservations;
+            document.getElementById('total-count').textContent = data.length;
+            const tbody = document.getElementById('reservation-table-body');
+
+            if (!data.length) {
+                tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📭</div><p>예약이 없습니다.</p></div></td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.map(r => `
+        <tr>
+          <td><span class="badge badge-gray">#${r.id}</span></td>
+          <td><strong>${r.name}</strong></td>
+          <td>${r.theme ? `<span class="badge badge-blue">${r.theme.name || '–'}</span>` : '–'}</td>
+          <td>${r.date}</td>
+          <td>${r.time?.startAt ?? r.time ?? '–'}</td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteReservation(${r.id})">
+              🗑 삭제
+            </button>
+          </td>
+        </tr>
+      `).join('');
+        } catch (e) {
+            toast(`예약 조회 실패: ${e.message}`, 'error');
+        }
+    }
+
+    async function loadThemes() {
+        try {
+            const themes = (await api('GET', '/themes')).themes;
+            const sel = document.getElementById('res-theme');
+            sel.innerHTML = '<option value="">테마 선택</option>' +
+                themes.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+        } catch (e) {
+            toast(`테마 조회 실패: ${e.message}`, 'error');
+        }
+    }
+
+    async function loadTimes() {
+        const themeId = document.getElementById('res-theme').value;
+        const date = document.getElementById('res-date').value;
+        const sel = document.getElementById('res-time');
+
+        // 날짜+테마가 모두 있으면 가용 시간 조회
+        if (themeId && date) {
+            try {
+                const times = (await api('GET', `/themes/${themeId}/times?date=${date}`)).times;
+                sel.innerHTML = '<option value="">시간 선택</option>' +
+                    times.map(t => `<option value="${t.id}" ${t.isReserved ? 'disabled' : ''}>${t.startAt}${t.isReserved ? ' (예약됨)' : ''}</option>`).join('');
+                return;
+            } catch (e) { /* fallback */
+            }
+        }
+
+        // 전체 시간 목록
+        try {
+            const times = (await api('GET', '/times')).times;
+            sel.innerHTML = '<option value="">시간 선택</option>' +
+                times.map(t => `<option value="${t.id}">${t.startAt}</option>`).join('');
+        } catch (e) {
+            toast(`시간 조회 실패: ${e.message}`, 'error');
+        }
+    }
+
+    // ── CRUD ─────────────────────────────────────────
+    async function createReservation() {
+        const name = document.getElementById('res-name').value.trim();
+        const date = document.getElementById('res-date').value;
+        const themeId = document.getElementById('res-theme').value;
+        const timeId = document.getElementById('res-time').value;
+
+        if (!name || !date || !themeId || !timeId) {
+            toast('모든 필드를 입력해주세요.', 'error');
+            return;
+        }
+
+        try {
+            await api('POST', '/reservations', {
+                name,
+                date,
+                themeId: Number(themeId),
+                timeId: Number(timeId),
+            });
+            toast('예약이 추가되었습니다.', 'success');
+            document.getElementById('res-name').value = '';
+            document.getElementById('res-date').value = '';
+            document.getElementById('res-theme').value = '';
+            document.getElementById('res-time').innerHTML = '<option value="">시간 선택</option>';
+            await loadReservations();
+        } catch (e) {
+            toast(`예약 추가 실패: ${e.message}`, 'error');
+        }
+    }
+
+    async function deleteReservation(id) {
+        if (!confirm(`예약 #${id}을 삭제할까요?`)) return;
+        try {
+            await api('DELETE', `/reservations/${id}`);
+            toast('예약이 삭제되었습니다.', 'success');
+            await loadReservations();
+        } catch (e) {
+            toast(`삭제 실패: ${e.message}`, 'error');
+        }
+    }
+
+    // ── Init ─────────────────────────────────────────
+    document.getElementById('res-date').addEventListener('change', loadTimes);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadReservations();
+        loadThemes();
+        loadTimes();
+        // 오늘 날짜를 기본값으로
+        document.getElementById('res-date').value = new Date().toISOString().split('T')[0];
+    });
+</script>
+</body>
+</html>

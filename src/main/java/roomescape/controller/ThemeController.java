@@ -1,0 +1,49 @@
+package roomescape.controller;
+
+import java.time.LocalDate;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.theme.PopularThemeResponses;
+import roomescape.dto.theme.ThemeReservationTimeResponses;
+import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.theme.ThemeResponses;
+import roomescape.service.ThemeService;
+
+@RestController
+@RequestMapping("/themes")
+public class ThemeController {
+
+    private final ThemeService themeService;
+
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
+    }
+
+    @GetMapping
+    public ResponseEntity<ThemeResponses> readThemes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(themeService.getThemes(page, size));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ThemeResponse> readTheme(@PathVariable Long id) {
+        return ResponseEntity.ok(ThemeResponse.from(themeService.getTheme(id)));
+    }
+
+    @GetMapping("/{id}/times")
+    public ResponseEntity<ThemeReservationTimeResponses> readThemeTimes(@PathVariable Long id,
+                                                                        @RequestParam LocalDate date) {
+        return ResponseEntity.ok(ThemeReservationTimeResponses.from(themeService.getThemeTimes(id, date)));
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<PopularThemeResponses> readPopularThemes(@RequestParam Integer limit) {
+        return ResponseEntity.ok(PopularThemeResponses.from(themeService.getPopularThemes(limit)));
+    }
+}
