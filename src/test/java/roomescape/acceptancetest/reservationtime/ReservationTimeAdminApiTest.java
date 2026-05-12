@@ -42,7 +42,7 @@ class ReservationTimeAdminApiTest {
 
         //when & then
         RestAssured.given().log().all()
-                .when().delete("/admin/themes/1/times/1")
+                .when().delete("/admin/themes/times/1")
                 .then().log().all()
                 .statusCode(204);
     }
