@@ -111,4 +111,13 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.create(info))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void 사용자가_본인의_예약_목록을_정상적으로_조회한다() {
+        Long id = USER_1.getId();
+        ReservationsResponse response = reservationService.findAllByUserId(id);
+
+        assertThat(response.getReservationsResponse()).hasSize(1);
+        assertThat(response.getReservationsResponse().getFirst().getUserId()).isEqualTo(id);
+    }
 }
