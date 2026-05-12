@@ -183,6 +183,38 @@ class ReservationServiceTest {
     }
 
     @Nested
+    class Cancel {
+
+        @Test
+        @DisplayName("미래 예약을 취소한다")
+        void cancelsReservation() {
+            Reservation saved = reservationDao.insert(
+                    new Reservation("유저", LocalDate.now().plusDays(1), savedTime1, savedTheme1));
+
+            reservationService.cancel(saved.getId());
+
+            assertThat(reservationDao.existsById(saved.getId())).isFalse();
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 id를 취소하면 예외를 반환한다")
+        void throwsWhenIdNotFound() {
+            assertThatThrownBy(() -> reservationService.cancel(-1L))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("이미 지난 예약을 취소하면 예외를 반환한다")
+        void throwsWhenPastReservation() {
+            Reservation saved = reservationDao.insert(
+                    new Reservation("유저", LocalDate.now().minusDays(1), savedTime1, savedTheme1));
+
+            assertThatThrownBy(() -> reservationService.cancel(saved.getId()))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Nested
     class Delete {
 
         @Test

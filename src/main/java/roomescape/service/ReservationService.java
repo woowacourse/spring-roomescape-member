@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +63,13 @@ public class ReservationService {
         reservationDao.update(reservation);
 
         return reservation;
+    }
+
+    @Transactional
+    public void cancel(Long id) {
+        Reservation reservation = findById(id);
+        reservation.validateCancel(LocalDateTime.now());
+        reservationDao.delete(id);
     }
 
     @Transactional

@@ -3,6 +3,7 @@ package roomescape.controller.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.time.LocalDate;
@@ -40,6 +41,21 @@ class ReservationControllerTest {
     @BeforeEach
     void setUp() {
         RestAssuredMockMvc.mockMvc(mockMvc);
+    }
+
+    @Nested
+    class Delete {
+
+        @Test
+        @DisplayName("예약을 취소하면 204를 반환한다")
+        void cancelsReservation() {
+            willDoNothing().given(reservationService).cancel(reservation.getId());
+
+            RestAssuredMockMvc.given()
+                    .when().delete("/reservations/" + reservation.getId())
+                    .then()
+                    .status(HttpStatus.NO_CONTENT);
+        }
     }
 
     @Nested
