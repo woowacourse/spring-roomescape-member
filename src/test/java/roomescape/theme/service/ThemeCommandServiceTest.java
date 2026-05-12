@@ -88,6 +88,6 @@ public class ThemeCommandServiceTest {
 
         assertThatThrownBy(() -> themeCommandService.delete(themeId))
                 .isInstanceOf(RoomEscapeException.class)
-                .hasMessage("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
+                .hasMessage("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
     }
 }

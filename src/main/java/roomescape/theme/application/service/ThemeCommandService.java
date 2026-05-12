@@ -28,7 +28,7 @@ public class ThemeCommandService {
 
     public void delete(long id) {
         if (reservationRepository.existsByTheme(id)) {
-            throw new RoomEscapeException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
+            throw new RoomEscapeException("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
         }
 
         if (themeRepository.delete(id) == 0) {

@@ -91,7 +91,7 @@ class ReservationQueryServiceTest {
             softly.assertThat(first.date()).isEqualTo(earlierDate);
             softly.assertThat(first.theme()).isEqualTo(ThemeFixture.horrorThemeQueryResult(themeId));
             softly.assertThat(first.time()).isEqualTo(new ReservationTimeResult(nineTimeId, LocalTime.of(9, 0)));
-            softly.assertThat(second.name()).isEqualTo("비밥");
+            softly.assertThat(second.name()).isEqualTo("스타크");
             softly.assertThat(second.date()).isEqualTo(laterDate);
             softly.assertThat(second.theme()).isEqualTo(ThemeFixture.horrorThemeQueryResult(themeId));
             softly.assertThat(second.time()).isEqualTo(new ReservationTimeResult(tenTimeId, LocalTime.of(10, 0)));
