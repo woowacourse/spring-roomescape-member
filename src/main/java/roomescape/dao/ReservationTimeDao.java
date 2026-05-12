@@ -55,43 +55,10 @@ public class ReservationTimeDao {
         return jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 
-    public Map<ReservationTime, Boolean> findAvailableTimes(LocalDate date, Long id) {
-        String sql = """
-                SELECT
-                    rt.id AS time_id,
-                    rt.start_at,
-                    NOT EXISTS (
-                        SELECT 1
-                        FROM reservation r
-                        WHERE r.time_id = rt.id
-                          AND r.theme_id = ?
-                          AND r.date = ?
-                    ) AS available
-                FROM reservation_time rt;
-                """;
-        return jdbcTemplate.query(sql, getMapResultSetExtractor(), id, date);
-    }
-
     private RowMapper<ReservationTime> getReservationTimeRowMapper() {
         return (resultSet, rowNum) -> new ReservationTime(
                 resultSet.getLong("id"),
                 LocalTime.parse(resultSet.getString("start_at"))
         );
-    }
-
-    private ResultSetExtractor<Map<ReservationTime, Boolean>> getMapResultSetExtractor() {
-        return (ResultSet rs) -> {
-            Map<ReservationTime, Boolean> results = new LinkedHashMap<>();
-
-            while (rs.next()) {
-                ReservationTime reservationTime = new ReservationTime(
-                        rs.getLong("time_id"),
-                        rs.getObject("start_at", LocalTime.class)
-                );
-                boolean isAvailable = rs.getBoolean("available");
-                results.put(reservationTime, isAvailable);
-            }
-            return results;
-        };
     }
 }

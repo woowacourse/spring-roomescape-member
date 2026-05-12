@@ -50,9 +50,4 @@ public class ReservationTimeService {
             throw new ReservationTimeNotFoundException();
         }
     }
-
-    public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long id) {
-        Map<ReservationTime, Boolean> reservationTimeBooleanMap = reservationTimeDao.findAvailableTimes(date, id);
-        return AvailableTimeResponse.from(reservationTimeBooleanMap);
-    }
 }

@@ -88,4 +88,9 @@ public class ReservationDao {
     public int delete(Long id) {
         return jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
+
+    public List<Long> findReservationTimeIds(LocalDate date, Long themeId) {
+        String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
+        return jdbcTemplate.queryForList(sql, Long.class, date, themeId);
+    }
 }

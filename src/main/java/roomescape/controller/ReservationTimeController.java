@@ -47,12 +47,4 @@ public class ReservationTimeController {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(
-            @RequestParam(name = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-            @RequestParam(name = "themeId") Long id) {
-        List<AvailableTimeResponse> availableTimeResponses = reservationTimeService.getAvailableTimes(date, id);
-        return ResponseEntity.ok().body(availableTimeResponses);
-    }
 }

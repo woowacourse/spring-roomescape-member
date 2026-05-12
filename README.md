@@ -82,7 +82,7 @@ Status Code: 204
 Times - 01
 
 API 설명: 사용자가 예약 가능한 시간을 조회할 수 있다.
-URI: /api/v1/times?date=2026-05-08&themeId=1
+URI: /api/v1/reservations/available-times/?date=2026-05-08&themeId=1
 Method: GET
 Path Variable:
 Query Variable: date, themeId
