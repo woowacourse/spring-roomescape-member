@@ -81,4 +81,15 @@ public class ReservationTimeControllerTest {
                 .statusCode(201)
                 .body("size()", is(2));
     }
+
+    @Test
+    public void 잘못된_형식의_시간_입력시_예외가_발생한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{\"startAt\": \"abc\"}")
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST_BODY"));
+    }
 }

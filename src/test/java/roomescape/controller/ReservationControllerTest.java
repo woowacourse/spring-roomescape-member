@@ -79,4 +79,15 @@ public class ReservationControllerTest {
                 .statusCode(409)
                 .body("code", is("RESERVATION_DUPLICATE"));
     }
+
+    @Test
+    public void 잘못된_형식의_날짜_입력시_예외가_발생한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{\"name\": \"포비\", \"date\": \"abc\", \"timeId\": 2, \"themeId\": 2}")
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_REQUEST_BODY"));
+    }
 }
