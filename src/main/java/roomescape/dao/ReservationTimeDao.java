@@ -33,6 +33,22 @@ public class ReservationTimeDao {
         );
     }
 
+    public boolean existsByTimeId(Long timeId) {
+        Boolean result = jdbcTemplate.queryForObject(
+                """
+                SELECT EXISTS(
+                    SELECT *
+                    FROM reservation_time rt
+                    JOIN reservation r ON r.time_id = rt.id
+                    WHERE rt.id = ?
+                )
+                """,
+                Boolean.class,
+                timeId
+        );
+        return Boolean.TRUE.equals(result);
+    }
+
     @Transactional
     public ReservationTime save(ReservationTime reservationTime) {
         Map<String, Object> params = new HashMap<>();

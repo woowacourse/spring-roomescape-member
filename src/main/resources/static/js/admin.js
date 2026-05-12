@@ -158,11 +158,17 @@
     const id = timeDeleteSelect.value;
     if (!id || !confirm("삭제하시겠습니까?")) return;
     try {
-      await fetch(`/admin/times/${id}`, { method: "DELETE" });
+      await fetchJson(`/admin/times/${id}`, { method: "DELETE" });
       setMsg(timeDeleteMsg, "삭제되었습니다.", true);
       await loadTimesIntoDeleteSelect();
     } catch (e) {
-      setMsg(timeDeleteMsg, "삭제 실패", false);
+      // 서버가 JSON 에러 응답을 반환하는 경우 메시지 파싱
+      try {
+        const parsed = JSON.parse(e.message);
+        setMsg(timeDeleteMsg, parsed.message || "삭제 실패", false);
+      } catch {
+        setMsg(timeDeleteMsg, e.message || "삭제 실패", false);
+      }
     }
   });
 
