@@ -3,6 +3,7 @@ package roomescape.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.format.DateTimeParseException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -66,5 +67,27 @@ class ReservationControllerTest {
                                 .content(requestBody)
                 )
                 .andExpect(status().isConflict());
+    }
+
+    @DisplayName("올바르지 않은 날짜 형식으로 예약하면 422 Unprocessable Entity를 응답한다")
+    @Test
+    void 예약_생성에서_DateTimeParseException이_발생하면_422_UNPROCESSABLE_ENTITY를_응답한다() throws Exception {
+        Mockito.when(reservationService.addReservation(Mockito.any()))
+                .thenThrow(DateTimeParseException.class);
+
+        String requestBody = """
+                {
+                    "name": "rudevico",
+                    "date": "2026,05,20",
+                    "timeId": 1,
+                    "themeId": 1
+                }
+                """;
+        mockMvc.perform(
+                        post("/reservations")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isUnprocessableEntity());
     }
 }

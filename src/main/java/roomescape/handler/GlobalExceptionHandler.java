@@ -1,5 +1,6 @@
 package roomescape.handler;
 
+import java.time.format.DateTimeParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,6 +34,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDuplicatedReservationException(DuplicatedReservationException ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT.value())
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<String> handleDateTimeParseException(DateTimeParseException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
                 .body(ex.getMessage());
     }
 }
