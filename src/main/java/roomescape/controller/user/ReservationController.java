@@ -1,5 +1,6 @@
 package roomescape.controller.user;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +43,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> saveReservation(@Valid @RequestBody ReservationRequest request) {
         UserReservationSavePolicy policy = new UserReservationSavePolicy(LocalDate.now(clock));
         Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand(), policy);
         ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);
