@@ -149,11 +149,19 @@ GET /themes?topCount=10&during=7 HTTP / 1.1
 
 에러 응답에 담을 데이터
 
-- HTTP 상태 코드
-- 에러 메시지
-- 에러 발생 시각
-- API 경로
-- 추적 ID
+ErrorResponse
+- HTTP 상태 코드 (statusCode)
+- 에러 메시지 (errorMessage)
+- 에러 발생 시각 (timeStamp)
+- API 경로 (Url)
+- 추적 ID (traceId)
+
+CustomException
+- ErrorCode
+
+ErrorCode
+- HTTP 상태
+- ErrorMessage
 
 ### 3단계 - 내 예약 조회/변경/취소
 사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다.
