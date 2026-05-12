@@ -26,13 +26,12 @@ import roomescape.theme.repository.ThemeRepository;
 class ReservationTimeServiceTest {
 
     private ReservationTimeService reservationTimeService;
-    private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
     private ThemeRepository themeRepository;
 
     @BeforeEach
     void setUp() {
-        reservationTimeRepository = new FakeReservationTimeRepository();
+        ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
         reservationRepository = new FakeReservationRepository();
         themeRepository = new FakeThemeRepository();
         reservationTimeService = new ReservationTimeService(

@@ -1,6 +1,6 @@
 package roomescape.reservation.exception;
 
-import roomescape.exception.exception.DuplicateException;
+import roomescape.global.exception.exception.DuplicateException;
 
 public class ReservationDuplicateException extends DuplicateException {
     public ReservationDuplicateException() {

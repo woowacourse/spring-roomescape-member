@@ -1,4 +1,4 @@
-package roomescape.exception.response;
+package roomescape.global.exception.response;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.global.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import roomescape.exception.exception.BadRequestException;
-import roomescape.exception.exception.DuplicateException;
-import roomescape.exception.exception.ForeignKeyConstraintException;
-import roomescape.exception.exception.InvalidException;
-import roomescape.exception.exception.NotFoundException;
-import roomescape.exception.response.ErrorResponse;
+import roomescape.global.exception.exception.BadRequestException;
+import roomescape.global.exception.exception.DuplicateException;
+import roomescape.global.exception.exception.ForeignKeyConstraintException;
+import roomescape.global.exception.exception.InvalidException;
+import roomescape.global.exception.exception.NotFoundException;
+import roomescape.global.exception.response.ErrorResponse;
 
 @Slf4j
 @RestControllerAdvice

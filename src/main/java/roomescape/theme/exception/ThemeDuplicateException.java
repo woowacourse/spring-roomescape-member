@@ -1,6 +1,6 @@
 package roomescape.theme.exception;
 
-import roomescape.exception.exception.DuplicateException;
+import roomescape.global.exception.exception.DuplicateException;
 
 public class ThemeDuplicateException extends DuplicateException {
     public ThemeDuplicateException() {

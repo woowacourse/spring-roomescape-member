@@ -14,11 +14,10 @@ import roomescape.theme.service.ThemeService;
 class ThemeServiceTest {
 
     private ThemeService themeService;
-    private ThemeRepository themeRepository;
 
     @BeforeEach
     void setUp() {
-        themeRepository = new FakeThemeRepository();
+        ThemeRepository themeRepository = new FakeThemeRepository();
         themeService = new ThemeService(themeRepository);
     }
 

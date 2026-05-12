@@ -1,9 +1,9 @@
-package roomescape.exception.exception;
+package roomescape.global.exception.exception;
 
 import lombok.Getter;
 
 @Getter
-public abstract class BadRequestException extends RuntimeException {
+public class BadRequestException extends RuntimeException {
     public BadRequestException(String message) {
         super(message);
     }

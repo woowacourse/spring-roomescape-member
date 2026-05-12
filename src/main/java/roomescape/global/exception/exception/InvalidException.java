@@ -1,11 +1,11 @@
-package roomescape.exception.exception;
+package roomescape.global.exception.exception;
 
 import java.util.List;
 import lombok.Getter;
-import roomescape.exception.GlobalErrorCode;
+import roomescape.global.exception.GlobalErrorCode;
 
 @Getter
-public abstract class InvalidException extends RuntimeException {
+public class InvalidException extends RuntimeException {
 
     private final List<String> errors;
 

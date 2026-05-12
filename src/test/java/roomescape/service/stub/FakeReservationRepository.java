@@ -18,6 +18,11 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByName(String name) {
+        return List.of();
+    }
+
+    @Override
     public Optional<Reservation> findById(final long id) {
         return storage.stream()
                 .filter(reservation -> reservation.getId().equals(id))

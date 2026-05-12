@@ -51,7 +51,4 @@ public class FakeThemeRepository implements ThemeRepository {
         return popularThemes.stream().limit(limit).toList();
     }
 
-    public void setPopularThemes(final List<Theme> themes) {
-        this.popularThemes = themes;
-    }
 }
