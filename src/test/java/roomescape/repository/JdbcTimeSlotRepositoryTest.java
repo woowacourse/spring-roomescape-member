@@ -10,10 +10,10 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.TimeSlot;
 
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
 @JdbcTest
 @Sql(scripts = "/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -47,18 +47,32 @@ class JdbcTimeSlotRepositoryTest {
     }
 
     @Test
-    @DisplayName("모든 예약 시간 객체 목록을 조회한다.")
-    void findAll() {
-        timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
-        List<TimeSlot> timeSlots = timeRepository.findAll();
-        assertThat(timeSlots).hasSize(1);
-    }
-
-    @Test
-    @DisplayName("식별자로 예약 시간을 삭제한다.")
-    void deleteById() {
+    @DisplayName("존재하는 예약 시간을 삭제한다.")
+    void deleteExisting() {
         TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
         timeRepository.deleteById(savedTimeSlot.id());
         assertThat(timeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간을 삭제해도 예외가 발생하지 않는다.")
+    void deleteNonExisting() {
+        assertThatCode(() -> timeRepository.deleteById(999L))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("존재하는 예약 시간 정보를 수정한다.")
+    void updateExisting() {
+        TimeSlot savedTimeSlot = timeRepository.save(TimeSlot.transientOf(LocalTime.of(10, 0)));
+        TimeSlot updateTime = new TimeSlot(savedTimeSlot.id(), LocalTime.of(12, 0));
+        assertThat(timeRepository.update(updateTime)).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간을 수정하면 0을 반환한다.")
+    void updateNonExisting() {
+        TimeSlot updateTime = new TimeSlot(999L, LocalTime.of(12, 0));
+        assertThat(timeRepository.update(updateTime)).isZero();
     }
 }

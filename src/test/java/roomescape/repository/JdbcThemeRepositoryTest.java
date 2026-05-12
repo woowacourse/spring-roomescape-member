@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
 @JdbcTest
 @Sql(scripts = "/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -63,6 +64,36 @@ class JdbcThemeRepositoryTest {
         List<Theme> themes = jdbcThemeRepository.findPopularThemes(10L, LocalDate.now().minusDays(1),
                 LocalDate.now().plusDays(1));
         assertThat(themes).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("존재하는 테마를 삭제한다.")
+    void deleteExisting() {
+        Theme savedTheme = jdbcThemeRepository.save(Theme.transientOf("공포", "귀신의 집", "https://url"));
+        jdbcThemeRepository.deleteById(savedTheme.id());
+        assertThat(jdbcThemeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마를 삭제해도 예외가 발생하지 않는다.")
+    void deleteNonExisting() {
+        assertThatCode(() -> jdbcThemeRepository.deleteById(999L))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("존재하는 테마의 정보를 수정한다.")
+    void updateExisting() {
+        Theme savedTheme = jdbcThemeRepository.save(Theme.transientOf("공포", "귀신의 집", "https://url"));
+        Theme updateTheme = new Theme(savedTheme.id(), "코믹", "웃긴 집", "https://url2");
+        assertThat(jdbcThemeRepository.update(updateTheme)).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마를 수정하면 0을 반환한다.")
+    void updateNonExisting() {
+        Theme updateTheme = new Theme(999L, "코믹", "웃긴 집", "https://url2");
+        assertThat(jdbcThemeRepository.update(updateTheme)).isZero();
     }
 
     private void insertTimeSlot() {

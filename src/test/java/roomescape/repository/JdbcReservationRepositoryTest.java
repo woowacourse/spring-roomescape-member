@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @JdbcTest
 @Sql(scripts = "/test-setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -96,5 +99,52 @@ class JdbcReservationRepositoryTest {
         jdbcReservationRepository.save(reservation);
         boolean exists = jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(LocalDate.now(), savedTimeSlot.id(), savedTheme.id());
         assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("존재하는 예약을 변경 불가능한 날짜, 시간, 테마으로 수정 시도 시 예외가 발생한다.")
+    void updateByDuplicatedDateAndTimeIdAndThemeId() {
+        jdbcReservationRepository.save(Reservation.transientOf(
+                "브라운",
+                LocalDate.now(),
+                savedTimeSlot,
+                savedTheme
+        ));
+
+        Reservation newReservation = jdbcReservationRepository.save(
+                Reservation.transientOf(
+                        "네오",
+                        LocalDate.now().plusDays(7),
+                        savedTimeSlot,
+                        savedTheme
+                )
+        );
+
+        Reservation updateReservation = new Reservation(
+                newReservation.id(),
+                "네오",
+                LocalDate.now(),
+                savedTimeSlot,
+                savedTheme
+        );
+
+        assertThatThrownBy(
+                () -> jdbcReservationRepository.update(updateReservation))
+                .isInstanceOf(DuplicateKeyException.class);
+    }
+
+    @Test
+    @DisplayName("존재하는 예약을 삭제한다.")
+    void deleteExisting() {
+        Reservation saved = jdbcReservationRepository.save(Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, savedTheme));
+        jdbcReservationRepository.deleteById(saved.id());
+        assertThat(jdbcReservationRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약을 삭제해도 예외가 발생하지 않는다.")
+    void deleteNonExisting() {
+        assertThatCode(() -> jdbcReservationRepository.deleteById(999L))
+                .doesNotThrowAnyException();
     }
 }
