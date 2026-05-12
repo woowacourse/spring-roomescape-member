@@ -41,16 +41,28 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    public Reservation selectById(Long id) {
+        String sql =
+                """
+                select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id
+                from reservation r
+                inner join reservation_time t
+                on r.time_id = t.id
+                and r.id = ?
+                """;
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+    }
+
     public List<Reservation> selectByThemeIdAndDate(Long themeId, LocalDate date) {
         String sql =
                 """
-                        select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id
-                        from reservation r
-                        inner join reservation_time t
-                        on r.time_id = t.id
-                        and r.theme_id = ?
-                        and r.date = ?
-                        """;
+                select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as start_at, r.theme_id as theme_id
+                from reservation r
+                inner join reservation_time t
+                on r.time_id = t.id
+                and r.theme_id = ?
+                and r.date = ?
+                """;
         return jdbcTemplate.query(sql, rowMapper, themeId, date);
     }
 

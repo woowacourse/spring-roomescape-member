@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,12 @@ public class ReservationController {
         return ResponseEntity.ok().body(reservations);
     }
 
+    @GetMapping("/reservations/{id}")
+    public ResponseEntity<ReservationResponse> readById(@PathVariable Long id) {
+        Reservation reservation = reservationService.findById(id);
+        return ResponseEntity.ok().body(ReservationResponse.from(reservation));
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity<?> create(@RequestBody ReservationRequest request) {
         try {
@@ -42,7 +49,9 @@ public class ReservationController {
                     request.timeId()
             );
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(reservation));
+            URI location = URI.create("/reservation/" + reservation.getId());
+
+            return ResponseEntity.created(location).body(ReservationResponse.from(reservation));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예약 불가");
         }

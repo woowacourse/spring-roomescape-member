@@ -29,7 +29,7 @@ public class AdminThemeController {
                 request.description(),
                 request.image());
         ThemeResponse adminThemeResponse = ThemeResponse.from(theme);
-        URI location = URI.create("/admin/themes" + adminThemeResponse.id());
+        URI location = URI.create("/admin/themes/" + adminThemeResponse.id());
         return ResponseEntity.created(location).body(adminThemeResponse);
     }
 

@@ -11,8 +11,8 @@ import roomescape.time.dao.TimeDao;
 
 @Service
 public class ReservationService {
-
     private final ReservationDao reservationDao;
+
     private final TimeDao timeDao;
 
     public ReservationService(ReservationDao reservationDao, TimeDao timeDao) {
@@ -22,6 +22,10 @@ public class ReservationService {
 
     public List<Reservation> findAll() {
         return reservationDao.selectAll();
+    }
+
+    public Reservation findById(Long id) {
+        return reservationDao.selectById(id);
     }
 
     @Transactional
