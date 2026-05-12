@@ -27,10 +27,9 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         String encodedName = webRequest.getHeader("Authorization");
-
         String name = URLDecoder.decode(encodedName, StandardCharsets.UTF_8);
 
-        if(name == null || name.isBlank()) {
+        if (name == null || name.isBlank()) {
             List<String> errors = List.of(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage());
             throw new InvalidException(errors);
         }

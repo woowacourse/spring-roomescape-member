@@ -18,7 +18,7 @@ public class ThemeApiTest {
 
     @Test
     @DisplayName("인기 테마 조회")
-    void findPopularThemes() {
+    void findPopularThemes_success() {
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "bb");
         acceptanceTestFixture.createTheme("사라진 열쇠", "aa", "bb");
         acceptanceTestFixture.createTheme("비밀의 방", "aa", "bb");

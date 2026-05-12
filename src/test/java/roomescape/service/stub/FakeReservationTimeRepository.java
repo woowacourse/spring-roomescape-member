@@ -9,8 +9,8 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
-    private long sequence = 1L;
     private final List<ReservationTime> storage = new ArrayList<>();
+    private long sequence = 1L;
 
     @Override
     public List<ReservationTime> findAll() {

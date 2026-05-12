@@ -20,7 +20,7 @@ class ThemeAdminApiTest {
 
     @Test
     @DisplayName("테마 목록 조회")
-    void findThemes() {
+    void findThemes_success() {
         // given
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "bb");
         acceptanceTestFixture.createTheme("사라진 열쇠", "aa", "bb");
@@ -36,7 +36,7 @@ class ThemeAdminApiTest {
 
     @Test
     @DisplayName("테마 생성")
-    void createTheme() {
+    void createTheme_success() {
         // given
         Map<String, String> request = new HashMap<>();
         request.put("name", "미술관의 밤");
@@ -55,7 +55,7 @@ class ThemeAdminApiTest {
 
     @Test
     @DisplayName("테마 생성 시 이름 중복 예외")
-    void createTheme_DuplicateName() {
+    void createTheme_duplicateName_throws() {
         // given
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "bb");
         Map<String, String> request = new HashMap<>();
@@ -74,7 +74,7 @@ class ThemeAdminApiTest {
 
     @Test
     @DisplayName("테마 삭제")
-    void deleteTheme() {
+    void deleteTheme_success() {
         // given
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "bb");
 
@@ -87,7 +87,7 @@ class ThemeAdminApiTest {
 
     @Test
     @DisplayName("테마 삭제 시 예약이 존재하면 예외")
-    void deleteTheme_ExistReservations() {
+    void deleteTheme_existReservations_throws() {
         // given
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "bb");
         acceptanceTestFixture.createReservationTime("10:00", 1L);

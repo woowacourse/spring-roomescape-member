@@ -61,7 +61,7 @@ public class ReservationService {
     @Transactional
     public void deleteById(final long id, final String name) {
         Reservation reservation = reservationRepository.findById(id)
-                    .orElseThrow(ReservationNotFoundException::new);
+                .orElseThrow(ReservationNotFoundException::new);
 
         validateOwner(name, reservation);
 

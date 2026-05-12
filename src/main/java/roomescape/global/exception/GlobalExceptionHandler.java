@@ -60,6 +60,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleValidationException(
             InvalidException e
     ) {
+        log.warn("InvalidException 발생: {}", e.getMessage(), e);
         return ErrorResponse.of(
                 GlobalErrorCode.BAD_REQUEST.getMessage(),
                 e.getErrors()

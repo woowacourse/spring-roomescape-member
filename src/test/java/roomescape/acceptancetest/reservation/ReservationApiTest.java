@@ -76,7 +76,7 @@ public class ReservationApiTest {
 
     @Test
     @DisplayName("예약 이름 기반 삭제 이름이 같지 않으면 삭제 실패 예외")
-    void deleteReservationsByName_nameNotMatch_exception() {
+    void deleteReservationsByName_nameNotMatch_throws() {
         // given
         acceptanceTestFixture.createTheme();
         acceptanceTestFixture.createReservationTime("15:40", 1L);
@@ -115,7 +115,7 @@ public class ReservationApiTest {
 
     @Test
     @DisplayName("예약 이름 기반 수정 과거 날짜로 수정 실패 예외")
-    void updateReservationsByName_pastDate_exception() {
+    void updateReservationsByName_pastDate_throws() {
         // given
         acceptanceTestFixture.createTheme();
         acceptanceTestFixture.createReservationTime("15:40", 1L);
@@ -136,7 +136,7 @@ public class ReservationApiTest {
 
     @Test
     @DisplayName("예약 이름 기반 수정 이미 있는 예약 날짜 예외")
-    void updateReservationsByName_alreadyExistDate_exception() {
+    void updateReservationsByName_alreadyExistDate_throws() {
         // given
         acceptanceTestFixture.createTheme();
         acceptanceTestFixture.createReservationTime("15:40", 1L);

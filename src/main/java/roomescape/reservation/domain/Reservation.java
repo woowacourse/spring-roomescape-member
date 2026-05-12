@@ -37,14 +37,6 @@ public class Reservation {
         return new Reservation(id, name, date, time);
     }
 
-    public Reservation withId(final long id) {
-        return new Reservation(id, this.name, this.date, this.time);
-    }
-
-    public Reservation modify(final LocalDate newDate, final ReservationTime newTime) {
-        return new Reservation(id, name, newDate, newTime);
-    }
-
     private static void validate(final String name, final LocalDate date, final ReservationTime time) {
         List<String> errors = new ArrayList<>();
 
@@ -79,6 +71,14 @@ public class Reservation {
         if (time == null) {
             errors.add(ReservationErrorCode.RESERVATION_TIME_NOT_NULL.getMessage());
         }
+    }
+
+    public Reservation withId(final long id) {
+        return new Reservation(id, this.name, this.date, this.time);
+    }
+
+    public Reservation modify(final LocalDate newDate, final ReservationTime newTime) {
+        return new Reservation(id, name, newDate, newTime);
     }
 
 }

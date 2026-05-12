@@ -139,7 +139,8 @@ class JdbcReservationRepositoryTest {
         // when
         LocalDate newDate = date.plusDays(1);
         LocalTime newTime = LocalTime.parse("11:00");
-        ReservationTime newReservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(newTime, theme));
+        ReservationTime newReservationTime = jdbcReservationTimeRepository.save(
+                ReservationTime.createNew(newTime, theme));
 
         jdbcReservationRepository.update(reservation.modify(newDate, newReservationTime));
 

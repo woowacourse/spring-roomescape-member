@@ -12,9 +12,7 @@ public class TestPortInitializer extends AbstractTestExecutionListener {
         WebServerApplicationContext applicationContext =
                 (WebServerApplicationContext) testContext.getApplicationContext();
 
-        int port = applicationContext.getWebServer().getPort();
-
-        RestAssured.port = port;
+        RestAssured.port = applicationContext.getWebServer().getPort();
     }
 
 }

@@ -11,7 +11,6 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeConstraintException;
 import roomescape.reservationtime.exception.ReservationTimeDuplicateException;
-import roomescape.reservationtime.exception.ReservationTimeErrorCode;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.exception.ThemeNotFoundException;

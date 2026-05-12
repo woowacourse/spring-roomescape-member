@@ -9,8 +9,8 @@ import roomescape.reservation.repository.ReservationRepository;
 
 public class FakeReservationRepository implements ReservationRepository {
 
-    private long sequence = 1L;
     private final List<Reservation> storage = new ArrayList<>();
+    private long sequence = 1L;
 
     @Override
     public List<Reservation> findAll() {
@@ -76,13 +76,13 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public void update(Reservation reservation) {
-            storage.stream()
-                    .filter(r -> r.getId().equals(reservation.getId()))
-                    .findFirst()
-                    .ifPresent(r -> {
-                        storage.remove(r);
-                        storage.add(reservation);
-                    });
+        storage.stream()
+                .filter(r -> r.getId().equals(reservation.getId()))
+                .findFirst()
+                .ifPresent(r -> {
+                    storage.remove(r);
+                    storage.add(reservation);
+                });
     }
 
 }

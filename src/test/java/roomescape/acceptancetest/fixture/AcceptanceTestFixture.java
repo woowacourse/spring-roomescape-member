@@ -1,8 +1,6 @@
 package roomescape.acceptancetest.fixture;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -64,18 +62,6 @@ public final class AcceptanceTestFixture {
                 date,
                 timeId
         );
-    }
-
-    public Map<String, Object> reservationRequest(
-            final String name,
-            final LocalDate date,
-            final long timeId
-    ) {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", name);
-        reservation.put("date", date.toString());
-        reservation.put("timeId", timeId);
-        return reservation;
     }
 
 }

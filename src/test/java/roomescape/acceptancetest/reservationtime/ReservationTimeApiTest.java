@@ -19,7 +19,7 @@ public class ReservationTimeApiTest {
 
     @Test
     @DisplayName("예약 가능 시간 조회")
-    void findAvailableTimes() {
+    void findAvailableTimes_success() {
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "aa");
         acceptanceTestFixture.createReservationTime("10:00", 1L);
         acceptanceTestFixture.createReservationTime("11:00", 1L);

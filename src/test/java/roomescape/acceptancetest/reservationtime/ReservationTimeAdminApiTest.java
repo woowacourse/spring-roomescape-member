@@ -20,7 +20,7 @@ class ReservationTimeAdminApiTest {
 
     @Test
     @DisplayName("테마 기준 예약 조회")
-    void findReservationTimes() {
+    void findReservationTimes_success() {
         // given
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "aa");
         acceptanceTestFixture.createReservationTime("10:00", 1L);
@@ -35,7 +35,7 @@ class ReservationTimeAdminApiTest {
 
     @Test
     @DisplayName("예약 시간 삭제")
-    void deleteReservationTime() {
+    void deleteReservationTime_success() {
         // given
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "aa");
         acceptanceTestFixture.createReservationTime("10:00", 1L);
@@ -49,7 +49,7 @@ class ReservationTimeAdminApiTest {
 
     @Test
     @DisplayName("예약 시간 삭제 시 예약이 존재하는 경우 예외")
-    void deleteReservationTime_ExistingReservations() {
+    void deleteReservationTime_ExistingReservations_throws() {
         // given
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "aa");
         acceptanceTestFixture.createReservationTime("10:00", 1L);
@@ -64,7 +64,7 @@ class ReservationTimeAdminApiTest {
 
     @Test
     @DisplayName("예약 시간 생성")
-    void createReservationTime() {
+    void createReservationTime_success() {
         // given
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "aa");
         Map<String, String> request = new HashMap<>();
@@ -82,7 +82,7 @@ class ReservationTimeAdminApiTest {
 
     @Test
     @DisplayName("예약 시간 생성 시 중복된 시간이 존재하는 경우 예외")
-    void createReservationTime_DuplicateTime() {
+    void createReservationTime_DuplicateTime_throws() {
         // given
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "aa");
         Map<String, String> request = new HashMap<>();

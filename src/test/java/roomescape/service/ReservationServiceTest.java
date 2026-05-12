@@ -91,7 +91,8 @@ class ReservationServiceTest {
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
 
-        Reservation reservation = reservationRepository.save(Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
+        Reservation reservation = reservationRepository.save(
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
 
         // when
         reservationService.deleteById(reservation.getId());
@@ -109,7 +110,8 @@ class ReservationServiceTest {
                 ReservationTime.createNew(LocalTime.of(10, 0), theme)
         );
 
-        Reservation reservation = reservationRepository.save(Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
+        Reservation reservation = reservationRepository.save(
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
 
         // when & then
         assertThatThrownBy(() -> reservationService.deleteById(reservation.getId(), "피케이"))
@@ -153,7 +155,8 @@ class ReservationServiceTest {
                 Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.update(reservation.getId(), "피케이", LocalDate.now().plusDays(2), time.getId()))
+        assertThatThrownBy(
+                () -> reservationService.update(reservation.getId(), "피케이", LocalDate.now().plusDays(2), time.getId()))
                 .isInstanceOf(ReservationBadRequestException.class);
     }
 
@@ -170,7 +173,8 @@ class ReservationServiceTest {
                 Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.update(reservation.getId(), "피케이", LocalDate.now().minusDays(10), time.getId()))
+        assertThatThrownBy(() -> reservationService.update(reservation.getId(), "피케이", LocalDate.now().minusDays(10),
+                time.getId()))
                 .isInstanceOf(ReservationBadRequestException.class);
     }
 

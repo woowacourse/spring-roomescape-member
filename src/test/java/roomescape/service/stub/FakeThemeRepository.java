@@ -9,9 +9,9 @@ import roomescape.theme.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 
-    private long sequence = 1L;
     private final List<Theme> storage = new ArrayList<>();
-    private List<Theme> popularThemes = List.of();
+    private long sequence = 1L;
+    private final List<Theme> popularThemes = List.of();
 
     @Override
     public List<Theme> findAll() {
