@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
                 .map(error -> error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
 
-        log.warn("검증 실패 발생: {}", errorMessage);
+        log.warn("입력값 유효성 검증 실패: {}", errorMessage);
 
         return ResponseEntity.badRequest().body(new ErrorResponse(errorMessage));
     }
