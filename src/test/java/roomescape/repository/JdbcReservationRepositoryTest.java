@@ -97,7 +97,7 @@ class JdbcReservationRepositoryTest {
     void existsByDateAndTimeIdAndThemeId() {
         Reservation reservation = Reservation.transientOf("브라운", LocalDate.now(), savedTimeSlot, savedTheme);
         jdbcReservationRepository.save(reservation);
-        boolean exists = jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(LocalDate.now(), savedTimeSlot.id(), savedTheme.id());
+        boolean exists = jdbcReservationRepository.existsByDateAndTimeIdAndThemeId(null, LocalDate.now(), savedTimeSlot.id(), savedTheme.id());
         assertThat(exists).isTrue();
     }
 

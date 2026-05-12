@@ -59,8 +59,7 @@ public class ReservationService {
 
     public void removeReservation(long reservationId, String userName) {
         Reservation reservation = findReservationById(reservationId);
-        validOwnership(reservation.name(), userName);
-        validNotPast(reservation.date(), reservation.timeSlot().startAt());
+        validModifiable(userName, reservation);
         reservationRepository.deleteById(reservationId);
     }
 
@@ -73,24 +72,29 @@ public class ReservationService {
             @NotNull Long themeId
     ) {
         Reservation existingReservation = findReservationById(id);
-        validOwnership(existingReservation.name(), userName);
-        validNotPast(existingReservation.date(), existingReservation.timeSlot().startAt());
+        validModifiable(userName, existingReservation);
 
         Reservation transientReservation = createTransientWithValidField(name, date, timeId, themeId);
         Reservation reservation = new Reservation(id, transientReservation.name(), transientReservation.date(), transientReservation.timeSlot(), transientReservation.theme());
+        validDuplicatedReservation(reservation.id(), date, timeId, themeId);
         reservationRepository.update(reservation);
     }
 
     public void patchReservation(long id, String userName, String name, LocalDate date, Long timeId, Long themeId) {
         Reservation reservation = findReservationById(id);
-        validOwnership(reservation.name(), userName);
-        validNotPast(reservation.date(), reservation.timeSlot().startAt());
+        validModifiable(userName, reservation);
 
         TimeSlot timeSlot = findOptionalTime(timeId);
         Theme theme = findOptionalTheme(themeId);
         Reservation patched = reservation.patch(name, date, timeSlot, theme);
         validDateTime(patched.date(), patched.timeSlot().startAt());
+        validDuplicatedReservation(patched.id(), date, timeId, themeId);
         reservationRepository.update(patched);
+    }
+
+    private void validModifiable(String userName, Reservation reservation) {
+        validOwnership(reservation.name(), userName);
+        validNotPast(reservation.date(), reservation.timeSlot().startAt());
     }
 
     private void validOwnership(String ownerName, String requesterName) {
@@ -105,7 +109,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + themeId));
         validDateTime(date, timeSlot.startAt());
-        validDuplicatedReservation(date, timeId, themeId);
+        validDuplicatedReservation(null, date, timeId, themeId);
         return Reservation.transientOf(name, date, timeSlot, theme);
     }
 
@@ -127,8 +131,8 @@ public class ReservationService {
         }
     }
 
-    private void validDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+    private void validDuplicatedReservation(Long id, LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(id, date, timeId, themeId)) {
             throw new DuplicateKeyException("선택하신 시간과 테마는 이미 예약되었습니다.");
         }
     }

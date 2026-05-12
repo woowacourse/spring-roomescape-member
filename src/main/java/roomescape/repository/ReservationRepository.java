@@ -22,7 +22,7 @@ public interface ReservationRepository {
 
     void deleteById(long id);
 
-    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+    boolean existsByDateAndTimeIdAndThemeId(Long id, LocalDate date, Long timeId, Long themeId);
 
     int update(Reservation reservation);
 }
