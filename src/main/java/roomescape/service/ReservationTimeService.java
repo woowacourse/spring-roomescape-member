@@ -36,6 +36,7 @@ public class ReservationTimeService {
         return ReservationTimeResponseDTO.from(savedTime);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationTimeResponseDTO> findAllReservationTime() {
         return reservationTimeRepository.findAll().stream()
                 .map(ReservationTimeResponseDTO::from).collect(Collectors.toList());

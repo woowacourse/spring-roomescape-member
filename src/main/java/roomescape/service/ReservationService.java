@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -29,12 +30,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResponseDTO> readAllReservation() {
-        return reservationRepository.findAll().stream()
-                .map(ReservationResponseDTO::from)
-                .collect(Collectors.toList());
-    }
-
+    @Transactional
     public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
         ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
                 .orElseThrow(
@@ -50,11 +46,27 @@ public class ReservationService {
         return ReservationResponseDTO.from(savedReservation);
     }
 
+    @Transactional(readOnly = true)
+    public List<ReservationResponseDTO> readAllReservation() {
+        return reservationRepository.findAll().stream()
+                .map(ReservationResponseDTO::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationResponseDTO readReservation(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("예약이 존재하지 않습니다."));
+        return ReservationResponseDTO.from(reservation);
+    }
+
+    @Transactional(readOnly = true)
     public List<ReservedTimeResponseDTO> findReservedTimes(LocalDate targetDate,
             Long targetThemeId) {
         return reservationTimeRepository.findReservedTimes(targetDate, targetThemeId);
     }
 
+    @Transactional
     public void deleteReservation(Long id) {
         reservationRepository.delete(id);
     }
