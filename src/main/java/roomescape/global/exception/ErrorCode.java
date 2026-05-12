@@ -12,6 +12,7 @@ public enum ErrorCode {
     RESERVATION_ALREADY_CANCELLED(HttpStatus.CONFLICT, "이미 예약이 취소되었습니다."),
     RESERVATION_ALREADY_COMPLETED(HttpStatus.CONFLICT, "이미 예약이 완료되었습니다."),
     RESERVATION_TIME_OUT(HttpStatus.UNPROCESSABLE_ENTITY, "이미 예약 시간이 지났습니다."),
+    RESERVATION_NOT_ALLOWED_DATE(HttpStatus.UNPROCESSABLE_ENTITY, "과거 날짜 시간은 예약할 수 없습니다."),
     RESERVATION_ALREADY_EXIST(HttpStatus.CONFLICT, "이미 해당 날짜 시간 테마에 예약이 존재합니다."),
 
     // time
