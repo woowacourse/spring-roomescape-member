@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import roomescape.common.exception.DomainException;
-import roomescape.common.exception.ErrorCode;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -23,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.theme.exception.ThemeErrorCode.*;
 
 @JdbcTest
 @Import({
@@ -50,7 +50,7 @@ class ThemeServiceTest {
         // when
         assertThatThrownBy(() -> themeService.delete(theme.getId()))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.THEME_HAS_RESERVATION.message());
+                .hasMessage(THEME_HAS_RESERVATION.message());
     }
 
     @Test
@@ -62,7 +62,7 @@ class ThemeServiceTest {
         // when, then
         assertThatThrownBy(() -> themeService.delete(id))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.THEME_NOT_FOUND.message());
+                .hasMessage(THEME_NOT_FOUND.message());
     }
 
     private Reservation insertReservation(String name, LocalDate date, ReservationTime time, Theme theme) {

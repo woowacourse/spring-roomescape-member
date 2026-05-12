@@ -10,8 +10,6 @@ import roomescape.theme.controller.dto.ThemeListResponse;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
-import java.time.LocalDate;
-
 @RestController
 @RequestMapping("/themes")
 @RequiredArgsConstructor

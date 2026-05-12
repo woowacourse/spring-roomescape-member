@@ -13,7 +13,6 @@ import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

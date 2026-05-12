@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.common.exception.DomainException;
-import roomescape.common.exception.ErrorCode;
+import roomescape.common.exception.ErrorPolicy;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -15,6 +15,9 @@ import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.reservation.exeption.ReservationErrorCode.*;
+import static roomescape.reservationtime.exeption.ReservationTimeErrorCode.*;
+import static roomescape.theme.exception.ThemeErrorCode.*;
 
 class ReservationTest {
 
@@ -26,7 +29,7 @@ class ReservationTest {
     void create_fail_when_name_is_blank() {
         assertDomainException(
                 () -> new Reservation(" ", LocalDate.of(2023, 8, 5), time, theme),
-                ErrorCode.INVALID_RESERVATION_GUEST_NAME
+                INVALID_RESERVATION_GUEST_NAME
         );
     }
 
@@ -35,7 +38,7 @@ class ReservationTest {
     void create_fail_when_date_is_null() {
         assertDomainException(
                 () -> new Reservation("브라운", null, time, theme),
-                ErrorCode.INVALID_RESERVATION_DATE
+                INVALID_RESERVATION_DATE
         );
     }
 
@@ -44,7 +47,7 @@ class ReservationTest {
     void create_fail_when_time_is_null() {
         assertDomainException(
                 () -> new Reservation("브라운", LocalDate.of(2023, 8, 5), null, theme),
-                ErrorCode.INVALID_RESERVATION_TIME
+                INVALID_RESERVATION_TIME
         );
     }
 
@@ -53,7 +56,7 @@ class ReservationTest {
     void create_fail_when_theme_is_null() {
         assertDomainException(
                 () -> new Reservation("브라운", LocalDate.of(2023, 8, 5), time, null),
-                ErrorCode.INVALID_THEME
+                INVALID_THEME
         );
     }
 
@@ -64,7 +67,7 @@ class ReservationTest {
 
         assertDomainException(
                 () -> reservation.withId(null),
-                ErrorCode.INVALID_RESERVATION_ID
+                INVALID_RESERVATION_ID
         );
     }
 
@@ -75,7 +78,7 @@ class ReservationTest {
 
         assertDomainException(
                 () -> reservation.withId(2L),
-                ErrorCode.RESERVATION_ALREADY_HAS_ID
+                RESERVATION_ALREADY_HAS_ID
         );
     }
 
@@ -109,10 +112,10 @@ class ReservationTest {
 
         // then
     }
-    private void assertDomainException(Runnable runnable, ErrorCode errorCode) {
+    private void assertDomainException(Runnable runnable, ErrorPolicy errorCode) {
         assertThatThrownBy(runnable::run)
                 .isInstanceOfSatisfying(DomainException.class, exception ->
-                        assertThat(exception.getErrorCode()).isEqualTo(errorCode)
+                        assertThat(exception.getErrorPolicy()).isEqualTo(errorCode)
                 )
                 .hasMessage(errorCode.message());
     }

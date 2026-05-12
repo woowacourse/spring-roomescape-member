@@ -2,12 +2,13 @@ package roomescape.reservationtime.domain;
 
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.DomainException;
-import roomescape.common.exception.ErrorCode;
+import roomescape.common.exception.ErrorPolicy;
 
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.reservationtime.exeption.ReservationTimeErrorCode.*;
 
 class ReservationTimeTest {
 
@@ -15,7 +16,7 @@ class ReservationTimeTest {
     void 예약_시간이_null이면_도메인_예외가_발생한다() {
         assertDomainException(
                 () -> new ReservationTime(null),
-                ErrorCode.INVALID_RESERVATION_TIME
+                INVALID_RESERVATION_TIME
         );
     }
 
@@ -25,7 +26,7 @@ class ReservationTimeTest {
 
         assertDomainException(
                 () -> reservationTime.withId(null),
-                ErrorCode.INVALID_RESERVATION_TIME_ID
+                INVALID_RESERVATION_TIME_ID
         );
     }
 
@@ -35,14 +36,14 @@ class ReservationTimeTest {
 
         assertDomainException(
                 () -> reservationTime.withId(2L),
-                ErrorCode.RESERVATION_TIME_ALREADY_HAS_ID
+                RESERVATION_TIME_ALREADY_HAS_ID
         );
     }
 
-    private void assertDomainException(Runnable runnable, ErrorCode errorCode) {
+    private void assertDomainException(Runnable runnable, ErrorPolicy errorCode) {
         assertThatThrownBy(runnable::run)
                 .isInstanceOfSatisfying(DomainException.class, exception ->
-                        assertThat(exception.getErrorCode()).isEqualTo(errorCode)
+                        assertThat(exception.getErrorPolicy()).isEqualTo(errorCode)
                 )
                 .hasMessage(errorCode.message());
     }

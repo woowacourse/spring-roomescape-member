@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.common.exception.ErrorCode;
 import roomescape.common.exception.InfrastructureException;
 import roomescape.reservationtime.repository.dto.ReservationTimeAvailability;
 
@@ -16,6 +15,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+
+import static roomescape.reservationtime.exeption.ReservationTimeErrorCode.RESERVATION_TIME_CREATE_FAILED;
 
 @Repository
 @RequiredArgsConstructor
@@ -105,14 +106,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     private void validateCreatedRowCount(int rowCount) {
         if (rowCount != 1) {
-            throw new InfrastructureException(ErrorCode.RESERVATION_TIME_CREATE_FAILED);
+            throw new InfrastructureException(RESERVATION_TIME_CREATE_FAILED);
         }
     }
 
     private Long getGeneratedId(KeyHolder keyHolder) {
         Number key = keyHolder.getKey();
         if (key == null) {
-            throw new InfrastructureException(ErrorCode.RESERVATION_TIME_CREATE_FAILED);
+            throw new InfrastructureException(RESERVATION_TIME_CREATE_FAILED);
         }
         return key.longValue();
     }

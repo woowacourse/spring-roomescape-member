@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.dto.ReservationTimeAvailability;
 import roomescape.common.exception.DomainException;
-import roomescape.common.exception.ErrorCode;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.repository.ThemeRepository;
@@ -14,6 +13,9 @@ import roomescape.theme.repository.ThemeRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
+import static roomescape.reservationtime.exeption.ReservationTimeErrorCode.*;
+import static roomescape.theme.exception.ThemeErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class ReservationTimeService {
 
     private void validateNotDuplicated(ReservationTime reservationTime) {
         if (reservationTimeRepository.existsByStartAt(reservationTime.getStartAt())) {
-            throw new DomainException(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS);
+            throw new DomainException(RESERVATION_TIME_ALREADY_EXISTS);
         }
     }
 
@@ -44,18 +46,18 @@ public class ReservationTimeService {
     @Transactional
     public void delete(Long id) {
         if (reservationRepository.existByTimeId(id)) {
-            throw new DomainException(ErrorCode.RESERVATION_TIME_HAS_RESERVATION);
+            throw new DomainException(RESERVATION_TIME_HAS_RESERVATION);
         }
 
         if (!reservationTimeRepository.deleteById(id)) {
-            throw new DomainException(ErrorCode.RESERVATION_TIME_NOT_FOUND);
+            throw new DomainException(RESERVATION_TIME_NOT_FOUND);
         }
     }
 
     @Transactional(readOnly = true)
     public List<ReservationTimeAvailability> findAvailableTimes(LocalDate date, Long themeId) {
         if (!themeRepository.existsById(themeId)) {
-            throw new DomainException(ErrorCode.THEME_NOT_FOUND);
+            throw new DomainException(THEME_NOT_FOUND);
         }
 
         return reservationTimeRepository.findAllByDateAndThemeIdWithAvailability(date, themeId);

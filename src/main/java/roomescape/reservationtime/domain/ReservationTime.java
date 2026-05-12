@@ -1,10 +1,11 @@
 package roomescape.reservationtime.domain;
 
 import roomescape.common.exception.DomainException;
-import roomescape.common.exception.ErrorCode;
 
 import java.time.LocalTime;
 import java.util.Objects;
+
+import static roomescape.reservationtime.exeption.ReservationTimeErrorCode.*;
 
 public class ReservationTime {
     private final Long id;
@@ -23,7 +24,7 @@ public class ReservationTime {
     public ReservationTime withId(Long id) {
         validateId(id);
         if (this.id != null) {
-            throw new DomainException(ErrorCode.RESERVATION_TIME_ALREADY_HAS_ID);
+            throw new DomainException(RESERVATION_TIME_ALREADY_HAS_ID);
         }
 
         return new ReservationTime(id, startAt);
@@ -31,13 +32,13 @@ public class ReservationTime {
 
     private void validateId(Long id) {
         if (id == null) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_TIME_ID);
+            throw new DomainException(INVALID_RESERVATION_TIME_ID);
         }
     }
 
     private void validateStartAt(LocalTime startAt) {
         if (startAt == null) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_TIME);
+            throw new DomainException(INVALID_RESERVATION_TIME);
         }
     }
 

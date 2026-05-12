@@ -24,7 +24,7 @@ public class ErrorResponse {
         this.timeStamp = timeStamp;
     }
 
-    public static ErrorResponse of(String path, ErrorCode errorCode) {
+    public static ErrorResponse of(String path, ErrorPolicy errorCode) {
         return new ErrorResponse(path, errorCode.code(), errorCode.message(), null, LocalDateTime.now());
     }
 
@@ -32,7 +32,7 @@ public class ErrorResponse {
         return new ErrorResponse(path, null, message, null, LocalDateTime.now());
     }
 
-    public static ErrorResponse of(String path, ErrorCode errorCode, List<String> messages) {
+    public static ErrorResponse of(String path, ErrorPolicy errorCode, List<String> messages) {
         List<String> copiedMessages = List.copyOf(messages);
         return new ErrorResponse(path, errorCode.code(), errorCode.message(), copiedMessages, LocalDateTime.now());
     }

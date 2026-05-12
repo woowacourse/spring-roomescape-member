@@ -12,7 +12,6 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 import roomescape.common.exception.DomainException;
-import roomescape.common.exception.ErrorCode;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.repository.JdbcThemeRepository;
@@ -23,6 +22,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.reservationtime.exeption.ReservationTimeErrorCode.*;
+import static roomescape.theme.exception.ThemeErrorCode.*;
 
 @JdbcTest
 @Import({
@@ -49,7 +50,7 @@ class ReservationTimeServiceTest {
         // when, then
         assertThatThrownBy(() -> reservationTimeService.create(startAt))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.RESERVATION_TIME_ALREADY_EXISTS.message());
+                .hasMessage(RESERVATION_TIME_ALREADY_EXISTS.message());
     }
 
     @Test
@@ -58,7 +59,7 @@ class ReservationTimeServiceTest {
         // when, then
         assertThatThrownBy(() -> reservationTimeService.findAvailableTimes(LocalDate.of(26,5,6), 37L))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.THEME_NOT_FOUND.message());
+                .hasMessage(THEME_NOT_FOUND.message());
     }
 
     @Test
@@ -72,7 +73,7 @@ class ReservationTimeServiceTest {
         // when
         assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.RESERVATION_TIME_HAS_RESERVATION.message());
+                .hasMessage(RESERVATION_TIME_HAS_RESERVATION.message());
     }
 
     @Test
@@ -84,7 +85,7 @@ class ReservationTimeServiceTest {
         // when, then
         assertThatThrownBy(() -> reservationTimeService.delete(id))
                 .isInstanceOf(DomainException.class)
-                .hasMessage(ErrorCode.RESERVATION_TIME_NOT_FOUND.message());
+                .hasMessage(RESERVATION_TIME_NOT_FOUND.message());
     }
 
     private ReservationTime insertReservationTime(LocalTime startAt) {

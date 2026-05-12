@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -24,7 +23,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DomainException.class)
     public ResponseEntity<ErrorResponse> handleDomainException(DomainException exception, HttpServletRequest request) {
         log.error("Domain exception occurred", exception);
-        ErrorCode errorCode = exception.getErrorCode();
+        ErrorPolicy errorCode = exception.getErrorPolicy();
 
         return ResponseEntity
                 .status(errorCode.status())
@@ -59,7 +58,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(statusCode)
                 .headers(headers)
-                .body(ErrorResponse.of(path, ErrorCode.INVALID_REQUEST, messages));
+                .body(ErrorResponse.of(path, GlobalErrorCode.INVALID_REQUEST, messages));
     }
 
     @Override
@@ -89,7 +88,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<ErrorResponse> internalServerError(String path) {
         return ResponseEntity
                 .internalServerError()
-                .body(ErrorResponse.of(path, ErrorCode.INTERNAL_SERVER_ERROR));
+                .body(ErrorResponse.of(path, GlobalErrorCode.INTERNAL_SERVER_ERROR));
     }
 
     private String pathFrom(WebRequest request) {

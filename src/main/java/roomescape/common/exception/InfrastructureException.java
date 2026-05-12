@@ -2,14 +2,11 @@ package roomescape.common.exception;
 
 public class InfrastructureException extends RuntimeException {
 
-    private final ErrorCode errorCode;
+    private final ErrorPolicy errorPolicy;
 
-    public InfrastructureException(ErrorCode errorCode) {
-        super(errorCode.message());
-        this.errorCode = errorCode;
+    public InfrastructureException(ErrorPolicy errorPolicy) {
+        super(errorPolicy.message());
+        this.errorPolicy = errorPolicy;
     }
 
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
 }

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.DomainException;
-import roomescape.common.exception.ErrorCode;
 import roomescape.theme.domain.Theme;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.repository.ThemeRepository;
@@ -12,6 +11,8 @@ import roomescape.theme.repository.ThemeRepository;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
+
+import static roomescape.theme.exception.ThemeErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,11 +45,11 @@ public class ThemeService {
     @Transactional
     public void delete(Long id) {
         if (reservationRepository.existByThemeId(id)) {
-            throw new DomainException(ErrorCode.THEME_HAS_RESERVATION);
+            throw new DomainException(THEME_HAS_RESERVATION);
         }
 
         if (!themeRepository.deleteById(id)) {
-            throw new DomainException(ErrorCode.THEME_NOT_FOUND);
+            throw new DomainException(THEME_NOT_FOUND);
         }
     }
 }

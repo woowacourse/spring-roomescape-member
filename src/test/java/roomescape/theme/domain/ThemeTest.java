@@ -2,10 +2,11 @@ package roomescape.theme.domain;
 
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.DomainException;
-import roomescape.common.exception.ErrorCode;
+import roomescape.common.exception.ErrorPolicy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.theme.exception.ThemeErrorCode.*;
 
 class ThemeTest {
 
@@ -13,7 +14,7 @@ class ThemeTest {
     void 테마_이름이_null이면_도메인_예외가_발생한다() {
         assertDomainException(
                 () -> new Theme(null, "설명", "https://example.com/theme.png"),
-                ErrorCode.INVALID_THEME_NAME
+                INVALID_THEME_NAME
         );
     }
 
@@ -21,7 +22,7 @@ class ThemeTest {
     void 테마_이름이_비어있으면_도메인_예외가_발생한다() {
         assertDomainException(
                 () -> new Theme(" ", "설명", "https://example.com/theme.png"),
-                ErrorCode.INVALID_THEME_NAME
+                INVALID_THEME_NAME
         );
     }
 
@@ -29,7 +30,7 @@ class ThemeTest {
     void 테마_설명이_null이면_도메인_예외가_발생한다() {
         assertDomainException(
                 () -> new Theme("테마", null, "https://example.com/theme.png"),
-                ErrorCode.INVALID_THEME_DESCRIPTION
+                INVALID_THEME_DESCRIPTION
         );
     }
 
@@ -37,7 +38,7 @@ class ThemeTest {
     void 테마_설명이_비어있으면_도메인_예외가_발생한다() {
         assertDomainException(
                 () -> new Theme("테마", " ", "https://example.com/theme.png"),
-                ErrorCode.INVALID_THEME_DESCRIPTION
+                INVALID_THEME_DESCRIPTION
         );
     }
 
@@ -45,7 +46,7 @@ class ThemeTest {
     void 테마_썸네일이_null이면_도메인_예외가_발생한다() {
         assertDomainException(
                 () -> new Theme("테마", "설명", null),
-                ErrorCode.INVALID_THEME_THUMBNAIL
+                INVALID_THEME_THUMBNAIL
         );
     }
 
@@ -53,7 +54,7 @@ class ThemeTest {
     void 테마_썸네일이_비어있으면_도메인_예외가_발생한다() {
         assertDomainException(
                 () -> new Theme("테마", "설명", " "),
-                ErrorCode.INVALID_THEME_THUMBNAIL
+                INVALID_THEME_THUMBNAIL
         );
     }
 
@@ -63,7 +64,7 @@ class ThemeTest {
 
         assertDomainException(
                 () -> theme.withId(null),
-                ErrorCode.INVALID_THEME_ID
+                INVALID_THEME_ID
         );
     }
 
@@ -73,14 +74,14 @@ class ThemeTest {
 
         assertDomainException(
                 () -> theme.withId(2L),
-                ErrorCode.THEME_ALREADY_HAS_ID
+                THEME_ALREADY_HAS_ID
         );
     }
 
-    private void assertDomainException(Runnable runnable, ErrorCode errorCode) {
+    private void assertDomainException(Runnable runnable, ErrorPolicy errorCode) {
         assertThatThrownBy(runnable::run)
                 .isInstanceOfSatisfying(DomainException.class, exception ->
-                        assertThat(exception.getErrorCode()).isEqualTo(errorCode)
+                        assertThat(exception.getErrorPolicy()).isEqualTo(errorCode)
                 )
                 .hasMessage(errorCode.message());
     }

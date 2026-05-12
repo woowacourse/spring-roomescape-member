@@ -1,9 +1,10 @@
 package roomescape.theme.domain;
 
 import roomescape.common.exception.DomainException;
-import roomescape.common.exception.ErrorCode;
 
 import java.util.Objects;
+
+import static roomescape.theme.exception.ThemeErrorCode.*;
 
 public class Theme {
     private final Long id;
@@ -28,7 +29,7 @@ public class Theme {
     public Theme withId(Long id) {
         validateId(id);
         if (this.id != null) {
-            throw new DomainException(ErrorCode.THEME_ALREADY_HAS_ID);
+            throw new DomainException(THEME_ALREADY_HAS_ID);
         }
 
         return new Theme(id, name, description, thumbnail);
@@ -36,25 +37,25 @@ public class Theme {
 
     private void validateId(Long id) {
         if (id == null) {
-            throw new DomainException(ErrorCode.INVALID_THEME_ID);
+            throw new DomainException(INVALID_THEME_ID);
         }
     }
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new DomainException(ErrorCode.INVALID_THEME_NAME);
+            throw new DomainException(INVALID_THEME_NAME);
         }
     }
 
     private void validateDescription(String description) {
         if (description == null || description.isBlank()) {
-            throw new DomainException(ErrorCode.INVALID_THEME_DESCRIPTION);
+            throw new DomainException(INVALID_THEME_DESCRIPTION);
         }
     }
 
     private void validateThumbnail(String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new DomainException(ErrorCode.INVALID_THEME_THUMBNAIL);
+            throw new DomainException(INVALID_THEME_THUMBNAIL);
         }
     }
 

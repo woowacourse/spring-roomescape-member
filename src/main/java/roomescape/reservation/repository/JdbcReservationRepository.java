@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
-import roomescape.common.exception.ErrorCode;
 import roomescape.common.exception.InfrastructureException;
 
 import java.sql.Date;
@@ -17,6 +16,8 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import static roomescape.reservation.exeption.ReservationErrorCode.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -178,14 +179,14 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private void validateCreatedRowCount(int rowCount) {
         if (rowCount != 1) {
-            throw new InfrastructureException(ErrorCode.RESERVATION_CREATE_FAILED);
+            throw new InfrastructureException(RESERVATION_CREATE_FAILED);
         }
     }
 
     private Long getGeneratedId(KeyHolder keyHolder) {
         Number key = keyHolder.getKey();
         if (key == null) {
-            throw new InfrastructureException(ErrorCode.RESERVATION_CREATE_FAILED);
+            throw new InfrastructureException(RESERVATION_CREATE_FAILED);
         }
         return key.longValue();
     }

@@ -2,13 +2,16 @@ package roomescape.reservation.domain;
 
 import lombok.Getter;
 import roomescape.common.exception.DomainException;
-import roomescape.common.exception.ErrorCode;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+
+import static roomescape.reservation.exeption.ReservationErrorCode.*;
+import static roomescape.reservationtime.exeption.ReservationTimeErrorCode.*;
+import static roomescape.theme.exception.ThemeErrorCode.*;
 
 @Getter
 public class Reservation {
@@ -37,7 +40,7 @@ public class Reservation {
     public Reservation withId(Long id) {
         validateId(id);
         if (this.id != null) {
-            throw new DomainException(ErrorCode.RESERVATION_ALREADY_HAS_ID);
+            throw new DomainException(RESERVATION_ALREADY_HAS_ID);
         }
 
         return new Reservation(id, guestName, date, time, theme);
@@ -45,31 +48,31 @@ public class Reservation {
 
     private void validateId(Long id) {
         if (id == null) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_ID);
+            throw new DomainException(INVALID_RESERVATION_ID);
         }
     }
 
     private void validateGuestName(String guestName) {
         if (guestName == null || guestName.isBlank()) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_GUEST_NAME);
+            throw new DomainException(INVALID_RESERVATION_GUEST_NAME);
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_DATE);
+            throw new DomainException(INVALID_RESERVATION_DATE);
         }
     }
 
     private void validateTime(ReservationTime time) {
         if (time == null) {
-            throw new DomainException(ErrorCode.INVALID_RESERVATION_TIME);
+            throw new DomainException(INVALID_RESERVATION_TIME);
         }
     }
 
     private void validateTheme(Theme theme) {
         if (theme == null) {
-            throw new DomainException(ErrorCode.INVALID_THEME);
+            throw new DomainException(INVALID_THEME);
         }
     }
 
