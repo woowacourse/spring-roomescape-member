@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.dto.CreateReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.UpdateReservationRequest;
 import roomescape.service.ReservationService;
 
 @Tag(name = "사용자 - 예약 관리", description = "사용자용 예약 생성·내 예약 조회·삭제 API")
@@ -55,6 +57,15 @@ public class ReservationController {
 
         URI location = URI.create("/reservations/" + createdReservation.getId());
         return ResponseEntity.created(location).build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable Long id,
+            @RequestParam Long userId,
+            @RequestBody UpdateReservationRequest request) {
+        Reservation updatedReservation = reservationService.updateReservation(id, userId, request);
+        return ResponseEntity.ok(ReservationResponse.from(updatedReservation));
     }
 
     @Operation(summary = "예약 삭제", description = "본인의 예약만 삭제할 수 있습니다. 타인의 예약 삭제 시 403을 반환합니다.")

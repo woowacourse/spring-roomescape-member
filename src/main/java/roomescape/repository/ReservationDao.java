@@ -118,6 +118,11 @@ public class ReservationDao {
         return keyHolder.getKey().longValue();
     }
 
+    public void updateDateAndTime(Long id, LocalDate date, Long timeId) {
+        String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+        jdbcTemplate.update(sql, Date.valueOf(date), timeId, id);
+    }
+
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
