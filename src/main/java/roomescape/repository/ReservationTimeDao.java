@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.ReservationStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.TimeStatus;
 
@@ -74,10 +75,11 @@ public class ReservationTimeDao {
                     ON rt.id = r.time_id
                     AND r.date = ?
                     AND r.theme_id = ?
+                    AND r.status = ?
                 WHERE r.id IS NULL
                     AND rt.status = ?
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper, date, themeId, TimeStatus.AVAILABLE.name());
+        return jdbcTemplate.query(sql, rowMapper, date, themeId, ReservationStatus.AVAILABLE.name(), TimeStatus.AVAILABLE.name());
     }
 }
