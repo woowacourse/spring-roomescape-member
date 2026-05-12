@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
+import roomescape.controller.dto.ReservationsResponse;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 
@@ -26,12 +27,12 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParam String username) {
+    public ResponseEntity<ReservationsResponse> getReservations(@RequestParam String username) {
         final List<ReservationResponse> responses = reservationService.findAllByName(username)
                 .stream()
                 .map(r -> ReservationResponse.from(r, r.getTheme()))
                 .toList();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(new ReservationsResponse(responses));
     }
 
     @PostMapping

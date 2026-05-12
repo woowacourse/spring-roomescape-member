@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.AdminReservationResponse;
+import roomescape.controller.dto.AdminReservationsResponse;
 import roomescape.service.ReservationService;
 
 @RequestMapping("/admin/reservations")
@@ -18,11 +19,11 @@ public class AdminReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AdminReservationResponse>> getAllReservations() {
+    public ResponseEntity<AdminReservationsResponse> getAllReservations() {
         final List<AdminReservationResponse> reservations = reservationService.findAll()
                 .stream()
                 .map(r -> AdminReservationResponse.from(r, r.getTheme()))
                 .toList();
-        return ResponseEntity.ok(reservations);
+        return ResponseEntity.ok(new AdminReservationsResponse(reservations));
     }
 }

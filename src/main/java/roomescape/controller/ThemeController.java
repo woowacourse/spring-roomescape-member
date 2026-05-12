@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.AvailableReservationTimeResponse;
+import roomescape.controller.dto.AvailableReservationTimesResponse;
 import roomescape.controller.dto.ThemeResponse;
+import roomescape.controller.dto.ThemesResponse;
 import roomescape.service.ThemeService;
 
 @RequestMapping("/themes")
@@ -23,16 +25,16 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
+    public ResponseEntity<ThemesResponse> getAllThemes() {
         final List<ThemeResponse> responses = themeService.getAllThemes()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(new ThemesResponse(responses));
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
+    public ResponseEntity<ThemesResponse> getPopularThemes(
             @RequestParam(defaultValue = "10") int size) {
         final LocalDate today = LocalDate.now();
         final LocalDate startDate = today.minusDays(7);
@@ -41,17 +43,17 @@ public class ThemeController {
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(new ThemesResponse(responses));
     }
 
     @GetMapping("/{id}/times")
-    public ResponseEntity<List<AvailableReservationTimeResponse>> getReservationTimes(
+    public ResponseEntity<AvailableReservationTimesResponse> getReservationTimes(
             @PathVariable long id,
             @RequestParam LocalDate date) {
         final List<AvailableReservationTimeResponse> responses = themeService.getAvailableTimes(id, date)
                 .stream()
                 .map(AvailableReservationTimeResponse::from)
                 .toList();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(new AvailableReservationTimesResponse(responses));
     }
 }

@@ -4,7 +4,7 @@
 
 ## ✅ 리팩토링 할 것 목록
 
-- [ ] **1. List 응답을 래퍼 객체로 감싸기**
+- [x] **1. List 응답을 래퍼 객체로 감싸기**
   - `List<T>`를 직접 반환하는 모든 컨트롤러 엔드포인트
     - `AdminReservationController` → `AdminReservationsResponse`
     - `ReservationController` → `ReservationsResponse`

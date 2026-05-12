@@ -39,7 +39,7 @@ public class MissionStepTest extends ControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(14));
+                .body("times.size()", is(14));
 
         RestAssured.given().log().all()
                 .pathParam("id", id)
@@ -69,7 +69,7 @@ public class MissionStepTest extends ControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("reservations.size()", is(1));
     }
 
     @Test

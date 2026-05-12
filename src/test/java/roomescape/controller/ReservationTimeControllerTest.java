@@ -35,7 +35,7 @@ class ReservationTimeControllerTest extends ControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", equalTo(13));
+                .body("times.size()", equalTo(13));
     }
 
     @DisplayName("API - 예약 시간 삭제")
@@ -67,7 +67,7 @@ class ReservationTimeControllerTest extends ControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", equalTo(13));
+                .body("times.size()", equalTo(13));
     }
 
     @DisplayName("이미 존재하는 시간이면 400")
