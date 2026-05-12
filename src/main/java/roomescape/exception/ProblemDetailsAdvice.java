@@ -1,5 +1,6 @@
 package roomescape.exception;
 
+import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,7 +12,14 @@ public class ProblemDetailsAdvice {
     @ExceptionHandler({
             IllegalArgumentException.class
     })
-    public ResponseEntity<String> handleException(Exception exception) {
+    public ResponseEntity<String> handleIllegalArgumentsException(Exception exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({
+            NoSuchElementException.class
+    })
+    public ResponseEntity<String> handleNoSuchElementException(Exception exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

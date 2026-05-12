@@ -1,11 +1,11 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class ThemeService {
@@ -24,8 +24,7 @@ public class ThemeService {
 
     public Theme findThemeById(long id) {
         return themeRepository.findById(id)
-
-                .orElseThrow(() -> new IllegalArgumentException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + id));
+                .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + id));
     }
 
     public Theme saveTheme(String name, String description, String thumbnailUrl) {

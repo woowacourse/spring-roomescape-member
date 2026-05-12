@@ -1,14 +1,14 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.TimeSlot;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeSlotRepository;
 import roomescape.service.dto.AvailableTimeSlot;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 
 @Service
 public class TimeSlotService {
@@ -27,7 +27,7 @@ public class TimeSlotService {
 
     public TimeSlot findTimeSlotById(long id) {
         return timeSlotRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + id));
+                .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + id));
     }
 
     public TimeSlot saveTime(LocalTime startAt) {

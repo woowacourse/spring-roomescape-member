@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -34,7 +35,7 @@ public class ReservationService {
 
     public Reservation findReservationById(long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + id));
+                .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + id));
     }
 
     public Reservation saveReservation(
@@ -46,9 +47,9 @@ public class ReservationService {
         validDate(date);
         validDuplicatedReservation(date, timeId, themeId);
         TimeSlot timeSlot = timeSlotRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + timeId));
+                .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + timeId));
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + themeId));
+                .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + themeId));
         Reservation transientReservation = Reservation.transientOf(name, date, timeSlot, theme);
         return reservationRepository.save(transientReservation);
     }
