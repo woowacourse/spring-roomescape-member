@@ -9,13 +9,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
+import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.EmptyNameException;
 import roomescape.exception.ReservationByPastDateTimeException;
 import roomescape.repository.JdbcReservationRepository;
@@ -77,6 +77,24 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.addReservation(emptyNameRequest))
                 .isExactlyInstanceOf(EmptyNameException.class);
+    }
+
+    @DisplayName("중복된 예약은 거부한다")
+    @Test
+    void 날짜와_시간_그리고_테마가_중복된_예약_요청에는_DuplicatedReservationException_예외를_던진다() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        long timeId = 1L;
+        long themeId = 1L;
+        ReservationRequestDTO reservationRequestDTO = new ReservationRequestDTO(
+                "루드비코", date, timeId, themeId
+        );
+        reservationService.addReservation(reservationRequestDTO);
+
+        // when and then
+        ReservationRequestDTO duplicatedRequestDto = new ReservationRequestDTO("에코", date, timeId, themeId);
+        assertThatThrownBy(() -> reservationService.addReservation(duplicatedRequestDto))
+                .isExactlyInstanceOf(DuplicatedReservationException.class);
     }
 
     @DisplayName("모든 예약을 조회한다")

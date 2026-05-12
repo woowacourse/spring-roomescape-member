@@ -110,6 +110,20 @@ public class JdbcReservationRepository implements ReservationRepository {
         return count != null && count > 0;
     }
 
+    @Override
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE date = ?
+                AND time_id = ?
+                AND theme_id = ?
+                """;
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
+        return count != null && count > 0;
+    }
+
     private static RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, rowNum) -> {
             ReservationTime time = new ReservationTime(

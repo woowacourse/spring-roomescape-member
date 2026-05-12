@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.CannotDeleteReservationTimeException;
+import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.EmptyNameException;
 import roomescape.exception.ReservationByPastDateTimeException;
 
@@ -23,6 +24,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CannotDeleteReservationTimeException.class)
     public ResponseEntity<String> handleCannotDeleteReservationTimeException(CannotDeleteReservationTimeException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT.value())
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicatedReservationException.class)
+    public ResponseEntity<String> handleDuplicatedReservationException(DuplicatedReservationException ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT.value())
                 .body(ex.getMessage());

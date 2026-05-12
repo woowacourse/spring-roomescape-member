@@ -9,6 +9,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
+import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.ReservationByPastDateTimeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -46,6 +47,7 @@ public class ReservationService {
                 .orElseThrow();
 
         validateNotPast(LocalDateTime.of(reservationRequestDTO.date(), time.getStartAt()));
+        validateNotDuplicated(reservationRequestDTO, time, theme);
 
         Reservation reservation = Reservation.withoutId(
                 reservationRequestDTO.name(),
@@ -66,6 +68,16 @@ public class ReservationService {
         LocalDateTime now = LocalDateTime.now();
         if (targetDateTime.isBefore(now)) {
             throw new ReservationByPastDateTimeException(now, targetDateTime);
+        }
+    }
+
+    private void validateNotDuplicated(ReservationRequestDTO reservationRequestDTO, ReservationTime time, Theme theme) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+                reservationRequestDTO.date(),
+                time.getId(),
+                theme.getId()
+        )) {
+            throw new DuplicatedReservationException(reservationRequestDTO.date(), time.getStartAt(), theme.getName());
         }
     }
 }
