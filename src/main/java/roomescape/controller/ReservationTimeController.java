@@ -58,6 +58,7 @@ public class ReservationTimeController {
 
     @GetMapping(value = "/availability", params = {"date", "themeId"})
     public ResponseEntity<List<AvailableReservationTimeResponse>> getAvailableReservationTimeByDateAndTheme(@ModelAttribute ReservationTimeCondition reservationTimeCondition) {
+        // 아래 코드 왜 필요한 거지? 여기서 같은 객체를 왜 또 생성..?
         ReservationTimeCondition reservationTimeWithAvailableCondition = new ReservationTimeCondition(reservationTimeCondition.date(), reservationTimeCondition.themeId());
         List<ReservationTimeWithAvailable> reservationTimesWithAvailable  = reservationTimeService.getAvailableReservationTimeByDateAndTheme(reservationTimeWithAvailableCondition);
         List<AvailableReservationTimeResponse> availableReservationTimeResponses = reservationTimesWithAvailable.stream()

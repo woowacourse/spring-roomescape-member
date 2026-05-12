@@ -9,6 +9,7 @@ import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.repository.reservationTime.JdbcReservationTimeRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,10 +90,10 @@ public class ReservationTimeRepositoryTest extends BaseRepositoryTest {
         insertTheme("테마1", "테마 설명", "image url");
         insertTheme("테마2", "테마 설명", "image url");
 
-        insertReservation("브라운", "2023-08-03", 1, 1);
+        insertReservation("브라운", LocalDate.parse("2023-08-03"), 1, 1);
 
-        List<ReservationTimeWithAvailable> reservationTimeWithAvailable1 = reservationTimeRepository.getAvailableReservationTimeByDateAndTheme(new ReservationTimeCondition("2023-08-04", 1));
-        List<ReservationTimeWithAvailable> reservationTimeWithAvailable2 = reservationTimeRepository.getAvailableReservationTimeByDateAndTheme(new ReservationTimeCondition("2023-08-03", 1));
+        List<ReservationTimeWithAvailable> reservationTimeWithAvailable1 = reservationTimeRepository.getAvailableReservationTimeByDateAndTheme(new ReservationTimeCondition(LocalDate.parse("2023-08-04"), 1));
+        List<ReservationTimeWithAvailable> reservationTimeWithAvailable2 = reservationTimeRepository.getAvailableReservationTimeByDateAndTheme(new ReservationTimeCondition(LocalDate.parse("2023-08-03"), 1));
 
         assertThat(reservationTimeWithAvailable1).containsAll(List.of(
                 new ReservationTimeWithAvailable(1, "10:00", true),

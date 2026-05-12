@@ -1,31 +1,31 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.theme.PopularThemeCondition;
-import roomescape.domain.theme.ThemeWithCount;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.ThemeCommand;
+import roomescape.domain.theme.ThemeWithCount;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
-import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
+import roomescape.repository.theme.ThemeRepository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ThemeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTheme) {
         return new ReservationRepository() {
 
             @Override
-            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
+            public Reservation addReservation(Reservation reservation) {
                 return null;
             }
 
@@ -45,7 +45,7 @@ public class ThemeServiceTest {
             }
 
             @Override
-            public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, String date) {
+            public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date) {
                 return false;
             }
 

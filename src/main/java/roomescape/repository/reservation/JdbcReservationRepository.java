@@ -1,17 +1,17 @@
 package roomescape.repository.reservation;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -76,7 +76,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final RowMapper<Reservation> MAPPER = (rs, rowNumber) -> new Reservation(
             rs.getLong(COLUMN_ID),
             rs.getString(COLUMN_NAME),
-            rs.getString(COLUMN_DATE),
+            rs.getObject(COLUMN_DATE, LocalDate.class),
             new ReservationTime(
                     rs.getLong(ALIAS_TIME_ID),
                     rs.getString(ALIAS_START_AT)
@@ -111,16 +111,16 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
+    public Reservation addReservation(Reservation reservation) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
-                COLUMN_NAME, reservationCommand.name(),
-                COLUMN_DATE, reservationCommand.date(),
-                COLUMN_TIME_ID, reservationCommand.timeId(),
-                COLUMN_THEME_ID, reservationCommand.themeId()
+                COLUMN_NAME, reservation.name(),
+                COLUMN_DATE, reservation.date(),
+                COLUMN_TIME_ID, reservation.time().id(),
+                COLUMN_THEME_ID, reservation.theme().id()
         )).longValue();
 
-        return new Reservation(id, reservationCommand.name(), reservationCommand.date(), reservationTime,
-                theme);
+        return new Reservation(id, reservation.name(), reservation.date(), reservation.time(),
+                reservation.theme());
     }
 
     @Override
@@ -139,7 +139,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, String date) {
+    public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date) {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE,
                 Boolean.class, timeId, themeId, date));
     }

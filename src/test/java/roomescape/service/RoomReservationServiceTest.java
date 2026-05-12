@@ -3,6 +3,7 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +18,7 @@ import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.domain.theme.ThemeCommand;
+import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.exception.DuplicatedReservationRequestException;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundResourceException;
@@ -33,8 +35,8 @@ public class RoomReservationServiceTest {
             }
 
             @Override
-            public Reservation addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme) {
-                return new Reservation(1, reservationCommand.name(), reservationCommand.date(), reservationTime, theme);
+            public Reservation addReservation(Reservation reservation) {
+                return new Reservation(1L, reservation.name(), reservation.date(), reservation.time(), reservation.theme());
             }
 
             @Override
@@ -58,7 +60,7 @@ public class RoomReservationServiceTest {
             }
 
             @Override
-            public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, String date) {
+            public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date) {
                 return isExist;
             }
         };
@@ -137,20 +139,29 @@ public class RoomReservationServiceTest {
 
         RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(reservationTime), createThemeRepository(
                 theme));
-        ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
 
-        Reservation reservation = reservationService.addReservation(reservationCommand);
+        AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", LocalDate.parse("2023-08-05"), 1L, 1L);
 
-        assertThat(reservation).isEqualTo(new Reservation(1, "브라운", "2023-08-05", reservationTime, theme));
+        Reservation reservation = reservationService.addReservation(addReservationRequest);
+
+        assertThat(reservation)
+                .usingRecursiveComparison()
+                .isEqualTo(new Reservation(
+                        1L,
+                        "브라운",
+                        LocalDate.parse("2023-08-05"),
+                        reservationTime,
+                        theme
+                ));
     }
 
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 시간ID인 경우 예외 테스트")
     void addReservationFailByInvalidTimeIdTest() {
         RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(null), createThemeRepository(new Theme(1, "테마1", "설명", "url")));
-        ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
+        AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", LocalDate.parse("2023-08-05"), 1L, 1L);
 
-        assertThatThrownBy(() -> reservationService.addReservation(reservationCommand))
+        assertThatThrownBy(() -> reservationService.addReservation(addReservationRequest))
                 .isExactlyInstanceOf(NotFoundResourceException.class)
                 .hasMessage(ErrorMessage.INVALID_RESERVATION_TIME_ID.getMessage());
     }
@@ -159,9 +170,9 @@ public class RoomReservationServiceTest {
     @DisplayName("예약 생성 시 존재하지 않는 테마 ID인 경우 예외 테스트")
     void addReservationFailByInvalidThemeIdTest() {
         RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(new ReservationTime(1, "10:00")), createThemeRepository(null));
-        ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
+        AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", LocalDate.parse("2023-08-05"), 1L, 1L);
 
-        assertThatThrownBy(() -> reservationService.addReservation(reservationCommand))
+        assertThatThrownBy(() -> reservationService.addReservation(addReservationRequest))
                 .isExactlyInstanceOf(NotFoundResourceException.class)
                 .hasMessage(ErrorMessage.INVALID_THEME_ID.getMessage());
     }
@@ -178,7 +189,7 @@ public class RoomReservationServiceTest {
                 createThemeRepository(theme)
         );
 
-        assertThatThrownBy(() -> reservationService.addReservation(new ReservationCommand("test", "2023-08-05", 1, 1)))
+        assertThatThrownBy(() -> reservationService.addReservation(new AddReservationRequest("test", LocalDate.parse("2023-08-05"), 1L, 1L)))
                 .isExactlyInstanceOf(DuplicatedReservationRequestException.class)
                 .hasMessage(ErrorMessage.DUPLICATED_RESERVATION_REQUEST.getMessage()
         );

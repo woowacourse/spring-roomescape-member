@@ -14,6 +14,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.service.RoomReservationService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -38,9 +39,15 @@ class ReservationControllerTest {
     void setUp() {
         ReservationTime reservationTime = new ReservationTime(1L, "10:00");
         Theme theme = new Theme(1L, "테마1", "테마 설명", "image url");
-        reservation = new Reservation(1L, "홍길동", "2026-05-06", reservationTime, theme);
-    }
 
+        reservation = new Reservation(
+                1L,
+                "홍길동",
+                LocalDate.parse("2026-05-06"),
+                reservationTime,
+                theme
+        );
+    }
     @Test
     @DisplayName("예약 목록 조회 시 200과 바디를 반환한다")
     void getReservations() throws Exception {
