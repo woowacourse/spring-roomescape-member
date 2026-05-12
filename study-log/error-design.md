@@ -123,14 +123,14 @@
 
 ### POST /times
 
-- [ ] TIME_BLANK_STARTAT — 필수 값 누락 (startAt 없음)
+- [x] TIME_BLANK_STARTAT — 필수 값 누락 (startAt 없음)
 - [ ] TIME_WRONG_STARTAT — 잘못된 시간 형식
-- [ ] TIME_DUPLICATE — 이미 존재하는 시간
+- [x] TIME_DUPLICATE — 이미 존재하는 시간
 
 ### DELETE /times/{id}
 
-- [ ] TIME_NOT_FOUND — 존재하지 않는 시간 삭제
-- [ ] TIME_CANNOT_DELETE — 예약이 존재하는 시간 삭제
+- [x] TIME_NOT_FOUND — 존재하지 않는 시간 삭제
+- [x] TIME_CANNOT_DELETE — 예약이 존재하는 시간 삭제
 
 ### POST /themes
 

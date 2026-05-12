@@ -48,12 +48,20 @@ public class TimeServiceTest {
     }
 
     @Test
+    public void 시작시간이_빈_예약시간을_추가할_경우_예외가_발생한다() {
+        TimeRequest timeRequest = new TimeRequest(null);
+
+        Assertions.assertThatCode(() -> timeService.register(timeRequest))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
     public void 이미_있는_시간에_대한_추가하는_예외가_발생한다() {
         // given
         TimeRequest timeRequest = new TimeRequest(LocalTime.of(10, 0));
 
         // when
         Assertions.assertThatThrownBy(() -> timeService.register(timeRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RoomescapeException.class);
     }
 }

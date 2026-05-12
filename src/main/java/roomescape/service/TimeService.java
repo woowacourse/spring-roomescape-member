@@ -49,8 +49,11 @@ public class TimeService {
     }
 
     public TimeResponse register(TimeRequest timeRequest) {
+        if (timeRequest.startAt() == null) {
+            throw new RoomescapeException(ErrorCode.TIME_BLANK_STARTAT);
+        }
         if (timeRepository.existsByStartAt(timeRequest.startAt())) {
-            throw new IllegalArgumentException("이미 존재하는 시간입니다.");
+            throw new RoomescapeException(ErrorCode.TIME_DUPLICATE);
         }
         ReservationTime reservationTime = timeRepository.save(timeRequest.startAt());
         return TimeResponse.from(reservationTime);
