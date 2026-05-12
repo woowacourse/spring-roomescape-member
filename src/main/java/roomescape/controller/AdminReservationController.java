@@ -8,15 +8,24 @@ import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
-@RequestMapping("/reservations")
-public class ReservationController {
+@RequestMapping("/admin/reservations")
+public class AdminReservationController {
 
     private final ReservationService service;
 
-    public ReservationController(ReservationService service) {
+    public AdminReservationController(ReservationService service) {
         this.service = service;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationResponse>> getReservations() {
+        List<ReservationResponse> reservations = service.findAll().stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return ResponseEntity.ok(reservations);
     }
 
     @PostMapping
@@ -26,7 +35,13 @@ public class ReservationController {
                 request.date(),
                 request.timeId(),
                 request.themeId());
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
+        return ResponseEntity.created(URI.create("/admin/reservations/" + reservation.getId()))
                 .body(ReservationResponse.from(reservation));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

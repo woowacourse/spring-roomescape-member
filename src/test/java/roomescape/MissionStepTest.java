@@ -40,7 +40,7 @@ public class MissionStepTest {
     @Test
     void 예약_조회() {
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0)); // 아직 생성 요청이 없으니 0개
@@ -63,18 +63,18 @@ public class MissionStepTest {
                 .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -96,7 +96,7 @@ public class MissionStepTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05", 1, 1);
 
         List<Reservation> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", Reservation.class);
@@ -125,7 +125,7 @@ public class MissionStepTest {
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
@@ -143,18 +143,18 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get("/admin/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/admin/times/1")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -175,7 +175,7 @@ public class MissionStepTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
@@ -197,7 +197,7 @@ public class MissionStepTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/admin/times/1")
                 .then().log().all()
                 .statusCode(400)
                 .body(is("[ERROR] 예약이 존재하는 시간은 삭제할 수 없습니다."));
@@ -219,7 +219,7 @@ public class MissionStepTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/admin/themes/1")
                 .then().log().all()
                 .statusCode(400)
                 .body(is("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다."));
@@ -251,7 +251,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
@@ -262,7 +262,7 @@ public class MissionStepTest {
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/admin/themes/1")
                 .then().log().all()
                 .statusCode(204);
 

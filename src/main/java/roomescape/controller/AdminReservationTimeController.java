@@ -11,12 +11,12 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/times")
-public class ReservationTimeController {
+@RequestMapping("/admin/times")
+public class AdminReservationTimeController {
 
     private final ReservationTimeService service;
 
-    public ReservationTimeController(ReservationTimeService service) {
+    public AdminReservationTimeController(ReservationTimeService service) {
         this.service = service;
     }
 
@@ -31,7 +31,7 @@ public class ReservationTimeController {
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody ReservationTimeRequest request) {
         ReservationTime reservationTime = service.create(request.startAt());
-        return ResponseEntity.created(URI.create("/times/" + reservationTime.getId()))
+        return ResponseEntity.created(URI.create("/admin/times/" + reservationTime.getId()))
                 .body(ReservationTimeResponse.from(reservationTime));
     }
 
