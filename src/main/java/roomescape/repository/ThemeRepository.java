@@ -1,0 +1,21 @@
+package roomescape.repository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import roomescape.domain.Theme;
+
+public interface ThemeRepository {
+
+    boolean isActiveByName(String name);
+
+    Theme save(Theme theme);
+
+    void update(Theme theme);
+
+    Optional<Theme> findById(Long id);
+
+    List<Theme> findAllActiveThemesByPaging(int page, int size);
+
+    List<Theme> findTopThemesByReservationCount(LocalDate startDate, LocalDate endDate, int limit);
+}

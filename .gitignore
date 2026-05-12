@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Playwright / Node ###
+node_modules/
+.gradle-playwright/
+playwright-report/
+test-results/
