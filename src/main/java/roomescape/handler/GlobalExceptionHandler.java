@@ -13,10 +13,14 @@ import roomescape.exception.ReservationByPastDateTimeException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({
-            ReservationByPastDateTimeException.class,
-            EmptyNameException.class
-    })
+    @ExceptionHandler(ReservationByPastDateTimeException.class)
+    public ResponseEntity<String> handleReservationByPastDateTimeException(ReservationByPastDateTimeException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(EmptyNameException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
         return ResponseEntity
                 .badRequest()

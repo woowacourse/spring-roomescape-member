@@ -26,14 +26,26 @@ class ReservationControllerTest {
     @MockitoBean
     ReservationService reservationService;
 
-    @DisplayName("잘못된 예약 인자값에 대해 400 상태 코드를 반환한다")
+    @DisplayName("지난 시점으로 예약하면 422 Unprocessable Entity를 응답한다")
     @Test
-    void 예약_생성에서_ReservationByPastDateTimeException이_발생하면_400_BAD_REQUEST를_응답한다() throws Exception {
+    void 예약_생성에서_ReservationByPastDateTimeException이_발생하면_422_UNPROCESSABLE_ENTITY를_응답한다() throws Exception {
         Mockito.when(reservationService.addReservation(Mockito.any(ReservationRequestDTO.class)))
                 .thenThrow(ReservationByPastDateTimeException.class);
 
-        mockMvc.perform(post("/reservations"))
-                .andExpect(status().isBadRequest());
+        String requestBody = """
+                {
+                    "name": "rudevico",
+                    "date": "2026-05-01",
+                    "timeId": 1,
+                    "themeId": 1
+                }
+                """;
+        mockMvc.perform(
+                        post("/reservations")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @DisplayName("비어 있는 이름으로 예약하면 400 상태 코드를 반환한다")
