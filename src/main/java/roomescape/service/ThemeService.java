@@ -25,7 +25,8 @@ public class ThemeService {
     }
 
     public List<ThemeResponseDTO> findAllThemes() {
-        return themeRepository.findAll().stream().map(ThemeResponseDTO::from)
+        return themeRepository.findAll().stream()
+                .map(ThemeResponseDTO::from)
                 .collect(Collectors.toList());
     }
 
@@ -35,15 +36,13 @@ public class ThemeService {
         return ThemeResponseDTO.from(result);
     }
 
-    public List<ThemeResponseDTO> getPopularThemes() {
-        List<Long> popularThemeIds = themeRepository.findPopularThemeIds(
-                LocalDate.now().minusWeeks(1),
+    public List<ThemeResponseDTO> getPopularThemes(Long weeks, Long limit) {
+        return themeRepository.findPopularThemes(
+                LocalDate.now().minusWeeks(weeks),
                 LocalDate.now(),
-                10L
-        );
-
-        return popularThemeIds.stream()
-                .map(id -> themeRepository.findById(id).get())
+                limit
+        )
+                .stream()
                 .map(ThemeResponseDTO::from)
                 .toList();
     }

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,10 +80,12 @@ class JdbcThemeRepositoryTest {
     @Test
     @Sql("/data.sql")
     void 최근_1주_동안의_예약_상위_10개의_테마를_조회한다() {
-        List<Long> popularThemes = themeRepository.findPopularThemeIds(
+        List<Long> popularThemes = themeRepository.findPopularThemes(
                 LocalDate.now().minusWeeks(1),
-                LocalDate.now(), 10L
-        );
+                LocalDate.now(),
+                10L
+        ).stream().map(Theme::getId).collect(Collectors.toList());
+
         assertThat(popularThemes)
                 .containsExactly(
                         1L, 2L, 3L, // 1순위: 테마의 예약 수 내림차순 정렬

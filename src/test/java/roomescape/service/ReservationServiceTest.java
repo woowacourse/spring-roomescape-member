@@ -22,7 +22,7 @@ class ThemeServiceTest {
     @DisplayName("인기 테마를 조회한다")
     @Test
     void 최근_1주_동안의_예약_상위_10개의_테마를_조회한다() {
-        List<ThemeResponseDTO> popularThemes = themeService.getPopularThemes();
+        List<ThemeResponseDTO> popularThemes = themeService.getPopularThemes(1L, 10L);
         assertThat(popularThemes)
                 .map(ThemeResponseDTO::id)
                 .containsExactly(

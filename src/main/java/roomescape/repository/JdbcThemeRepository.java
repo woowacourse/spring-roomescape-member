@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,10 +76,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Long> findPopularThemeIds(LocalDate startDate, LocalDate endDate, Long limit) {
-        List<Long> popularThemeIds = new ArrayList<>();
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, Long limit) {
         String sql = """
-                    SELECT t.id AS theme_id, t.name, COUNT(r.id) AS reservation_count
+                    SELECT t.id AS theme_id, t.name, t.description, t.image_url, COUNT(r.id) AS reservation_count
                     FROM theme AS t
                     LEFT JOIN reservation AS r
                     ON r.theme_id = t.id
@@ -96,12 +94,11 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("endDate", endDate)
                 .addValue("limit", limit);
 
-        jdbcTemplate.query(
+        return jdbcTemplate.query(
                 sql,
                 params,
-                (resultSet, rowNum) -> popularThemeIds.add(resultSet.getLong("theme_id"))
+                getThemeRowMapper()
         );
-        return popularThemeIds;
     }
 
     @Override
