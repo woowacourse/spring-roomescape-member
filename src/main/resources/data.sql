@@ -41,3 +41,11 @@ INSERT IGNORE INTO reservation (id, user_id, schedule_id) VALUES (10, 1, 10);
 INSERT IGNORE INTO reservation (id, user_id, schedule_id) VALUES (11, 2, 11);
 
 INSERT IGNORE INTO schedule (id, theme_id, start_at, end_at) VALUES (12, 1, '2026-05-20 10:00:00', '2026-05-20 12:00:00');
+
+INSERT IGNORE INTO theme (id, name, description, image_url, required_time) VALUES (100, '테스트테마', '테스트용', 'test.jpg', '01:00:00');
+INSERT IGNORE INTO schedule (id, theme_id, start_at, end_at) VALUES (1000, 100, '2026-06-01 10:00:00', '2026-06-01 11:00:00');
+
+INSERT IGNORE INTO theme (id, name, description, image_url, required_time) VALUES (101, '예약테마', '예약용', 'reserved.jpg', '01:00:00');
+INSERT IGNORE INTO schedule (id, theme_id, start_at, end_at) VALUES (1001, 101, '2026-06-02 10:00:00', '2026-06-02 11:00:00');
+INSERT IGNORE INTO `user` (id, name, role) VALUES (101, '테스트유저', 'USER');
+INSERT IGNORE INTO reservation (id, user_id, schedule_id) VALUES (10000, 101, 1001);
