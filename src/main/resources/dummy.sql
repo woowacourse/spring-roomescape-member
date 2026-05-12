@@ -1,18 +1,18 @@
 -- Reservation Time
-MERGE INTO reservation_time (start_at) KEY (start_at)
+MERGE INTO reservation_time (start_at, is_active) KEY (start_at)
     VALUES
-    ('11:00:00'),
-    ('12:00:00'),
-    ('13:00:00'),
-    ('14:00:00'),
-    ('15:00:00'),
-    ('16:00:00'),
-    ('17:00:00'),
-    ('18:00:00'),
-    ('19:00:00'),
-    ('20:00:00'),
-    ('21:00:00'),
-    ('22:00:00');
+    ('11:00:00', true),
+    ('12:00:00', true),
+    ('13:00:00', true),
+    ('14:00:00', true),
+    ('15:00:00', true),
+    ('16:00:00', true),
+    ('17:00:00', true),
+    ('18:00:00', true),
+    ('19:00:00', true),
+    ('20:00:00', true),
+    ('21:00:00', true),
+    ('22:00:00', true);
 
 -- Reservation Date
 MERGE INTO reservation_date (date, is_active) KEY (date)

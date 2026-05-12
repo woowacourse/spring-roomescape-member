@@ -4,22 +4,25 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 public class ReservationTime {
-    private final Long id;
-    private final LocalTime startAt;
 
-    private ReservationTime(Long id, LocalTime startAt) {
+    private Long id;
+    private LocalTime startAt;
+    private boolean isActive;
+
+    private ReservationTime(Long id, LocalTime startAt, boolean isActive) {
         validateStartAt(startAt);
         this.id = id;
         this.startAt = startAt;
+        this.isActive = isActive;
     }
 
     public static ReservationTime create(LocalTime startAt) {
-        return new ReservationTime(null, startAt);
+        return new ReservationTime(null, startAt, false);
     }
 
-    public static ReservationTime load(Long timeId, LocalTime startAt) {
+    public static ReservationTime load(Long timeId, LocalTime startAt, boolean isActive) {
         validateId(timeId);
-        return new ReservationTime(timeId, startAt);
+        return new ReservationTime(timeId, startAt, isActive);
     }
 
     private static void validateStartAt(LocalTime startAt) {
@@ -40,6 +43,14 @@ public class ReservationTime {
 
     public LocalTime startAt() {
         return startAt;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void updateStatus(boolean isActive) {
+        this.isActive = isActive;
     }
 
     @Override

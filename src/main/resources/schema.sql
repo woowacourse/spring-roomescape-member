@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS reservation_time
 (
-    id       BIGINT NOT NULL AUTO_INCREMENT,
-    start_at TIME   NOT NULL UNIQUE,
+    id        BIGINT   NOT NULL AUTO_INCREMENT,
+    start_at  TIME     NOT NULL UNIQUE,
+    is_active BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (id)
 );
 
