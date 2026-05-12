@@ -2,6 +2,7 @@ package roomescape.global;
 
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +55,7 @@ public class RestExceptionHandlerTest {
                 .when().post("/dummy")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("요청 Json 형식이 잘못되었습니다."));
+                .body("message", equalTo("요청 Json 형식이 잘못되었습니다."));
     }
 
     @Test
@@ -72,7 +73,7 @@ public class RestExceptionHandlerTest {
                 .when().post("/dummy")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("[testField] 필드 낫널 검증"));
+                .body("message", equalTo("[testField] 필드 not null 검증"));
     }
 
     @Test
@@ -91,7 +92,7 @@ public class RestExceptionHandlerTest {
                 .when().delete("/dummy")
                 .then().log().all()
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
-                .body(containsString("지원하지 않는 HTTP Method 입니다."));
+                .body("message", equalTo("지원하지 않는 HTTP Method 입니다."));
     }
 
     @Test
@@ -102,7 +103,7 @@ public class RestExceptionHandlerTest {
                 .when().post("/dummy/0")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("양수가 아님"));
+                .body("message", equalTo("양수가 아님"));
     }
 
     @Test
@@ -113,18 +114,51 @@ public class RestExceptionHandlerTest {
                 .when().post("/dummy/string")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("변환할 수 없는 잘못된 데이터 타입이 존재합니다."));
+                .body("message", equalTo("변환할 수 없는 잘못된 데이터 타입이 존재합니다."));
     }
 
     @Test
-    void 비즈니스_예외() {
+    void 커스텀_예외는_지정한_상태와_메시지로_응답한다() {
         // when & then
         RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .when().get("/dummy/business")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("비즈니스 예외"));
+                .body("message", equalTo("비즈니스 예외"));
+    }
+
+    @Test
+    void 일반_잘못된_요청_예외는_400으로_응답한다() {
+        // when & then
+        RestAssuredMockMvc.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON)
+                .when().get("/dummy/badRequest")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body("message", equalTo("잘못된 요청 예외"));
+    }
+
+    @Test
+    void 잘못된_상태_예외는_400으로_응답한다() {
+        // when & then
+        RestAssuredMockMvc.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON)
+                .when().get("/dummy/illegalState")
+                .then().log().all()
+                .status(HttpStatus.BAD_REQUEST)
+                .body("message", equalTo("잘못된 상태 예외"));
+    }
+
+    @Test
+    void 접근_권한_예외는_403으로_응답한다() {
+        // when & then
+        RestAssuredMockMvc.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON)
+                .when().get("/dummy/forbidden")
+                .then().log().all()
+                .status(HttpStatus.FORBIDDEN)
+                .body("message", equalTo("접근 권한이 없습니다."));
     }
 
     @Test
@@ -135,7 +169,7 @@ public class RestExceptionHandlerTest {
                 .when().get("/dummy/entityNotFound")
                 .then().log().all()
                 .status(HttpStatus.NOT_FOUND)
-                .body(containsString("데이터 없음"));
+                .body("message", equalTo("데이터 없음"));
     }
 
     @Test
@@ -146,7 +180,7 @@ public class RestExceptionHandlerTest {
                 .when().get("/dummy/duplicateEntity")
                 .then().log().all()
                 .status(HttpStatus.CONFLICT)
-                .body(containsString("충돌"));
+                .body("message", equalTo("충돌"));
     }
 
     @Test
@@ -157,7 +191,7 @@ public class RestExceptionHandlerTest {
                 .when().get("/dummy/param")
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
-                .body(containsString("test 파라미터가 누락 되었습니다."));
+                .body("message", equalTo("test 파라미터가 누락 되었습니다."));
     }
 
     @Test
@@ -168,6 +202,6 @@ public class RestExceptionHandlerTest {
                 .when().get("/dummy/internal")
                 .then().log().all()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(containsString("알 수 없는 서버 예외가 발생했습니다."));
+                .body("message", equalTo("알 수 없는 서버 예외가 발생했습니다."));
     }
 }

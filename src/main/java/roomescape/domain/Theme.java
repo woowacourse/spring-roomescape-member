@@ -39,10 +39,10 @@ public class Theme {
             URI uri = URI.create(thumbnailImageUrl);
 
             if (uri.getScheme() == null || !uri.getScheme().startsWith("http")) {
-                throw new IllegalArgumentException("올바른 이미지 주소 형식이 아닙니다.");
+                throw new IllegalArgumentException("올바른 이미지 주소 형식이 아닙니다. url=" + thumbnailImageUrl);
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("올바른 이미지 주소 형식이 아닙니다.");
+            throw new IllegalArgumentException("올바른 이미지 주소 형식이 아닙니다. url=" + thumbnailImageUrl);
         }
     }
 

@@ -1,8 +1,10 @@
 package roomescape.global.exception;
 
-public class EntityNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class EntityNotFoundException extends CustomException {
 
     public EntityNotFoundException(String message) {
-        super(message);
+        super(HttpStatus.NOT_FOUND, message);
     }
 }

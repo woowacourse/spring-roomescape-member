@@ -56,16 +56,16 @@ class ThemeTest {
                 .hasMessage("설명은 필수 값입니다.");
     }
 
-    @ParameterizedTest(name = "이미지 주소가 ''{0}''일 때, \"{1}\" 메시지와 함께 예외가 발생한다.")
+    @ParameterizedTest(name = "이미지 주소가 ''{0}''일 때, 입력값을 포함한 예외가 발생한다.")
     @CsvSource(value = {
-            "null, 올바른 이미지 주소 형식이 아닙니다.",
-            "'', 올바른 이미지 주소 형식이 아닙니다.",
-            "' ', 올바른 이미지 주소 형식이 아닙니다.",
-            "문자열, 올바른 이미지 주소 형식이 아닙니다.",                       // 순수 문자열
-            "ftp://image.com/test.png, 올바른 이미지 주소 형식이 아닙니다.",   // 다른 프로토콜 스킴
-            "htts://image.com/test.png, 올바른 이미지 주소 형식이 아닙니다."   // 오탈자
+            "null",
+            "''",
+            "' '",
+            "문자열",                       // 순수 문자열
+            "ftp://image.com/test.png",   // 다른 프로토콜 스킴
+            "htts://image.com/test.png"   // 오탈자
     }, nullValues = "null")
-    void 썸네일_이미지_주소_검증_통합_테스트(String invalidUrl, String expectedMessage) {
+    void 썸네일_이미지_주소_검증_통합_테스트(String invalidUrl) {
         // given
         String name = "테마 이름";
         String description = "설명";
@@ -73,7 +73,7 @@ class ThemeTest {
         // when & then
         assertThatThrownBy(() -> new Theme(name, description, invalidUrl))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(expectedMessage);
+                .hasMessage("올바른 이미지 주소 형식이 아닙니다. url=" + invalidUrl);
     }
 
     @Test
