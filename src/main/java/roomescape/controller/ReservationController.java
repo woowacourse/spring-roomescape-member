@@ -35,6 +35,11 @@ public class ReservationController {
                 URI.create("/reservations/" + saved.id())).build();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservationResponseDTO> readById(@PathVariable Long id) {
+        return ResponseEntity.ok(reservationService.readReservationById(id));
+    }
+
     @GetMapping("/booked-times")
     public ResponseEntity<List<ReservedTimeResponseDTO>> findReservedTimes(
             @RequestParam LocalDate selectedDate,
