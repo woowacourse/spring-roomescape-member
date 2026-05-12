@@ -21,4 +21,11 @@ public class ReservationQueryService {
                 .map(ReservationResult::from)
                 .toList();
     }
+
+    public List<ReservationResult> findByName(String username) {
+        List<ReservationDetail> result = reservationDetailDao.findByName(username);
+        return result.stream()
+                .map(ReservationResult::from)
+                .toList();
+    }
 }

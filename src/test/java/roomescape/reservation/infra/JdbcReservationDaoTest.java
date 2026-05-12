@@ -33,20 +33,45 @@ class JdbcReservationDaoTest {
     @Test
     void findAll() {
         Long themeId = testHelper.insertTheme("테마1", "설명1", "img1.jpg");
-        Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        Long tenTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        Long elevenTimeId = testHelper.insertReservationTime(LocalTime.of(11, 0));
         LocalDate date = LocalDate.of(2026, 5, 10);
-        testHelper.insertReservation("스타크", date, themeId, timeId);
+        testHelper.insertReservation("스타크", date, themeId, tenTimeId);
+        testHelper.insertReservation("비밥", date, themeId, elevenTimeId);
 
         List<ReservationDetail> details = reservationDao.findAll();
         ReservationDetail first = details.getFirst();
 
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(details).hasSize(1);
+            softly.assertThat(details).hasSize(2);
             softly.assertThat(first.username()).isEqualTo("스타크");
             softly.assertThat(first.date()).isEqualTo(date);
             softly.assertThat(first.themeId()).isEqualTo(themeId);
-            softly.assertThat(first.timeId()).isEqualTo(timeId);
+            softly.assertThat(first.timeId()).isEqualTo(tenTimeId);
             softly.assertThat(first.startAt()).isEqualTo(LocalTime.of(10, 0));
+        });
+    }
+
+    @DisplayName("사용자의 이름으로 해당 사용자의 예약 상세 정보 조회를 테스트합니다.")
+    @Test
+    void findByName() {
+        Long themeId = testHelper.insertTheme("테마1", "설명1", "img1.jpg");
+        Long tenTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        Long elevenTimeId = testHelper.insertReservationTime(LocalTime.of(11, 0));
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        testHelper.insertReservation("스타크", date, themeId, tenTimeId);
+        testHelper.insertReservation("비밥", date, themeId, elevenTimeId);
+
+        List<ReservationDetail> details = reservationDao.findByName("비밥");
+        ReservationDetail first = details.getFirst();
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(details).hasSize(1);
+            softly.assertThat(first.username()).isEqualTo("비밥");
+            softly.assertThat(first.date()).isEqualTo(date);
+            softly.assertThat(first.themeId()).isEqualTo(themeId);
+            softly.assertThat(first.timeId()).isEqualTo(elevenTimeId);
+            softly.assertThat(first.startAt()).isEqualTo(LocalTime.of(11, 0));
         });
     }
 }

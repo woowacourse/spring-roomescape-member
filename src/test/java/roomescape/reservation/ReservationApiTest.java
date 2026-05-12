@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.greaterThan;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,17 +68,7 @@ class ReservationApiTest {
     void delete_reservation() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
         Long timeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
-
-        Map<String, String> params = ReservationFixture.futureReservationParams(themeId, timeId);
-
-        Integer reservationId = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .extract()
-                .path("id");
+        Long reservationId = testHelper.insertReservation("스타크", LocalDate.of(2028, 5, 6), themeId, timeId);
 
         RestAssured.given()
                 .when().delete("/reservations/{id}", reservationId)
@@ -143,15 +134,9 @@ class ReservationApiTest {
     void save_duplicated_reservation() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
         Long timeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
+        testHelper.insertReservation("스타크", LocalDate.of(2028, 5, 6), themeId, timeId);
 
         Map<String, String> params = ReservationFixture.futureReservationParams(themeId, timeId);
-
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -169,5 +154,82 @@ class ReservationApiTest {
                 .when().delete("/reservations/{id}", 999L)
                 .then().log().all()
                 .statusCode(404);
+    }
+
+    @DisplayName("사용자 이름 없이 예약 전체 조회 API를 테스트합니다.")
+    @Test
+    void find_all_reservations() {
+        Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
+        Long nineTimeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
+        Long tenTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        LocalDate earlierDate = LocalDate.of(2026, 5, 6);
+        LocalDate laterDate = LocalDate.of(2026, 5, 7);
+
+        testHelper.insertReservation("스타크", earlierDate, themeId, nineTimeId);
+        testHelper.insertReservation("비밥", laterDate, themeId, nineTimeId);
+        testHelper.insertReservation("스타크", laterDate, themeId, tenTimeId);
+
+        RestAssured.given()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("[0].id", greaterThan(0))
+                .body("[0].name", equalTo("스타크"))
+                .body("[0].date", equalTo("2026-05-06"))
+                .body("[0].time.id", equalTo(nineTimeId.intValue()))
+                .body("[0].time.startAt", equalTo("09:00"))
+                .body("[0].theme.id", equalTo(themeId.intValue()))
+                .body("[0].theme.name", equalTo("공포 테마"))
+
+                .body("[1].id", greaterThan(0))
+                .body("[1].name", equalTo("비밥"))
+                .body("[1].date", equalTo("2026-05-07"))
+                .body("[1].time.id", equalTo(nineTimeId.intValue()))
+                .body("[1].time.startAt", equalTo("09:00"))
+                .body("[1].theme.id", equalTo(themeId.intValue()))
+                .body("[1].theme.name", equalTo("공포 테마"))
+
+                .body("[2].id", greaterThan(0))
+                .body("[2].name", equalTo("스타크"))
+                .body("[2].date", equalTo("2026-05-07"))
+                .body("[2].time.id", equalTo(tenTimeId.intValue()))
+                .body("[2].time.startAt", equalTo("10:00"))
+                .body("[2].theme.id", equalTo(themeId.intValue()))
+                .body("[2].theme.name", equalTo("공포 테마"));
+    }
+
+    @DisplayName("사용자 이름으로 예약 목록 조회 API를 테스트합니다.")
+    @Test
+    void find_reservations_by_name() {
+        Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
+        Long nineTimeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
+        Long tenTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        LocalDate earlierDate = LocalDate.of(2026, 5, 6);
+        LocalDate laterDate = LocalDate.of(2026, 5, 7);
+
+        testHelper.insertReservation("스타크", earlierDate, themeId, nineTimeId);
+        testHelper.insertReservation("비밥", laterDate, themeId, nineTimeId);
+        testHelper.insertReservation("스타크", laterDate, themeId, tenTimeId);
+
+        RestAssured.given()
+                .param("username", "스타크")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("[0].id", greaterThan(0))
+                .body("[0].name", equalTo("스타크"))
+                .body("[0].date", equalTo("2026-05-06"))
+                .body("[0].time.id", equalTo(nineTimeId.intValue()))
+                .body("[0].time.startAt", equalTo("09:00"))
+                .body("[0].theme.id", equalTo(themeId.intValue()))
+                .body("[0].theme.name", equalTo("공포 테마"))
+
+                .body("[1].id", greaterThan(0))
+                .body("[1].name", equalTo("스타크"))
+                .body("[1].date", equalTo("2026-05-07"))
+                .body("[1].time.id", equalTo(tenTimeId.intValue()))
+                .body("[1].time.startAt", equalTo("10:00"))
+                .body("[1].theme.id", equalTo(themeId.intValue()))
+                .body("[1].theme.name", equalTo("공포 테마"));
     }
 }

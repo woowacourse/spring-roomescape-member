@@ -5,4 +5,6 @@ import roomescape.reservation.application.dto.ReservationDetail;
 
 public interface ReservationDetailDao {
     List<ReservationDetail> findAll();
+
+    List<ReservationDetail> findByName(String username);
 }
