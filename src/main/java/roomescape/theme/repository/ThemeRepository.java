@@ -58,37 +58,58 @@ public class ThemeRepository {
     }
 
     public Theme save(Theme theme) {
+        if (theme.getId() == null) {
+            return insert(theme);
+        }
+
+        return merge(theme);
+    }
+
+    private Theme merge(Theme theme) {
+        final String sql = """
+                UPDATE theme
+                SET name = ?,
+                    description = ?,
+                    thumbnail_url = ?
+                WHERE id = ?
+                """;
+        final int affectedRows = jdbcTemplate.update(
+                sql,
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnailUrl(),
+                theme.getId()
+        );
+
+        if (affectedRows == 0) {
+            return insert(theme);
+        }
+
+        return theme;
+    }
+
+    private Theme insert(Theme theme) {
+        if (theme.getId() != null) {
+            final String sql = "INSERT INTO theme (id, name, description, thumbnail_url) VALUES (?, ?, ?, ?)";
+            jdbcTemplate.update(sql, theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnailUrl());
+            return theme;
+        }
+
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    """
-                    MERGE INTO theme t
-                    USING (
-                        VALUES (?, ?, ?, ?)
-                    ) s(id, name, description, thumbnail_url)
-                    ON t.id = s.id
-                    WHEN MATCHED THEN
-                        UPDATE SET
-                            name = s.name,
-                            description = s.description,
-                            thumbnail_url = s.thumbnail_url
-                    WHEN NOT MATCHED THEN
-                        INSERT (name, description, thumbnail_url)
-                        VALUES (s.name, s.description, s.thumbnail_url)
-                    """,
+                    "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
                     new String[]{"id"}
             );
 
-            ps.setObject(1, theme.getId());
-            ps.setString(2, theme.getName());
-            ps.setString(3, theme.getDescription());
-            ps.setString(4, theme.getThumbnailUrl());
+            ps.setString(1, theme.getName());
+            ps.setString(2, theme.getDescription());
+            ps.setString(3, theme.getThumbnailUrl());
 
             return ps;
         }, keyHolder);
 
-        //if문으로
         if (keyHolder.getKey() != null) {
             return new Theme(keyHolder.getKey().longValue(), theme.getName(), theme.getDescription(),
                     theme.getThumbnailUrl());

@@ -45,34 +45,64 @@ public class ReservationRepository {
     }
 
     public Reservation save(Reservation reservation) {
+        if (reservation.getId() == null) {
+            return insert(reservation);
+        }
+
+        return merge(reservation);
+    }
+
+    private Reservation merge(Reservation reservation) {
+        final String sql = """
+                UPDATE reservation
+                SET name = ?,
+                    date = ?,
+                    time_id = ?,
+                    theme_id = ?
+                WHERE id = ?
+                """;
+        final int affectedRows = jdbcTemplate.update(
+                sql,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId()
+        );
+
+        if (affectedRows == 0) {
+            return insert(reservation);
+        }
+
+        return reservation;
+    }
+
+    private Reservation insert(Reservation reservation) {
+        if (reservation.getId() != null) {
+            final String sql = "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)";
+            jdbcTemplate.update(
+                    sql,
+                    reservation.getId(),
+                    reservation.getName(),
+                    reservation.getDate(),
+                    reservation.getTime().getId(),
+                    reservation.getTheme().getId()
+            );
+            return reservation;
+        }
+
         final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    """
-                    MERGE INTO reservation r
-                    USING (
-                        VALUES (?, ?, ?, ?, ?)
-                    ) t(id, name, date, time_id, theme_id)
-                    ON r.id = t.id
-                    WHEN MATCHED THEN
-                        UPDATE SET
-                            name = t.name,
-                            date = t.date,
-                            time_id = t.time_id,
-                            theme_id = t.theme_id
-                    WHEN NOT MATCHED THEN
-                        INSERT (name, date, time_id, theme_id)
-                        VALUES (t.name, t.date, t.time_id, t.theme_id)
-                    """,
+                    "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                     new String[]{"id"}
             );
 
-            ps.setObject(1, reservation.getId());
-            ps.setString(2, reservation.getName());
-            ps.setObject(3, reservation.getDate());
-            ps.setLong(4, reservation.getTime().getId());
-            ps.setLong(5, reservation.getTheme().getId());
+            ps.setString(1, reservation.getName());
+            ps.setObject(2, reservation.getDate());
+            ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
 
             return ps;
         }, keyHolder);
