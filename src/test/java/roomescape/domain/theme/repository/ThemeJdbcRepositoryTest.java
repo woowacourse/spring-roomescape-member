@@ -19,7 +19,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.theme.entity.Theme;
-import roomescape.domain.theme.response.PopularThemeResponse;
 import roomescape.domain.theme.response.ThemeReservationTimeResponse;
 
 @JdbcTest
@@ -123,7 +122,7 @@ class ThemeJdbcRepositoryTest {
         int limit = 10;
 
         // when
-        List<PopularThemeResponse> result = themeRepository.findPopularThemes(
+        List<PopularThemeResult> result = themeRepository.findPopularThemes(
                 startDate,
                 endDate,
                 limit

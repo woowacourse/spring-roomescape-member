@@ -14,9 +14,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.repository.PopularThemeResult;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.request.ThemeCreateRequest;
-import roomescape.domain.theme.response.PopularThemeResponse;
 import roomescape.domain.theme.response.PopularThemesResponse;
 import roomescape.domain.theme.response.ThemeResponse;
 
@@ -90,17 +90,17 @@ class ThemeServiceTest {
         LocalDate expectedStartDate = LocalDate.of(2026, 4, 29);
         LocalDate expectedEndDate = LocalDate.of(2026, 5, 5);
 
-        List<PopularThemeResponse> popularThemes = List.of(
-                new PopularThemeResponse(1L, "테마1", "설명1", "url1", 1),
-                new PopularThemeResponse(2L, "테마2", "설명2", "url2", 2),
-                new PopularThemeResponse(3L, "테마3", "설명3", "url3", 3),
-                new PopularThemeResponse(4L, "테마4", "설명4", "url4", 4),
-                new PopularThemeResponse(5L, "테마5", "설명5", "url5", 5),
-                new PopularThemeResponse(6L, "테마6", "설명6", "url6", 6),
-                new PopularThemeResponse(7L, "테마7", "설명7", "url7", 7),
-                new PopularThemeResponse(8L, "테마8", "설명8", "url8", 8),
-                new PopularThemeResponse(9L, "테마9", "설명9", "url9", 9),
-                new PopularThemeResponse(10L, "테마10", "설명10", "url10", 10)
+        List<PopularThemeResult> popularThemes = List.of(
+                new PopularThemeResult(1L, "테마1", "설명1", "url1", 1),
+                new PopularThemeResult(2L, "테마2", "설명2", "url2", 2),
+                new PopularThemeResult(3L, "테마3", "설명3", "url3", 3),
+                new PopularThemeResult(4L, "테마4", "설명4", "url4", 4),
+                new PopularThemeResult(5L, "테마5", "설명5", "url5", 5),
+                new PopularThemeResult(6L, "테마6", "설명6", "url6", 6),
+                new PopularThemeResult(7L, "테마7", "설명7", "url7", 7),
+                new PopularThemeResult(8L, "테마8", "설명8", "url8", 8),
+                new PopularThemeResult(9L, "테마9", "설명9", "url9", 9),
+                new PopularThemeResult(10L, "테마10", "설명10", "url10", 10)
         );
 
         when(themeRepository.findPopularThemes(expectedStartDate, expectedEndDate, limit))

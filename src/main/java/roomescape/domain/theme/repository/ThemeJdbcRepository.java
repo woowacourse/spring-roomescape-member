@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.entity.Theme;
-import roomescape.domain.theme.response.PopularThemeResponse;
 import roomescape.domain.theme.response.ThemeReservationTimeResponse;
 
 @Repository
@@ -120,7 +119,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public List<PopularThemeResponse> findPopularThemes(
+    public List<PopularThemeResult> findPopularThemes(
             LocalDate startDate,
             LocalDate endDate,
             Integer limit
@@ -183,8 +182,8 @@ public class ThemeJdbcRepository implements ThemeRepository {
         );
     }
 
-    private RowMapper<PopularThemeResponse> popularThemeRowMapper() {
-        return (resultSet, rowNumber) -> new PopularThemeResponse(
+    private RowMapper<PopularThemeResult> popularThemeRowMapper() {
+        return (resultSet, rowNumber) -> new PopularThemeResult(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
