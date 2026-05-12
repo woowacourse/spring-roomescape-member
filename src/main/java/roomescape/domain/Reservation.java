@@ -45,6 +45,12 @@ public class Reservation {
         validateTheme(theme);
     }
 
+    private static void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime now) {
+        if (time.isPast(date, now)) {
+            throw new IllegalArgumentException("지난 날짜 또는 시간은 예약할 수 없습니다.");
+        }
+    }
+
     private static void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름 형식은 " + MIN_NAME_LENGTH + "글자 이상 " + MAX_NAME_LENGTH + "글자 이하입니다.");
@@ -76,14 +82,6 @@ public class Reservation {
     private static void validateNow(LocalDateTime now) {
         if (now == null) {
             throw new IllegalArgumentException("현재 시각은 필수입니다.");
-        }
-    }
-
-    private static void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime now) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-
-        if (reservationDateTime.isBefore(now)) {
-            throw new IllegalArgumentException("지난 날짜 또는 시간은 예약할 수 없습니다.");
         }
     }
 
