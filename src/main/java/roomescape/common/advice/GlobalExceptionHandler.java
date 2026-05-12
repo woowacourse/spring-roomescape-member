@@ -45,6 +45,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
+        log.error("Illegal State Exception 발생 : {}", e.getMessage());
+        return ResponseEntity.unprocessableEntity().body(e.getMessage());
+    }
+
     private static ResponseEntity<String> getStringResponseEntity(BindingResult e) {
         String message = e
                 .getAllErrors()
