@@ -3,6 +3,8 @@ package roomescape.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import roomescape.exception.PastReservationException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -60,7 +62,7 @@ class ReservationTest {
         LocalDate yesterday = now.toLocalDate().minusDays(1);
 
         assertThatThrownBy(() -> Reservation.create("브라운", yesterday, now, time, theme))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(PastReservationException.class)
                 .hasMessage("과거 날짜로는 예약할 수 없습니다.");
     }
 

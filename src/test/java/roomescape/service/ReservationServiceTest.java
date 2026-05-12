@@ -2,6 +2,8 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import roomescape.exception.ReservationConflictException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -78,7 +80,7 @@ class ReservationServiceTest {
         given(reservationDao.existsByDateAndTimeIdAndThemeId(futureDate, 1L, 1L)).willReturn(true);
 
         assertThatThrownBy(() -> reservationService.save("브라운", futureDate, 1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ReservationConflictException.class)
                 .hasMessage("이미 예약된 시간입니다.");
     }
 

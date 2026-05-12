@@ -11,6 +11,8 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.PastReservationException;
+import roomescape.exception.ReservationConflictException;
 
 @Service
 public class ReservationService {
@@ -31,7 +33,7 @@ public class ReservationService {
         final Theme theme = themeDao.findById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+            throw new ReservationConflictException("이미 예약된 시간입니다.");
         }
         final Reservation reservation = Reservation.create(name, date, LocalDateTime.now(), time, theme);
         return reservationDao.save(reservation);
@@ -44,10 +46,10 @@ public class ReservationService {
         final ReservationTime newTime = reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
         if (LocalDateTime.of(date, newTime.getStartAt()).isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("과거 날짜로는 예약할 수 없습니다.");
+            throw new PastReservationException("과거 날짜로는 예약할 수 없습니다.");
         }
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, reservation.getTheme().getId())) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+            throw new ReservationConflictException("이미 예약된 시간입니다.");
         }
         return reservationDao.update(id, date, timeId);
     }
@@ -57,7 +59,7 @@ public class ReservationService {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
         if (LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt()).isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("이미 지난 예약은 취소할 수 없습니다.");
+            throw new PastReservationException("이미 지난 예약은 취소할 수 없습니다.");
         }
         reservationDao.delete(id);
     }

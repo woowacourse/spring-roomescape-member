@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.controller.dto.ErrorResponse;
+import roomescape.exception.PastReservationException;
+import roomescape.exception.ReservationConflictException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -16,6 +18,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse("INVALID_INPUT", e.getMessage()));
+    }
+
+    @ExceptionHandler(ReservationConflictException.class)
+    public ResponseEntity<ErrorResponse> handleReservationConflict(ReservationConflictException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("RESERVATION_CONFLICT", e.getMessage()));
+    }
+
+    @ExceptionHandler(PastReservationException.class)
+    public ResponseEntity<ErrorResponse> handlePastReservation(PastReservationException e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(new ErrorResponse("PAST_RESERVATION", e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

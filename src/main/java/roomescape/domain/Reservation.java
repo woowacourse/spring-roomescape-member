@@ -3,6 +3,7 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.exception.PastReservationException;
 
 public class Reservation {
     private final Long id;
@@ -24,7 +25,7 @@ public class Reservation {
 
     public static Reservation create(String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
         if (LocalDateTime.of(date, time.getStartAt()).isBefore(createdAt)) {
-            throw new IllegalArgumentException("과거 날짜로는 예약할 수 없습니다.");
+            throw new PastReservationException("과거 날짜로는 예약할 수 없습니다.");
         }
         return new Reservation(null, name, date, createdAt, time, theme);
     }
