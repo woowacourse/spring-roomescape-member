@@ -4,15 +4,10 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.request.ReservationTimeSaveDto;
+import roomescape.time.dto.request.ReservationTimeStatusUpdateDto;
 import roomescape.time.dto.response.ReservationTimeDetailDto;
 import roomescape.time.service.ReservationTimeService;
 
@@ -27,7 +22,7 @@ public class ReservationTimeAdminController {
 
     @GetMapping("/times")
     public ResponseEntity<List<ReservationTimeDetailDto>> getReservationTimes() {
-        List<ReservationTimeDetailDto> responseData = reservationTimeService.findAll().stream()
+        List<ReservationTimeDetailDto> responseData = reservationTimeService.readAll().stream()
                 .map(ReservationTimeDetailDto::from)
                 .toList();
         return ResponseEntity.ok(responseData);
@@ -42,10 +37,20 @@ public class ReservationTimeAdminController {
         return ResponseEntity.ok(responseData);
     }
 
+    @PatchMapping("/times/{id}/status")
+    public ResponseEntity<ReservationTimeDetailDto> updateStatus(
+            @PathVariable Long id, @RequestBody ReservationTimeStatusUpdateDto dto
+    ) {
+        ReservationTime reservationTime = reservationTimeService.updateStatus(id, dto.isActive());
+        ReservationTimeDetailDto responseData = ReservationTimeDetailDto.from(reservationTime);
+        return ResponseEntity.ok(responseData);
+    }
+
     @DeleteMapping("/times/{id}")
     public ResponseEntity<ReservationTimeDetailDto> delete(@PathVariable Long id) {
         ReservationTime reservationTime = reservationTimeService.delete(id);
         ReservationTimeDetailDto responseData = ReservationTimeDetailDto.from(reservationTime);
         return ResponseEntity.ok(responseData);
     }
+
 }

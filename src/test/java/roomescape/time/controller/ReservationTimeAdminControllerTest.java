@@ -20,13 +20,16 @@ import static roomescape.date.fixture.ReservationDateApiFixture.createReservatio
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
 import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
 import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
+import static roomescape.time.fixture.ReservationTimeApiFixture.updateTimeStatus;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Sql(scripts = "classpath:truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationTimeAdminControllerTest {
 
-    private final String startAt = "10:00:00";
+    private final String startAt1 = "10:00:00";
+    private static String startAt2 = "11:00:00";
+
 
     @LocalServerPort
     private int port;
@@ -47,9 +50,25 @@ class ReservationTimeAdminControllerTest {
     }
 
     @Test
+    @DisplayName("관리자로 등록된 시간 조회시, 활성화/비활성화된 시간을 모두 조회한다.")
+    void readAvailableTimesExcludeInactive() {
+        Integer activeTimeId = createReservationTime(startAt1);
+        Integer inactiveTimeId = createReservationTime(startAt2);
+        updateTimeStatus(activeTimeId, true);
+        updateTimeStatus(inactiveTimeId, false);
+
+        RestAssured.given().log().all()
+                .when().get("/admin/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
+
+
+    @Test
     @DisplayName("관리자는 예약 시간을 생성한다.")
     void create_reservation_time() {
-        Integer timeId = createReservationTime(startAt);
+        Integer timeId = createReservationTime(startAt1);
 
         RestAssured.given().log().all()
                 .when().get("/admin/times")
@@ -57,20 +76,20 @@ class ReservationTimeAdminControllerTest {
                 .statusCode(200)
                 .body("size()", is(1))
                 .body("[0].id", is(timeId))
-                .body("[0].startAt", is(startAt));
+                .body("[0].startAt", is(startAt1));
     }
 
     @Test
     @DisplayName("관리자는 예약 시간을 삭제한다.")
     void delete_reservation_time() {
-        Integer timeId = createReservationTime(startAt);
+        Integer timeId = createReservationTime(startAt1);
 
         RestAssured.given().log().all()
                 .when().delete("/admin/times/" + timeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("id", is(timeId))
-                .body("startAt", is(startAt));
+                .body("startAt", is(startAt1));
 
         RestAssured.given().log().all()
                 .when().get("/admin/times")

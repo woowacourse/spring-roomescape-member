@@ -25,4 +25,16 @@ public class ReservationTimeApiFixture {
                 .path("id");
     }
 
+    public static void updateTimeStatus(Integer timeId, boolean isActive) {
+        Map<String, Object> updateActive = new HashMap<>();
+        updateActive.put("isActive", isActive);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateActive)
+                .when().patch("/admin/times/" + timeId + "/status")
+                .then().log().all()
+                .statusCode(200);
+    }
+
 }

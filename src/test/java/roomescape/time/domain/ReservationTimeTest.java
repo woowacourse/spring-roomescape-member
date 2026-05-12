@@ -16,7 +16,7 @@ class ReservationTimeTest {
 
     @BeforeEach
     void setUp() {
-        reservationTime = ReservationTime.load(1L, LocalTime.of(10, 0));
+        reservationTime = ReservationTime.load(1L, LocalTime.of(10, 0), false);
     }
 
     @Test
@@ -50,7 +50,7 @@ class ReservationTimeTest {
     @DisplayName("두 예약 객체의 동등성을 비교한다.")
     void equals() {
         //given & when
-        ReservationTime otherReservationTime = ReservationTime.load(1L, LocalTime.of(20, 0));
+        ReservationTime otherReservationTime = ReservationTime.load(1L, LocalTime.of(20, 0), false);
 
         //then
         assertEquals(reservationTime, otherReservationTime);
@@ -70,7 +70,7 @@ class ReservationTimeTest {
     @Test
     @DisplayName("예약 시작 시간이 유효하지 않은 경우 예외가 발생한다.")
     void validate_startAt() {
-        assertThatThrownBy(() -> ReservationTime.load(1L, null))
+        assertThatThrownBy(() -> ReservationTime.load(1L, null, false))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 시작 시간은 필수입니다.");
     }

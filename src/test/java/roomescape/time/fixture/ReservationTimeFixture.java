@@ -19,6 +19,24 @@ public class ReservationTimeFixture {
         return ReservationTime.create(LocalTime.of(17, 0));
     }
 
+    public static ReservationTime activeTime15() {
+        ReservationTime reservationTime = ReservationTime.create(LocalTime.of(15, 0));
+        reservationTime.updateStatus(true);
+        return reservationTime;
+    }
+
+    public static ReservationTime activeTime16() {
+        ReservationTime reservationTime = ReservationTime.create(LocalTime.of(16, 0));
+        reservationTime.updateStatus(true);
+        return reservationTime;
+    }
+
+    public static ReservationTime activeTime17() {
+        ReservationTime reservationTime = ReservationTime.create(LocalTime.of(17, 0));
+        reservationTime.updateStatus(true);
+        return reservationTime;
+    }
+
     public static ReservationTime time(LocalTime time) {
         return ReservationTime.create(time);
     }

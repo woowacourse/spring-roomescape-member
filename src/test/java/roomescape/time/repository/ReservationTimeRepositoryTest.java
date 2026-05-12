@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -76,6 +77,38 @@ class ReservationTimeRepositoryTest {
     }
 
     @Test
+    @DisplayName("등록된 예약 시간을 활성화 상태로 변경한다.")
+    void updateStatus_active() {
+        // given
+        ReservationTime saved = saveTime(ReservationTimeFixture.time15());
+        saved.updateStatus(true);
+        updateStatus(saved);
+
+        // when
+        ReservationTime actual = jdbcReservationTimeRepository.findById(saved.id()).get();
+
+        // then
+        Assertions.assertThat(actual.isActive())
+                .isTrue();
+    }
+
+    @Test
+    @DisplayName("등록된 예약 시간을 비활성화 상태로 변경한다.")
+    void updateStatus_inactive() {
+        // given
+        ReservationTime saved = saveTime(ReservationTimeFixture.activeTime15());
+        saved.updateStatus(false);
+        updateStatus(saved);
+
+        // when
+        ReservationTime actual = jdbcReservationTimeRepository.findById(saved.id()).get();
+
+        // then
+        Assertions.assertThat(actual.isActive())
+                .isFalse();
+    }
+
+    @Test
     @DisplayName("예약 시간을 삭제한다.")
     void delete() {
         // given
@@ -111,9 +144,9 @@ class ReservationTimeRepositoryTest {
     @DisplayName("예약 가능한 시간을 조회한다. ")
     void findAvailableTimes() {
         // given
-        ReservationTime reservedTime15 = saveTime(ReservationTimeFixture.time15());
-        ReservationTime reservedTime16 = saveTime(ReservationTimeFixture.time16());
-        ReservationTime nonReservedTime = saveTime(ReservationTimeFixture.time17());
+        ReservationTime reservedTime15 = saveTime(ReservationTimeFixture.activeTime15());
+        ReservationTime reservedTime16 = saveTime(ReservationTimeFixture.activeTime16());
+        ReservationTime nonReservedTime = saveTime(ReservationTimeFixture.activeTime17());
 
         ReservationDate date = saveDate(ReservationDateFixture.oneWeekLater());
         Theme theme = saveTheme(ThemeFixture.activeTheme());
@@ -155,6 +188,10 @@ class ReservationTimeRepositoryTest {
 
     private void saveReservation(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
         jdbcReservationRepository.save(reservation("송송", reservationDate, reservationTime, theme));
+    }
+
+    private boolean updateStatus(ReservationTime saved) {
+        return jdbcReservationTimeRepository.updateStatus(saved);
     }
 
 }

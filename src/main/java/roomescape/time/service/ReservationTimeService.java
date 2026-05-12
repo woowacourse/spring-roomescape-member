@@ -22,7 +22,7 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<ReservationTime> findAll() {
+    public List<ReservationTime> readAll() {
         return reservationTimeRepository.findAll();
     }
 
@@ -34,6 +34,21 @@ public class ReservationTimeService {
     public ReservationTime register(ReservationTimeSaveDto dto) {
         validateDuplicateTimeExist(dto.startAt());
         return reservationTimeRepository.save(ReservationTime.create(dto.startAt()));
+    }
+
+    @Transactional
+    public ReservationTime updateStatus(Long id, boolean isActive) {
+        ReservationTime reservationTime = getReservationTime(id);
+        reservationTime.updateStatus(isActive);
+        boolean isUpdated = reservationTimeRepository.updateStatus(reservationTime);
+        validateIsUpdated(isUpdated);
+        return reservationTime;
+    }
+
+    private void validateIsUpdated(boolean isUpdated) {
+        if (!isUpdated) {
+            throw new IllegalArgumentException("활성화/비활성화 상태 변경에 실패했습니다.");
+        }
     }
 
     @Transactional

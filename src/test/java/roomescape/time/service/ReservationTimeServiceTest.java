@@ -31,17 +31,17 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("모든 예약 시간 정보를 조회한다.")
-    void findAll() {
+    @DisplayName("관리자 등록된 시간 조회시, 활성화/비활성화된 시간을 모두 조회한다.")
+    void readAll() {
         // given
         List<ReservationTime> times = List.of(
                 ReservationTimeFixture.time15(),
-                ReservationTimeFixture.time16()
+                ReservationTimeFixture.activeTime16()
         );
         saveAll(times);
 
         // when
-        List<ReservationTime> actual = reservationTimeService.findAll();
+        List<ReservationTime> actual = reservationTimeService.readAll();
 
         // then
         assertThat(actual)
@@ -58,7 +58,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.register(saveDto(LocalTime.of(12, 0)));
 
         // then
-        assertThat(reservationTimeService.findAll())
+        assertThat(reservationTimeService.readAll())
                 .hasSize(times.size() + 1);
     }
 
@@ -76,7 +76,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.delete(savedTimes.getFirst().id());
 
         // then
-        assertThat(reservationTimeService.findAll())
+        assertThat(reservationTimeService.readAll())
                 .hasSize(times.size() - 1);
     }
 

@@ -13,6 +13,8 @@ public interface ReservationTimeRepository {
 
     ReservationTime save(ReservationTime reservationTime);
 
+    boolean updateStatus(ReservationTime reservationTime);
+
     boolean delete(Long id);
 
     boolean existsByStartAt(LocalTime startAt);

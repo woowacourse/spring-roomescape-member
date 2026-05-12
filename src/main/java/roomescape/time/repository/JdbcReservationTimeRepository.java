@@ -20,7 +20,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) -> ReservationTime.load(
             resultSet.getLong("id"),
-            resultSet.getTime("start_at").toLocalTime()
+            resultSet.getTime("start_at").toLocalTime(),
+            resultSet.getBoolean("is_active")
     );
 
     public JdbcReservationTimeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -33,7 +34,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         String sql = "SELECT * FROM reservation_time";
-
         return jdbcTemplate.query(sql, new MapSqlParameterSource(), reservationTimeRowMapper);
     }
 
@@ -53,9 +53,27 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        SqlParameterSource params = new MapSqlParameterSource("start_at", reservationTime.startAt());
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("start_at", reservationTime.startAt())
+                .addValue("is_active", reservationTime.isActive());
         Long savedId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return ReservationTime.load(savedId, reservationTime.startAt());
+        return ReservationTime.load(savedId, reservationTime.startAt(), reservationTime.isActive());
+    }
+
+    @Override
+    public boolean updateStatus(ReservationTime reservationTime) {
+        String sql = """
+                UPDATE reservation_time 
+                SET is_active = :is_active
+                WHERE id = :id
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", reservationTime.id())
+                .addValue("is_active", reservationTime.isActive());
+
+        int updateCount = jdbcTemplate.update(sql, params);
+        return updateCount > 0;
     }
 
     @Override
@@ -79,13 +97,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         String sql = """
                 SELECT rt.*
                 FROM reservation_time rt
-                WHERE rt.id NOT IN (
-                    SELECT r.time_id
-                    FROM reservation r
-                    WHERE r.date_id = :date_id
-                      AND r.theme_id = :theme_id
-                      AND r.status = 'RESERVED'
-                )
+                WHERE rt.is_active = true
+                  AND rt.id NOT IN (
+                      SELECT r.time_id
+                      FROM reservation r
+                      WHERE r.date_id = :date_id
+                        AND r.theme_id = :theme_id
+                        AND r.status = 'RESERVED'
+                  )
+                ORDER BY rt.start_at ASC
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource()
