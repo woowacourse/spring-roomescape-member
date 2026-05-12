@@ -5,25 +5,18 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import roomescape.model.ReservationTime;
 
 @JdbcTest
+@Import(TimeRepository.class)
 public class ReservationTimeRepositoryTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     private TimeRepository timeRepository;
-
-    @BeforeEach
-    public void setUp() {
-        timeRepository = new TimeRepository(jdbcTemplate);
-    }
 
     @Test
     void 전쳬_시간_조회를_할_수_있다() {

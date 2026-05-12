@@ -4,27 +4,20 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
 @JdbcTest
+@Import(ReservationRepository.class)
 public class ReservationRepositoryTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     private ReservationRepository reservationRepository;
-
-    @BeforeEach
-    public void setUp() {
-        reservationRepository = new ReservationRepository(jdbcTemplate);
-    }
 
     @Test
     void 모든_예약을_조회한다() {

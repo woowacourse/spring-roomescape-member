@@ -4,26 +4,19 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import roomescape.model.Theme;
 
 
 @JdbcTest
+@Import(ThemeRepository.class)
 public class ThemeRepositoryTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     private ThemeRepository themeRepository;
-
-    @BeforeEach
-    public void setUp() {
-        themeRepository = new ThemeRepository(jdbcTemplate);
-    }
 
     @Test
     public void 새로운_테마를_등록할_수_있다() {
