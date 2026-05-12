@@ -18,7 +18,7 @@ import roomescape.schedule.dto.response.ScheduleSaveResponse;
 import java.util.List;
 
 @RestController
-@RequestMapping("/schedule")
+@RequestMapping("/schedules")
 @RequiredArgsConstructor
 public class ScheduleController {
     private final ScheduleService scheduleService;
