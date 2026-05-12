@@ -4,13 +4,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import roomescape.domain.theme.PopularThemeCondition;
 
+import java.time.LocalDate;
+
 public record PopularConditionRequest(
         @NotNull
-        @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜는 YYYY-MM-DD 형식이여야 합니다.")
-        String startDate,
+        LocalDate startDate,
         @NotNull
-        @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜는 YYYY-MM-DD 형식이여야 합니다.")
-        String endDate,
+        LocalDate endDate,
         @NotNull
         Long size
 ) {

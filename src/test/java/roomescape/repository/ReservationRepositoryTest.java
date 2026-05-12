@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.repository.reservation.JdbcReservationRepository;
@@ -23,8 +22,8 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
             1L,
             "브라운",
             LocalDate.parse("2023-08-05"),
-            new ReservationTime(1, LocalTime.parse("10:00")),
-            new Theme(1, "테마1", "테마 설명", "image url")
+            new ReservationTime(1L, LocalTime.parse("10:00")),
+            new Theme(1L, "테마1", "테마 설명", "image url")
     );
 
     @Override
@@ -69,15 +68,15 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
                 null,
                 "테스트",
                 LocalDate.parse("2023-08-15"),
-                new ReservationTime(1, LocalTime.parse("15:14")),
-                new Theme(1, "theme", "description", "imageUrl")
+                new ReservationTime(1L, LocalTime.parse("15:14")),
+                new Theme(1L, "theme", "description", "imageUrl")
         );
 
         reservationRepository.addReservation(reservation);
 
         List<Reservation> reservations = reservationRepository.getAllReservation();
 
-        Reservation expectedReservation = new Reservation(2L, "테스트", LocalDate.parse("2023-08-15"), new ReservationTime(1, LocalTime.parse("10:00")), new Theme(1, "테마1", "테마 설명", "image url"));
+        Reservation expectedReservation = new Reservation(2L, "테스트", LocalDate.parse("2023-08-15"), new ReservationTime(1L, LocalTime.parse("10:00")), new Theme(1L, "테마1", "테마 설명", "image url"));
 
         assertThat(reservations.size()).isEqualTo(2);
         assertThat(reservations).contains(expectedReservation);
@@ -99,15 +98,15 @@ public class ReservationRepositoryTest extends BaseRepositoryTest {
                         2L,
                         "테스트",
                         LocalDate.parse("2023-09-15"),
-                        new ReservationTime(1, LocalTime.parse("10:00")),
-                        new Theme(1, "테마1", "테마 설명", "image url")
+                        new ReservationTime(1L, LocalTime.parse("10:00")),
+                        new Theme(1L, "테마1", "테마 설명", "image url")
                 ),
                 new Reservation(
                         4L,
                         "테스트",
                         LocalDate.parse("2023-11-15"),
-                        new ReservationTime(1, LocalTime.parse("10:00")),
-                        new Theme(1, "테마1", "테마 설명", "image url")
+                        new ReservationTime(1L, LocalTime.parse("10:00")),
+                        new Theme(1L, "테마1", "테마 설명", "image url")
                 )
         );
 

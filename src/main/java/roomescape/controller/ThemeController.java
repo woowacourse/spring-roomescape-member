@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.theme.PopularThemeCondition;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.ThemeCommand;
 import roomescape.domain.theme.ThemeWithCount;
 import roomescape.dto.theme.AddThemeRequest;
 import roomescape.dto.theme.PopularConditionRequest;
@@ -43,8 +42,7 @@ public class ThemeController {
 
     @PostMapping()
     public ResponseEntity<ThemeResponse> addTheme(@RequestBody @Valid AddThemeRequest addThemeRequest) {
-        ThemeCommand themeCommand = addThemeRequest.from();
-        Theme addedTheme = themeService.addTheme(themeCommand);
+        Theme addedTheme = themeService.addTheme(addThemeRequest);
 
         return new ResponseEntity<>(ThemeResponse.from(addedTheme), HttpStatus.CREATED);
     }
@@ -58,8 +56,7 @@ public class ThemeController {
 
     @GetMapping(value = "/popular", params = {"startDate", "endDate", "size"})
     public ResponseEntity<List<PopularThemeResponse>> getPopularTheme(@ModelAttribute @Valid PopularConditionRequest popularConditionRequest) {
-        PopularThemeCondition popularThemeCondition = popularConditionRequest.to();
-        List<ThemeWithCount> themeWithCounts = themeService.getPopularTheme(popularThemeCondition);
+        List<ThemeWithCount> themeWithCounts = themeService.getPopularTheme(popularConditionRequest);
         List<PopularThemeResponse> popularThemeResponses = themeWithCounts.stream()
                 .map(PopularThemeResponse::from)
                 .toList();

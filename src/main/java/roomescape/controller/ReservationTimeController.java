@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.reservationTime.ReservationTime;
-import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.dto.reservationTime.AddReservationTimeRequest;
@@ -36,11 +35,7 @@ public class ReservationTimeController {
 
     @PostMapping()
     public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody @Valid AddReservationTimeRequest addReservationTimeRequest) {
-        /**
-         * Command 객체 제거
-         */
-        ReservationTimeCommand reservationTimeCommand = new ReservationTimeCommand(addReservationTimeRequest.startAt());
-        ReservationTime reservationTime = reservationTimeService.addReservationTime(reservationTimeCommand);
+        ReservationTime reservationTime = reservationTimeService.addReservationTime(addReservationTimeRequest);
 
         return new ResponseEntity(ReservationTimeResponse.from(reservationTime), HttpStatus.CREATED);
     }

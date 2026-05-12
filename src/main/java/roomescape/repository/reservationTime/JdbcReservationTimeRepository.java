@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservationTime.ReservationTime;
-import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 
@@ -62,12 +61,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime addReservationTime(ReservationTimeCommand reservationTimeCommand) {
+    public ReservationTime addReservationTime(ReservationTime reservationTime) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
-                COLUMN_START_AT, reservationTimeCommand.startAt()
+                COLUMN_START_AT, reservationTime.startAt()
         )).longValue();
 
-        return ReservationTime.from(id, reservationTimeCommand);
+        return new ReservationTime(id, reservationTime.startAt());
     }
 
     @Override

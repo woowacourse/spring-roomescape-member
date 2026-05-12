@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationCommand;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.reservation.ReservationCondition;
 import roomescape.dto.reservation.ReservationResponse;
@@ -48,7 +47,7 @@ public class ReservationController {
 
     @GetMapping(params = {"name"})
     public ResponseEntity<List<ReservationResponse>> getReservation(@ModelAttribute @Valid ReservationCondition reservationCondition) {
-        List<Reservation> reservations = roomReservationService.getAllReservationByName(reservationCondition.name());
+        List<Reservation> reservations = roomReservationService.getAllReservationByName(reservationCondition);
         List<ReservationResponse> reservationResponses = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();

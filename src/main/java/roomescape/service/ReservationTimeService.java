@@ -1,17 +1,18 @@
 package roomescape.service;
 
-import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservationTime.ReservationTime;
-import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
+import roomescape.dto.reservationTime.AddReservationTimeRequest;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
+
+import java.util.List;
 
 @Service
 public class ReservationTimeService {
@@ -28,8 +29,8 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTime addReservationTime(ReservationTimeCommand reservationTimeCommand) {
-        return reservationTimeRepository.addReservationTime(reservationTimeCommand);
+    public ReservationTime addReservationTime(AddReservationTimeRequest addReservationTimeRequest) {
+        return reservationTimeRepository.addReservationTime(addReservationTimeRequest.toEntity());
     }
 
     @Transactional

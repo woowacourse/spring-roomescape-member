@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationTime.ReservationTime;
-import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.exception.DataReferencedException;
@@ -64,7 +63,7 @@ public class ReservationTimeServiceTest {
     private ReservationTimeRepository createReservationTimeRepository(Runnable runnable) {
         return new ReservationTimeRepository() {
             @Override
-            public ReservationTime addReservationTime(ReservationTimeCommand reservationTimeCommand) {
+            public ReservationTime addReservationTime(ReservationTime reservationTime) {
                 return null;
             }
 

@@ -4,11 +4,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.theme.PopularThemeCondition;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.ThemeCommand;
 import roomescape.domain.theme.ThemeWithCount;
+import roomescape.dto.theme.PopularConditionRequest;
 import roomescape.repository.theme.JdbcThemeRepository;
 import roomescape.repository.theme.ThemeRepository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +39,7 @@ public class ThemeRepositoryTest extends BaseRepositoryTest {
         Optional<Theme> theme = themeRepository.getTheme(1L);
 
         assertThat(theme.isPresent()).isTrue();
-        assertThat(theme.get()).isEqualTo(new Theme(1, "테마1", "테마 설명", "image url"));
+        assertThat(theme.get()).isEqualTo(new Theme(1L, "테마1", "테마 설명", "image url"));
     }
 
     @Test
@@ -54,7 +55,7 @@ public class ThemeRepositoryTest extends BaseRepositoryTest {
     void getAllThemeTest() {
         List<Theme> reservationTimes = themeRepository.getAllTheme();
 
-        assertThat(reservationTimes).containsExactly(new Theme(1, "테마1", "테마 설명", "image url"));
+        assertThat(reservationTimes).containsExactly(new Theme(1L, "테마1", "테마 설명", "image url"));
     }
 
     @Test
@@ -63,16 +64,16 @@ public class ThemeRepositoryTest extends BaseRepositoryTest {
         themeRepository.deleteTheme(1);
         List<Theme> reservationTimes = themeRepository.getAllTheme();
 
-        assertThat(reservationTimes).isNotIn(new Theme(1, "테마1", "테마 설명", "image url"));
+        assertThat(reservationTimes).isNotIn(new Theme(1L, "테마1", "테마 설명", "image url"));
     }
 
     @Test
     @DisplayName("예약 테마 추가 정상적으로 작동하는 지 테스트")
     void insertReservationTest() {
-        Theme theme = themeRepository.addTheme(new ThemeCommand( "테마2", "테마 설명", "image url"));
+        Theme theme = themeRepository.addTheme(new Theme( "테마2", "테마 설명", "image url"));
         List<Theme> reservations = themeRepository.getAllTheme();
 
-        Theme expectedTheme = new Theme(2, "테마2", "테마 설명", "image url");
+        Theme expectedTheme = new Theme(2L, "테마2", "테마 설명", "image url");
 
         assertThat(theme).isEqualTo(expectedTheme);
         assertThat(reservations).contains(expectedTheme);
@@ -84,8 +85,8 @@ public class ThemeRepositoryTest extends BaseRepositoryTest {
         createReservationTimeTable();
         createReservationTable();
 
-        String startDate = "2026-04-01";
-        String endDate = "2026-05-01";
+        LocalDate startDate = LocalDate.parse("2026-04-01");
+        LocalDate endDate = LocalDate.parse("2026-05-01");
         long size = 2;
 
         insertTheme("name1", "description1", "imageUrl1");
@@ -102,7 +103,7 @@ public class ThemeRepositoryTest extends BaseRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id, created_at) VALUES (?, ?, ?, ?, ?)", "reservation5", "2026-04-04", 1, 3, "2026-04-04");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id, created_at) VALUES (?, ?, ?, ?, ?)", "reservation6", "2026-05-05", 1, 2, "2026-05-05");
 
-        List<ThemeWithCount> popularThemes = themeRepository.getPopularTheme(new PopularThemeCondition(startDate, endDate, size));
+        List<ThemeWithCount> popularThemes = themeRepository.getPopularTheme(new PopularConditionRequest(startDate, endDate, size));
         assertAll(
                 () -> assertThat(popularThemes.size()).isEqualTo(2),
                 () -> assertThat(popularThemes.getFirst().id()).isEqualTo(2),

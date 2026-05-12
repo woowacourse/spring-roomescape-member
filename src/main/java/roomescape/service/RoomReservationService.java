@@ -1,14 +1,13 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationCommand;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AddReservationRequest;
+import roomescape.dto.reservation.ReservationCondition;
 import roomescape.exception.DuplicatedReservationRequestException;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundResourceException;
@@ -32,8 +31,8 @@ public class RoomReservationService {
         return reservationRepository.getAllReservation();
     }
 
-    public List<Reservation> getAllReservationByName(String name) {
-        return reservationRepository.getAllReservationByName(name);
+    public List<Reservation> getAllReservationByName(ReservationCondition reservationCondition) {
+        return reservationRepository.getAllReservationByName(reservationCondition.name());
     }
 
     @Transactional

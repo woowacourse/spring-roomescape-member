@@ -3,7 +3,6 @@ package roomescape.repository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservationTime.ReservationTime;
-import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.repository.reservationTime.JdbcReservationTimeRepository;
@@ -43,7 +42,7 @@ public class ReservationTimeRepositoryTest extends BaseRepositoryTest {
         Optional<ReservationTime> reservationTime = reservationTimeRepository.getReservationTime(1);
 
         assertThat(reservationTime.isPresent()).isTrue();
-        assertThat(reservationTime.get()).isEqualTo(new ReservationTime(1, LocalTime.parse("10:00")));
+        assertThat(reservationTime.get()).isEqualTo(new ReservationTime(1L, LocalTime.parse("10:00")));
     }
 
     @Test
@@ -59,7 +58,7 @@ public class ReservationTimeRepositoryTest extends BaseRepositoryTest {
     void getReservationTimesTest() {
         List<ReservationTime> reservationTimes = reservationTimeRepository.getAllReservationTime();
 
-        assertThat(reservationTimes).containsExactly(new ReservationTime(1, LocalTime.parse("10:00")));
+        assertThat(reservationTimes).containsExactly(new ReservationTime(1L, LocalTime.parse("10:00")));
     }
 
     @Test
@@ -68,18 +67,18 @@ public class ReservationTimeRepositoryTest extends BaseRepositoryTest {
         reservationTimeRepository.deleteReservationTime(1);
         List<ReservationTime> reservationTimes = reservationTimeRepository.getAllReservationTime();
 
-        assertThat(reservationTimes).isNotIn(new ReservationTime(1, LocalTime.parse("10:00")));
+        assertThat(reservationTimes).isNotIn(new ReservationTime(1L, LocalTime.parse("10:00")));
     }
 
     @Test
     @DisplayName("예약 시간 추가 정상적으로 작동하는 지 테스트")
     void insertReservationTest() {
 
-        reservationTimeRepository.addReservationTime(new ReservationTimeCommand(LocalTime.parse("12:00")));
+        reservationTimeRepository.addReservationTime(new ReservationTime(LocalTime.parse("12:00")));
 
         List<ReservationTime> reservations = reservationTimeRepository.getAllReservationTime();
 
-        ReservationTime expectedReservation = new ReservationTime(2, LocalTime.parse("12:00"));
+        ReservationTime expectedReservation = new ReservationTime(2L, LocalTime.parse("12:00"));
 
         assertThat(reservations.size()).isEqualTo(2);
         assertThat(reservations).contains(expectedReservation);

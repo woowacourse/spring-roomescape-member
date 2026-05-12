@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.PopularThemeCondition;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.ThemeCommand;
 import roomescape.domain.theme.ThemeWithCount;
+import roomescape.dto.theme.PopularConditionRequest;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -46,14 +46,14 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .withTableName(TABLE_NAME)
                 .usingGeneratedKeyColumns(COLUMN_ID);    }
 
-    public Theme addTheme(ThemeCommand themeCommand) {
+    public Theme addTheme(Theme theme) {
         long id = simpleJdbcInsert.executeAndReturnKey(Map.of(
-                COLUMN_NAME, themeCommand.name(),
-                COLUMN_DESCRIPTION, themeCommand.description(),
-                COLUMN_IMAGE_URL, themeCommand.imageUrl()
+                COLUMN_NAME, theme.name(),
+                COLUMN_DESCRIPTION, theme.description(),
+                COLUMN_IMAGE_URL, theme.imageUrl()
         )).longValue();
 
-        return Theme.from(id, themeCommand);
+        return new Theme(id, theme.name(), theme.description(), theme.imageUrl());
     }
 
     public List<Theme> getAllTheme() {
@@ -71,11 +71,11 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<ThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
+    public List<ThemeWithCount> getPopularTheme(PopularConditionRequest popularConditionRequest) {
         return jdbcTemplate.query(SELECT_POPULAR_THEMES_BY_DATE_RANGE, (rs, i) -> ThemeWithCount.from(rs),
-                popularThemeCondition.startDate(),
-                popularThemeCondition.endDate(),
-                popularThemeCondition.size()
+                popularConditionRequest.startDate(),
+                popularConditionRequest.endDate(),
+                popularConditionRequest.size()
         );
     }
 }

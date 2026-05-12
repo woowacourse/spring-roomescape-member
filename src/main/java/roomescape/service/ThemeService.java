@@ -1,17 +1,18 @@
 package roomescape.service;
 
-import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.theme.PopularThemeCondition;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.ThemeCommand;
 import roomescape.domain.theme.ThemeWithCount;
+import roomescape.dto.theme.AddThemeRequest;
+import roomescape.dto.theme.PopularConditionRequest;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
-import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
+import roomescape.repository.theme.ThemeRepository;
+
+import java.util.List;
 
 @Service
 public class ThemeService {
@@ -25,8 +26,8 @@ public class ThemeService {
     }
 
     @Transactional
-    public Theme addTheme(ThemeCommand themeCommand) {
-        return themeRepository.addTheme(themeCommand);
+    public Theme addTheme(AddThemeRequest addThemeRequest) {
+        return themeRepository.addTheme(addThemeRequest.toEntity());
     }
 
     public List<Theme> getAllTheme() {
@@ -48,7 +49,7 @@ public class ThemeService {
         }
     }
 
-    public List<ThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
-        return themeRepository.getPopularTheme(popularThemeCondition);
+    public List<ThemeWithCount> getPopularTheme(PopularConditionRequest popularConditionRequest) {
+        return themeRepository.getPopularTheme(popularConditionRequest);
     }
 }

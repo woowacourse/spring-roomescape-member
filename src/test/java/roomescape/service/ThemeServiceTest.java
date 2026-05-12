@@ -6,8 +6,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.PopularThemeCondition;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.ThemeCommand;
 import roomescape.domain.theme.ThemeWithCount;
+import roomescape.dto.theme.PopularConditionRequest;
 import roomescape.exception.DataReferencedException;
 import roomescape.exception.ErrorMessage;
 import roomescape.repository.reservation.ReservationRepository;
@@ -64,8 +64,8 @@ public class ThemeServiceTest {
     private ThemeRepository createThemeRepository(Runnable runnable) {
         return new ThemeRepository() {
             @Override
-            public Theme addTheme(ThemeCommand themeCommand) {
-                return new Theme(1, themeCommand.name(), themeCommand.description(), themeCommand.imageUrl());
+            public Theme addTheme(Theme theme) {
+                return new Theme(1L, theme.name(), theme.description(), theme.imageUrl());
             }
 
             @Override
@@ -84,7 +84,7 @@ public class ThemeServiceTest {
             }
 
             @Override
-            public List<ThemeWithCount> getPopularTheme(PopularThemeCondition popularThemeCondition) {
+            public List<ThemeWithCount> getPopularTheme(PopularConditionRequest popularConditionRequest) {
                 return List.of();
             }
         };
