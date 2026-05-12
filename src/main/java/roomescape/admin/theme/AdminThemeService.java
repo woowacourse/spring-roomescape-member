@@ -49,13 +49,13 @@ public class AdminThemeService {
         return AdminThemesResponse.from(themes);
     }
 
-    public void deleteTheme(Long id) {
-        if (!adminThemeRepository.existsById(id)) {
+    public void deleteTheme(Long themeId) {
+        if (!adminThemeRepository.existsById(themeId)) {
             throw new RoomescapeException(ErrorCode.THEME_ID_NOT_FOUND);
         }
-        if (reservationRepository.existsByThemeId(id)) {
+        if (reservationRepository.existsByThemeId(themeId)) {
             throw new RoomescapeException(ErrorCode.TIME_DELETE_NOT_ALLOWED);
         }
-        adminThemeRepository.deleteById(id);
+        adminThemeRepository.deleteById(themeId);
     }
 }
