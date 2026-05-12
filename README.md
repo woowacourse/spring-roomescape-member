@@ -134,6 +134,56 @@
 
 ---
 
+## 예약 변경·취소 & 에러 처리 cycle 2 : 구현 기능 목록
+
+### 1단계 - 서비스 정책
+- [ ] 지나간 날짜·시간으로 예약 불가 (날짜가 오늘이면 현재 시각 이전 시간도 거부)
+- [ ] 유효하지 않은 입력값 거부 (`@Valid` 적용 — 빈 이름, null 날짜 등)
+- [ ] 이미 지난 예약 취소·변경 불가
+
+### 2단계 - 에러 응답 설계
+- [ ] 에러 응답 형식 통일: `{"message": "..."}`
+- [ ] `GlobalExceptionHandler` 보강
+  - `MethodArgumentNotValidException` → 400
+  - `HttpMessageNotReadableException` (잘못된 JSON/날짜 형식) → 400
+  - 존재하지 않는 엔드포인트 → 404
+  - 그 외 예외 fallback → 500 (`{"message": "서버 오류가 발생했습니다."}`)
+- [ ] 브라우저에서 에러 발생 시 서버 응답의 `message`를 사용자에게 표시
+
+### 3단계 - 예약 변경/취소
+- [ ] 예약 변경 API (`PATCH /reservations/{id}`) — 날짜·시간 변경
+  - 변경 대상이 존재해야 함
+  - 변경하려는 날짜+시간+테마에 중복 예약 없어야 함
+  - 변경하려는 날짜·시간이 과거이면 거부
+- [ ] 예약 변경 화면 (`user.html` — 날짜·시간 변경 UI 추가)
+
+### 에러 응답 형식
+
+```json
+{ "code": "RESERVATION_CONFLICT", "message": "이미 예약된 시간입니다." }
+```
+
+### 에러 응답 명세
+
+| 상황 | 상태 코드 | code 예시 |
+|------|---------|---------|
+| 유효하지 않은 입력값 (빈 이름, null 날짜 등) | `400` | `INVALID_INPUT` |
+| 잘못된 JSON / 날짜 형식 | `400` | `INVALID_FORMAT` |
+| 존재하지 않는 리소스 (ID) | `404` | `NOT_FOUND` |
+| 변경하려는 시간이 이미 예약됨 (서버 상태와 충돌) | `409` | `RESERVATION_CONFLICT` |
+| 이미 지난 예약 취소·변경 (비즈니스 로직상 불가) | `422` | `PAST_RESERVATION` |
+| 서버 내부 오류 | `500` | `SERVER_ERROR` |
+
+> 지나간 예약 기준: `예약 날짜 + 예약 시간 < 현재 시각 (LocalDateTime)`
+
+### 추가 API 명세
+
+| 기능 | 메서드 / URL | 요청 본문 | 응답 |
+|------|------------|---------|------|
+| **예약 변경** | `PATCH /reservations/{id}` | `{date, timeId}` | `200 {id, date, themeName, time}` |
+
+---
+
 ## 4️⃣ API 명세
 
 ### 관리자 API (`/admin`)
