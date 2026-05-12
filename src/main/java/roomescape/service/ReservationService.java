@@ -71,6 +71,7 @@ public class ReservationService {
         if (!reservation.getUser().getId().equals(userId)) {
             throw new UnauthorizedReservationException("본인의 예약만 변경할 수 있습니다.");
         }
+        checkNotPastReservation(reservation);
 
         ReservationTime time = reservationTimeDao.findById(request.timeId())
                 .orElseThrow(() -> new ReservationTimeNotFoundException("존재하지 않는 예약 시간입니다."));
@@ -90,12 +91,20 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
     }
 
+    private void checkNotPastReservation(Reservation reservation) {
+        LocalDateTime reservationAt = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
+        if (reservationAt.isBefore(LocalDateTime.now())) {
+            throw new PastReservationException("지난 예약은 변경하거나 취소할 수 없습니다.");
+        }
+    }
+
     public void deleteMyReservation(Long reservationId, Long userId) {
         Reservation reservation = reservationDao.findById(reservationId)
                 .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
         if (!reservation.getUser().getId().equals(userId)) {
             throw new UnauthorizedReservationException("본인의 예약만 삭제할 수 있습니다.");
         }
+        checkNotPastReservation(reservation);
         reservationDao.deleteById(reservationId);
     }
 

@@ -19,10 +19,6 @@ public class ReservationPolicyTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // ─────────────────────────────────────────────
-    // 1단계: 서비스 정책
-    // ─────────────────────────────────────────────
-
     @Test
     void 과거_날짜_예약_시도_시_400_반환() {
         insertUser(1L, "브라운", "brown@test.com");
@@ -74,10 +70,6 @@ public class ReservationPolicyTest {
                 .statusCode(409)
                 .body("message", equalTo("해당 시간에 예약이 존재하여 삭제할 수 없습니다."));
     }
-
-    // ─────────────────────────────────────────────
-    // 3단계: 예약 변경 (PATCH /reservations/{id})
-    // ─────────────────────────────────────────────
 
     @Test
     void 본인_예약_날짜_변경_성공() {
@@ -182,9 +174,41 @@ public class ReservationPolicyTest {
                 .body("message", equalTo("선택하신 날짜·시간·테마에 이미 예약이 있습니다. 다른 시간을 선택해 주세요."));
     }
 
-    // ─────────────────────────────────────────────
-    // 헬퍼 메서드
-    // ─────────────────────────────────────────────
+    @Test
+    void 과거_예약_변경_시도_시_400_반환() {
+        insertUser(1L, "브라운", "brown@test.com");
+        insertTheme(1L, "테마명");
+        insertReservationTime(1L, "10:00:00");
+        insertReservationTime(2L, "14:00:00");
+        // 과거 날짜로 예약 강제 삽입
+        insertReservation(1L, 1L, "2020-01-01", 1L);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "2030-09-10"); // 변경하려는 날짜는 미래라도
+        params.put("timeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1?userId=1")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo("지난 예약은 변경하거나 취소할 수 없습니다."));
+    }
+
+    @Test
+    void 과거_예약_취소_시도_시_400_반환() {
+        insertUser(1L, "브라운", "brown@test.com");
+        insertTheme(1L, "테마명");
+        insertReservationTime(1L, "10:00:00");
+        insertReservation(1L, 1L, "2020-01-01", 1L);
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1?userId=1")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo("지난 예약은 변경하거나 취소할 수 없습니다."));
+    }
 
     private void insertUser(Long id, String name, String email) {
         jdbcTemplate.update("INSERT INTO users(id, name, email) VALUES (?, ?, ?)", id, name, email);

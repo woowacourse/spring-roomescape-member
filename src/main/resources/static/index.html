@@ -201,6 +201,7 @@
     <nav class="top-nav">
         <div class="top-nav-logo">🔐 RoomEscape</div>
         <div class="top-nav-links">
+            <a class="btn btn-ghost btn-sm" href="/my.html">내 예약</a>
             <a class="btn btn-ghost btn-sm" href="/admin/reservation.html">🛠 관리자</a>
         </div>
     </nav>
@@ -358,7 +359,12 @@
         const res = await fetch(url, opts);
         if (!res.ok) {
             const text = await res.text().catch(() => '');
-            throw new Error(text || `HTTP ${res.status}`);
+            let errorMsg = text;
+            try {
+                const json = JSON.parse(text);
+                if (json.message) errorMsg = json.message;
+            } catch(e) {}
+            throw new Error(errorMsg || `HTTP ${res.status}`);
         }
         const ct = res.headers.get('Content-Type') || '';
         return ct.includes('json') ? res.json() : null;
