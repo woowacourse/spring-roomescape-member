@@ -54,7 +54,7 @@ class ReservationFlowTest {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("userName", "매트");
         reservation.put("themeId", 1);
-        reservation.put("date", "2026-05-10");
+        reservation.put("date", "2026-12-30");
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -62,6 +62,29 @@ class ReservationFlowTest {
                 .body(reservation)
                 .when().post("/api/reservations")
                 .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/api/reservations")
+                .then().log().all()
                 .statusCode(409);
+    }
+
+    @Test
+    void 과거_시간_예약시_422() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("userName", "동키");
+        reservation.put("themeId", 1);
+        reservation.put("date", "2024-01-01");
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/api/reservations")
+                .then().log().all()
+                .statusCode(422);
     }
 }

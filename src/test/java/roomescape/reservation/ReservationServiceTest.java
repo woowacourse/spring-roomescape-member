@@ -5,15 +5,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.exception.RoomescapeException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -35,8 +37,20 @@ class ReservationServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
-    @InjectMocks
     private ReservationService reservationService;
+
+    private final Clock fixedClock = Clock.fixed(
+            Instant.parse("2026-01-01T12:00:00Z"),
+            ZoneId.of("Asia/Seoul")
+    );
+
+    @BeforeEach
+    void setUp() {
+        reservationService = new ReservationService(
+                reservationRepository, reservationTimeRepository,
+                themeRepository, fixedClock
+        );
+    }
 
     @Test
     void 예약_생성() {
@@ -92,6 +106,22 @@ class ReservationServiceTest {
         given(reservationRepository.existsActiveByDateAndThemeAndTime(date, 1L, 1L))
                 .willReturn(true);
 
+        assertThatThrownBy(() -> reservationService.create(request))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
+    void 과거_시간_예약시_예외() {
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10,
+                0));
+        Theme theme = new Theme(1L, "공포의 방", "설명", "thumb.jpg");
+        LocalDate pastDate = LocalDate.of(2025, 12, 31);
+        ReservationRequest request = new ReservationRequest("동키", 1L,
+                pastDate, 1L);
+
+        given(reservationTimeRepository.findById(1L)).willReturn(Optional.
+                of(time));
+        given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
         assertThatThrownBy(() -> reservationService.create(request))
                 .isInstanceOf(RoomescapeException.class);
     }
