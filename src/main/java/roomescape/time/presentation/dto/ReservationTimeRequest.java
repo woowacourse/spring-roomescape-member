@@ -10,9 +10,9 @@ public record ReservationTimeRequest(
         @JsonFormat(pattern = "HH:mm")
         LocalTime startAt
 ) {
-    public static ReservationTime toEntity(ReservationTimeRequest request) {
+    public ReservationTime toEntity() {
         return ReservationTime.builder()
-                .startAt(request.startAt)
+                .startAt(this.startAt)
                 .build();
     }
 }

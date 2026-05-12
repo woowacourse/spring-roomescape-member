@@ -8,21 +8,21 @@ import roomescape.theme.domain.Theme;
 
 @Builder
 public record ThemeRequest(
-        @NotBlank
+        @NotBlank(message = "이름은 필수입니다.")
         String name,
-        @NotBlank
+        @NotBlank(message = "섬네일 이미지가 없습니다.")
         String thumbnailImageUrl,
-        @NotBlank
+        @NotBlank(message = "설명을 작성해주세요.")
         String description,
-        @NotNull
+        @NotNull(message = "소요 시간을 넣어주세요.")
         LocalTime durationTime
 ) {
-    public static Theme toEntity(ThemeRequest request) {
+    public Theme toEntity() {
         return Theme.builder()
-                .name(request.name)
-                .description(request.description)
-                .thumbnailImageUrl(request.thumbnailImageUrl)
-                .durationTime(request.durationTime)
+                .name(this.name)
+                .description(this.description)
+                .thumbnailImageUrl(this.thumbnailImageUrl)
+                .durationTime(this.durationTime)
                 .build();
     }
 }

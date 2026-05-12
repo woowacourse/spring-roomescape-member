@@ -36,7 +36,7 @@ class ThemeServiceTest {
                 .durationTime(LocalTime.now(fixedClock))
                 .build();
 
-        service.addTheme(ThemeRequest.toEntity(request));
+        service.addTheme(request.toEntity());
         Assertions.assertThatThrownBy(() -> service.deleteTheme(-1L))
                 .isInstanceOf(ThemeNotFoundException.class);
     }
@@ -50,7 +50,7 @@ class ThemeServiceTest {
                 .thumbnailImageUrl("https://~~~~")
                 .durationTime(LocalTime.now(fixedClock))
                 .build();
-        Theme theme = service.addTheme(ThemeRequest.toEntity(request));
+        Theme theme = service.addTheme(request.toEntity());
         Assertions.assertThatCode(() -> service.deleteTheme(theme.getId()))
                 .doesNotThrowAnyException();
     }
