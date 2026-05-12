@@ -21,7 +21,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
-        Reservation reservation = service.create(
+        Reservation reservation = service.createUserReservation(
                 request.name(),
                 request.date(),
                 request.timeId(),

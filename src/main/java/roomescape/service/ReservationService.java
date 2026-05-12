@@ -11,6 +11,7 @@ import roomescape.repository.ThemeRepository;
 import roomescape.service.result.TimeAvailabilityResult;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -32,14 +33,16 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
-        validateAlreadyReserved(date, timeId, themeId);
+    public Reservation createUserReservation(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = findReservationTime(timeId);
-        Theme theme = findTheme(themeId);
-        Reservation reservation = new Reservation(null, name, date, time, theme);
-        Long id = reservationRepository.insert(reservation);
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 ID입니다."));
+        validateNotPast(date, time);
+        return create(name, date, timeId, themeId, time);
+    }
+
+    @Transactional
+    public Reservation createAdminReservation(String name, LocalDate date, Long timeId, Long themeId) {
+        ReservationTime time = findReservationTime(timeId);
+        return create(name, date, timeId, themeId, time);
     }
 
     @Transactional
@@ -61,9 +64,25 @@ public class ReservationService {
                 .toList();
     }
 
+    private Reservation create(String name, LocalDate date, Long timeId, Long themeId, ReservationTime time) {
+        validateAlreadyReserved(date, timeId, themeId);
+        Theme theme = findTheme(themeId);
+        Reservation reservation = new Reservation(null, name, date, time, theme);
+        Long id = reservationRepository.insert(reservation);
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 ID입니다."));
+    }
+
     private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existWith(date, timeId, themeId)) {
             throw new IllegalArgumentException("[ERROR] 이미 예약된 시간입니다.");
+        }
+    }
+
+    private void validateNotPast(LocalDate date, ReservationTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("[ERROR] 이미 지난 시간으로는 예약할 수 없습니다.");
         }
     }
 
