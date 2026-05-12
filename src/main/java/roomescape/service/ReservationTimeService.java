@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -15,6 +16,7 @@ import roomescape.exception.EntityNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.ReservationTimeCreateCommand;
+import roomescape.service.mapper.ReservationTimeResponseMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -23,24 +25,29 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository timeRepository;
     private final ReservationRepository reservationRepository;
+    private final ReservationTimeResponseMapper reservationTimeResponseMapper;
 
     @Transactional
-    public ReservationTime create(
+    public ReservationTimeResponse create(
             ReservationTimeCreateCommand command
     ) {
         EntityId id = EntityId.random();
         ReservationTime reservationTime = new ReservationTime(id, command.startAt());
 
-        return timeRepository.persist(reservationTime);
+        ReservationTime persisted = timeRepository.persist(reservationTime);
+        return reservationTimeResponseMapper.map(persisted);
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationTime> findAll() {
-        return timeRepository.findAll();
+    public List<ReservationTimeResponse> findAll() {
+        return timeRepository.findAll()
+                .stream()
+                .map(reservationTimeResponseMapper::map)
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationTime> findAvailableTimes(
+    public List<ReservationTimeResponse> findAvailableTimes(
             EntityId themeId,
             LocalDate date
     ) {
@@ -53,6 +60,7 @@ public class ReservationTimeService {
 
         return allTimes.stream()
                 .filter(time -> !inUsedTimeIds.contains(time.id()))
+                .map(reservationTimeResponseMapper::map)
                 .toList();
     }
 

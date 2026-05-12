@@ -15,7 +15,6 @@ import roomescape.controller.dto.ReservationDetailResponse;
 import roomescape.controller.dto.ReservationSummaryResponse;
 import roomescape.controller.mapper.ReservationMapper;
 import roomescape.domain.EntityId;
-import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationCreateCommand;
 
@@ -32,19 +31,14 @@ public class ReservationController {
             @RequestBody ReservationCreateRequest createRequest
     ) {
         ReservationCreateCommand createCommand = mapper.mapToCommand(createRequest);
-        Reservation createdReservation = service.create(createCommand);
-
-        ReservationSummaryResponse response = mapper.mapToSummaryResponse(createdReservation);
+        ReservationSummaryResponse response = service.create(createCommand);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationDetailResponse>> findAll() {
-        List<ReservationDetailResponse> responses = service.findAllIncludeDetail()
-                .stream()
-                .map(mapper::mapToDetailResponse)
-                .toList();
+        List<ReservationDetailResponse> responses = service.findAllIncludeDetail();
 
         return ResponseEntity.ok(responses);
     }

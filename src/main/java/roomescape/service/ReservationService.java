@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.controller.dto.ReservationDetailResponse;
+import roomescape.controller.dto.ReservationSummaryResponse;
 import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -15,6 +17,7 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.AssembledReservation;
 import roomescape.service.dto.ReservationCreateCommand;
+import roomescape.service.mapper.ReservationResponseMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +27,10 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final ReservationResponseMapper reservationResponseMapper;
 
     @Transactional
-    public Reservation create(
+    public ReservationSummaryResponse create(
             ReservationCreateCommand command
     ) {
         EntityId reservationId = EntityId.random();
@@ -38,14 +42,17 @@ public class ReservationService {
                 command.themeId()
         );
 
-        return reservationRepository.persist(reservation);
+        Reservation persisted = reservationRepository.persist(reservation);
+
+        return reservationResponseMapper.mapToSummaryResponse(persisted);
     }
 
     @Transactional(readOnly = true)
-    public List<AssembledReservation> findAllIncludeDetail() {
+    public List<ReservationDetailResponse> findAllIncludeDetail() {
         return reservationRepository.findAll()
                 .stream()
                 .map(this::assembleReservation)
+                .map(reservationResponseMapper::mapToDetailResponse)
                 .toList();
     }
 

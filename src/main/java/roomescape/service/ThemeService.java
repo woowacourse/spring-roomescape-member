@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.controller.dto.ThemeResponse;
 import roomescape.domain.Duration;
 import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
@@ -16,6 +17,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.dto.ReservedTheme;
 import roomescape.service.dto.ThemeCreateCommand;
+import roomescape.service.mapper.ThemeResponseMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +26,10 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
+    private final ThemeResponseMapper themeResponseMapper;
 
     @Transactional
-    public Theme create(
+    public ThemeResponse create(
             ThemeCreateCommand command
     ) {
         EntityId id = EntityId.random();
@@ -37,12 +40,16 @@ public class ThemeService {
                 command.imageUrl()
         );
 
-        return themeRepository.persist(theme);
+        Theme persisted = themeRepository.persist(theme);
+        return themeResponseMapper.map(persisted);
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> findAll() {
-        return themeRepository.findAll();
+    public List<ThemeResponse> findAll() {
+        return themeRepository.findAll()
+                .stream()
+                .map(themeResponseMapper::map)
+                .toList();
     }
 
     @Transactional(readOnly = true)

@@ -18,7 +18,6 @@ import roomescape.controller.dto.ThemeResponse;
 import roomescape.controller.mapper.ThemeMapper;
 import roomescape.domain.Duration;
 import roomescape.domain.EntityId;
-import roomescape.domain.Theme;
 import roomescape.repository.dto.ReservedTheme;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.ThemeCreateCommand;
@@ -33,10 +32,7 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> findAll() {
-        List<ThemeResponse> responses = service.findAll()
-                .stream()
-                .map(mapper::mapToResponse)
-                .toList();
+        List<ThemeResponse> responses = service.findAll();
 
         return ResponseEntity.ok(responses);
     }
@@ -46,9 +42,7 @@ public class ThemeController {
             @RequestBody ThemeCreateRequest createRequest
     ) {
         ThemeCreateCommand createCommand = mapper.mapToCommand(createRequest);
-        Theme createdTheme = service.create(createCommand);
-
-        ThemeResponse response = mapper.mapToResponse(createdTheme);
+        ThemeResponse response = service.create(createCommand);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

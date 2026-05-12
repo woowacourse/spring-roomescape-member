@@ -16,7 +16,6 @@ import roomescape.controller.dto.ReservationTimeCreateRequest;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.controller.mapper.ReservationTimeMapper;
 import roomescape.domain.EntityId;
-import roomescape.domain.ReservationTime;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationTimeCreateCommand;
 
@@ -33,19 +32,14 @@ public class ReservationTimeController {
             @RequestBody ReservationTimeCreateRequest createRequest
     ) {
         ReservationTimeCreateCommand createCommand = mapper.mapToCommand(createRequest);
-        ReservationTime createdTime = service.create(createCommand);
-
-        ReservationTimeResponse response = mapper.mapToResponse(createdTime);
+        ReservationTimeResponse response = service.create(createCommand);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
-        List<ReservationTimeResponse> responses = service.findAll()
-                .stream()
-                .map(mapper::mapToResponse)
-                .toList();
+        List<ReservationTimeResponse> responses = service.findAll();
 
         return ResponseEntity.ok(responses);
     }
@@ -56,12 +50,9 @@ public class ReservationTimeController {
             @RequestParam LocalDate date
     ) {
         List<ReservationTimeResponse> responses = service.findAvailableTimes(
-                        EntityId.fromString(themeId),
-                        date
-                )
-                .stream()
-                .map(mapper::mapToResponse)
-                .toList();
+                EntityId.fromString(themeId),
+                date
+        );
 
         return ResponseEntity.ok(responses);
     }
