@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import roomescape.common.exception.ErrorPolicy;
 
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.HttpStatus.CONFLICT;
 
 public enum ThemeErrorCode implements ErrorPolicy {
     INVALID_THEME_ID("테마 id는 비어 있을 수 없습니다.", BAD_REQUEST),
@@ -14,7 +13,6 @@ public enum ThemeErrorCode implements ErrorPolicy {
     INVALID_THEME("테마 정보는 비어 있을 수 없습니다.", BAD_REQUEST),
     THEME_ALREADY_HAS_ID("이미 id가 존재하는 테마입니다.", CONFLICT),
     THEME_NOT_FOUND("존재하지 않는 테마입니다.", NOT_FOUND),
-    THEME_CREATE_FAILED("테마 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     THEME_HAS_RESERVATION("예약이 있는 테마는 삭제할 수 없습니다.", CONFLICT);
 
     private final String code;

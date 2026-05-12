@@ -7,14 +7,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
-import roomescape.common.exception.InfrastructureException;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-import static roomescape.theme.exception.ThemeErrorCode.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -33,10 +30,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     public Theme save(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        int rowCount = insert(theme, keyHolder);
-        validateCreatedRowCount(rowCount);
+        insert(theme, keyHolder);
 
-        Long id = getGeneratedId(keyHolder);
+        Long id = keyHolder.getKey().longValue();
         return theme.withId(id);
     }
 
@@ -97,8 +93,8 @@ public class JdbcThemeRepository implements ThemeRepository {
         return rowCount > 0;
     }
 
-    private int insert(Theme theme, KeyHolder keyHolder) {
-        return jdbcTemplate.update(connection -> {
+    private void insert(Theme theme, KeyHolder keyHolder) {
+        jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(
                     """
                             INSERT INTO theme (name, description, thumbnail)
@@ -111,19 +107,5 @@ public class JdbcThemeRepository implements ThemeRepository {
             preparedStatement.setString(3, theme.getThumbnail());
             return preparedStatement;
         }, keyHolder);
-    }
-
-    private void validateCreatedRowCount(int rowCount) {
-        if (rowCount != 1) {
-            throw new InfrastructureException(THEME_CREATE_FAILED);
-        }
-    }
-
-    private Long getGeneratedId(KeyHolder keyHolder) {
-        Number key = keyHolder.getKey();
-        if (key == null) {
-            throw new InfrastructureException(THEME_CREATE_FAILED);
-        }
-        return key.longValue();
     }
 }

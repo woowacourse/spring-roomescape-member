@@ -9,15 +9,12 @@ import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
-import roomescape.common.exception.InfrastructureException;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-import static roomescape.reservation.exeption.ReservationErrorCode.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -98,10 +95,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        int rowCount = insert(reservation, keyHolder);
-        validateCreatedRowCount(rowCount);
+        insert(reservation, keyHolder);
 
-        Long id = getGeneratedId(keyHolder);
+        Long id = keyHolder.getKey().longValue();
         return reservation.withId(id);
     }
 
@@ -160,8 +156,8 @@ public class JdbcReservationRepository implements ReservationRepository {
         return count != null && count > 0;
     }
 
-    private int insert(Reservation reservation, KeyHolder keyHolder) {
-        return jdbcTemplate.update(connection -> {
+    private void insert(Reservation reservation, KeyHolder keyHolder) {
+        jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(
                     """
                             INSERT INTO reservation (guest_name, date, time_id, theme_id)
@@ -175,20 +171,6 @@ public class JdbcReservationRepository implements ReservationRepository {
             preparedStatement.setLong(4, reservation.getTheme().getId());
             return preparedStatement;
         }, keyHolder);
-    }
-
-    private void validateCreatedRowCount(int rowCount) {
-        if (rowCount != 1) {
-            throw new InfrastructureException(RESERVATION_CREATE_FAILED);
-        }
-    }
-
-    private Long getGeneratedId(KeyHolder keyHolder) {
-        Number key = keyHolder.getKey();
-        if (key == null) {
-            throw new InfrastructureException(RESERVATION_CREATE_FAILED);
-        }
-        return key.longValue();
     }
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {

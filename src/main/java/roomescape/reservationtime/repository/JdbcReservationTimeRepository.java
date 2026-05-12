@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.common.exception.InfrastructureException;
 import roomescape.reservationtime.repository.dto.ReservationTimeAvailability;
 
 import java.sql.PreparedStatement;
@@ -15,8 +14,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-
-import static roomescape.reservationtime.exeption.ReservationTimeErrorCode.RESERVATION_TIME_CREATE_FAILED;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,10 +25,9 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public ReservationTime save(ReservationTime reservationTime) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        int rowCount = insert(reservationTime, keyHolder);
-        validateCreatedRowCount(rowCount);
+        insert(reservationTime, keyHolder);
 
-        Long id = getGeneratedId(keyHolder);
+        Long id = keyHolder.getKey().longValue();
         return reservationTime.withId(id);
     }
 
@@ -90,8 +86,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return jdbcTemplate.query(sql, reservationTimeAvailabilityRowMapper, date, themeId);
     }
 
-    private int insert(ReservationTime reservationTime, KeyHolder keyHolder) {
-        return jdbcTemplate.update(connection -> {
+    private void insert(ReservationTime reservationTime, KeyHolder keyHolder) {
+        jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(
                     """
                             INSERT INTO reservation_time (start_at)
@@ -102,20 +98,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             preparedStatement.setString(1, reservationTime.getStartAt().toString());
             return preparedStatement;
         }, keyHolder);
-    }
-
-    private void validateCreatedRowCount(int rowCount) {
-        if (rowCount != 1) {
-            throw new InfrastructureException(RESERVATION_TIME_CREATE_FAILED);
-        }
-    }
-
-    private Long getGeneratedId(KeyHolder keyHolder) {
-        Number key = keyHolder.getKey();
-        if (key == null) {
-            throw new InfrastructureException(RESERVATION_TIME_CREATE_FAILED);
-        }
-        return key.longValue();
     }
 
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->

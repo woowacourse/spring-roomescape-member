@@ -22,18 +22,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DomainException.class)
     public ResponseEntity<ErrorResponse> handleDomainException(DomainException exception, HttpServletRequest request) {
-        log.error("Domain exception occurred", exception);
+        log.error("Domain exception occurred: ", exception);
         ErrorPolicy errorCode = exception.getErrorPolicy();
 
         return ResponseEntity
                 .status(errorCode.status())
                 .body(ErrorResponse.of(request.getRequestURI(), errorCode));
-    }
-
-    @ExceptionHandler(InfrastructureException.class)
-    public ResponseEntity<ErrorResponse> handleInfrastructureException(InfrastructureException exception, HttpServletRequest request) {
-        log.error("Infrastructure exception occurred", exception);
-        return internalServerError(request.getRequestURI());
     }
 
     @Override
@@ -59,23 +53,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .status(statusCode)
                 .headers(headers)
                 .body(ErrorResponse.of(path, GlobalErrorCode.INVALID_REQUEST, messages));
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleExceptionInternal(
-            Exception exception,
-            Object body,
-            HttpHeaders headers,
-            HttpStatusCode statusCode,
-            WebRequest request
-    ) {
-        log.error("Spring Mvc Internal exception occurred", exception);
-        String path = pathFrom(request);
-
-        return ResponseEntity
-                .status(statusCode)
-                .headers(headers)
-                .body(ErrorResponse.of(path, exception.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

@@ -95,7 +95,6 @@ public class ReservationService {
             throw new DomainException(RESERVATION_NOT_FOUND);
         }
 
-        // TODO: 이미 취소된 예약인지 검증(soft delete 있어야 가능)
         return editedReservation;
     }
 
