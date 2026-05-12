@@ -11,7 +11,6 @@ import roomescape.schedule.service.ScheduleService;
 import roomescape.user.model.User;
 import roomescape.user.service.UserService;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -30,7 +29,7 @@ public class ReservationService {
 
     @Transactional
     public Long create(ReservationRequest request) {
-        User user = userService.findOrCreateByName(request.name());
+        User user = userService.findByName(request.name());
         Schedule schedule = scheduleService.findById(request.scheduleId());
 
         if (reservationRepository.existsByScheduleId(schedule.getId())) {
@@ -46,14 +45,11 @@ public class ReservationService {
     }
 
     public ReservationsResponse findReservationsByUserName(String name) {
-        return userService.findByName(name)
-                .map(user -> {
-                    List<Reservation> reservations = reservationRepository.findAllByUserId(user.getId());
-                    return ReservationsResponse.from(reservations);
-                })
-                .orElse(ReservationsResponse.from(Collections.emptyList()));
-    }
+        User user = userService.findByName(name);
+        List<Reservation> reservations = reservationRepository.findAllByUserId(user.getId());
 
+        return ReservationsResponse.from(reservations);
+    }
 
     public ReservationsResponse findAll() {
         List<Reservation> responses = reservationRepository.findAll();

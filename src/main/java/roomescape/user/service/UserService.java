@@ -8,8 +8,6 @@ import roomescape.user.model.Role;
 import roomescape.user.model.User;
 import roomescape.user.repository.UserRepository;
 
-import java.util.Optional;
-
 @Service
 public class UserService {
 
@@ -28,17 +26,8 @@ public class UserService {
         return UserResponse.from(new User(id, request.name(), DEFAULT));
     }
 
-    public Optional<User> findByName(String name) {
-        return userRepository.findByName(name);
-    }
-
-    @Transactional
-    public User findOrCreateByName(String name) {
+    public User findByName(String name) {
         return userRepository.findByName(name)
-                .orElseGet(() -> {
-                    User newUser = new User(name, DEFAULT);
-                    Long newId = userRepository.create(newUser);
-                    return new User(newId, name, DEFAULT);
-                });
+                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 유저입니다. 로그인을 다시 확인해주세요."));
     }
 }
