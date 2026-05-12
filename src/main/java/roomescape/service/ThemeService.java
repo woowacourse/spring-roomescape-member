@@ -32,7 +32,7 @@ public class ThemeService {
 
     public ThemeResponseDTO findById(Long id) {
         Theme result = themeRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("해당하는 id의 테마가 존재하지 않습니다."));
         return ThemeResponseDTO.from(result);
     }
 
