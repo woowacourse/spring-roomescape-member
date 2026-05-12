@@ -1,20 +1,17 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ReservationTimeInUseException;
 
 @Repository
 public class ReservationTimeDao {
@@ -52,7 +49,11 @@ public class ReservationTimeDao {
     }
 
     public int delete(Long id) {
-        return jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+        try {
+            return jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ReservationTimeInUseException();
+        }
     }
 
     private RowMapper<ReservationTime> getReservationTimeRowMapper() {

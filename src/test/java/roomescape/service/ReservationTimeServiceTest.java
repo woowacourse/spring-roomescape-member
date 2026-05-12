@@ -2,7 +2,6 @@ package roomescape.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ReservationTimeNotFoundException;
@@ -26,7 +25,7 @@ public class ReservationTimeServiceTest {
     @Test
     void 예약이_있는_시간을_삭제할_수_없다() {
         when(reservationTimeDao.delete(1L))
-                .thenThrow(new DataIntegrityViolationException("foreign key violation"));
+                .thenThrow(new ReservationTimeInUseException());
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
                 .isInstanceOf(ReservationTimeInUseException.class);

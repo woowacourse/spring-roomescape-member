@@ -2,7 +2,6 @@ package roomescape.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DuplicateKeyException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.Reservation;
@@ -37,7 +36,7 @@ public class ReservationServiceTest {
     @Test
     void 중복_예약_생성_예외_테스트() {
         when(reservationDao.insertReservation("이든", LocalDate.of(2026, 05, 06), 1L, 1L))
-                .thenThrow(new DuplicateKeyException("중복 키 에러"));
+                .thenThrow(new ReservationAlreadyExistsException());
 
         assertThatThrownBy(() -> reservationService.createReservation(new ReservationCreateRequest(
                         "이든", LocalDate.of(2026, 05, 06), 1L, 1L

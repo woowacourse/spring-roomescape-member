@@ -5,14 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Reservation;
+import roomescape.exception.ReservationAlreadyExistsException;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -21,19 +18,40 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @ActiveProfiles("test")
-@Import(ReservationDao.class)
+@Import({
+        ReservationTimeDao.class,
+        ReservationDao.class,
+        ThemeDao.class
+})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationDaoTest {
 
-    @Autowired
+    private ReservationTimeDao reservationTimeDao;
     private ReservationDao reservationDao;
+    private ThemeDao themeDao;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    public ReservationDaoTest(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao, ThemeDao themeDao) {
+        this.reservationTimeDao = reservationTimeDao;
+        this.reservationDao = reservationDao;
+        this.themeDao = themeDao;
+    }
+
+    @Test
+    void 중복된_예약을_추가하면_예외가_발생한다() {
+        Long themeId = themeDao.insertTheme("테마", "설명", "url");
+        Long timeId = reservationTimeDao.insertReservationTime(LocalTime.of(15, 30));
+
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        reservationDao.insertReservation("이든", date, timeId, themeId);
+
+        assertThatThrownBy(() -> reservationDao.insertReservation("이든", date, timeId, themeId))
+                .isInstanceOf(ReservationAlreadyExistsException.class);
+    }
 
     @Test
     void 테마ID_외래키_제약조건_위반_테스트() {
-        Long timeId = insertTime(LocalTime.of(10, 0));
+        Long timeId = reservationTimeDao.insertReservationTime(LocalTime.of(10, 0));
         Long nonExistentThemeId = 999L;
 
         assertThatThrownBy(() ->
@@ -44,7 +62,7 @@ public class ReservationDaoTest {
     @Test
     void 시간ID_외래키_제약조건_위반_테스트() {
         Long nonExistentTimeId = 999L;
-        Long themeId = insertTheme("테마", "설명", "url");
+        Long themeId = themeDao.insertTheme("테마", "설명", "url");
 
         assertThatThrownBy(() ->
                 reservationDao.insertReservation("이든", LocalDate.of(2026, 5, 6), nonExistentTimeId, themeId)
@@ -53,8 +71,8 @@ public class ReservationDaoTest {
 
     @Test
     void 예약_조회_매핑_테스트() {
-        Long themeId = insertTheme("테마", "설명", "url");
-        Long timeId = insertTime(LocalTime.of(15, 30));
+        Long themeId = themeDao.insertTheme("테마", "설명", "url");
+        Long timeId = reservationTimeDao.insertReservationTime(LocalTime.of(15, 30));
 
         Long reservationId = reservationDao.insertReservation("이든", LocalDate.of(2026, 5, 5), timeId, themeId);
 
@@ -63,29 +81,5 @@ public class ReservationDaoTest {
         assertThat(reservation.getName()).isEqualTo("이든");
         assertThat(reservation.getTime().getId()).isEqualTo(timeId);
         assertThat(reservation.getTime().getStartAt()).isEqualTo(LocalTime.of(15, 30));
-    }
-
-    private Long insertTheme(String name, String description, String imgUrl) {
-        String sql = "INSERT INTO theme (name, description, imgUrl) VALUES (?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, name);
-            ps.setString(2, description);
-            ps.setString(3, imgUrl);
-            return ps;
-        }, keyHolder);
-        return keyHolder.getKey().longValue();
-    }
-
-    private Long insertTime(LocalTime startAt) {
-        String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, startAt.toString());
-            return ps;
-        }, keyHolder);
-        return keyHolder.getKey().longValue();
     }
 }

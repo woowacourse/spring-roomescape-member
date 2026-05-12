@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,6 +13,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ReservationAlreadyExistsException;
 
 @Repository
 public class ReservationDao {
@@ -70,17 +72,21 @@ public class ReservationDao {
         String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    sql,
-                    new String[]{"id"}
-            );
-            ps.setString(1, name);
-            ps.setString(2, date.toString());
-            ps.setLong(3, timeId);
-            ps.setLong(4, themeId);
-            return ps;
-        }, keyHolder);
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(
+                        sql,
+                        new String[]{"id"}
+                );
+                ps.setString(1, name);
+                ps.setString(2, date.toString());
+                ps.setLong(3, timeId);
+                ps.setLong(4, themeId);
+                return ps;
+            }, keyHolder);
+        } catch (DuplicateKeyException e) {
+            throw new ReservationAlreadyExistsException();
+        }
 
         return keyHolder.getKey().longValue();
     }

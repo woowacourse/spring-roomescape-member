@@ -9,35 +9,51 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.exception.ReservationTimeInUseException;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @ActiveProfiles("test")
-@Import(ReservationTimeDao.class)
+@Import({
+        ReservationTimeDao.class,
+        ReservationDao.class,
+        ThemeDao.class
+})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationTimeDaoTest {
 
-    @Autowired
     private ReservationTimeDao reservationTimeDao;
-
-    @Autowired
+    private ReservationDao reservationDao;
+    private ThemeDao themeDao;
     private JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("description"),
-            resultSet.getString("imgUrl")
-    );
+    @Autowired
+    public ReservationTimeDaoTest(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao, ThemeDao themeDao, JdbcTemplate jdbcTemplate) {
+        this.reservationTimeDao = reservationTimeDao;
+        this.reservationDao = reservationDao;
+        this.themeDao = themeDao;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) -> new ReservationTime(
             resultSet.getLong("id"),
             LocalTime.parse(resultSet.getString("start_at"))
     );
+
+    @Test
+    void 예약에서_사용중인_시간을_삭제하면_예외가_발생한다() {
+        Long timeId = reservationTimeDao.insertReservationTime(LocalTime.of(10, 0));
+        Long themeId = themeDao.insertTheme("이든의 하우스", "설명", "링크");
+        reservationDao.insertReservation("이든", LocalDate.of(2026, 5, 6), timeId, themeId);
+
+        assertThatThrownBy(() -> reservationTimeDao.delete(themeId))
+                .isInstanceOf(ReservationTimeInUseException.class);
+    }
 
     @Test
     void 예약_시간_생성_테스트() {
