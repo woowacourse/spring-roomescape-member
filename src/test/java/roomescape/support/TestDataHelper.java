@@ -47,14 +47,16 @@ public class TestDataHelper {
         )).longValue();
     }
 
-    public void insertReservation(String name, LocalDate date, Long themeId, Long timeId) {
-        jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)",
-                name,
-                date,
-                themeId,
-                timeId
-        );
+    public Long insertReservation(String name, LocalDate date, Long themeId, Long timeId) {
+        SimpleJdbcInsert reservationInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
+        return reservationInsert.executeAndReturnKey(Map.of(
+                "name", name,
+                "date", date,
+                "theme_id", themeId,
+                "time_id", timeId
+        )).longValue();
     }
 
 }

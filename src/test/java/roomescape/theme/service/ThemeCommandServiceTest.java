@@ -4,13 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.fixture.ThemeFixture;
 import roomescape.global.exception.NotFoundException;
+import roomescape.support.TestDataHelper;
 import roomescape.theme.application.dto.ThemeResult;
 import roomescape.global.exception.RoomEscapeException;
 import roomescape.theme.application.service.ThemeCommandService;
@@ -21,7 +24,17 @@ import roomescape.theme.infra.JdbcThemeRepository;
 public class ThemeCommandServiceTest {
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
     private ThemeCommandService themeCommandService;
+
+    private TestDataHelper testHelper;
+
+    @BeforeEach
+    void setUp() {
+        testHelper = new TestDataHelper(jdbcTemplate);
+    }
 
     @DisplayName("테마의 정상 추가를 테스트합니다.")
     @Test
@@ -35,7 +48,7 @@ public class ThemeCommandServiceTest {
     @DisplayName("중복된 테마 추가 시 예외 발생을 테스트합니다.")
     @Test
     void save_duplicated_theme_exception() {
-        themeCommandService.save(ThemeFixture.horrorThemeCreateCommand());
+        testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
 
         assertThatThrownBy(() -> themeCommandService.save(ThemeFixture.horrorThemeCreateCommand()))
                 .isInstanceOf(RoomEscapeException.class)
@@ -45,9 +58,9 @@ public class ThemeCommandServiceTest {
     @DisplayName("테마의 삭제를 테스트합니다.")
     @Test
     void delete_theme() {
-        ThemeResult result = themeCommandService.save(ThemeFixture.horrorThemeCreateCommand());
+        Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
 
-        assertThatNoException().isThrownBy(() -> themeCommandService.delete(result.id()));
+        assertThatNoException().isThrownBy(() -> themeCommandService.delete(themeId));
     }
 
     @DisplayName("삭제할 테마가 없을 시 예외 발생을 테스트합니다.")

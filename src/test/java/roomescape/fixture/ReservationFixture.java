@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
-import roomescape.reservation.domain.Reservation;
 
 public class ReservationFixture {
 
@@ -23,15 +22,6 @@ public class ReservationFixture {
 
     public static ReservationCreateCommand kayaCreateCommand(Long themeId, Long timeId) {
         return new ReservationCreateCommand(KAYA, RESERVATION_DATE, themeId, timeId);
-    }
-
-    public static Reservation starkReservation(Long themeId, Long timeId) {
-        return Reservation.builder()
-                .name(STARK)
-                .date(RESERVATION_DATE)
-                .themeId(themeId)
-                .timeId(timeId)
-                .build();
     }
 
     public static Map<String, String> futureReservationParams(Long themeId, Long timeId) {

@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.assertj.core.api.SoftAssertions;
@@ -71,15 +72,11 @@ class ReservationCommandServiceTest {
     void save_duplicated_reservation_exception() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
         Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
-
-        reservationCommandService.save(
-                ReservationFixture.starkCreateCommand(themeId, timeId),
-                LocalDateTime.of(2000, 1, 1, 0, 0)
-        );
+        testHelper.insertReservation("스타크", LocalDate.of(2026, 5, 6), themeId, timeId);
 
         assertThatThrownBy(() -> reservationCommandService.save(
                 ReservationFixture.kayaCreateCommand(themeId, timeId),
-                LocalDateTime.of(2000, 1, 1, 0, 0)
+                LocalDateTime.of(2026, 5, 5, 0, 0)
         ))
                 .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("이미 해당 날짜와 시간에 예약이 존재합니다.");
@@ -104,12 +101,9 @@ class ReservationCommandServiceTest {
     void delete_reservation() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
         Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
-        ReservationResult result = reservationCommandService.save(
-                ReservationFixture.starkCreateCommand(themeId, timeId),
-                LocalDateTime.of(2000, 1, 1, 0, 0)
-        );
+        Long reservationId = testHelper.insertReservation("스타크", LocalDate.of(2026, 5, 6), themeId, timeId);
 
-        assertThatNoException().isThrownBy(() -> reservationCommandService.delete(result.id()));
+        assertThatNoException().isThrownBy(() -> reservationCommandService.delete(reservationId));
     }
 
     @DisplayName("삭제할 예약이 없을 시 예외 발생을 테스트합니다.")
