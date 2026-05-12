@@ -93,6 +93,6 @@ public class ThemeServiceImpl implements ThemeService {
     @Override
     public List<Theme> getBestThemes() {
         LocalDate today = LocalDate.now();
-        return themeRepository.findBestThemesByDate(today.minusDays(dayCount), today, rankCount);
+        return themeRepository.findBestThemesByDate(today.minusDays(dayCount), today.minusDays(1), rankCount);
     }
 }
