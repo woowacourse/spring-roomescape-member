@@ -1,8 +1,11 @@
 package roomescape.global.exception;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -75,8 +78,30 @@ public class GlobalExceptionHandler {
         log.warn("MethodArgumentTypeMismatchException 발생", e);
 
         return ErrorResponse.of(
-                GlobalErrorCode.BAD_REQUEST.getMessage()
+                GlobalErrorCode.BAD_REQUEST.getMessage(),
+                List.of(e.getName() + "은(는) 올바른 타입이 아닙니다.")
         );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNotReadable(
+            HttpMessageNotReadableException e
+    ) {
+        log.warn("HttpMessageNotReadableException 발생", e);
+        return ErrorResponse.of(GlobalErrorCode.INVALID_JSON.getMessage());
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMissingParameter(
+            MissingServletRequestParameterException e
+    ) {
+        log.warn("MissingServletRequestParameterException 발생", e);
+        return ErrorResponse.of(
+                GlobalErrorCode.BAD_REQUEST.getMessage(),
+                List.of(e.getParameterName() + " 파라미터가 누락되었습니다.")
+                );
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -86,9 +111,7 @@ public class GlobalExceptionHandler {
     ) {
         log.warn("DataIntegrityViolationException 발생", e);
 
-        return ErrorResponse.of(
-                GlobalErrorCode.BAD_REQUEST.getMessage()
-        );
+        return ErrorResponse.of(GlobalErrorCode.BAD_REQUEST.getMessage());
     }
 
     @ExceptionHandler(NoResourceFoundException.class)

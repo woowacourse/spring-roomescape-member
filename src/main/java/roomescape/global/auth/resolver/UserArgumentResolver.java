@@ -16,7 +16,6 @@ import roomescape.global.exception.exception.InvalidException;
 
 @Component
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
-    //Todo : 인증 구현 후 UserInfo 어노테이션이 붙은 파라미터에 인증된 사용자 정보를 반환하도록 구현
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
