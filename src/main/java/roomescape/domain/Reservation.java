@@ -11,6 +11,18 @@ public class Reservation {
     private final ReservationTime time;
 
     public Reservation(Long id, User user, Theme theme, LocalDate date, ReservationTime time) {
+        if (user == null) {
+            throw new IllegalArgumentException("사용자는 필수입니다.");
+        }
+        if (theme == null) {
+            throw new IllegalArgumentException("테마는 필수입니다.");
+        }
+        if (date == null) {
+            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+        }
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+        }
         this.id = id;
         this.user = user;
         this.theme = theme;
