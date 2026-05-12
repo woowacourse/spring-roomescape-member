@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import roomescape.dto.ThemeAllResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
@@ -28,12 +30,9 @@ public class ThemeService {
     }
 
     public void removeById(Long id) {
-        if (reservationRepository.existsByThemeId(id)) {
-            throw new IllegalArgumentException("해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
-        }
         int deleteCnt = themeRepository.deleteById(id);
         if (deleteCnt == 0) {
-            throw new IllegalArgumentException("존재하지 않는 테마의 ID 입니다.");
+            throw new RoomescapeException(ErrorCode.THEME_NOT_FOUND);
         }
     }
 

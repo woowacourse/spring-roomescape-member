@@ -58,6 +58,17 @@ public class ThemeControllerTest {
     }
 
     @Test
+    public void 존재하지_않는_테마_삭제_API() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/themes/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("THEME_NOT_FOUND"));
+    }
+
+
+    @Test
     public void 인기_테마_조회_API_예외() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

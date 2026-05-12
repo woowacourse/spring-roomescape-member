@@ -140,7 +140,7 @@
 
 ### DELETE /themes/{id}
 
-- [ ] THEME_NOT_FOUND — 존재하지 않는 테마 삭제
+- [x] THEME_NOT_FOUND — 존재하지 않는 테마 삭제
 
 ### GET /themes/ranks
 
