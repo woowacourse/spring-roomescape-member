@@ -27,7 +27,7 @@ public class ScheduleControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(schedule)
-                .when().post("/schedule")
+                .when().post("/schedules")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(6))
@@ -39,7 +39,7 @@ public class ScheduleControllerTest {
     @Test
     void 스케줄_조회() {
         RestAssured.given().log().all()
-                .when().get("/schedule/1")
+                .when().get("/schedules/1")
                 .then().log().all()
                 .statusCode(200)
                 .body("id", is(1))
@@ -58,13 +58,13 @@ public class ScheduleControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(schedule)
-                .when().post("/schedule")
+                .when().post("/schedules")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(6));
 
         RestAssured.given().log().all()
-                .when().delete("/schedule/6")
+                .when().delete("/schedules/6")
                 .then().log().all()
                 .statusCode(204);
     }
