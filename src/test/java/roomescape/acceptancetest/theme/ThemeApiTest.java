@@ -6,7 +6,6 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.acceptancetest.RoomecapeAcceptanceTest;
 import roomescape.acceptancetest.fixture.AcceptanceTestFixture;
 
@@ -14,22 +13,22 @@ import roomescape.acceptancetest.fixture.AcceptanceTestFixture;
 public class ThemeApiTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private AcceptanceTestFixture acceptanceTestFixture;
 
     @Test
     void 인기_테마_API() {
-        AcceptanceTestFixture.createTheme("미술관의 밤");
-        AcceptanceTestFixture.createTheme("사라진 열쇠");
-        AcceptanceTestFixture.createTheme("비밀의 방");
-        AcceptanceTestFixture.createReservationTime("10:00", 1L);
-        AcceptanceTestFixture.createReservationTime("11:00", 1L);
-        AcceptanceTestFixture.createReservationTime("12:00", 2L);
-        AcceptanceTestFixture.createReservationTime("13:00", 3L);
+        acceptanceTestFixture.createTheme("미술관의 밤", "aa", "bb");
+        acceptanceTestFixture.createTheme("사라진 열쇠", "aa", "bb");
+        acceptanceTestFixture.createTheme("비밀의 방", "aa", "bb");
+        acceptanceTestFixture.createReservationTime("10:00", 1L);
+        acceptanceTestFixture.createReservationTime("11:00", 1L);
+        acceptanceTestFixture.createReservationTime("12:00", 2L);
+        acceptanceTestFixture.createReservationTime("13:00", 3L);
 
-        AcceptanceTestFixture.insertReservation(jdbcTemplate, "브라운", AcceptanceTestFixture.today().minusDays(1), 1L);
-        AcceptanceTestFixture.insertReservation(jdbcTemplate, "코니", AcceptanceTestFixture.today().minusDays(1), 2L);
-        AcceptanceTestFixture.insertReservation(jdbcTemplate, "샐리", AcceptanceTestFixture.today().minusDays(7), 3L);
-        AcceptanceTestFixture.insertReservation(jdbcTemplate, "문", AcceptanceTestFixture.today().minusDays(8), 4L);
+        acceptanceTestFixture.createReservation("브라운", acceptanceTestFixture.today().minusDays(1), 1L);
+        acceptanceTestFixture.createReservation("코니", acceptanceTestFixture.today().minusDays(1), 2L);
+        acceptanceTestFixture.createReservation("샐리", acceptanceTestFixture.today().minusDays(7), 3L);
+        acceptanceTestFixture.createReservation("문", acceptanceTestFixture.today().minusDays(8), 4L);
 
         RestAssured.given().log().all()
                 .queryParam("period", 7)

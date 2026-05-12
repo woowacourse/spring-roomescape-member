@@ -36,6 +36,10 @@ public class Reservation {
         return new Reservation(id, name, date, time);
     }
 
+    public Reservation withId(final long id) {
+        return new Reservation(id, this.name, this.date, this.time);
+    }
+
     private static void validate(final String name, final LocalDate date, final ReservationTime time) {
         List<String> errors = new ArrayList<>();
 
@@ -49,9 +53,15 @@ public class Reservation {
     }
 
     private static void validateName(final String name, final List<String> errors) {
-        if (name == null || name.isBlank() || name.length() >= NAME_MAX_LENGTH) {
+        if (name == null || name.isBlank()) {
             errors.add(ReservationErrorCode.RESERVATION_NAME_NOT_BLANK.getMessage());
+            return;
         }
+
+        if (name.length() > NAME_MAX_LENGTH) {
+            errors.add(ReservationErrorCode.RESERVATION_NAME_TOO_LONG.getMessage());
+        }
+
     }
 
     private static void validateDate(final LocalDate date, final List<String> errors) {
@@ -64,10 +74,6 @@ public class Reservation {
         if (time == null) {
             errors.add(ReservationErrorCode.RESERVATION_TIME_NOT_NULL.getMessage());
         }
-    }
-
-    public Reservation withId(final long id) {
-        return new Reservation(id, this.name, this.date, this.time);
     }
 
 }

@@ -7,15 +7,10 @@ import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.acceptancetest.RoomecapeAcceptanceTest;
 
 @RoomecapeAcceptanceTest
 class ReservationTimeAdminApiTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Test
     void 테마_시간_관리_API() {
