@@ -7,12 +7,16 @@ import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationRequestDTO;
 import roomescape.dto.ReservationResponseDTO;
+import roomescape.exception.EmptyNameException;
 import roomescape.exception.ReservationByPastDateTimeException;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
@@ -58,6 +62,21 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.addReservation(outdatedRequest))
                 .isExactlyInstanceOf(ReservationByPastDateTimeException.class);
+    }
+
+    @DisplayName("비어 있는 이름에 대한 예약은 거부한다")
+    @ParameterizedTest(name = "이름이 {0}이면 예외를 던진다")
+    @NullAndEmptySource
+    void 이름이_비어_있는_요청에는_EmptyNameException_예외를_던진다(String emptyName) {
+        ReservationRequestDTO emptyNameRequest = new ReservationRequestDTO(
+                emptyName,
+                LocalDate.now().plusDays(1),
+                1L,
+                1L
+        );
+
+        assertThatThrownBy(() -> reservationService.addReservation(emptyNameRequest))
+                .isExactlyInstanceOf(EmptyNameException.class);
     }
 
     @DisplayName("모든 예약을 조회한다")

@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -12,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.ReservationRequestDTO;
+import roomescape.exception.EmptyNameException;
 import roomescape.exception.ReservationByPastDateTimeException;
 import roomescape.service.ReservationService;
 
@@ -28,6 +28,16 @@ class ReservationControllerTest {
     void 예약_생성에서_ReservationByPastDateTimeException이_발생하면_400_BAD_REQUEST를_응답한다() throws Exception {
         Mockito.when(reservationService.addReservation(Mockito.any(ReservationRequestDTO.class)))
                 .thenThrow(ReservationByPastDateTimeException.class);
+
+        mockMvc.perform(post("/reservations"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("비어 있는 이름으로 예약하면 400 상태 코드를 반환한다")
+    @Test
+    void 예약_생성에서_EmptyNameException이_발생하면_400_BAD_REQUEST를_응답한다() throws Exception {
+        Mockito.when(reservationService.addReservation(Mockito.any(ReservationRequestDTO.class)))
+                .thenThrow(EmptyNameException.class);
 
         mockMvc.perform(post("/reservations"))
                 .andExpect(status().isBadRequest());
