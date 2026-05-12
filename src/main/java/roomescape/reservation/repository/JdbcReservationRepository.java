@@ -61,56 +61,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        String sql = RESERVATION_BASE_SELECT;
-        return jdbcTemplate.query(sql, reservationRowMapper);
-    }
-
-    @Override
-    public List<Reservation> findAllByName(final String name) {
-        String sql = RESERVATION_BASE_SELECT + "WHERE r.name = ?";
-        return jdbcTemplate.query(sql, reservationRowMapper);
-    }
-
-    @Override
-    public List<Long> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
-        final String sql = """
-                SELECT rt.id AS time_id
-                FROM reservation AS r
-                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
-                WHERE rt.theme_id = ? AND r.date = ?
-                """;
-
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> resultSet.getLong("time_id"),
-                themeId,
-                Date.valueOf(date)
-        );
-    }
-
-    @Override
-    public void update(Reservation reservation) {
-        final String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
-
-        jdbcTemplate.update(
-                sql,
-                Date.valueOf(reservation.getDate()),
-                reservation.getTime().getId(),
-                reservation.getId()
-        );
-    }
-
-    @Override
-    public Optional<Reservation> findById(final long id) {
-        String sql = RESERVATION_BASE_SELECT + "WHERE r.id = ?";
-
-        return jdbcTemplate.query(sql, reservationRowMapper, id)
-                .stream()
-                .findFirst();
-    }
-
-    @Override
     public void deleteById(final long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
@@ -138,14 +88,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByTimeId(long timeId) {
-        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
+    public void update(final Reservation reservation) {
+        final String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
 
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+        jdbcTemplate.update(
                 sql,
-                Boolean.class,
-                timeId
-        ));
+                Date.valueOf(reservation.getDate()),
+                reservation.getTime().getId(),
+                reservation.getId()
+        );
     }
 
     @Override
@@ -160,5 +111,70 @@ public class JdbcReservationRepository implements ReservationRepository {
         ));
     }
 
+    @Override
+    public boolean existsByTimeId(final long timeId) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                timeId
+        ));
+    }
+
+    @Override
+    public boolean existsByThemeId(final long themeId) {
+        final String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation AS r
+                    INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                    WHERE rt.theme_id = ?
+                )
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                themeId
+        ));
+    }
+
+    @Override
+    public List<Long> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
+        final String sql = """
+                SELECT rt.id AS time_id
+                FROM reservation AS r
+                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                WHERE rt.theme_id = ? AND r.date = ?
+                """;
+
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> resultSet.getLong("time_id"),
+                themeId,
+                Date.valueOf(date)
+        );
+    }
+
+    @Override
+    public List<Reservation> findAll() {
+        String sql = RESERVATION_BASE_SELECT;
+        return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    @Override
+    public List<Reservation> findAllByName(final String name) {
+        String sql = RESERVATION_BASE_SELECT + "WHERE r.name = ?";
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
+    }
+
+    @Override
+    public Optional<Reservation> findById(final long id) {
+        String sql = RESERVATION_BASE_SELECT + "WHERE r.id = ?";
+
+        return jdbcTemplate.query(sql, reservationRowMapper, id)
+                .stream()
+                .findFirst();
+    }
 
 }

@@ -48,9 +48,7 @@ public class ReservationTimeService {
     @Transactional
     public void deleteById(final long timeId) {
         if (reservationRepository.existsByTimeId(timeId)) {
-            throw new ReservationTimeConstraintException(
-                    ReservationTimeErrorCode.RESERVATION_TIME_CONSTRAINT.getMessage()
-            );
+            throw new ReservationTimeConstraintException();
         }
         reservationTimeRepository.deleteById(timeId);
     }
