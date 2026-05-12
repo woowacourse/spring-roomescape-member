@@ -11,6 +11,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.UnprocessableException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -55,10 +56,18 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        if (!reservationRepository.existsById(id)) {
-            throw new NotFoundException("존재하지 않는 예약입니다.");
-        }
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+
+        validatePastDate(reservation);
         reservationRepository.delete(id);
+    }
+
+    private void validatePastDate(Reservation reservation) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new UnprocessableException("지난 예약은 취소할 수 없습니다.");
+        }
     }
 
     private ReservationTime findReservationTime(Long timeId) {
