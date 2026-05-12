@@ -27,7 +27,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return ResponseEntity
                 .status(errorCode.status())
-                .body(ErrorResponse.of(request.getRequestURI(), errorCode.message()));
+                .body(ErrorResponse.of(request.getRequestURI(), errorCode));
     }
 
     @ExceptionHandler(InfrastructureException.class)
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(statusCode)
                 .headers(headers)
-                .body(ErrorResponse.of(path, messages));
+                .body(ErrorResponse.of(path, ErrorCode.INVALID_REQUEST, messages));
     }
 
     @Override

@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 import static org.springframework.http.HttpStatus.*;
 
 public enum ErrorCode {
+
+    INVALID_REQUEST("Validation 오류입니다.", BAD_REQUEST),
+
     INVALID_RESERVATION_ID("예약 id는 비어 있을 수 없습니다.", BAD_REQUEST),
     INVALID_RESERVATION_NAME("예약자 이름은 비어 있을 수 없습니다.", BAD_REQUEST),
     INVALID_RESERVATION_DATE("예약 날짜는 비어 있을 수 없습니다.", BAD_REQUEST),
@@ -32,12 +35,18 @@ public enum ErrorCode {
     THEME_CREATE_FAILED("테마 생성에 실패했습니다.", INTERNAL_SERVER_ERROR),
     THEME_HAS_RESERVATION("예약이 있는 테마는 삭제할 수 없습니다.", CONFLICT);
 
+    private final String code;
     private final String message;
     private final HttpStatus status;
 
     ErrorCode(String message, HttpStatus status) {
+        this.code = name();
         this.message = message;
         this.status = status;
+    }
+
+    public String code() {
+        return code;
     }
 
     public String message() {
