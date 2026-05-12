@@ -27,8 +27,8 @@ public class AdminReservationTimeController {
         ReservationTimeResponse response = reservationTimeService.save(reservationTime);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("{/id}")
-                .buildAndExpand()
+                .path("/{id}")
+                .buildAndExpand(response.id())
                 .toUri();
 
         return ResponseEntity.created(location).body(response);
