@@ -27,6 +27,12 @@ public record ReservationRequest(
         }
     }
 
+    private static void validateThemeIdNotEmpty(Long themeId) {
+        if (themeId == null) {
+            throw new EntityNotFoundException("테마가 비어있습니다.");
+        }
+    }
+
     private static void validateDateNotEmpty(LocalDate date) {
         if (date == null) {
             throw new EntityNotFoundException("예약 날짜가 비어있습니다.");
