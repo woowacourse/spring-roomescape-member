@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +62,35 @@ class ReservationRepositoryTest {
         reservationDate1 = jdbcReservationDateRepository.save(ReservationDate.create(date1));
         reservationDate2 = jdbcReservationDateRepository.save(ReservationDate.create(date2));
         theme = jdbcThemeRepository.save(Theme.create("테마", "설명", "썸네일"));
+    }
+
+    @Test
+    @DisplayName("예약 정보를 단건 조회한다.")
+    void findById() {
+        // given
+        Reservation saved = save(Reservation.create(name, reservationDate1, reservationTime1, theme));
+
+        // when
+        Reservation actual = jdbcReservationRepository.findById(saved.id()).get();
+
+        // then
+        Assertions.assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(saved);
+    }
+
+    @Test
+    @DisplayName("등록되지 않은 예약을 단건 조회하면 빈 값을 반환한다.")
+    void findById_wrongId() {
+        // given
+        Long wrongId = Long.MIN_VALUE;
+
+        // when
+        Optional<Reservation> actual = jdbcReservationRepository.findById(wrongId);
+
+        // then
+        Assertions.assertThat(actual)
+                .isEmpty();
     }
 
     @Test
