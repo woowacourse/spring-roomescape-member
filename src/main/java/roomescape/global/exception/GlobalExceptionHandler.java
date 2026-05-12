@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
         this.httpMessageNotReadableExceptionMapper = httpMessageNotReadableExceptionMapper;
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception e) {
         return ResponseEntity
                 .internalServerError()
