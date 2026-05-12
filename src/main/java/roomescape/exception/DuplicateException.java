@@ -3,13 +3,7 @@ package roomescape.exception;
 import org.springframework.http.HttpStatus;
 
 public class DuplicateException extends ApiException {
-    private final HttpStatus status = HttpStatus.BAD_REQUEST;
-
     public DuplicateException(String message) {
-        super(message);
-    }
-
-    public HttpStatus getStatus() {
-        return status;
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }
