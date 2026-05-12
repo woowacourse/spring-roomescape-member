@@ -8,6 +8,7 @@ import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
+import roomescape.theme.dto.ThemesResponse;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
@@ -35,10 +36,12 @@ public class ThemeService {
         return ThemeResponse.from(saved);
     }
 
-    public List<ThemeResponse> read(int page, int size) {
-        return themeRepository.findAll(page, size).stream()
+    public ThemesResponse read(int page, int size) {
+        List<ThemeResponse> themesResponse = themeRepository.findAll(page, size).stream()
                 .map(ThemeResponse::from)
                 .toList();
+
+        return ThemesResponse.from(themesResponse);
     }
 
     @Transactional
@@ -47,13 +50,15 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeResponse> readPopularThemes(LocalDate now) {
+    public ThemesResponse readPopularThemes(LocalDate now) {
         LocalDate start = now.minusDays(POPULAR_PERIOD);
         LocalDate end = now.minusDays(POPULAR_OFFSET);
         List<Theme> themes = themeRepository.findPopularThemes(start, end, POPULAR_LIMIT);
 
-        return themes.stream()
+        List<ThemeResponse> themesResponse = themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
+
+        return ThemesResponse.from(themesResponse);
     }
 }

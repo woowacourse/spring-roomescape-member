@@ -3,7 +3,6 @@ package roomescape.reservation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationsResponse;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -33,7 +33,7 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> read(
+    public ResponseEntity<ReservationsResponse> read(
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "10") @Max(100) int size
     ) {
@@ -41,7 +41,7 @@ public class ReservationController {
     }
 
     @GetMapping(params = {"user_name"})
-    public ResponseEntity<List<ReservationResponse>> read(
+    public ResponseEntity<ReservationsResponse> read(
             @RequestParam("user_name") String userName
     ) {
         return ResponseEntity.ok().body(reservationService.readByUserName(userName));

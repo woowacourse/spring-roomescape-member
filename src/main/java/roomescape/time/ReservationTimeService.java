@@ -10,6 +10,7 @@ import roomescape.exception.RoomescapeException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.dto.ReservationTimeRequest;
 import roomescape.time.dto.ReservationTimeResponse;
+import roomescape.time.dto.ReservationTimesResponse;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
@@ -34,10 +35,12 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(saved);
     }
 
-    public List<ReservationTimeResponse> read() {
-        return reservationTimeRepository.findAll().stream()
+    public ReservationTimesResponse read() {
+        List<ReservationTimeResponse> reservationTimesResponse = reservationTimeRepository.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
+
+        return ReservationTimesResponse.from(reservationTimesResponse);
     }
 
     @Transactional
@@ -50,7 +53,7 @@ public class ReservationTimeService {
         reservationTimeRepository.deleteById(id);
     }
 
-    public List<ReservationTimeResponse> readAvailableTimes(Long themeId, LocalDate date) {
+    public ReservationTimesResponse readAvailableTimes(Long themeId, LocalDate date) {
 
         List<LocalTime> reservedTimes = reservationRepository.findByThemeAndDate(themeId, date).stream()
                 .map(m -> m.getTime().getStartAt())
@@ -60,6 +63,9 @@ public class ReservationTimeService {
                 .filter(r -> !reservedTimes.contains(r.getStartAt()))
                 .toList();
 
-        return availableTimes.stream().map(ReservationTimeResponse::from).toList();
+        List<ReservationTimeResponse> reservationTimesResponse = availableTimes.stream()
+                .map(ReservationTimeResponse::from).toList();
+
+        return ReservationTimesResponse.from(reservationTimesResponse);
     }
 }

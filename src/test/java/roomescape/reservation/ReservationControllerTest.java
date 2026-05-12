@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.reservation.dto.ReservationsResponse;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
@@ -34,7 +35,7 @@ class ReservationControllerTest {
     void 예약_조회() throws Exception {
         int page = 0;
         int size = 10;
-        given(reservationService.read(page, size)).willReturn(List.of());
+        given(reservationService.read(page, size)).willReturn(ReservationsResponse.from(List.of()));
 
         mockMvc.perform(get("/api/reservations"))
                 .andExpect(status().isOk());

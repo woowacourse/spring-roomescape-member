@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.theme.dto.ThemeResponse;
+import roomescape.theme.dto.ThemesResponse;
 
 @WebMvcTest(ThemeController.class)
 class ThemeControllerTest {
@@ -29,7 +30,7 @@ class ThemeControllerTest {
         int page = 0;
         int size = 10;
         given(themeService.read(page, size))
-                .willReturn(List.of(
+                .willReturn(ThemesResponse.from(List.of(
                         new ThemeResponse(1L, "공포의 방",
                                 "심장 약한 사람은 들어오지 마세요.",
                                 "https://example.com/themes/horror.jpg"),
@@ -37,29 +38,29 @@ class ThemeControllerTest {
                                 "셜록이 되어 사건을 해결해보세요.",
                                 "https://example.com/themes/mystery.jpg"
                         )
-                ));
+                )));
 
         mockMvc.perform(get("/api/themes"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].name").value("공포의 방"))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].name").value("미스터리 추리"));
+                .andExpect(jsonPath("$.themes.length()").value(2))
+                .andExpect(jsonPath("$.themes[0].id").value(1))
+                .andExpect(jsonPath("$.themes[0].name").value("공포의 방"))
+                .andExpect(jsonPath("$.themes[1].id").value(2))
+                .andExpect(jsonPath("$.themes[1].name").value("미스터리 추리"));
     }
 
     @Test
     void 인기_테마_조회() throws Exception {
         given(themeService.readPopularThemes(any(LocalDate.class)))
-                .willReturn(List.of(
+                .willReturn(ThemesResponse.from(List.of(
                         new ThemeResponse(5L, "초보자 방",
                                 "방탈출이 처음이신 분들을 위한 입문 테마.",
                                 "https://example.com/themes/beginner.jpg")
-                ));
+                )));
         mockMvc.perform(get("/api/themes/popular"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(5))
-                .andExpect(jsonPath("$[0].name").value("초보자 방"));
+                .andExpect(jsonPath("$.themes.length()").value(1))
+                .andExpect(jsonPath("$.themes[0].id").value(5))
+                .andExpect(jsonPath("$.themes[0].name").value("초보자 방"));
     }
 }

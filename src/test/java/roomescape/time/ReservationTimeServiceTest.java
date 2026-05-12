@@ -15,6 +15,7 @@ import roomescape.reservation.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.Theme;
 import roomescape.time.dto.ReservationTimeResponse;
+import roomescape.time.dto.ReservationTimesResponse;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,14 +47,14 @@ class ReservationTimeServiceTest {
         given(reservationRepository.findByThemeAndDate(themeId, date))
                 .willReturn(List.of(reservation));
 
-        List<ReservationTimeResponse> availableTimes = reservationTimeService.readAvailableTimes(themeId, date);
+        ReservationTimesResponse availableTimes = reservationTimeService.readAvailableTimes(themeId, date);
 
         List<ReservationTimeResponse> expected = List.of(
                 new ReservationTimeResponse(2L, LocalTime.of(11, 0)),
                 new ReservationTimeResponse(4L, LocalTime.of(16, 0))
         );
 
-        assertThat(availableTimes)
+        assertThat(availableTimes.reservationTimes())
                 .usingRecursiveFieldByFieldElementComparator()
                 .isEqualTo(expected);
     }
@@ -72,8 +73,8 @@ class ReservationTimeServiceTest {
         given(reservationRepository.findByThemeAndDate(themeId, date))
                 .willReturn(List.of(reservation));
 
-        List<ReservationTimeResponse> availableTimes = reservationTimeService.readAvailableTimes(themeId, date);
+        ReservationTimesResponse availableTimes = reservationTimeService.readAvailableTimes(themeId, date);
 
-        assertThat(availableTimes).isEmpty();
+        assertThat(availableTimes.reservationTimes()).isEmpty();
     }
 }

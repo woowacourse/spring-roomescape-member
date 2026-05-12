@@ -7,6 +7,7 @@ import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -45,16 +46,20 @@ public class ReservationService {
         return ReservationResponse.from(saved);
     }
 
-    public List<ReservationResponse> read(int page, int size) {
-        return reservationRepository.findAll(page, size).stream()
+    public ReservationsResponse read(int page, int size) {
+        List<ReservationResponse> reservationsResponse = reservationRepository.findAll(page, size).stream()
                 .map(ReservationResponse::from)
                 .toList();
+
+        return ReservationsResponse.from(reservationsResponse);
     }
 
-    public List<ReservationResponse> readByUserName(String userName) {
-        return reservationRepository.findByUserName(userName).stream()
+    public ReservationsResponse readByUserName(String userName) {
+        List<ReservationResponse> reservationsResponse = reservationRepository.findByUserName(userName).stream()
                 .map(ReservationResponse::from)
                 .toList();
+
+        return ReservationsResponse.from(reservationsResponse);
     }
 
     @Transactional

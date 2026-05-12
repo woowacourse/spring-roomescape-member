@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.theme.dto.ThemeResponse;
+import roomescape.theme.dto.ThemesResponse;
 import roomescape.theme.repository.ThemeRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,10 +34,10 @@ class ThemeServiceTest {
         given(themeRepository.findPopularThemes(expectedStart, expectedEnd, limit))
                 .willReturn(List.of(theme));
 
-        List<ThemeResponse> themes = themeService.readPopularThemes(testDate);
+        ThemesResponse themes = themeService.readPopularThemes(testDate);
 
-        assertThat(themes).hasSize(1);
-        assertThat(themes.get(0).id()).isEqualTo(5L);
-        assertThat(themes.get(0).name()).isEqualTo("초보자 방");
+        assertThat(themes.themes()).hasSize(1);
+        assertThat(themes.themes().get(0).id()).isEqualTo(5L);
+        assertThat(themes.themes().get(0).name()).isEqualTo("초보자 방");
     }
 }
