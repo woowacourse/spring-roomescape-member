@@ -50,7 +50,7 @@ class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest(2L, "user1");
         Schedule availableSchedule = new Schedule(2L, LocalDateTime.of(2026, 12, 10, 15, 0), theme);
 
-        when(userService.findOrCreateByName("user1")).thenReturn(user);
+        when(userService.findByName("user1")).thenReturn(user);
         when(scheduleService.findById(2L)).thenReturn(availableSchedule);
         when(reservationRepository.existsByScheduleId(2L)).thenReturn(false);
         when(reservationRepository.create(any(Reservation.class))).thenReturn(100L);
@@ -69,7 +69,7 @@ class ReservationServiceTest {
         // given
         ReservationRequest request = new ReservationRequest(1L, "user1");
 
-        when(userService.findOrCreateByName("user1")).thenReturn(user);
+        when(userService.findByName("user1")).thenReturn(user);
         when(scheduleService.findById(1L)).thenReturn(schedule);
         when(reservationRepository.existsByScheduleId(1L)).thenReturn(true);
 

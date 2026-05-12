@@ -3,6 +3,7 @@ package roomescape.schedule.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.schedule.dto.AdminScheduleRequest;
 import roomescape.schedule.model.Schedule;
 import roomescape.schedule.repository.ScheduleRepository;
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.when;
 class ScheduleServiceTest {
 
     private ScheduleService scheduleService;
+    private ReservationRepository reservationRepository;
     private ScheduleRepository scheduleRepository;
     private ThemeService themeService;
 
@@ -32,8 +34,9 @@ class ScheduleServiceTest {
     void setUp() {
         scheduleRepository = Mockito.mock(ScheduleRepository.class);
         themeService = Mockito.mock(ThemeService.class);
+        reservationRepository = Mockito.mock(ReservationRepository.class);
 
-        scheduleService = new ScheduleService(scheduleRepository, themeService);
+        scheduleService = new ScheduleService(scheduleRepository, reservationRepository, themeService);
     }
 
     @Test
