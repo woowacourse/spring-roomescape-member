@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.DuplicateException;
+import roomescape.common.exception.IllegalDateTimeException;
 import roomescape.common.exception.NotFoundException;
 
 @Slf4j
@@ -56,6 +57,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDuplicateException(DuplicateException e) {
         log.error("Duplicate Exception 발생 : {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalDateTimeException.class)
+    public ResponseEntity<String> handleIllegalDateTimeException(IllegalDateTimeException e) {
+        log.error("Illegal Date Time Exception 발생 : {}", e.getMessage());
+        return ResponseEntity.unprocessableEntity().body(e.getMessage());
     }
 
     private ResponseEntity<String> getStringResponseEntity(BindingResult e) {
