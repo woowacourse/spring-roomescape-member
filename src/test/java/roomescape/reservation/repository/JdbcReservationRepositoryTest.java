@@ -5,14 +5,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.JdbcThemeRepository;
-import roomescape.theme.repository.ThemeRepository;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -20,27 +21,28 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-@Import({JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
+@Import(JdbcReservationRepository.class)
 class JdbcReservationRepositoryTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
 
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
-
-    @Autowired
-    private ThemeRepository themeRepository;
+    private JdbcTemplate jdbcTemplate;
 
 
     @Test
-    void 예약을_저장하고_조회한다() {
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
+    @DisplayName("예약의 목록을 조회한다")
+    void save() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Reservation reservation = insertReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
 
+        // when
         List<Reservation> reservations = reservationRepository.findAll();
 
+        // then
         assertThat(reservations).hasSize(1);
 
         Reservation found = reservations.getFirst();
@@ -61,12 +63,12 @@ class JdbcReservationRepositoryTest {
     @DisplayName("특정 날짜, 시간, 테마를 가진 예약이 존재하는지 확인한다.")
     public void existsByDateAndTimeIdAndThemeId() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        ReservationTime time2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Theme theme2 = themeRepository.save(new Theme("레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        ReservationTime time2 = insertReservationTime(LocalTime.of(12, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Theme theme2 = insertTheme("레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.", "https://example.com/theme.png");
         LocalDate targetDate = LocalDate.of(2023, 8, 5);
-        reservationRepository.save(new Reservation("브라운", targetDate, time, theme));
+        insertReservation("브라운", targetDate, time, theme);
 
         // when
         boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(targetDate, time.getId(), theme.getId());
@@ -80,9 +82,9 @@ class JdbcReservationRepositoryTest {
     @Test
     @DisplayName("예약을 삭제한다.")
     void deleteById() {
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Reservation reservation = insertReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
 
         boolean deleted = reservationRepository.deleteById(reservation.getId());
 
@@ -107,10 +109,10 @@ class JdbcReservationRepositoryTest {
     @DisplayName("특정 예약 시간 id를 가진 예약이 존재하는지 확인한다.")
     public void existByTimeId() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        ReservationTime time2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        ReservationTime time2 = insertReservationTime(LocalTime.of(12, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        insertReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
 
         // when
         boolean exists = reservationRepository.existByTimeId(time.getId());
@@ -125,10 +127,10 @@ class JdbcReservationRepositoryTest {
     @DisplayName("특정 테마 id를 가진 예약이 존재하는지 확인한다.")
     public void existByThemeId() {
         // given
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Theme theme2 = themeRepository.save(new Theme("레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        reservationRepository.save(new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme));
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Theme theme2 = insertTheme("레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.", "https://example.com/theme.png");
+        insertReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
 
         // when
         boolean exists = reservationRepository.existByThemeId(theme.getId());
@@ -137,5 +139,59 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(exists).isTrue();
         assertThat(notExists).isFalse();
+    }
+
+    private ReservationTime insertReservationTime(LocalTime startAt) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO reservation_time (start_at)
+                    VALUES (?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, startAt.toString());
+            return preparedStatement;
+        }, keyHolder);
+
+        return new ReservationTime(getGeneratedId(keyHolder), startAt);
+    }
+
+    private Theme insertTheme(String name, String description, String thumbnail) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO theme (name, description, thumbnail)
+                    VALUES (?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setString(3, thumbnail);
+            return preparedStatement;
+        }, keyHolder);
+
+        return new Theme(getGeneratedId(keyHolder), name, description, thumbnail);
+    }
+
+    private Reservation insertReservation(String guestName, LocalDate date, ReservationTime time, Theme theme) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO reservation (guest_name, date, time_id, theme_id)
+                    VALUES (?, ?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, guestName);
+            preparedStatement.setDate(2, Date.valueOf(date));
+            preparedStatement.setLong(3, time.getId());
+            preparedStatement.setLong(4, theme.getId());
+            return preparedStatement;
+        }, keyHolder);
+
+        return new Reservation(getGeneratedId(keyHolder), guestName, date, time, theme);
+    }
+
+    private Long getGeneratedId(KeyHolder keyHolder) {
+        return keyHolder.getKey().longValue();
     }
 }

@@ -5,9 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.theme.domain.Theme;
 
+import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +25,9 @@ class JdbcThemeRepositoryTest {
 
     @Autowired
     private JdbcThemeRepository jdbcThemeRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     @DisplayName("Theme를 저장하고 조회한다.")
@@ -40,9 +47,9 @@ class JdbcThemeRepositoryTest {
     @Test
     @DisplayName("모든 Theme를 불러온다.")
     public void findAll() {
-        jdbcThemeRepository.save(new Theme("kim", "desc1", "thumb1"));
-        jdbcThemeRepository.save(new Theme("lee", "desc2", "thumb2"));
-        jdbcThemeRepository.save(new Theme("park", "desc3", "thumb3"));
+        insertTheme("kim", "desc1", "thumb1");
+        insertTheme("lee", "desc2", "thumb2");
+        insertTheme("park", "desc3", "thumb3");
 
         List<Theme> themes = jdbcThemeRepository.findAll();
 
@@ -61,7 +68,7 @@ class JdbcThemeRepositoryTest {
     @Test
     @DisplayName("Theme 존재 여부를 조회한다.")
     public void existsById() {
-        Theme theme = jdbcThemeRepository.save(new Theme("kim", "desc1", "thumb1"));
+        Theme theme = insertTheme("kim", "desc1", "thumb1");
 
         boolean exists = jdbcThemeRepository.existsById(theme.getId());
         boolean notExists = jdbcThemeRepository.existsById(theme.getId() + 1);
@@ -92,7 +99,7 @@ class JdbcThemeRepositoryTest {
     @Test
     @DisplayName("Theme를 삭제한다.")
     public void deleteById() {
-        Theme theme = jdbcThemeRepository.save(new Theme("kim", "desc1", "thumb1"));
+        Theme theme = insertTheme("kim", "desc1", "thumb1");
 
         boolean deleted = jdbcThemeRepository.deleteById(theme.getId());
 
@@ -111,6 +118,27 @@ class JdbcThemeRepositoryTest {
 
         // then
         assertThat(deleted).isFalse();
+    }
+
+    private Theme insertTheme(String name, String description, String thumbnail) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement("""
+                    INSERT INTO theme (name, description, thumbnail)
+                    VALUES (?, ?, ?)
+                    """, new String[]{"id"});
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setString(3, thumbnail);
+            return preparedStatement;
+        }, keyHolder);
+
+        return new Theme(getGeneratedId(keyHolder), name, description, thumbnail);
+    }
+
+    private Long getGeneratedId(KeyHolder keyHolder) {
+        return keyHolder.getKey().longValue();
     }
 
 }
