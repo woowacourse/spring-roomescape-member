@@ -38,7 +38,7 @@ class JdbcReservationRepositoryTest {
 
     @Test
     @DisplayName("예약 저장")
-    void reservation_save_test() {
+    void reservation_save_success() {
         //given
         String name = "쿠다";
         LocalDate date = LocalDate.parse("2023-08-05");
@@ -59,7 +59,7 @@ class JdbcReservationRepositoryTest {
 
     @Test
     @DisplayName("예약 저장 중복 예외")
-    void reservation_save_duplicate_test() {
+    void reservation_save_whenDuplicate_throws() {
         // given
         LocalDate date = LocalDate.parse("2026-08-06");
         LocalTime time = LocalTime.parse("10:00");
@@ -80,7 +80,7 @@ class JdbcReservationRepositoryTest {
 
     @Test
     @DisplayName("예약 전체 조회")
-    void reservation_findAll_test() {
+    void reservation_findAll_success() {
         //given
         LocalDate date = LocalDate.parse("2026-08-06");
         LocalTime time = LocalTime.parse("10:00");
@@ -98,7 +98,7 @@ class JdbcReservationRepositoryTest {
 
     @Test
     @DisplayName("예약 삭제")
-    void reservation_delete_test() {
+    void reservation_delete_success() {
         // given
         LocalDate date = LocalDate.parse("2026-08-06");
         LocalTime time = LocalTime.parse("10:00");
@@ -125,8 +125,36 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("날짜와 테마로 예약된 시간 ID를 조회한다")
-    void findAllByDateAndThemeId_test() {
+    @DisplayName("예약 업데이트")
+    void update_success() {
+        // given
+        LocalDate date = LocalDate.parse("2026-08-06");
+        LocalTime time = LocalTime.parse("10:00");
+        Theme theme = createTheme("미술관의 밤");
+
+        ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
+
+        Reservation reservation = jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime));
+
+        // when
+        LocalDate newDate = date.plusDays(1);
+        LocalTime newTime = LocalTime.parse("11:00");
+        ReservationTime newReservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(newTime, theme));
+
+        reservation.modify(newDate, newReservationTime);
+        jdbcReservationRepository.update(reservation);
+
+        Reservation updated = jdbcReservationRepository.findById(reservation.getId())
+                .orElseThrow();
+
+        // then
+        assertThat(updated.getDate()).isEqualTo(newDate);
+        assertThat(updated.getTime().getId()).isEqualTo(newReservationTime.getId());
+    }
+
+    @Test
+    @DisplayName("날짜 테마 예약 시간 ID 조회")
+    void findAllByDateAndThemeId_success() {
         // given
         LocalDate date = LocalDate.parse("2026-08-06");
         Theme firstTheme = createTheme("우테코의 밤");

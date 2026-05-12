@@ -68,4 +68,15 @@ public class FakeReservationRepository implements ReservationRepository {
                 .toList();
     }
 
+    @Override
+    public void update(Reservation reservation) {
+            storage.stream()
+                    .filter(r -> r.getId().equals(reservation.getId()))
+                    .findFirst()
+                    .ifPresent(r -> {
+                        storage.remove(r);
+                        storage.add(reservation);
+                    });
+    }
+
 }

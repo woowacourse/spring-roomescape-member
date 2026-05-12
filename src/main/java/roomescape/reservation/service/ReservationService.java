@@ -46,16 +46,6 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    private void validateDateTime(final LocalDate date, final LocalTime time) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
-
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new ReservationBadRequestException(
-                    ReservationErrorCode.RESERVATION_INVALID_DATE.getMessage()
-            );
-        }
-    }
-
     private void existsByDateAndTimeId(final LocalDate date, final Long timeId) {
         if (reservationRepository.existsByDateAndTimeId(date, timeId)) {
             throw new ReservationDuplicateException();
@@ -91,6 +81,16 @@ public class ReservationService {
         existsByDateAndTimeId(date, timeId);
 
         reservationRepository.update(reservation.modify(date, reservationTime));
+    }
+
+    private void validateDateTime(final LocalDate date, final LocalTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
+
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new ReservationBadRequestException(
+                    ReservationErrorCode.RESERVATION_INVALID_DATE.getMessage()
+            );
+        }
     }
 
     private void validateOwner(String name, Reservation reservation) {

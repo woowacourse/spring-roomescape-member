@@ -19,7 +19,7 @@ class ReservationTest {
 
     @DisplayName("예약 정상 생성")
     @Test
-    void createReservation_Success() {
+    void createReservation_success() {
         // given
         String name = "쿠다";
         LocalDate date = LocalDate.parse("2026-03-08");
@@ -35,7 +35,7 @@ class ReservationTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   "})
-    void validateName_ThrowsException(String name) {
+    void validateName_throws(String name) {
         // given
         LocalDate date = LocalDate.parse("2026-03-08");
         Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
@@ -48,7 +48,7 @@ class ReservationTest {
 
     @DisplayName("예약 날짜 null 예외")
     @Test
-    void validateDate_ThrowsException() {
+    void validateDate_throws() {
         // given
         String name = "쿠다";
         Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
@@ -61,7 +61,7 @@ class ReservationTest {
 
     @DisplayName("예약 시간 null 예외")
     @Test
-    void validateTime_ThrowsException() {
+    void validateTime_throws() {
         // given
         String name = "쿠다";
         LocalDate date = LocalDate.parse("2026-03-08");

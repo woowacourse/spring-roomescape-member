@@ -14,7 +14,7 @@ class ReservationTimeTest {
 
     @Test
     @DisplayName("정상 예약 시간 생성")
-    void createNew_Success() {
+    void createNew_success() {
         // given
         LocalTime time = LocalTime.parse("10:00");
         Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");
@@ -30,7 +30,7 @@ class ReservationTimeTest {
 
     @Test
     @DisplayName("예약 시간 null 예외")
-    void validate_NullStartAt_ThrowsException() {
+    void validate_NullStartAt_throws() {
         // given
         LocalTime nullTime = null;
         Theme theme = Theme.of(1L, "미술관의 밤", "추리 테마", "https://example.com/theme.png");

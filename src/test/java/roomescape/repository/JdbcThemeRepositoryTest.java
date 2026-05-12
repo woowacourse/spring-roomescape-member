@@ -38,7 +38,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @DisplayName("테마 저장")
-    void theme_save_test() {
+    void theme_save_success() {
         // given
         Theme theme = Theme.createNew("미술관의 밤", "추리 테마", "https://example.com/theme.png");
 
@@ -53,7 +53,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @DisplayName("테마 전체 조회")
-    void theme_findAll_test() {
+    void theme_findAll_success() {
         // given
         createTheme("미술관의 밤");
 
@@ -66,7 +66,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @DisplayName("테마 이름 중복 저장 예외")
-    void theme_save_duplicate_test() {
+    void theme_save_whenDuplicate_throws() {
         // given
         createTheme("미술관의 밤");
 
@@ -78,7 +78,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @DisplayName("테마 삭제")
-    void theme_delete_test() {
+    void theme_delete_success() {
         // given
         Theme saved = createTheme("미술관의 밤");
         int beforeSize = jdbcThemeRepository.findAll().size();
@@ -92,8 +92,8 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    @DisplayName("최근 기간 기준 인기 테마를 예약 수 순서대로 조회한다")
-    void findPopularThemes_test() {
+    @DisplayName("최근 기간 기준 인기 테마 예약 수 순서대로 조회")
+    void findPopularThemes_success() {
         // given
         LocalDate referenceDate = LocalDate.parse("2026-05-06");
         Theme firstTheme = createTheme("미술관의 밤");
@@ -130,8 +130,8 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    @DisplayName("오늘 예약은 인기 테마 집계에서 제외한다")
-    void findPopularThemes_excludeTodayReservation() {
+    @DisplayName("오늘 예약 인기 테마 집계 제외")
+    void findPopularThemes_excludeTodayReservation_success() {
         // given
         LocalDate today = LocalDate.parse("2026-11-08");
 
@@ -173,7 +173,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @DisplayName("테마 이름 존재 여부 확인")
-    void theme_existsByName_test() {
+    void theme_existsByName_success() {
         // given
         createTheme("미술관의 밤");
 

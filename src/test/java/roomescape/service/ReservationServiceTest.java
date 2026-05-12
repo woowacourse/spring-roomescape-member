@@ -81,4 +81,121 @@ class ReservationServiceTest {
         assertThat(reservationRepository.findAll()).hasSize(1);
     }
 
+
+    @Test
+    @DisplayName("예약 정상 삭제")
+    void deleteById_success() {
+        // given
+        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        ReservationTime time = reservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.of(10, 0), theme)
+        );
+
+        Reservation reservation = reservationRepository.save(Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
+
+        // when
+        reservationService.deleteById(reservation.getId());
+
+        // then
+        assertThat(reservationRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("이름이 다른 예약 삭제 예외")
+    void deleteById_whenNameMismatch_throws() {
+        // given
+        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        ReservationTime time = reservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.of(10, 0), theme)
+        );
+
+        Reservation reservation = reservationRepository.save(Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteById(reservation.getId(), "피케이"))
+                .isInstanceOf(ReservationBadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("예약 수정 성공")
+    void update_success() {
+        // given
+        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        ReservationTime time1 = reservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.of(10, 0), theme)
+        );
+        ReservationTime time2 = reservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.of(11, 0), theme)
+        );
+
+        Reservation reservation = reservationRepository.save(
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time1));
+
+        // when
+        reservationService.update(reservation.getId(), "쿠다", LocalDate.now().plusDays(2), time2.getId());
+
+        // then
+        Reservation updated = reservationRepository.findById(reservation.getId()).orElseThrow();
+        assertThat(updated.getDate()).isEqualTo(LocalDate.now().plusDays(2));
+        assertThat(updated.getTime().getId()).isEqualTo(time2.getId());
+    }
+
+    @Test
+    @DisplayName("예약 수정 시 이름이 다른 경우 예외")
+    void update_whenNameMismatch_throws() {
+        // given
+        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        ReservationTime time = reservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.of(10, 0), theme)
+        );
+
+        Reservation reservation = reservationRepository.save(
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(reservation.getId(), "피케이", LocalDate.now().plusDays(2), time.getId()))
+                .isInstanceOf(ReservationBadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("예약 수정 시 과거 날짜/시간 예외")
+    void update_whenPastDateTime_throws() {
+        // given
+        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        ReservationTime time = reservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.of(10, 0), theme)
+        );
+
+        Reservation reservation = reservationRepository.save(
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(reservation.getId(), "피케이", LocalDate.now().minusDays(10), time.getId()))
+                .isInstanceOf(ReservationBadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("예약 수정 시 같은 날짜/시간 중복 예외")
+    void update_whenDuplicateDateTime_throws() {
+        // given
+        Theme theme = Theme.of(1L, "미술관의 밤", "설명", "thumb");
+        ReservationTime time1 = reservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.of(10, 0), theme)
+        );
+        ReservationTime time2 = reservationTimeRepository.save(
+                ReservationTime.createNew(LocalTime.of(11, 0), theme)
+        );
+
+        Reservation reservation1 = reservationRepository.save(
+                Reservation.createNew("쿠다", LocalDate.now().plusDays(1), time1));
+
+        Reservation reservation2 = reservationRepository.save(
+                Reservation.createNew("피케이", LocalDate.now().plusDays(1), time2));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.update(reservation1.getId(), "쿠다", reservation2.getDate(),
+                time2.getId())).isInstanceOf(ReservationDuplicateException.class);
+    }
+
+
 }

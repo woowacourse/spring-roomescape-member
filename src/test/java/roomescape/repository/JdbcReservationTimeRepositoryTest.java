@@ -34,7 +34,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("예약 시간 전체 조회")
-    void reservationTime_findAll_test() {
+    void reservationTime_findAll_success() {
         //given & when
         LocalTime time = LocalTime.parse("11:00");
         Theme theme = createTheme("미술관의 밤");
@@ -51,7 +51,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("예약 시간 저장")
-    void reservationTime_save_test() {
+    void reservationTime_save_success() {
         //given
         LocalTime time = LocalTime.parse("11:00");
         Theme theme = createTheme("미술관의 밤");
@@ -67,7 +67,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("테마 예약 시간 전체 조회")
-    void reservationTime_theme_time_finaAll_test() {
+    void reservationTime_theme_time_finaAll_success() {
         //given
         Theme theme = createTheme("미술관의 밤");
         ReservationTime nonIdReservationTime1 = ReservationTime.createNew(LocalTime.parse("11:00"), theme);
@@ -85,7 +85,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("예약 시간 저장 예외")
-    void save_duplicate_test() {
+    void save_whenDuplicate_throws() {
         //given
         LocalTime time = LocalTime.parse("11:00");
         Theme theme = createTheme("미술관의 밤");
@@ -101,7 +101,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("예약 시간 삭제")
-    void reservationTime_delete_test() {
+    void reservationTime_delete_success() {
         // given
         LocalTime time = LocalTime.parse("11:00");
         Theme theme = createTheme("미술관의 밤");
