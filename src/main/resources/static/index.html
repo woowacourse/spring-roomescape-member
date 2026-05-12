@@ -24,7 +24,10 @@
     <div id="reservation-section" class="container hidden">
         <div class="reservation-header">
             <h1>방탈출 예약하기 🗝️</h1>
-            <button id="admin-page-btn" class="admin-btn hidden">관리자 페이지</button>
+            <div class="header-buttons">
+                <button id="my-reservations-nav-btn" class="primary-btn small">내 예약 보기</button>
+                <button id="admin-page-btn" class="admin-btn hidden">관리자 페이지</button>
+            </div>
         </div>
 
         <!-- 인기 테마 통계 영역 -->
@@ -61,6 +64,20 @@
             </ul>
 
             <button id="reserve-btn" class="success-btn">예약하기</button>
+        </section>
+    </div>
+
+    <!-- 내 예약 목록 섹션 -->
+    <div id="my-reservations-section" class="container hidden">
+        <div class="reservation-header">
+            <h1>내 예약 목록</h1>
+            <button id="back-to-reservation-btn" class="primary-btn">예약하기</button>
+        </div>
+
+        <section class="my-reservations-list-section">
+            <ul id="my-reservation-list" class="schedule-list">
+                <li class="empty-message">예약 내역을 불러오는 중입니다...</li>
+            </ul>
         </section>
     </div>
 

@@ -44,6 +44,20 @@ document.getElementById('admin-page-btn').addEventListener('click', () => {
     window.location.href = '/admin.html';
 });
 
+// '내 예약 보기' 버튼 클릭 이벤트
+document.getElementById('my-reservations-nav-btn').addEventListener('click', () => {
+    document.getElementById('reservation-section').classList.add('hidden');
+    document.getElementById('my-reservations-section').classList.remove('hidden');
+    loadMyReservations(); // '내 예약 보기' 화면으로 전환될 때 예약 목록을 불러옵니다.
+});
+
+// '예약하기' 페이지로 돌아가기 버튼 클릭 이벤트 (새로 추가된 버튼)
+document.getElementById('back-to-reservation-btn').addEventListener('click', () => {
+    document.getElementById('my-reservations-section').classList.add('hidden');
+    document.getElementById('reservation-section').classList.remove('hidden');
+});
+
+
 // =================================================================================================
 // ✅ TODO 1: 테마 목록을 API(GET /themes)로 가져와서 <select>에 채우기
 // API 명세: GET /themes -> [ { id, name, ... }, ... ]
@@ -158,6 +172,54 @@ document.getElementById('search-schedule-btn').addEventListener('click', () => {
         .catch(error => console.error(error));
 });
 
+
+// =================================================================================================
+// ✅ 사용자 본인의 예약 목록 조회
+// API 명세: GET /reservations?name={name}
+// =================================================================================================
+function loadMyReservations() {
+    if (!currentUser) { // 로그인하지 않았다면 조회하지 않습니다.
+        return;
+    }
+
+    fetch(`/reservations?name=${currentUser}`)
+        .then(response => {
+            if (!response.ok) throw new Error('내 예약 목록을 불러오는데 실패했습니다.');
+            return response.json();
+        })
+        .then(reservationsResponse => {
+            const myReservationList = document.getElementById('my-reservation-list');
+            myReservationList.innerHTML = ''; // 기존 목록 초기화
+
+            const reservations = reservationsResponse; // 🚨 @JsonValue 때문에 reservationsResponse 자체가 배열입니다.
+
+            if (reservations.length === 0) {
+                myReservationList.innerHTML = '<li class="empty-message">예약된 내역이 없습니다.</li>';
+                return;
+            }
+
+            reservations.forEach(reservation => {
+                const li = document.createElement('li');
+                const startDateTime = new Date(reservation.startAt);
+                const endDateTime = new Date(reservation.endAt);
+
+                const formattedDate = startDateTime.toLocaleDateString('ko-KR');
+                const formattedStartTime = startDateTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+                const formattedEndTime = endDateTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+
+                // 🚨 "테마: " 레이블을 추가하고, div와 span으로 구조화하여 CSS로 제어하기 쉽게 만듭니다.
+                li.innerHTML = `
+                    <div class="reservation-item-header"><strong>테마: ${reservation.themeName}</strong></div>
+                    <div class="reservation-item-details">
+                        <span>날짜: ${formattedDate}</span>
+                        <span>시간: ${formattedStartTime} ~ ${formattedEndTime}</span>
+                    </div>
+                `;
+                myReservationList.appendChild(li);
+            });
+        })
+        .catch(error => console.error('내 예약 목록 로드 중 에러:', error));
+}
 
 // =================================================================================================
 // ✅ TODO 3: '예약하기' 버튼 클릭 시 API(POST /reservations) 호출

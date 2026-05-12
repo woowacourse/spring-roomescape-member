@@ -74,6 +74,11 @@ button:active {
     transform: scale(0.98);
 }
 
+.primary-btn.small {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+}
+
 .primary-btn {
     background-color: #3498db;
     color: white;
@@ -158,6 +163,11 @@ hr {
     margin: 0;
 }
 
+.header-buttons {
+    display: flex;
+    gap: 10px; /* 버튼 사이의 간격 */
+}
+
 .admin-btn {
     width: auto;
     padding: 10px 15px;
@@ -226,4 +236,38 @@ hr {
     font-size: 0.9rem;
     font-weight: 500;
     color: #3498db;
+}
+
+.my-reservations-list-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* 내 예약 목록 아이템 스타일 */
+.my-reservations-list-section .schedule-list li {
+    display: flex;
+    flex-direction: column; /* 헤더와 상세 정보를 세로로 쌓음 */
+    align-items: flex-start; /* 텍스트를 왼쪽 정렬 */
+    gap: 5px; /* 헤더와 상세 정보 사이 간격 */
+    padding: 15px; /* 패딩 조정 */
+}
+
+.my-reservations-list-section .schedule-list li .reservation-item-header {
+    width: 100%;
+    text-align: left;
+    font-size: 1.1rem;
+    color: #2c3e50;
+}
+
+.my-reservations-list-section .schedule-list li .reservation-item-details {
+    width: 100%;
+    display: flex; /* 날짜와 시간을 가로로 배치 */
+    flex-wrap: wrap; /* 공간이 부족하면 줄바꿈 허용 */
+    justify-content: space-between; /* 날짜와 시간을 양 끝으로 분리 */
+    font-size: 0.9em;
+    color: #666;
+}
+
+.my-reservations-list-section .schedule-list li .reservation-item-details span {
+    white-space: nowrap; /* 날짜나 시간이 중간에 끊기지 않도록 */
 }
