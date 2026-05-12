@@ -1,5 +1,6 @@
 package roomescape.date.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -35,7 +36,12 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
         String sql = "SELECT * FROM reservation_date where id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, reservationDateRowMapper));
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, reservationDateRowMapper));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

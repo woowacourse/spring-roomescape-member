@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -44,7 +45,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, themeRowMapper));
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, themeRowMapper));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
