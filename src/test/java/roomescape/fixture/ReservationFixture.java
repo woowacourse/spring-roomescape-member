@@ -9,19 +9,32 @@ public class ReservationFixture {
 
     private static final String STARK = "스타크";
     private static final String KAYA = "카야";
-    private static final LocalDate RESERVATION_DATE = LocalDate.of(2026, 5, 6);
+    private static final LocalDate PAST_RESERVATION_DATE = LocalDate.of(2000, 5, 6);
+    private static final LocalDate FUTURE_RESERVATION_DATE = LocalDate.of(2028, 5, 6);
     private static final String PAST_RESERVATION_DATE_TEXT = "2000-05-06";
     private static final String FUTURE_RESERVATION_DATE_TEXT = "2028-05-06";
 
     private ReservationFixture() {
     }
 
-    public static ReservationCreateCommand starkCreateCommand(Long themeId, Long timeId) {
-        return new ReservationCreateCommand(STARK, RESERVATION_DATE, themeId, timeId);
+    public static ReservationCreateCommand pastStarkCreateCommand(Long themeId, Long timeId) {
+        return new ReservationCreateCommand(STARK, PAST_RESERVATION_DATE, themeId, timeId);
     }
 
-    public static ReservationCreateCommand kayaCreateCommand(Long themeId, Long timeId) {
-        return new ReservationCreateCommand(KAYA, RESERVATION_DATE, themeId, timeId);
+    public static ReservationCreateCommand futureStarkCreateCommand(Long themeId, Long timeId) {
+        return new ReservationCreateCommand(STARK, FUTURE_RESERVATION_DATE, themeId, timeId);
+    }
+
+    public static ReservationCreateCommand futureKayaCreateCommand(Long themeId, Long timeId) {
+        return new ReservationCreateCommand(KAYA, FUTURE_RESERVATION_DATE, themeId, timeId);
+    }
+
+    public static LocalDate pastReservationDate() {
+        return PAST_RESERVATION_DATE;
+    }
+
+    public static LocalDate futureReservationDate() {
+        return FUTURE_RESERVATION_DATE;
     }
 
     public static Map<String, String> futureReservationParams(Long themeId, Long timeId) {

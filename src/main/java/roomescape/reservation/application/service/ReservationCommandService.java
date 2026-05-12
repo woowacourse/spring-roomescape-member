@@ -1,5 +1,6 @@
 package roomescape.reservation.application.service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,11 +22,13 @@ import roomescape.theme.domain.repository.ThemeRepository;
 @Service
 public class ReservationCommandService {
 
+    private final Clock clock;
+
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
     private final ReservationTimeRepository timeRepository;
 
-    public ReservationResult save(ReservationCreateCommand request, LocalDateTime currentDateTime) {
+    public ReservationResult save(ReservationCreateCommand request) {
         ThemeResult themeResult = ThemeResult.from(themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new RoomEscapeException("존재하지 않는 테마입니다.")));
 
@@ -33,21 +36,21 @@ public class ReservationCommandService {
                 .orElseThrow(() -> new RoomEscapeException("존재하지 않는 시간입니다.")));
 
         Reservation reservation = request.toEntity(themeResult.id(), timeResult.id());
-        reservation.validateNotPast(timeResult.startAt(), currentDateTime);
+        reservation.validateNotPast(timeResult.startAt(), LocalDateTime.now(clock));
 
         validateDuplicateReservation(reservation);
 
         return ReservationResult.from(reservationRepository.save(reservation), themeResult, timeResult);
     }
 
-    public void delete(Long id, LocalDateTime currentDateTime) {
+    public void delete(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
 
         ReservationTime time = timeRepository.findById(reservation.getTimeId())
                 .orElseThrow(() -> new RoomEscapeException("존재하지 않는 시간입니다."));
 
-        reservation.validateDeletable(time.getStartAt(), currentDateTime);
+        reservation.validateDeletable(time.getStartAt(), LocalDateTime.now(clock));
 
         if (reservationRepository.delete(id) == 0) {
             throw new NotFoundException("존재하지 않는 예약입니다.");

@@ -68,7 +68,7 @@ class ReservationApiTest {
     void delete_reservation() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
         Long timeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
-        Long reservationId = testHelper.insertReservation("스타크", LocalDate.of(2028, 5, 6), themeId, timeId);
+        Long reservationId = testHelper.insertReservation("스타크", ReservationFixture.futureReservationDate(), themeId, timeId);
 
         RestAssured.given()
                 .when().delete("/reservations/{id}", reservationId)
@@ -134,7 +134,7 @@ class ReservationApiTest {
     void save_duplicated_reservation() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
         Long timeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
-        testHelper.insertReservation("스타크", LocalDate.of(2028, 5, 6), themeId, timeId);
+        testHelper.insertReservation("스타크", ReservationFixture.futureReservationDate(), themeId, timeId);
 
         Map<String, String> params = ReservationFixture.futureReservationParams(themeId, timeId);
 
@@ -238,7 +238,7 @@ class ReservationApiTest {
     void delete_past_reservation() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
         Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
-        Long reservationId = testHelper.insertReservation("스타크", LocalDate.of(2000, 5, 6), themeId, timeId);
+        Long reservationId = testHelper.insertReservation("스타크", ReservationFixture.pastReservationDate(), themeId, timeId);
 
         RestAssured.given()
                 .when().delete("/reservations/{id}", reservationId)
