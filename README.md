@@ -37,6 +37,53 @@
 - 예: 오늘이 5월 8일이면, 게임 날짜가 5월 1일~5월 7일인 예약을 집계해 인기 순서대로 10개를 응답한다.
 - [x] 전체 테마 목록을 가져오면서, 예약 정보 테이블에서 각 테마당 예약 횟수의 총합도 가져온다.
 
+## 4단계 - 서비스 정책 적용
+
+- 지나간 날짜·시간에 대한 예약 생성은 불가능하다.
+    - [ ] 지나간 날짜, 시간에 예약을 요청하면 422 에러를 발생시킨다.
+- 같은 날짜+시간+테마에 이미 예약이 있으면 중복 예약을 거부한다.
+    - [ ] 중복 예약을 요청하면 409 에러를 발생시킨다.
+- 예약이 존재하는 시간을 삭제할 수 없다.
+    - [ ] 예약이 존재하는 시간을 삭제 요청하면 409 에러를 발생시킨다.
+- 유효하지 않은 입력값(빈 이름, 잘못된 날짜 형식 등)을 거부한다.
+    - [ ] 유효하지 않은 입력값이 들어오면 400 에러를 발생시킨다.
+- 랭킹 조회 기간이 유효하지 않으면 거부한다.
+    - [ ] 종료 날짜와 시작 날짜 모두 미래일 수 없다.
+    - [ ] 조회 종료 날짜가 시작 날짜보다 뒤여야 한다.
+    - [ ] 조회 기간은 1년 이내여야 한다.
+- 중복된 예약 시간 추가를 거부한다.
+    - [ ] 중복된 예약 시간 추가를 요청하면 409 에러를 발생시킨다.
+
+## 5단계 - 에러 응답 설계
+
+- 서비스 정책 위반, 유효하지 않은 입력, 존재하지 않는 리소스 등에 대해 의도된 에러 응답을 반환한다.
+    - [ ] (우선순위) 상태 코드 선택 순서:
+        1) 리소스가 존재하지 않는가? → 404
+        2) 요청 형식·필수값이 잘못됐는가? → 400
+        3) DB 제약조건이 걸린(걸려야 하는) 규칙 위반인가? → 409
+           (중복 예약, 외래 키 참조 중인 리소스 삭제 등)
+        4) 나머지 비즈니스 규칙 위반 → 422
+           (과거 날짜 예약, 운영 시간 외 예약 등)
+- 500(서버 에러)이 사용자에게 노출되지 않도록 한다.
+    - [ ] 요청 url이 잘못된 경우 400 에러를 발생시킨다.
+- 에러 응답 본문에 어떤 정보를 담을지 결정한다.
+    - [ ] 응답 코드 + 메시지를 담는다.
+- 브라우저에서 에러 발생 시 사용자에게 의미 있는 메시지가 표시되어야 한다.
+    - [ ] 클라이언트가 행동을 바꿔 재시도 가능한 상황이면 구체적인 다음 행동을 제시한다.
+        - ex) 이미 예약이 존재하는 시간에 예약을 요청할 때: "[ERROR] 해당 시간에 예약이 이미 존재합니다. 다른 시간을 선택해 주세요."
+
+## 6단계 - 내 예약 조회/변경/취소
+
+- 사용자가 자신의 이름으로 본인의 예약 목록을 조회할 수 있다.
+    - [ ] 예약 목록이 없다면 빈 리스트를 반환한다.
+- 사용자가 본인의 예약을 취소할 수 있다.
+    - [ ] 날짜, 시간이 지난 예약을 취소 요청할 경우 예외를 발생시킨다.
+- 사용자가 본인의 예약의 날짜·시간을 변경할 수 있다.
+    - [ ] 날짜, 시간 이외의 것들의 변경을 요청할 경우 예외를 발생시킨다.
+    - [ ] 변경하려는 날짜, 시간이 이미 지난 경우 예외를 발생시킨다.
+    - [ ] 변경하려는 날짜, 시간에 예약이 이미 존재할 경우 예외를 발생시킨다.
+- 변경·취소 시 발생하는 에러 케이스(이미 지난 예약을 취소, 변경하려는 시간이 이미 차 있음 등)도 2단계의 규칙에 맞춰 처리한다.
+
 ## API URL
 
 ### 테마 관리 및 조회 API (/admin/themes, /themes)
@@ -67,94 +114,123 @@
 
 ## API 명세서
 
-- 사용자의 테마 조회
-    - Http Method: GET
-    - URL: /themes
-    - Response
-        - 정상적으로 조회된 경우: `Http Status: 200 OK`
-  ```text
-  [
-      {
-          "id": 1,
-          "name": "피즈의 모험",
-          "description": "피즈가 모험을 떠나는 이야기입니다.",
-          "thumbnail": "http://localhost:8080/images/fizz.jpg"
-      },
-      {
-          "id": 2,
-          "name": "나무의 일대기",
-          "date": "나무가 살아온 인생을 보여주는 이야기입니다.",
-          "thumbnail": "http://localhost:8080/images/tree.jpg"
-      }
-  ]
-  ```
+### 공통
 
-- 관리자의 테마 조회
-    - Http Method: GET
-    - URL: /admin/themes
-    - Response
-        - 정상적으로 조회된 경우: `Http Status: 200 OK`
-  ```text
-  [
-      {
-          "id": 1,
-          "name": "피즈의 모험",
-          "description": "피즈가 모험을 떠나는 이야기입니다.",
-          "thumbnail": "http://localhost:8080/images/fizz.jpg"
-      },
-      {
-          "id": 2,
-          "name": "나무의 일대기",
-          "date": "나무가 살아온 인생을 보여주는 이야기입니다.",
-          "thumbnail": "http://localhost:8080/images/tree.jpg"
-      }
-  ]
-  ```
+- [ ] 요청 형식이 잘못된 경우 (검증 예외, 잘못된 url 등): `Http Status: 400 Bad Request`
+
+    ```text
+    {
+        "status": "BAD_REQUEST",
+        "message": "[ERROR] (~ 이유). 다시 시도해 주세요."
+    }
+    ```
+
+### Theme
 
 - 관리자의 테마 추가
     - Http Method: POST
     - URL: /admin/themes
     - Request
-  ```text
-  {
-      "name": "피즈의 모험",
-      "description": "피즈가 모험을 떠나는 이야기입니다.",
-      "thumbnail": "http://localhost:8080/images/fizz.jpg"
-  }
-  ```
+        ```text
+        {
+            "name": "피즈의 모험",
+            "description": "피즈가 모험을 떠나는 이야기입니다.",
+            "thumbnail": "http://localhost:8080/images/fizz.jpg"
+        }
+        ```
     - Response
-        - 정상적으로 추가된 경우: `Http Status: 201 Created`
-  ```text
-  {
-      "id": 1,
-      "name": "피즈의 모험",
-      "description": "피즈가 모험을 떠나는 이야기입니다.",
-      "thumbnail": "http://localhost:8080/images/fizz.jpg"
-  }
-  ```
+        - [x] 정상적으로 추가된 경우: `Http Status: 201 Created`
+        ```text
+        {
+            "id": 1,
+            "name": "피즈의 모험",
+            "description": "피즈가 모험을 떠나는 이야기입니다.",
+            "thumbnail": "http://localhost:8080/images/fizz.jpg"
+        }
+        ```
 
 - 관리자의 테마 삭제
-    - Http Method: GET
+    - Http Method: DELETE
     - URL: /admin/themes/{id}
     - Response
-        - 정상적으로 삭제된 경우: `Http Status: 204 No Content`
+        - [x] 정상적으로 삭제된 경우: `Http Status: 204 No Content`
 
-    - 사용자의 예약 추가
-        - Http Method: POST
-        - URL: /reservation
-        - Request
-      ```text
-      {
+        - [x] 해당 테마를 사용하는 예약이 존재할 경우: `Http Status: 409 Conflict`
+        ```text
+        {
+            "status": "CONFLICT",
+            "message": "[ERROR] 현재 해당 테마를 사용하는 예약이 존재합니다. 연관된 예약을 삭제한 후 다시 시도해 주세요."
+        }
+        ```
+
+- 전체 테마 조회
+    - Http Method: GET
+    - URL: /themes
+    - Response
+        - [x] 정상적으로 조회된 경우: `Http Status: 200 OK`
+        ```text
+        [
+            {
+                "id": 1,
+                "name": "피즈의 모험",
+                "description": "피즈가 모험을 떠나는 이야기입니다.",
+                "thumbnail": "http://localhost:8080/images/fizz.jpg"
+            },
+            {
+                "id": 2,
+                "name": "나무의 일대기",
+                "date": "나무가 살아온 인생을 보여주는 이야기입니다.",
+                "thumbnail": "http://localhost:8080/images/tree.jpg"
+            }
+        ]
+        ```
+
+- 인기 테마 조회
+    - Http Method: GET
+    - URL: /themes/ranking?start-date={start-date}&end-date={end-date} / date 형식: yyyy-mm-dd
+    - Response
+        - [x] 정상적으로 조회된 경우: `Http Status: 200 OK`
+        ```text
+        [
+            {
+                "id": 1,
+                "name": "잃어버린 왕국",
+                "description": "사라진 고대 왕국의 비밀을 추적하는 모험 테마",
+                "thumbnailUrl": "https://example.com/images/lost-kingdom.jpg"
+            },
+            {
+                "id": 2,
+                "name": "심야의 연구소",
+                "description": "한밤중 폐쇄된 연구소에서 탈출 단서를 찾는 스릴러 테마",
+                "thumbnailUrl": "https://example.com/images/midnight-lab.jpg"
+            },
+            {
+                "id": 3,
+                "name": "해적선의 저주",
+                "description": "저주받은 해적선에서 보물을 찾아 탈출하는 테마",
+                "thumbnailUrl": "https://example.com/images/pirate-curse.jpg"
+            }
+        ]
+        ```
+
+### Reservation
+
+- 예약 추가
+    - Http Method: POST
+    - URL: /reservation
+    - Request
+        ```text
+        {
             "name": "fizz",
             "date": "2026-05-02",
             "timeId": 1,
             "themeId": 1
-      }
-      ```
-        - Response
-            - 정상적으로 추가된 경우: `Http Status: 201 Created`
-      ```text
-      {
+        }
+        ```
+    - Response
+        - [x] 정상적으로 추가된 경우: `Http Status: 201 Created`
+        ```text
+        {
             "id": 1,
             "name": "fizz",
             "date": "2026-05-02",
@@ -168,88 +244,272 @@
                 "description": "피즈가 모험하는 이야기",
                 "thumbnailUrl": "1.jpg"
             }
-      }
-      ```
-        - 날짜, 시간, 테마가 동일한 예약일 경우: `Http Status: 400 Bad Request`
-        ```text
-      {
-          "status": "BAD_REQUEST",
-          "message": "[ERROR] 중복된 예약이 이미 존재합니다."
-      }
-      ```
+        }
+        ```
 
-- 관리자의 예약 추가
-    - Http Method: POST
-    - URL: /admin/reservation
-    - Request
-  ```text
-  {
-        "name": "fizz",
-        "date": "2026-05-02",
-        "timeId": 1
-  }
-  ```
+        - [ ] 존재하는 예약과 날짜, 시간, 테마가 동일한 예약일 경우: `Http Status: 409 Conflict`
+        ```text
+        {
+            "status": "CONFLICT",
+            "message": "[ERROR] 해당 시간에 예약이 이미 존재합니다. 예약 가능한 시간으로 다시 시도해 주세요."
+        }
+        ```
+
+        - [ ] 지나간 날짜, 시간일 경우: `Http Status: 422 Unprocessable Entity`
+        ```text
+        {
+            "status": "UNPROCESSABLE_ENTITY",
+            "message": "[ERROR] 지나간 시간에는 예약할 수 없습니다. 예약 시간을 변경해 주세요."
+        }
+        ```
+
+- 사용자 이름으로 예약 조회
+    - Http Method: GET
+    - URL: /reservations
     - Response
-        - 정상적으로 추가된 경우: `Http Status: 201 Created`
-  ```text
-  {
-        "id": 1,
-        "name": "fizz",
-        "date": "2026-05-02",
-        "time": {
+        - [ ] 정상적으로 조회된 경우: `Http Status: 200 OK`
+        ```text
+        [
+            {
+                "id": 1,
+                "name": "예약자01",
+                "date": "2026-05-01",
+                "time": {
+                    "id": 1,
+                    "startAt": "10:00:00"
+                },
+                "theme": {
+                    "id": 1,
+                    "name": "잃어버린 왕국",
+                    "description": "사라진 고대 왕국의 비밀을 추적하는 모험 테마",
+                    "thumbnailUrl": "https://example.com/images/lost-kingdom.jpg"
+                }
+            },
+            {
+                "id": 2,
+                "name": "예약자01",
+                "date": "2026-05-02",
+                "time": {
+                    "id": 2,
+                    "startAt": "11:00:00"
+                },
+                "theme": {
+                    "id": 1,
+                    "name": "잃어버린 왕국",
+                    "description": "사라진 고대 왕국의 비밀을 추적하는 모험 테마",
+                    "thumbnailUrl": "https://example.com/images/lost-kingdom.jpg"
+                }
+            }
+        ]
+        ```
+
+- 전체 예약 조회
+    - Http Method: GET
+    - URL: /reservations
+    - Response
+        - [x] 정상적으로 조회된 경우: `Http Status: 200 OK`
+        ```text
+        [
+            {
+                "id": 1,
+                "name": "예약자01",
+                "date": "2026-05-01",
+                "time": {
+                    "id": 1,
+                    "startAt": "10:00:00"
+                },
+                "theme": {
+                    "id": 1,
+                    "name": "잃어버린 왕국",
+                    "description": "사라진 고대 왕국의 비밀을 추적하는 모험 테마",
+                    "thumbnailUrl": "https://example.com/images/lost-kingdom.jpg"
+                }
+            },
+            {
+                "id": 2,
+                "name": "예약자02",
+                "date": "2026-05-02",
+                "time": {
+                    "id": 2,
+                    "startAt": "11:00:00"
+                },
+                "theme": {
+                    "id": 1,
+                    "name": "잃어버린 왕국",
+                    "description": "사라진 고대 왕국의 비밀을 추적하는 모험 테마",
+                    "thumbnailUrl": "https://example.com/images/lost-kingdom.jpg"
+                }
+            }
+        ]
+        ```
+
+- 예약 변경
+    - Http Method: PATCH
+    - URL: /reservations/{id}
+    - Request
+        ```text
+        {
+            "date": "2026-05-03",
+            "timeId": 2
+        }
+        ```
+    - Response
+        - [x] 정상적으로 변경된 경우: `Http Status: 200 OK`
+        ```text
+        {
+            "name": "fizz",
+            "date": "2026-05-03",
+            "timeId": 2,
+            "themeId": 1
+        }
+        ```
+
+        - [ ] 이미 지나간 날짜, 시간으로 예약을 변경할 경우: `Http Status: 422 Unprocessable Entity`
+        ```text
+        {
+            "status": "UNPROCESSABLE_ENTITY",
+            "message": "[ERROR] 지나간 시간으로 예약을 변경할 수 없습니다."
+        }
+        ```
+
+        - [ ] 예약이 이미 존재하는 시간으로 변경할 경우: `Http Status: 409 Conflict`
+        ```text
+        {
+            "status": "CONFLICT",
+            "message": "[ERROR] 동일한 예약 시간이 이미 존재합니다. 시간을 변경해 다시 시도해 주세요."
+        }
+        ```
+
+        - [ ] 날짜, 시간이 아닌 변경을 요청할 경우: `Http Status: 422 Unprocessable Entity`
+        ```text
+        {
+            "status": "UNPROCESSABLE_ENTITY",
+            "message": "[ERROR] 날짜, 시간만 변경할 수 있습니다. 변경할 수 없는 값을 제외하고 다시 시도해 주세요."
+        }
+        ```
+
+- 예약 삭제
+    - Http Method: DELETE
+    - URL: /reservations/{id}
+    - Response
+        - [x] 정상적으로 삭제된 경우: `Http Status: 204 No Content`
+
+        - [ ] 이미 지나간 시간의 예약을 삭제할 경우: `Http Status: 422 Unprocessable Entity`
+        ```text
+        {
+            "status": "UNPROCESSABLE_ENTITY",
+            "message": "[ERROR] 지나간 시간의 예약은 삭제할 수 없습니다."
+        }
+        ```
+
+### Reservation Time
+
+- 예약 시간 추가
+    - Http Method: POST
+    - URL: /admin/themes
+    - Request
+        ```text
+        {
+            "startAt": "10:00:00"
+        }
+        ```
+    - Response
+        - [x] 정상적으로 추가된 경우: `Http Status: 201 Created`
+        ```text
+        {
             "id": 1,
             "startAt": "10:00:00"
         }
-  }
-  ```
-    - 이름, 날짜, 시간이 동일한 예약일 경우: `Http Status: 400 Bad Request`
-  ```text
-  {
-      "status": "BAD_REQUEST",
-      "message": "[ERROR] 중복된 예약이 이미 존재합니다."
-  }
-  ```
+        ```
 
-- 예약 가능 시간 조회
-    - Http Method: GET
-    - URL: /times?date={date}&themeId={id} / date 형식: yyyy-mm-dd
-    - Response
-        - 정상적으로 조회된 경우: `Http Status: 200 OK`
-  ```text
-  {
-      {
-        "id": 1,
-        "startAt": "10:00"
-      },
-      {
-        "id": 2,
-        "startAt": "11:00"
-      }
-  }
-  ```
+        - [ ] 존재하는 예약 시간과 동일한 시간일 경우: `Http Status: 409 Conflict`
+        ```text
+        {
+            "status": "CONFLICT",
+            "message": "[ERROR] 동일한 예약 시간이 이미 존재합니다. 시간을 변경해 다시 시도해 주세요."
+        }
+        ```
 
-- 인기 테마 조회
+- 전체 예약 시간 조회
     - Http Method: GET
-    - URL: /themes/ranking?start-date={start-date}&end-date={end-date} / date 형식: yyyy-mm-dd
+    - URL: /times
     - Response
-        - 정상적으로 조회된 경우: `Http Status: 200 OK`
-  ```text
-  {
-      {
-        "theme": {
-          "id": 1,
-          "name": "피즈의 모험",
-          "description": "피즈가 모험을 떠나는 이야기입니다.",
-          "thumbnail": "http://localhost:8080/images/fizz.jpg"
+        - [x] 정상적으로 조회된 경우: `Http Status: 200 OK`
+        ```text
+        [
+            {
+                "id": 1,
+                "startAt": "10:00:00"
+            },
+            {
+                "id": 2,
+                "startAt": "11:00:00"
+            },
+            {
+                "id": 3,
+                "startAt": "12:00:00"
+            }
+        ]
+        ```
+
+- 예약 가능 여부 조회
+    - Http Method: GET
+    - URL: /times/available?date={date}&themeId={id} / date 형식: yyyy-mm-dd
+    - Response
+        - [x] 정상적으로 조회된 경우: `Http Status: 200 OK`
+        ```text
+        [
+            {
+                "time": {
+                    "id": 1,
+                    "startAt": "10:00:00"
+                },
+                "available": true
+            },
+            {
+                "time": {
+                    "id": 2,
+                    "startAt": "11:00:00"
+                },
+                "available": false
+            }
+        ]
+        ```
+
+        - [ ] 시작 날짜 또는 종료 날짜가 미래인 경우: `Http Status: 422 Unprocessable Entity`
+        ```
+        {
+            "status": "UNPROCESSABLE_ENTITY",
+            "message": "[ERROR] 요청에 미래 날짜가 존재합니다. 현재보다 이전 날짜로 다시 요청해 주세요."
         }
-      },
-      {
-        "theme": {
-          "id": 2,
-          "name": "나무의 일대기",
-          "date": "나무가 살아온 인생을 보여주는 이야기입니다.",
-          "thumbnail": "http://localhost:8080/images/tree.jpg"
+        ```
+
+        - [ ] 종료 날짜가 시작 날짜보다 먼저 올 경우: `Http Status: 422 Unprocessable Entity`
+        ```
+        {
+            "status": "UNPROCESSABLE_ENTITY",
+            "message": "[ERROR] 종료 날짜가 시작 날짜보다 빠릅니다. 종료 날짜가 시작 날짜보다 뒤에 오도록 요청해 주세요."
         }
-      },
-  }
-  ```
+        ```
+
+        - [ ] 조회 기간이 1년을 초과할 경우: `Http Status: 422 Unprocessable Entity`
+        ```
+        {
+            "status": "UNPROCESSABLE_ENTITY",
+            "message": "[ERROR] 조회 기간이 최대 기간을 초과했습니다. 기간이 1년 이내가 되도록 다시 요청해 주세요."
+        }
+        ```
+
+- 예약 시간 삭제
+    - Http Method: DELETE
+    - URL: /times/{id}
+    - Response
+        - [x] 정상적으로 삭제된 경우: `Http Status: 204 No Content`
+
+        - [ ] 해당 예약 시간을 사용하는 예약이 존재할 경우: `Http Status: 409 Conflict`
+        ```text
+        {
+            "status": "CONFLICT",
+            "message": "[ERROR] 현재 해당 예약 시간을 사용하는 예약이 존재합니다. 연관된 예약을 삭제한 후 다시 시도해 주세요."
+        }
+        ```
