@@ -23,6 +23,8 @@ const API_BASE = "";
       selectedThemeId: null,
       selectedTimeId: null,
       editingReservationId: null,
+      editingReservationThemeId: null,
+      editAvailableTimes: [],
       adminSelectedThemeId: null,
       adminSelectedTimeId: null,
       adminAvailableTimes: []
@@ -570,19 +572,26 @@ const API_BASE = "";
         state.editingReservationId &&
         elements.editAuthorizationName.value.trim() &&
         elements.editReservationDate.value &&
-        elements.editReservationTime.value
+        elements.editReservationTime.value &&
+        !elements.editReservationTime.disabled
       );
       elements.editReservationButton.disabled = !canEdit;
     }
 
-    function renderEditTimeOptions(selectedTimeId) {
+    function renderEditTimeOptions(times, selectedTimeId = null) {
       elements.editReservationTime.innerHTML = "";
-      if (state.times.length === 0) {
-        elements.editReservationTime.innerHTML = `<option value="">시간 없음</option>`;
+      const availableTimes = times.filter((time) => time.isAvailable);
+      if (availableTimes.length === 0) {
+        elements.editReservationTime.innerHTML = `<option value="">예약 가능한 시간 없음</option>`;
+        elements.editReservationTime.disabled = true;
+        syncEditReservationForm();
         return;
       }
 
-      [...state.times]
+      elements.editReservationTime.disabled = false;
+      elements.editReservationTime.innerHTML = `<option value="">시간 선택</option>`;
+
+      [...availableTimes]
         .sort((a, b) => normalizeTime(a.startAt).localeCompare(normalizeTime(b.startAt)))
         .forEach((time) => {
           const option = document.createElement("option");
@@ -591,8 +600,38 @@ const API_BASE = "";
           elements.editReservationTime.appendChild(option);
         });
 
-      if (state.times.some((time) => time.id === selectedTimeId)) {
+      if (availableTimes.some((time) => time.id === selectedTimeId)) {
         elements.editReservationTime.value = String(selectedTimeId);
+      }
+      syncEditReservationForm();
+    }
+
+    async function loadEditAvailability(selectedTimeId = null) {
+      const date = elements.editReservationDate.value;
+      const themeId = state.editingReservationThemeId;
+      if (!state.editingReservationId || !date || !themeId) {
+        state.editAvailableTimes = [];
+        renderEditTimeOptions([]);
+        return;
+      }
+
+      elements.editReservationTime.disabled = true;
+      elements.editReservationTime.innerHTML = `<option value="">불러오는 중</option>`;
+      setEditReservationMessage("예약 가능한 시간을 불러오는 중입니다.");
+      syncEditReservationForm();
+
+      try {
+        const times = state.mode === "live"
+          ? (await getJson(`/times/availability?date=${date}&themeId=${themeId}`)).availableTimes || []
+          : getDemoAvailabilityFor(date, themeId);
+        state.editAvailableTimes = times;
+        renderEditTimeOptions(times, selectedTimeId);
+        const hasAvailableTime = times.some((time) => time.isAvailable);
+        setEditReservationMessage(hasAvailableTime ? "" : "예약 가능한 시간이 없습니다.", hasAvailableTime ? "" : "error");
+      } catch (error) {
+        state.editAvailableTimes = [];
+        renderEditTimeOptions([]);
+        setEditReservationMessage(endpointMessageOr(error, "예약 가능한 시간 조회에 실패했습니다."), "error");
       }
     }
 
@@ -603,13 +642,16 @@ const API_BASE = "";
 
     function clearEditReservation() {
       state.editingReservationId = null;
+      state.editingReservationThemeId = null;
+      state.editAvailableTimes = [];
       elements.editReservationForm.hidden = true;
       elements.editReservationForm.reset();
       elements.editReservationMeta.textContent = "";
+      elements.editReservationTime.disabled = false;
       setEditReservationMessage("");
     }
 
-    function startEditReservation(id) {
+    async function startEditReservation(id) {
       const reservation = findReservation(id);
       if (!reservation) {
         return;
@@ -618,13 +660,13 @@ const API_BASE = "";
       const theme = getReservationTheme(reservation);
       const time = getReservationTime(reservation);
       state.editingReservationId = id;
+      state.editingReservationThemeId = getReservationThemeId(reservation);
       elements.editReservationForm.hidden = false;
       elements.editReservationTitle.textContent = `예약 수정 #${id}`;
       elements.editReservationMeta.textContent = `${theme?.name || "-"} · ${normalizeTime(time?.startAt || "-")}`;
       elements.editAuthorizationName.value = "";
       elements.editReservationDate.value = reservation.date;
-      renderEditTimeOptions(getReservationTimeId(reservation));
-      setEditReservationMessage("");
+      await loadEditAvailability(getReservationTimeId(reservation));
       syncEditReservationForm();
       elements.editAuthorizationName.focus();
     }
@@ -1181,7 +1223,7 @@ const API_BASE = "";
       elements.editReservationForm.addEventListener("submit", editReservation);
       elements.editCancelButton.addEventListener("click", clearEditReservation);
       elements.editAuthorizationName.addEventListener("input", syncEditReservationForm);
-      elements.editReservationDate.addEventListener("change", syncEditReservationForm);
+      elements.editReservationDate.addEventListener("change", () => loadEditAvailability());
       elements.editReservationTime.addEventListener("change", syncEditReservationForm);
     }
 
