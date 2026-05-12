@@ -31,7 +31,7 @@ class JdbcReservationDaoTest {
 
     @DisplayName("예약 상세 정보 전체 조회를 테스트합니다.")
     @Test
-    void findAll() {
+    void find_all() {
         Long themeId = testHelper.insertTheme("테마1", "설명1", "img1.jpg");
         Long tenTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
         Long elevenTimeId = testHelper.insertReservationTime(LocalTime.of(11, 0));
@@ -54,7 +54,7 @@ class JdbcReservationDaoTest {
 
     @DisplayName("사용자의 이름으로 해당 사용자의 예약 상세 정보 조회를 테스트합니다.")
     @Test
-    void findByName() {
+    void find_by_name() {
         Long themeId = testHelper.insertTheme("테마1", "설명1", "img1.jpg");
         Long tenTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
         Long elevenTimeId = testHelper.insertReservationTime(LocalTime.of(11, 0));
