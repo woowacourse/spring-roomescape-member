@@ -17,6 +17,7 @@ public class ThemeService {
     private static final int POPULAR_PERIOD = 7;
     private static final int POPULAR_OFFSET = 1;
     private static final int POPULAR_LIMIT = 10;
+
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {

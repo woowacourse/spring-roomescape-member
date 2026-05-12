@@ -59,33 +59,38 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll(int page, int size) {
-        String sql = "SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id, " +
-                "c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail " +
-                "FROM reservation r INNER JOIN reservation_time t ON r.time_id = t.id INNER JOIN theme c ON r.theme_id = c.id "
-                +
-                "LIMIT ? OFFSET ? ";
+        String sql = """
+                SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id,
+                c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail
+                FROM reservation r INNER JOIN reservation_time t ON r.time_id = t.id INNER JOIN theme c ON r.theme_id = c.id
+                LIMIT ? OFFSET ? 
+                """;
         int offset = page * size;
         return jdbcTemplate.query(sql, reservationRowMapper, size, offset);
     }
 
     @Override
     public Optional<Reservation> findById(long id) {
-        String sql = "SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id, " +
-                "c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail " +
-                "FROM reservation r " +
-                "INNER JOIN reservation_time t ON r.time_id = t.id INNER JOIN theme c ON r.theme_id = c.id " +
-                "WHERE r.id = ?";
+        String sql = """
+                SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id,
+                c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t ON r.time_id = t.id INNER JOIN theme c ON r.theme_id = c.id
+                WHERE r.id = ?
+                """;
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
         return reservations.stream().findFirst();
     }
 
     @Override
     public List<Reservation> findByUserName(String userName) {
-        String sql = "SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id, " +
-                "c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail " +
-                "FROM reservation r " +
-                "INNER JOIN reservation_time t ON r.time_id = t.id INNER JOIN theme c ON r.theme_id = c.id " +
-                "WHERE r.user_name = ?";
+        String sql = """
+                SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id,
+                c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t ON r.time_id = t.id INNER JOIN theme c ON r.theme_id = c.id
+                WHERE r.user_name = ?
+                """;
 
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, userName);
         return reservations;
@@ -93,12 +98,14 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findByThemeAndDate(long themeId, LocalDate date) {
-        String sql = "SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id, " +
-                "c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail " +
-                "FROM reservation r " +
-                "INNER JOIN reservation_time t ON r.time_id = t.id " +
-                "INNER JOIN theme c ON r.theme_id = c.id " +
-                "WHERE r.date = ? AND r.theme_id = ?";
+        String sql = """
+                SELECT r.id, r.user_name, r.date, t.id as time_id, t.start_at, c.id as theme_id,
+                c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t ON r.time_id = t.id
+                INNER JOIN theme c ON r.theme_id = c.id
+                WHERE r.date = ? AND r.theme_id = ?
+                """;
 
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
