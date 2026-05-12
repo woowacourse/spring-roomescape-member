@@ -1,5 +1,6 @@
 package roomescape.time.infra;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -49,6 +50,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         String sql = "SELECT id, start_at FROM reservation_time WHERE id=:id";
         List<ReservationTime> results = jdbcTemplate.query(sql, Map.of("id", id), rowMapper);
         return results.stream().findFirst();
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime time) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at=:startAt";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Map.of("startAt", time), Boolean.class));
     }
 
     @Override

@@ -1,13 +1,15 @@
 package roomescape.time.domain;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import roomescape.time.domain.exception.ReservationTimeNotFoundException;
+import roomescape.time.application.exception.ReservationTimeNotFoundException;
 
 public interface ReservationTimeRepository {
     ReservationTime save(ReservationTime reservationTime);
     List<ReservationTime> findAll();
     Optional<ReservationTime> findById(Long id);
+    boolean existsByStartAt(LocalTime time);
     int deleteById(Long id);
 
     default ReservationTime getById(Long id) {

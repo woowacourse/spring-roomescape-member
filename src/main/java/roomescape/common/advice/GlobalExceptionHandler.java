@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.exception.AlreadyInUseException;
+import roomescape.common.exception.DuplicateException;
 import roomescape.common.exception.NotFoundException;
 
 @Slf4j
@@ -49,6 +50,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
         log.error("Illegal State Exception 발생 : {}", e.getMessage());
         return ResponseEntity.unprocessableEntity().body(e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<String> handleDuplicateException(DuplicateException e) {
+        log.error("Duplicate Exception 발생 : {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
     private ResponseEntity<String> getStringResponseEntity(BindingResult e) {
