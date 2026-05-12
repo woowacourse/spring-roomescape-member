@@ -82,7 +82,7 @@ class ReservationTimeControllerTest extends ControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400)
-                .body(equalTo("이미 존재하는 예약 시간입니다."));
+                .body("message", equalTo("이미 존재하는 예약 시간입니다."));
     }
 
     @DisplayName("예약에 사용 중인 시간 삭제하면 400")
@@ -92,6 +92,6 @@ class ReservationTimeControllerTest extends ControllerTest {
                 .when().delete("/times/3")
                 .then().log().all()
                 .statusCode(400)
-                .body(equalTo("예약에 사용 중인 시간은 삭제할 수 없습니다."));
+                .body("message", equalTo("예약에 사용 중인 시간은 삭제할 수 없습니다."));
     }
 }

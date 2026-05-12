@@ -61,6 +61,6 @@ class AdminThemeControllerTest extends ControllerTest {
                 .when().delete("/admin/themes/{id}")
                 .then().log().all()
                 .statusCode(400)
-                .body(equalTo("예약에 사용 중인 테마는 삭제할 수 없습니다."));
+                .body("message", equalTo("예약에 사용 중인 테마는 삭제할 수 없습니다."));
     }
 }

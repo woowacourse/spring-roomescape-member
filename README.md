@@ -142,13 +142,13 @@
 - [x] 이미 지난 예약 취소·변경 불가
 
 ### 2단계 - 에러 응답 설계
-- [ ] 에러 응답 형식 통일: `{"message": "..."}`
+- [x] 에러 응답 형식 통일: `{"message": "..."}`
 - [ ] `GlobalExceptionHandler` 보강
   - `MethodArgumentNotValidException` → 400
   - `HttpMessageNotReadableException` (잘못된 JSON/날짜 형식) → 400
   - 존재하지 않는 엔드포인트 → 404
   - 그 외 예외 fallback → 500 (`{"message": "서버 오류가 발생했습니다."}`)
-- [ ] 브라우저에서 에러 발생 시 서버 응답의 `message`를 사용자에게 표시
+- [ ] 브라우저에서 에러 발생 시 `code`를 기반으로 사용자 친화적인 메시지를 별도로 표시 (`message`는 개발자용이므로 그대로 노출하지 않는다)
 
 ### 3단계 - 예약 변경/취소
 - [ ] 예약 변경 API (`PATCH /reservations/{id}`) — 날짜·시간 변경

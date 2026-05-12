@@ -77,7 +77,7 @@ class ReservationControllerTest extends ControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(equalTo("존재하지 않는 예약 시간입니다."));
+                .body("message", equalTo("존재하지 않는 예약 시간입니다."));
     }
 
     @DisplayName("존재하지 않는 테마로 예약하면 400")
@@ -95,7 +95,7 @@ class ReservationControllerTest extends ControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(equalTo("존재하지 않는 테마입니다."));
+                .body("message", equalTo("존재하지 않는 테마입니다."));
     }
 
     @DisplayName("이미 예약된 시간이면 400")
@@ -114,7 +114,7 @@ class ReservationControllerTest extends ControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(equalTo("이미 예약된 시간입니다."));
+                .body("message", equalTo("이미 예약된 시간입니다."));
     }
 
     @DisplayName("과거 날짜로 예약하면 400")
@@ -132,6 +132,6 @@ class ReservationControllerTest extends ControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(equalTo("과거 날짜로는 예약할 수 없습니다."));
+                .body("message", equalTo("과거 날짜로는 예약할 수 없습니다."));
     }
 }
