@@ -91,7 +91,7 @@ class ReservationServiceTest {
                 )
         )
                 .isInstanceOf(DomainRuleViolationException.class)
-                .hasMessage(ErrorCode.PAST_DATE_OR_TIME.getMessage());
+                .hasMessage(ErrorCode.ILLEGAL_PAST_DATE.getMessage());
 
     }
 
@@ -112,7 +112,7 @@ class ReservationServiceTest {
                 )
         )
                 .isInstanceOf(DomainRuleViolationException.class)
-                .hasMessage(ErrorCode.PAST_DATE_OR_TIME.getMessage());
+                .hasMessage(ErrorCode.ILLEGAL_PAST_DATE.getMessage());
 
     }
 
@@ -212,5 +212,39 @@ class ReservationServiceTest {
         // when & then
         assertThatCode(() -> reservationService.deleteById(savedReservation.id()))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("이름을 기반으로 예약을 조회 후 id가 같은 경우에만 삭제한다")
+    void deleteById_success_with_id_and_name() {
+        // given
+        Reservation savedReservation = reservationRepository.save(Reservation.createWithNullId(
+                TESTER_NAME,
+                LocalDate.now().plusDays(1),
+                savedTime,
+                savedTheme
+        ));
+
+        // when & then
+        assertThatCode(() -> reservationService.deleteById(savedReservation.id(), TESTER_NAME))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("이름을 기반으로 예약을 조회 후 id가 같아도 과거 기록에 대해서는 삭제를 하지 못하게 한다")
+    void deleteById_fail_with_id_and_name_causeOf_past() {
+        // given
+        Reservation savedReservation = reservationRepository.save(Reservation.createWithNullId(
+                TESTER_NAME,
+                LocalDate.now().minusDays(1),
+                savedTime,
+                savedTheme
+        ));
+
+        // when & then
+        assertThatThrownBy(
+                () -> reservationService.deleteById(savedReservation.id(), TESTER_NAME)
+        ).isInstanceOf(DomainRuleViolationException.class)
+                .hasMessage(ErrorCode.ILLEGAL_PAST_DATE.getMessage());
     }
 }

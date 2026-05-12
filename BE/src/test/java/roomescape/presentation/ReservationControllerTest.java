@@ -144,7 +144,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("GET /reservations?name=... - 예약 가능 시간 목록을 이름 기반으로 조회 후 반환한다.")
+    @DisplayName("GET /reservations?name=... - 예약 목록을 이름 기반으로 조회 후 반환한다.")
     void readAvailableReservations_filter_by_name() throws Exception {
         // given
         List<Reservation> reservations = List.of(sampleReservation(1L, "브라운", TEST_DATE, 2L, "11:00", 1L, "테마A"));
@@ -167,7 +167,7 @@ class ReservationControllerTest {
     @DisplayName("DELETE /reservations/{id} - 정상 삭제 시 204와 빈 본문을 반환한다.")
     void deleteReservation_success() throws Exception {
         // when & then
-        mockMvc.perform(delete("/reservations/1"))
+        mockMvc.perform(delete("/reservations/1").header("Authorization", "ADMIN"))
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
 

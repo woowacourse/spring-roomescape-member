@@ -1,8 +1,10 @@
 package roomescape.application;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.entity.Reservation;
@@ -36,32 +38,16 @@ public class ReservationService {
 
     @Transactional
     public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {
-        validateFutureOrPresentDate(date);
-        validateFutureOrPresentTime(timeId);
+        ReservationTime time = findTargetTimeById(timeId);
+        validateIsFuture(date, time.startAt());
         validateUniquenessByDateAndTimeIdAndThemeId(date, timeId, themeId);
         Reservation reservation = Reservation.createWithNullId(
                 name,
                 date,
-                findTargetTimeById(timeId),
+                time,
                 findTargetThemeById(themeId)
         );
         return reservationRepository.save(reservation);
-    }
-
-    private void validateFutureOrPresentDate(LocalDate date) {
-        LocalDate now = LocalDate.now();
-        if (date.isBefore(now)) {
-            throw new DomainRuleViolationException(ErrorCode.PAST_DATE_OR_TIME);
-        }
-    }
-
-    private void validateFutureOrPresentTime(Long id) {
-        ReservationTime reservationTime = findTargetTimeById(id);
-        LocalTime requestTimeValue = reservationTime.startAt();
-        LocalTime nowTime = LocalTime.now();
-        if (requestTimeValue.isBefore(nowTime)) {
-            throw new DomainRuleViolationException(ErrorCode.PAST_DATE_OR_TIME);
-        }
     }
 
     private void validateUniquenessByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
@@ -95,5 +81,27 @@ public class ReservationService {
     @Transactional
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteById(Long id, String name) {
+        List<Reservation> ownReservations = reservationRepository.findByName(name);
+
+        Optional<Reservation> deleteTargetWithWrapper = ownReservations.stream().filter(
+                reservation -> reservation.id().equals(id)
+        ).findAny();
+
+        if (deleteTargetWithWrapper.isPresent()) {
+            Reservation deleteTarget = deleteTargetWithWrapper.get();
+            validateIsFuture(deleteTarget.date(), deleteTarget.time().startAt());
+            reservationRepository.deleteById(id);
+        }
+    }
+
+    private void validateIsFuture(LocalDate date, LocalTime time) {
+        LocalDateTime requestDateTime = LocalDateTime.of(date, time);
+        if (requestDateTime.isBefore(LocalDateTime.now())) {
+            throw new DomainRuleViolationException(ErrorCode.ILLEGAL_PAST_DATE);
+        }
     }
 }

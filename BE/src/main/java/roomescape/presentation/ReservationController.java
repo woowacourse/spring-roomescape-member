@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.application.ReservationService;
 import roomescape.entity.Reservation;
+import roomescape.global.auth.Admin;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.InvalidRequestException;
 import roomescape.presentation.dto.AvailableReservationResponse;
@@ -65,14 +66,15 @@ public class ReservationController {
     @GetMapping(params = {"date", "themeId"})
     public ResponseEntity<List<AvailableReservationResponse>> readReservationsByDateAndTheme(
             @RequestParam LocalDate date, @RequestParam Long themeId) {
+        validateIdNotNull(themeId);
         List<Reservation> reservations = reservationService.findAllByDateAndThemeId(date, themeId);
         List<AvailableReservationResponse> response = convertToAvailableReservationResponse(reservations);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping(params = "name")
-    public ResponseEntity<List<ReservationResponse>> readReservationsByDateAndTheme(
-            @RequestParam String name) {
+    public ResponseEntity<List<ReservationResponse>> readReservationsByDateAndTheme(@RequestParam String name) {
+        validateNameNotBlank(name);
         List<Reservation> reservations = reservationService.findByName(name);
         List<ReservationResponse> response = convertToReservationResponse(reservations);
         return ResponseEntity.ok(response);
@@ -90,12 +92,31 @@ public class ReservationController {
                 .toList();
     }
 
+    @Admin
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+        validateIdNotNull(id);
+        reservationService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping(value = "/{id}", params = "name")
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id, @RequestParam String name) {
+        validateIdNotNull(id);
+        validateNameNotBlank(name);
+        reservationService.deleteById(id, name);
+        return ResponseEntity.noContent().build();
+    }
+
+    private void validateNameNotBlank(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidRequestException(ErrorCode.REQUEST_NAME_EMPTY);
+        }
+    }
+
+    private void validateIdNotNull(Long id) {
         if (id == null) {
             throw new InvalidRequestException(ErrorCode.RESERVATION_ID_NULL);
         }
-        reservationService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 }
