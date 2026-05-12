@@ -11,25 +11,26 @@ public class ReservationDate {
     private final Long id;
     private final LocalDate playDay;
 
-    public ReservationDate(Long id, LocalDate playDay) {
+    private ReservationDate(Long id, LocalDate playDay) {
         validate(playDay);
         this.id = id;
         this.playDay = playDay;
     }
 
-    public static ReservationDate of(long dateId, LocalDate date) {
-        return new ReservationDate(dateId, date);
+    private ReservationDate(LocalDate playDay) {
+        this(null, playDay);
     }
 
-    public static ReservationDate createWithoutId(LocalDate reservationDate) {
-        return new ReservationDate(
-            null,
-            reservationDate
-        );
+    public static ReservationDate of(Long dateId, LocalDate playDay) {
+        return new ReservationDate(dateId, playDay);
     }
 
-    private static void validate(LocalDate reservationDate) {
-        if (reservationDate == null) {
+    public static ReservationDate createWithoutId(LocalDate playDay) {
+        return new ReservationDate(playDay);
+    }
+
+    private static void validate(LocalDate playDay) {
+        if (playDay == null) {
             throw new RoomescapeException(ReservationDateErrorCode.INVALID_RESERVATION_DATE);
         }
     }

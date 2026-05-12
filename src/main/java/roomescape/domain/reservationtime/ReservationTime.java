@@ -21,9 +21,7 @@ public class ReservationTime {
     }
 
     private ReservationTime(LocalTime startAt) {
-        validate(startAt);
-        this.id = null;
-        this.startAt = startAt;
+        this(null, startAt);
     }
 
     public static ReservationTime createWithoutId(LocalTime startAt) {
@@ -34,14 +32,14 @@ public class ReservationTime {
         return new ReservationTime(id, startAt);
     }
 
-    public String getFormattedStartAt() {
-        return startAt.format(TIME_FORMATTER);
-    }
-
     private static void validate(LocalTime startAt) {
         if (startAt == null) {
             throw new RoomescapeException(ReservationTimeErrorCode.INVALID_RESERVATION_TIME);
         }
+    }
+
+    public String getFormattedStartAt() {
+        return startAt.format(TIME_FORMATTER);
     }
 
 }

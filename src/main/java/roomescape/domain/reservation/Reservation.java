@@ -33,6 +33,10 @@ public class Reservation {
         this.theme = theme;
     }
 
+    private Reservation(String name, ReservationDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
+    }
+
     public static Reservation createWithoutId(
         String name,
         ReservationDate date,
@@ -40,7 +44,6 @@ public class Reservation {
         Theme theme
     ) {
         return new Reservation(
-            null,
             name,
             date,
             time,
@@ -49,7 +52,7 @@ public class Reservation {
     }
 
     public static Reservation of(
-        long id,
+        Long id,
         String name,
         ReservationDate date,
         ReservationTime time,
