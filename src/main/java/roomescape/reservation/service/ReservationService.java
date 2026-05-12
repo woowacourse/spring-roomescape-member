@@ -67,4 +67,10 @@ public class ReservationService {
             throw new IllegalArgumentException("해당 시간은 이미 예약이 완료되었습니다.");
         }
     }
+
+    public ReservationsResponse findAllByUserId(Long id) {
+        userService.getUserById(id);
+        List<Reservation> responses = reservationRepository.findAllByUserId(id);
+        return ReservationsResponse.from(responses);
+    }
 }
