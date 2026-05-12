@@ -7,17 +7,29 @@ export const state = {
   popularThemes: [],
   adminTimes: [],
   reservations: [],
+  searchedReservations: [],
   availableTimes: [],
   selectedThemeId: null,
   selectedDate: tomorrowString(),
   selectedTimeId: null,
   guestName: "",
+  reservationSearchName: "",
+  reservationSearchSubmitted: false,
+  reservationSearchSubmittedName: "",
+  reservationEdit: {
+    id: null,
+    date: "",
+    timeId: null,
+    times: [],
+    loading: false
+  },
   themeQuery: "",
   loading: {
     boot: false,
     themes: false,
     times: false,
-    reservations: false
+    reservations: false,
+    searchedReservations: false
   },
   submitting: false,
   toast: null,
@@ -40,6 +52,20 @@ export function canSubmitReservation() {
     state.guestName.trim() &&
     !state.submitting
   );
+}
+
+export function isPastReservation(reservation, now = new Date()) {
+  const startAt = reservation?.time?.startAt;
+
+  if (!reservation?.date || !startAt) {
+    return false;
+  }
+
+  const [year, month, day] = reservation.date.split("-").map(Number);
+  const [hour, minute] = startAt.split(":").map(Number);
+  const reservationDateTime = new Date(year, month - 1, day, hour, minute);
+
+  return reservationDateTime < now;
 }
 
 export function todayString() {

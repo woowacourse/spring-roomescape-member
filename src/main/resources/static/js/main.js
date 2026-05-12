@@ -3,6 +3,7 @@ import {appEl} from "./dom.js";
 import {
   ADMIN_TABS,
   canSubmitReservation,
+  isPastReservation,
   selectedTheme,
   selectedTime,
   state
@@ -102,17 +103,70 @@ async function handleClick(event) {
     }
 
     if (action === "delete-theme") {
-      openConfirm("테마를 삭제할까요?", "연결된 예약도 함께 삭제될 수 있습니다.", () => deleteTheme(Number(actionTarget.dataset.themeId)));
+      const themeId = Number(actionTarget.dataset.themeId);
+
+      if (hasReservationsForTheme(themeId)) {
+        showToast("예약이 연결된 테마는 삭제할 수 없습니다.", "error");
+        return;
+      }
+
+      openConfirm("테마를 삭제할까요?", "예약이 없는 테마만 삭제됩니다. 삭제한 테마는 되돌릴 수 없습니다.", () => deleteTheme(themeId));
       return;
     }
 
     if (action === "delete-time") {
-      openConfirm("시간을 삭제할까요?", "연결된 예약도 함께 삭제될 수 있습니다.", () => deleteTime(Number(actionTarget.dataset.timeId)));
+      const timeId = Number(actionTarget.dataset.timeId);
+
+      if (hasReservationsForTime(timeId)) {
+        showToast("예약이 연결된 시간은 삭제할 수 없습니다.", "error");
+        return;
+      }
+
+      openConfirm("시간을 삭제할까요?", "예약이 없는 시간만 삭제됩니다. 삭제한 시간은 되돌릴 수 없습니다.", () => deleteTime(timeId));
       return;
     }
 
     if (action === "delete-reservation") {
-      openConfirm("예약을 삭제할까요?", "삭제한 예약은 되돌릴 수 없습니다.", () => deleteReservation(Number(actionTarget.dataset.reservationId)));
+      const reservationId = Number(actionTarget.dataset.reservationId);
+      const reservation = findReservation(reservationId);
+
+      if (!reservation) {
+        showToast("예약 정보를 찾을 수 없습니다.", "error");
+        return;
+      }
+
+      if (isPastReservation(reservation)) {
+        showToast("이미 지난 예약은 삭제할 수 없습니다.", "error");
+        return;
+      }
+
+      const title = actionTarget.dataset.deleteMode === "cancel" ? "예약을 취소할까요?" : "예약을 삭제할까요?";
+      const body = actionTarget.dataset.deleteMode === "cancel"
+        ? "취소한 예약은 되돌릴 수 없습니다."
+        : "삭제한 예약은 되돌릴 수 없습니다.";
+
+      const successMessage = actionTarget.dataset.deleteMode === "cancel"
+        ? "예약을 취소했습니다."
+        : "예약을 삭제했습니다.";
+
+      openConfirm(title, body, () => deleteReservation(reservationId, successMessage));
+      return;
+    }
+
+    if (action === "edit-reservation") {
+      await startReservationEdit(Number(actionTarget.dataset.reservationId));
+      return;
+    }
+
+    if (action === "cancel-reservation-edit") {
+      clearReservationEdit();
+      render();
+      return;
+    }
+
+    if (action === "select-edit-time") {
+      state.reservationEdit.timeId = Number(actionTarget.dataset.timeId);
+      render();
       return;
     }
 
@@ -137,6 +191,10 @@ async function handleClick(event) {
     if (action === "dismiss-toast") {
       state.toast = null;
       render();
+    }
+
+    if (action === "clear-reservation-search") {
+      clearReservationSearch();
     }
 
     return;
@@ -164,6 +222,16 @@ async function handleSubmit(event) {
     return;
   }
 
+  if (event.target.id === "reservation-search-form") {
+    await submitReservationSearch(event.target);
+    return;
+  }
+
+  if (event.target.id === "reservation-edit-form") {
+    await submitReservationEdit(event.target);
+    return;
+  }
+
   if (event.target.id === "theme-form") {
     await submitTheme(event.target);
     return;
@@ -175,20 +243,31 @@ async function handleSubmit(event) {
 }
 
 async function handleChange(event) {
-  if (event.target.id !== "reservation-date") {
+  if (event.target.id === "reservation-date") {
+    state.selectedDate = event.target.value;
+    state.selectedTimeId = null;
+    render();
+    await loadAvailableTimes();
     return;
   }
 
-  state.selectedDate = event.target.value;
-  state.selectedTimeId = null;
-  render();
-  await loadAvailableTimes();
+  if (event.target.id === "reservation-edit-date") {
+    state.reservationEdit.date = event.target.value;
+    state.reservationEdit.timeId = null;
+    await loadReservationEditTimes();
+  }
 }
 
 function handleInput(event) {
   if (event.target.id === "guest-name") {
     state.guestName = event.target.value;
     syncReservationButton();
+    return;
+  }
+
+  if (event.target.id === "reservation-search-name") {
+    state.reservationSearchName = event.target.value;
+    syncReservationSearchButton();
     return;
   }
 
@@ -217,6 +296,7 @@ async function refreshEverything() {
     if (state.selectedThemeId) {
       await loadAvailableTimes({silent: true});
     }
+    await reloadReservationSearchIfNeeded();
     showToast("데이터를 새로 불러왔습니다.", "success");
   } catch (error) {
     showToast(error.message, "error");
@@ -301,6 +381,7 @@ async function submitReservation(form) {
     state.selectedTimeId = null;
     state.availableTimes = [];
     await loadAllData({silent: true});
+    await reloadReservationSearchIfNeeded();
     showToast("예약이 완료되었습니다.", "success");
     submitted = true;
   } catch (error) {
@@ -311,6 +392,126 @@ async function submitReservation(form) {
     if (submitted) {
       scrollToPageTop();
     }
+  }
+}
+
+async function submitReservationSearch(form) {
+  const formData = new FormData(form);
+  const username = String(formData.get("username") || "").trim();
+
+  state.reservationSearchName = username;
+
+  if (!username) {
+    showToast("예약자 이름을 입력해 주세요.", "error");
+    syncReservationSearchButton();
+    return;
+  }
+
+  await loadSearchedReservations();
+}
+
+async function startReservationEdit(reservationId) {
+  const reservation = findReservation(reservationId);
+
+  if (!reservation) {
+    showToast("예약 정보를 찾을 수 없습니다.", "error");
+    return;
+  }
+
+  if (isPastReservation(reservation)) {
+    showToast("이미 지난 예약은 변경할 수 없습니다.", "error");
+    return;
+  }
+
+  state.reservationEdit.id = reservation.id;
+  state.reservationEdit.date = reservation.date;
+  state.reservationEdit.timeId = reservation.time.id;
+  state.reservationEdit.times = [];
+  state.reservationEdit.loading = false;
+  render();
+  await loadReservationEditTimes();
+}
+
+async function loadReservationEditTimes() {
+  const reservation = findReservation(state.reservationEdit.id);
+
+  if (!reservation || !state.reservationEdit.date) {
+    state.reservationEdit.times = [];
+    state.reservationEdit.timeId = null;
+    state.reservationEdit.loading = false;
+    render();
+    return;
+  }
+
+  state.reservationEdit.loading = true;
+  render();
+
+  try {
+    const query = new URLSearchParams({
+      themeId: reservation.theme.id,
+      date: state.reservationEdit.date
+    }).toString();
+
+    state.reservationEdit.times = await api(`/times?${query}`);
+
+    if (!isSelectableEditTime(reservation, state.reservationEdit.timeId)) {
+      state.reservationEdit.timeId = null;
+    }
+  } catch (error) {
+    state.reservationEdit.times = [];
+    state.reservationEdit.timeId = null;
+    showToast(error.message, "error");
+  } finally {
+    state.reservationEdit.loading = false;
+    render();
+  }
+}
+
+async function submitReservationEdit(form) {
+  const reservationId = Number(form.dataset.reservationId);
+  const reservation = findReservation(reservationId);
+  const date = state.reservationEdit.date;
+  const timeId = Number(state.reservationEdit.timeId);
+
+  if (!reservation) {
+    showToast("예약 정보를 찾을 수 없습니다.", "error");
+    return;
+  }
+
+  if (!date || !timeId) {
+    showToast("변경할 날짜와 시간을 선택해 주세요.", "error");
+    return;
+  }
+
+  if (isPastReservation(reservation)) {
+    showToast("이미 지난 예약은 변경할 수 없습니다.", "error");
+    clearReservationEdit();
+    render();
+    return;
+  }
+
+  state.submitting = true;
+  render();
+
+  try {
+    await api(`/reservations/${reservationId}`, {
+      method: "PATCH",
+      body: {date, timeId}
+    });
+
+    clearReservationEdit();
+    await loadAllData({silent: true});
+    ensureSelectedTheme();
+    if (state.selectedThemeId) {
+      await loadAvailableTimes({silent: true});
+    }
+    await reloadReservationSearchIfNeeded();
+    showToast("예약을 변경했습니다.", "success");
+  } catch (error) {
+    showToast(error.message, "error");
+  } finally {
+    state.submitting = false;
+    render();
   }
 }
 
@@ -385,8 +586,8 @@ async function deleteTime(timeId) {
   await mutateWithReload(() => api(`/admin/times/${timeId}`, {method: "DELETE"}), "시간을 삭제했습니다.");
 }
 
-async function deleteReservation(reservationId) {
-  await mutateWithReload(() => api(`/reservations/${reservationId}`, {method: "DELETE"}), "예약을 삭제했습니다.");
+async function deleteReservation(reservationId, successMessage = "예약을 삭제했습니다.") {
+  await mutateWithReload(() => api(`/reservations/${reservationId}`, {method: "DELETE"}), successMessage);
 }
 
 async function mutateWithReload(request, successMessage) {
@@ -400,6 +601,7 @@ async function mutateWithReload(request, successMessage) {
     if (state.selectedThemeId) {
       await loadAvailableTimes({silent: true});
     }
+    await reloadReservationSearchIfNeeded();
     showToast(successMessage, "success");
   } catch (error) {
     showToast(error.message, "error");
@@ -407,6 +609,111 @@ async function mutateWithReload(request, successMessage) {
     state.submitting = false;
     render();
   }
+}
+
+async function loadSearchedReservations(options = {}) {
+  const username = String(options.username || state.reservationSearchName).trim();
+
+  if (!username) {
+    state.searchedReservations = [];
+    state.reservationSearchSubmitted = false;
+    state.reservationSearchSubmittedName = "";
+    render();
+    return;
+  }
+
+  state.loading.searchedReservations = true;
+  if (!options.silent) {
+    render();
+  }
+
+  try {
+    const query = new URLSearchParams({username}).toString();
+    state.searchedReservations = await api(`/reservations?${query}`);
+    state.reservationSearchSubmitted = true;
+    state.reservationSearchSubmittedName = username;
+    syncReservationEditWithSearchResults();
+
+    if (!options.silent) {
+      showToast(`${state.searchedReservations.length}건의 예약을 찾았습니다.`, "success");
+    }
+  } catch (error) {
+    state.searchedReservations = [];
+    showToast(error.message, "error");
+  } finally {
+    state.loading.searchedReservations = false;
+    render();
+  }
+}
+
+async function reloadReservationSearchIfNeeded() {
+  const username = state.reservationSearchSubmittedName.trim();
+
+  if (!state.reservationSearchSubmitted || !username) {
+    return;
+  }
+
+  await loadSearchedReservations({silent: true, username});
+}
+
+function clearReservationSearch() {
+  state.reservationSearchName = "";
+  state.searchedReservations = [];
+  state.reservationSearchSubmitted = false;
+  state.reservationSearchSubmittedName = "";
+  state.loading.searchedReservations = false;
+  clearReservationEdit();
+  render();
+}
+
+function clearReservationEdit() {
+  state.reservationEdit.id = null;
+  state.reservationEdit.date = "";
+  state.reservationEdit.timeId = null;
+  state.reservationEdit.times = [];
+  state.reservationEdit.loading = false;
+}
+
+function syncReservationEditWithSearchResults() {
+  if (!state.reservationEdit.id) {
+    return;
+  }
+
+  const stillExists = state.searchedReservations.some(
+    (reservation) => Number(reservation.id) === Number(state.reservationEdit.id)
+  );
+
+  if (!stillExists) {
+    clearReservationEdit();
+  }
+}
+
+function findReservation(reservationId) {
+  return [...state.searchedReservations, ...state.reservations]
+    .find((reservation) => Number(reservation.id) === Number(reservationId)) || null;
+}
+
+function isSelectableEditTime(reservation, timeId) {
+  const time = state.reservationEdit.times.find((candidate) => Number(candidate.id) === Number(timeId));
+
+  if (!time) {
+    return false;
+  }
+
+  return time.available || isCurrentReservationTime(reservation, time.id);
+}
+
+function isCurrentReservationTime(reservation, timeId) {
+  return reservation.date === state.reservationEdit.date &&
+    Number(reservation.time.id) === Number(timeId);
+}
+
+function hasReservationsForTheme(themeId) {
+  return state.reservations.some((reservation) => Number(reservation.theme?.id) === Number(themeId));
+}
+
+function hasReservationsForTime(timeId) {
+  return state.reservations.some((reservation) => Number(reservation.time?.id) === Number(timeId));
 }
 
 function ensureSelectedTheme() {
@@ -462,6 +769,15 @@ function syncReservationButton() {
   }
 
   button.disabled = !canSubmitReservation();
+}
+
+function syncReservationSearchButton() {
+  const button = appEl.querySelector("#reservation-search-form .submit-button");
+  if (!button) {
+    return;
+  }
+
+  button.disabled = !state.reservationSearchName.trim() || state.loading.searchedReservations;
 }
 
 function openConfirm(title, body, onConfirm) {
