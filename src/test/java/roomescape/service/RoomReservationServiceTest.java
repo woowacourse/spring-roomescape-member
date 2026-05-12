@@ -139,7 +139,9 @@ public class RoomReservationServiceTest {
         RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(reservationTime), createThemeRepository(
                 theme));
 
-        AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", LocalDate.parse("2023-08-05"), 1L, 1L);
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+
+        AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", futureDate, 1L, 1L);
 
         Reservation reservation = reservationService.addReservation(addReservationRequest);
 
@@ -148,17 +150,42 @@ public class RoomReservationServiceTest {
                 .isEqualTo(new Reservation(
                         1L,
                         "브라운",
-                        LocalDate.parse("2023-08-05"),
+                        futureDate,
                         reservationTime,
                         theme
                 ));
     }
 
     @Test
+    @DisplayName("예약 생성 시 지나간 날짜인 경우 예외 테스트")
+    void addReservationFailByPastDateTest() {
+
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
+        Theme theme = new Theme(1L, "name", "description", "image");
+
+        RoomReservationService reservationService = new RoomReservationService(
+                createReservationRepository(false),
+                createReservationTimeRepository(reservationTime),
+                createThemeRepository(theme)
+        );
+
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+
+        AddReservationRequest addReservationRequest =
+                new AddReservationRequest("브라운", pastDate, 1L, 1L);
+
+        assertThatThrownBy(() -> reservationService.addReservation(addReservationRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지난 날짜에는 예약할 수 없습니다.");
+    }
+
+    @Test
     @DisplayName("예약 생성 시 존재하지 않는 시간ID인 경우 예외 테스트")
     void addReservationFailByInvalidTimeIdTest() {
         RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(null), createThemeRepository(new Theme(1L, "테마1", "설명", "url")));
-        AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", LocalDate.parse("2023-08-05"), 1L, 1L);
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+
+        AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", futureDate, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(addReservationRequest))
                 .isExactlyInstanceOf(NotFoundResourceException.class)
@@ -169,7 +196,9 @@ public class RoomReservationServiceTest {
     @DisplayName("예약 생성 시 존재하지 않는 테마 ID인 경우 예외 테스트")
     void addReservationFailByInvalidThemeIdTest() {
         RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(new ReservationTime(1L, LocalTime.parse("10:00"))), createThemeRepository(null));
-        AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", LocalDate.parse("2023-08-05"), 1L, 1L);
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+
+        AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", futureDate, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(addReservationRequest))
                 .isExactlyInstanceOf(NotFoundResourceException.class)
@@ -179,6 +208,7 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("같은 시간, 날짜, themeId가 존재하는 경우, 예약 생성 시 예외 테스트")
     void test() {
+        LocalDate futureDate = LocalDate.now().plusDays(1);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, "name", "description", "image");
 
@@ -188,7 +218,7 @@ public class RoomReservationServiceTest {
                 createThemeRepository(theme)
         );
 
-        assertThatThrownBy(() -> reservationService.addReservation(new AddReservationRequest("test", LocalDate.parse("2023-08-05"), 1L, 1L)))
+        assertThatThrownBy(() -> reservationService.addReservation(new AddReservationRequest("test", futureDate, 1L, 1L)))
                 .isExactlyInstanceOf(DuplicatedReservationRequestException.class)
                 .hasMessage(ErrorMessage.DUPLICATED_RESERVATION_REQUEST.getMessage()
         );

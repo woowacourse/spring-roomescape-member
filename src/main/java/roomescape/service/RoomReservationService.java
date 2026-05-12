@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,10 +38,7 @@ public class RoomReservationService {
 
     @Transactional
     public Reservation addReservation(AddReservationRequest addReservationRequest) {
-        /**
-         * 지난 날짜인지 검증 필요
-         */
-//        validateDate(addReservationRequest.date());
+        validateDate(addReservationRequest.date());
 
         ReservationTime reservationTime = reservationTimeRepository.getReservationTime(addReservationRequest.timeId())
                 .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_RESERVATION_TIME_ID));
@@ -60,11 +58,11 @@ public class RoomReservationService {
         reservationRepository.deleteReservation(id);
     }
 
-//    private void validateDate(LocalDate reservationDate) {
-//        LocalDate today = LocalDate.now();
-//
-//        if (reservationDate.isBefore(today)) {
-//            throw new IllegalArgumentException("지난 날짜에는 예약할 수 없습니다.");
-//        }
-//    }
+    private void validateDate(LocalDate reservationDate) {
+        LocalDate today = LocalDate.now();
+
+        if (reservationDate.isBefore(today)) {
+            throw new IllegalArgumentException("지난 날짜에는 예약할 수 없습니다.");
+        }
+    }
 }
