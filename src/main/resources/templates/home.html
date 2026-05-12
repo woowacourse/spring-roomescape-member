@@ -129,7 +129,6 @@
                     radial-gradient(ellipse 40% 30% at 20% 80%, rgba(100,80,40,0.06) 0%, transparent 60%);
         }
 
-        /* 격자 패턴 */
         .hero-grid {
             position: absolute;
             inset: 0;
@@ -665,11 +664,90 @@
             .booking-steps-preview { grid-template-columns: repeat(2, 1fr); }
             footer { flex-direction: column; gap: 1rem; text-align: center; }
         }
+
+        /* ─── ERROR MODAL ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 2px solid var(--danger);
+            border-radius: 4px;
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            color: var(--danger);
+        }
+
+        .modal-status {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.75rem;
+            color: var(--danger);
+            letter-spacing: 0.1em;
+            background: rgba(224, 82, 82, 0.1);
+            padding: 3px 8px;
+            border-radius: 2px;
+        }
+
+        .modal-body {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            word-break: keep-all;
+        }
+
+        .modal-footer {
+            text-align: right;
+        }
+
+        .modal-footer .btn-ghost {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.7rem;
+        }
     </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav id="navbar">
     <a href="/home" class="nav-logo">ESC<span>A</span>PE</a>
     <ul class="nav-tabs">
@@ -680,7 +758,6 @@
     <a href="/reservation" class="nav-reserve">예약하기</a>
 </nav>
 
-<!-- HERO -->
 <div id="hero">
     <div class="hero-bg"></div>
     <div class="hero-grid"></div>
@@ -700,27 +777,22 @@
     </div>
 </div>
 
-<!-- MAIN CONTENT -->
 <div style="background: var(--bg);">
     <section id="main-section" style="max-width: 1100px; padding: 5rem 2rem 6rem;">
 
-        <!-- 탭 네비게이션 -->
         <div class="tab-nav">
             <button class="tab-btn active" data-tab="themes">테마 소개</button>
             <button class="tab-btn" data-tab="booking">예약하기</button>
             <button class="tab-btn" data-tab="popular">인기 테마</button>
         </div>
 
-        <!-- 탭 1: 테마 소개 -->
         <div class="tab-content active" id="tab-themes">
             <div class="section-label"><span>Theme Gallery</span></div>
             <h2 class="section-title fade-in">엄선된 <em style="font-style:italic; color:var(--accent)">테마</em>들을<br>만나보세요</h2>
             <div class="theme-intro-grid" id="theme-intro-grid">
-                <!-- JS로 렌더링 -->
             </div>
         </div>
 
-        <!-- 탭 2: 예약하기 -->
         <div class="tab-content" id="tab-booking">
             <div class="section-label"><span>Reservation</span></div>
             <h2 class="section-title fade-in">간편하게<br>예약하세요</h2>
@@ -737,19 +809,16 @@
             </div>
         </div>
 
-        <!-- 탭 3: 인기 테마 -->
         <div class="tab-content" id="tab-popular">
             <div class="section-label"><span>Popular Themes</span></div>
             <h2 class="section-title fade-in" id="popular-title"></h2>
             <div class="popular-list" id="popular-list">
-                <!-- JS로 렌더링 -->
             </div>
         </div>
 
     </section>
 </div>
 
-<!-- FOOTER -->
 <footer>
     <div class="footer-logo">ESC<span>A</span>PE</div>
     <div class="footer-copy">© 2025 Escape Room. All rights reserved.</div>
@@ -759,7 +828,40 @@
     </a>
 </footer>
 
+<div id="error-modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="modal-title">System Message</span>
+            <span class="modal-status" id="error-status">400</span>
+        </div>
+        <div class="modal-body" id="error-message">
+            에러 메시지가 여기에 표시됩니다.
+        </div>
+        <div class="modal-footer">
+            <button class="btn-ghost" onclick="closeErrorAlert()">확인</button>
+        </div>
+    </div>
+</div>
+
 <script th:inline="none">
+    // ─── ERROR MODAL 제어 ───
+    function showErrorAlert(errorResponse) {
+        const statusEl = document.getElementById('error-status');
+        const messageEl = document.getElementById('error-message');
+        const modalEl = document.getElementById('error-modal');
+
+        // 백엔드 DTO(ErrorResponse) 데이터 매핑
+        statusEl.innerText = `ERROR ${errorResponse.status || 500}`;
+        messageEl.innerText = errorResponse.message || '서버와 통신 중 문제가 발생했습니다.';
+
+        // 모달 표시
+        modalEl.classList.add('active');
+    }
+
+    function closeErrorAlert() {
+        document.getElementById('error-modal').classList.remove('active');
+    }
+
     // ─── 탭 전환 ───
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -895,12 +997,16 @@
     fetch('/themes')
         .then(res => res.json())
         .then(themes => renderThemeIntroGrid(themes))
-        .catch(() => renderThemeIntroGrid(dummyThemes));
+        .catch(err => {
+            // 통신 에러 발생 시 더미 데이터 렌더링 대신 에러 알럿을 띄우고 싶다면 아래 코드를 사용할 수 있습니다.
+            // showErrorAlert({ status: 500, message: "테마 목록을 불러오는데 실패했습니다." });
+            renderThemeIntroGrid(dummyThemes);
+        });
 
     fetch('/themes/weekly-top')
         .then(res => res.json())
         .then(themes => renderPopularList(themes))
-        .catch(() => renderPopularList(dummyThemes));
+        .catch(err => renderPopularList(dummyThemes));
 </script>
 </body>
 </html>

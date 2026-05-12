@@ -157,7 +157,7 @@
 
         td.primary { color: var(--text-primary); }
 
-        /* 삭제 버튼 */
+        /* 버튼류 */
         .btn-delete {
             padding: 0.3rem 0.75rem;
             background: var(--danger-dim);
@@ -174,6 +174,25 @@
         .btn-delete:hover {
             background: rgba(224,82,82,0.22);
             border-color: var(--danger);
+        }
+
+        .btn-ghost {
+            padding: 0.6rem 1.5rem;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: 1px solid var(--border-hover);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-primary);
+            border-color: var(--accent);
         }
 
         /* 폼 카드 */
@@ -302,6 +321,82 @@
         .toast.success { border-color: var(--success); color: var(--success); }
         .toast.error { border-color: var(--danger); color: var(--danger); }
 
+        /* ─── ERROR MODAL ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 13, 15, 0.85); /* --bg 기반 투명도 */
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 2px solid var(--danger);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .modal-status {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.75rem;
+            color: var(--danger);
+            letter-spacing: 0.1em;
+            background: var(--danger-dim);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .modal-body {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            word-break: keep-all;
+        }
+
+        .modal-footer {
+            text-align: right;
+        }
+
         @media (max-width: 768px) {
             .panel-grid { grid-template-columns: 1fr; }
             header { padding: 1.5rem; flex-direction: column; gap: 0.5rem; }
@@ -320,14 +415,12 @@
 </header>
 
 <main>
-    <!-- 탭 -->
     <div class="tabs">
         <div class="tab active" onclick="switchTab('reservation')">예약 관리</div>
         <div class="tab" onclick="switchTab('theme')">테마 관리</div>
         <div class="tab" onclick="switchTab('time')">시간 관리</div>
     </div>
 
-    <!-- 예약 관리 탭 -->
     <div class="tab-panel active" id="panel-reservation">
         <div class="panel-grid">
             <div>
@@ -373,7 +466,6 @@
         </div>
     </div>
 
-    <!-- 테마 관리 탭 -->
     <div class="tab-panel" id="panel-theme">
         <div class="panel-grid">
             <div>
@@ -414,7 +506,6 @@
         </div>
     </div>
 
-    <!-- 시간 관리 탭 -->
     <div class="tab-panel" id="panel-time">
         <div class="panel-grid">
             <div>
@@ -448,7 +539,38 @@
 
 <div class="toast" id="toast"></div>
 
+<div id="error-modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="modal-title">System Error</span>
+            <span class="modal-status" id="error-status">400</span>
+        </div>
+        <div class="modal-body" id="error-message">
+            에러 메시지가 여기에 표시됩니다.
+        </div>
+        <div class="modal-footer">
+            <button class="btn-ghost" onclick="closeErrorAlert()">확인</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    // ── ERROR MODAL 제어 ──────────────────────────────
+    function showErrorAlert(errorResponse) {
+        const statusEl = document.getElementById('error-status');
+        const messageEl = document.getElementById('error-message');
+        const modalEl = document.getElementById('error-modal');
+
+        statusEl.innerText = `ERROR ${errorResponse.status || 500}`;
+        messageEl.innerText = errorResponse.message || '서버와 통신 중 문제가 발생했습니다.';
+
+        modalEl.classList.add('active');
+    }
+
+    function closeErrorAlert() {
+        document.getElementById('error-modal').classList.remove('active');
+    }
+
     // ── 탭 전환 ──────────────────────────────────────
     function switchTab(name) {
         document.querySelectorAll('.tab').forEach((t, i) => {
@@ -464,7 +586,16 @@
         const options = { method, headers: { 'Content-Type': 'application/json' } };
         if (body) options.body = JSON.stringify(body);
         const res = await fetch(url, options);
-        if (!res.ok) throw new Error(`${res.status}`);
+
+        if (!res.ok) {
+            // 백엔드에서 내려주는 ErrorResponse 파싱 시도 (실패 시 기본 에러 객체 생성)
+            const errorData = await res.json().catch(() => ({
+                status: res.status,
+                message: '요청을 처리하는 도중 서버 오류가 발생했습니다.'
+            }));
+            throw errorData;
+        }
+
         if (res.status === 204) return null;
         return res.json();
     }
@@ -488,8 +619,10 @@
                     <td><button class="btn-delete" onclick="deleteReservation(${r.id})">삭제</button></td>
                 </tr>
             `).join('');
-        } catch {
+        } catch (error) {
             tbody.innerHTML = `<tr class="empty-row"><td colspan="6">불러오기 실패</td></tr>`;
+            // 불러오기 실패 시에도 모달을 띄우려면 아래 주석 해제
+            // showErrorAlert(error);
         }
     }
 
@@ -498,13 +631,18 @@
         const date = document.getElementById('res-date').value;
         const themeId = parseInt(document.getElementById('res-theme').value);
         const timeId = parseInt(document.getElementById('res-time').value);
-        if (!name || !date || !themeId || !timeId) return showToast('모든 항목을 입력하세요', 'error');
+
+        if (!name || !date || !themeId || !timeId) {
+            return showErrorAlert({ status: 400, message: '모든 항목을 입력하세요.' });
+        }
 
         try {
             await api('POST', '/reservations', { name, date, themeId, timeId });
             showToast('예약이 추가되었습니다', 'success');
             loadReservations();
-        } catch { showToast('추가 실패', 'error'); }
+        } catch (error) {
+            showErrorAlert(error);
+        }
     }
 
     async function deleteReservation(id) {
@@ -513,7 +651,9 @@
             await api('DELETE', `/reservations/${id}`);
             showToast('삭제되었습니다', 'success');
             loadReservations();
-        } catch { showToast('삭제 실패', 'error'); }
+        } catch (error) {
+            showErrorAlert(error);
+        }
     }
 
     // ── 테마 ──────────────────────────────────────────
@@ -523,7 +663,6 @@
         try {
             const data = await api('GET', '/themes');
 
-            // 테이블 렌더링
             if (!data.length) {
                 tbody.innerHTML = `<tr class="empty-row"><td colspan="5">테마가 없습니다</td></tr>`;
             } else {
@@ -540,11 +679,10 @@
                 `).join('');
             }
 
-            // 예약 폼 select 채우기
             themeSelect.innerHTML = data.map(t =>
                 `<option value="${t.id}">${t.name}</option>`
             ).join('');
-        } catch {
+        } catch (error) {
             tbody.innerHTML = `<tr class="empty-row"><td colspan="5">불러오기 실패</td></tr>`;
         }
     }
@@ -553,13 +691,18 @@
         const name = document.getElementById('theme-name').value.trim();
         const description = document.getElementById('theme-desc').value.trim();
         const thumbnail = document.getElementById('theme-thumbnail').value.trim();
-        if (!name) return showToast('테마명을 입력하세요', 'error');
+
+        if (!name) {
+            return showErrorAlert({ status: 400, message: '테마명을 입력하세요.' });
+        }
 
         try {
             await api('POST', '/themes', { name, description, thumbnail });
             showToast('테마가 추가되었습니다', 'success');
             loadThemes();
-        } catch { showToast('추가 실패', 'error'); }
+        } catch (error) {
+            showErrorAlert(error);
+        }
     }
 
     async function deleteTheme(id) {
@@ -568,7 +711,9 @@
             await api('DELETE', `/themes/${id}`);
             showToast('삭제되었습니다', 'success');
             loadThemes();
-        } catch { showToast('삭제 실패', 'error'); }
+        } catch (error) {
+            showErrorAlert(error);
+        }
     }
 
     // ── 시간 ──────────────────────────────────────────
@@ -590,24 +735,27 @@
                 `).join('');
             }
 
-            // 예약 폼 select 채우기
             timeSelect.innerHTML = data.map(t =>
                 `<option value="${t.id}">${t.startAt?.slice(0,5)}</option>`
             ).join('');
-        } catch {
+        } catch (error) {
             tbody.innerHTML = `<tr class="empty-row"><td colspan="3">불러오기 실패</td></tr>`;
         }
     }
 
     async function createTime() {
         const startAt = document.getElementById('time-start').value;
-        if (!startAt) return showToast('시간을 선택하세요', 'error');
+        if (!startAt) {
+            return showErrorAlert({ status: 400, message: '시간을 선택하세요.' });
+        }
 
         try {
             await api('POST', '/times', { startAt });
             showToast('시간이 추가되었습니다', 'success');
             loadTimes();
-        } catch { showToast('추가 실패', 'error'); }
+        } catch (error) {
+            showErrorAlert(error);
+        }
     }
 
     async function deleteTime(id) {
@@ -616,7 +764,9 @@
             await api('DELETE', `/times/${id}`);
             showToast('삭제되었습니다', 'success');
             loadTimes();
-        } catch { showToast('삭제 실패', 'error'); }
+        } catch (error) {
+            showErrorAlert(error);
+        }
     }
 
     // ── 토스트 ────────────────────────────────────────
