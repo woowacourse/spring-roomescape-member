@@ -6,6 +6,7 @@ import static roomescape.dao.rowMapper.ThemeMapper.THEME_ROW_MAPPER;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -24,12 +25,19 @@ public class ThemeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Theme findThemeById(Long id) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, description, url FROM theme WHERE id = ?",
-                THEME_ROW_MAPPER,
-                id
-        );
+    public Optional<Theme> findThemeById(Long id) {
+        String sql = """
+                SELECT id, name, description, url 
+                FROM theme 
+                WHERE id = ?
+                """;
+
+        return jdbcTemplate.query(
+                        sql,
+                        THEME_ROW_MAPPER,
+                        id
+                ).stream()
+                .findFirst();
     }
 
     public List<Theme> findAllThemes() {

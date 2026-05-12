@@ -5,6 +5,7 @@ import static roomescape.dao.rowMapper.ReservationTimeMapper.RESERVATION_TIME_RO
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -43,11 +44,18 @@ public class ReservationTimeDao {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 
-    public ReservationTime findTimeById(Long timeId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, start_at FROM reservation_time WHERE id = ?",
-                RESERVATION_TIME_ROW_MAPPER,
-                timeId
-        );
+    public Optional<ReservationTime> findTimeById(Long timeId) {
+        String sql = """
+                SELECT id, start_at 
+                FROM reservation_time 
+                WHERE id = ?
+                """;
+
+        return jdbcTemplate.query(
+                        sql,
+                        RESERVATION_TIME_ROW_MAPPER,
+                        timeId
+                ).stream()
+                .findFirst();
     }
 }
