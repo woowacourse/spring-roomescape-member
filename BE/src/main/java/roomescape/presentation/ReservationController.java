@@ -70,6 +70,14 @@ public class ReservationController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping(params = "name")
+    public ResponseEntity<List<ReservationResponse>> readReservationsByDateAndTheme(
+            @RequestParam String name) {
+        List<Reservation> reservations = reservationService.findByName(name);
+        List<ReservationResponse> response = convertToReservationResponse(reservations);
+        return ResponseEntity.ok(response);
+    }
+
     private List<ReservationResponse> convertToReservationResponse(List<Reservation> reservations) {
         return reservations.stream()
                 .map(ReservationResponse::from)

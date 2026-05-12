@@ -37,6 +37,13 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByName(String name) {
+        return store.values().stream()
+                .filter(reservation -> reservation.name().equals(name))
+                .toList();
+    }
+
+    @Override
     public List<Reservation> findAll() {
         return store.values().stream().toList();
     }

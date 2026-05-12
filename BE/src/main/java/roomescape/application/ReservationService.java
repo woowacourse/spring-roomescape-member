@@ -84,6 +84,10 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public List<Reservation> findByName(String name) {
+        return reservationRepository.findByName(name);
+    }
+
     public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
         return reservationRepository.findByDateAndThemeId(date, themeId);
     }

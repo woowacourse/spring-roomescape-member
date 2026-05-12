@@ -52,6 +52,23 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
             JOIN theme t ON r.theme_id = t.id
             WHERE r.id = ?
             """;
+
+    private static final String FIND_BY_NAME_QUERY = """
+            SELECT r.id,
+                   r.name AS reservation_name,
+                   r.date,
+                   rt.id AS time_id,
+                   rt.start_at,
+                   t.id AS theme_id,
+                   t.name AS theme_name,
+                   t.description AS theme_description,
+                   t.thumbnail_url
+            FROM reservation r
+            JOIN reservation_time rt ON r.time_id = rt.id
+            JOIN theme t ON r.theme_id = t.id
+            WHERE r.name = ?
+            """;
+
     private static final String FIND_ALL_QUERY = """
             SELECT r.id,
                    r.name AS reservation_name,
@@ -150,6 +167,11 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
         List<Reservation> reservation = jdbcTemplate.query(FIND_BY_ID_QUERY, ROW_MAPPER, id);
         return reservation.stream()
                 .findFirst();
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        return jdbcTemplate.query(FIND_BY_NAME_QUERY, ROW_MAPPER, name);
     }
 
     @Override

@@ -148,11 +148,30 @@ class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("예약자 성함을 기반으로 예약 목록 조회 시 값이 존재한다면 오류가 발생하지 않는다")
+    void findByName_success() {
+        reservationService.save(TESTER_NAME, LocalDate.now(), savedTime.id(), savedTheme.id());
+
+        // when & then
+        assertThatCode(() -> reservationService.findByName(TESTER_NAME))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("예약자 성함을 기반으로 예약 목록 조회 시 값이 존재하지 않아도 오류가 발생하지 않는다")
+    void findByName_success_even_though_not_exist() {
+        // when & then
+        assertThatCode(() -> reservationService.findByName(TESTER_NAME))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
     @DisplayName("예약 목록을 조회한다")
     void findAll_success() {
+
         // given
         reservationRepository.save(Reservation.createWithNullId(
-                "인직",
+                TESTER_NAME,
                 LocalDate.now(),
                 savedTime,
                 savedTheme

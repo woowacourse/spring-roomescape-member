@@ -66,6 +66,35 @@ class ReservationJdbcTemplateRepositoryTest {
     }
 
     @Test
+    @DisplayName("특정 이름으로 된 예약이 존재하면 이름을 기반으로 예약을 조회 잘 한다")
+    @Sql(scripts = {
+            "/sql/cleanup.sql",
+            "/sql/infrastructure/reservation/find-by-name-fixtures.sql"
+    })
+    void findByName_success() {
+        // when
+        String targetName = "홍길동";
+        List<Reservation> result = reservationRepository.findByName(targetName);
+
+        // then
+        Assertions.assertEquals(2, result.size());
+    }
+
+    @Test
+    @DisplayName("특정 이름으로 된 예약이 존재하지 않으면 빈 리스트를 반환한다")
+    @Sql(scripts = {
+            "/sql/cleanup.sql",
+    })
+    void findByName_fail_not_exist() {
+        // when
+        String targetName = "존재하지않음";
+        List<Reservation> result = reservationRepository.findByName(targetName);
+
+        // then
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    @Test
     @DisplayName("date만 있으면 해당 날짜의 예약만 조회한다.")
     @Sql(scripts = {
             "/sql/cleanup.sql",

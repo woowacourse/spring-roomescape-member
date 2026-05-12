@@ -37,6 +37,9 @@ import roomescape.global.auth.AdminInterceptor;
 @Import({AdminInterceptor.class, ReservationControllerTest.TestWebConfig.class})
 class ReservationControllerTest {
 
+    private static final LocalDate TEST_DATE = LocalDate.now();
+    private static final String TEST_DATE_VALUE = TEST_DATE.toString();
+
     @TestConfiguration
     static class TestWebConfig implements WebMvcConfigurer {
         @Autowired
@@ -68,13 +71,12 @@ class ReservationControllerTest {
     @DisplayName("POST /reservations - 정상 저장 시 201과 응답 본문을 반환한다.")
     void createReservation_success() throws Exception {
         // given
-        LocalDate date = LocalDate.of(2026, 5, 5);
-        Reservation reservation = sampleReservation(1L, "브라운", date, 1L, "10:00", 1L, "테스트-테마");
-        given(reservationService.save("브라운", date, 1L, 1L)).willReturn(reservation);
+        Reservation reservation = sampleReservation(1L, "브라운", TEST_DATE, 1L, "10:00", 1L, "테스트-테마");
+        given(reservationService.save("브라운", TEST_DATE, 1L, 1L)).willReturn(reservation);
 
         Map<String, Object> body = new HashMap<>();
         body.put("name", "브라운");
-        body.put("date", "2026-05-05");
+        body.put("date", TEST_DATE_VALUE);
         body.put("timeId", 1);
         body.put("themeId", 1);
 
@@ -87,13 +89,13 @@ class ReservationControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("브라운"))
-                .andExpect(jsonPath("$.date").value("2026-05-05"))
+                .andExpect(jsonPath("$.date").value(TEST_DATE_VALUE))
                 .andExpect(jsonPath("$.time.id").value(1))
                 .andExpect(jsonPath("$.time.startAt").value("10:00:00"))
                 .andExpect(jsonPath("$.theme.id").value(1))
                 .andExpect(jsonPath("$.theme.name").value("테스트-테마"));
 
-        then(reservationService).should().save("브라운", date, 1L, 1L);
+        then(reservationService).should().save("브라운", TEST_DATE, 1L, 1L);
     }
 
     @Test
@@ -101,8 +103,8 @@ class ReservationControllerTest {
     void readReservations_no_filter() throws Exception {
         // given
         List<Reservation> reservations = List.of(
-                sampleReservation(1L, "브라운", LocalDate.of(2026, 5, 5), 1L, "10:00", 1L, "테마A"),
-                sampleReservation(2L, "리오", LocalDate.of(2026, 5, 6), 2L, "11:00", 2L, "테마B")
+                sampleReservation(1L, "브라운", TEST_DATE, 1L, "10:00", 1L, "테마A"),
+                sampleReservation(2L, "리오", TEST_DATE.plusDays(1), 2L, "11:00", 2L, "테마B")
         );
         given(reservationService.findAll()).willReturn(reservations);
 
@@ -111,6 +113,7 @@ class ReservationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].name").value("브라운"))
+                .andExpect(jsonPath("$[0].date").value(TEST_DATE_VALUE))
                 .andExpect(jsonPath("$[1].name").value("리오"));
 
         then(reservationService).should().findAll();
@@ -120,16 +123,15 @@ class ReservationControllerTest {
     @DisplayName("GET /reservations?date=...&themeId=... - 예약 가능 시간 목록을 반환한다.")
     void readAvailableReservations_filter_by_date_and_theme() throws Exception {
         // given
-        LocalDate date = LocalDate.of(2026, 5, 5);
         List<Reservation> reservations = List.of(
-                sampleReservation(null, null, date, 1L, "10:00", 1L, "테마A"),
-                sampleReservation(1L, "브라운", date, 2L, "11:00", 1L, "테마A")
+                sampleReservation(null, null, TEST_DATE, 1L, "10:00", 1L, "테마A"),
+                sampleReservation(1L, "브라운", TEST_DATE, 2L, "11:00", 1L, "테마A")
         );
-        given(reservationService.findAllByDateAndThemeId(date, 1L)).willReturn(reservations);
+        given(reservationService.findAllByDateAndThemeId(TEST_DATE, 1L)).willReturn(reservations);
 
         // when & then
         mockMvc.perform(get("/reservations")
-                        .param("date", "2026-05-05")
+                        .param("date", TEST_DATE_VALUE)
                         .param("themeId", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -138,7 +140,27 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$[1].time.id").value(2))
                 .andExpect(jsonPath("$[1].isAvailable").value(false));
 
-        then(reservationService).should().findAllByDateAndThemeId(date, 1L);
+        then(reservationService).should().findAllByDateAndThemeId(TEST_DATE, 1L);
+    }
+
+    @Test
+    @DisplayName("GET /reservations?name=... - 예약 가능 시간 목록을 이름 기반으로 조회 후 반환한다.")
+    void readAvailableReservations_filter_by_name() throws Exception {
+        // given
+        List<Reservation> reservations = List.of(sampleReservation(1L, "브라운", TEST_DATE, 2L, "11:00", 1L, "테마A"));
+        given(reservationService.findByName("브라운")).willReturn(reservations);
+
+        // when & then
+        mockMvc.perform(get("/reservations")
+                        .param("name", "브라운"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].name").value("브라운"))
+                .andExpect(jsonPath("$[0].date").value(TEST_DATE_VALUE))
+                .andExpect(jsonPath("$[0].time.id").value(2))
+                .andExpect(jsonPath("$[0].theme.id").value(1));
+
+        then(reservationService).should().findByName("브라운");
     }
 
     @Test
@@ -158,9 +180,8 @@ class ReservationControllerTest {
         // given
         Map<String, Object> body = new HashMap<>();
         body.put("name", "브라운");
-        body.put("date", "2026-05-05");
+        body.put("date", TEST_DATE_VALUE);
         body.put("themeId", 1);
-        // timeId is missing
 
         // when & then
         mockMvc.perform(post("/reservations")
