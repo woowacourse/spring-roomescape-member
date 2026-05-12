@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
@@ -20,22 +21,27 @@ import roomescape.service.ReservationService;
 @RequestMapping("/reservations")
 public class ReservationController {
 
-    private final ReservationService service;
+    private final ReservationService reservationService;
 
-    public ReservationController(ReservationService service) {
-        this.service = service;
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
     @GetMapping
-    public List<ReservationResponse> getReservations() {
-        return service.findAll().stream()
+    public List<ReservationResponse> getReservations(@RequestParam(value = "name", required = false) String name) {
+        if (name != null) {
+            return reservationService.findByName(name).stream()
+                    .map(ReservationResponse::from)
+                    .toList();
+        }
+        return reservationService.findAll().stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
-        Reservation reservation = service.create(
+        Reservation reservation = reservationService.create(
                 request.name(),
                 request.date(),
                 request.timeId(),
@@ -46,7 +52,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        service.delete(id);
+        reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

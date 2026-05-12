@@ -4,7 +4,6 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -39,7 +38,29 @@ public class ReservationRepository {
                 "  ON r.time_id = rt.id\n" +
                 "INNER JOIN theme as t\n" +
                 "  ON r.theme_id = t.id\n";
+
         return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    public List<Reservation> findByName(String name) {
+        String sql = "SELECT\n" +
+                "    r.id as reservation_id,\n" +
+                "    r.name as username,\n" +
+                "    r.date,\n" +
+                "    rt.id as time_id,\n" +
+                "    rt.start_at as time_value,\n" +
+                "    t.id as theme_id,\n" +
+                "    t.name as theme_name,\n" +
+                "    t.description,\n" +
+                "    t.thumbnail\n" +
+                "FROM reservation as r\n" +
+                "INNER JOIN reservation_time as rt\n" +
+                "  ON r.time_id = rt.id\n" +
+                "INNER JOIN theme as t\n" +
+                "  ON r.theme_id = t.id\n" +
+                "WHERE r.name = ?\n";
+
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
     }
 
     public Reservation insert(Reservation reservation) {
