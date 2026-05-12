@@ -60,6 +60,16 @@ public class ReservationTimeControllerTest {
     }
 
     @Test
+    public void 존재하지_않는_시간_삭제_API() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/times/9999")
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("TIME_NOT_FOUND"));
+    }
+
+    @Test
     public void 예약_가능한_시간_추가_API() {
         TimeRequest timeRequest = new TimeRequest(LocalTime.of(8, 0));
 

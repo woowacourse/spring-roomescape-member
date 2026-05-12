@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import roomescape.dto.TimeAllResponse;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeRepository;
@@ -42,7 +44,7 @@ public class TimeService {
         }
         int deleteCnt = timeRepository.deleteById(id);
         if (deleteCnt == 0) {
-            throw new IllegalArgumentException("존재하지 않는 시간의 ID 입니다.");
+            throw new RoomescapeException(ErrorCode.TIME_NOT_FOUND);
         }
     }
 
