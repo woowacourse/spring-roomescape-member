@@ -9,6 +9,7 @@ const API_BASE = "";
       popularThemes: [],
       times: [],
       reservations: [],
+      lookupReservations: [],
       availableTimes: [],
       demoReservations: [
         { id: 1, guestName: "guest-8", date: "2026-05-05", themeId: 1, timeId: 1 },
@@ -21,6 +22,7 @@ const API_BASE = "";
       ],
       selectedThemeId: null,
       selectedTimeId: null,
+      editingReservationId: null,
       adminSelectedThemeId: null,
       adminSelectedTimeId: null,
       adminAvailableTimes: []
@@ -85,6 +87,15 @@ const API_BASE = "";
       lookupMessage: $("#lookupMessage"),
       lookupList: $("#lookupList"),
       lookupCount: $("#lookupCount"),
+      editReservationForm: $("#editReservationForm"),
+      editReservationTitle: $("#editReservationTitle"),
+      editReservationMeta: $("#editReservationMeta"),
+      editAuthorizationName: $("#editAuthorizationName"),
+      editReservationDate: $("#editReservationDate"),
+      editReservationTime: $("#editReservationTime"),
+      editReservationButton: $("#editReservationButton"),
+      editReservationMessage: $("#editReservationMessage"),
+      editCancelButton: $("#editCancelButton"),
       themeMetric: $("#themeMetric"),
       timeMetric: $("#timeMetric"),
       reservationMetric: $("#reservationMetric"),
@@ -162,6 +173,22 @@ const API_BASE = "";
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+      if (!response.ok) {
+        throw new Error(await errorMessageFrom(response));
+      }
+      return response.json();
+    }
+
+    async function patchJson(path, body, headers = {}) {
+      const response = await fetch(`${API_BASE}${path}`, {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          ...headers
         },
         body: JSON.stringify(body)
       });
@@ -521,7 +548,89 @@ const API_BASE = "";
       return reservation.time || state.times.find((time) => time.id === reservation.timeId) || null;
     }
 
+    function getReservationThemeId(reservation) {
+      return Number(reservation.themeId || reservation.theme?.id);
+    }
+
+    function getReservationTimeId(reservation) {
+      return Number(reservation.timeId || reservation.time?.id);
+    }
+
+    function setEditReservationMessage(text, type = "") {
+      elements.editReservationMessage.textContent = text;
+      elements.editReservationMessage.className = `message${type ? ` ${type}` : ""}`;
+    }
+
+    function syncEditReservationForm() {
+      if (!elements.editReservationForm || elements.editReservationForm.hidden) {
+        return;
+      }
+
+      const canEdit = Boolean(
+        state.editingReservationId &&
+        elements.editAuthorizationName.value.trim() &&
+        elements.editReservationDate.value &&
+        elements.editReservationTime.value
+      );
+      elements.editReservationButton.disabled = !canEdit;
+    }
+
+    function renderEditTimeOptions(selectedTimeId) {
+      elements.editReservationTime.innerHTML = "";
+      if (state.times.length === 0) {
+        elements.editReservationTime.innerHTML = `<option value="">시간 없음</option>`;
+        return;
+      }
+
+      [...state.times]
+        .sort((a, b) => normalizeTime(a.startAt).localeCompare(normalizeTime(b.startAt)))
+        .forEach((time) => {
+          const option = document.createElement("option");
+          option.value = time.id;
+          option.textContent = normalizeTime(time.startAt);
+          elements.editReservationTime.appendChild(option);
+        });
+
+      if (state.times.some((time) => time.id === selectedTimeId)) {
+        elements.editReservationTime.value = String(selectedTimeId);
+      }
+    }
+
+    function findReservation(id) {
+      return [...state.lookupReservations, ...state.reservations, ...state.demoReservations]
+        .find((reservation) => reservation.id === id) || null;
+    }
+
+    function clearEditReservation() {
+      state.editingReservationId = null;
+      elements.editReservationForm.hidden = true;
+      elements.editReservationForm.reset();
+      elements.editReservationMeta.textContent = "";
+      setEditReservationMessage("");
+    }
+
+    function startEditReservation(id) {
+      const reservation = findReservation(id);
+      if (!reservation) {
+        return;
+      }
+
+      const theme = getReservationTheme(reservation);
+      const time = getReservationTime(reservation);
+      state.editingReservationId = id;
+      elements.editReservationForm.hidden = false;
+      elements.editReservationTitle.textContent = `예약 수정 #${id}`;
+      elements.editReservationMeta.textContent = `${theme?.name || "-"} · ${normalizeTime(time?.startAt || "-")}`;
+      elements.editAuthorizationName.value = "";
+      elements.editReservationDate.value = reservation.date;
+      renderEditTimeOptions(getReservationTimeId(reservation));
+      setEditReservationMessage("");
+      syncEditReservationForm();
+      elements.editAuthorizationName.focus();
+    }
+
     function renderLookupReservations(reservations) {
+      state.lookupReservations = reservations;
       elements.lookupList.innerHTML = "";
       elements.lookupCount.textContent = `${reservations.length}건`;
 
@@ -542,6 +651,7 @@ const API_BASE = "";
               <span class="list-title">${escapeHtml(reservation.guestName || "예약자")}</span>
               <span class="list-meta">${escapeHtml(formatDate(reservation.date))} · ${escapeHtml(theme?.name || "-")} · ${escapeHtml(normalizeTime(time?.startAt || "-"))}</span>
             </div>
+            <button class="secondary-button compact-button" type="button" data-edit-reservation-id="${reservation.id}">수정</button>
           `;
           elements.lookupList.appendChild(row);
         });
@@ -554,12 +664,14 @@ const API_BASE = "";
         elements.lookupMessage.textContent = "예약자 이름을 입력해주세요.";
         elements.lookupMessage.className = "message error";
         renderLookupReservations([]);
+        clearEditReservation();
         return;
       }
 
       elements.lookupButton.disabled = true;
       elements.lookupMessage.textContent = "예약을 조회하는 중입니다.";
       elements.lookupMessage.className = "message";
+      clearEditReservation();
 
       try {
         const reservations = state.mode === "live"
@@ -575,6 +687,80 @@ const API_BASE = "";
         elements.lookupMessage.className = "message error";
       } finally {
         elements.lookupButton.disabled = false;
+      }
+    }
+
+    function replaceReservation(reservations, editedReservation) {
+      return reservations.map((reservation) =>
+        reservation.id === editedReservation.id ? editedReservation : reservation
+      );
+    }
+
+    function editDemoReservation(id, payload, authorizationName) {
+      const reservation = state.demoReservations.find((item) => item.id === id);
+      if (!reservation) {
+        throw new Error("존재하지 않는 예약입니다.");
+      }
+      if (reservation.guestName !== authorizationName) {
+        throw new Error("본인의 예약만 수정할 수 있습니다.");
+      }
+
+      const themeId = getReservationThemeId(reservation);
+      const duplicated = state.demoReservations.some((item) =>
+        item.id !== id &&
+        item.date === payload.date &&
+        getReservationTimeId(item) === payload.timeId &&
+        getReservationThemeId(item) === themeId
+      );
+      if (duplicated) {
+        throw new Error("이미 존재하는 예약입니다.");
+      }
+
+      return {
+        ...reservation,
+        date: payload.date,
+        timeId: payload.timeId
+      };
+    }
+
+    async function editReservation(event) {
+      event.preventDefault();
+      const reservationId = state.editingReservationId;
+      const authorizationName = elements.editAuthorizationName.value.trim();
+      const payload = {
+        date: elements.editReservationDate.value,
+        timeId: Number(elements.editReservationTime.value)
+      };
+
+      if (!reservationId || !authorizationName || !payload.date || !payload.timeId) {
+        setEditReservationMessage("이름, 날짜, 시간을 모두 입력해주세요.", "error");
+        syncEditReservationForm();
+        return;
+      }
+
+      elements.editReservationButton.disabled = true;
+      setEditReservationMessage("예약을 수정하는 중입니다.");
+
+      try {
+        const editedReservation = state.mode === "live"
+          ? await patchJson(`/reservations/${reservationId}`, payload, { Authorization: authorizationName })
+          : editDemoReservation(reservationId, payload, authorizationName);
+
+        if (state.mode === "demo") {
+          state.demoReservations = replaceReservation(state.demoReservations, editedReservation);
+        }
+        state.reservations = replaceReservation(state.reservations, editedReservation);
+        state.lookupReservations = replaceReservation(state.lookupReservations, editedReservation);
+
+        renderLookupReservations(state.lookupReservations);
+        clearEditReservation();
+        showToast("예약이 수정되었습니다.", `${formatDate(editedReservation.date)} · ${normalizeTime(getReservationTime(editedReservation)?.startAt || "")}`);
+        await loadAvailability();
+        elements.lookupMessage.textContent = "예약 수정이 완료되었습니다.";
+        elements.lookupMessage.className = "message ok";
+      } catch (error) {
+        setEditReservationMessage(endpointMessageOr(error, "예약 수정에 실패했습니다."), "error");
+        syncEditReservationForm();
       }
     }
 
@@ -985,6 +1171,17 @@ const API_BASE = "";
       elements.nameInput.addEventListener("input", syncSummary);
       elements.reserveButton.addEventListener("click", reserve);
       elements.lookupForm.addEventListener("submit", lookupReservations);
+      elements.lookupList.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-edit-reservation-id]");
+        if (button) {
+          startEditReservation(Number(button.dataset.editReservationId));
+        }
+      });
+      elements.editReservationForm.addEventListener("submit", editReservation);
+      elements.editCancelButton.addEventListener("click", clearEditReservation);
+      elements.editAuthorizationName.addEventListener("input", syncEditReservationForm);
+      elements.editReservationDate.addEventListener("change", syncEditReservationForm);
+      elements.editReservationTime.addEventListener("change", syncEditReservationForm);
     }
 
     if (isAdminPage()) {

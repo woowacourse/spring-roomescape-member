@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -88,7 +89,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<ErrorResponse> internalServerError(String path) {
         return ResponseEntity
                 .internalServerError()
-                .body(ErrorResponse.of(path, "서버 내부에서 문제가 발생했습니다."));
+                .body(ErrorResponse.of(path, ErrorCode.INTERNAL_SERVER_ERROR));
     }
 
     private String pathFrom(WebRequest request) {

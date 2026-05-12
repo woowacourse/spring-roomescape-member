@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -174,6 +175,7 @@ public class ReservationAcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(editRequest))
                 .pathParam("id", reservationId)
+                .header("Authorization", reservationRequest.guestName())
                 .when()
                 .patch("/reservations/{id}")
                 .then().log().all()
@@ -217,6 +219,7 @@ public class ReservationAcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(editRequest))
                 .pathParam("id", targetReservationId)
+                .header("Authorization", targetReservationRequest.guestName())
                 .when()
                 .patch("/reservations/{id}")
                 .then().log().all()
@@ -252,6 +255,7 @@ public class ReservationAcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(editRequest))
                 .pathParam("id", reservationId)
+                .header("Authorization", reservationRequest.guestName())
                 .when()
                 .patch("/reservations/{id}")
                 .then().log().all()
@@ -285,10 +289,50 @@ public class ReservationAcceptanceTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(editRequest))
                 .pathParam("id", reservationId)
+                .header("Authorization", reservationRequest.guestName())
                 .when()
                 .patch("/reservations/{id}")
                 .then().log().all()
                 .statusCode(422);
+    }
+
+    @Test
+    @DisplayName("본인의 예약이 아니면 수정할 수 없다.")
+    public void scenario8() throws JsonProcessingException {
+        Integer reservationTimeId = createReservationTime(
+                new ReservationTimeCreateRequest(LocalTime.of(10, 30)));
+        Integer editedReservationTimeId = createReservationTime(
+                new ReservationTimeCreateRequest(LocalTime.of(11, 30)));
+        Integer themeId = createTheme(
+                new ThemeCreateRequest("테마1", "설명", "섬네일"));
+
+        ReservationCreateRequest otherReservation = new ReservationCreateRequest(
+                "brown",
+                LocalDate.of(2026, 10, 14),
+                reservationTimeId.longValue(),
+                themeId.longValue());
+        createReservation(otherReservation);
+
+        ReservationCreateRequest myReservation = new ReservationCreateRequest(
+                "pobi",
+                LocalDate.of(2026, 10, 15),
+                editedReservationTimeId.longValue(),
+                themeId.longValue());
+        Integer myReservationId = createReservation(myReservation);
+
+        ReservationEditRequest editRequest = new ReservationEditRequest(
+                otherReservation.date(),
+                otherReservation.timeId());
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(editRequest))
+                .pathParam("id", myReservationId)
+                .header("Authorization", otherReservation.guestName())
+                .when()
+                .patch("/reservations/{id}")
+                .then().log().all()
+                .statusCode(403);
     }
 
     private Integer createReservationTime(ReservationTimeCreateRequest request) throws JsonProcessingException {

@@ -113,3 +113,11 @@
     - `PATCH /reservations/{id}`
   - 검증
     - `422 Unprocessable Entity`가 반환된다.
+
+- [x] **8. 본인의 예약이 아니면 수정할 수 없다.**
+  - 요청 흐름
+    - 다른 이름으로 예약 2개 생성
+    - 다른 사람의 예약 수정 시도
+    - `PATCH /reservations/{id}`
+  - 검증
+    - `403 Forbidden`이 반환된다.

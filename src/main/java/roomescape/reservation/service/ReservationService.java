@@ -59,10 +59,11 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation editDateTime(Long reservationId, LocalDate date, Long timeId) {
+    public Reservation editDateTime(Long reservationId, LocalDate date, Long timeId, String guestName) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new DomainException(ErrorCode.RESERVATION_NOT_FOUND));
         validateAlreadyStarted(reservation);
+        validateIsMyReservation(guestName, reservation);
 
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new DomainException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
@@ -83,6 +84,12 @@ public class ReservationService {
     private void validateAlreadyStarted(Reservation reservation) {
         if (reservation.isPast(LocalDateTime.now(clock))) {
             throw new DomainException(ErrorCode.CANNOT_EDIT_ALREADY_STARTED_RESERVATION);
+        }
+    }
+
+    private static void validateIsMyReservation(String guestName, Reservation reservation) {
+        if(!reservation.isSameGuest(guestName)) {
+            throw new DomainException(ErrorCode.CANNOT_EDIT_OTHER_GUEST_RESERVATION);
         }
     }
 

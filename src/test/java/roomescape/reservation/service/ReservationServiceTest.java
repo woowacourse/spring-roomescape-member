@@ -101,7 +101,7 @@ class ReservationServiceTest {
         // given
         ReservationTime existTime = insertReservationTime(LocalTime.of(10, 0));
         LocalDate existDate = LocalDate.of(2023, 8, 5);
-        Reservation reservation = insertReservation(existDate, existTime);
+        Reservation reservation = insertReservation(existDate, existTime, "브라운");
 
         LocalDate editedDate = LocalDate.of(2023, 8, 10);
         ReservationTime editedTime = insertReservationTime(LocalTime.of(12, 0));
@@ -110,7 +110,7 @@ class ReservationServiceTest {
 
         // when
         Reservation editedReservation =
-                reservationService.editDateTime(reservation.getId(), editedDate, editedTime.getId());
+                reservationService.editDateTime(reservation.getId(), editedDate, editedTime.getId(), reservation.getGuestName());
 
         // then
         assertThat(editedReservation)
@@ -127,7 +127,7 @@ class ReservationServiceTest {
         ReservationTime editedTime = insertReservationTime(LocalTime.of(12, 0));
 
         // when then
-        assertThatThrownBy(() -> reservationService.editDateTime(reservationId, editedDate, editedTime.getId()))
+        assertThatThrownBy(() -> reservationService.editDateTime(reservationId, editedDate, editedTime.getId(), "브라운"))
                 .isInstanceOf(DomainException.class)
                 .hasMessage(ErrorCode.RESERVATION_NOT_FOUND.message());
     }
@@ -140,13 +140,13 @@ class ReservationServiceTest {
 
         ReservationTime existTime = insertReservationTime(LocalTime.of(10, 0));
         LocalDate existDate = LocalDate.of(2023, 8, 5);
-        Reservation reservation = insertReservation(existDate, existTime);
+        Reservation reservation = insertReservation(existDate, existTime, "브라운");
 
         LocalDate editedDate = LocalDate.of(2023, 8, 10);
         Long editedTimeId = 999L;
 
         // when then
-        assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTimeId))
+        assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTimeId, reservation.getGuestName()))
                 .isInstanceOf(DomainException.class)
                 .hasMessage(ErrorCode.RESERVATION_TIME_NOT_FOUND.message());
     }
@@ -159,13 +159,13 @@ class ReservationServiceTest {
 
         ReservationTime existTime = insertReservationTime(LocalTime.of(10, 0));
         LocalDate existDate = LocalDate.of(2023, 8, 5);
-        Reservation reservation = insertReservation(existDate, existTime);
+        Reservation reservation = insertReservation(existDate, existTime, "브라운");
 
         LocalDate editedDate = LocalDate.of(2023, 8, 10);
         ReservationTime editedTime = insertReservationTime(LocalTime.of(12, 0));
 
         // when then
-        assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTime.getId()))
+        assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTime.getId(), reservation.getGuestName()))
                 .isInstanceOf(DomainException.class)
                 .hasMessage(ErrorCode.CANNOT_EDIT_ALREADY_STARTED_RESERVATION.message());
     }
@@ -180,6 +180,7 @@ class ReservationServiceTest {
 
         LocalDate editedDate = LocalDate.of(2023, 8, 10);
         ReservationTime editedTime = insertReservationTime(LocalTime.of(10, 0));
+
         insertReservation("브라운", editedDate, editedTime, theme);
 
         LocalDate existDate = LocalDate.of(2023, 8, 6);
@@ -187,7 +188,7 @@ class ReservationServiceTest {
         Reservation reservation = insertReservation("포비", existDate, existTime, theme);
 
         // when then
-        assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTime.getId()))
+        assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTime.getId(), reservation.getGuestName()))
                 .isInstanceOf(DomainException.class)
                 .hasMessage(ErrorCode.RESERVATION_ALREADY_EXISTS.message());
     }
@@ -203,19 +204,38 @@ class ReservationServiceTest {
         clock.setFixed(LocalDateTime.of(2023, 7, 6, 10, 0));
         LocalDate existDate = LocalDate.of(2023, 8, 6);
         ReservationTime existTime = insertReservationTime(LocalTime.of(12, 0));
-        Reservation reservation = insertReservation(existDate, existTime);
+        Reservation reservation = insertReservation(existDate, existTime, "브라운");
 
         ReservationTime editedTime = insertReservationTime(et);
 
         // when then
-        assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), ed, editedTime.getId()))
+        assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), ed, editedTime.getId(), reservation.getGuestName()))
                 .isInstanceOf(DomainException.class)
                 .hasMessage(ErrorCode.PAST_RESERVATION_NOT_ALLOWED.message());
     }
 
-    private Reservation insertReservation(LocalDate existDate, ReservationTime existTime) {
+    @Test
+    @DisplayName("본인의 예약이 아니면 예외가 발생한다.")
+    public void editDateTime_fail6() {
+        // given
+        clock.setFixed(LocalDate.of(2023, 7, 6));
+
         Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
-        return insertReservation("브라운", existDate, existTime, theme);
+
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+
+        Reservation reservation = insertReservation("브라운", LocalDate.of(2023, 8, 10), time, theme);
+
+        // when then
+        assertThatThrownBy(() -> reservationService.editDateTime(
+                reservation.getId(), reservation.getDate(), time.getId(), "other_guest"))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(ErrorCode.CANNOT_EDIT_OTHER_GUEST_RESERVATION.message());
+    }
+
+    private Reservation insertReservation(LocalDate existDate, ReservationTime existTime, String guestName) {
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        return insertReservation(guestName, existDate, existTime, theme);
     }
 
     private ReservationTime insertReservationTime(LocalTime startAt) {

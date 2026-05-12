@@ -209,7 +209,7 @@ class ReservationControllerTest {
         Theme theme = new Theme(1L, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme-1.png");
         Reservation reservation = new Reservation(reservationId, "브라운", LocalDate.of(2023, 8, 10), time, theme);
 
-        given(reservationService.editDateTime(anyLong(), any(), anyLong()))
+        given(reservationService.editDateTime(anyLong(), any(), anyLong(), anyString()))
                 .willReturn(reservation);
 
         ReservationEditRequest request = new ReservationEditRequest(
@@ -218,10 +218,13 @@ class ReservationControllerTest {
         );
 
         // when then
+        String guestNameHeader = "브라운";
         MvcResult result = mockMvc.perform(
                         patch("/reservations/{id}", reservationId)
                                 .content(objectMapper.writeValueAsString(request))
-                                .contentType(MediaType.APPLICATION_JSON))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", guestNameHeader)
+                )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -237,7 +240,7 @@ class ReservationControllerTest {
 
         then(reservationService)
                 .should()
-                .editDateTime(reservationId, request.date(), request.timeId());
+                .editDateTime(reservationId, request.date(), request.timeId(), guestNameHeader);
     }
 
     @ParameterizedTest

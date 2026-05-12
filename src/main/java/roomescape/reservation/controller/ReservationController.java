@@ -48,10 +48,13 @@ public class ReservationController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<ReservationResponse> editDateTime(
-            @PathVariable("id") Long id, @RequestBody @Valid ReservationEditRequest request) {
+            @PathVariable("id") Long id,
+            @RequestBody @Valid ReservationEditRequest request,
+            @RequestHeader("Authorization") String guestName
+    ) {
         return ResponseEntity.ok(
                 ReservationResponse.from(
-                        reservationService.editDateTime(id, request.date(), request.timeId())));
+                        reservationService.editDateTime(id, request.date(), request.timeId(), guestName)));
     }
 
 }

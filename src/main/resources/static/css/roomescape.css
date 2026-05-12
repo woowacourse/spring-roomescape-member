@@ -521,6 +521,37 @@
       scrollbar-width: thin;
     }
 
+    .reservation-edit-form {
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .reservation-edit-form[hidden] {
+      display: none;
+    }
+
+    .edit-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .edit-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(150px, 180px) minmax(150px, 180px);
+      gap: 10px;
+      align-items: end;
+    }
+
+    .compact-button {
+      min-width: 72px;
+    }
+
     .summary-head {
       display: flex;
       justify-content: space-between;
@@ -1012,9 +1043,15 @@
         grid-template-columns: 1fr;
       }
 
+      .edit-head {
+        display: grid;
+      }
+
       .admin-reserve-grid,
       .admin-time-grid,
-      .lookup-form {
+      .lookup-form,
+      .edit-grid,
+      .edit-head {
         grid-template-columns: 1fr;
       }
 

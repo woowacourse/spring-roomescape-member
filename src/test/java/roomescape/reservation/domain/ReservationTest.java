@@ -98,6 +98,17 @@ class ReservationTest {
         assertThat(result).isEqualTo(expected);
     }
 
+
+    @Test
+    @DisplayName("같은 사람의 예약인지 확인한다.")
+    public void isSameGuest() {
+        // given
+        // TODO:
+
+        // when
+
+        // then
+    }
     private void assertDomainException(Runnable runnable, ErrorCode errorCode) {
         assertThatThrownBy(runnable::run)
                 .isInstanceOfSatisfying(DomainException.class, exception ->

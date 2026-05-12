@@ -89,4 +89,8 @@ public class Reservation {
         return LocalDateTime.of(date, time.getStartAt())
                 .isBefore(now);
     }
+
+    public boolean isSameGuest(String guestName) {
+        return Objects.equals(this.guestName, guestName);
+    }
 }
