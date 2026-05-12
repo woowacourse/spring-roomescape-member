@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
@@ -7,9 +9,6 @@ import roomescape.domain.TimeSlot;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeSlotRepository;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class ReservationService {
@@ -43,6 +42,7 @@ public class ReservationService {
             Long timeId,
             Long themeId
     ) {
+        validDate(date);
         validDuplicatedReservation(date, timeId, themeId);
         TimeSlot timeSlot = timeSlotRepository.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + timeId));
@@ -54,6 +54,12 @@ public class ReservationService {
 
     public void removeReservation(long reservationId) {
         reservationRepository.deleteById(reservationId);
+    }
+
+    private void validDate(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("지난 날짜로 예약하실 수 없습니다.");
+        }
     }
 
     private void validDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
