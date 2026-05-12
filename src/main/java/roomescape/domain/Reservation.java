@@ -15,7 +15,7 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
 
     private void validateTheme(Theme theme) {
         if (Objects.isNull(theme)) {
-            throw new IllegalArgumentException("유효하지 않는 테마입니다.");
+            throw new IllegalArgumentException("유효하지 않은 테마입니다.");
         }
     }
 
