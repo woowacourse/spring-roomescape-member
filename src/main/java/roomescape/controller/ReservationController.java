@@ -1,9 +1,11 @@
 package roomescape.controller;
 
-import java.util.List;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Reservation;
 import roomescape.dto.ReservationRequest;
@@ -11,6 +13,7 @@ import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationResponses;
 import roomescape.service.ReservationService;
 
+@Validated
 @RestController
 public class ReservationController {
 
@@ -22,8 +25,8 @@ public class ReservationController {
 
     @GetMapping("/reservations")
     public ReservationResponses read(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size
     ) {
         return ReservationResponses.from(reservationService.findAll(page, size));
     }
