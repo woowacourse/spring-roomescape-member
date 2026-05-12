@@ -447,6 +447,41 @@
       color: var(--muted);
     }
 
+    .reservation-actions { display: flex; gap: 8px; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal h3 { font-size: 18px; font-weight: 700; }
+    .modal label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 6px; }
+    .modal input, .modal select {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+    .modal-actions { display: flex; gap: 8px; margin-top: 4px; }
+
     /* Empty state */
     .empty-state {
       text-align: center;
@@ -676,6 +711,26 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <h3>예약 변경</h3>
+    <div>
+      <label>날짜</label>
+      <input type="date" id="edit-date" onchange="loadEditTimes()">
+    </div>
+    <div>
+      <label>시간</label>
+      <select id="edit-time">
+        <option value="">날짜를 먼저 선택하세요</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-accent" onclick="confirmUpdate()" style="flex:1">변경 확정</button>
+      <button class="btn btn-ghost" onclick="closeEditModal()" style="flex:1">취소</button>
+    </div>
+  </div>
+</div>
 
 <script>
   const API = '';
@@ -929,7 +984,10 @@
             <div class="reservation-theme">${r.themeName}</div>
             <div class="reservation-meta">📅 ${formatDate(r.date)} &nbsp; ⏰ ${r.time}</div>
           </div>
-          <button class="btn btn-danger" onclick="deleteMyReservation(${r.id})">삭제</button>
+          <div class="reservation-actions">
+            <button class="btn btn-ghost" onclick="openEditModal(${r.id})">변경</button>
+            <button class="btn btn-danger" onclick="deleteMyReservation(${r.id})">삭제</button>
+          </div>
         </div>
       `).join('');
       list.style.display = 'flex';
@@ -943,7 +1001,12 @@
     if (!confirm('예약을 삭제하시겠습니까?')) return;
     try {
       const res = await fetch(`${API}/reservations/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const { code } = await res.json();
+        if (code === 'PAST_RESERVATION') showToast('이미 지난 예약은 취소할 수 없습니다.', 'error');
+        else showToast('삭제에 실패했습니다.', 'error');
+        return;
+      }
       document.getElementById(`res-${id}`)?.remove();
       showToast('예약이 삭제되었습니다.');
 
@@ -954,6 +1017,61 @@
       }
     } catch (e) {
       showToast('삭제에 실패했습니다.', 'error');
+    }
+  }
+
+  let editingReservationId = null;
+
+  function openEditModal(id) {
+    editingReservationId = id;
+    document.getElementById('edit-date').value = '';
+    document.getElementById('edit-time').innerHTML = '<option value="">날짜를 먼저 선택하세요</option>';
+    document.getElementById('edit-modal').classList.add('open');
+  }
+
+  function closeEditModal() {
+    editingReservationId = null;
+    document.getElementById('edit-modal').classList.remove('open');
+  }
+
+  async function loadEditTimes() {
+    const date = document.getElementById('edit-date').value;
+    if (!date) return;
+
+    const res = await fetch(`${API}/times`);
+    const { times } = await res.json();
+    const select = document.getElementById('edit-time');
+    select.innerHTML = times.map(t => `<option value="${t.id}">${t.startAt}</option>`).join('');
+  }
+
+  async function confirmUpdate() {
+    const date = document.getElementById('edit-date').value;
+    const timeId = document.getElementById('edit-time').value;
+    if (!date || !timeId) {
+      showToast('날짜와 시간을 선택해주세요.', 'error');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API}/reservations/${editingReservationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date, timeId: Number(timeId) })
+      });
+
+      if (!res.ok) {
+        const { code } = await res.json();
+        if (code === 'PAST_RESERVATION') showToast('과거 날짜나 시간으로는 변경할 수 없습니다.', 'error');
+        else if (code === 'RESERVATION_CONFLICT') showToast('해당 시간은 이미 예약되어 있습니다. 다른 시간을 선택해주세요.', 'error');
+        else showToast('변경에 실패했습니다.', 'error');
+        return;
+      }
+
+      closeEditModal();
+      showToast('예약이 변경되었습니다.');
+      loadMyReservations();
+    } catch (e) {
+      showToast('변경에 실패했습니다.', 'error');
     }
   }
 
