@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>방탈출 예약하기</title>
+    <style>
+        body {
+            font-family: -apple-system, sans-serif;
+            padding: 2rem;
+            background: #f1f5f9;
+            color: #1e293b;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4f46e5;
+            margin-bottom: 2.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .step {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 2px solid #f1f5f9;
+            border-radius: 12px;
+            background: white;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .step.active {
+            border-color: #e0e7ff;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.05);
+        }
+
+        .step.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+            background: #fafafa;
+            border-color: #f1f5f9;
+        }
+
+        h2 {
+            font-size: 1.15rem;
+            margin-top: 0;
+            color: #334155;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .step-num {
+            background: #4f46e5;
+            color: white;
+            width: 26px;
+            height: 26px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .step.disabled .step-num {
+            background: #94a3b8;
+        }
+
+        input[type="date"], input[type="text"] {
+            width: 100%;
+            padding: 0.9rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: #4f46e5;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .btn-card {
+            padding: 1rem 0.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .btn-card:hover:not(:disabled) {
+            border-color: #4f46e5;
+            color: #4f46e5;
+            background: #f5f3ff;
+        }
+
+        .btn-card.selected {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn-card:disabled {
+            background: #f8fafc;
+            color: #cbd5e1;
+            cursor: not-allowed;
+            border-color: #f1f5f9;
+            opacity: 0.6;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1.25rem;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #4338ca;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        .nav {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav a {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .nav a:hover {
+            color: #4f46e5;
+        }
+
+        .loading-msg {
+            color: #94a3b8;
+            text-align: center;
+            padding: 1.5rem;
+            grid-column: 1 / -1;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="nav"><a href="/">&larr; 메인화면</a></div>
+    <h1>방탈출 예약</h1>
+
+    <div class="step active" id="step1">
+        <h2><span class="step-num">1</span> 날짜 선택</h2>
+        <input type="date" id="dateInput">
+    </div>
+
+    <div class="step disabled" id="step2">
+        <h2><span class="step-num">2</span> 테마 선택</h2>
+        <div class="grid" id="themeList"></div>
+    </div>
+
+    <div class="step disabled" id="step3">
+        <h2><span class="step-num">3</span> 시간 선택</h2>
+        <div class="grid" id="timeList"></div>
+    </div>
+
+    <div class="step disabled" id="step4">
+        <h2><span class="step-num">4</span> 예약 완료</h2>
+        <input type="text" id="nameInput" placeholder="이름을 입력해주세요">
+        <button class="submit-btn" id="reserveBtn">지금 바로 예약하기</button>
+    </div>
+</div>
+
+<script>
+    const dateInput = document.getElementById('dateInput');
+    const themeList = document.getElementById('themeList');
+    const timeList = document.getElementById('timeList');
+    const nameInput = document.getElementById('nameInput');
+    const reserveBtn = document.getElementById('reserveBtn');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    const step4 = document.getElementById('step4');
+
+    let selectedDate = '';
+    let selectedThemeId = null;
+    let selectedTimeId = null;
+
+    // Set min date to today
+    const today = new Date();
+    dateInput.min = today.toISOString().split('T')[0];
+
+    dateInput.addEventListener('change', async (e) => {
+        selectedDate = e.target.value;
+        if (selectedDate) {
+            step2.classList.remove('disabled');
+            step2.classList.add('active');
+            step3.classList.add('disabled');
+            step4.classList.add('disabled');
+            selectedThemeId = null;
+            selectedTimeId = null;
+            timeList.innerHTML = '';
+            await loadThemes();
+        }
+    });
+
+    async function loadThemes() {
+        themeList.innerHTML = '<div class="loading-msg">테마 정보를 불러오고 있습니다...</div>';
+        try {
+            const res = await fetch('/themes');
+            const themes = await res.json();
+            themeList.innerHTML = '';
+
+            if (themes.length === 0) {
+                themeList.innerHTML = '<div class="loading-msg">현재 선택 가능한 테마가 없습니다.</div>';
+                return;
+            }
+
+            themes.forEach(theme => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-card';
+                btn.textContent = theme.name;
+                btn.onclick = () => selectTheme(theme.id, btn);
+                themeList.appendChild(btn);
+            });
+        } catch (e) {
+            themeList.innerHTML = '<div class="loading-msg">데이터 로드 중 오류가 발생했습니다.</div>';
+        }
+    }
+
+    async function selectTheme(themeId, clickedBtn) {
+        selectedThemeId = themeId;
+        document.querySelectorAll('#themeList .btn-card').forEach(b => b.classList.remove('selected'));
+        clickedBtn.classList.add('selected');
+
+        step3.classList.remove('disabled');
+        step3.classList.add('active');
+        step4.classList.add('disabled');
+        selectedTimeId = null;
+        await loadAvailableTimes();
+    }
+
+    async function loadAvailableTimes() {
+        timeList.innerHTML = '<div class="loading-msg">예약 가능 시간을 확인 중입니다...</div>';
+        try {
+            const res = await fetch(`/times/available?themeId=${selectedThemeId}&date=${selectedDate}`);
+            const data = await res.json();
+            timeList.innerHTML = '';
+
+            if (!data.availableTimes || data.availableTimes.length === 0) {
+                timeList.innerHTML = '<div class="loading-msg">해당 날짜에는 예약 가능한 시간이 없습니다.</div>';
+                return;
+            }
+
+            data.availableTimes.forEach(time => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-card';
+
+                if (!time.available) {
+                    btn.disabled = true;
+                    btn.innerHTML = `${time.startAt}<br><span style="font-size:0.7rem; font-weight:normal; color:#94a3b8;">예약마감</span>`;
+                } else {
+                    btn.textContent = time.startAt;
+                    btn.onclick = () => selectTime(time.id, btn);
+                }
+                timeList.appendChild(btn);
+            });
+        } catch (e) {
+            timeList.innerHTML = '<div class="loading-msg">시간 정보를 불러올 수 없습니다.</div>';
+        }
+    }
+
+    function selectTime(timeId, clickedBtn) {
+        selectedTimeId = timeId;
+        document.querySelectorAll('#timeList .btn-card').forEach(b => b.classList.remove('selected'));
+        clickedBtn.classList.add('selected');
+
+        step4.classList.remove('disabled');
+        step4.classList.add('active');
+        nameInput.focus();
+    }
+
+    reserveBtn.addEventListener('click', async () => {
+        const name = nameInput.value.trim();
+        if (!name) {
+            alert('예약자 성함을 입력해주세요.');
+            nameInput.focus();
+            return;
+        }
+
+        const payload = {
+            name: name,
+            date: selectedDate,
+            themeId: selectedThemeId,
+            timeId: selectedTimeId
+        };
+
+        reserveBtn.disabled = true;
+        reserveBtn.textContent = '예약 요청을 보내는 중...';
+
+        try {
+            const res = await fetch('/reservations', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert('🎉 예약이 완료되었습니다! 현장에서 뵙겠습니다.');
+                window.location.href = '/';
+            } else {
+                const error = await res.json();
+                alert(error.message || '예약 처리에 실패했습니다. 다른 시간을 선택해주세요.');
+                loadAvailableTimes(); // Refresh
+            }
+        } catch (e) {
+            alert('통신 중 오류가 발생했습니다. 인터넷 연결을 확인해주세요.');
+        } finally {
+            reserveBtn.disabled = false;
+            reserveBtn.textContent = '지금 바로 예약하기';
+        }
+    });
+</script>
+</body>
+</html>
