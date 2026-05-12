@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -73,7 +74,7 @@ public class MissionStepTest {
 
     @Test
     void 예약과_시간_연결() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.now().plusHours(1).toString());
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "김인직", "레전드 방송", "gamst.jpg");
 
         Map<String, Object> reservation = new HashMap<>();
