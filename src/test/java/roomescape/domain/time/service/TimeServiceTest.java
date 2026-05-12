@@ -1,6 +1,7 @@
 package roomescape.domain.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -173,6 +174,20 @@ class TimeServiceTest {
                 () -> assertEquals(1, actual.size()),
                 () -> assertEquals(LocalTime.of(13, 0), actual.getFirst().startAt())
             );
+        }
+
+        @Test
+        @DisplayName("주어진 아이디를 참조하는 예약이 존재하는 경우 예외가 발생한다.")
+        void 실패() {
+            Time time = timeRepository.save(Time.create(LocalTime.of(12, 0)));
+            Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명", "썸네일 Url"));
+            reservationRepository.save(
+                Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, fixedClock));
+
+            assertThatThrownBy(() -> timeService.deleteTimeById(time.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("요청된 시간을 참조하는 예약이 존재합니다.");
+
         }
     }
 }

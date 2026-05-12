@@ -96,6 +96,14 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByTimeId(Long timeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservations WHERE time_id = :timeId)";
+        SqlParameterSource parameters = new MapSqlParameterSource("timeId", timeId);
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, parameters, Boolean.class));
+    }
+
+    @Override
     public void deleteReservationById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);

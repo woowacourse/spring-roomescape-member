@@ -44,6 +44,9 @@ public class TimeService {
     }
 
     public void deleteTimeById(Long id) {
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new IllegalStateException("요청된 시간을 참조하는 예약이 존재합니다.");
+        }
         timeRepository.deleteTimeById(id);
     }
 }
