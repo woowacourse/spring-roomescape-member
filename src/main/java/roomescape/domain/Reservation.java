@@ -49,28 +49,28 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 이름은 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("이름은 비어 있을 수 없습니다.");
         }
         if (name.length() > 255) {
-            throw new IllegalArgumentException("[ERROR] 이름은 255자를 넘을 수 없습니다.");
+            throw new IllegalArgumentException("이름은 255자를 넘을 수 없습니다.");
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("[ERROR] 날짜는 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("날짜는 비어 있을 수 없습니다.");
         }
     }
 
     private void validateTime(ReservationTime time) {
         if (time == null) {
-            throw new IllegalArgumentException("[ERROR] 예약 시간은 비어있을 수 없습니다.");
+            throw new IllegalArgumentException("예약 시간은 비어있을 수 없습니다.");
         }
     }
 
     private void validateTheme(Theme theme) {
         if (theme == null) {
-            throw new IllegalArgumentException("[ERROR] 테마는 비어있을 수 없습니다.");
+            throw new IllegalArgumentException("테마는 비어있을 수 없습니다.");
         }
     }
 }
