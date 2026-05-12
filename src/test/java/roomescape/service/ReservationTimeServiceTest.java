@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDTO;
 import roomescape.dto.ReservationTimeResponseDTO;
+import roomescape.exception.CannotDeleteReservationTimeException;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
 
@@ -80,5 +82,13 @@ class ReservationTimeServiceTest {
         reservationTimeService.deleteReservationTime(addedTime.id());
 
         assertThat(reservationTimeService.findAllReservationTime()).isEmpty();
+    }
+
+    @DisplayName("예약이 존재하는 예약 시간의 삭제를 거부한다")
+    @Sql("/data.sql")
+    @Test
+    void 삭제하려는_예약_시간에_대한_예약이_존재한다면_CannotDeleteReservationTimeException을_던진다() {
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
+                .isExactlyInstanceOf(CannotDeleteReservationTimeException.class);
     }
 }
