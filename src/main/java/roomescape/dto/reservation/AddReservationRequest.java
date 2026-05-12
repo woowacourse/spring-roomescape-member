@@ -11,6 +11,7 @@ import roomescape.domain.theme.Theme;
 import java.time.LocalDate;
 
 public record AddReservationRequest(
+
         @NotBlank(message = "이름이 반드시 포함되어야 합니다.")
         @Size(min = 1, max = 20, message = "이름은 1자 이상 20자 이하이어야 합니다.")
         String name,
