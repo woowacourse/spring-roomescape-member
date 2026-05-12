@@ -9,7 +9,6 @@ import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,15 +28,6 @@ public class AdminReservationTimeController {
 
     public AdminReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
-    }
-
-    @Operation(summary = "전체 예약 시간 목록 조회", description = "등록된 모든 예약 시간 슬롯을 반환합니다.")
-    @ApiResponse(responseCode = "200", description = "예약 시간 목록 조회 성공")
-    @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> readTimes() {
-        return ResponseEntity.ok(reservationTimeService.getReservationTimes().stream()
-                .map(ReservationTimeResponse::from)
-                .toList());
     }
 
     @Operation(summary = "예약 시간 생성", description = "새로운 예약 시간 슬롯을 생성합니다.")

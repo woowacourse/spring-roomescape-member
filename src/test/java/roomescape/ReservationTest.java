@@ -29,7 +29,7 @@ public class ReservationTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("userId", 1);
-        params.put("date", "2023-08-05");
+        params.put("date", "2030-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -66,7 +66,7 @@ public class ReservationTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("userId", 1);
-        params.put("date", "2023-08-05");
+        params.put("date", "2030-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -97,7 +97,7 @@ public class ReservationTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("userId", 1);
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2030-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
@@ -120,11 +120,11 @@ public class ReservationTest {
         insertUser(1L, "홍길동", "hong@test.com");
         insertTheme(1L, "테마명");
         insertReservationTime(1L, "10:00:00");
-        insertReservation(1L, 1L, "2026-05-06", 1L);
+        insertReservation(1L, 1L, "2030-08-05", 1L);
 
         Map<String, Object> params = new HashMap<>();
         params.put("userId", 1);
-        params.put("date", "2026-05-06");
+        params.put("date", "2030-08-05");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
@@ -133,8 +133,8 @@ public class ReservationTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
-                .body(equalTo("해당 날짜·시간·테마에 이미 예약이 존재합니다."));
+                .statusCode(409)
+                .body("message", equalTo("선택하신 날짜·시간·테마에 이미 예약이 있습니다. 다른 시간을 선택해 주세요."));
     }
 
     @Test
@@ -149,7 +149,7 @@ public class ReservationTest {
                 .when().delete("/reservations/1?userId=2")
                 .then().log().all()
                 .statusCode(403)
-                .body(equalTo("본인의 예약만 삭제할 수 있습니다."));
+                .body("message", equalTo("본인의 예약만 삭제할 수 있습니다."));
     }
 
     private void insertUser(Long id, String name, String email) {
