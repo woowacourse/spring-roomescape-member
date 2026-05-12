@@ -1,10 +1,5 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,6 +8,12 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -44,6 +45,16 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Long> findByThemeIdAndDate(long themeId, LocalDate date) {
+        String sql = """
+                        SELECT time_id
+                        FROM reservation 
+                        WHERE theme_id = ? and date = ?
+                """;
+        return jdbcTemplate.queryForList(sql, Long.class, themeId, date);
+    }
+
+    @Override
     public Optional<Reservation> findById(long reservationId) {
         String sql = """
                 SELECT
@@ -66,13 +77,24 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Long> findByThemeIdAndDate(long themeId, LocalDate date) {
+    public List<Reservation> findByName(String name) {
         String sql = """
-                        SELECT time_id
-                        FROM reservation 
-                        WHERE theme_id = ? and date = ?
+                SELECT
+                    r.id AS r_id,
+                    r.name,
+                    r.date,
+                    t.id AS t_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail_url AS theme_thumbnail_url
+                FROM reservation r
+                INNER JOIN time_slot t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
+                WHERE r.name = ?
                 """;
-        return jdbcTemplate.queryForList(sql, Long.class, themeId, date);
+        return jdbcTemplate.query(sql, rowMapper(), name);
     }
 
     @Override

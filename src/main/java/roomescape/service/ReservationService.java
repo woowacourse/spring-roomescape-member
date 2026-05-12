@@ -43,6 +43,10 @@ public class ReservationService {
                 .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + id));
     }
 
+    public List<Reservation> findReservationByName(String name) {
+        return reservationRepository.findByName(name);
+    }
+
     public Reservation saveReservation(
             String name,
             LocalDate date,
@@ -53,33 +57,8 @@ public class ReservationService {
         return reservationRepository.save(transientReservation);
     }
 
-    private Reservation createTransientWithValidField(String name, LocalDate date, Long timeId, Long themeId) {
-        TimeSlot timeSlot = timeSlotRepository.findById(timeId)
-                .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + timeId));
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + themeId));
-        validDateTime(date, timeSlot.startAt());
-        validDuplicatedReservation(date, timeId, themeId);
-        return Reservation.transientOf(name, date, timeSlot, theme);
-    }
-
     public void removeReservation(long reservationId) {
         reservationRepository.deleteById(reservationId);
-    }
-
-    private void validDateTime(LocalDate date, LocalTime time) {
-        if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("지난 날짜로 예약하실 수 없습니다.");
-        }
-        if (date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
-            throw new IllegalArgumentException("지난 시간으로 예약하실 수 없습니다.");
-        }
-    }
-
-    private void validDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new DuplicateKeyException("선택하신 시간과 테마는 이미 예약되었습니다.");
-        }
     }
 
     public void putReservation(
@@ -101,6 +80,31 @@ public class ReservationService {
         Reservation patched = reservation.patch(name, date, timeSlot, theme);
         validDateTime(patched.date(), patched.timeSlot().startAt());
         reservationRepository.update(patched);
+    }
+
+    private Reservation createTransientWithValidField(String name, LocalDate date, Long timeId, Long themeId) {
+        TimeSlot timeSlot = timeSlotRepository.findById(timeId)
+                .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + timeId));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + themeId));
+        validDateTime(date, timeSlot.startAt());
+        validDuplicatedReservation(date, timeId, themeId);
+        return Reservation.transientOf(name, date, timeSlot, theme);
+    }
+
+    private void validDateTime(LocalDate date, LocalTime time) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("지난 날짜로 예약하실 수 없습니다.");
+        }
+        if (date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
+            throw new IllegalArgumentException("지난 시간으로 예약하실 수 없습니다.");
+        }
+    }
+
+    private void validDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new DuplicateKeyException("선택하신 시간과 테마는 이미 예약되었습니다.");
+        }
     }
 
     private TimeSlot findOptionalTime(Long id) {
