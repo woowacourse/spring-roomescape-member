@@ -62,22 +62,25 @@ public class ReservationService {
         }
     }
 
+    public void deleteUserReservation(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+        validateUserCanDeleteReservation(reservation);
+        reservationRepository.deleteById(id);
+    }
+
+    //TODO: 메서드명 변경
     private void checkReservationDateAndReservationTime(
         ReservationDate reservationDate,
         ReservationTime reservationTime
     ) {
         LocalDate today = LocalDate.now(clock);
-        if (reservationDate.isBefore(today)) {
-            throw new BadRequestException(
-                ReservationDateErrorCode.RESERVATION_DATE_MUST_BE_TODAY_OR_LATER,
-                LocalDate.now(clock)
-            );
+        LocalTime now = LocalTime.now(clock);
+        if (isPastDate(reservationDate, today)) {
+            throw new BadRequestException(ReservationDateErrorCode.RESERVATION_DATE_MUST_BE_TODAY_OR_LATER, today);
         }
-        if (reservationDate.isSame(today) && reservationTime.isBefore(LocalTime.now(clock))) {
-            throw new BadRequestException(
-                ReservationTimeErrorCode.RESERVATION_TIME_SHOULD_BE_NOW_OR_LATER,
-                LocalTime.now(clock)
-            );
+        if (isPastTimeToday(reservationDate, reservationTime, today, now)) {
+            throw new BadRequestException(ReservationTimeErrorCode.RESERVATION_TIME_SHOULD_BE_NOW_OR_LATER, now);
         }
     }
 
@@ -85,6 +88,30 @@ public class ReservationService {
         if (reservationRepository.existsReservation(reservationTime.getId(), reservationDate.getId(), theme.getId())) {
             throw new BadRequestException(ReservationErrorCode.DUPLICATED_RESERVATION);
         }
+    }
+
+    private void validateUserCanDeleteReservation(Reservation reservation) {
+        LocalDate today = LocalDate.now(clock);
+        LocalTime now = LocalTime.now(clock);
+        if (isPastDate(reservation.getDate(), today)) {
+            throw new BadRequestException(ReservationDateErrorCode.PAST_RESERVATION_DATE_CANNOT_BE_DELETED, today);
+        }
+        if (isPastTimeToday(reservation.getDate(), reservation.getTime(), today, now)) {
+            throw new BadRequestException(ReservationTimeErrorCode.PAST_RESERVATION_TiME_CANNOT_BE_DELETED, now);
+        }
+    }
+
+    private boolean isPastDate(ReservationDate reservationDate, LocalDate today) {
+        return reservationDate.isBefore(today);
+    }
+
+    private boolean isPastTimeToday(
+        ReservationDate reservationDate,
+        ReservationTime reservationTime,
+        LocalDate today,
+        LocalTime now
+    ) {
+        return reservationDate.isSame(today) && reservationTime.isBefore(now);
     }
 
     public UserReservationResponse getUserReservations(String name) {

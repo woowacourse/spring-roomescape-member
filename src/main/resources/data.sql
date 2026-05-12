@@ -32,6 +32,7 @@ VALUES ('공포', '오금이 저리는 공포입니다.', '/themes/scary'),
 
 INSERT INTO reservation (name, date_id, time_id, theme_id)
 VALUES ('보예', 1, 1, 1),
+       ('보예', 9, 1, 1),
        ('이산', 1, 2, 1),
        ('나무', 2, 1, 2),
        ('피즈', 2, 3, 2),

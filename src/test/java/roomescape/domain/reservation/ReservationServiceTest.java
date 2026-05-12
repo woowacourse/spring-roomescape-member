@@ -402,6 +402,109 @@ class ReservationServiceTest {
             .hasMessage("중복 예약입니다. 예약 정보를 다시 확인해주세요.");
     }
 
+    @Test
+    void 사용자는_미래_예약을_삭제할_수_있다() {
+        // given
+        Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
+        ReservationTime reservationTime = reservationTimeRepository.save(
+            ReservationTime.createWithoutId(LocalTime.of(10, 0))
+        );
+        ReservationDate reservationDate = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.of(2026, 5, 13))
+        );
+        Theme theme = themeRepository.save(Theme.createWithoutId("공포", "무서운 테마", "theme-url"));
+        Reservation savedReservation = reservationRepository.save(
+            Reservation.createWithoutId("보예", reservationDate, reservationTime, theme)
+        );
+        ReservationService reservationService = new ReservationService(
+            reservationRepository,
+            reservationTimeRepository,
+            reservationDateRepository,
+            themeRepository,
+            now
+        );
+
+        // when
+        reservationService.deleteUserReservation(savedReservation.getId());
+
+        // then
+        assertThat(reservationRepository.findById(savedReservation.getId())).isEmpty();
+    }
+
+    @Test
+    void 사용자는_이미_시간이_지난_예약을_삭제할_수_없다() {
+        // given
+        Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
+        ReservationTime reservationTime = reservationTimeRepository.save(
+            ReservationTime.createWithoutId(LocalTime.of(12, 59))
+        );
+        ReservationDate reservationDate = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.of(2026, 5, 12))
+        );
+        Theme theme = themeRepository.save(Theme.createWithoutId("공포", "무서운 테마", "theme-url"));
+        Reservation savedReservation = reservationRepository.save(
+            Reservation.createWithoutId("보예", reservationDate, reservationTime, theme)
+        );
+        ReservationService reservationService = new ReservationService(
+            reservationRepository,
+            reservationTimeRepository,
+            reservationDateRepository,
+            themeRepository,
+            now
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteUserReservation(savedReservation.getId()))
+            .isInstanceOf(BadRequestException.class)
+            .hasMessage("현재보다 이전 시간 예약을 삭제할 수 없습니다. 현재 시각:" + LocalTime.of(13, 0));
+    }
+
+    @Test
+    void 사용자는_이미_날짜가_지난_예약을_삭제할_수_없다() {
+        // given
+        Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
+        ReservationTime reservationTime = reservationTimeRepository.save(
+            ReservationTime.createWithoutId(LocalTime.of(12, 59))
+        );
+        ReservationDate reservationDate = reservationDateRepository.save(
+            ReservationDate.createWithoutId(LocalDate.of(2026, 5, 11))
+        );
+        Theme theme = themeRepository.save(Theme.createWithoutId("공포", "무서운 테마", "theme-url"));
+        Reservation savedReservation = reservationRepository.save(
+            Reservation.createWithoutId("보예", reservationDate, reservationTime, theme)
+        );
+        ReservationService reservationService = new ReservationService(
+            reservationRepository,
+            reservationTimeRepository,
+            reservationDateRepository,
+            themeRepository,
+            now
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteUserReservation(savedReservation.getId()))
+            .isInstanceOf(BadRequestException.class)
+            .hasMessage("예전 예약은 삭제할 수 없습니다. 오늘 날짜:" + LocalDate.of(2026, 5, 12));
+    }
+
+    @Test
+    void 사용자가_존재하지_않는_예약을_삭제하면_예외가_발생한다() {
+        // given
+        Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
+        ReservationService reservationService = new ReservationService(
+            reservationRepository,
+            reservationTimeRepository,
+            reservationDateRepository,
+            themeRepository,
+            now
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.deleteUserReservation(1L))
+            .isInstanceOf(RoomescapeException.class)
+            .hasMessage("존재하지 않는 예약건 입니다");
+    }
+
     private Clock fixedClockAt(LocalDateTime dateTime) {
         return Clock.fixed(dateTime.atZone(ZONE_ID).toInstant(), ZONE_ID);
     }
