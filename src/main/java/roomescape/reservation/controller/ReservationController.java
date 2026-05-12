@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.global.annotation.CurrentUser;
+import roomescape.global.auth.UserInfo;
+import roomescape.global.auth.annotation.CurrentUser;
 import roomescape.reservation.controller.dto.ReservationCreateRequest;
 import roomescape.reservation.controller.dto.ReservationUpdateRequest;
 import roomescape.reservation.domain.Reservation;
@@ -26,13 +27,12 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @GetMapping(params = "name")
+    @GetMapping
     public ResponseEntity<List<Reservation>> readByName(
-            @RequestParam String name
+            @CurrentUser final UserInfo userInfo
     ) {
-        return ResponseEntity.ok(
-                reservationService.getAllByName(name)
-        );
+        List<Reservation> reservations = reservationService.getAllByName(userInfo.name());
+        return ResponseEntity.ok(reservations);
     }
 
     @PostMapping
@@ -48,16 +48,16 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable final Long id, @CurrentUser final String name) {
-        reservationService.deleteById(id, name);
+    public ResponseEntity<Void> delete(@PathVariable final Long id, @CurrentUser final UserInfo userInfo) {
+        reservationService.deleteById(id, userInfo.name());
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable final Long id,
-                                       @CurrentUser final String name,
-                                       @RequestBody ReservationUpdateRequest request) {
-        reservationService.update(id, name, request.date(), request.timeId());
+                                       @CurrentUser final UserInfo userInfo,
+                                       @RequestBody final ReservationUpdateRequest request) {
+        reservationService.update(id, userInfo.name(), request.date(), request.timeId());
         return ResponseEntity.noContent().build();
     }
 

@@ -1,5 +1,7 @@
-package roomescape.global.resolver;
+package roomescape.global.auth.resolver;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -7,7 +9,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.global.annotation.CurrentUser;
+import roomescape.global.auth.UserInfo;
+import roomescape.global.auth.annotation.CurrentUser;
 import roomescape.global.exception.GlobalErrorCode;
 import roomescape.global.exception.exception.InvalidException;
 
@@ -23,13 +26,15 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        String name = webRequest.getHeader("Authorization");
+        String encodedName = webRequest.getHeader("Authorization");
+
+        String name = URLDecoder.decode(encodedName, StandardCharsets.UTF_8);
 
         if(name == null || name.isBlank()) {
             List<String> errors = List.of(GlobalErrorCode.AUTHENTICATION_FAILED.getMessage());
             throw new InvalidException(errors);
         }
 
-        return name;
+        return new UserInfo(name);
     }
 }
