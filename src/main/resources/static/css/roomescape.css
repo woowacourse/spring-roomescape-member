@@ -552,6 +552,13 @@
       min-width: 72px;
     }
 
+    .row-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
     .summary-head {
       display: flex;
       justify-content: space-between;
@@ -1053,6 +1060,14 @@
       .edit-grid,
       .edit-head {
         grid-template-columns: 1fr;
+      }
+
+      .row-actions {
+        width: 100%;
+      }
+
+      .row-actions > button {
+        flex: 1;
       }
 
       .admin-thumb {

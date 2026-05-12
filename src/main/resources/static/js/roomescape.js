@@ -200,10 +200,13 @@ const API_BASE = "";
       return response.json();
     }
 
-    async function deleteJson(path) {
+    async function deleteJson(path, headers = {}) {
       const response = await fetch(`${API_BASE}${path}`, {
         method: "DELETE",
-        headers: { Accept: "application/json" }
+        headers: {
+          Accept: "application/json",
+          ...headers
+        }
       });
       if (!response.ok) {
         throw new Error(await errorMessageFrom(response));
@@ -693,7 +696,10 @@ const API_BASE = "";
               <span class="list-title">${escapeHtml(reservation.guestName || "예약자")}</span>
               <span class="list-meta">${escapeHtml(formatDate(reservation.date))} · ${escapeHtml(theme?.name || "-")} · ${escapeHtml(normalizeTime(time?.startAt || "-"))}</span>
             </div>
-            <button class="secondary-button compact-button" type="button" data-edit-reservation-id="${reservation.id}">수정</button>
+            <div class="row-actions">
+              <button class="secondary-button compact-button" type="button" data-edit-reservation-id="${reservation.id}">수정</button>
+              <button class="danger-button compact-button" type="button" data-cancel-reservation-id="${reservation.id}">취소</button>
+            </div>
           `;
           elements.lookupList.appendChild(row);
         });
@@ -738,6 +744,10 @@ const API_BASE = "";
       );
     }
 
+    function removeReservation(reservations, reservationId) {
+      return reservations.filter((reservation) => reservation.id !== reservationId);
+    }
+
     function editDemoReservation(id, payload, authorizationName) {
       const reservation = state.demoReservations.find((item) => item.id === id);
       if (!reservation) {
@@ -763,6 +773,50 @@ const API_BASE = "";
         date: payload.date,
         timeId: payload.timeId
       };
+    }
+
+    function cancelDemoReservation(id, authorizationName) {
+      const reservation = state.demoReservations.find((item) => item.id === id);
+      if (!reservation) {
+        throw new Error("존재하지 않는 예약입니다.");
+      }
+      if (reservation.guestName !== authorizationName) {
+        throw new Error("본인의 예약만 취소할 수 있습니다.");
+      }
+    }
+
+    async function cancelReservation(id) {
+      const authorizationName = elements.lookupGuestName.value.trim();
+      if (!authorizationName) {
+        elements.lookupMessage.textContent = "예약자 이름을 입력해주세요.";
+        elements.lookupMessage.className = "message error";
+        return;
+      }
+
+      elements.lookupMessage.textContent = "예약을 취소하는 중입니다.";
+      elements.lookupMessage.className = "message";
+      clearEditReservation();
+
+      try {
+        const authorizationHeader = encodeURIComponent(authorizationName);
+        if (state.mode === "live") {
+          await deleteJson(`/reservations/${id}`, { Authorization: authorizationHeader });
+        } else {
+          cancelDemoReservation(id, authorizationName);
+          state.demoReservations = removeReservation(state.demoReservations, id);
+        }
+
+        state.reservations = removeReservation(state.reservations, id);
+        state.lookupReservations = removeReservation(state.lookupReservations, id);
+        renderLookupReservations(state.lookupReservations);
+        showToast("예약이 취소되었습니다.", authorizationName);
+        await loadAvailability();
+        elements.lookupMessage.textContent = "예약 취소가 완료되었습니다.";
+        elements.lookupMessage.className = "message ok";
+      } catch (error) {
+        elements.lookupMessage.textContent = endpointMessageOr(error, "예약 취소에 실패했습니다.");
+        elements.lookupMessage.className = "message error";
+      }
     }
 
     async function editReservation(event) {
@@ -1215,9 +1269,15 @@ const API_BASE = "";
       elements.reserveButton.addEventListener("click", reserve);
       elements.lookupForm.addEventListener("submit", lookupReservations);
       elements.lookupList.addEventListener("click", (event) => {
-        const button = event.target.closest("[data-edit-reservation-id]");
-        if (button) {
-          startEditReservation(Number(button.dataset.editReservationId));
+        const editButton = event.target.closest("[data-edit-reservation-id]");
+        if (editButton) {
+          startEditReservation(Number(editButton.dataset.editReservationId));
+          return;
+        }
+
+        const cancelButton = event.target.closest("[data-cancel-reservation-id]");
+        if (cancelButton) {
+          cancelReservation(Number(cancelButton.dataset.cancelReservationId));
         }
       });
       elements.editReservationForm.addEventListener("submit", editReservation);
