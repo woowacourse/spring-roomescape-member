@@ -168,19 +168,34 @@ async function updateDateStatus(id, isActive) {
 // 시간 관리
 async function loadTimes() {
     const response = await fetch("/admin/times");
+
+    if (!response.ok) {
+        alert("시간 목록을 불러오지 못했습니다.");
+        return;
+    }
+
     const times = await response.json();
 
     const tbody = document.getElementById("time-table-body");
     tbody.innerHTML = "";
 
     times.forEach(time => {
+        const badgeClass = time.isActive ? "active" : "inactive";
+        const badgeText = time.isActive ? "활성" : "비활성";
+        const nextStatus = !time.isActive;
+        const buttonText = time.isActive ? "비활성화" : "활성화";
+
         tbody.insertAdjacentHTML("beforeend", `
             <tr>
                 <td>${time.id}</td>
                 <td>${formatTime(time.startAt)}</td>
+                <td>
+                    <span class="badge ${badgeClass}">${badgeText}</span>
+                </td>
                 <td class="align-right">
-                    <button class="delete-button" type="button" onclick="deleteTime(${time.id})">
-                        🗑
+                    <button class="status-button" type="button"
+                            onclick="updateTimeStatus(${time.id}, ${nextStatus})">
+                        ${buttonText}
                     </button>
                 </td>
             </tr>
@@ -193,7 +208,7 @@ async function createTime() {
     const minute = document.getElementById("minute-select").value;
     const startAt = `${hour}:${minute}:00`;
 
-    await fetch("/admin/times", {
+    const response = await fetch("/admin/times", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -201,17 +216,35 @@ async function createTime() {
         body: JSON.stringify({ startAt })
     });
 
-    await loadTimes();
-}
-
-async function deleteTime(id) {
-    if (!confirm("해당 시간을 삭제하시겠습니까?")) {
+    if (!response.ok) {
+        alert("시간 추가에 실패했습니다.");
         return;
     }
 
-    await fetch(`/admin/times/${id}`, {
-        method: "DELETE"
+    await loadTimes();
+}
+
+async function updateTimeStatus(id, isActive) {
+    const message = isActive
+        ? "해당 시간을 활성화하시겠습니까?"
+        : "해당 시간을 비활성화하시겠습니까?";
+
+    if (!confirm(message)) {
+        return;
+    }
+
+    const response = await fetch(`/admin/times/${id}/status`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ isActive })
     });
+
+    if (!response.ok) {
+        alert("시간 상태 변경에 실패했습니다.");
+        return;
+    }
 
     await loadTimes();
 }
