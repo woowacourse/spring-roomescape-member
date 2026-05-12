@@ -33,7 +33,7 @@ public class ThemeDaoTest {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
-            resultSet.getString("imgUrl")
+            resultSet.getString("img_url")
     );
 
     @Test

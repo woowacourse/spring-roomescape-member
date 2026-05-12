@@ -21,14 +21,14 @@ public class ThemeDao {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
-            resultSet.getString("imgUrl")
+            resultSet.getString("img_url")
     );
 
     private RowMapper<PopularTheme> popularThemeRowMapper = (resultSet, rowNum) -> new PopularTheme(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
-            resultSet.getString("imgUrl"),
+            resultSet.getString("img_url"),
             resultSet.getLong("theme_rank"),
             resultSet.getLong("reservation_count")
     );
@@ -48,7 +48,7 @@ public class ThemeDao {
     }
 
     public Long insertTheme(String name, String description, String imgUrl) {
-        String sql = "INSERT INTO theme (name, description, imgUrl) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO theme (name, description, img_url) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -74,7 +74,7 @@ public class ThemeDao {
                     ranked.id,
                     ranked.name,
                     ranked.description,
-                    ranked.imgUrl,
+                    ranked.img_url,
                     ranked.reservation_count
                 FROM (
                     SELECT
@@ -82,12 +82,12 @@ public class ThemeDao {
                         t.id,
                         t.name,
                         t.description,
-                        t.imgUrl,
+                        t.img_url,
                         COUNT(r.id) AS reservation_count
                     FROM theme t
                     JOIN reservation r ON t.id = r.theme_id
                     WHERE r.date BETWEEN ? AND ?
-                    GROUP BY t.id, t.name, t.description, t.imgUrl
+                    GROUP BY t.id, t.name, t.description, t.img_url
                 ) ranked
                 WHERE ranked.theme_rank <= 10
                 ORDER BY ranked.theme_rank;
