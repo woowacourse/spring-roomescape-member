@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
+import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -44,7 +45,7 @@ public class ThemeService {
 
     private void validateDuplicateName(String name) {
         if (themeRepository.existsByName(name)) {
-            throw new IllegalArgumentException("이미 추가된 테마입니다.");
+            throw new ConflictException("이미 추가된 테마입니다.");
         }
     }
 
@@ -54,7 +55,7 @@ public class ThemeService {
             throw new NotFoundException("존재하지 않는 테마입니다.");
         }
         if (reservationRepository.existsByThemeId(id)) {
-            throw new IllegalArgumentException("해당 테마의 예약이 존재합니다.");
+            throw new ConflictException("해당 테마의 예약이 존재합니다.");
         }
         themeRepository.delete(id);
     }
