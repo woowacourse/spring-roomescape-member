@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -111,23 +112,23 @@ public class MissionStepTest {
 
         jdbcTemplate.update(
                 "INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
-                TEST_TIME_ID.toBytes(),
+                UUID.fromString(TEST_TIME_ID.getValueAsString()),
                 LocalTime.of(10, 0)
         );
         jdbcTemplate.update(
                 "INSERT INTO theme (id, name, description, image_url) VALUES (?, ?, ?, ?)",
-                TEST_THEME_ID.toBytes(),
+                UUID.fromString(TEST_THEME_ID.getValueAsString()),
                 "themeName",
                 "themeDescription",
                 "themeUrl"
         );
         jdbcTemplate.update(
                 "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)",
-                reservationId.toBytes(),
+                UUID.fromString(reservationId.getValueAsString()),
                 name,
                 date,
-                TEST_TIME_ID.toBytes(),
-                TEST_THEME_ID.toBytes()
+                UUID.fromString(TEST_TIME_ID.getValueAsString()),
+                UUID.fromString(TEST_THEME_ID.getValueAsString())
         );
 
         RestAssured.given().log().all()
@@ -299,12 +300,12 @@ public class MissionStepTest {
     private void insertTestTimeAndTheme() {
         jdbcTemplate.update(
                 "INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
-                TEST_TIME_ID.toBytes(),
+                UUID.fromString(TEST_TIME_ID.getValueAsString()),
                 LocalTime.of(10, 0)
         );
         jdbcTemplate.update(
                 "INSERT INTO theme (id, name, description, image_url) VALUES (?, ?, ?, ?)",
-                TEST_THEME_ID.toBytes(),
+                UUID.fromString(TEST_THEME_ID.getValueAsString()),
                 "themeName",
                 "themeDescription",
                 "themeUrl"

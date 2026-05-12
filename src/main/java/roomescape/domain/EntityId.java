@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import java.nio.ByteBuffer;
 import java.util.UUID;
 
 public final class EntityId {
@@ -20,20 +19,8 @@ public final class EntityId {
         return new EntityId(UUID.fromString(value));
     }
 
-    public static EntityId fromBytes(byte[] bytes) {
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        UUID uuid = new UUID(buffer.getLong(), buffer.getLong());
-
-        return new EntityId(uuid);
-    }
-
-    public byte[] toBytes() {
-        ByteBuffer buffer = ByteBuffer.allocate(16);
-
-        buffer.putLong(uuid.getMostSignificantBits());
-        buffer.putLong(uuid.getLeastSignificantBits());
-
-        return buffer.array();
+    public UUID getValueAsUuid() {
+        return uuid;
     }
 
     public String getValueAsString() {

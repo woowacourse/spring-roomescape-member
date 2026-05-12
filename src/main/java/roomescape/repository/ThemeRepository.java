@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -35,7 +36,7 @@ public class ThemeRepository {
 
     public Theme persist(Theme theme) {
         simpleJdbcInsert.execute(Map.of(
-                "id", theme.id().toBytes(),
+                "id", theme.id().getValueAsUuid(),
                 "name", theme.name(),
                 "description", theme.description(),
                 "image_url", theme.imageUrl()
@@ -59,7 +60,7 @@ public class ThemeRepository {
 
             Theme theme = namedParameterJdbcTemplate.queryForObject(
                     findSql,
-                    Map.of("id", id.toBytes()),
+                    Map.of("id", id.getValueAsUuid()),
                     themeRowMapper()
             );
             return Optional.ofNullable(theme);
@@ -76,13 +77,13 @@ public class ThemeRepository {
         String findSql = "SELECT id, name, description, image_url"
                 + " FROM theme"
                 + " WHERE id IN (:ids)";
-        List<byte[]> idBytes = ids.stream()
-                .map(EntityId::toBytes)
+        List<UUID> jdbcIds = ids.stream()
+                .map(EntityId::getValueAsUuid)
                 .toList();
 
         List<Theme> themes = namedParameterJdbcTemplate.query(
                 findSql,
-                Map.of("ids", idBytes),
+                Map.of("ids", jdbcIds),
                 themeRowMapper()
         );
 
@@ -100,7 +101,7 @@ public class ThemeRepository {
 
             int deletedRowCount = namedParameterJdbcTemplate.update(
                     deleteSql,
-                    Map.of("id", themeId.toBytes())
+                    Map.of("id", themeId.getValueAsUuid())
             );
 
             return isDeleted(deletedRowCount);
@@ -139,7 +140,9 @@ public class ThemeRepository {
         };
     }
 
-    private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
-        return EntityId.fromBytes(resultSet.getBytes(column));
+    private EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
+        UUID uuid = resultSet.getObject(column, UUID.class);
+
+        return EntityId.fromString(uuid.toString());
     }
 }

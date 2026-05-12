@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -168,7 +169,9 @@ class ReservationTimeRepositoryTest {
     }
 
     private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
-        return EntityId.fromBytes(resultSet.getBytes(column));
+        UUID uuid = resultSet.getObject(column, UUID.class);
+
+        return EntityId.fromString(uuid.toString());
     }
 
     private static void skipIfPersistTestFailed() {

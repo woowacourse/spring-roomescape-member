@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -271,7 +272,7 @@ class ReservationRepositoryTest {
                 .withTableName("reservation_time");
 
         simpleJdbcInsert.execute(Map.of(
-                "id", id.toBytes(),
+                "id", UUID.fromString(id.getValueAsString()),
                 "start_at", startAt
         ));
     }
@@ -286,7 +287,7 @@ class ReservationRepositoryTest {
                 .withTableName("theme");
 
         simpleJdbcInsert.execute(Map.of(
-                "id", id.toBytes(),
+                "id", UUID.fromString(id.getValueAsString()),
                 "name", name,
                 "description", description,
                 "image_url", imageUrl
@@ -304,7 +305,9 @@ class ReservationRepositoryTest {
     }
 
     private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
-        return EntityId.fromBytes(resultSet.getBytes(column));
+        UUID uuid = resultSet.getObject(column, UUID.class);
+
+        return EntityId.fromString(uuid.toString());
     }
 
     private static void skipIfPersistTestFailed() {

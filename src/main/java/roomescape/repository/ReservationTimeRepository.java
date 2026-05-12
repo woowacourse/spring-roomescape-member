@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,7 +33,7 @@ public class ReservationTimeRepository {
 
     public ReservationTime persist(ReservationTime reservationTime) {
         simpleJdbcInsert.execute(Map.of(
-                "id", reservationTime.id().toBytes(),
+                "id", reservationTime.id().getValueAsUuid(),
                 "start_at", reservationTime.startAt()
         ));
 
@@ -55,7 +56,7 @@ public class ReservationTimeRepository {
             ReservationTime reservationTime = jdbcTemplate.queryForObject(
                     findSql,
                     reservationTimeRowMapper(),
-                    id.toBytes()
+                    id.getValueAsUuid()
             );
             return Optional.ofNullable(reservationTime);
         } catch (EmptyResultDataAccessException exception) {
@@ -67,7 +68,7 @@ public class ReservationTimeRepository {
         try {
             String deleteSql = "DELETE FROM reservation_time"
                     + " WHERE id = ?";
-            int deletedRowCount = jdbcTemplate.update(deleteSql, timeId.toBytes());
+            int deletedRowCount = jdbcTemplate.update(deleteSql, timeId.getValueAsUuid());
 
             return isDeleted(deletedRowCount);
         } catch (DataIntegrityViolationException exception) {
@@ -103,7 +104,9 @@ public class ReservationTimeRepository {
         };
     }
 
-    private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
-        return EntityId.fromBytes(resultSet.getBytes(column));
+    private EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
+        UUID uuid = resultSet.getObject(column, UUID.class);
+
+        return EntityId.fromString(uuid.toString());
     }
 }

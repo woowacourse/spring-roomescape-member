@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -28,12 +29,15 @@ public class ReservationRepository {
     }
 
     public Reservation persist(Reservation reservation) {
+        EntityId timeId = reservation.timeId();
+        EntityId themeId = reservation.themeId();
+
         simpleJdbcInsert.execute(Map.of(
-                "id", reservation.id().toBytes(),
+                "id", reservation.id().getValueAsUuid(),
                 "name", reservation.name(),
                 "date", reservation.date(),
-                "time_id", reservation.timeId().toBytes(),
-                "theme_id", reservation.themeId().toBytes()
+                "time_id", timeId.getValueAsUuid(),
+                "theme_id", themeId.getValueAsUuid()
         ));
 
         return reservation;
@@ -68,7 +72,7 @@ public class ReservationRepository {
                 findSql,
                 reservationRowMapper(),
                 date,
-                themeId.toBytes()
+                themeId.getValueAsUuid()
         );
     }
 
@@ -76,7 +80,7 @@ public class ReservationRepository {
         String deleteSql = "DELETE FROM reservation"
                 + " WHERE id = ?";
 
-        int deletedRowCount = jdbcTemplate.update(deleteSql, reservationId.toBytes());
+        int deletedRowCount = jdbcTemplate.update(deleteSql, reservationId.getValueAsUuid());
 
         return isDeleted(deletedRowCount);
     }
@@ -95,7 +99,9 @@ public class ReservationRepository {
         );
     }
 
-    private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
-        return EntityId.fromBytes(resultSet.getBytes(column));
+    private EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
+        UUID uuid = resultSet.getObject(column, UUID.class);
+
+        return EntityId.fromString(uuid.toString());
     }
 }
