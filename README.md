@@ -50,24 +50,41 @@
 
     - 이미 예약되어있는 날짜, 테마, 시간에 방탈출 예약 불가
     - 지나간 시간에 대해서 예약 불가
-- [x] 사용자가 **자신의 이름으로 본인의 예약 목록을 조회**기능 추가
-- [ ] 사용자가 본인의 예약을 **취소**할 수 있다.
+- [x] 사용자가 **자신의 이름으로 본인의 예약 목록을 조회** 기능 추가
+- [x] 사용자가 본인의 예약을 **취소**할 수 있다.
   - 이미 지나간 날짜/시간에 대한 예약은 취소할 수 없다.
-- [ ] 사용자가 본인의 예약의 **날짜·시간을 변경**할 수 있다.
+- [x] 사용자가 본인의 예약의 **날짜·시간을 변경**할 수 있다.
   - 변경하려는 예약의 테마에 대한 날짜/시간에 이미 예약이 존재할 경우 변경할 수 없다.
 
 ### **잘못된 입력값 처리**
-- [ ] 유효하지 않은 입력값(빈 이름, 잘못된 날짜 형식 등)을 거부
+- [x] 유효하지 않은 입력값(빈 이름, 잘못된 날짜 형식 등)을 거부
   - 적절한 에러 메시지 반환
 ---
 
 ## API 명세서
+
+### 공통 에러 응답
+
+요청 처리 실패 시 다음 형식으로 에러 메시지를 반환한다.
+
+```json
+{
+  "errorMessage": "에러 메시지"
+}
+```
+
+- `400 Bad Request`: 빈 값, 잘못된 날짜/시간 형식, 숫자가 아니거나 양수가 아닌 ID 등 요청 형식이 올바르지 않은 경우
+- `404 Not Found`: 요청한 리소스가 존재하지 않는 경우
+- `409 Conflict`: 이미 같은 리소스가 존재해 요청이 충돌하는 경우
+- `422 Unprocessable Entity`: 요청 형식은 올바르지만 비즈니스 규칙상 처리할 수 없는 경우
 
 ### 사용자 API
 
 #### 예약 (`/reservations`)
 
 **전체 예약 조회** `GET /reservations` → `200 OK`
+
+**예약자 이름으로 예약 조회** `GET /reservations?username={name}` → `200 OK`
 
 응답
 ```json
@@ -91,6 +108,10 @@
 ```
 
 **예약 생성** `POST /reservations` → `201 Created`
+
+- `400 Bad Request`: 빈 이름, 잘못된 날짜 형식, 숫자가 아니거나 양수가 아닌 ID
+- `409 Conflict`: 같은 날짜, 테마, 시간에 이미 예약이 존재하는 경우
+- `422 Unprocessable Entity`: 현재 시각보다 이전 날짜/시간으로 예약하거나 존재하지 않는 테마/시간 ID로 예약하는 경우
 
 요청
 ```json
@@ -120,15 +141,51 @@
 }
 ```
 
+**예약 날짜/시간 변경** `PATCH /reservations/{id}` → `200 OK`
+
+- `400 Bad Request`: 잘못된 날짜 형식, 숫자가 아니거나 양수가 아닌 시간 ID
+- `404 Not Found`: 변경할 예약이 존재하지 않는 경우
+- `409 Conflict`: 변경하려는 날짜와 시간에 이미 예약이 존재하는 경우
+- `422 Unprocessable Entity`: 현재 시각보다 이전 날짜/시간으로 변경하거나 존재하지 않는 시간 ID로 변경하는 경우
+
+요청
+```json
+{
+  "date": "2024-05-02",
+  "timeId": 2
+}
+```
+응답
+```json
+{
+  "id": 1,
+  "name": "홍길동",
+  "date": "2024-05-02",
+  "theme": {
+    "id": 1,
+    "name": "테마 이름",
+    "description": "테마 설명",
+    "thumbnailImgUrl": "https://example.com/thumbnail.jpg"
+  },
+  "time": {
+    "id": 2,
+    "startAt": "12:00"
+  }
+}
+```
+
 **예약 삭제** `DELETE /reservations/{id}`  
 → 성공 시 `204 No Content`  
-→ 실패 시 `404 Not Found`
+→ 존재하지 않는 예약 삭제 시 `404 Not Found`  
+→ 이미 지나간 예약 삭제 시 `422 Unprocessable Entity`
 
 ---
 
 #### 예약 가능 시간 조회 (`/times`)
 
 **예약 가능 시간 목록 조회** `GET /times?themeId={id}&date={date}` → `200 OK`
+
+- `400 Bad Request`: 잘못된 날짜 형식, 숫자가 아니거나 양수가 아닌 테마 ID
 
 응답
 ```json
@@ -203,6 +260,9 @@
 
 **예약 시간 생성** `POST /admin/times` → `201 Created`
 
+- `400 Bad Request`: 빈 시간, 잘못된 시간 형식
+- `409 Conflict`: 같은 시간이 이미 존재하는 경우
+
 요청
 ```json
 {
@@ -219,13 +279,17 @@
 
 **예약 시간 삭제** `DELETE /admin/times/{id}`  
 → 성공 시 `204 No Content`  
-→ 실패 시 `404 Not Found`
+→ 존재하지 않는 예약 시간 삭제 시 `404 Not Found`  
+→ 예약이 연결된 시간 삭제 시 `422 Unprocessable Entity`
 
 ---
 
 #### 테마 관리 (`/admin/themes`)
 
 **테마 생성** `POST /admin/themes` → `201 Created`
+
+- `400 Bad Request`: 빈 이름, 빈 설명, 빈 썸네일 이미지 URL
+- `409 Conflict`: 이름과 설명이 같은 테마가 이미 존재하는 경우
 
 요청
 ```json
@@ -247,4 +311,5 @@
 
 **테마 삭제** `DELETE /admin/themes/{id}`   
 → 성공 시 `204 No Content`  
-→ 실패 시 `404 Not Found`
+→ 존재하지 않는 테마 삭제 시 `404 Not Found`  
+→ 예약이 연결된 테마 삭제 시 `422 Unprocessable Entity`
