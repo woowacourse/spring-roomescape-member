@@ -1,7 +1,7 @@
 package roomescape.exception;
 
-public class UnauthorizedException extends BaseCustomException {
-    public UnauthorizedException(ErrorMessage errorMessage) {
-        super(errorMessage);
+public class UnauthorizedException extends CustomException {
+    public UnauthorizedException(String message) {
+        super(message);
     }
 }

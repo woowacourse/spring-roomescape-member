@@ -17,8 +17,6 @@ import roomescape.domain.theme.ReservationThemeWithCount;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ReservationThemeCommand;
-import roomescape.exception.DataReferencedException;
-import roomescape.exception.ErrorMessage;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
