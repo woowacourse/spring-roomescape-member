@@ -230,7 +230,7 @@ class ReservationServiceTest {
                 request.themeId())
         )
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("이미 지난 날짜입니다.");
+                .hasMessageContaining("지난 날짜로는 예약할 수 없습니다.");
     }
 
     @Test
@@ -254,7 +254,7 @@ class ReservationServiceTest {
                 request.themeId())
         )
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("예약 시간이 현재보다 이전일 수 없습니다.");
+                .hasMessageContaining("현재 시각보다 이전 시간으로는 예약할 수 없습니다.");
     }
 
     @Test
@@ -336,7 +336,7 @@ class ReservationServiceTest {
                 "인직"
         ))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("예약 ID를 찾을 수 없습니다.");
+                .hasMessageContaining("수정할 예약을 찾을 수 없습니다.");
     }
 
     @Test
@@ -413,7 +413,7 @@ class ReservationServiceTest {
                 "인직"
         ))
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("이미 예약된 시간입니다.");
+                .hasMessageContaining("이미 예약된 시간입니다. 다른 시간을 선택해 주세요.");
     }
 
     @Test
@@ -441,7 +441,7 @@ class ReservationServiceTest {
     void deleteReservation_fail_with_null_id() {
         assertThatThrownBy(() -> reservationService.deleteReservation(null))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("예약 ID가 비어있습니다.");
+                .hasMessageContaining("예약을 식별할 값이 비어있습니다.");
     }
 
     @Test
@@ -449,6 +449,6 @@ class ReservationServiceTest {
     void deleteReservationByName_fail_with_blank_name() {
         assertThatThrownBy(() -> reservationService.deleteReservationByName(1L, " "))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("이름이 비어있습니다.");
+                .hasMessageContaining("예약자 이름을 입력해 주세요.");
     }
 }

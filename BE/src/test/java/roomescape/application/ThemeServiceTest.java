@@ -136,7 +136,7 @@ class ThemeServiceTest {
         // when & then
         assertThatThrownBy(() -> themeService.deleteById(theme.getId()))
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("참조하고 있는 테마여서 삭제할 수 없습니다.");
+                .hasMessageContaining("예약이 연결된 테마는 삭제할 수 없습니다.");
         assertThat(themeRepository.findById(theme.getId())).contains(theme);
     }
 }

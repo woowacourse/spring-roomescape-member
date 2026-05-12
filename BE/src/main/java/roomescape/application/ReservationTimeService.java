@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
@@ -54,7 +53,7 @@ public class ReservationTimeService {
     @Transactional
     public void deleteTime(Long id) {
         if (reservationRepository.existsByReservationTimeId(id)) {
-            throw new BusinessException("참조하고 있는 예약 시간이어서 삭제할 수 없습니다.");
+            throw new BusinessException("예약이 연결된 예약 시간은 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(id);
     }
