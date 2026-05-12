@@ -55,7 +55,7 @@ public class ReservationRepositoryTest {
                 () -> assertEquals(18L, saved.id()),
                 () -> assertEquals("포비", saved.name()),
                 () -> assertEquals(LocalDate.of(2026, 5, 5), saved.date()),
-                () -> assertEquals(1L, saved.time().getId()),
+                () -> assertEquals(1L, saved.time().id()),
                 () -> assertEquals(1L, saved.theme().getId())
         );
     }

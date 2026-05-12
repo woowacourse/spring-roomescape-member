@@ -59,7 +59,7 @@ public class ReservationRepository {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.name());
             ps.setObject(2, reservation.date());
-            ps.setLong(3, reservation.time().getId());
+            ps.setLong(3, reservation.time().id());
             ps.setLong(4, reservation.theme().getId());
             return ps;
         }, keyHolder);

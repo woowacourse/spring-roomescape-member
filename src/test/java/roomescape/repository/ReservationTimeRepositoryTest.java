@@ -39,7 +39,7 @@ public class ReservationTimeRepositoryTest {
         // when
         Optional<ReservationTime> time = timeRepository.findById(2L);
         // then
-        Assertions.assertEquals(LocalTime.of(11, 0), time.get().getStartAt());
+        Assertions.assertEquals(LocalTime.of(11, 0), time.get().startAt());
     }
 
     @Test
