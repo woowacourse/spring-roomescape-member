@@ -5,156 +5,165 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>예약 시간 관리</title>
     <style>
-        :root {
-            --bg: #eef4f3;
-            --card: #ffffff;
-            --line: #c8d7d5;
-            --text: #20302f;
-            --point: #0f766e;
-            --danger: #d62828;
-        }
+        :root { --bg: #eef4f3; --card: #fff; --line: #c8d7d5; --text: #20302f; --point: #0f766e; --danger: #d62828; }
         * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
-            background:
-                linear-gradient(160deg, rgba(15,118,110,0.12), transparent 35%),
-                linear-gradient(180deg, #f5faf9 0%, var(--bg) 100%);
-            color: var(--text);
-        }
-        .wrap {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 32px 20px 64px;
-        }
-        .eyebrow {
-            display: inline-flex;
-            width: fit-content;
-            padding: 8px 12px;
-            border-radius: 999px;
-            border: 1px solid var(--line);
-            background: rgba(255,255,255,0.75);
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            margin-bottom: 14px;
-        }
-        .nav {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-        }
-        .nav a {
-            text-decoration: none;
-            color: var(--text);
-            background: rgba(255,255,255,0.84);
-            border: 1px solid var(--line);
-            padding: 10px 14px;
-            border-radius: 999px;
-        }
-        .user-link {
-            margin-left: auto;
-            color: var(--point) !important;
-            border-color: rgba(15,118,110,0.24) !important;
-            background: rgba(15,118,110,0.08) !important;
-            font-weight: 700;
-        }
+        body { margin: 0; font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif; background: linear-gradient(160deg, rgba(15,118,110,.12), transparent 35%), linear-gradient(180deg, #f5faf9 0%, var(--bg) 100%); color: var(--text); }
+        .wrap { max-width: 1000px; margin: 0 auto; padding: 32px 20px 64px; }
+        .eyebrow { display: inline-flex; width: fit-content; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,.75); font-size: 13px; font-weight: 700; letter-spacing: .04em; margin-bottom: 14px; }
+        .nav { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+        .nav a { text-decoration: none; color: var(--text); background: rgba(255,255,255,.84); border: 1px solid var(--line); padding: 10px 14px; border-radius: 999px; }
+        .user-link { margin-left: auto; color: var(--point) !important; border-color: rgba(15,118,110,.24) !important; background: rgba(15,118,110,.08) !important; font-weight: 700; }
         .hero h1 { margin: 0 0 8px; font-size: 38px; }
-        .hero p { margin: 0 0 24px; color: rgba(32, 48, 47, 0.76); }
-        .layout {
-            display: grid;
-            grid-template-columns: minmax(280px, 340px) 1fr;
-            gap: 20px;
-        }
-        .card {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 12px 30px rgba(15, 118, 110, 0.08);
-        }
+        .hero p { margin: 0 0 24px; color: rgba(32,48,47,.76); }
+        .layout { display: grid; grid-template-columns: minmax(280px, 340px) 1fr; gap: 20px; }
+        .card { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 20px; box-shadow: 0 12px 30px rgba(15,118,110,.08); }
         form { display: grid; gap: 12px; }
         label { display: grid; gap: 6px; font-weight: 600; }
-        input, button, select {
-            font: inherit;
-            border-radius: 12px;
-            border: 1px solid var(--line);
-            padding: 12px 14px;
-        }
-        button {
-            border: 0;
-            background: var(--point);
-            color: white;
-            cursor: pointer;
-            font-weight: 700;
-        }
+        input, button { font: inherit; border-radius: 12px; border: 1px solid var(--line); padding: 12px 14px; }
+        button { border: 0; background: var(--point); color: white; cursor: pointer; font-weight: 700; }
         button.delete { background: var(--danger); }
-        .list {
-            display: grid;
-            gap: 12px;
-        }
-        .item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            padding: 14px;
-            background: rgba(250,255,255,0.9);
-        }
-        @media (max-width: 860px) {
-            .layout { grid-template-columns: 1fr; }
-        }
+        .list { display: grid; gap: 12px; }
+        .item { display: flex; justify-content: space-between; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 16px; padding: 14px; background: rgba(250,255,255,.9); }
+        .message { margin: 0 0 14px; padding: 12px 14px; border-radius: 14px; background: rgba(15,118,110,.08); color: var(--point); }
+        .message.error { background: rgba(214,40,40,.09); color: var(--danger); }
+        .empty { color: rgba(32,48,47,.64); }
+        @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .user-link { margin-left: 0; } }
     </style>
 </head>
 <body>
 <div class="wrap">
-    <nav class="nav">
+    <nav class="nav" id="nav">
         <a th:href="@{/pages/admin/themes}">관리자 홈</a>
         <a th:href="@{/pages/admin/themes}">테마 관리</a>
-        <a th:each="navTheme : ${themes}"
-           th:href="@{/pages/admin/themes/{themeId}/times(themeId=${navTheme.id})}"
-           th:text="${navTheme.name}">테마명</a>
         <a class="user-link" th:href="@{/pages/user/reservations}">사용자 예약 페이지</a>
     </nav>
 
     <section class="hero">
         <span class="eyebrow">ADMIN PAGE</span>
-        <h1 th:text="${theme.name + ' 시간 관리'}">테마 시간 관리</h1>
-        <p th:text="${theme.description}">선택한 테마의 예약 가능 시간 슬롯을 추가하고 제거합니다.</p>
+        <h1 id="page-title">테마 시간 관리</h1>
+        <p id="page-description">선택한 테마의 예약 가능 시간 슬롯을 JavaScript로 불러와 추가하고 제거합니다.</p>
     </section>
+
+    <p class="message" id="message" hidden></p>
 
     <section class="layout">
         <article class="card">
             <h2>시간 슬롯 추가</h2>
-            <form method="post" th:action="@{/pages/admin/themes/{themeId}/times(themeId=${theme.id})}">
-                <label>
-                    시작 시간
-                    <input name="startAt" required type="time">
-                </label>
+            <form id="time-form">
+                <label>시작 시간 <input id="startAt" required type="time"></label>
                 <button type="submit">시간 추가</button>
             </form>
         </article>
 
         <article class="card">
             <h2>등록된 시간</h2>
-            <div class="list" th:if="${!#lists.isEmpty(reservationTimes)}">
-                <div class="item" th:each="time : ${reservationTimes}">
-                    <div>
-                        <strong th:text="${time.startAt}">10:00</strong>
-                        <span th:text="${time.theme.name}">테마명</span>
-                    </div>
-                    <form method="post"
-                          th:action="@{/pages/admin/themes/{themeId}/times/{timeId}/delete(themeId=${theme.id}, timeId=${time.id})}">
-                        <button class="delete" type="submit">삭제</button>
-                    </form>
-                </div>
-            </div>
-            <p th:if="${#lists.isEmpty(reservationTimes)}">등록된 시간이 없습니다.</p>
+            <div class="list" id="time-list"></div>
+            <p class="empty" id="empty" hidden>등록된 시간이 없습니다.</p>
         </article>
     </section>
 </div>
+
+<script>
+    const themeId = location.pathname.match(/\/pages\/admin\/themes\/(\d+)\/times/)?.[1];
+    const nav = document.querySelector('#nav');
+    const pageTitle = document.querySelector('#page-title');
+    const pageDescription = document.querySelector('#page-description');
+    const timeList = document.querySelector('#time-list');
+    const empty = document.querySelector('#empty');
+    const message = document.querySelector('#message');
+
+    const showMessage = (text, error = false) => {
+        message.textContent = text;
+        message.classList.toggle('error', error);
+        message.hidden = false;
+    };
+
+    const request = async (url, options = {}) => {
+        const response = await fetch(url, {
+            headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+            ...options
+        });
+        if (!response.ok) {
+            const body = await response.json().catch(() => ({}));
+            throw new Error(body.message || body.validationErrors?.join(', ') || `요청 실패 (${response.status})`);
+        }
+        return response.status === 204 ? null : response.json();
+    };
+
+    const renderThemeNav = (themes) => {
+        themes.forEach((theme) => {
+            const link = document.createElement('a');
+            link.href = `/pages/admin/themes/${theme.id}/times`;
+            link.textContent = theme.name;
+            nav.insertBefore(link, nav.querySelector('.user-link'));
+        });
+        const currentTheme = themes.find((theme) => String(theme.id) === themeId);
+        if (currentTheme) {
+            pageTitle.textContent = `${currentTheme.name} 시간 관리`;
+            pageDescription.textContent = currentTheme.description;
+        }
+    };
+
+    const renderTimes = (times) => {
+        timeList.innerHTML = '';
+        empty.hidden = times.length !== 0;
+        times.forEach((time) => {
+            const item = document.createElement('div');
+            item.className = 'item';
+            item.innerHTML = `
+                <div>
+                    <strong>${time.startAt}</strong>
+                    <span>${time.theme.name}</span>
+                </div>
+                <button class="delete" type="button" data-id="${time.id}">삭제</button>`;
+            timeList.appendChild(item);
+        });
+    };
+
+    const loadPage = async () => {
+        if (!themeId) {
+            showMessage('테마 ID를 URL에서 찾을 수 없습니다.', true);
+            return;
+        }
+        try {
+            const [themes, times] = await Promise.all([
+                request('/admin/themes'),
+                request(`/admin/themes/${themeId}/times`)
+            ]);
+            renderThemeNav(themes);
+            renderTimes(times);
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    };
+
+    document.querySelector('#time-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        try {
+            await request(`/admin/themes/${themeId}/times`, {
+                method: 'POST',
+                body: JSON.stringify({ startAt: document.querySelector('#startAt').value })
+            });
+            event.target.reset();
+            showMessage('예약 시간이 추가되었습니다.');
+            renderTimes(await request(`/admin/themes/${themeId}/times`));
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    });
+
+    timeList.addEventListener('click', async (event) => {
+        if (!event.target.matches('button.delete')) return;
+        try {
+            await request(`/admin/themes/times/${event.target.dataset.id}`, { method: 'DELETE' });
+            showMessage('예약 시간이 삭제되었습니다.');
+            renderTimes(await request(`/admin/themes/${themeId}/times`));
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    });
+
+    loadPage();
+</script>
 </body>
 </html>

@@ -3,249 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>예약 관리</title>
+    <title>예약 페이지</title>
     <style>
-        :root {
-            --bg: #f7f3ea;
-            --card: #fffdf8;
-            --line: #d8cbb4;
-            --text: #2f2418;
-            --point: #0e7490;
-            --point-dark: #155e75;
-            --accent: #efb366;
-            --accent-soft: #fff1dc;
-        }
+        :root { --bg: #f7f3ea; --card: #fffdf8; --line: #d8cbb4; --text: #2f2418; --point: #0e7490; --point-dark: #155e75; --accent: #efb366; --danger: #d1495b; }
         * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
-            background:
-                radial-gradient(circle at top left, rgba(239, 179, 102, 0.35), transparent 30%),
-                linear-gradient(180deg, #f8f4ec 0%, var(--bg) 100%);
-            color: var(--text);
-        }
-        .wrap {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 32px 20px 64px;
-        }
-        .hero {
-            display: grid;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-        .eyebrow {
-            display: inline-flex;
-            width: fit-content;
-            padding: 8px 12px;
-            border-radius: 999px;
-            border: 1px solid var(--line);
-            background: rgba(255, 255, 255, 0.75);
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-        }
-        .hero h1 {
-            margin: 0;
-            font-size: clamp(32px, 5vw, 56px);
-            line-height: 1;
-        }
-        .hero p {
-            margin: 0;
-            max-width: 700px;
-            color: rgba(47, 36, 24, 0.76);
-        }
-        .nav {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 28px;
-        }
-        .nav a {
-            text-decoration: none;
-            color: var(--text);
-            background: rgba(255, 255, 255, 0.7);
-            border: 1px solid var(--line);
-            padding: 10px 14px;
-            border-radius: 999px;
-        }
-        .admin-link {
-            margin-left: auto;
-            background: rgba(14, 116, 144, 0.08) !important;
-            border-color: rgba(14, 116, 144, 0.24) !important;
-            color: var(--point) !important;
-            font-weight: 700;
-        }
-        .top-grid {
-            display: grid;
-            grid-template-columns: minmax(360px, 1.15fr) minmax(320px, 0.85fr);
-            gap: 20px;
-        }
-        .bottom-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
-            gap: 20px;
-            margin-top: 20px;
-            align-items: start;
-        }
-        .card {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 16px 32px rgba(47, 36, 24, 0.08);
-        }
-        .stack {
-            display: grid;
-            gap: 20px;
-        }
-        .card h2 {
-            margin: 0 0 16px;
-            font-size: 22px;
-        }
-        form {
-            display: grid;
-            gap: 12px;
-        }
-        label {
-            display: grid;
-            gap: 6px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        input, select, button {
-            border-radius: 12px;
-            border: 1px solid var(--line);
-            padding: 12px 14px;
-            font: inherit;
-        }
-        button {
-            background: var(--point);
-            color: white;
-            border: 0;
-            cursor: pointer;
-            font-weight: 700;
-        }
-        button:hover {
-            background: var(--point-dark);
-        }
-        button.delete {
-            background: #d1495b;
-        }
-        ul, ol {
-            margin: 0;
-            padding-left: 20px;
-        }
-        .list {
-            display: grid;
-            gap: 12px;
-        }
-        .item {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            align-items: center;
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            padding: 12px 14px;
-            background: rgba(255, 255, 255, 0.72);
-        }
-        .item strong {
-            display: block;
-        }
-        .item span {
-            font-size: 14px;
-            color: rgba(47, 36, 24, 0.72);
-        }
-        .time-option {
-            width: 100%;
-            text-align: left;
-            background: transparent;
-            color: inherit;
-            border: 0;
-            padding: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-        }
-        .time-option:hover strong {
-            color: var(--point-dark);
-        }
-        .time-option small {
-            color: var(--point);
-            font-weight: 700;
-        }
-        .selection-card {
-            margin-top: 14px;
-            padding: 14px 16px;
-            border-radius: 16px;
-            border: 1px solid rgba(14, 116, 144, 0.24);
-            background: rgba(14, 116, 144, 0.08);
-        }
-        .selection-card.hidden {
-            display: none;
-        }
-        .inline-form {
-            display: inline;
-        }
-        .hint {
-            margin-top: 8px;
-            font-size: 14px;
-            color: rgba(47, 36, 24, 0.72);
-        }
-        .helper {
-            font-size: 13px;
-            color: rgba(47, 36, 24, 0.68);
-        }
-        .popular-list {
-            display: grid;
-            gap: 12px;
-            margin-top: 16px;
-        }
-        .popular-card {
-            display: grid;
-            grid-template-columns: 56px 1fr;
-            gap: 14px;
-            align-items: center;
-            padding: 14px;
-            border-radius: 18px;
-            border: 1px solid rgba(14, 116, 144, 0.15);
-            background:
-                linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,244,227,0.95)),
-                var(--card);
-            box-shadow: 0 10px 24px rgba(14, 116, 144, 0.08);
-        }
-        .popular-rank {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, var(--accent), #ffd8a8);
-            color: #5d3700;
-            font-size: 22px;
-            font-weight: 800;
-        }
-        .popular-meta {
-            display: grid;
-            gap: 4px;
-        }
-        .popular-meta strong {
-            font-size: 17px;
-        }
-        .popular-meta span {
-            font-size: 13px;
-            color: rgba(47, 36, 24, 0.7);
-        }
-        @media (max-width: 980px) {
-            .top-grid,
-            .bottom-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        body { margin: 0; font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif; background: radial-gradient(circle at top left, rgba(239,179,102,.35), transparent 30%), linear-gradient(180deg, #f8f4ec 0%, var(--bg) 100%); color: var(--text); }
+        .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
+        .hero { display: grid; gap: 12px; margin-bottom: 24px; }
+        .eyebrow { display: inline-flex; width: fit-content; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,.75); font-size: 13px; font-weight: 700; letter-spacing: .04em; }
+        .hero h1 { margin: 0; font-size: clamp(32px, 5vw, 56px); line-height: 1; }
+        .hero p { margin: 0; max-width: 760px; color: rgba(47,36,24,.76); }
+        .nav { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+        .nav a { text-decoration: none; color: var(--text); background: rgba(255,255,255,.7); border: 1px solid var(--line); padding: 10px 14px; border-radius: 999px; }
+        .admin-link { margin-left: auto; background: rgba(14,116,144,.08) !important; border-color: rgba(14,116,144,.24) !important; color: var(--point) !important; font-weight: 700; }
+        .top-grid { display: grid; grid-template-columns: minmax(360px, 1.15fr) minmax(320px, .85fr); gap: 20px; }
+        .bottom-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(320px, .7fr); gap: 20px; margin-top: 20px; align-items: start; }
+        .card { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 20px; box-shadow: 0 16px 32px rgba(47,36,24,.08); }
+        .stack, form, .list, .popular-list { display: grid; gap: 12px; }
+        .card h2 { margin: 0 0 16px; font-size: 22px; }
+        label { display: grid; gap: 6px; font-size: 14px; font-weight: 600; }
+        input, select, button { border-radius: 12px; border: 1px solid var(--line); padding: 12px 14px; font: inherit; }
+        button { background: var(--point); color: white; border: 0; cursor: pointer; font-weight: 700; }
+        button:hover { background: var(--point-dark); }
+        button.delete { background: var(--danger); }
+        .item { display: flex; justify-content: space-between; gap: 12px; align-items: center; border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; background: rgba(255,255,255,.72); }
+        .item strong { display: block; }
+        .item span, .hint, .helper { font-size: 14px; color: rgba(47,36,24,.72); }
+        .time-option { width: 100%; text-align: left; background: transparent; color: inherit; border: 0; padding: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; }
+        .time-option:hover strong { color: var(--point-dark); }
+        .time-option small { color: var(--point); font-weight: 700; }
+        .selection-card { margin-top: 14px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(14,116,144,.24); background: rgba(14,116,144,.08); }
+        .selection-card.hidden { display: none; }
+        .popular-card { display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: center; padding: 14px; border-radius: 18px; border: 1px solid rgba(14,116,144,.15); background: linear-gradient(135deg, rgba(255,255,255,.95), rgba(255,244,227,.95)), var(--card); box-shadow: 0 10px 24px rgba(14,116,144,.08); }
+        .popular-rank { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(135deg, var(--accent), #ffd8a8); color: #5d3700; font-size: 22px; font-weight: 800; }
+        .message { margin: 0 0 14px; padding: 12px 14px; border-radius: 14px; background: rgba(14,116,144,.08); color: var(--point); }
+        .message.error { background: rgba(209,73,91,.09); color: var(--danger); }
+        @media (max-width: 980px) { .top-grid, .bottom-grid { grid-template-columns: 1fr; } .admin-link { margin-left: 0; } }
     </style>
 </head>
 <body>
@@ -253,172 +46,238 @@
     <section class="hero">
         <span class="eyebrow">USER PAGE</span>
         <h1>예약 페이지</h1>
-        <p>날짜와 테마를 고른 뒤 예약 가능한 시간대를 클릭하면, 아래 예약 폼이 자동으로 채워집니다. 관리 기능은 관리자 페이지에서만 다룰 수 있도록 분리했습니다.</p>
+        <p>현재 컨트롤러 구조에 맞춰 JavaScript가 테마, 인기 테마, 예약 가능 시간, 예약 목록을 REST API로 불러옵니다.</p>
     </section>
 
     <nav class="nav">
         <a th:href="@{/pages/user/reservations}">예약 홈</a>
-        <a class="admin-link" th:href="@{/pages/admin/themes}">관리자 콘솔로 이동</a>
+        <a class="admin-link" th:href="@{/pages/admin/themes}">관리자 페이지</a>
     </nav>
 
+    <p class="message" id="message" hidden></p>
+
     <section class="top-grid">
-        <article class="card">
-            <div class="stack">
-                <section>
-                    <h2>예약 가능 시간 조회</h2>
-                    <form method="get" th:action="@{/pages/user/reservations}">
-                        <label>
-                            테마
-                            <select name="themeId" required>
-                                <option value="">테마를 선택하세요</option>
-                                <option th:each="theme : ${themes}"
-                                        th:selected="${selectedThemeId != null and selectedThemeId == theme.id}"
-                                        th:text="${theme.name}"
-                                        th:value="${theme.id}">
-                                </option>
-                            </select>
-                        </label>
-                        <label>
-                            날짜
-                            <input name="date" required th:value="${selectedDate}" type="date">
-                        </label>
-                        <button type="submit">가능 시간 찾기</button>
-                    </form>
+        <article class="card stack">
+            <section>
+                <h2>1. 날짜와 테마 선택</h2>
+                <form id="search-form">
+                    <label>예약 날짜 <input id="date" required type="date"></label>
+                    <label>테마 <select id="themeId" required><option value="">테마를 선택하세요</option></select></label>
+                    <button type="submit">예약 가능 시간 조회</button>
+                </form>
+                <p class="hint">날짜와 테마를 선택하면 이미 예약된 시간을 제외한 슬롯만 표시됩니다.</p>
+            </section>
 
-                    <div class="hint" th:if="${selectedThemeId == null or selectedDate == null}">
-                        테마와 날짜를 고르면 아래에 예약 가능한 시간 카드가 표시됩니다.
-                    </div>
-                </section>
-
-                <section>
-                    <h2>조회된 가능 시간</h2>
-                    <div class="list" th:if="${selectedThemeId != null and selectedDate != null}">
-                        <div class="item" th:if="${#lists.isEmpty(availableTimes)}">
-                            <div>
-                                <strong>예약 가능한 시간이 없습니다.</strong>
-                                <span>다른 날짜를 선택해보세요.</span>
-                            </div>
-                        </div>
-                        <div class="item" th:each="time : ${availableTimes}">
-                            <button class="time-option"
-                                    onclick="selectTimeSlot(this)"
-                                    th:attr="data-time-id=${time.id},data-date=${selectedDate},data-theme-name=${time.theme.name},data-start-at=${time.startAt}"
-                                    type="button">
-                                <div>
-                                    <strong th:text="${time.startAt}">10:00</strong>
-                                    <span th:text="${time.theme.name}">테마명</span>
-                                </div>
-                                <small>이 시간 선택</small>
-                            </button>
-                        </div>
-                    </div>
-                    <p class="hint" th:if="${selectedThemeId == null or selectedDate == null}">조회 후 원하는 시간대를 클릭하면 바로 오른쪽
-                        예약 폼으로 이어집니다.</p>
-                </section>
-            </div>
+            <section>
+                <h2>예약 가능 시간</h2>
+                <div class="list" id="available-times"></div>
+                <p class="hint" id="time-empty">날짜와 테마를 먼저 선택하세요.</p>
+            </section>
         </article>
 
-        <article class="card" id="reservation-form-card">
-            <h2>예약 생성</h2>
-            <form method="post" th:action="@{/pages/user/reservations}">
-                <label>
-                    예약자 이름
-                    <input id="reservation-name" maxlength="9" name="name" required type="text">
-                </label>
-                <label>
-                    날짜
-                    <input id="reservation-date" name="date" required th:value="${selectedDate}" type="date">
-                </label>
-                <label>
-                    시간 슬롯
-                    <select id="reservation-time" name="timeId" required>
-                        <option value="">예약 가능한 시간을 먼저 조회하세요</option>
-                        <option th:each="time : ${availableTimes}"
-                                th:text="${time.theme.name + ' / ' + time.startAt}"
-                                th:value="${time.id}">
-                        </option>
-                    </select>
-                </label>
-                <div class="selection-card hidden" id="selection-card">
-                    <strong id="selection-title">선택한 시간</strong>
-                    <div class="helper" id="selection-body">조회 결과에서 시간을 고르면 자동으로 채워집니다.</div>
-                </div>
-                <button type="submit">예약 저장</button>
+        <article class="card">
+            <h2>2. 예약 정보 입력</h2>
+            <form id="reservation-form">
+                <label>예약자 이름 <input id="name" required type="text"></label>
+                <label>예약 날짜 <input id="selected-date" readonly required type="date"></label>
+                <label>선택 시간 <input id="selected-time-label" readonly required type="text"></label>
+                <input id="timeId" type="hidden">
+                <button type="submit">예약하기</button>
             </form>
-            <p class="hint">조회 결과에서 시간 카드를 누르면 날짜와 시간 슬롯이 자동으로 선택되고, 이름만 입력하면 바로 예약할 수 있습니다.</p>
+            <div class="selection-card hidden" id="selection-card">
+                <strong id="selection-title"></strong>
+                <p class="helper" id="selection-helper"></p>
+            </div>
         </article>
     </section>
 
     <section class="bottom-grid">
         <article class="card">
-            <h2>예약 목록</h2>
-            <div class="list" th:if="${!#lists.isEmpty(reservations)}">
-                <div class="item" th:each="reservation : ${reservations}">
-                    <div>
-                        <strong th:text="${reservation.name}">브라운</strong>
-                        <span th:text="${reservation.date + ' / ' + reservation.time.theme.name + ' / ' + reservation.time.startAt}">내용</span>
-                    </div>
-                    <form class="inline-form" method="post"
-                          th:action="@{/pages/user/reservations/{id}/delete(id=${reservation.id})}">
-                        <button class="delete" type="submit">삭제</button>
-                    </form>
-                </div>
-            </div>
-            <p class="hint" th:if="${#lists.isEmpty(reservations)}">아직 예약이 없습니다.</p>
+            <h2>내 예약 현황</h2>
+            <div class="list" id="reservation-list"></div>
+            <p class="hint" id="reservation-empty" hidden>등록된 예약이 없습니다.</p>
         </article>
 
         <article class="card">
-            <h2>최근 인기 테마</h2>
-            <form method="get" th:action="@{/pages/user/reservations}">
-                <input name="themeId" th:value="${selectedThemeId}" type="hidden">
-                <input name="date" th:value="${selectedDate}" type="hidden">
-                <label>
-                    최근 기간(일)
-                    <input min="1" name="period" required th:value="${period}" type="number">
-                </label>
-                <label>
-                    노출 개수
-                    <input min="1" name="limit" required th:value="${limit}" type="number">
-                </label>
-                <button type="submit">인기 테마 갱신</button>
+            <h2>인기 테마</h2>
+            <form id="popular-form">
+                <label>집계 기간(일) <input id="period" min="1" type="number" value="7"></label>
+                <label>표시 개수 <input id="limit" min="1" type="number" value="10"></label>
+                <button type="submit">인기 테마 새로고침</button>
             </form>
-            <div class="popular-list" th:if="${!#lists.isEmpty(popularThemes)}">
-                <div class="popular-card" th:each="theme, stat : ${popularThemes}">
-                    <div class="popular-rank" th:text="${stat.count}">1</div>
-                    <div class="popular-meta">
-                        <strong th:text="${theme.name}">테마명</strong>
-                        <span th:text="${theme.description}">설명</span>
-                    </div>
-                </div>
-            </div>
-            <p class="hint" th:if="${#lists.isEmpty(popularThemes)}">선택한 기간 안에 집계된 인기 테마가 아직 없습니다.</p>
+            <div class="popular-list" id="popular-list"></div>
         </article>
     </section>
 </div>
+
 <script>
-    function selectTimeSlot(button) {
-        const timeId = button.dataset.timeId;
-        const date = button.dataset.date;
-        const themeName = button.dataset.themeName;
-        const startAt = button.dataset.startAt;
+    const message = document.querySelector('#message');
+    const themeSelect = document.querySelector('#themeId');
+    const availableTimes = document.querySelector('#available-times');
+    const timeEmpty = document.querySelector('#time-empty');
+    const reservationList = document.querySelector('#reservation-list');
+    const reservationEmpty = document.querySelector('#reservation-empty');
+    const popularList = document.querySelector('#popular-list');
+    const selectionCard = document.querySelector('#selection-card');
+    const selectionTitle = document.querySelector('#selection-title');
+    const selectionHelper = document.querySelector('#selection-helper');
 
-        const dateInput = document.getElementById("reservation-date");
-        const timeSelect = document.getElementById("reservation-time");
-        const nameInput = document.getElementById("reservation-name");
-        const selectionCard = document.getElementById("selection-card");
-        const selectionTitle = document.getElementById("selection-title");
-        const selectionBody = document.getElementById("selection-body");
-        const formCard = document.getElementById("reservation-form-card");
+    const showMessage = (text, error = false) => {
+        message.textContent = text;
+        message.classList.toggle('error', error);
+        message.hidden = false;
+    };
 
-        dateInput.value = date;
-        timeSelect.value = timeId;
-        selectionCard.classList.remove("hidden");
-        selectionTitle.textContent = themeName + " / " + startAt;
-        selectionBody.textContent = date + " 예약으로 바로 연결됩니다. 이름만 입력하면 저장할 수 있습니다.";
+    const request = async (url, options = {}) => {
+        const response = await fetch(url, {
+            headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+            ...options
+        });
+        if (!response.ok) {
+            const body = await response.json().catch(() => ({}));
+            throw new Error(body.message || body.validationErrors?.join(', ') || `요청 실패 (${response.status})`);
+        }
+        return response.status === 204 ? null : response.json();
+    };
 
-        formCard.scrollIntoView({behavior: "smooth", block: "center"});
-        nameInput.focus();
-    }
+    const loadThemes = async () => {
+        const themes = await request('/admin/themes');
+        themeSelect.innerHTML = '<option value="">테마를 선택하세요</option>';
+        themes.forEach((theme) => {
+            const option = document.createElement('option');
+            option.value = theme.id;
+            option.textContent = theme.name;
+            themeSelect.appendChild(option);
+        });
+    };
+
+    const renderAvailableTimes = (times) => {
+        availableTimes.innerHTML = '';
+        timeEmpty.hidden = times.length !== 0;
+        timeEmpty.textContent = '예약 가능한 시간이 없습니다.';
+        times.forEach((time) => {
+            const item = document.createElement('div');
+            item.className = 'item';
+            item.innerHTML = `
+                <button class="time-option" type="button" data-id="${time.id}" data-time="${time.startAt}" data-theme="${time.theme.name}">
+                    <div><strong>${time.startAt}</strong><span>${time.theme.name}</span></div>
+                    <small>이 시간 선택</small>
+                </button>`;
+            availableTimes.appendChild(item);
+        });
+    };
+
+    const renderReservations = (reservations) => {
+        reservationList.innerHTML = '';
+        reservationEmpty.hidden = reservations.length !== 0;
+        reservations.forEach((reservation) => {
+            const item = document.createElement('div');
+            item.className = 'item';
+            item.innerHTML = `
+                <div>
+                    <strong>${reservation.name}</strong>
+                    <span>${reservation.date} ${reservation.time.startAt} · ${reservation.time.theme.name}</span>
+                </div>
+                <button class="delete" type="button" data-id="${reservation.id}" data-name="${reservation.name}">삭제</button>`;
+            reservationList.appendChild(item);
+        });
+    };
+
+    const loadReservations = async () => {
+        renderReservations(await request('/admin/reservations'));
+    };
+
+    const loadPopularThemes = async () => {
+        const period = document.querySelector('#period').value;
+        const limit = document.querySelector('#limit').value;
+        const themes = await request(`/themes/popular?period=${period}&limit=${limit}`);
+        popularList.innerHTML = '';
+        themes.forEach((theme, index) => {
+            const card = document.createElement('div');
+            card.className = 'popular-card';
+            card.innerHTML = `
+                <div class="popular-rank">${index + 1}</div>
+                <div><strong>${theme.name}</strong><br><span>${theme.description}</span></div>`;
+            popularList.appendChild(card);
+        });
+        if (themes.length === 0) {
+            popularList.innerHTML = '<p class="hint">인기 테마 데이터가 없습니다.</p>';
+        }
+    };
+
+    document.querySelector('#search-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        try {
+            const date = document.querySelector('#date').value;
+            const themeId = themeSelect.value;
+            document.querySelector('#selected-date').value = date;
+            renderAvailableTimes(await request(`/themes/${themeId}/available-times?date=${date}`));
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    });
+
+    availableTimes.addEventListener('click', (event) => {
+        const button = event.target.closest('.time-option');
+        if (!button) return;
+        document.querySelector('#timeId').value = button.dataset.id;
+        document.querySelector('#selected-time-label').value = `${button.dataset.time} (${button.dataset.theme})`;
+        selectionTitle.textContent = `${button.dataset.theme} · ${button.dataset.time}`;
+        selectionHelper.textContent = '선택한 시간으로 예약 정보 입력을 이어가세요.';
+        selectionCard.classList.remove('hidden');
+    });
+
+    document.querySelector('#reservation-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        try {
+            await request('/reservations', {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: document.querySelector('#name').value,
+                    date: document.querySelector('#selected-date').value,
+                    timeId: Number(document.querySelector('#timeId').value)
+                })
+            });
+            event.target.reset();
+            selectionCard.classList.add('hidden');
+            showMessage('예약이 완료되었습니다.');
+            await loadReservations();
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    });
+
+    reservationList.addEventListener('click', async (event) => {
+        if (!event.target.matches('button.delete')) return;
+        try {
+            await request(`/admin/reservations/${event.target.dataset.id}`, { method: 'DELETE' });
+            showMessage('예약이 삭제되었습니다.');
+            await loadReservations();
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    });
+
+    document.querySelector('#popular-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        try {
+            await loadPopularThemes();
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    });
+
+    (async () => {
+        try {
+            const today = new Date().toISOString().slice(0, 10);
+            document.querySelector('#date').min = today;
+            document.querySelector('#date').value = today;
+            document.querySelector('#selected-date').value = today;
+            await Promise.all([loadThemes(), loadReservations(), loadPopularThemes()]);
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    })();
 </script>
 </body>
 </html>
