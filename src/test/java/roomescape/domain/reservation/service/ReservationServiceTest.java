@@ -21,9 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.common.exception.BusinessException;
 import roomescape.domain.reservation.entity.Reservation;
-import roomescape.domain.reservation.exception.DuplicateReservationException;
-import roomescape.domain.reservation.exception.PastReservationException;
+import roomescape.domain.reservation.exception.ReservationErrorCode;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
@@ -153,7 +153,8 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
-                .isInstanceOf(PastReservationException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ReservationErrorCode.PAST_RESERVATION.getMessage());
     }
 
     @Test
@@ -162,12 +163,11 @@ class ReservationServiceTest {
         // given
         Long timeId = 1L;
         Long themeId = 1L;
-        LocalDate sameDate = FIXED_DATE;
         LocalTime pastTime = LocalTime.of(13, 0);
         ReservationCreateRequest request = new ReservationCreateRequest(
                 "브라운",
                 themeId,
-                sameDate,
+                FIXED_DATE,
                 timeId
         );
 
@@ -179,7 +179,8 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
-                .isInstanceOf(PastReservationException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ReservationErrorCode.PAST_RESERVATION.getMessage());
     }
 
     @Test
@@ -207,7 +208,8 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
-                .isInstanceOf(DuplicateReservationException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ReservationErrorCode.DUPLICATE_RESERVATION.getMessage());
     }
 
     @Test

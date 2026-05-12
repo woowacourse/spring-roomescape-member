@@ -1,9 +1,8 @@
 package roomescape.common.exception;
 
-import java.util.stream.Collectors;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,22 +15,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException exception) {
-        ErrorCode errorCode = exception.getErrorCode();
-
-        return ResponseEntity.status(errorCode.getStatus())
-                .body(ErrorResponse.of(errorCode, exception.getMessage()));
+        return ResponseEntity.status(exception.getStatus())
+                .body(ErrorResponse.of(exception.getErrorCode()));
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
-            DataIntegrityViolationException exception
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException exception
     ) {
-        ErrorCode errorCode = ErrorCode.DATA_CONFLICT;
+        List<FieldErrorMessage> errors = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> new FieldErrorMessage(
+                        error.getField(),
+                        error.getDefaultMessage()
+                ))
+                .toList();
 
-        log.warn("데이터 충돌 예외가 발생했습니다. errorCode={}", errorCode, exception);
-
-        return ResponseEntity.status(errorCode.getStatus())
-                .body(ErrorResponse.of(errorCode, errorCode.getMessage()));
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(CommonErrorCode.VALIDATION_FAILED, errors));
     }
 
     @ExceptionHandler(Exception.class)
@@ -39,22 +41,5 @@ public class GlobalExceptionHandler {
         log.error("예상하지 못한 서버 예외가 발생했습니다.", exception);
 
         return ResponseEntity.internalServerError().build();
-    }
-
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException exception
-    ) {
-        String message = exception.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error -> String.format("%s: %s", error.getField(), error.getDefaultMessage()))
-                .collect(Collectors.joining(",\n"));
-
-        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_RESERVATION_TIME, message);
-
-        return ResponseEntity.badRequest()
-                .body(errorResponse);
     }
 }

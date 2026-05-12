@@ -6,7 +6,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservationtime.entity.ReservationTime;
-import roomescape.domain.reservationtime.exception.ReservationTimeDeleteConflictException;
 import roomescape.domain.reservationtime.repository.ReservationTimeRepository;
 import roomescape.domain.reservationtime.request.ReservationTimeCreateRequest;
 import roomescape.domain.reservationtime.response.ReservationTimeResponse;
@@ -44,7 +43,7 @@ public class ReservationTimeService {
         try {
             reservationTimeRepository.deleteById(id);
         } catch (DataIntegrityViolationException exception) {
-            throw new ReservationTimeDeleteConflictException(exception);
+            throw new IllegalStateException();
         }
     }
 }

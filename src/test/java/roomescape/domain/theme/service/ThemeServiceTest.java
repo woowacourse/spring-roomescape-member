@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.theme.entity.Theme;
-import roomescape.domain.theme.exception.ThemeDeleteConflictException;
 import roomescape.domain.theme.repository.PopularThemeResult;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.request.ThemeCreateRequest;
@@ -155,6 +154,6 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteThemeById(themeId))
-                .isInstanceOf(ThemeDeleteConflictException.class);
+                .isInstanceOf(IllegalStateException.class);
     }
 }

@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.reservationtime.entity.ReservationTime;
-import roomescape.domain.reservationtime.exception.ReservationTimeDeleteConflictException;
 import roomescape.domain.reservationtime.repository.ReservationTimeRepository;
 import roomescape.domain.reservationtime.request.ReservationTimeCreateRequest;
 import roomescape.domain.reservationtime.response.ReservationTimeResponse;
@@ -99,6 +98,6 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeBy(timeId))
-                .isInstanceOf(ReservationTimeDeleteConflictException.class);
+                .isInstanceOf(IllegalStateException.class);
     }
 }
