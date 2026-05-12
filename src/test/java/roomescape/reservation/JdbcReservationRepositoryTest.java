@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.repository.JdbcReservationRepository;
-import roomescape.reservation.repository.dto.ReservationDetailFind;
+import roomescape.reservation.repository.projection.ReservationDetailProjection;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -51,11 +51,11 @@ class JdbcReservationRepositoryTest {
         Reservation newReservation2 = reservationRepository.save(reservation2);
 
         // when
-        List<ReservationDetailFind> reservations = reservationRepository.findAllDetails();
+        List<ReservationDetailProjection> reservations = reservationRepository.findAllDetails();
 
         // then
         assertThat(reservations).hasSize(6);
-        assertThat(reservations).extracting(ReservationDetailFind::id)
+        assertThat(reservations).extracting(ReservationDetailProjection::id)
                 .contains(newReservation1.getId(), newReservation2.getId());
     }
 
@@ -69,9 +69,9 @@ class JdbcReservationRepositoryTest {
         reservationRepository.deleteById(savedReservation.getId());
 
         // then
-        List<ReservationDetailFind> reservations = reservationRepository.findAllDetails();
+        List<ReservationDetailProjection> reservations = reservationRepository.findAllDetails();
         assertThat(reservations).hasSize(4);
-        assertThat(reservations).extracting(ReservationDetailFind::id)
+        assertThat(reservations).extracting(ReservationDetailProjection::id)
                 .doesNotContain(savedReservation.getId());
     }
 
@@ -84,5 +84,20 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(result).hasSize(1);
         assertThat(result).containsExactlyInAnyOrder(1L);
+    }
+
+    @Test
+    @DisplayName("이름을 기준으로 예약들을 조회 할 수 있다.")
+    void findDetailsByName_테스트() {
+        // given
+        String name = "a";
+
+        // when
+        List<ReservationDetailProjection> result = reservationRepository.findDetailsByName(name);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result).extracting(ReservationDetailProjection::name)
+                .containsExactly(name);
     }
 }

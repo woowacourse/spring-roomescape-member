@@ -1,11 +1,11 @@
-package roomescape.reservation.repository.dto;
+package roomescape.reservation.repository.projection;
 
 import roomescape.theme.dto.response.ThemeFindResponse;
 import roomescape.reservationtime.dto.response.TimeInformation;
 
 import java.time.LocalDate;
 
-public record ReservationDetailFind(
+public record ReservationDetailProjection(
         Long id,
         String name,
         LocalDate date,

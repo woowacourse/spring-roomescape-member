@@ -1,6 +1,6 @@
 package roomescape.reservation.dto.response;
 
-import roomescape.reservation.repository.dto.ReservationDetailFind;
+import roomescape.reservation.repository.projection.ReservationDetailProjection;
 import roomescape.reservationtime.dto.response.TimeInformation;
 import roomescape.theme.dto.response.ThemeFindResponse;
 
@@ -14,8 +14,8 @@ public record ReservationDetailFindResponse(
         ThemeFindResponse theme,
         TimeInformation time
 ) {
-    public static List<ReservationDetailFindResponse> from(List<ReservationDetailFind> reservationRows) {
-        return reservationRows.stream()
+    public static List<ReservationDetailFindResponse> from(List<ReservationDetailProjection> rows) {
+        return rows.stream()
                 .map(row -> new ReservationDetailFindResponse(
                         row.id(),
                         row.name(),
@@ -24,5 +24,15 @@ public record ReservationDetailFindResponse(
                         row.timeInformation()
                 ))
                 .toList();
+    }
+
+    public static ReservationDetailFindResponse from(ReservationDetailProjection row) {
+        return new ReservationDetailFindResponse(
+                row.id(),
+                row.name(),
+                row.date(),
+                row.themeFindResponse(),
+                row.timeInformation()
+        );
     }
 }

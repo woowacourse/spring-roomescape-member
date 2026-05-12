@@ -6,6 +6,7 @@ import roomescape.reservation.dto.request.ReservationSaveRequest;
 import roomescape.reservation.dto.response.ReservationDetailFindResponse;
 import roomescape.reservation.dto.response.ReservationSaveResponse;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.projection.ReservationDetailProjection;
 import roomescape.schedule.ScheduleService;
 
 import java.util.List;
@@ -29,5 +30,11 @@ public class ReservationService {
 
     public void delete(long id) {
         reservationRepository.deleteById(id);
+    }
+
+    public List<ReservationDetailFindResponse> findDetailByName(String name) {
+        List<ReservationDetailProjection> reservationDetailProjection = reservationRepository.findDetailsByName(name);
+
+        return ReservationDetailFindResponse.from(reservationDetailProjection);
     }
 }
