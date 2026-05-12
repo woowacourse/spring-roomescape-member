@@ -9,10 +9,6 @@ public class InvalidRequestException extends BusinessException {
         super(errorCode);
     }
 
-    public InvalidRequestException(ErrorCode errorCode, String message) {
-        super(errorCode, message);
-    }
-
     @Override
     public HttpStatus httpStatus() {
         return HttpStatus.BAD_REQUEST;
