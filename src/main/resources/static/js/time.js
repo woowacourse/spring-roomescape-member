@@ -73,8 +73,8 @@ function saveRow(event, startInput, finishInput) {
     body: JSON.stringify(body)
   })
     .then(res => {
-      if (res.status === 200) return res.json();
-      throw new Error('시간 추가 실패');
+      if (res.ok) return res.json();
+      return res.json().then(err => { throw new Error(err.message); });
     })
     .then(data => {
       row.cells[0].textContent = data.id;
@@ -91,8 +91,14 @@ function deleteRow(event) {
   const row = event.target.closest('tr');
   const id = row.cells[0].textContent;
   fetch(`${TIME_API}/${id}`, { method: 'DELETE' })
-    .then(res => { if (res.status === 204) row.remove(); })
-    .catch(err => console.error('삭제 실패:', err));
+    .then(res => {
+      if (res.status === 204) {
+        row.remove();
+        return;
+      }
+      return res.json().then(err => { throw new Error(err.message); });
+    })
+    .catch(err => alert(err.message));
 }
 
 function createInput(type) {

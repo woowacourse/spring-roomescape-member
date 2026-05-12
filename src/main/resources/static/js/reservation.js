@@ -189,8 +189,8 @@ function confirmBooking() {
     })
   })
     .then(res => {
-      if (res.status === 200) return res.json();
-      throw new Error('예약 실패');
+      if (res.ok) return res.json();
+      return res.json().then(err => { throw new Error(err.message); });
     })
     .then(() => {
       alert('예약이 완료되었습니다.');
