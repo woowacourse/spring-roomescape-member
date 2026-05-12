@@ -4,8 +4,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -22,10 +25,15 @@ import roomescape.domain.time.entity.Time;
 
 class ThemeServiceTest {
 
+    private final Clock fixedClock;
     private final ThemeService themeService;
     private final FakeThemeRepository themeRepository;
 
     ThemeServiceTest() {
+        this.fixedClock = Clock.fixed(
+            Instant.parse("2026-01-01T10:00:00Z"),
+            ZoneId.of("UTC")
+        );
         this.themeRepository = new FakeThemeRepository();
         this.themeService = new ThemeService(themeRepository);
     }
@@ -75,7 +83,8 @@ class ThemeServiceTest {
                         "예약자" + j,
                         targetDate,
                         Time.reconstruct(1L, LocalTime.of(10, 0)),
-                        theme
+                        theme,
+                        fixedClock
                     ));
                 }
             }

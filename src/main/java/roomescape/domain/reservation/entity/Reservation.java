@@ -1,5 +1,6 @@
 package roomescape.domain.reservation.entity;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Objects;
 import roomescape.domain.theme.entity.Theme;
@@ -13,12 +14,31 @@ public class Reservation {
     private final Time time;
     private final Theme theme;
 
-    private Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
+    private Reservation(Long id, String name, LocalDate date, Time time, Theme theme, Clock clock) {
+        if (clock != null) {
+            validateDate(date, clock);
+        }
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public static Reservation create(String name, LocalDate date, Time time, Theme theme, Clock clock) {
+        return new Reservation(null, name, date, time, theme, clock);
+    }
+
+    public static Reservation reconstruct(Long id, String name, LocalDate date, Time time, Theme theme) {
+        return new Reservation(id, name, date, time, theme, null);
+    }
+
+    private void validateDate(LocalDate date, Clock clock) {
+        LocalDate now = LocalDate.now(clock);
+
+        if (date.isBefore(now)) {
+            throw new IllegalArgumentException("이전 날짜로 예약할 수 없습니다.");
+        }
     }
 
     public Long getId() {
@@ -39,14 +59,6 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
-    }
-
-    public static Reservation create(String name, LocalDate date, Time time, Theme theme) {
-        return new Reservation(null, name, date, time, theme);
-    }
-
-    public static Reservation reconstruct(Long id, String name, LocalDate date, Time time, Theme theme) {
-        return new Reservation(id, name, date, time, theme);
     }
 
     @Override

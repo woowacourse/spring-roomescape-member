@@ -1,5 +1,6 @@
 package roomescape.domain.reservation.service;
 
+import java.time.Clock;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.global.exception.ErrorCode;
@@ -17,12 +18,14 @@ import roomescape.domain.time.repository.TimeRepository;
 @Service
 public class ReservationService {
 
+    private final Clock clock;
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
+    public ReservationService(Clock clock, ReservationRepository reservationRepository, TimeRepository timeRepository,
         ThemeRepository themeRepository) {
+        this.clock = clock;
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
@@ -50,7 +53,7 @@ public class ReservationService {
             .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND));
         Theme theme = themeRepository.findThemeById(requestDto.themeId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
-        return Reservation.create(requestDto.name(), requestDto.date(), time, theme);
+        return Reservation.create(requestDto.name(), requestDto.date(), time, theme, clock);
     }
 
     public void deleteReservationById(Long id) {

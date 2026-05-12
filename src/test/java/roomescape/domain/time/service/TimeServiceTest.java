@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,12 +27,17 @@ import roomescape.domain.time.repository.TimeRepository;
 
 class TimeServiceTest {
 
+    private final Clock fixedClock;
     private final TimeService timeService;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
     TimeServiceTest() {
+        this.fixedClock = Clock.fixed(
+            Instant.parse("2026-01-01T10:00:00Z"),
+            ZoneId.of("UTC")
+        );
         this.themeRepository = new FakeThemeRepository();
         this.timeRepository = new FakeTimeRepository();
         this.reservationRepository = new FakeReservationRepository();
@@ -100,13 +108,13 @@ class TimeServiceTest {
             ));
 
             reservationRepository.save(
-                Reservation.create("브라이언", LocalDate.of(2026, 5, 10), time1, theme1));
+                Reservation.create("브라이언", LocalDate.of(2026, 5, 10), time1, theme1, fixedClock));
             reservationRepository.save(
-                Reservation.create("제이슨", LocalDate.of(2026, 5, 10), time2, theme2));
+                Reservation.create("제이슨", LocalDate.of(2026, 5, 10), time2, theme2, fixedClock));
             reservationRepository.save(
-                Reservation.create("앨리스", LocalDate.of(2026, 5, 11), time3, theme3));
+                Reservation.create("앨리스", LocalDate.of(2026, 5, 11), time3, theme3, fixedClock));
             reservationRepository.save(
-                Reservation.create("데이브", LocalDate.of(2026, 5, 11), time4, theme1));
+                Reservation.create("데이브", LocalDate.of(2026, 5, 11), time4, theme1, fixedClock));
 
             LocalDate date = LocalDate.of(2026, 5, 10);
             Long themeId = 1L;

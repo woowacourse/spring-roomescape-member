@@ -3,8 +3,11 @@ package roomescape.domain.reservation.service;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,16 +29,21 @@ import roomescape.domain.time.repository.TimeRepository;
 
 class ReservationServiceTest {
 
+    private final Clock fixedClock;
     private final ReservationService reservationService;
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
     ReservationServiceTest() {
+        this.fixedClock = Clock.fixed(
+            Instant.parse("26-01-01T10:00:00Z"),
+            ZoneId.of("UTC")
+        );
         this.reservationRepository = new FakeReservationRepository();
         this.timeRepository = new FakeTimeRepository();
         this.themeRepository = new FakeThemeRepository();
-        this.reservationService = new ReservationService(reservationRepository, timeRepository,
+        this.reservationService = new ReservationService(fixedClock, reservationRepository, timeRepository,
             themeRepository);
     }
 
@@ -53,13 +61,13 @@ class ReservationServiceTest {
             Theme theme = Theme.reconstruct(1L, "테마 이름", "테마 설명",
                 "https://roomescape.com/images/themes/ring-banner.png");
 
-            reservationRepository.save(Reservation.create("제이콥", date, time, theme));
+            reservationRepository.save(Reservation.create("제이콥", date, time, theme, fixedClock));
             reservationRepository.save(
                 Reservation.create("라이", date.plusDays(1),
-                    Time.reconstruct(2L, LocalTime.of(11, 0)), theme));
+                    Time.reconstruct(2L, LocalTime.of(11, 0)), theme, fixedClock));
             reservationRepository.save(
                 Reservation.create("티모", date.plusDays(2),
-                    Time.reconstruct(3L, LocalTime.of(12, 0)), theme));
+                    Time.reconstruct(3L, LocalTime.of(12, 0)), theme, fixedClock));
 
             // when
             List<ReservationResponseDto> actual = reservationService.getReservations();
@@ -135,12 +143,12 @@ class ReservationServiceTest {
                 Reservation.create("제이슨", LocalDate.of(2026, 5, 2),
                     Time.reconstruct(1L, LocalTime.of(12, 0)),
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
-                        "https://roomescape.com/images/themes/ring-banner.png")));
+                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
             reservationRepository.save(
                 Reservation.create("시오", LocalDate.of(2026, 5, 3),
                     Time.reconstruct(2L, LocalTime.of(13, 0)),
                     Theme.reconstruct(1L, "테마 이름", "테마 설명",
-                        "https://roomescape.com/images/themes/ring-banner.png")));
+                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
 
             // when
             reservationService.deleteReservationById(savedReservation.getId());
