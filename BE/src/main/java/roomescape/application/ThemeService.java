@@ -6,18 +6,22 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.PopularThemeRepository;
+import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.domain.ThemeSortType;
+import roomescape.global.exception.BusinessException;
 
 @Service
 @Transactional(readOnly = true)
 public class ThemeService {
 
+    private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
     private final PopularThemeRepository popularThemeRepository;
 
-    public ThemeService(ThemeRepository themeRepository, PopularThemeRepository popularThemeRepository) {
+    public ThemeService(ThemeRepository themeRepository, PopularThemeRepository popularThemeRepository, ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
         this.popularThemeRepository = popularThemeRepository;
     }
@@ -40,6 +44,9 @@ public class ThemeService {
     }
 
     public void deleteById(Long id) {
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new BusinessException("참조하고 있는 테마여서 삭제할 수 없습니다.");
+        }
         themeRepository.deleteById(id);
     }
 }

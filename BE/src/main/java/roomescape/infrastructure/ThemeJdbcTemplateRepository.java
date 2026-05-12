@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.domain.ThemeSortType;
+
 
 @Repository
 public class ThemeJdbcTemplateRepository implements ThemeRepository {
