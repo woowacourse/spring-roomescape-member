@@ -35,7 +35,8 @@ public class ReservationService {
             .orElseThrow(() -> new RoomescapeException(ReservationDateErrorCode.RESERVATION_DATE_NOT_EXIST));
         Theme theme = themeRepository.findById(request.themeId())
             .orElseThrow(() -> new RoomescapeException(ThemeErrorCode.THEME_NOT_EXIST));
-        Reservation savedReservation = reservationRepository.save(request.toEntity(reservationDate, reservationTime, theme));
+        Reservation savedReservation = reservationRepository.save(
+            request.toEntity(reservationDate, reservationTime, theme));
         return ReservationCreationResponse.from(savedReservation);
     }
 
@@ -50,5 +51,11 @@ public class ReservationService {
         if (deletedCount == 0) {
             log.warn("이미 삭제된 예약 삭제 요청이 들어왔습니다. reservationId={}", id);
         }
+    }
+
+    public List<ReservationResponse> getReservationsByName(String name) {
+        return reservationRepository.findByName(name).stream()
+            .map(ReservationResponse::from)
+            .toList();
     }
 }

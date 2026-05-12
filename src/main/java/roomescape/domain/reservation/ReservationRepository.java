@@ -17,4 +17,6 @@ public interface ReservationRepository {
     List<Long> findReservedTimes(Long themeId, Long dateId);
 
     int countByThemeId(Long id);
+
+    List<Reservation> findByName(String name);
 }
