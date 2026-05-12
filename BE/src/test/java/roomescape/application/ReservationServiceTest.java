@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -133,7 +134,7 @@ class ReservationServiceTest {
         ));
 
         // when
-        var reservations = reservationService.getReservations();
+        List<Reservation> reservations = reservationService.getReservations();
 
         // then
         assertThat(reservations).containsExactly(savedReservation);
@@ -154,7 +155,7 @@ class ReservationServiceTest {
         ));
 
         // when
-        var reservations = reservationService.getReservationsByDateAndTheme(date, savedTheme.getId());
+        List<Reservation> reservations = reservationService.getReservationsByDateAndTheme(date, savedTheme.getId());
 
         // then
         assertThat(reservations).containsExactly(savedReservation);
@@ -254,5 +255,200 @@ class ReservationServiceTest {
         )
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("예약 시간이 현재보다 이전일 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("이름을 기반으로 자신 예약 목록 조회 기능")
+    void getReservationsByName_success() {
+        // given
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
+        Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
+        Reservation savedReservation = reservationRepository.save(Reservation.create(
+                "인직",
+                LocalDate.now(),
+                savedTime,
+                savedTheme
+        ));
+
+        // when
+        List<Reservation> reservations = reservationService.getReservationsByName("인직");
+
+        // then
+        assertThat(reservations).containsExactly(savedReservation);
+    }
+
+    @Test
+    @DisplayName("자신의 예약 날짜 및 시간 수정 기능")
+    void updateReservationSchedule_success() {
+        // given
+        ReservationTime savedTime1 = reservationTimeRepository.save(
+                ReservationTime.create(LocalTime.now().plusHours(1))
+        );
+
+        ReservationTime savedTime2 = reservationTimeRepository.save(
+                ReservationTime.create(LocalTime.now().plusHours(2))
+        );
+
+        Theme savedTheme = themeRepository.save(
+                Theme.create("공포", "아니", "https://good.com/thumb-nail/1")
+        );
+
+        Reservation savedReservation = reservationRepository.save(
+                Reservation.create(
+                        "인직",
+                        LocalDate.now().plusDays(1),
+                        savedTime1,
+                        savedTheme
+                )
+        );
+
+        LocalDate changedDate = LocalDate.now().plusDays(2);
+
+        // when
+        reservationService.updateReservationSchedule(
+                changedDate,
+                savedTime2.getId(),
+                savedReservation.getId(),
+                "인직"
+        );
+
+        // then
+        Reservation updatedReservation = reservationRepository.findById(savedReservation.getId())
+                .orElseThrow();
+
+        assertThat(updatedReservation.getDate()).isEqualTo(changedDate);
+        assertThat(updatedReservation.getTime().getId()).isEqualTo(savedTime2.getId());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 ID로 수정하면 예외 발생")
+    void updateReservationSchedule_fail_with_not_found_reservation() {
+        // given
+        ReservationTime savedTime = reservationTimeRepository.save(
+                ReservationTime.create(LocalTime.now().plusHours(1))
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateReservationSchedule(
+                LocalDate.now().plusDays(1),
+                savedTime.getId(),
+                999L,
+                "인직"
+        ))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("예약 ID를 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("본인의 예약이 아니면 수정 시 예외 발생")
+    void updateReservationSchedule_fail_with_invalid_owner() {
+        // given
+        ReservationTime savedTime = reservationTimeRepository.save(
+                ReservationTime.create(LocalTime.now().plusHours(1))
+        );
+
+        Theme savedTheme = themeRepository.save(
+                Theme.create("공포", "설명", "https://good.com")
+        );
+
+        Reservation savedReservation = reservationRepository.save(
+                Reservation.create(
+                        "인직",
+                        LocalDate.now().plusDays(1),
+                        savedTime,
+                        savedTheme
+                )
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateReservationSchedule(
+                LocalDate.now().plusDays(2),
+                savedTime.getId(),
+                savedReservation.getId(),
+                "포비"
+        ))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("본인의 예약만 수정할 수 있습니다.");
+    }
+
+    @Test
+    @DisplayName("이미 예약된 시간으로 수정하면 예외 발생")
+    void updateReservationSchedule_fail_with_duplicate_reservation() {
+        // given
+        ReservationTime savedTime1 = reservationTimeRepository.save(
+                ReservationTime.create(LocalTime.now().plusHours(1))
+        );
+
+        ReservationTime savedTime2 = reservationTimeRepository.save(
+                ReservationTime.create(LocalTime.now().plusHours(2))
+        );
+
+        Theme savedTheme = themeRepository.save(
+                Theme.create("공포", "설명", "https://good.com")
+        );
+
+        reservationRepository.save(
+                Reservation.create(
+                        "브라운",
+                        LocalDate.now().plusDays(1),
+                        savedTime2,
+                        savedTheme
+                )
+        );
+
+        Reservation myReservation = reservationRepository.save(
+                Reservation.create(
+                        "인직",
+                        LocalDate.now().plusDays(1),
+                        savedTime1,
+                        savedTheme
+                )
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateReservationSchedule(
+                LocalDate.now().plusDays(1),
+                savedTime2.getId(),
+                myReservation.getId(),
+                "인직"
+        ))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("이미 예약된 시간입니다.");
+    }
+
+    @Test
+    @DisplayName("이름을 기반으로 자신의 예약 삭제 기능")
+    void deleteReservationByName_success() {
+        // given
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.now().plusHours(1)));
+        Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
+        Reservation savedReservation = reservationRepository.save(Reservation.create(
+                "인직",
+                LocalDate.now(),
+                savedTime,
+                savedTheme
+        ));
+
+        // when
+        reservationService.deleteReservationByName(savedReservation.getId(), "인직");
+
+        // then
+        assertThat(reservationRepository.findById(savedReservation.getId())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("예약 ID가 null이면 삭제 시 예외 발생")
+    void deleteReservation_fail_with_null_id() {
+        assertThatThrownBy(() -> reservationService.deleteReservation(null))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("예약 ID가 비어있습니다.");
+    }
+
+    @Test
+    @DisplayName("이름이 비어있으면 자신의 예약 삭제 시 예외 발생")
+    void deleteReservationByName_fail_with_blank_name() {
+        assertThatThrownBy(() -> reservationService.deleteReservationByName(1L, " "))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("이름이 비어있습니다.");
     }
 }

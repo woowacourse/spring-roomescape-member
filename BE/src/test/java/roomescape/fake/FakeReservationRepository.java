@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
 
 public class FakeReservationRepository implements ReservationRepository {
 
@@ -73,6 +74,30 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public void updateScheduleByIdAndName(
+            LocalDate date,
+            Long timeId,
+            Long id,
+            String name
+    ) {
+        Reservation reservation = store.get(id);
+        if (reservation == null) {
+            return;
+        }
+        if (!reservation.getName().equals(name)) {
+            return;
+        }
+        Reservation updatedReservation = Reservation.createRow(
+                reservation.getId(),
+                reservation.getName(),
+                date,
+                ReservationTime.createRow(timeId, reservation.getTime().getStartAt()),
+                reservation.getTheme()
+        );
+        store.put(id, updatedReservation);
+    }
+
+    @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         return store.values().stream()
                 .filter(reservation -> date == null || reservation.getDate().equals(date))
@@ -81,7 +106,22 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByName(String name) {
+        return store.values().stream()
+                .filter(reservation -> reservation.getName().equals(name))
+                .toList();
+    }
+
+    @Override
     public void deleteById(Long id) {
         store.remove(id);
+    }
+
+    @Override
+    public void deleteByIdAndName(Long id, String name) {
+        store.values().removeIf(reservation ->
+                reservation.getId().equals(id)
+                        && reservation.getName().equals(name)
+        );
     }
 }
