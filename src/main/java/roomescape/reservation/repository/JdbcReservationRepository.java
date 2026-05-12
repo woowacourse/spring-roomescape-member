@@ -111,4 +111,13 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = "SELECT EXISTS (SELECT * FROM reservation WHERE time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
+
+    @Override
+    public boolean existsActiveByDateAndThemeAndTime(LocalDate date, Long themeId, Long timeId) {
+        String sql = "SELECT COUNT(*) FROM reservation " +
+                "WHERE date = ? AND theme_id = ? AND time_id = ? AND deleted_at IS NULL";
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, themeId, timeId);
+        return count != null && count > 0;
+    }
 }

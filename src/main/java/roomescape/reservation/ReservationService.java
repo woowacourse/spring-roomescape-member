@@ -42,13 +42,12 @@ public class ReservationService {
                 reservationRequest.date(),
                 reservationTime
         );
-
-        try {
-            Reservation saved = reservationRepository.save(reservation);
-            return ReservationResponse.from(saved);
-        } catch (DataIntegrityViolationException e) {
+        if (reservationRepository.existsActiveByDateAndThemeAndTime(reservation.getDate(), theme.getId(),
+                reservationTime.getId())) {
             throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
         }
+        Reservation saved = reservationRepository.save(reservation);
+        return ReservationResponse.from(saved);
     }
 
     public List<ReservationResponse> read() {

@@ -84,13 +84,13 @@ class ReservationServiceTest {
     void 중복_예약시_예외() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "공포의 방", "설명", "thumb.jpg");
-        ReservationRequest request = new ReservationRequest("동키", 1L,
-                LocalDate.of(2026, 5, 10), 1L);
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        ReservationRequest request = new ReservationRequest("동키", 1L, date, 1L);
 
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(time));
         given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
-        given(reservationRepository.save(any()))
-                .willThrow(new DataIntegrityViolationException("중복"));
+        given(reservationRepository.existsActiveByDateAndThemeAndTime(date, 1L, 1L))
+                .willReturn(true);
 
         assertThatThrownBy(() -> reservationService.create(request))
                 .isInstanceOf(RoomescapeException.class);
