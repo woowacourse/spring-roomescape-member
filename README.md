@@ -50,7 +50,7 @@ Password: 비워두기
 ##### Theme - 01
 
 - API 설명: 관리자가 테마를 추가할 수 있다.
-- URI: `/api/v1/themes`
+- URI: `/api/v1/admin/themes`
 - Method: `POST`
 - Path Variable: 없음
 - Query Variable: 없음
@@ -61,8 +61,7 @@ RequestBody
 {
   "name": "String",
   "description": "String",
-  "imgUrl": "String",
-  "userName": "String"
+  "imgUrl": "String"
 }
 ```
 
@@ -82,18 +81,12 @@ ResponseBody
 ##### Theme - 02
 
 - API 설명: 관리자가 테마를 삭제할 수 있다.
-- URI: `/api/v1/themes/{id}`
+- URI: `/api/v1/admin/themes/{id}`
 - Method: `DELETE`
 - Path Variable: `id`
 - Query Variable: 없음
 
-RequestBody
-
-```json
-{
-  "userName": "String"
-}
-```
+- RequestBody: 없음
 
 - ResponseBody: 없음
 
@@ -102,8 +95,8 @@ RequestBody
 - 이유
 
     - theme에 필요한 값들을 요청 필드로 받아서 post 요청을 보냈고,
-      반환 값에서는 id를 추가해줘서 했다. 중간에 userName을 추가한 이유는 admin을 확인하기 위함이다.
-    - delete도 현재 userName을 식별하여 admin일 때만 삭제할 수 있게 했다.
+      반환 값에서는 id를 추가해줘서 했다.
+    - 관리자 기능은 일반 사용자 API와 분리하기 위해 `/api/v1/admin/themes` 경로로 분리했다.
 
 #### 2단계
 
@@ -118,7 +111,7 @@ RequestBody
 ##### Times - 01
 
 - API 설명: 사용자가 예약 가능한 시간을 조회할 수 있다.
-- URI: `/api/v1/times?date=2026-05-08&themeId=1`
+- URI: `/api/v1/reservation/times?date=2026-05-08&themeId=1`
 - Method: `GET`
 - Path Variable: 없음
 - Query Variable: `date`, `themeId`
