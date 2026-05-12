@@ -45,6 +45,14 @@ public class Reservation {
         }
     }
 
+    public void validateDeletable(LocalTime startAt, LocalDateTime currentDateTime) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
+
+        if (reservationDateTime.isBefore(currentDateTime)) {
+            throw new RoomEscapeException("이미 지나간 예약은 삭제할 수 없습니다.");
+        }
+    }
+
     private static String requireName(String name) {
         if (name == null || name.isBlank()) {
             throw new RoomEscapeException("이름은 비어있을 수 없습니다.");

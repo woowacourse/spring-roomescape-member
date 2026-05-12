@@ -60,7 +60,7 @@ public class ReservationController {
     public ResponseEntity<Void> delete(
             @PathVariable Long id
     ) {
-        reservationCommandService.delete(id);
+        reservationCommandService.delete(id, LocalDateTime.now(clock));
         return ResponseEntity.noContent().build();
     }
 }

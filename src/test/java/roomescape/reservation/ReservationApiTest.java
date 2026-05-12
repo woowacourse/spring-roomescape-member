@@ -232,4 +232,18 @@ class ReservationApiTest {
                 .body("[1].theme.id", equalTo(themeId.intValue()))
                 .body("[1].theme.name", equalTo("공포 테마"));
     }
+
+    @DisplayName("이미 지나간 시간의 예약을 삭제 시 400 응답 반환을 테스트합니다.")
+    @Test
+    void delete_past_reservation() {
+        Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
+        Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        Long reservationId = testHelper.insertReservation("스타크", LocalDate.of(2000, 5, 6), themeId, timeId);
+
+        RestAssured.given()
+                .when().delete("/reservations/{id}", reservationId)
+                .then().log().all()
+                .statusCode(400)
+                .body("errorMessage", equalTo("이미 지나간 예약은 삭제할 수 없습니다."));
+    }
 }

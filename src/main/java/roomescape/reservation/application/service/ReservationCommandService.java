@@ -11,6 +11,7 @@ import roomescape.reservation.application.dto.ReservationResult;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
+import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 import roomescape.theme.application.dto.ThemeResult;
 import roomescape.theme.domain.repository.ThemeRepository;
@@ -39,7 +40,15 @@ public class ReservationCommandService {
         return ReservationResult.from(reservationRepository.save(reservation), themeResult, timeResult);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, LocalDateTime currentDateTime) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+
+        ReservationTime time = timeRepository.findById(reservation.getTimeId())
+                .orElseThrow(() -> new RoomEscapeException("존재하지 않는 시간입니다."));
+
+        reservation.validateDeletable(time.getStartAt(), currentDateTime);
+
         if (reservationRepository.delete(id) == 0) {
             throw new NotFoundException("존재하지 않는 예약입니다.");
         }
