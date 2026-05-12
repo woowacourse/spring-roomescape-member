@@ -97,6 +97,24 @@
           <p id="formMessage" class="message"></p>
         </aside>
       </section>
+
+      <section class="lookup-panel" aria-labelledby="lookupTitle">
+        <div class="lookup-head">
+          <div class="lookup-title-group">
+            <h2 id="lookupTitle" class="area-title">내 예약 조회</h2>
+            <span id="lookupCount" class="area-subtitle">예약자 이름으로 조회</span>
+          </div>
+          <form id="lookupForm" class="lookup-form">
+            <label class="field">
+              <span class="label">예약자 이름</span>
+              <input id="lookupGuestName" class="name-input" type="text" placeholder="이름" autocomplete="name" />
+            </label>
+            <button id="lookupButton" class="secondary-button" type="submit">조회</button>
+          </form>
+        </div>
+        <p id="lookupMessage" class="message"></p>
+        <div id="lookupList" class="lookup-list" aria-label="예약 조회 결과"></div>
+      </section>
     </main>
   </div>
 

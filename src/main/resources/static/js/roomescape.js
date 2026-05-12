@@ -79,6 +79,12 @@ const API_BASE = "";
       summaryTime: $("#summaryTime"),
       reserveButton: $("#reserveButton"),
       formMessage: $("#formMessage"),
+      lookupForm: $("#lookupForm"),
+      lookupGuestName: $("#lookupGuestName"),
+      lookupButton: $("#lookupButton"),
+      lookupMessage: $("#lookupMessage"),
+      lookupList: $("#lookupList"),
+      lookupCount: $("#lookupCount"),
       themeMetric: $("#themeMetric"),
       timeMetric: $("#timeMetric"),
       reservationMetric: $("#reservationMetric"),
@@ -515,6 +521,63 @@ const API_BASE = "";
       return reservation.time || state.times.find((time) => time.id === reservation.timeId) || null;
     }
 
+    function renderLookupReservations(reservations) {
+      elements.lookupList.innerHTML = "";
+      elements.lookupCount.textContent = `${reservations.length}건`;
+
+      if (reservations.length === 0) {
+        elements.lookupList.innerHTML = `<div class="empty">조회된 예약이 없습니다.</div>`;
+        return;
+      }
+
+      [...reservations]
+        .sort((a, b) => String(b.date).localeCompare(String(a.date)) || Number(b.id) - Number(a.id))
+        .forEach((reservation) => {
+          const theme = getReservationTheme(reservation);
+          const time = getReservationTime(reservation);
+          const row = document.createElement("div");
+          row.className = "list-row";
+          row.innerHTML = `
+            <div class="list-main">
+              <span class="list-title">${escapeHtml(reservation.guestName || "예약자")}</span>
+              <span class="list-meta">${escapeHtml(formatDate(reservation.date))} · ${escapeHtml(theme?.name || "-")} · ${escapeHtml(normalizeTime(time?.startAt || "-"))}</span>
+            </div>
+          `;
+          elements.lookupList.appendChild(row);
+        });
+    }
+
+    async function lookupReservations(event) {
+      event.preventDefault();
+      const guestName = elements.lookupGuestName.value.trim();
+      if (!guestName) {
+        elements.lookupMessage.textContent = "예약자 이름을 입력해주세요.";
+        elements.lookupMessage.className = "message error";
+        renderLookupReservations([]);
+        return;
+      }
+
+      elements.lookupButton.disabled = true;
+      elements.lookupMessage.textContent = "예약을 조회하는 중입니다.";
+      elements.lookupMessage.className = "message";
+
+      try {
+        const reservations = state.mode === "live"
+          ? (await getJson(`/reservations?guestName=${encodeURIComponent(guestName)}`)).reservations || []
+          : state.demoReservations.filter((reservation) => reservation.guestName === guestName);
+
+        renderLookupReservations(reservations);
+        elements.lookupMessage.textContent = reservations.length === 0 ? "조회된 예약이 없습니다." : "예약 조회가 완료되었습니다.";
+        elements.lookupMessage.className = `message${reservations.length === 0 ? "" : " ok"}`;
+      } catch (error) {
+        renderLookupReservations([]);
+        elements.lookupMessage.textContent = endpointMessageOr(error, "예약 조회에 실패했습니다.");
+        elements.lookupMessage.className = "message error";
+      } finally {
+        elements.lookupButton.disabled = false;
+      }
+    }
+
     function renderAdmin() {
       elements.themeMetric.textContent = state.themes.length;
       elements.timeMetric.textContent = state.times.length;
@@ -853,6 +916,7 @@ const API_BASE = "";
       state.availableTimes = getDemoAvailability();
       renderTimes();
       syncSummary();
+      renderLookupReservations([]);
     }
 
     async function loadInitialData() {
@@ -905,6 +969,7 @@ const API_BASE = "";
         renderThemes();
         await loadAvailability();
         syncSummary();
+        renderLookupReservations([]);
       } catch (error) {
         state.mode = "demo";
         renderDemoFirst();
@@ -919,6 +984,7 @@ const API_BASE = "";
       });
       elements.nameInput.addEventListener("input", syncSummary);
       elements.reserveButton.addEventListener("click", reserve);
+      elements.lookupForm.addEventListener("submit", lookupReservations);
     }
 
     if (isAdminPage()) {

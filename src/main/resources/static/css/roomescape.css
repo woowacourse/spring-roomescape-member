@@ -478,6 +478,49 @@
       min-width: 0;
     }
 
+    .lookup-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 16px;
+      box-shadow: 0 12px 24px rgba(43, 35, 24, 0.07);
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .lookup-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+      gap: 16px;
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+    }
+
+    .lookup-title-group {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .lookup-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 86px;
+      gap: 10px;
+      align-items: end;
+      min-width: 0;
+    }
+
+    .lookup-list {
+      display: grid;
+      gap: 8px;
+      max-height: 320px;
+      overflow-y: auto;
+      padding-right: 3px;
+      scrollbar-width: thin;
+    }
+
     .summary-head {
       display: flex;
       justify-content: space-between;
@@ -859,6 +902,7 @@
       .popular-band,
       .reservation-layout,
       .control-strip,
+      .lookup-head,
       .admin-layout,
       .admin-header {
         grid-template-columns: 1fr;
@@ -969,7 +1013,8 @@
       }
 
       .admin-reserve-grid,
-      .admin-time-grid {
+      .admin-time-grid,
+      .lookup-form {
         grid-template-columns: 1fr;
       }
 
