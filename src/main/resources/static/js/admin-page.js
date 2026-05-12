@@ -150,7 +150,7 @@ timeForm.addEventListener("submit", async (event) => {
     };
 
     try {
-        await request("/times", {
+        await request("/admin/times", {
             method: "POST",
             body: JSON.stringify(payload)
         });
@@ -220,7 +220,7 @@ timeList.addEventListener("click", async (event) => {
     clearFeedback(timeFeedback);
 
     try {
-        await request(`/times/${target.dataset.id}`, { method: "DELETE" });
+        await request(`/admin/times/${target.dataset.id}`, { method: "DELETE" });
         await refreshTimes();
         showFeedback(timeFeedback, "success", "예약 시간이 삭제되었습니다.");
     } catch (error) {
