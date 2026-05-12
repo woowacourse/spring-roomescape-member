@@ -178,4 +178,32 @@ class ReservationServiceTest {
         // then
         assertThat(reservationRepository.findById(savedReservation.getId())).isEmpty();
     }
+
+    @Test
+    @DisplayName("중복 예약이 있으면 예외를 반환한다")
+    void saveReservation_fail_with_duplicate_reservation() {
+        // given
+        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.create(LocalTime.of(10, 0)));
+        Theme savedTheme = themeRepository.save(Theme.create("공포", "아니", "https://good.com/thumb-nail/1"));
+        ReservationRequest request = new ReservationRequest(
+                "흑곰",
+                LocalDate.now(),
+                savedTime.getId(),
+                savedTheme.getId()
+        );
+        reservationService.saveReservation(
+                request.name(),
+                request.date(),
+                request.timeId(),
+                request.themeId()
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.saveReservation(
+                request.name(),
+                request.date(),
+                request.timeId(),
+                request.themeId())
+        ).isInstanceOf(BusinessException.class);
+    }
 }
