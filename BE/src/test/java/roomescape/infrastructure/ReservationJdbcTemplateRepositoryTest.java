@@ -206,4 +206,19 @@ class ReservationJdbcTemplateRepositoryTest {
         Assertions.assertTrue(result.isPresent());
         Assertions.assertEquals(savedReservation.getId(), result.get().getId());
     }
+
+    @Test
+    @DisplayName("특정 테마 ID를 참조하는 예약이 존재하는지 확인한다.")
+    void existsByThemeId_success() {
+        // given
+        reservationRepository.save(Reservation.create(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1));
+
+        // when
+        boolean exists = reservationRepository.existsByThemeId(savedTime1.getId());
+        boolean notExists = reservationRepository.existsByThemeId(999L);
+
+        // then
+        Assertions.assertTrue(exists);
+        Assertions.assertFalse(notExists);
+    }
 }
