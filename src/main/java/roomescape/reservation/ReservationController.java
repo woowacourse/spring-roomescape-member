@@ -1,6 +1,8 @@
 package roomescape.reservation;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +34,8 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> read(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Max(100) int size
     ) {
         return ResponseEntity.ok().body(reservationService.read(page, size));
     }

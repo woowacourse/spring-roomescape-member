@@ -1,5 +1,7 @@
 package roomescape.theme;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -22,8 +24,8 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> read(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Max(100) int size
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(themeService.read(page, size));
     }
