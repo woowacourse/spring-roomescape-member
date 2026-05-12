@@ -57,34 +57,46 @@ public class ReservationService {
         return reservationRepository.save(transientReservation);
     }
 
-    public void removeReservation(long reservationId) {
+    public void removeReservation(long reservationId, String userName) {
         Reservation reservation = findReservationById(reservationId);
+        validOwnership(reservation.name(), userName);
         validNotPast(reservation.date(), reservation.timeSlot().startAt());
         reservationRepository.deleteById(reservationId);
     }
 
     public void putReservation(
             long id,
+            String userName,
             @NotBlank(message = "이름은 필수입니다.") String name,
             @NotNull(message = "날짜는 필수입니다.") LocalDate date,
             @NotNull Long timeId,
             @NotNull Long themeId
     ) {
         Reservation existingReservation = findReservationById(id);
+        validOwnership(existingReservation.name(), userName);
         validNotPast(existingReservation.date(), existingReservation.timeSlot().startAt());
+
         Reservation transientReservation = createTransientWithValidField(name, date, timeId, themeId);
         Reservation reservation = new Reservation(id, transientReservation.name(), transientReservation.date(), transientReservation.timeSlot(), transientReservation.theme());
         reservationRepository.update(reservation);
     }
 
-    public void patchReservation(long id, String name, LocalDate date, Long timeId, Long themeId) {
+    public void patchReservation(long id, String userName, String name, LocalDate date, Long timeId, Long themeId) {
         Reservation reservation = findReservationById(id);
+        validOwnership(reservation.name(), userName);
         validNotPast(reservation.date(), reservation.timeSlot().startAt());
+
         TimeSlot timeSlot = findOptionalTime(timeId);
         Theme theme = findOptionalTheme(themeId);
         Reservation patched = reservation.patch(name, date, timeSlot, theme);
         validDateTime(patched.date(), patched.timeSlot().startAt());
         reservationRepository.update(patched);
+    }
+
+    private void validOwnership(String ownerName, String requesterName) {
+        if (!ownerName.equals(requesterName)) {
+            throw new IllegalArgumentException("본인의 예약만 제어할 수 있습니다.");
+        }
     }
 
     private Reservation createTransientWithValidField(String name, LocalDate date, Long timeId, Long themeId) {

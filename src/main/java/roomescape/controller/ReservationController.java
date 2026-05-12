@@ -31,9 +31,9 @@ public class ReservationController {
         return ResponseEntity.ok(toResponse(reservation));
     }
 
-    @GetMapping(params = {"name"})
-    public ResponseEntity<List<ReservationResponse>> getReservationByName(@RequestParam String name) {
-        return ResponseEntity.ok(convertToReservationResponse(reservationService.findReservationByName(name)));
+    @GetMapping(params = {"userName"})
+    public ResponseEntity<List<ReservationResponse>> getReservationByName(@RequestParam String userName) {
+        return ResponseEntity.ok(convertToReservationResponse(reservationService.findReservationByName(userName)));
     }
 
     @PostMapping
@@ -45,27 +45,29 @@ public class ReservationController {
                 .body(toResponse(reservation));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
-        reservationService.removeReservation(id);
+    @DeleteMapping(value = "/{id}", params = {"userName"})
+    public ResponseEntity<Void> deleteReservation(@PathVariable long id, @RequestParam String userName) {
+        reservationService.removeReservation(id, userName);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", params = {"userName"})
     public ResponseEntity<ReservationResponse> updateReservation(
             @PathVariable long id,
-            @RequestBody @Valid ReservationPutRequest request
+            @RequestBody @Valid ReservationPutRequest request,
+            @RequestParam String userName
     ) {
-        reservationService.putReservation(id, request.name(), request.date(), request.timeId(), request.themeId());
+        reservationService.putReservation(id, userName, request.name(), request.date(), request.timeId(), request.themeId());
         return ResponseEntity.ok(toResponse(reservationService.findReservationById(id)));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping(value = "/{id}", params = {"userName"})
     public ResponseEntity<ReservationResponse> patchReservation(
             @PathVariable long id,
-            @RequestBody ReservationPatchRequest request
+            @RequestBody ReservationPatchRequest request,
+            @RequestParam String userName
     ) {
-        reservationService.patchReservation(id, request.name(), request.date(), request.timeId(), request.themeId());
+        reservationService.patchReservation(id, userName, request.name(), request.date(), request.timeId(), request.themeId());
         return ResponseEntity.ok(toResponse(reservationService.findReservationById(id)));
     }
 

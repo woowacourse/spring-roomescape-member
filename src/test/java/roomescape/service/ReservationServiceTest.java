@@ -22,7 +22,7 @@ class ReservationServiceTest {
 
     private ReservationService reservationService;
     private FakeReservationRepository reservationRepository;
-    private FakeTimeSlotRepository timeSlotRepository; // 타입 오타 수정
+    private FakeTimeSlotRepository timeSlotRepository;
     private FakeThemeRepository themeRepository;
 
     private TimeSlot savedTimeSlot;
@@ -65,7 +65,7 @@ class ReservationServiceTest {
     void removeReservation() {
         LocalDate futureDate = LocalDate.now().plusDays(1);
         Reservation reservation = reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(), savedTheme.id());
-        reservationService.removeReservation(reservation.id());
+        reservationService.removeReservation(reservation.id(), "브라운");
         assertThat(reservationService.allReservations()).isEmpty();
     }
 
@@ -119,7 +119,7 @@ class ReservationServiceTest {
                 Reservation.transientOf("브라운", pastDate, savedTimeSlot, savedTheme)
         );
 
-        assertThatThrownBy(() -> reservationService.removeReservation(pastReservation.id()))
+        assertThatThrownBy(() -> reservationService.removeReservation(pastReservation.id(), "브라운"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 지난 예약은 수정/삭제할 수 없습니다.");
     }
@@ -133,7 +133,7 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.putReservation(
-                pastReservation.id(), "네오", LocalDate.now().plusDays(1), savedTimeSlot.id(), savedTheme.id()
+                pastReservation.id(), "브라운", "브라운", LocalDate.now().plusDays(1), savedTimeSlot.id(), savedTheme.id()
         )).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 지난 예약은 수정/삭제할 수 없습니다.");
     }
@@ -147,8 +147,47 @@ class ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.patchReservation(
-                pastReservation.id(), "네오", null, null, null
+                pastReservation.id(), "브라운", "브라운", null, null, null
         )).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 지난 예약은 수정/삭제할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("다른 사용자의 예약을 삭제하려고 시도하면 예외가 발생한다.")
+    void removeReservation_WrongOwner() {
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+        Reservation savedReservation = reservationRepository.save(
+                Reservation.transientOf("브라운", futureDate, savedTimeSlot, savedTheme)
+        );
+
+        assertThatThrownBy(() -> reservationService.removeReservation(savedReservation.id(), "네오"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("본인의 예약만 제어할 수 있습니다.");
+    }
+
+    @Test
+    @DisplayName("예약을 이미 예약된 다른 시간으로 수정(PUT)하려 하면 예외가 발생한다.")
+    void putReservation_Duplicated() {
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+        Reservation target = reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(), savedTheme.id());
+        TimeSlot otherTime = timeSlotRepository.save(TimeSlot.transientOf(LocalTime.of(13, 0)));
+        reservationService.saveReservation("네오", futureDate, otherTime.id(), savedTheme.id());
+
+        assertThatThrownBy(() -> reservationService.putReservation(
+                target.id(), "브라운", "브라운", futureDate, otherTime.id(), savedTheme.id()
+        )).isInstanceOf(DuplicateKeyException.class);
+    }
+
+    @Test
+    @DisplayName("자기 자신의 예약 시간을 그대로 유지한 채 이름만 수정(PUT)하면 정상 통과해야 한다.")
+    void putReservation_SelfDuplicate_Bug() {
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+        Reservation target = reservationService.saveReservation("브라운", futureDate, savedTimeSlot.id(), savedTheme.id());
+
+        reservationService.putReservation(
+                target.id(), "브라운", "새로운이름", futureDate, savedTimeSlot.id(), savedTheme.id()
+        );
+
+        assertThat(reservationService.findReservationById(target.id()).name()).isEqualTo("새로운이름");
     }
 }
