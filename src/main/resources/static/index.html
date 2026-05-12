@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roomescape Member</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<nav class="bg-indigo-600 text-white shadow-lg">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold tracking-tight cursor-pointer" onclick="showSection('home')">Roomescape</h1>
+        <div class="space-x-6">
+            <button onclick="showSection('themes')" class="hover:text-indigo-200 font-medium">테마예약</button>
+            <button onclick="showSection('ranking-search')" class="hover:text-indigo-200 font-medium">인기 테마 검색</button> <!-- 추가됨 -->
+            <button onclick="showSection('reservations')" class="hover:text-indigo-200 font-medium">전체 예약 현황</button>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto p-6">
+
+    <!-- [Section 1] Home: Ranking (디폴트 랭킹) -->
+    <section id="home-section" class="space-y-8">
+        <h2 class="text-3xl font-extrabold text-gray-800">🔥 지금 가장 인기 있는 테마 (최근 7일)</h2>
+        <div id="ranking-list" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Ranking items injected here -->
+        </div>
+    </section>
+
+    <!-- [Section 2] Themes: List & Schedule -->
+    <section id="themes-section" class="hidden space-y-8">
+        <h2 class="text-3xl font-extrabold text-gray-800">전체 테마</h2>
+        <div id="theme-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <div id="schedule-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+                <div class="flex justify-between items-center">
+                    <h3 id="modal-theme-name" class="text-xl font-bold">테마 예약하기</h3>
+                    <button onclick="closeModal()" class="text-gray-500 hover:text-black font-bold text-xl">✕</button>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">예약 날짜</label>
+                    <input type="date" id="reservation-date" class="block w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500" onchange="loadSchedules()">
+                </div>
+                <div id="schedule-slots" class="grid grid-cols-3 gap-2 mt-2"></div>
+                <div class="pt-4 border-t mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">예약자 성함</label>
+                    <input type="text" id="user-name" placeholder="이름을 입력하세요" class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <button onclick="submitReservation()" class="w-full mt-4 bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition">예약 신청하기</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ⭐ [Section 3] Ranking Search (새로 추가된 검색 탭) -->
+    <section id="ranking-search-section" class="hidden space-y-6">
+        <h2 class="text-3xl font-extrabold text-gray-800">🏆 인기 테마 상세 검색</h2>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-wrap gap-4 items-end">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">시작일</label>
+                <input type="date" id="search-start" class="border border-gray-300 p-2 rounded focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">종료일</label>
+                <input type="date" id="search-end" class="border border-gray-300 p-2 rounded focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <button onclick="executeRankingSearch()" class="bg-indigo-600 text-white px-8 py-2 rounded font-bold hover:bg-indigo-700 transition">검색하기</button>
+        </div>
+        <div id="search-ranking-list" class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+            <div class="col-span-3 text-center text-gray-500 py-10">기간을 설정하고 검색 버튼을 눌러주세요.</div>
+        </div>
+    </section>
+
+    <!-- [Section 4] All Reservations Status -->
+    <section id="reservations-section" class="hidden space-y-8">
+        <h2 class="text-3xl font-extrabold text-gray-800">📋 전체 예약 현황</h2>
+        <div class="bg-white shadow rounded-lg overflow-hidden border border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200 text-left">
+                <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-6 py-3 font-semibold text-gray-700">날짜</th>
+                    <th class="px-6 py-3 font-semibold text-gray-700">테마</th>
+                    <th class="px-6 py-3 font-semibold text-gray-700">시간</th>
+                    <th class="px-6 py-3 font-semibold text-gray-700">예약자</th>
+                    <th class="px-6 py-3 font-semibold text-gray-700">작업</th>
+                </tr>
+                </thead>
+                <tbody id="all-reservation-list" class="divide-y divide-gray-200"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<script>
+    const API_BASE_URL = '';
+    let selectedThemeId = null;
+    let selectedTimeId = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadRankings();
+        loadThemes();
+        loadAllReservations();
+        initSearchDates(); // 검색 날짜 기본값 세팅
+    });
+
+    function showSection(section) {
+        // 1. 모든 섹션 숨기기
+        ['home', 'themes', 'ranking-search', 'reservations'].forEach(s => {
+            document.getElementById(`${s}-section`).classList.add('hidden');
+        });
+        // 2. 선택한 섹션만 보여주기
+        document.getElementById(`${section}-section`).classList.remove('hidden');
+
+        // ⭐ 3. 탭을 이동할 때마다 최신 데이터로 갱신하기 (추가된 부분)
+        if (section === 'home') {
+            loadRankings(); // 홈 화면으로 오면 랭킹 다시 불러오기
+        } else if (section === 'reservations') {
+            loadAllReservations(); // 전체 예약 현황 탭으로 오면 예약 다시 불러오기
+        }
+    }
+
+    async function loadRankings() {
+        try {
+            // limit=3 파라미터로 홈 화면에는 Top 3만 출력
+            const res = await fetch(`${API_BASE_URL}/themes/rank?limit=3`);
+            const data = await res.json();
+            const container = document.getElementById('ranking-list');
+            container.innerHTML = data.map((theme, index) => `
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden border-2 border-indigo-100 p-4 transform transition hover:-translate-y-1">
+                        <div class="text-indigo-600 font-black text-2xl mb-2">Rank ${index + 1}</div>
+                        <img src="${theme.thumbnail}" class="w-full h-40 object-cover rounded-md mb-4">
+                        <h3 class="font-bold text-lg">${theme.name}</h3>
+                        <p class="text-gray-500 text-sm mt-1">${theme.description}</p>
+                    </div>
+                `).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    // ⭐ 새로 추가된 랭킹 검색 기능
+    function initSearchDates() {
+        const today = new Date();
+        const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+        const formatDate = (date) => {
+            const offset = date.getTimezoneOffset() * 60000;
+            return (new Date(date - offset)).toISOString().split('T')[0];
+        };
+
+        document.getElementById('search-start').value = formatDate(lastWeek);
+        document.getElementById('search-end').value = formatDate(today);
+    }
+
+    async function executeRankingSearch() {
+        const start = document.getElementById('search-start').value;
+        const end = document.getElementById('search-end').value;
+
+        // 검색 시에는 최대 10개까지 보여주도록 제한 (명세서 기본값 활용)
+        let url = `${API_BASE_URL}/themes/rank?limit=10`;
+        if (start) url += `&startDate=${start}`;
+        if (end) url += `&endDate=${end}`;
+
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            const container = document.getElementById('search-ranking-list');
+
+            if(data.length === 0) {
+                container.innerHTML = `<div class="col-span-3 text-center text-gray-500 py-10">해당 기간 내에 예약된 테마가 없습니다.</div>`;
+                return;
+            }
+
+            container.innerHTML = data.map((theme, index) => `
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2.5 py-0.5 rounded border border-indigo-200">${index + 1}위</span>
+                        </div>
+                        <img src="${theme.thumbnail}" class="w-full h-40 object-cover rounded-md mb-4">
+                        <h3 class="font-bold text-lg">${theme.name}</h3>
+                        <p class="text-gray-500 text-sm mt-1">${theme.description}</p>
+                    </div>
+                `).join('');
+        } catch (e) { console.error("Ranking Search Error", e); }
+    }
+
+    async function loadThemes() {
+        try {
+            const res = await fetch(`${API_BASE_URL}/themes`);
+            const data = await res.json();
+            const container = document.getElementById('theme-list');
+            container.innerHTML = data.map(theme => `
+                    <div class="bg-white rounded-xl shadow p-4 space-y-4 border border-gray-100">
+                        <img src="${theme.thumbnail}" class="w-full h-48 object-cover rounded-lg">
+                        <h3 class="font-bold text-xl">${theme.name}</h3>
+                        <button onclick="openBookingModal(${theme.id}, '${theme.name}')"
+                                class="w-full bg-gray-800 text-white py-2 rounded font-medium hover:bg-gray-900 transition">예약하기</button>
+                    </div>
+                `).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    function openBookingModal(id, name) {
+        selectedThemeId = id;
+        document.getElementById('modal-theme-name').innerText = name;
+
+        const today = new Date();
+        const offset = today.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(today - offset)).toISOString().split('T')[0];
+
+        document.getElementById('reservation-date').value = localISOTime;
+        document.getElementById('user-name').value = '';
+        document.getElementById('schedule-modal').classList.remove('hidden');
+        loadSchedules();
+    }
+
+    async function loadSchedules() {
+        selectedTimeId = null;
+        const date = document.getElementById('reservation-date').value;
+        if(!date) return;
+
+        const res = await fetch(`${API_BASE_URL}/times/${selectedThemeId}?date=${date}`);
+        const data = await res.json();
+
+        const container = document.getElementById('schedule-slots');
+        container.innerHTML = data.schedules.map(s => `
+                <button onclick="selectTime(${s.timeId})"
+                        ${!s.isAvailable ? 'disabled' : ''}
+                        class="p-2 border rounded font-medium transition-colors ${!s.isAvailable ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'hover:border-indigo-600 time-btn'}"
+                        id="time-slot-${s.timeId}">
+                    ${s.startAt.substring(0, 5)}
+                </button>
+            `).join('');
+    }
+
+    function selectTime(id) {
+        selectedTimeId = id;
+        document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
+        });
+        const selectedBtn = document.getElementById(`time-slot-${id}`);
+        if (selectedBtn) {
+            selectedBtn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+        }
+    }
+
+    async function submitReservation() {
+        if (!selectedTimeId) { alert('🚨 예약 시간을 먼저 선택해 주세요!'); return; }
+        const name = document.getElementById('user-name').value;
+        if (!name.trim()) { alert('🚨 예약자 성함을 입력해 주세요!'); return; }
+        const date = document.getElementById('reservation-date').value;
+
+        const res = await fetch(`${API_BASE_URL}/reservations`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ themeId: selectedThemeId, name, date, timeId: selectedTimeId })
+        });
+
+        if (res.ok) {
+            alert('🎉 예약이 성공적으로 완료되었습니다!');
+            closeModal();
+            loadAllReservations();
+            showSection('reservations');
+        } else {
+            const error = await res.json();
+            alert(`에러 발생: ${error.message}`);
+        }
+    }
+
+    async function loadAllReservations() {
+        try {
+            const res = await fetch(`${API_BASE_URL}/reservations`);
+            const data = await res.json();
+            const container = document.getElementById('all-reservation-list');
+
+            container.innerHTML = data.map(r => {
+                const themeName = r.themeResponse?.name || r.theme?.name || '테마 정보 없음';
+                const startTime = r.time?.startAt ? r.time.startAt.substring(0, 5) : '시간 없음';
+
+                return `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">${r.date}</td>
+                            <td class="px-6 py-4 font-medium">${themeName}</td>
+                            <td class="px-6 py-4">${startTime}</td>
+                            <td class="px-6 py-4 font-bold text-gray-400">🔒 비공개</td>
+                            <td class="px-6 py-4">
+                                <button onclick="promptCancelReservation(${r.id})" class="text-red-500 font-bold hover:text-red-700 transition">취소</button>
+                            </td>
+                        </tr>
+                    `;
+            }).join('');
+        } catch (e) { console.error("Reservation Load Error", e); }
+    }
+
+    async function promptCancelReservation(id) {
+        const inputName = prompt('🔒 예약을 취소하려면 예약자 성함을 정확히 입력해주세요:');
+        if (!inputName || !inputName.trim()) return;
+
+        const res = await fetch(`${API_BASE_URL}/reservations/${id}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: inputName.trim() })
+        });
+
+        if (res.ok) {
+            alert('✅ 예약이 성공적으로 취소되었습니다.');
+            loadAllReservations();
+        } else {
+            alert('❌ 취소에 실패했습니다. 예약자 성함이 일치하지 않습니다.');
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('schedule-modal').classList.add('hidden');
+    }
+</script>
+</body>
+</html>
