@@ -3,6 +3,7 @@ package roomescape.reservation.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -95,8 +96,11 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE r.id = :id
                 """;
         SqlParameterSource params = new MapSqlParameterSource("id", id);
-
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, reservationRowMapper));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, params, reservationRowMapper));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
