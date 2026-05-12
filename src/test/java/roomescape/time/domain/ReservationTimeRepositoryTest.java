@@ -17,7 +17,7 @@ import roomescape.reservation.infra.JdbcReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.infra.JdbcThemeRepository;
-import roomescape.time.domain.exception.ReservationTimeNotFoundException;
+import roomescape.time.application.exception.ReservationTimeNotFoundException;
 import roomescape.time.infra.JdbcReservationTimeRepository;
 
 @JdbcTest

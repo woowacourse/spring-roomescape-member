@@ -1,4 +1,4 @@
-package roomescape.time.domain.exception;
+package roomescape.time.application.exception;
 
 import roomescape.common.exception.NotFoundException;
 
