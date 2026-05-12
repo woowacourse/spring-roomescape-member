@@ -1,54 +1,77 @@
 package roomescape.support.fake;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.theme.Theme;
 
 public class FakeReservationRepository implements ReservationRepository {
 
-    public Reservation savedReservation;
-    public List<Reservation> findAllResult = List.of();
-    public int countByTimeIdResult;
-    public int countByReservationDateIdResult;
-    public int countByThemeIdResult;
+    private final Map<Long, Reservation> storage = new LinkedHashMap<>();
+    private long sequence = 1L;
 
     @Override
     public Reservation save(Reservation reservation) {
-        savedReservation = reservation;
-        return Reservation.of(
-            1L,
-            reservation.getName(),
-            reservation.getDate(),
-            reservation.getTime(),
-            reservation.getTheme()
-        );
+        Long id = reservation.getId();
+        if (id == null) {
+            id = sequence++;
+        } else {
+            sequence = Math.max(sequence, id + 1);
+        }
+        Reservation savedReservation = Reservation.createWithId(id, reservation);
+        storage.put(id, savedReservation);
+        return savedReservation;
     }
 
     @Override
     public List<Reservation> findAll() {
-        return findAllResult;
+        return new ArrayList<>(storage.values());
     }
 
     @Override
     public int deleteById(Long id) {
-        return 0;
+        Reservation removedReservation = storage.remove(id);
+        if (removedReservation == null) {
+            return 0;
+        }
+        return 1;
     }
 
     @Override
     public int countByTimeId(Long timeId) {
-        return countByTimeIdResult;
+        int count = 0;
+        for (Reservation value : storage.values()) {
+            if (value.getTime().getId().equals(timeId)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     @Override
     public int countByReservationDateId(Long dateId) {
-        return countByReservationDateIdResult;
+        int count = 0;
+        for (Reservation value : storage.values()) {
+            if (value.getDate().getId().equals(dateId)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     @Override
     public List<Long> findReservedTimes(Long themeId, Long dateId) {
-        return List.of();
+        List<Long> reservedTimeIds = new ArrayList<>();
+        for (Reservation reservation : storage.values()) {
+            if (reservation.getTheme().getId().equals(themeId) && reservation.getDate().getId().equals(dateId)) {
+                reservedTimeIds.add(reservation.getTime().getId());
+            }
+        }
+        return reservedTimeIds;
     }
 
     @Override
@@ -57,7 +80,18 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public int countByThemeId(Long id) {
-        return countByThemeIdResult;
+    public int countByThemeId(Long themeId) {
+        int count = 0;
+        for (Reservation reservation : storage.values()) {
+            if (reservation.getTheme().getId().equals(themeId)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public void insert(Reservation reservation) {
+        storage.put(reservation.getId(), reservation);
+        sequence = Math.max(sequence, reservation.getId() + 1);
     }
 }
