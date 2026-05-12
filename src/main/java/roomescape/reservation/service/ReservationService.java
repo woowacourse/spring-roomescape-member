@@ -23,7 +23,6 @@ import roomescape.time.exception.TimeNotFoundException;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
-@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;

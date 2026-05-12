@@ -8,7 +8,6 @@ import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.ThemeCommand;
 
 @Service
-@Transactional(readOnly = true)
 public class ThemeService {
 
     private final ThemeRepository themeRepository;

@@ -9,7 +9,6 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
-@Transactional(readOnly = true)
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
