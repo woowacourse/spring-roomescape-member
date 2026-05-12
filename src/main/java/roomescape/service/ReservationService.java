@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -68,5 +70,18 @@ public class ReservationService {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new DuplicateKeyException("선택하신 시간과 테마는 이미 예약되었습니다.");
         }
+    }
+
+    public int putReservation(long id, @NotBlank(message = "이름은 필수입니다.") String name,
+                              @NotNull(message = "날짜는 필수입니다.") LocalDate date, @NotNull Long timeId,
+                              @NotNull Long themeId) {
+        validDate(date);
+        validDuplicatedReservation(date, timeId, themeId);
+        TimeSlot timeSlot = timeSlotRepository.findById(timeId)
+                .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + timeId));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + themeId));
+        Reservation reservation = new Reservation(id, name, date, timeSlot, theme);
+        return reservationRepository.update(reservation);
     }
 }

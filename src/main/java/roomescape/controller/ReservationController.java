@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.dto.ReservationPutRequest;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.controller.dto.ThemeResponse;
@@ -51,6 +53,15 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
         reservationService.removeReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable long id,
+            @RequestBody ReservationPutRequest request
+    ) {
+        reservationService.putReservation(id, request.name(), request.date(), request.timeId(), request.themeId());
+        return ResponseEntity.ok(toResponse(reservationService.findReservationById(id)));
     }
 
     private List<ReservationResponse> convertToReservationResponse(List<Reservation> reservations) {

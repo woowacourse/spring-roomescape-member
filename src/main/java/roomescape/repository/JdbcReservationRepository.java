@@ -1,5 +1,10 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -8,12 +13,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -100,6 +99,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = "SELECT EXISTS (SELECT * FROM reservation WHERE date = ? AND theme_id = ? AND time_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
+    }
+
+    @Override
+    public int update(Reservation reservation) {
+        String sql = "UPDATE reservation SET name = ?, date = ?, time_id = ?, theme_id = ? WHERE id = ?";
+        return jdbcTemplate.update(
+                sql,
+                reservation.name(),
+                reservation.date(),
+                reservation.timeSlot().id(),
+                reservation.theme().id(),
+                reservation.id()
+        );
     }
 
     private SimpleJdbcInsert createInsert() {
