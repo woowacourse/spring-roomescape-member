@@ -16,6 +16,7 @@ import roomescape.domain.fixture.ReservationTimeFixture;
 import roomescape.domain.fixture.ThemeFixture;
 import roomescape.global.exception.DuplicateEntityException;
 import roomescape.global.exception.EntityNotFoundException;
+import roomescape.global.exception.InactiveException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -105,6 +106,26 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.reserve(request))
                 .isInstanceOf(DuplicateEntityException.class)
                 .hasMessageContaining("이미 예약 된 날짜입니다.");
+    }
+
+    @Test
+    void 비활성화된_테마로_예약하면_예외가_발생한다() {
+        // given
+        Theme inactiveTheme = ThemeFixture.createDefaultTheme();
+        inactiveTheme.deactivate();
+        Theme savedTheme = themeRepository.save(inactiveTheme);
+        ReservationTime time = reservationTimeRepository.save(ReservationTimeFixture.createDefaultReservationTime());
+        ReservationRequest request = new ReservationRequest(
+                "웨지",
+                LocalDate.now().plusDays(1),
+                savedTheme.getId(),
+                time.getId()
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.reserve(request))
+                .isInstanceOf(InactiveException.class)
+                .hasMessage("비활성화 된 테마는 예약할 수 없습니다.");
     }
 
     @Test

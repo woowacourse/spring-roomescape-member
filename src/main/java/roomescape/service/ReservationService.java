@@ -10,6 +10,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.global.exception.DuplicateEntityException;
 import roomescape.global.exception.EntityNotFoundException;
+import roomescape.global.exception.InactiveException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -31,6 +32,7 @@ public class ReservationService {
         ReservationTime time = findTimeOrThrow(request.timeId());
 
         validateDuplicateReservation(request.date(), time, theme);
+        validateInactiveTheme(theme);
 
         Reservation reservation = Reservation.of(request.name(), request.date(), theme, time);
         return ReservationResponse.from(reservationRepository.save(reservation));
@@ -62,5 +64,11 @@ public class ReservationService {
     private ReservationTime findTimeOrThrow(Long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간 정보입니다."));
+    }
+
+    private void validateInactiveTheme(Theme theme) {
+        if (!theme.isActive()) {
+            throw new InactiveException("비활성화 된 테마는 예약할 수 없습니다.");
+        }
     }
 }
