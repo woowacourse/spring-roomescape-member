@@ -1,6 +1,6 @@
 package roomescape.reservation.exception;
 
-import roomescape.global.BusinessException;
+import roomescape.global.exception.base.BusinessException;
 
 public class ReservationNotFoundException extends BusinessException {
 

@@ -12,7 +12,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.exception.DuplicateTimeException;
 import roomescape.time.exception.TimeInUseException;
+import roomescape.time.exception.TimeNotFoundException;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -48,7 +50,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
             return new ReservationTime(id, reservationTime.getStartAt());
         } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("해당 시간이 이미 DB에 존재합니다.");
+            throw new DuplicateTimeException();
         }
     }
 
@@ -63,7 +65,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             int affectedRow = jdbcTemplate.update(sql, id);
 
             if(affectedRow == 0) {
-                throw new IllegalArgumentException("해당 id의 시간이 존재하지 않습니다.");
+                throw new TimeNotFoundException();
             }
         } catch (DataIntegrityViolationException e) {
             throw new TimeInUseException();

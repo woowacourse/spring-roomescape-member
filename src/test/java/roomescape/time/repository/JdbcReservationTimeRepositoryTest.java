@@ -10,10 +10,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.exception.DuplicateTimeException;
 import roomescape.time.exception.TimeInUseException;
+import roomescape.time.exception.TimeNotFoundException;
 
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
@@ -56,7 +57,7 @@ class JdbcReservationTimeRepositoryTest {
                 () ->   reservationTimeRepository.save(
                         new ReservationTime(null, LocalTime.of(10, 0))
                 )
-        ).isInstanceOf(DataIntegrityViolationException.class);
+        ).isInstanceOf(DuplicateTimeException.class);
     }
 
     @Test
@@ -78,8 +79,7 @@ class JdbcReservationTimeRepositoryTest {
     void deleteByIdTest_id_not_exist() {
         assertThatThrownBy(
                 () -> reservationTimeRepository.deleteById(999L)
-        ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 id의 시간이 존재하지 않습니다.");
+        ).isInstanceOf(TimeNotFoundException.class);
     }
 
     @Test

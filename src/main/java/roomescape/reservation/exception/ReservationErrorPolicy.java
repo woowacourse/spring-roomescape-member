@@ -1,7 +1,7 @@
 package roomescape.reservation.exception;
 
 import org.springframework.http.HttpStatus;
-import roomescape.global.ErrorPolicy;
+import roomescape.global.exception.base.ErrorPolicy;
 
 public enum ReservationErrorPolicy implements ErrorPolicy {
 

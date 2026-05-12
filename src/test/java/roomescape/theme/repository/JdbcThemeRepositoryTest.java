@@ -9,9 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.DuplicateThemeException;
+import roomescape.theme.exception.ThemeInUseException;
+import roomescape.theme.exception.ThemeNotFoundException;
 
 @JdbcTest
 class JdbcThemeRepositoryTest {
@@ -39,7 +41,7 @@ class JdbcThemeRepositoryTest {
                 () ->  themeRepository.save(
                         new Theme(null, "테마", "테마 설명", "썸네일_url")
                 )
-        ).isInstanceOf(DataIntegrityViolationException.class);
+        ).isInstanceOf(DuplicateThemeException.class);
     }
 
     @Test
@@ -47,8 +49,7 @@ class JdbcThemeRepositoryTest {
     void deleteByIdTest_id_not_exist() {
         assertThatThrownBy(
                 () -> themeRepository.deleteById(999L)
-        ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 id의 테마가 존재하지 않습니다.");
+        ).isInstanceOf(ThemeNotFoundException.class);
     }
 
     @Test
@@ -85,7 +86,6 @@ class JdbcThemeRepositoryTest {
         //when & then
         assertThatThrownBy(
                 () -> themeRepository.deleteById(themeId)
-        ).isInstanceOf(DataIntegrityViolationException.class)
-                .hasMessage("예약에 사용 중인 테마는 삭제할 수 없습니다.");
+        ).isInstanceOf(ThemeInUseException.class);
     }
 }

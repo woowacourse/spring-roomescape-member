@@ -10,6 +10,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.DuplicateThemeException;
+import roomescape.theme.exception.ThemeInUseException;
+import roomescape.theme.exception.ThemeNotFoundException;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -55,7 +58,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                     theme.getThumbnailUrl()
             );
         } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("해당 테마가 이미 존재합니다.");
+            throw new DuplicateThemeException();
         }
     }
 
@@ -70,10 +73,10 @@ public class JdbcThemeRepository implements ThemeRepository {
             int affectedRow = jdbcTemplate.update(sql, id);
 
             if(affectedRow == 0) {
-                throw new IllegalArgumentException("해당 id의 테마가 존재하지 않습니다.");
+                throw new ThemeNotFoundException();
             }
         } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("예약에 사용 중인 테마는 삭제할 수 없습니다.");
+            throw new ThemeInUseException();
         }
     }
 

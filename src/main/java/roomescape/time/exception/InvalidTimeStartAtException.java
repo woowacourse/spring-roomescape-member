@@ -1,6 +1,6 @@
 package roomescape.time.exception;
 
-import roomescape.global.BusinessException;
+import roomescape.global.exception.base.BusinessException;
 
 public class InvalidTimeStartAtException extends BusinessException {
 

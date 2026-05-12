@@ -1,6 +1,6 @@
-package roomescape.advice;
+package roomescape.global.exception;
 
-import roomescape.global.BusinessException;
+import roomescape.global.exception.base.BusinessException;
 
 public record ErrorResponse(String message) {
 
