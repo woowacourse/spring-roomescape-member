@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,10 @@ public class ReservationService {
 
         if (theme == null) {
             throw new IllegalArgumentException("요청하신 테마 ID가 존재하지 않습니다.");
+        }
+
+        if (time.getStartAt().isBefore(LocalTime.now()) && request.date().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("이미 지난 시간/날짜는 예약할 수 없습니다.");
         }
 
         if (reservationDao.existsBy(request.date(), theme, time)) {
