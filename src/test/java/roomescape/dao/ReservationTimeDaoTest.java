@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
@@ -30,20 +28,13 @@ public class ReservationTimeDaoTest {
     private ReservationTimeDao reservationTimeDao;
     private ReservationDao reservationDao;
     private ThemeDao themeDao;
-    private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public ReservationTimeDaoTest(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao, ThemeDao themeDao, JdbcTemplate jdbcTemplate) {
+    public ReservationTimeDaoTest(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao, ThemeDao themeDao) {
         this.reservationTimeDao = reservationTimeDao;
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
-        this.jdbcTemplate = jdbcTemplate;
     }
-
-    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) -> new ReservationTime(
-            resultSet.getLong("id"),
-            LocalTime.parse(resultSet.getString("start_at"))
-    );
 
     @Test
     void 예약에서_사용중인_시간을_삭제하면_예외가_발생한다() {
@@ -51,18 +42,18 @@ public class ReservationTimeDaoTest {
         Long themeId = themeDao.insertTheme("이든의 하우스", "설명", "링크");
         reservationDao.insertReservation("이든", LocalDate.of(2026, 5, 6), timeId, themeId);
 
-        assertThatThrownBy(() -> reservationTimeDao.delete(themeId))
+        assertThatThrownBy(() -> reservationTimeDao.delete(timeId))
                 .isInstanceOf(ReservationTimeInUseException.class);
     }
 
     @Test
     void 예약_시간_생성_테스트() {
-        Long id = reservationTimeDao.insertReservationTime(LocalTime.of(12, 0));
+        LocalTime startTime = LocalTime.of(12, 0);
 
+        Long id = reservationTimeDao.insertReservationTime(startTime);
         ReservationTime actual = reservationTimeDao.findById(id);
-        ReservationTime expected = jdbcTemplate.queryForObject("SELECT * FROM reservation_time WHERE id = ?", reservationTimeRowMapper, id);
 
-        assertThat(actual.getId()).isEqualTo(expected.getId());
-        assertThat(actual.getStartAt()).isEqualTo(expected.getStartAt());
+        assertThat(actual.getId()).isNotNull();
+        assertThat(actual.getStartAt()).isEqualTo(startTime);
     }
 }
