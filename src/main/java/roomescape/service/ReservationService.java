@@ -58,6 +58,8 @@ public class ReservationService {
     }
 
     public void removeReservation(long reservationId) {
+        Reservation reservation = findReservationById(reservationId);
+        validNotPast(reservation.date(), reservation.timeSlot().startAt());
         reservationRepository.deleteById(reservationId);
     }
 
@@ -68,6 +70,8 @@ public class ReservationService {
             @NotNull Long timeId,
             @NotNull Long themeId
     ) {
+        Reservation existingReservation = findReservationById(id);
+        validNotPast(existingReservation.date(), existingReservation.timeSlot().startAt());
         Reservation transientReservation = createTransientWithValidField(name, date, timeId, themeId);
         Reservation reservation = new Reservation(id, transientReservation.name(), transientReservation.date(), transientReservation.timeSlot(), transientReservation.theme());
         reservationRepository.update(reservation);
@@ -75,6 +79,7 @@ public class ReservationService {
 
     public void patchReservation(long id, String name, LocalDate date, Long timeId, Long themeId) {
         Reservation reservation = findReservationById(id);
+        validNotPast(reservation.date(), reservation.timeSlot().startAt());
         TimeSlot timeSlot = findOptionalTime(timeId);
         Theme theme = findOptionalTheme(themeId);
         Reservation patched = reservation.patch(name, date, timeSlot, theme);
@@ -90,6 +95,15 @@ public class ReservationService {
         validDateTime(date, timeSlot.startAt());
         validDuplicatedReservation(date, timeId, themeId);
         return Reservation.transientOf(name, date, timeSlot, theme);
+    }
+
+    private void validNotPast(LocalDate date, LocalTime time) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("이미 지난 예약은 수정/삭제할 수 없습니다.");
+        }
+        if (date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
+            throw new IllegalArgumentException("이미 지난 예약은 수정/삭제할 수 없습니다.");
+        }
     }
 
     private void validDateTime(LocalDate date, LocalTime time) {

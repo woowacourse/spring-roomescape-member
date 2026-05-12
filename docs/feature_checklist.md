@@ -42,7 +42,7 @@
 - [ ] 거부되어야 하는 요청
     - [x] 존재하지 않는 예약에 대한 수정/삭제 `NoSuchElementException`
     - [ ] 다른 사용자의 예약에 대한 수정/삭제 `AccessDeniedException `
-    - [ ] 이미 지난 예약에 대한 수정/삭제 `DuplicateKeyException`
+    - [x] 이미 지난 예약에 대한 수정/삭제 `DuplicateKeyException`
     - [x] 이미 존재하는 예약(동일한 날짜, 테마, 시간)으로의 수정 `DuplicateKeyException`
     - [x] 이미 지난 시간으로의 수정 `IllegalArgumentException`
 - [x] 잘못된 요청
