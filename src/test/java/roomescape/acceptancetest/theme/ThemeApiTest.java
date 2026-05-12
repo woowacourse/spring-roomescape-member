@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
 import io.restassured.RestAssured;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.acceptancetest.RoomecapeAcceptanceTest;
@@ -16,7 +17,8 @@ public class ThemeApiTest {
     private AcceptanceTestFixture acceptanceTestFixture;
 
     @Test
-    void 인기_테마_API() {
+    @DisplayName("인기 테마 조회")
+    void findPopularThemes() {
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "bb");
         acceptanceTestFixture.createTheme("사라진 열쇠", "aa", "bb");
         acceptanceTestFixture.createTheme("비밀의 방", "aa", "bb");
