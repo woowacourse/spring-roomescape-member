@@ -23,28 +23,84 @@
 
 `Resrevation`
 
-| 기능          | Http/url                                                          | 요청본문                   | 응답                              |
-|-------------|-------------------------------------------------------------------|------------------------|---------------------------------|
-| 예약 생성       | `POST` `/reservations`                                            | `{name, date, timeId}` | `{id, name, date, time}`        |
-| 예약 삭제       | `DELETE` `/reservations/{reservationId}`                          | -                      | -                               |
-| 예약 조회       | `GET` `/reservations`                                             | -                      | `[{id, name, date, time}, ...]` |
-`Theme`
 
-| 기능 | Http/url                                              | 요청본문 | 응답 |
-|--------|-------------------------------------------------------|-----------------------------------------|-----------------------------------------------------|
-| 관리자 테마 추가 | `POST` `/admin/themes`                                | `{name, description, thumbnailUrl}` | `{id, name, description, thumbnailUrl}` |
-| 관리자 테마 삭제 | `DELETE` `/admin/themes/{themeId}`                    | - | - |
-| 관리자 테마 조회  | `GET` `/admin/themes`                                 | - | `[{id, name, description, thumbnailUrl}, ...]` |
-| 인기 테마 조회    | `GET` `/themes/popular?period={period}&limit={limit}` | -       | `[{id, name, description, thumbnailUrl}, ...]`                                |
+| 기능 | Http/url | 헤더 | 요청본문 | 응답 |
+|---|---|---|---|---|
+| 사용자 예약 생성 | `POST` `/reservations` | - | `{name, date, timeId}` | `{id, name, date, time}` |
+| 사용자 이름별 예약 조회 | `GET` `/reservations?name={name}` | - | - | `[{id, name, date, time}, ...]` |
+| 사용자 예약 변경 | `PATCH` `/reservations/{id}` | `Authorization: {name}` | `{date, timeId}` | - |
+| 사용자 예약 삭제 | `DELETE` `/reservations/{id}` | `Authorization: {name}` | - | - |
+| 관리자 예약 조회 | `GET` `/admin/reservations` | - | - | `[{id, name, date, time}, ...]` |
+| 관리자 예약 삭제 | `DELETE` `/admin/reservations/{id}` | - | - | - |
+
 
 `ReservationTime`
 
-| 기능 | Http/url                                                    | 요청본문 | 응답 |
-|--------------|-------------------------------------------------------------|-------------|-----------------------------------------------------|
-| 관리자 테마 시간 생성 | `POST` `/admin/themes/{themeId}/times`                      | `{startAt}` | `{id, startAt, theme}` |
-| 관리자 테마 시간 삭제 | `DELETE` `/admin/themes/times/{timeId}`                     | - | - |
-| 관리자 테마 시간 조회 | `GET` `/admin/themes/{themeId}/times`                       | - | `[{id, startAt, theme}, ...]` |
-| 예약 가능 시간 조회 | `GET` `/themes/{themeId}/available-times?date={yyyy-MM-dd}` | -                      | `[{id, startAt, theme}, ...]`   |
+| 기능 | Http/url | 헤더 | 요청본문 | 응답 |
+|---|---|---|---|---|
+| 관리자 테마 시간 조회 | `GET` `/admin/themes/{themeId}/times` | - | - | `[{id, startAt, theme}, ...]` |
+| 관리자 테마 시간 생성 | `POST` `/admin/themes/{themeId}/times` | - | `{startAt}` | `{id, startAt, theme}` |
+| 관리자 테마 시간 삭제 | `DELETE` `/admin/themes/times/{timeId}` | - | - | - |
+| 예약 가능 시간 조회 | `GET` `/themes/{themeId}/available-times?date={yyyy-MM-dd}` | - | - | `[{id, startAt, theme}, ...]` |
+
+
+`Theme`
+
+| 기능 | Http/url | 헤더 | 요청본문 | 응답 |
+|---|---|---|---|---|
+| 관리자 테마 조회 | `GET` `/admin/themes` | - | - | `[{id, name, description, thumbnailUrl}, ...]` |
+| 관리자 테마 추가 | `POST` `/admin/themes` | - | `{name, description, thumbnailUrl}` | `{id, name, description, thumbnailUrl}` |
+| 관리자 테마 삭제 | `DELETE` `/admin/themes/{id}` | - | - | - |
+| 인기 테마 조회 | `GET` `/themes/popular?period={period}&limit={limit}` | - | - | `[{id, name, description, thumbnailUrl}, ...]` |
+
+## 예외 명세서
+
+### 예외 응답 형식
+
+| 상황 | HTTP Status | 응답본문 |
+|---|---|---|
+| 단일 오류 | 각 예외별 상태 코드 | `{message, validationErrors: null}` |
+| 검증 오류 | `400 Bad Request` | `{message: "잘못된 요청입니다", validationErrors: ["오류 메시지", ...]}` |
+
+### 공통 예외
+
+| 상황 | HTTP Status | message | validationErrors |
+|---|---|---|---|
+| 잘못된 경로 | `404 Not Found` | `잘못된 경로입니다.` | `null` |
+| 요청 파라미터 타입 불일치 | `400 Bad Request` | `잘못된 요청입니다` | `null` |
+| 데이터 무결성 위반 | `400 Bad Request` | `잘못된 요청입니다` | `null` |
+| 예상하지 못한 서버 오류 | `500 Internal Server Error` | `서버 내부 오류가 발생했습니다.` | `null` |
+| 인증 헤더 누락 또는 공백 | `400 Bad Request` | `잘못된 요청입니다` | `["인증에 실패했습니다."]` |
+
+### Reservation 예외
+
+| 상황 | HTTP Status       | message | validationErrors |
+|---|-------------------|---|---|
+| 예약자 이름 누락 또는 공백 | `400 Bad Request` | `잘못된 요청입니다` | `["예약자 이름은 비어있을 수 없습니다."]` |
+| 예약자 이름 길이 초과 | `400 Bad Request` | `잘못된 요청입니다` | `["예약자 이름은 최대 10자까지 입력할 수 있습니다."]` |
+| 예약 날짜 누락 | `400 Bad Request` | `잘못된 요청입니다` | `["예약 날짜는 비어있을 수 없습니다."]` |
+| 예약 시간 정보 누락 | `400 Bad Request` | `잘못된 요청입니다` | `["예약 시간 정보가 없습니다."]` |
+| 과거 날짜/시간 예약 생성 또는 변경 | `400 Bad Request` | `예약 날짜는 미래여야 합니다.` | `null` |
+| 예약자 이름 불일치 | `400 Bad Request` | `예약자 이름이 일치하지 않습니다.` | `null` |
+| 예약 없음 | `404 Not Found` | `찾는 예약이 없습니다.` | `null` |
+| 예약 중복 | `409 Conflict`    | `예약은 중복 생성이 불가능합니다.` | `null` |
+
+### Theme 예외
+
+| 상황 | HTTP Status | message | validationErrors |
+|---|---|---|---|
+| 테마 이름 누락 또는 공백 | `400 Bad Request` | `잘못된 요청입니다` | `["테마의 이름은 비어있울 수 없습니다."]` |
+| 테마 중복 | `409 Conflict` | `테마는 중복 생성이 불가능합니다.` | `null` |
+| 테마 없음 | `404 Not Found` | `찾는 테마가 없습니다.` | `null` |
+
+### ReservationTime 예외
+
+| 상황 | HTTP Status | message | validationErrors |
+|---|---|---|---|
+| 예약 시간 누락 | `400 Bad Request` | `잘못된 요청입니다` | `["찾는 예약 시간이 없습니다."]` |
+| 예약 시간 없음 | `404 Not Found` | `찾는 예약 시간이 없습니다.` | `null` |
+| 예약 시간 중복 | `409 Conflict` | `예약 시간은 중복 생성이 불가능합니다.` | `null` |
+| 예약이 존재하는 시간 삭제 | `409 Conflict` | `예약이 존재하는 시간은 삭제할 수 없습니다.` | `null` |
 
 ## 테이블 설계
 
