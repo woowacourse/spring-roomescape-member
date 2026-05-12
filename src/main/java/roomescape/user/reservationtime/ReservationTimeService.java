@@ -3,6 +3,8 @@ package roomescape.user.reservationtime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.user.reservationtime.dto.TimeRequest;
 import roomescape.user.reservationtime.dto.TimeResponse;
 
@@ -40,7 +42,7 @@ public class ReservationTimeService {
     private void validateReservationTimeId(Long id) {
         boolean isValidId = timeRepository.existsById(id);
         if (!isValidId) {
-            throw new IllegalArgumentException("[ERROR] 유효하지 않은 Id입니다");
+            throw new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND);
         }
     }
 }

@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import roomescape.admin.theme.dto.AdminThemeRequest;
 import roomescape.admin.theme.dto.AdminThemeResponse;
 import roomescape.admin.theme.dto.AdminThemesResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.user.reservation.ReservationRepository;
 
 import java.util.List;
@@ -49,10 +51,10 @@ public class AdminThemeService {
 
     public void deleteTheme(Long id) {
         if (!adminThemeRepository.existsById(id)) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 theme id 입니다.");
+            throw new RoomescapeException(ErrorCode.THEME_ID_NOT_FOUND);
         }
         if (reservationRepository.existsByThemeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
+            throw new RoomescapeException(ErrorCode.TIME_DELETE_NOT_ALLOWED);
         }
         adminThemeRepository.deleteById(id);
     }

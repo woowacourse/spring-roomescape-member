@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.user.theme.Theme;
 import roomescape.admin.theme.AdminThemeRepository;
 import roomescape.user.reservationtime.ReservationTime;
@@ -30,9 +32,9 @@ public class ReservationService {
 
     public ReservationResponse createReservation(ReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
-            .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 time id입니다."));
+            .orElseThrow(() -> new RoomescapeException(ErrorCode.TIME_ID_NOT_FOUND));
         Theme theme = adminThemeRepository.findById(request.themeId())
-            .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 theme id입니다."));
+            .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_ID_NOT_FOUND));
         validateDuplicateReservation(request);
 
         Reservation reservation = Reservation.of(
@@ -52,7 +54,7 @@ public class ReservationService {
             request.timeId(),
             request.themeId());
         if (isDuplicated) {
-            throw new IllegalArgumentException("[ERROR] 다른 사용자에의해 예약이 완료되었습니다.");
+            throw new RoomescapeException(ErrorCode.DUPLICATE_RESERVATION);
         }
     }
 
@@ -74,7 +76,7 @@ public class ReservationService {
     private void validateReservationId(Long id) {
         boolean isValidId = reservationRepository.existsById(id);
         if (!isValidId) {
-            throw new IllegalArgumentException("[ERROR] 유효하지 않은 Id입니다");
+            throw new RoomescapeException(ErrorCode.RESERVATION_ID_NOT_FOUND);
         }
     }
 }
