@@ -1,21 +1,23 @@
 package roomescape.global;
 
+import org.springframework.http.HttpStatus;
+
 public abstract class BusinessException extends RuntimeException {
 
+    private final HttpStatus status;
     private final String message;
-    private final String code;
 
-    public BusinessException(ErrorCode errorCode) {
-        this.message = errorCode.message();
-        this.code = errorCode.code();
+    public BusinessException(ErrorPolicy errorPolicy) {
+        this.status = errorPolicy.status();
+        this.message = errorPolicy.message();
+    }
+
+    public HttpStatus getStatus() {
+        return status;
     }
 
     @Override
     public String getMessage() {
         return message;
-    }
-
-    public String getCode() {
-        return code;
     }
 }

@@ -130,7 +130,6 @@ period=7&limit=10
 
 ```json
 {
-  "errorCode": "TIME_00X",
   "message": "시간이 유효하지 않습니다."
 }
 ```
@@ -138,7 +137,7 @@ period=7&limit=10
 ### 2. 날짜 검증
 
 #### 구현
-- [ ] 구현 완료
+- [x] 구현 완료
 
 #### 응답
 
@@ -146,7 +145,6 @@ period=7&limit=10
 
 ```json
 {
-  "errorCode": "RESERVATION_003",
   "message": "예약 날짜가 유효하지 않습니다."
 }
 ```
@@ -162,7 +160,6 @@ period=7&limit=10
 
 ```json
 {
-  "errorCode": "RESERVATION_002",
   "message": "예약이 이미 존재합니다."
 }
 ```
@@ -178,7 +175,6 @@ period=7&limit=10
 
 ```json
 {
-  "errorCode": "TIME_00X",
   "message": "해당 시간에 예약이 존재합니다."
 }
 ```
@@ -194,7 +190,6 @@ period=7&limit=10
 
 ```json
 {
-  "errorCode": "RESERVATION_004",
   "message": "예약 요청 값이 올바르지 않습니다."
 }
 ```
@@ -205,7 +200,6 @@ period=7&limit=10
 ```json
 
 {
-  "errorCode": "RESERVATION_004",
   "message": "예약 요청 값이 올바르지 않습니다."
 }
 ```
@@ -215,7 +209,6 @@ period=7&limit=10
 
 ```json
 {
-  "errorCode": "TIME_00X",
   "message": "예약 시간 형식이 유효하지 않습니다."
 }
 ```
@@ -225,7 +218,6 @@ period=7&limit=10
 
 ```json
 {
-  "errorCode": "THEME_00X",
   "message": "테마 이름이 유효하지 않습니다."
 }
 ```
@@ -235,7 +227,6 @@ period=7&limit=10
 
 ```json
 {
-  "errorCode": "THEME_00X",
   "message": "테마 설명이 유효하지 않습니다."
 }
 ```
@@ -245,7 +236,6 @@ period=7&limit=10
 
 ```json
 {
-  "errorCode": "THEME_00X",
   "message": "테마 썸네일 url이 유효하지 않습니다."
 }
 ```

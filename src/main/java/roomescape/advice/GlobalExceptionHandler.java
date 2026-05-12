@@ -1,14 +1,11 @@
 package roomescape.advice;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.global.BusinessException;
-import roomescape.reservation.exception.DuplicateReservationException;
-import roomescape.reservation.exception.ReservationNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -17,7 +14,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGeneral(Exception e) {
         return ResponseEntity
                 .internalServerError()
-                .body(ErrorResponse.of("INTERNAL_SERVER_ERROR", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -28,11 +25,7 @@ public class GlobalExceptionHandler {
         if (businessException == null) {
             return ResponseEntity
                     .badRequest()
-                    .body(ErrorResponse.of(
-                                    "MALFORMED_JSON_REQUEST",
-                                    "요청 본문 형식이 올바르지 않습니다."
-                            )
-                    );
+                    .body(new ErrorResponse(e.getMessage()));
         }
 
         return ResponseEntity
@@ -56,17 +49,10 @@ public class GlobalExceptionHandler {
         return null;
     }
 
-    @ExceptionHandler(DuplicateReservationException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateReservation(DuplicateReservationException e) {
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(ErrorResponse.of(e));
-    }
-
-    @ExceptionHandler(ReservationNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleReservationNotFound(ReservationNotFoundException e) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
+                .status(e.getStatus())
                 .body(ErrorResponse.of(e));
     }
 
@@ -74,20 +60,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
         return ResponseEntity
                 .badRequest()
-                .body(ErrorResponse.of("INVALID_ARGUMENT", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException e) {
         return ResponseEntity
                 .badRequest()
-                .body(ErrorResponse.of("INVALID_STATE", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException e) {
         return ResponseEntity
                 .badRequest()
-                .body(ErrorResponse.of("DATA_INTEGRITY_VIOLATION", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
     }
 }

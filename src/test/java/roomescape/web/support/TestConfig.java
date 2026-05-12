@@ -18,7 +18,7 @@ public class TestConfig {
     @Bean
     public Clock clock() {
         return Clock.fixed(
-                Instant.parse("2026-05-06T00:00:00Z"),
+                Instant.parse("2026-05-01T09:00:00Z"),
                 ZoneId.of("Asia/Seoul")
         );
     }

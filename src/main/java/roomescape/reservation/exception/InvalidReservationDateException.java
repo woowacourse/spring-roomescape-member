@@ -5,6 +5,6 @@ import roomescape.global.BusinessException;
 public class InvalidReservationDateException extends BusinessException {
 
     public InvalidReservationDateException() {
-        super(ReservationErrorCode.INVALID_RESERVATION_DATE);
+        super(ReservationErrorPolicy.INVALID_RESERVATION_DATE);
     }
 }

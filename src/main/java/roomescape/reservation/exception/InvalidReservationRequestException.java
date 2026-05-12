@@ -5,6 +5,6 @@ import roomescape.global.BusinessException;
 public class InvalidReservationRequestException extends BusinessException {
 
     public InvalidReservationRequestException() {
-        super(ReservationErrorCode.INVALID_RESERVATION_REQUEST);
+        super(ReservationErrorPolicy.INVALID_RESERVATION_REQUEST);
     }
 }

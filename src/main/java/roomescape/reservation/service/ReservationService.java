@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.exception.InvalidReservationDateException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.PopularThemesResult;
 import roomescape.reservation.service.dto.ReservationCommand;
@@ -39,6 +40,16 @@ public class ReservationService {
 
         Theme theme = themeRepository.findById(command.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마가 존재하지 않습니다."));
+
+        LocalDate nowDate = LocalDate.now(clock);
+
+        System.out.println("startAt = " + time.getStartAt());
+        System.out.println("date = " + command.date());
+
+        if (nowDate.isAfter(command.date())) {
+            throw new InvalidReservationDateException();
+        }
+
 
         return reservationRepository.save(
                 Reservation.of(command.name(), command.date(), time, theme)

@@ -2,14 +2,21 @@ package roomescape.web;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.web.support.SpringWebTest;
 
 @SpringWebTest
-public class InvalidRequestFormatTest {
+public class ExceptionTest {
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     @DisplayName("예약 시, name에 null이나 공백, 빈 문자열이 들어오면 예외가 발생한다.")
     @Test
@@ -99,5 +106,34 @@ public class InvalidRequestFormatTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @DisplayName("예약 날짜 오늘 (5월 1일)보다 이전이면 예외가 발생한다.")
+    @Test
+    void makeReservation() {
+        //given
+        jdbcTemplate.update(
+                "INSERT INTO reservation_time (start_at) VALUES (?)",
+                Time.valueOf(LocalTime.of(10, 0))
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)",
+                "테마", "설명", "thumbnailUrl"
+        );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2026-04-30");
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(422);
     }
 }
