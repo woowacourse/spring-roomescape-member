@@ -11,7 +11,6 @@ import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
-@Transactional
 public class ThemeService {
 
     private static final int POPULAR_PERIOD = 7;
@@ -24,6 +23,7 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public ThemeResponse create(ThemeRequest themeRequest) {
         Theme theme = new Theme(
                 themeRequest.name(),
@@ -41,6 +41,7 @@ public class ThemeService {
                 .toList();
     }
 
+    @Transactional
     public void delete(Long id) {
         themeRepository.findById(id).orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
         themeRepository.deleteById(id);

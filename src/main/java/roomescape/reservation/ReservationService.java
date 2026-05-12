@@ -14,7 +14,6 @@ import roomescape.time.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
-@Transactional
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -28,6 +27,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public ReservationResponse create(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
@@ -57,6 +57,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public void delete(Long id) {
         reservationRepository.deleteById(id);
     }

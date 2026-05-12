@@ -13,7 +13,6 @@ import roomescape.time.dto.ReservationTimeResponse;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
-@Transactional
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
@@ -25,6 +24,7 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
+    @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest reservationTimeRequest) {
         ReservationTime reservationTime = new ReservationTime(
                 reservationTimeRequest.startAt()
@@ -40,6 +40,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    @Transactional
     public void delete(Long id) {
         reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
