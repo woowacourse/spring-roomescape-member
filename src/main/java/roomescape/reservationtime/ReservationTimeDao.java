@@ -23,7 +23,11 @@ public class ReservationTimeDao {
     }
 
     public long save(LocalTime startAt) {
-        String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
+        String sql = """
+                INSERT INTO reservation_time (start_at)
+                VALUES (?)
+                """;
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -36,17 +40,30 @@ public class ReservationTimeDao {
     }
 
     public List<Map<String, Object>> findAll() {
-        String sql = "SELECT id, start_at FROM reservation_time";
+        String sql = """
+                SELECT id, start_at
+                FROM reservation_time
+                """;
+
         return jdbcTemplate.queryForList(sql);
     }
 
     public void delete(long id) {
-        String sql = "DELETE FROM reservation_time WHERE id = ?";
+        String sql = """
+                DELETE FROM reservation_time
+                WHERE id = ?
+                """;
+
         jdbcTemplate.update(sql, id);
     }
 
     public Optional<Map<String, Object>> findById(long id) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+        String sql = """
+                SELECT id, start_at
+                FROM reservation_time
+                WHERE id = ?
+                """;
+
         try {
             return Optional.ofNullable(jdbcTemplate.queryForMap(sql, id));
         } catch (EmptyResultDataAccessException e) {
@@ -55,11 +72,14 @@ public class ReservationTimeDao {
     }
 
     public List<Map<String, Object>> findAvailableTimes(LocalDate date, Long themeId) {
-        String sql =
-                "SELECT rt.id AS timeId, rt.start_at AS time, CASE WHEN r.id IS NULL THEN true ELSE false END AS isAvailable "
-                        + "FROM reservation_time rt "
-                        + "LEFT JOIN reservation AS r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? "
-                        + "ORDER BY rt.id";
+        String sql = """
+                SELECT rt.id AS timeId, rt.start_at AS time,
+                       CASE WHEN r.id IS NULL THEN true ELSE false END AS isAvailable
+                FROM reservation_time rt
+                LEFT JOIN reservation AS r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ?
+                ORDER BY rt.id
+                """;
+
         return jdbcTemplate.queryForList(sql, date, themeId);
     }
 }

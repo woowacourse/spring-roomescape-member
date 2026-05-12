@@ -33,7 +33,11 @@ public class ReservationDao {
     }
 
     Reservation save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+        String sql = """
+                INSERT INTO reservation (name, date, time_id, theme_id)
+                VALUES (?, ?, ?, ?)
+                """;
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -51,24 +55,35 @@ public class ReservationDao {
     }
 
     List<Reservation> findAll() {
-        String sql = "SELECT r.id AS reservation_id, r.name, r.date, " +
-                "rt.id AS time_id, rt.start_at AS time_value, " +
-                "th.id AS theme_id, th.name AS theme_name, " +
-                "th.description AS theme_description, th.thumbnail AS theme_thumbnail " +
-                "FROM reservation AS r " +
-                "INNER JOIN reservation_time AS rt ON r.time_id = rt.id " +
-                "INNER JOIN themes AS th ON r.theme_id = th.id";
+        String sql = """
+                SELECT r.id AS reservation_id, r.name, r.date,
+                       rt.id AS time_id, rt.start_at AS time_value,
+                       th.id AS theme_id, th.name AS theme_name,
+                       th.description AS theme_description, th.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                INNER JOIN themes AS th ON r.theme_id = th.id
+                """;
 
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     void delete(long id) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
+        String sql = """
+                DELETE FROM reservation
+                WHERE id = ?
+                """;
+
         jdbcTemplate.update(sql, id);
     }
 
     int countByTimeId(long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
+        String sql = """
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE time_id = ?
+                """;
+
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
 
         if (count == null) {
@@ -78,19 +93,26 @@ public class ReservationDao {
     }
 
     List<Long> findByDateAndTheme(LocalDate date, long themeId) {
-        String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
+        String sql = """
+                SELECT time_id
+                FROM reservation
+                WHERE date = ? AND theme_id = ?
+                """;
+
         return jdbcTemplate.queryForList(sql, Long.class, date, themeId);
     }
 
     Optional<Reservation> findById(long id) {
-        String sql = "SELECT r.id AS reservation_id, r.name, r.date, " +
-                "rt.id AS time_id, rt.start_at AS time_value, " +
-                "th.id AS theme_id, th.name AS theme_name, " +
-                "th.description AS theme_description, th.thumbnail AS theme_thumbnail " +
-                "FROM reservation AS r " +
-                "INNER JOIN reservation_time AS rt ON r.time_id = rt.id " +
-                "INNER JOIN themes AS th ON r.theme_id = th.id " +
-                "WHERE r.id = ?";
+        String sql = """
+                SELECT r.id AS reservation_id, r.name, r.date,
+                       rt.id AS time_id, rt.start_at AS time_value,
+                       th.id AS theme_id, th.name AS theme_name,
+                       th.description AS theme_description, th.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                INNER JOIN themes AS th ON r.theme_id = th.id
+                WHERE r.id = ?
+                """;
 
         List<Reservation> results = jdbcTemplate.query(sql, rowMapper, id);
 

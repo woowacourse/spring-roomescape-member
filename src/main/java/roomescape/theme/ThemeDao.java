@@ -29,7 +29,11 @@ public class ThemeDao {
     }
 
     public Theme save(String name, String description, String thumbnail) {
-        String sql = "INSERT INTO themes (name, description, thumbnail) VALUES (?, ?, ?)";
+        String sql = """
+                INSERT INTO themes (name, description, thumbnail)
+                VALUES (?, ?, ?)
+                """;
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
@@ -45,13 +49,20 @@ public class ThemeDao {
     }
 
     public void delete(long id) {
-        String sql = "DELETE FROM themes WHERE id = ?";
+        String sql = """
+                DELETE FROM themes
+                WHERE id = ?
+                """;
 
         jdbcTemplate.update(sql, id);
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT * FROM themes";
+        String sql = """
+                SELECT id, name, description, thumbnail
+                FROM themes
+                """;
+
         return jdbcTemplate.query(sql, rowMapper);
     }
 
@@ -61,24 +72,28 @@ public class ThemeDao {
     }
 
     private String getReservationSortSql(ThemeSort sort, SortOrder order, Long limit) {
-        StringBuilder sql = new StringBuilder(
-                "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount " +
-                        "FROM themes t " +
-                        "INNER JOIN reservation r ON t.id = r.theme_id " +
-                        "WHERE r.date >= ? AND r.date <= ? " +
-                        "GROUP BY t.id, t.name, t.description, t.thumbnail " +
-                        "ORDER BY " + sort.getColumn() + " " + order.name()
-        );
+        String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservationCount
+                FROM themes t
+                INNER JOIN reservation r ON t.id = r.theme_id
+                WHERE r.date >= ? AND r.date <= ?
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY %s %s
+                """.formatted(sort.getColumn(), order.name());
 
         if (limit != null) {
-            sql.append(" LIMIT ").append(limit);
+            sql += "LIMIT " + limit;
         }
 
-        return sql.toString();
+        return sql;
     }
 
     public Optional<Theme> findById(long id) {
-        String sql = "SELECT * FROM themes WHERE id = ?";
+        String sql = """
+                SELECT id, name, description, thumbnail
+                FROM themes
+                WHERE id = ?
+                """;
 
         try {
             Theme theme = jdbcTemplate.queryForObject(sql, rowMapper, id);
