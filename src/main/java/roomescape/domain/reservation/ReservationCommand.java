@@ -9,6 +9,7 @@ public record ReservationCommand(String name, LocalDate date, long timeId, long 
 
     private static final String INVALID_DATE_NULL = "날짜는 필수입니다.";
     private static final String INVALID_DATE_FORMAT = "유효하지 않은 날짜입니다.";
+    private static final String NOT_RESERVABLE_PAST_DATE = "예약일은 현재 날짜보다 이전일 수 없습니다.";
     private static final String INVALID_TIME_ID_FORMAT = "시간 id는 0보다 커야 합니다.";
     private static final String INVALID_THEME_ID_FORMAT = "테마 id 0보다 커야 합니다.";
     private static final String INVALID_NAME_BLANK = "이름은 필수입니다.";
@@ -37,6 +38,11 @@ public record ReservationCommand(String name, LocalDate date, long timeId, long 
         }
 
         try {
+            LocalDate value = LocalDate.parse(date);
+
+            if(value.isBefore(LocalDate.now())) {
+                throw new InvalidRequestValueException(NOT_RESERVABLE_PAST_DATE);
+            }
             return LocalDate.parse(date);
         } catch (DateTimeParseException e) {
             throw new InvalidRequestValueException(INVALID_DATE_FORMAT);
