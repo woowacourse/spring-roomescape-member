@@ -1,0 +1,23 @@
+package roomescape.reservation.repository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+import roomescape.reservation.domain.Reservation;
+
+public interface ReservationRepository {
+    List<Reservation> findAll();
+
+    List<Reservation> findAllByNameOrderByDateAndTime(String name);
+
+    Optional<Reservation> findById(Long id);
+
+    Reservation save(Reservation reservation);
+
+    boolean existsByDateAndTimeAndThemeId(LocalDate date, LocalTime time, Long themeId);
+
+    boolean existsByNameAndDateAndTime(String name, LocalDate date, LocalTime time);
+
+    boolean updateStatus(Reservation reservation);
+}

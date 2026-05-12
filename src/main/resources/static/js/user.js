@@ -1,0 +1,248 @@
+let selectedDate = null;
+let selectedTheme = null;
+let selectedTime = null;
+
+const DEFAULT_THUMBNAIL_URL = 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80';
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadThemes();
+    await loadPopularThemes();
+    await loadDates();
+});
+
+async function loadPopularThemes() {
+    const popularThemeList = document.getElementById("popular-theme-list");
+
+    const response = await fetch("/themes/popular?top=10");
+
+    if (!response.ok) {
+        popularThemeList.innerHTML = `
+            <div class="popular-empty-message">
+                인기 테마를 불러오지 못했습니다.
+            </div>
+        `;
+        return;
+    }
+
+    const themes = await response.json();
+    popularThemeList.innerHTML = "";
+
+    if (themes.length === 0) {
+        popularThemeList.innerHTML = `
+            <div class="popular-empty-message">
+                아직 인기 테마 데이터가 없습니다.
+            </div>
+        `;
+        return;
+    }
+
+    themes.forEach((theme, index) => {
+        const article = document.createElement("article");
+        article.className = "popular-theme-card";
+
+        article.innerHTML = `
+            <img src="${theme.thumbnailUrl || DEFAULT_THUMBNAIL_URL}" alt="${theme.name}">
+            <div class="popular-rank-badge">${index + 1}</div>
+            <div class="popular-theme-content">
+                <h3>${theme.name}</h3>
+                <p>${theme.description}</p>
+            </div>
+        `;
+
+        article.addEventListener("click", () => {
+            selectTheme(theme);
+            const themeSection = document.getElementById("theme-select-section");
+            themeSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        popularThemeList.appendChild(article);
+    });
+}
+
+async function loadDates() {
+    const response = await fetch("/available-dates");
+
+    if (!response.ok) {
+        alert("날짜 목록을 불러오지 못했습니다.");
+        return;
+    }
+
+    const dates = await response.json();
+    const dateList = document.getElementById("date-list");
+    dateList.innerHTML = "";
+
+    dates.forEach(dateDto => {
+        const localDate = new Date(dateDto.date);
+        const month = localDate.toLocaleString("en-US", { month: "short" }).toUpperCase();
+        const day = localDate.getDate();
+
+        const button = document.createElement("button");
+        button.className = "date-card";
+        button.type = "button";
+        button.innerHTML = `
+            <span class="month">${month}</span>
+            <span class="day">${day}</span>
+        `;
+
+        button.addEventListener("click", () => {
+            document.querySelectorAll(".date-card")
+                .forEach(item => item.classList.remove("selected"));
+            button.classList.add("selected");
+            selectedDate = dateDto.date;
+        });
+
+        dateList.appendChild(button);
+    });
+}
+
+async function loadThemes() {
+    const response = await fetch("/themes");
+
+    if (!response.ok) {
+        alert("테마 목록을 불러오지 못했습니다.");
+        return;
+    }
+
+    const themes = await response.json();
+    const themeList = document.getElementById("theme-list");
+    themeList.innerHTML = "";
+
+    themes.forEach(theme => {
+        const article = document.createElement("article");
+        article.className = "theme-card";
+
+        article.dataset.themeId = theme.id;
+        article.dataset.themeName = theme.name;
+        article.dataset.themeDescription = theme.description;
+        article.dataset.themeThumbnailUrl = theme.thumbnailUrl;
+
+        article.innerHTML = `
+            <img src="${theme.thumbnailUrl || DEFAULT_THUMBNAIL_URL}" alt="${theme.name}">
+            <div class="theme-card-content">
+                <h3>${theme.name}</h3>
+                <p>${theme.description}</p>
+            </div>
+        `;
+
+        article.addEventListener("click", () => {
+            selectTheme(theme);
+        });
+
+        themeList.appendChild(article);
+    });
+}
+
+function selectTheme(theme) {
+    selectedTheme = theme;
+
+    document.querySelectorAll(".theme-card")
+        .forEach(card => {
+            const cardThemeId = Number(card.dataset.themeId);
+            if (cardThemeId === Number(theme.id)) {
+                card.classList.add("selected");
+                return;
+            }
+            card.classList.remove("selected");
+        });
+}
+
+async function goToReservationStep() {
+    if (!selectedDate) {
+        alert("날짜를 선택해주세요.");
+        return;
+    }
+
+    if (!selectedTheme) {
+        alert("테마를 선택해주세요.");
+        return;
+    }
+
+    document.getElementById("select-section").classList.add("hidden");
+    document.getElementById("confirm-section").classList.remove("hidden");
+
+    await loadAvailableTimes();
+}
+
+function goBackToSelectStep() {
+    document.getElementById("confirm-section").classList.add("hidden");
+    document.getElementById("select-section").classList.remove("hidden");
+
+    selectedTime = null;
+    document.getElementById("reservation-name-input").value = "";
+}
+
+async function loadAvailableTimes() {
+    const response = await fetch(`/times?date=${selectedDate}&themeId=${selectedTheme.id}`);
+
+    if (!response.ok) {
+        alert("예약 가능 시간을 불러오지 못했습니다.");
+        return;
+    }
+
+    const times = await response.json();
+    const timeList = document.getElementById("time-list");
+    timeList.innerHTML = "";
+    selectedTime = null;
+
+    if (times.length === 0) {
+        timeList.innerHTML = `<p style="color: #b5b5b5;">예약 가능한 시간이 없습니다.</p>`;
+        return;
+    }
+
+    times.forEach(time => {
+        const button = document.createElement("button");
+        button.className = "time-button";
+        button.type = "button";
+        button.textContent = formatTime(time.startAt);
+
+        button.addEventListener("click", () => {
+            document.querySelectorAll(".time-button")
+                .forEach(item => item.classList.remove("selected"));
+            button.classList.add("selected");
+            selectedTime = time;
+        });
+
+        timeList.appendChild(button);
+    });
+}
+
+async function createReservation() {
+    const name = document.getElementById("reservation-name-input").value.trim();
+
+    if (!selectedTime) {
+        alert("방문 시간을 선택해주세요.");
+        return;
+    }
+
+    if (!name) {
+        alert("예약자 성함을 입력해주세요.");
+        return;
+    }
+
+    const requestBody = {
+        name: name,
+        date: selectedDate,
+        timeId: selectedTime.id,
+        themeId: selectedTheme.id
+    };
+
+    const response = await fetch("/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+        alert("예약에 실패했습니다.");
+        return;
+    }
+
+    alert("예약이 완료되었습니다.");
+    location.href = `/reservation-lookup?name=${encodeURIComponent(name)}`;
+}
+
+function formatTime(value) {
+    if (!value) return "";
+    const parts = value.split(":");
+    return `${parts[0]}:${parts[1]}`;
+}
