@@ -1,22 +1,28 @@
 package roomescape.reservation.presentation.advice;
 
-import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.common.advice.ApiExceptionHandlerSupport;
+import roomescape.common.dto.ErrorResponse;
+import roomescape.common.exception.RoomescapeException;
 import roomescape.reservation.domain.exception.DuplicateReservationException;
 import roomescape.reservation.domain.exception.ReservationNotFoundException;
 
 @RestControllerAdvice
-public class ReservationExceptionHandler {
+public class ReservationExceptionHandler extends ApiExceptionHandlerSupport {
 
-    @ExceptionHandler(ReservationNotFoundException.class)
-    public ResponseEntity<String> handleReservationNotFoundException(ReservationNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
+    private static final Logger log = LoggerFactory.getLogger(ReservationExceptionHandler.class);
 
-    @ExceptionHandler(DuplicateReservationException.class)
-    public ResponseEntity<String> handleDuplicateReservationException(DuplicateReservationException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    @ExceptionHandler({
+            ReservationNotFoundException.class,
+            DuplicateReservationException.class
+    })
+    public ResponseEntity<ErrorResponse> handleReservationException(
+            RoomescapeException e, HttpServletRequest request) {
+        return handleRoomescapeException(e, request, log);
     }
 }

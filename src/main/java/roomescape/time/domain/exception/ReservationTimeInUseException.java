@@ -1,7 +1,11 @@
 package roomescape.time.domain.exception;
 
-public class ReservationTimeInUseException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import roomescape.common.exception.RoomescapeException;
+
+public class ReservationTimeInUseException extends RoomescapeException {
+
     public ReservationTimeInUseException(String message) {
-        super(message);
+        super(HttpStatus.CONFLICT, message);
     }
 }

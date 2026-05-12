@@ -1,7 +1,11 @@
 package roomescape.reservation.domain.exception;
 
-public class ReservationNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import roomescape.common.exception.RoomescapeException;
+
+public class ReservationNotFoundException extends RoomescapeException {
+
     public ReservationNotFoundException(String message) {
-        super(message);
+        super(HttpStatus.NOT_FOUND, message);
     }
 }

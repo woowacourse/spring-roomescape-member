@@ -1,7 +1,11 @@
 package roomescape.theme.domain.exception;
 
-public class ThemeNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import roomescape.common.exception.RoomescapeException;
+
+public class ThemeNotFoundException extends RoomescapeException {
+
     public ThemeNotFoundException(String message) {
-        super(message);
+        super(HttpStatus.NOT_FOUND, message);
     }
 }

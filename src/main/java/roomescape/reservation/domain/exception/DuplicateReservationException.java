@@ -1,7 +1,11 @@
 package roomescape.reservation.domain.exception;
 
-public class DuplicateReservationException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import roomescape.common.exception.RoomescapeException;
+
+public class DuplicateReservationException extends RoomescapeException {
+
     public DuplicateReservationException(String message) {
-        super(message);
+        super(HttpStatus.CONFLICT, message);
     }
 }

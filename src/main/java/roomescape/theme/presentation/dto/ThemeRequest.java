@@ -1,5 +1,6 @@
 package roomescape.theme.presentation.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
@@ -8,13 +9,14 @@ import roomescape.theme.domain.Theme;
 
 @Builder
 public record ThemeRequest(
-        @NotBlank
+        @NotBlank(message = "테마 이름은 필수입니다.")
         String name,
-        @NotBlank
+        @NotBlank(message = "썸네일 이미지 URL은 필수입니다.")
         String thumbnailImageUrl,
-        @NotBlank
+        @NotBlank(message = "테마 설명은 필수입니다.")
         String description,
-        @NotNull
+        @NotNull(message = "진행 시간은 필수입니다.")
+        @JsonFormat(pattern = "HH:mm:ss")
         LocalTime durationTime
 ) {
     public Theme toEntity() {
