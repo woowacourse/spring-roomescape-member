@@ -26,7 +26,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorCode errorCode = exception.getErrorCode();
 
         return ResponseEntity
-                .status(ErrorStatusMapper.map(errorCode))
+                .status(errorCode.status())
                 .body(ErrorResponse.of(request.getRequestURI(), errorCode.message()));
     }
 
