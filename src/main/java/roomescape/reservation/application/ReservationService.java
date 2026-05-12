@@ -72,6 +72,6 @@ public class ReservationService {
         }
         Reservation changedReservation = reservation.changeTime(command.date(), time, theme);
         reservationRepository.updateById(id, changedReservation);
-        return reservation;
+        return changedReservation;
     }
 }
