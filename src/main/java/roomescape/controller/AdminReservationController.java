@@ -41,17 +41,6 @@ public class AdminReservationController {
                 .toList());
     }
 
-    @Operation(summary = "내 예약 목록 조회", description = "사용자 ID에 해당하는 예약 목록을 반환합니다.")
-    @ApiResponse(responseCode = "200", description = "내 예약 목록 조회 성공")
-    @GetMapping("/my")
-    public ResponseEntity<List<ReservationResponse>> readMyReservations(
-            @Parameter(description = "사용자 ID", example = "1")
-            @RequestParam Long userId) {
-        return ResponseEntity.ok(reservationService.getMyReservations(userId).stream()
-                .map(ReservationResponse::from)
-                .toList());
-    }
-
     @Operation(summary = "예약 단건 조회", description = "ID로 특정 예약 정보를 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "예약 조회 성공"),
