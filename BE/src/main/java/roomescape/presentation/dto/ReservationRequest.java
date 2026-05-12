@@ -13,6 +13,7 @@ public record ReservationRequest(
         validateNameNotEmpty(name);
         validateDateNotEmpty(date);
         validateTimeIdNotEmpty(timeId);
+        validateThemeIdNotEmpty(themeId);
     }
 
     private static void validateNameNotEmpty(String name) {
