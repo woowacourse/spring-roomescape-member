@@ -67,6 +67,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByName(final String name) {
+        String sql = RESERVATION_BASE_SELECT + "WHERE r.name = ?";
+        return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    @Override
     public List<Long> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
         final String sql = """
                 SELECT rt.id AS time_id
@@ -80,6 +86,18 @@ public class JdbcReservationRepository implements ReservationRepository {
                 (resultSet, rowNum) -> resultSet.getLong("time_id"),
                 themeId,
                 Date.valueOf(date)
+        );
+    }
+
+    @Override
+    public void update(Reservation reservation) {
+        final String sql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+
+        jdbcTemplate.update(
+                sql,
+                Date.valueOf(reservation.getDate()),
+                reservation.getTime().getId(),
+                reservation.getId()
         );
     }
 

@@ -28,6 +28,10 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public List<Reservation> getAllByName(final String name) {
+        return reservationRepository.findAllByName(name);
+    }
+
     @Transactional
     public Reservation save(final String name, final LocalDate date, final Long timeId) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
@@ -62,5 +66,40 @@ public class ReservationService {
     public void deleteById(final long id) {
         reservationRepository.deleteById(id);
     }
+
+    @Transactional
+    public void deleteById(final long id, final String name) {
+        Reservation reservation = reservationRepository.findById(id)
+                    .orElseThrow(() -> new ReservationBadRequestException(ReservationErrorCode.RESERVATION_NOT_FOUND.getMessage()));
+
+        validateOwner(name, reservation);
+
+        reservationRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void update(final long id, final String name, final LocalDate date, final Long timeId) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationBadRequestException(ReservationErrorCode.RESERVATION_NOT_FOUND.getMessage()));
+
+        validateOwner(name, reservation);
+
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
+                .orElseThrow(ReservationTimeNotFoundException::new);
+
+        validateDateTime(date, reservationTime.getStartAt());
+        existsByDateAndTimeId(date, timeId);
+
+        reservationRepository.update(reservation.modify(date, reservationTime));
+    }
+
+    private void validateOwner(String name, Reservation reservation) {
+        if (!reservation.getName().equals(name)) {
+            throw new ReservationBadRequestException(
+                    ReservationErrorCode.RESERVATION_NAME_MISMATCH.getMessage()
+            );
+        }
+    }
+
 
 }

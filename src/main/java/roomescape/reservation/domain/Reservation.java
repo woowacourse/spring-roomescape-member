@@ -27,10 +27,11 @@ public class Reservation {
         this.time = time;
     }
 
-    public static Reservation createNew(final String name, final LocalDate date, ReservationTime time) {
+    public static Reservation createNew(final String name, final LocalDate date, final ReservationTime time) {
         validate(name, date, time);
         return new Reservation(null, name, date, time);
     }
+
 
     public static Reservation of(final long id, final String name, final LocalDate date, final ReservationTime time) {
         return new Reservation(id, name, date, time);
@@ -38,6 +39,10 @@ public class Reservation {
 
     public Reservation withId(final long id) {
         return new Reservation(id, this.name, this.date, this.time);
+    }
+
+    public Reservation modify(final LocalDate newDate, final ReservationTime newTime) {
+        return new Reservation(id, name, newDate, newTime);
     }
 
     private static void validate(final String name, final LocalDate date, final ReservationTime time) {
