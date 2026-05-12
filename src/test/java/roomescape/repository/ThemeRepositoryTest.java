@@ -1,9 +1,11 @@
 package roomescape.repository;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -27,10 +29,12 @@ public class ThemeRepositoryTest {
         Theme newTheme = themeRepository.save(theme);
 
         // then
-        Assertions.assertEquals(18L, newTheme.getId());
-        Assertions.assertEquals("테스트 테마", newTheme.getName());
-        Assertions.assertEquals("테스트 테마입니다", newTheme.getDescription());
-        Assertions.assertEquals("url.com", newTheme.getUrl());
+        assertAll(
+                () -> assertEquals(18L, newTheme.getId()),
+                () -> assertEquals("테스트 테마", newTheme.getName()),
+                () -> assertEquals("테스트 테마입니다", newTheme.getDescription()),
+                () -> assertEquals("url.com", newTheme.getUrl())
+        );
     }
 
     @Test
@@ -39,7 +43,7 @@ public class ThemeRepositoryTest {
         List<Theme> themes = themeRepository.findAll();
         int themeSize = 17;
         // then
-        Assertions.assertEquals(themeSize, themes.size());
+        assertEquals(themeSize, themes.size());
     }
 
     @Test
@@ -51,7 +55,7 @@ public class ThemeRepositoryTest {
         themeRepository.deleteById(themeId);
 
         // then
-        Assertions.assertEquals(themeRepository.findAll().size(), 16);
+        assertEquals(themeRepository.findAll().size(), 16);
     }
 
     @Test
@@ -63,12 +67,13 @@ public class ThemeRepositoryTest {
         Optional<Theme> theme = themeRepository.findById(themeId);
 
         // then
-        Assertions.assertEquals(themeId, theme.get().getId());
-        Assertions.assertEquals("루팡의 예고장", theme.get().getName());
-        Assertions.assertEquals("세계 최고의 보석 '여신의 눈물'이 전시된 박물관. 당신은 예고된 시간에 맞춰 보석을 훔쳐낼 수 있을까요?",
-                theme.get().getDescription());
-        Assertions.assertEquals("https://picsum.photos/seed/lupin/400/300", theme.get().getUrl());
-
+        assertAll(
+                () -> assertEquals(themeId, theme.get().getId()),
+                () -> assertEquals("루팡의 예고장", theme.get().getName()),
+                () -> assertEquals("세계 최고의 보석 '여신의 눈물'이 전시된 박물관. 당신은 예고된 시간에 맞춰 보석을 훔쳐낼 수 있을까요?",
+                        theme.get().getDescription()),
+                () -> assertEquals("https://picsum.photos/seed/lupin/400/300", theme.get().getUrl())
+        );
     }
 
     @Test
@@ -83,11 +88,13 @@ public class ThemeRepositoryTest {
                 lastWeekDate.toString(), limit);
 
         // then
-        Assertions.assertEquals(themes.get(0).getId(), 5);
-        Assertions.assertEquals(themes.get(1).getId(), 2);
-        Assertions.assertEquals(themes.get(2).getId(), 1);
-        Assertions.assertEquals(themes.get(3).getId(), 3);
-        Assertions.assertEquals(themes.get(4).getId(), 4);
-        Assertions.assertEquals(themes.get(5).getId(), 6);
+        assertAll(
+                () -> assertEquals(themes.get(0).getId(), 5),
+                () -> assertEquals(themes.get(1).getId(), 2),
+                () -> assertEquals(themes.get(2).getId(), 1),
+                () -> assertEquals(themes.get(3).getId(), 3),
+                () -> assertEquals(themes.get(4).getId(), 4),
+                () -> assertEquals(themes.get(5).getId(), 6)
+        );
     }
 }
