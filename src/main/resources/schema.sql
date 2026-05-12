@@ -1,0 +1,38 @@
+DROP TABLE IF EXISTS reservations;
+DROP TABLE IF EXISTS times;
+DROP TABLE IF EXISTS themes;
+
+CREATE TABLE times
+(
+    id       BIGINT NOT NULL AUTO_INCREMENT,
+    start_at TIME   NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE (start_at)
+);
+
+CREATE TABLE themes
+(
+    id            BIGINT      NOT NULL AUTO_INCREMENT,
+    name          VARCHAR(50) NOT NULL,
+    thumbnail_url VARCHAR(500),
+    description   VARCHAR(500),
+    PRIMARY KEY (id),
+    UNIQUE (name)
+);
+
+
+CREATE TABLE reservations
+(
+    id       BIGINT      NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(50) NOT NULL,
+    date     DATE        NOT NULL,
+    time_id  BIGINT,
+    theme_id BIGINT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (time_id) REFERENCES times (id),
+    FOREIGN KEY (theme_id) REFERENCES themes (id),
+    UNIQUE (theme_id, time_id, date)
+);
+
+
+
