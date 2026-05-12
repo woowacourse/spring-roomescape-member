@@ -72,7 +72,7 @@ class ReservationTimeControllerTest {
                 .andExpect(header().string("Location", "http://localhost/times/1"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.startAt").value("10:00"));
+                .andExpect(jsonPath("$.startAt").value("10:00:00"));
 
         then(reservationTimeService).should().save(startAt);
     }
@@ -91,7 +91,7 @@ class ReservationTimeControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].startAt").value("10:00"));
+                .andExpect(jsonPath("$[0].startAt").value("10:00:00"));
 
         then(reservationTimeService).should().findAll();
     }

@@ -89,7 +89,7 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.name").value("브라운"))
                 .andExpect(jsonPath("$.date").value("2026-05-05"))
                 .andExpect(jsonPath("$.time.id").value(1))
-                .andExpect(jsonPath("$.time.startAt").value("10:00"))
+                .andExpect(jsonPath("$.time.startAt").value("10:00:00"))
                 .andExpect(jsonPath("$.theme.id").value(1))
                 .andExpect(jsonPath("$.theme.name").value("테스트-테마"));
 
@@ -167,6 +167,6 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("예약 시간이 비어있습니다."));
+                .andExpect(content().string("예약 시간이 비어있습니다. 시간을 선택해주세요."));
     }
 }

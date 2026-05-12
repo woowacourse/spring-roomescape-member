@@ -3,26 +3,26 @@ package roomescape.global.exception;
 public enum ErrorCode {
 
     // Not Found - 404
-    RESERVATION_NOT_FOUND("예약을 찾을 수 없습니다."),
-    RESERVATION_TIME_NOT_FOUND("예약 시간을 찾을 수 없습니다."),
-    THEME_NOT_FOUND("테마를 찾을 수 없습니다."),
+    RESERVATION_NOT_FOUND("예약을 찾을 수 없습니다. 예약 ID를 확인해주세요."),
+    RESERVATION_TIME_NOT_FOUND("예약 시간을 찾을 수 없습니다. 예약 시간 ID를 확인해주세요."),
+    THEME_NOT_FOUND("테마를 찾을 수 없습니다. 테마 ID를 확인해주세요."),
 
     // Bad Request - 400
-    RESERVATION_NAME_EMPTY("예약자의 이름이 비어있습니다."),
-    RESERVATION_DATE_NULL("예약 날짜가 비어있습니다."),
-    RESERVATION_ID_NULL("예약 목록 ID가 비어있습니다."),
-    RESERVATION_TIME_NULL("예약 시간이 비어있습니다."),
-    THEME_NAME_EMPTY("테마 이름은 null 혹은 빈 값일 수 없습니다."),
-    THEME_DESCRIPTION_EMPTY("테마 설명은 null 혹은 빈 값일 수 없습니다."),
-    THEME_THUMBNAIL_EMPTY("테마 썸네일은 null 혹은 빈 값일 수 없습니다."),
+    RESERVATION_NAME_EMPTY("예약자의 이름이 비어있습니다. 이름을 입력해주세요."),
+    RESERVATION_DATE_NULL("예약 날짜가 비어있습니다. 날짜를 선택해주세요."),
+    RESERVATION_ID_NULL("예약 목록 ID가 비어있습니다. 요청 형식을 확인해주세요."),
+    RESERVATION_TIME_NULL("예약 시간이 비어있습니다. 시간을 선택해주세요."),
+    THEME_NAME_EMPTY("테마 이름이 비어있습니다. 이름을 입력해주세요."),
+    THEME_DESCRIPTION_EMPTY("테마 설명이 비어있습니다. 설명을 입력해주세요."),
+    THEME_THUMBNAIL_EMPTY("테마 썸네일이 비어있습니다. 썸네일 URL을 입력해주세요."),
 
     // Conflict - 409
-    RESERVATION_DUPLICATED("동일한 날짜, 시간, 테마의 예약이 이미 존재합니다."),
-    RESERVATION_TIME_ALREADY_USED("참조하고 있는 예약 시간이어서 삭제할 수 없습니다."),
-    THEME_ALREADY_USED("참조하고 있는 테마이어서 삭제할 수 없습니다."),
+    RESERVATION_DUPLICATED("동일한 날짜, 시간, 테마의 예약이 이미 존재합니다. 다른 조건을 선택해주세요."),
+    RESERVATION_TIME_ALREADY_USED("사용 중인 예약 시간은 삭제할 수 없습니다. 관련 예약을 먼저 삭제해주세요."),
+    THEME_ALREADY_USED("사용 중인 테마는 삭제할 수 없습니다. 관련 예약을 먼저 삭제해주세요."),
 
     // Unprocessable Entity - 422
-    PAST_DATE_OR_TIME("지나간 날짜 혹은 시간에 대한 요청은 처리할 수 없습니다.");
+    PAST_DATE_OR_TIME("지나간 날짜나 시간은 예약할 수 없습니다. 현재 이후의 시간을 선택해주세요.");
 
     private final String message;
 
