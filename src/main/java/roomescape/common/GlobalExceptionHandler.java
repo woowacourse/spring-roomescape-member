@@ -28,24 +28,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e) {
-        return new ErrorResponse(e.getMessage());
+        return new ErrorResponse("잘못된 요청입니다.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return new ErrorResponse("작업을 처리할 수 없습니다. : %s".formatted(e.getMessage()));
+        return new ErrorResponse("입력값이 잘못되었습니다.");
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        return new ErrorResponse("작업을 처리할 수 없습니다. : %s".formatted(e.getMessage()));
+        return new ErrorResponse("입력 형식이 잘못되었습니다");
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleAllException(Exception e) {
-        return new ErrorResponse("예상하지 못한 오류가 발생했습니다. : %s".formatted(e.getMessage()));
+        return new ErrorResponse("예상하지 못한 오류가 발생했습니다.");
     }
 }
