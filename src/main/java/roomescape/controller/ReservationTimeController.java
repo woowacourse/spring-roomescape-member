@@ -48,7 +48,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping(value = "/availability", params = {"date", "themeId"})
-    public ResponseEntity<List<AvailableReservationTimeResponse>> getAvailableReservationTimeByDateAndTheme(@ModelAttribute ReservationTimeCondition reservationTimeCondition) {
+    public ResponseEntity<List<AvailableReservationTimeResponse>> getAvailableReservationTimeByDateAndTheme(@ModelAttribute @Valid ReservationTimeCondition reservationTimeCondition) {
         List<ReservationTimeWithAvailable> reservationTimesWithAvailable  = reservationTimeService.getAvailableReservationTimeByDateAndTheme(reservationTimeCondition);
         List<AvailableReservationTimeResponse> availableReservationTimeResponses = reservationTimesWithAvailable.stream()
                 .map(AvailableReservationTimeResponse::from)
