@@ -1,11 +1,16 @@
 package roomescape.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,7 +35,15 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseErrorMessage handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
         log.error("[HttpMessageNotReadableException] ", e);
-        return new ResponseErrorMessage("요청 형식이 올바르지 않습니다.");
+
+        String message = "요청 형식이 올바르지 않습니다.";
+
+        if (e.getCause() instanceof InvalidFormatException ife) {
+            String fieldName = ife.getPath().get(0).getFieldName();
+            message = String.format("필드 '%s'의 형식이 잘못되었습니다.", fieldName);
+        }
+
+        return new ResponseErrorMessage(message);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
