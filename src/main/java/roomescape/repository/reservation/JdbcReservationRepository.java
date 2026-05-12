@@ -35,7 +35,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final String ALIAS_THEME_DESCRIPTION = "themeDescription";
     private static final String ALIAS_THEME_IMAGE_URL = "themeImageUrl";
 
-    private static final String SELECT_BY_ID_SQL = "SELECT id, name, date, timeId, themeId FROM reservation WHERE id = ?";
+    private static final String SELECT_BY_ID_SQL = "SELECT id, name, date, time_id, theme_id FROM reservation WHERE id = ?";
 
     private static final String SELECT_ALL_SQL = """
         SELECT\s
@@ -85,7 +85,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             rs.getString(COLUMN_NAME),
             rs.getDate(COLUMN_DATE).toLocalDate(),
             rs.getLong(COLUMN_TIME_ID),
-            rs.getLong(COLUMN_TIME_ID)
+            rs.getLong(COLUMN_THEME_ID)
     );
 
     private static final RowMapper<ReservationInfo> MAPPER = (rs, rowNumber) -> new ReservationInfo(

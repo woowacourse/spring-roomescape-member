@@ -60,7 +60,7 @@ public class RoomReservationService {
 
         Reservation reservation = optionalReservation.get();
 
-        if(!reservation.name().equals(name) && !name.equals(ADMIN_NAME)) {
+        if(name == null || (!reservation.name().equals(name) && !name.equals(ADMIN_NAME))) {
             throw new UnauthorizedException(ErrorMessage.UNAUTHORIZED_DELETE_RESERVATION_REQUEST);
         }
 

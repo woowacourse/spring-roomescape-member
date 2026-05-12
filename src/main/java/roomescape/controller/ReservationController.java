@@ -1,6 +1,8 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +41,8 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@RequestHeader String name, @PathVariable("id") long id) {
-        roomReservationService.deleteReservation(id, name);
+    public ResponseEntity<Void> deleteReservation(@RequestHeader(required = false) String name, @PathVariable("id") long id) {
+        roomReservationService.deleteReservation(id, URLDecoder.decode(name, StandardCharsets.UTF_8));
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
