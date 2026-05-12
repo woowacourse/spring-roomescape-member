@@ -57,7 +57,10 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteReservationById(Long id) {
+    public int deleteReservationById(Long id) {
+        int beforeSize = reservations.size();
         reservations.removeIf(reservation -> Objects.equals(reservation.getId(), id));
+
+        return beforeSize - reservations.size();
     }
 }

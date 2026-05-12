@@ -2,7 +2,10 @@ package roomescape.domain.global.exception;
 
 public enum ErrorCode {
 
+    COMMON_INVALID_PARAMETER_TYPE("요청 파라미터의 형식이 잘못되었습니다."),
+
     RESERVATION_INVALID_REQUEST("요청 형식이 잘못되었습니다."),
+    RESERVATION_NOT_FOUND("요청한 예약을 찾을 수 없습니다."),
     RESERVATION_DUPLICATE("이미 존재하는 예약입니다."),
     RESERVATION_INVALID_DATETIME("지난 날짜 및 시간에 예약을 시도했습니다."),
 

@@ -104,10 +104,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteReservationById(Long id) {
+    public int deleteReservationById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = :id";
         SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        jdbcTemplate.update(sql, parameters);
+        return jdbcTemplate.update(sql, parameters);
     }
 
     private Reservation mapReservation(ResultSet resultSet, int rowNum) throws SQLException {

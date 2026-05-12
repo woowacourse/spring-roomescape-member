@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.global.exception.BadRequestException;
 import roomescape.domain.global.exception.ConflictException;
 import roomescape.domain.global.exception.ErrorCode;
+import roomescape.domain.global.exception.NotFoundException;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
@@ -60,7 +61,6 @@ public class ReservationService {
     }
 
     private Reservation createReservation(ReservationCreateRequestDto requestDto) {
-
         Time time = timeRepository.findTimeById(requestDto.timeId())
             .orElseThrow(() -> new BadRequestException(ErrorCode.TIME_NOT_FOUND, List.of()));
         Theme theme = themeRepository.findThemeById(requestDto.themeId())
@@ -69,6 +69,8 @@ public class ReservationService {
     }
 
     public void deleteReservationById(Long id) {
-        reservationRepository.deleteReservationById(id);
+        if (reservationRepository.deleteReservationById(id) == 0) {
+            throw new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND);
+        }
     }
 }
