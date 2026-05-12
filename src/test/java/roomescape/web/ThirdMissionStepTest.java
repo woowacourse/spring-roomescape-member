@@ -9,7 +9,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.support.DatabaseHelper;
+import roomescape.web.support.DatabaseHelper;
+import roomescape.web.support.SpringWebTest;
 
 @SpringWebTest
 public class ThirdMissionStepTest {
@@ -101,6 +102,21 @@ public class ThirdMissionStepTest {
     }
 
     @Test
+    void 이름이_공백이면_예약_생성_실패() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", " ");
+        params.put("date", "2026-04-29");
+        params.put("timeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     void 날짜가_없으면_예약_생성_실패() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "홍길동");
@@ -178,6 +194,6 @@ public class ThirdMissionStepTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(409);
     }
 }

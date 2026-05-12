@@ -131,8 +131,7 @@ period=7&limit=10
 ```json
 {
   "errorCode": "TIME_00X",
-  "message": "시간이 유효하지 않습니다.",
-  "timestamp": "2026-05-11T11:13:50.231022"
+  "message": "시간이 유효하지 않습니다."
 }
 ```
 
@@ -147,16 +146,15 @@ period=7&limit=10
 
 ```json
 {
-  "errorCode": "RESERVATION_00X",
-  "message": "예약 날짜가 유효하지 않습니다.",
-  "timestamp": "2026-05-11T11:13:50.231022"
+  "errorCode": "RESERVATION_003",
+  "message": "예약 날짜가 유효하지 않습니다."
 }
 ```
 
 ### 3. 중복 예약 검증
 
 #### 구현
-- [ ] 구현 완료
+- [x] 구현 완료
 
 #### 응답
 
@@ -164,9 +162,8 @@ period=7&limit=10
 
 ```json
 {
-  "errorCode": "RESERVATION_00X",
-  "message": "예약이 이미 존재합니다.",
-  "timestamp": "2026-05-11T11:13:50.231022"
+  "errorCode": "RESERVATION_002",
+  "message": "예약이 이미 존재합니다."
 }
 ```
 
@@ -182,8 +179,7 @@ period=7&limit=10
 ```json
 {
   "errorCode": "TIME_00X",
-  "message": "해당 시간에 예약이 존재합니다.",
-  "timestamp": "2026-05-11T11:13:50.231022"
+  "message": "해당 시간에 예약이 존재합니다."
 }
 ```
 ### 5. 유효하지 않은 입력값 검증
@@ -198,9 +194,8 @@ period=7&limit=10
 
 ```json
 {
-  "errorCode": "RESERVATION_00X",
-  "message": "예약자 이름이 유효하지 않습니다.",
-  "timestamp": "2026-05-11T11:13:50.231022"
+  "errorCode": "RESERVATION_004",
+  "message": "예약 요청 값이 올바르지 않습니다."
 }
 ```
 
@@ -210,9 +205,8 @@ period=7&limit=10
 ```json
 
 {
-  "errorCode": "RESERVATION_00X",
-  "message": "예약 날짜 형식이 유효하지 않습니다.",
-  "timestamp": "2026-05-11T11:13:50.231022"
+  "errorCode": "RESERVATION_004",
+  "message": "예약 요청 값이 올바르지 않습니다."
 }
 ```
 
@@ -222,8 +216,7 @@ period=7&limit=10
 ```json
 {
   "errorCode": "TIME_00X",
-  "message": "예약 시간 형식이 유효하지 않습니다.",
-  "timestamp": "2026-05-11T11:13:50.231022"
+  "message": "예약 시간 형식이 유효하지 않습니다."
 }
 ```
 
@@ -233,8 +226,7 @@ period=7&limit=10
 ```json
 {
   "errorCode": "THEME_00X",
-  "message": "테마 이름이 유효하지 않습니다.",
-  "timestamp": "2026-05-11T11:13:50.231022"
+  "message": "테마 이름이 유효하지 않습니다."
 }
 ```
 
@@ -244,8 +236,7 @@ period=7&limit=10
 ```json
 {
   "errorCode": "THEME_00X",
-  "message": "테마 설명이 유효하지 않습니다.",
-  "timestamp": "2026-05-11T11:13:50.231022"
+  "message": "테마 설명이 유효하지 않습니다."
 }
 ```
 
@@ -255,8 +246,7 @@ period=7&limit=10
 ```json
 {
   "errorCode": "THEME_00X",
-  "message": "테마 썸네일 url이 유효하지 않습니다.",
-  "timestamp": "2026-05-11T11:13:50.231022"
+  "message": "테마 썸네일 url이 유효하지 않습니다."
 }
 ```
 

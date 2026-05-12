@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.web.support.SpringWebTest;
 
 @SpringWebTest
 public class SecondMissionStepTest {

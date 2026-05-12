@@ -11,6 +11,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.exception.DuplicateReservationException;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -74,7 +76,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     reservation.getTheme()
             );
         } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("이미 해당 날짜와 시간에 예약이 존재합니다.");
+            throw new DuplicateReservationException();
         }
     }
 
@@ -88,7 +90,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         int affectedRow = jdbcTemplate.update(sql, id);
 
         if(affectedRow == 0) {
-            throw new IllegalArgumentException("해당 id의 예약이 존재하지 않습니다.");
+            throw new ReservationNotFoundException();
         }
     }
 

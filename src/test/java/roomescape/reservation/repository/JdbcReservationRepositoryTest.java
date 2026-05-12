@@ -14,9 +14,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.exception.DuplicateReservationException;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -84,7 +85,7 @@ class JdbcReservationRepositoryTest {
                                 theme
                         )
                 )
-        ).isInstanceOf(DataIntegrityViolationException.class);
+        ).isInstanceOf(DuplicateReservationException.class);
     }
 
     @Test
@@ -109,8 +110,7 @@ class JdbcReservationRepositoryTest {
     void deleteByIdTest_id_not_exist() {
         assertThatThrownBy(
                 () -> reservationRepository.deleteById(999L)
-        ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 id의 예약이 존재하지 않습니다.");
+        ).isInstanceOf(ReservationNotFoundException.class);
     }
 
     @Test

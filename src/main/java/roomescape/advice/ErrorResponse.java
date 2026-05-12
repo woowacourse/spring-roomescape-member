@@ -1,38 +1,30 @@
 package roomescape.advice;
 
-import java.time.LocalDateTime;
+import roomescape.global.BusinessException;
 
 public class ErrorResponse {
 
-    private final int status;
-    private final String errorCode;
+    private final String code;
     private final String message;
-    private final LocalDateTime timestamp;
 
-    public ErrorResponse(int status, String errorCode, String message, LocalDateTime timestamp) {
-        this.status = status;
-        this.errorCode = errorCode;
+    public ErrorResponse(String code, String message) {
+        this.code = code;
         this.message = message;
-        this.timestamp = timestamp;
     }
 
-    public static ErrorResponse of (int status, String errorCode, String message) {
-        return new ErrorResponse(status, errorCode, message, LocalDateTime.now());
+    public static ErrorResponse of (String code, String message) {
+        return new ErrorResponse(code, message);
     }
 
-    public int getStatus() {
-        return status;
+    public static ErrorResponse of (BusinessException e) {
+        return new ErrorResponse(e.getCode(), e.getMessage());
     }
 
-    public String getErrorCode() {
-        return errorCode;
+    public String getCode() {
+        return code;
     }
 
     public String getMessage() {
         return message;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
     }
 }

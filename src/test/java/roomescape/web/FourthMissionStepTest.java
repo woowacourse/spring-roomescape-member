@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.controller.ReservationController;
+import roomescape.web.support.SpringWebTest;
 
 @SpringWebTest
 public class FourthMissionStepTest {

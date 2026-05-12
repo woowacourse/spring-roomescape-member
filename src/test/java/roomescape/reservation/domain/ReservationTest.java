@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.reservation.exception.InvalidReservationRequestException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -32,16 +33,14 @@ class ReservationTest {
     }
 
     @Test
-    @DisplayName("이름이 10글자를 초과하면 예외가 발생한다.")
-    void validateNameSizeTest() {
+    @DisplayName("이름이 비어있거나 공백이면 예외가 발생한다.")
+    void validateNameTest() {
         // given
-        String longName = "열한글자짜리이름입니다아";
         Theme theme = Theme.of("우테코", "우테코 전용 테마", "https://example.com");
 
         // when & then
-        assertThatThrownBy(() -> Reservation.of(longName, LocalDate.of(2024, 5, 1), reservationTime, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이름은 10글자 이하여야 합니다.");
+        assertThatThrownBy(() -> Reservation.of("", LocalDate.of(2024, 5, 1), reservationTime, theme))
+                .isInstanceOf(InvalidReservationRequestException.class);
     }
 
     @Test
