@@ -41,7 +41,7 @@ public class ReservationTimeService {
         if (date == null || themeId == null) {
             return Set.of();
         }
-        List<ReservationTime> bookedTimes =reservationRepository.findByDateAndThemeId(date, themeId)
+        List<ReservationTime> bookedTimes = reservationRepository.findByDateAndThemeId(date, themeId)
                 .stream()
                 .map(Reservation::getTime)
                 .toList();

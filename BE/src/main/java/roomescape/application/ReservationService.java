@@ -1,6 +1,7 @@
 package roomescape.application;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,7 @@ public class ReservationService {
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "예약 시간 ID를 찾을 수 없습니다."));
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "테마 ID를 찾을 수 없습니다."));
-        validateAlreadyReservation(date, timeId, themeId);
+        validateSaveReservation(date, time, themeId);
         Reservation reservation = Reservation.create(
                 name,
                 date,
@@ -64,6 +65,12 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    private void validateSaveReservation(LocalDate date, ReservationTime timeId, Long themeId) {
+        validateAlreadyReservation(date, timeId.getId(), themeId);
+        validatePastDateReservation(date);
+        validatePastTimeReservation(date, timeId);
+    }
+
     private void validateAlreadyReservation(
             LocalDate date,
             Long timeId,
@@ -75,6 +82,18 @@ public class ReservationService {
 
         if (exists) {
             throw new BusinessException(HttpStatus.NOT_ACCEPTABLE, "이미 예약된 시간입니다.");
+        }
+    }
+
+    private void validatePastDateReservation(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new BusinessException(HttpStatus.NOT_ACCEPTABLE, "이미 지난 날짜입니다.");
+        }
+    }
+
+    private void validatePastTimeReservation(LocalDate date, ReservationTime time) {
+        if (date.isEqual(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now())) {
+            throw new BusinessException(HttpStatus.NOT_ACCEPTABLE, "예약 시간이 현재보다 이전일 수 없습니다.");
         }
     }
 }
