@@ -28,7 +28,7 @@ class ReservationCreateRequestDtoTest {
         }
 
         @Test
-        @DisplayName("빈 문자열인 경우 예외가 발생한다.")
+        @DisplayName("이름이 빈 문자열인 경우 예외가 발생한다.")
         void 실패1() {
             String name = "";
             LocalDate date = LocalDate.of(2026, 1, 1);
