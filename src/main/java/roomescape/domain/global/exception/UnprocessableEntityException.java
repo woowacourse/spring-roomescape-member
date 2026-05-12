@@ -1,10 +1,10 @@
 package roomescape.domain.global.exception;
 
-public class NotFoundException extends RuntimeException implements BaseException {
+public class UnprocessableEntityException extends RuntimeException implements BaseException {
 
     private final ErrorCode errorCode;
 
-    public NotFoundException(ErrorCode errorCode) {
+    public UnprocessableEntityException(ErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 
@@ -12,4 +12,5 @@ public class NotFoundException extends RuntimeException implements BaseException
     public ErrorCode getErrorCode() {
         return errorCode;
     }
+
 }

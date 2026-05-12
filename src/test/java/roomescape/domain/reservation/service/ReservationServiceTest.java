@@ -13,6 +13,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.global.exception.ConflictException;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
@@ -145,8 +146,7 @@ class ReservationServiceTest {
             reservationRepository.save(Reservation.create(request.name(), request.date(), time, theme, fixedClock));
 
             assertThatThrownBy(() -> reservationService.saveReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("요청된 날짜와 테마, 시간에 중복된 데이터가 있습니다.");
+                .isInstanceOf(ConflictException.class);
         }
     }
 

@@ -4,8 +4,9 @@ import java.time.Clock;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.domain.global.exception.BadRequestException;
+import roomescape.domain.global.exception.ConflictException;
 import roomescape.domain.global.exception.ErrorCode;
-import roomescape.domain.global.exception.NotFoundException;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
@@ -45,20 +46,25 @@ public class ReservationService {
 
     public ReservationCreateResponseDto saveReservation(ReservationCreateRequestDto requestDto) {
         Reservation reservation = createReservation(requestDto);
+        validateDuplicates(requestDto);
+        return ReservationCreateResponseDto.from(reservationRepository.save(reservation));
+    }
+
+    private void validateDuplicates(ReservationCreateRequestDto requestDto) {
         Optional<Reservation> duplicatedReservation =
             reservationRepository.findReservationByDateTimeAndThemeId(requestDto.date(), requestDto.timeId(), requestDto.themeId());
 
         if (duplicatedReservation.isPresent()) {
-            throw new IllegalArgumentException("요청된 날짜와 테마, 시간에 중복된 데이터가 있습니다.");
+            throw new ConflictException(ErrorCode.RESERVATION_DUPLICATE);
         }
-        return ReservationCreateResponseDto.from(reservationRepository.save(reservation));
     }
 
     private Reservation createReservation(ReservationCreateRequestDto requestDto) {
+
         Time time = timeRepository.findTimeById(requestDto.timeId())
-            .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND));
+            .orElseThrow(() -> new BadRequestException(ErrorCode.TIME_NOT_FOUND, List.of()));
         Theme theme = themeRepository.findThemeById(requestDto.themeId())
-            .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
+            .orElseThrow(() -> new BadRequestException(ErrorCode.THEME_NOT_FOUND, List.of()));
         return Reservation.create(requestDto.name(), requestDto.date(), time, theme, clock);
     }
 

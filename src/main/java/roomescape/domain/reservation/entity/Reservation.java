@@ -3,6 +3,8 @@ package roomescape.domain.reservation.entity;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Objects;
+import roomescape.domain.global.exception.ErrorCode;
+import roomescape.domain.global.exception.UnprocessableEntityException;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.time.entity.Time;
 
@@ -16,8 +18,7 @@ public class Reservation {
 
     private Reservation(Long id, String name, LocalDate date, Time time, Theme theme, Clock clock) {
         if (clock != null) {
-            validateDate(date, clock);
-            validateTime(date, time, clock);
+            validateDateTime(date, time, clock);
         }
         this.id = id;
         this.name = name;
@@ -34,19 +35,11 @@ public class Reservation {
         return new Reservation(id, name, date, time, theme, null);
     }
 
-    private void validateDate(LocalDate date, Clock clock) {
+    private void validateDateTime(LocalDate date, Time time, Clock clock) {
         LocalDate nowDate = LocalDate.now(clock);
 
-        if (date.isBefore(nowDate)) {
-            throw new IllegalArgumentException("이전 날짜로 예약할 수 없습니다.");
-        }
-    }
-
-    private void validateTime(LocalDate date, Time time, Clock clock) {
-        LocalDate nowDate = LocalDate.now(clock);
-
-        if (date.isEqual(nowDate) && time.isPast(clock)) {
-            throw new IllegalArgumentException("이전 시간으로 예약할 수 없습니다.");
+        if (date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isPast(clock))) {
+            throw new UnprocessableEntityException(ErrorCode.RESERVATION_INVALID_DATETIME);
         }
     }
 

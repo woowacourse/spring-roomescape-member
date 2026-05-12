@@ -1,7 +1,6 @@
 package roomescape.domain.reservation.entity;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -12,8 +11,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.global.exception.ErrorCode;
+import roomescape.domain.global.exception.UnprocessableEntityException;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.time.entity.Time;
+import roomescape.global.ExceptionAssertions;
 
 class ReservationTest {
 
@@ -49,9 +51,11 @@ class ReservationTest {
             Time time = Time.create(LocalTime.of(20, 30));
             Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
 
-            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, fixedClock))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이전 날짜로 예약할 수 없습니다.");
+            ExceptionAssertions.assertErrorCode(
+                () -> Reservation.create("브라운", date, time, theme, fixedClock),
+                UnprocessableEntityException.class,
+                ErrorCode.RESERVATION_INVALID_DATETIME
+            );
         }
 
         @Test
@@ -61,9 +65,11 @@ class ReservationTest {
             Time time = Time.create(LocalTime.of(10, 0));
             Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
 
-            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, fixedClock))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이전 시간으로 예약할 수 없습니다.");
+            ExceptionAssertions.assertErrorCode(
+                () -> Reservation.create("브라운", date, time, theme, fixedClock),
+                UnprocessableEntityException.class,
+                ErrorCode.RESERVATION_INVALID_DATETIME
+            );
         }
     }
 

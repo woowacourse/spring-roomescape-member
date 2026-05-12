@@ -2,12 +2,12 @@ package roomescape.domain.reservation.dto.request;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.global.exception.BadRequestException;
 
 class ReservationCreateRequestDtoTest {
 
@@ -36,8 +36,7 @@ class ReservationCreateRequestDtoTest {
             Long themeId = 1L;
 
             assertThatThrownBy(() -> new ReservationCreateRequestDto(name, date, timeId, themeId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름은 빈 문자열일 수 없습니다.");
+                .isInstanceOf(BadRequestException.class);
         }
     }
 

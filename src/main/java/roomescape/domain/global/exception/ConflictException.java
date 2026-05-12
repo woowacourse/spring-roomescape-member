@@ -1,10 +1,10 @@
 package roomescape.domain.global.exception;
 
-public class NotFoundException extends RuntimeException implements BaseException {
+public class ConflictException extends RuntimeException implements BaseException {
 
     private final ErrorCode errorCode;
 
-    public NotFoundException(ErrorCode errorCode) {
+    public ConflictException(ErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 
