@@ -2,9 +2,6 @@ package roomescape.service;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -13,6 +10,11 @@ import roomescape.domain.TimeSlot;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeSlotRepository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -72,9 +74,13 @@ public class ReservationService {
         }
     }
 
-    public int putReservation(long id, @NotBlank(message = "이름은 필수입니다.") String name,
-                              @NotNull(message = "날짜는 필수입니다.") LocalDate date, @NotNull Long timeId,
-                              @NotNull Long themeId) {
+    public void putReservation(
+            long id,
+            @NotBlank(message = "이름은 필수입니다.") String name,
+            @NotNull(message = "날짜는 필수입니다.") LocalDate date,
+            @NotNull Long timeId,
+            @NotNull Long themeId
+    ) {
         validDate(date);
         validDuplicatedReservation(date, timeId, themeId);
         TimeSlot timeSlot = timeSlotRepository.findById(timeId)
@@ -82,6 +88,31 @@ public class ReservationService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NoSuchElementException("해당 식별자로 데이터를 찾을 수 없습니다. id: " + themeId));
         Reservation reservation = new Reservation(id, name, date, timeSlot, theme);
-        return reservationRepository.update(reservation);
+        reservationRepository.update(reservation);
+    }
+
+    public void patchReservation(long id, String name, LocalDate date, Long timeId, Long themeId) {
+        Reservation reservation = findReservationById(id);
+        TimeSlot timeSlot = findOptionalTime(timeId);
+        Theme theme = findOptionalTheme(themeId);
+        Reservation patched = reservation.patch(name, date, timeSlot, theme);
+        validDate(patched.date());
+        reservationRepository.update(patched);
+    }
+
+    private TimeSlot findOptionalTime(Long id) {
+        return Optional.ofNullable(id).map(this::findTimeSlot).orElse(null);
+    }
+
+    private Theme findOptionalTheme(Long id) {
+        return Optional.ofNullable(id).map(this::findTheme).orElse(null);
+    }
+
+    private TimeSlot findTimeSlot(Long id) {
+        return timeSlotRepository.findById(id).orElseThrow();
+    }
+
+    private Theme findTheme(Long id) {
+        return themeRepository.findById(id).orElseThrow();
     }
 }

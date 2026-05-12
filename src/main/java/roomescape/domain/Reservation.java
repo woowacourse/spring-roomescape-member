@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 public record Reservation(Long id, String name, LocalDate date, TimeSlot timeSlot, Theme theme) {
 
@@ -18,6 +19,16 @@ public record Reservation(Long id, String name, LocalDate date, TimeSlot timeSlo
                 date,
                 timeSlot,
                 theme
+        );
+    }
+
+    public Reservation patch(String name, LocalDate date, TimeSlot timeSlot, Theme theme) {
+        return new Reservation(
+                this.id,
+                Optional.ofNullable(name).orElse(this.name),
+                Optional.ofNullable(date).orElse(this.date),
+                Optional.ofNullable(timeSlot).orElse(this.timeSlot),
+                Optional.ofNullable(theme).orElse(this.theme)
         );
     }
 

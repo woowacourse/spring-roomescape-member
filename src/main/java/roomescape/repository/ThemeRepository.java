@@ -1,10 +1,10 @@
 package roomescape.repository;
 
+import roomescape.domain.Theme;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-import roomescape.domain.Theme;
 
 public interface ThemeRepository {
 
@@ -15,6 +15,8 @@ public interface ThemeRepository {
     Theme save(Theme theme);
 
     void deleteById(long id);
+
+    int update(Theme theme);
 
     List<Theme> findPopularThemes(Long topCount, LocalDate fromDate, LocalDate toDate);
 }

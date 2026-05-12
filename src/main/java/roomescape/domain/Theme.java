@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import java.util.Optional;
+
 public record Theme(Long id, String name, String description, String thumbnailUrl) {
 
     public Theme {
@@ -14,6 +16,15 @@ public record Theme(Long id, String name, String description, String thumbnailUr
                 name,
                 description,
                 thumbnailUrl
+        );
+    }
+
+    public Theme patch(String name, String description, String thumbnailUrl) {
+        return new Theme(
+                this.id,
+                Optional.ofNullable(name).orElse(this.name),
+                Optional.ofNullable(description).orElse(this.description),
+                Optional.ofNullable(thumbnailUrl).orElse(this.thumbnailUrl)
         );
     }
 

@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import java.util.Optional;
 
 public record TimeSlot(Long id, LocalTime startAt) {
 
@@ -10,6 +11,13 @@ public record TimeSlot(Long id, LocalTime startAt) {
 
     public static TimeSlot transientOf(LocalTime startAt) {
         return new TimeSlot(null, startAt);
+    }
+
+    public TimeSlot patch(LocalTime startAt) {
+        return new TimeSlot(
+                this.id,
+                Optional.ofNullable(startAt).orElse(this.startAt)
+        );
     }
 
     private void validate(LocalTime startAt) {

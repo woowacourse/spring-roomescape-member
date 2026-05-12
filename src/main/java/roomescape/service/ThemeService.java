@@ -1,11 +1,12 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class ThemeService {
@@ -34,6 +35,15 @@ public class ThemeService {
 
     public void removeTheme(long themeId) {
         themeRepository.deleteById(themeId);
+    }
+
+    public void putTheme(long id, String name, String description, String thumbnailUrl) {
+        themeRepository.update(new Theme(id, name, description, thumbnailUrl));
+    }
+
+    public void patchTheme(long id, String name, String description, String thumbnailUrl) {
+        Theme theme = findThemeById(id);
+        themeRepository.update(theme.patch(name, description, thumbnailUrl));
     }
 
     public List<Theme> findPopularThemes(Long topCount, Long during) {

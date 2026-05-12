@@ -1,9 +1,9 @@
 package roomescape.repository;
 
+import roomescape.domain.TimeSlot;
+
 import java.util.List;
 import java.util.Optional;
-
-import roomescape.domain.TimeSlot;
 
 public interface TimeSlotRepository {
 
@@ -14,4 +14,6 @@ public interface TimeSlotRepository {
     TimeSlot save(TimeSlot timeSlot);
 
     void deleteById(long id);
+
+    int update(TimeSlot timeSlot);
 }

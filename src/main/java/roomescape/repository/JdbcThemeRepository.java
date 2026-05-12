@@ -62,6 +62,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public int update(Theme theme) {
+        String sql = "UPDATE theme SET name = ?, description = ?, thumbnail_url = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, theme.name(), theme.description(), theme.thumbnailUrl(), theme.id());
+    }
+    
+    @Override
     public List<Theme> findPopularThemes(Long topCount, LocalDate fromDate, LocalDate toDate) {
         String sql = """
                 SELECT

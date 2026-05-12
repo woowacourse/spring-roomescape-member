@@ -1,14 +1,15 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.TimeSlot;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeSlotRepository;
 import roomescape.service.dto.AvailableTimeSlot;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class TimeSlotService {
@@ -37,6 +38,15 @@ public class TimeSlotService {
 
     public void removeTime(long timeId) {
         timeSlotRepository.deleteById(timeId);
+    }
+
+    public void putTime(long id, LocalTime startAt) {
+        timeSlotRepository.update(new TimeSlot(id, startAt));
+    }
+
+    public void patchTime(long id, LocalTime startAt) {
+        TimeSlot timeSlot = findTimeSlotById(id);
+        timeSlotRepository.update(timeSlot.patch(startAt));
     }
 
     public List<AvailableTimeSlot> findAvailableTimes(long themeId, LocalDate date) {
