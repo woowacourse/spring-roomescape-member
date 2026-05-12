@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.fixture.ThemeFixture;
 import roomescape.global.exception.NotFoundException;
+import roomescape.reservation.infra.JdbcReservationRepository;
 import roomescape.support.TestDataHelper;
 import roomescape.theme.application.dto.ThemeResult;
 import roomescape.global.exception.RoomEscapeException;
@@ -20,7 +23,11 @@ import roomescape.theme.application.service.ThemeCommandService;
 import roomescape.theme.infra.JdbcThemeRepository;
 
 @JdbcTest
-@Import({ThemeCommandService.class, JdbcThemeRepository.class})
+@Import({
+        ThemeCommandService.class,
+        JdbcThemeRepository.class,
+        JdbcReservationRepository.class
+})
 public class ThemeCommandServiceTest {
 
     @Autowired
@@ -65,9 +72,22 @@ public class ThemeCommandServiceTest {
 
     @DisplayName("삭제할 테마가 없을 시 예외 발생을 테스트합니다.")
     @Test
-    void fail_to_delete_theme() {
+    void delete_not_found_theme_exception() {
         assertThatThrownBy(() -> themeCommandService.delete(1L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 테마입니다.");
+    }
+
+    @DisplayName("테마 삭제 시 해당 테마를 사용한 예약이 존재하면 예외 발생을 테스트합니다.")
+    @Test
+    void delete_theme_with_existing_reservation_exception() {
+        Long themeId = testHelper.insertTheme("테마1", "설명1", "img1.jpg");
+        Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        testHelper.insertReservation("스타크", date, themeId, timeId);
+
+        assertThatThrownBy(() -> themeCommandService.delete(themeId))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
     }
 }
