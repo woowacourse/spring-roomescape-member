@@ -17,6 +17,7 @@ public class Reservation {
     private Reservation(Long id, String name, LocalDate date, Time time, Theme theme, Clock clock) {
         if (clock != null) {
             validateDate(date, clock);
+            validateTime(date, time, clock);
         }
         this.id = id;
         this.name = name;
@@ -34,10 +35,18 @@ public class Reservation {
     }
 
     private void validateDate(LocalDate date, Clock clock) {
-        LocalDate now = LocalDate.now(clock);
+        LocalDate nowDate = LocalDate.now(clock);
 
-        if (date.isBefore(now)) {
+        if (date.isBefore(nowDate)) {
             throw new IllegalArgumentException("이전 날짜로 예약할 수 없습니다.");
+        }
+    }
+
+    private void validateTime(LocalDate date, Time time, Clock clock) {
+        LocalDate nowDate = LocalDate.now(clock);
+
+        if (date.isEqual(nowDate) && time.isPast(clock)) {
+            throw new IllegalArgumentException("이전 시간으로 예약할 수 없습니다.");
         }
     }
 

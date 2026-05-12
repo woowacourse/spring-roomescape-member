@@ -26,7 +26,7 @@ class ReservationTest {
         @BeforeEach
         void setUp() {
             this.fixedClock = Clock.fixed(
-                Instant.parse("2026-05-12T10:00:00Z"),
+                Instant.parse("2026-05-12T11:00:00Z"),
                 ZoneId.of("UTC")
             );
         }
@@ -52,6 +52,18 @@ class ReservationTest {
             assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, fixedClock))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이전 날짜로 예약할 수 없습니다.");
+        }
+
+        @Test
+        @DisplayName("날짜가 같은 경우, 지난 시간으로 예약을 시도하면 예외가 발생한다.")
+        void 실패2() {
+            LocalDate date = LocalDate.of(2026, 5, 12);
+            Time time = Time.create(LocalTime.of(10, 0));
+            Theme theme = Theme.create("성", "성 테마 설명", "castle_image_url");
+
+            assertThatThrownBy(() -> Reservation.create("브라운", date, time, theme, fixedClock))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이전 시간으로 예약할 수 없습니다.");
         }
     }
 

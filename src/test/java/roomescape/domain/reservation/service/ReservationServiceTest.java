@@ -37,7 +37,7 @@ class ReservationServiceTest {
 
     ReservationServiceTest() {
         this.fixedClock = Clock.fixed(
-            Instant.parse("26-01-01T10:00:00Z"),
+            Instant.parse("2026-01-01T10:00:00Z"),
             ZoneId.of("UTC")
         );
         this.reservationRepository = new FakeReservationRepository();
