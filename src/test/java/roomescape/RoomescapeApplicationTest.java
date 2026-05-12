@@ -162,12 +162,12 @@ class RoomescapeApplicationTest {
     @Test
     void 특정_날짜와_테마의_스케줄_조회_시_예약_상태_isAvailable가_정확히_반환된다() {
         RestAssured.given().log().all()
-                .queryParam("date", "2026-05-01")
+                .queryParam("date", "2099-12-31")
                 .when().get("/times/1")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body("themeId", is(1))
-                .body("date", is("2026-05-01"))
+                .body("date", is("2099-12-31"))
                 .body("schedules.find { it.timeId == 1 }.isAvailable", is(false))
                 .body("schedules.find { it.timeId == 2 }.isAvailable", is(true));
     }

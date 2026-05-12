@@ -40,8 +40,8 @@ public class UserReservationTimeService {
                 .map(time -> new AvailableTime(
                         time.id(),
                         time.startAt(),
-                        !reservedIdSet.contains(time.id()) &&
-                                LocalDateTime.of(date, time.startAt()).isAfter(LocalDateTime.now())
+                        !reservedIdSet.contains(time.id()) && LocalDateTime.of(date, time.startAt())
+                                .isAfter(LocalDateTime.now())
                 ))
                 .toList();
     }
