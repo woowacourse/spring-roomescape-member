@@ -19,4 +19,6 @@ public interface ReservationRepository {
     void deleteById(long id);
 
     boolean isExistBy(Long themeId, LocalDate date, Long reservationTimeId);
+
+    List<Reservation> findByName(String name);
 }

@@ -82,6 +82,35 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByName(String name) {
+        String sql = """
+                SELECT 
+                    r.id AS r_id,
+                    r.name,
+                    r.date,
+                    t.id AS t_id,
+                    t.start_at, 
+                    theme.id as theme_id,
+                    theme.name AS theme_name,
+                    theme.description AS theme_description,
+                    theme.thumbnail_url AS theme_thumbnail_url
+                FROM 
+                    reservation r 
+                        INNER JOIN 
+                        time t 
+                        INNER JOIN 
+                        theme theme
+                            ON 
+                                r.time_id = t.id 
+                                   AND 
+                                r.theme_id = theme.id
+                WHERE r.name = ?
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper(), name).stream().toList();
+    }
+
+    @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = createParams(reservation);
         long reservationId = simpleJdbcInsert.executeAndReturnKey(params).longValue();

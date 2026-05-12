@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +66,10 @@ public class ReservationService {
 
     public Reservation findReservation(long reservationId) {
         return getReservationOrElseThrow(reservationId);
+    }
+
+    public List<Reservation> findReservationBy(String name) {
+        return reservationRepository.findByName(name);
     }
 
     @NonNull
