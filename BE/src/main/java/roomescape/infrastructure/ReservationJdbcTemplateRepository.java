@@ -3,6 +3,7 @@ package roomescape.infrastructure;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -108,6 +109,8 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
                 );
             """;
 
+    private static final String UPDATE_DATE_AND_TIME_QUERY = "UPDATE reservation SET date = :date, time_id = :time_id WHERE id = :id";
+
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM reservation WHERE id = ?";
 
     private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> Reservation.createWithId(
@@ -203,10 +206,20 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
 
     @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
-        Map<String, Object> params = new java.util.HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("date", date);
         params.put("themeId", themeId);
         return namedParameterJdbcTemplate.query(FIND_BY_DATE_AND_THEME_ID_QUERY, params, ROW_MAPPER);
+    }
+
+    @Override
+    public void update(Reservation reservation) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", reservation.id());
+        params.put("date", reservation.date());
+        params.put("time_id", reservation.time().id());
+
+        namedParameterJdbcTemplate.update(UPDATE_DATE_AND_TIME_QUERY, params);
     }
 
     @Override

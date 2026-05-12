@@ -80,6 +80,11 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public void update(Reservation reservation) {
+        store.put(reservation.id(), reservation);
+    }
+
+    @Override
     public void deleteById(Long id) {
         store.remove(id);
     }

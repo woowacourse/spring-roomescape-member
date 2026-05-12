@@ -269,4 +269,30 @@ class ReservationJdbcTemplateRepositoryTest {
         // then
         Assertions.assertTrue(reservationRepository.findById(1L).isEmpty());
     }
+
+    @Test
+    @DisplayName("예약의 날짜와 시간을 수정한다.")
+    @Sql(scripts = {
+            "/sql/cleanup.sql",
+            "/sql/infrastructure/reservation/update-fixtures.sql"
+    })
+    void update_success() {
+        // given
+        Reservation existing = reservationRepository.findById(1L).get();
+        ReservationTime newTime = ReservationTime.createWithId(2L, LocalTime.of(11, 0));
+
+        Reservation patched = existing.patch(builder -> {
+            builder.date(DATE_5_6);
+            builder.time(newTime);
+        });
+
+        // when
+        reservationRepository.update(patched);
+
+        // then
+        Reservation updated = reservationRepository.findById(1L).get();
+        Assertions.assertEquals(DATE_5_6, updated.date());
+        Assertions.assertEquals(2L, updated.time().id());
+        Assertions.assertEquals("홍길동", updated.name()); // 다른 필드는 유지되어야 함
+    }
 }
