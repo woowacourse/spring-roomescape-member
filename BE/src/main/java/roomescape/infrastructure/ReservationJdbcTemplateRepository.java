@@ -82,19 +82,42 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
         ORDER BY r.id
         """;
     private static final String EXISTS_BY_TIME_ID_QUERY = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM reservation
-                WHERE time_id = ?
-            );
+        SELECT EXISTS (
+            SELECT 1
+            FROM reservation
+            WHERE time_id = ?
+        );
         """;
     private static final String EXISTS_BY_THEME_ID_QUERY = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM reservation
-                WHERE theme_id = ?
-            );
+        SELECT EXISTS (
+            SELECT 1
+            FROM reservation
+            WHERE theme_id = ?
+        );
         """;
+    private static final String UPDATE_SCHEDULE_BY_ID_AND_NAME_QUERY = """
+        UPDATE reservation
+        SET date = ?, time_id = ?
+        WHERE id = ?
+          AND name = ?
+        """;
+    private static final String FIND_BY_NAME_QUERY = """
+        SELECT r.id,
+               r.name AS reservation_name,
+               r.date,
+               rt.id AS time_id,
+               rt.start_at,
+               t.id AS theme_id,
+               t.name AS theme_name,
+               t.description AS theme_description,
+               t.thumbnail_url
+        FROM reservation r
+        JOIN reservation_time rt ON r.time_id = rt.id
+        JOIN theme t ON r.theme_id = t.id
+        WHERE r.name = ?
+        """;
+    private static final String DELETE_BY_ID_QUERY = "DELETE FROM reservation WHERE id = ?";
+    private static final String DELETE_BY_ID_AND_NAME_QUERY = "DELETE FROM reservation WHERE id = ? AND name = ?";
     private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> {
         ReservationTime time = ReservationTime.createRow(
                 rs.getLong("time_id"),
@@ -181,12 +204,49 @@ public class ReservationJdbcTemplateRepository implements ReservationRepository 
     }
 
     @Override
-    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
-        return jdbcTemplate.query(FIND_BY_DATE_AND_THEME_ID_QUERY, ROW_MAPPER, date, date, themeId, themeId);
+    public void updateScheduleByIdAndName(LocalDate date, Long timeId, Long id, String name) {
+        jdbcTemplate.update(
+                UPDATE_SCHEDULE_BY_ID_AND_NAME_QUERY,
+                date,
+                timeId,
+                id,
+                name
+        );
     }
 
     @Override
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+        return jdbcTemplate.query(
+                FIND_BY_DATE_AND_THEME_ID_QUERY,
+                ROW_MAPPER,
+                date,
+                date,
+                themeId,
+                themeId
+        );
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        return jdbcTemplate.query(
+                FIND_BY_NAME_QUERY,
+                ROW_MAPPER,
+                name
+        );
+    }
+
+
+    @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
+        jdbcTemplate.update(DELETE_BY_ID_QUERY, id);
+    }
+
+    @Override
+    public void deleteByIdAndName(Long id, String name) {
+        jdbcTemplate.update(
+                DELETE_BY_ID_AND_NAME_QUERY,
+                id,
+                name
+        );
     }
 }
