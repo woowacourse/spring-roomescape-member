@@ -17,6 +17,7 @@ import roomescape.dto.ReservationTimeStatusResponse;
 @Service
 public class ThemeService {
 
+    private static final int POPULAR_THEME_PERIOD_DAYS = 7;
     private static final int POPULAR_THEME_LIMIT = 10;
 
     private final ThemeDao themeDao;
@@ -33,7 +34,10 @@ public class ThemeService {
 
     public List<PopularThemeResponse> findPopularThemes() {
         LocalDate today = LocalDate.now();
-        return findPopularThemes(today.minusDays(7), today.minusDays(1), POPULAR_THEME_LIMIT);
+        return findPopularThemes(
+                today.minusDays(POPULAR_THEME_PERIOD_DAYS),
+                today.minusDays(1),
+                POPULAR_THEME_LIMIT);
     }
 
     public List<PopularThemeResponse> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
