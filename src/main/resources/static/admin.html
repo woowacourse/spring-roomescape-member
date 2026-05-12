@@ -520,7 +520,7 @@
 
     try {
       const res = await fetch(`${API}/admin/reservations`);
-      const list = await res.json();
+      const { reservations: list } = await res.json();
 
       document.getElementById('res-loading').style.display = 'none';
 
@@ -575,7 +575,7 @@
 
     try {
       const res = await fetch(`${API}/themes`);
-      const themes = await res.json();
+      const { themes } = await res.json();
 
       document.getElementById('themes-loading').style.display = 'none';
 
@@ -661,7 +661,7 @@
 
     try {
       const res = await fetch(`${API}/times`);
-      const times = await res.json();
+      const { times } = await res.json();
 
       document.getElementById('times-loading').style.display = 'none';
 
@@ -729,7 +729,7 @@
   async function ensureStandardTimes() {
     try {
       const res = await fetch(`${API}/times`);
-      const existing = await res.json();
+      const { times: existing } = await res.json();
       const existingTimes = new Set(existing.map(t => t.startAt));
 
       const standard = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];

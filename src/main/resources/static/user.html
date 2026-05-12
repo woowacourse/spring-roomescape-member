@@ -725,7 +725,7 @@
 
     try {
       const res = await fetch(`${API}/themes/popular?size=5`);
-      const themes = await res.json();
+      const { themes } = await res.json();
 
       document.getElementById('popular-loading').style.display = 'none';
 
@@ -765,7 +765,7 @@
 
     try {
       const res = await fetch(`${API}/themes`);
-      const themes = await res.json();
+      const { themes } = await res.json();
 
       document.getElementById('booking-themes-loading').style.display = 'none';
       const grid = document.getElementById('booking-themes-grid');
@@ -822,7 +822,7 @@
 
     try {
       const res = await fetch(`${API}/themes/${selectedTheme.id}/times?date=${selectedDate}`);
-      const times = await res.json();
+      const { times } = await res.json();
 
       document.getElementById('times-loading').style.display = 'none';
       const container = document.getElementById('time-slots');
@@ -912,7 +912,7 @@
 
     try {
       const res = await fetch(`${API}/reservations?username=${encodeURIComponent(username)}`);
-      const reservations = await res.json();
+      const { reservations } = await res.json();
 
       document.getElementById('my-loading').style.display = 'none';
 
