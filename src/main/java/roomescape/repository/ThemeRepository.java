@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,12 +17,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.EntityId;
 import roomescape.domain.Theme;
-import roomescape.exception.DataReferencedException;
 
 @Repository
 public class ThemeRepository {
-
-    private static final String FK_RESERVATION_THEME_ID = "fk_reservation_theme_id";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -95,34 +91,15 @@ public class ThemeRepository {
     }
 
     public boolean delete(EntityId themeId) {
-        try {
-            String deleteSql = "DELETE FROM theme"
-                    + " WHERE id = :id";
+        String deleteSql = "DELETE FROM theme"
+                + " WHERE id = :id";
 
-            int deletedRowCount = namedParameterJdbcTemplate.update(
-                    deleteSql,
-                    Map.of("id", themeId.getValueAsUuid())
-            );
+        int deletedRowCount = namedParameterJdbcTemplate.update(
+                deleteSql,
+                Map.of("id", themeId.getValueAsUuid())
+        );
 
-            return isDeleted(deletedRowCount);
-        } catch (DataIntegrityViolationException exception) {
-            if (isForeignKeyViolation(exception)) {
-                throw new DataReferencedException(
-                        "외래키 제약조건으로 인해 삭제에 실패했습니다.",
-                        "themeId = " + themeId,
-                        exception
-                );
-            }
-
-            throw exception;
-        }
-    }
-
-    private boolean isForeignKeyViolation(DataIntegrityViolationException exception) {
-        String message = exception.getMessage();
-
-        return message != null &&
-                message.toLowerCase().contains(FK_RESERVATION_THEME_ID);
+        return isDeleted(deletedRowCount);
     }
 
     private boolean isDeleted(int deletedRowCount) {

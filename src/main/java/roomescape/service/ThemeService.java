@@ -11,9 +11,7 @@ import roomescape.domain.Duration;
 import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
-import roomescape.exception.DataReferencedException;
 import roomescape.exception.EntityNotFoundException;
-import roomescape.exception.InUseEntityException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.dto.ReservedTheme;
@@ -66,15 +64,15 @@ public class ThemeService {
 
     @Transactional
     public void delete(EntityId themeId) {
-        try {
-            boolean deleted = themeRepository.delete(themeId);
-            validateDeleted(deleted, themeId);
-        } catch (DataReferencedException exception) {
-            throw new InUseEntityException(
-                    "사용 중인 테마는 제거할 수 없습니다.",
-                    "themeId = " + themeId,
-                    exception
-            );
+        validateThemeNotUsed(themeId);
+
+        boolean deleted = themeRepository.delete(themeId);
+        validateDeleted(deleted, themeId);
+    }
+
+    private void validateThemeNotUsed(EntityId themeId) {
+        if (reservationRepository.existByThemeId(themeId)) {
+            throw new IllegalStateException("사용되지 않는 테마만 제거할 수 있습니다. themeId = " + themeId.getValueAsString());
         }
     }
 

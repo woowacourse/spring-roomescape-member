@@ -76,6 +76,36 @@ public class ReservationRepository {
         );
     }
 
+    public boolean existByTimeId(EntityId timeId) {
+        String countSql = "SELECT count(*)"
+                + " FROM reservation r"
+                + " WHERE time_id = ?";
+
+        Integer count = jdbcTemplate.queryForObject(
+                countSql,
+                Integer.class,
+                timeId.getValueAsUuid()
+        );
+
+        return count != null
+                && count > 0;
+    }
+
+    public boolean existByThemeId(EntityId themeId) {
+        String countSql = "SELECT count(*)"
+                + " FROM reservation r"
+                + " WHERE theme_id = ?";
+
+        Integer count = jdbcTemplate.queryForObject(
+                countSql,
+                Integer.class,
+                themeId.getValueAsUuid()
+        );
+
+        return count != null
+                && count > 0;
+    }
+
     public boolean delete(EntityId reservationId) {
         String deleteSql = "DELETE FROM reservation"
                 + " WHERE id = ?";

@@ -11,9 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.DataReferencedException;
 import roomescape.exception.EntityNotFoundException;
-import roomescape.exception.InUseEntityException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.ReservationTimeCreateCommand;
@@ -60,15 +58,15 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(EntityId timeId) {
-        try {
-            boolean deleted = timeRepository.delete(timeId);
-            validateDeleted(deleted, timeId);
-        } catch (DataReferencedException exception) {
-            throw new InUseEntityException(
-                    "사용 중인 예약 시간은 제거할 수 없습니다.",
-                    "timeId = " + timeId,
-                    exception
-            );
+        validateTimeNotUsed(timeId);
+
+        boolean deleted = timeRepository.delete(timeId);
+        validateDeleted(deleted, timeId);
+    }
+
+    private void validateTimeNotUsed(EntityId timeId) {
+        if (reservationRepository.existByTimeId(timeId)) {
+            throw new IllegalStateException("사용되지 않는 시간만 제거할 수 있습니다. timeId = " + timeId.getValueAsString());
         }
     }
 

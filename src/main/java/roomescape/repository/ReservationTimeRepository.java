@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,12 +14,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.EntityId;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.DataReferencedException;
 
 @Repository
 public class ReservationTimeRepository {
-
-    private static final String FK_RESERVATION_TIME_ID = "fk_reservation_time_id";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -65,30 +61,11 @@ public class ReservationTimeRepository {
     }
 
     public boolean delete(EntityId timeId) {
-        try {
-            String deleteSql = "DELETE FROM reservation_time"
-                    + " WHERE id = ?";
-            int deletedRowCount = jdbcTemplate.update(deleteSql, timeId.getValueAsUuid());
+        String deleteSql = "DELETE FROM reservation_time"
+                + " WHERE id = ?";
+        int deletedRowCount = jdbcTemplate.update(deleteSql, timeId.getValueAsUuid());
 
-            return isDeleted(deletedRowCount);
-        } catch (DataIntegrityViolationException exception) {
-            if (isForeignKeyViolation(exception)) {
-                throw new DataReferencedException(
-                        "외래키 제약조건으로 인해 삭제에 실패했습니다.",
-                        "timeId = " + timeId,
-                        exception
-                );
-            }
-
-            throw exception;
-        }
-    }
-
-    private boolean isForeignKeyViolation(DataIntegrityViolationException exception) {
-        String message = exception.getMessage();
-
-        return message != null &&
-                message.toLowerCase().contains(FK_RESERVATION_TIME_ID);
+        return isDeleted(deletedRowCount);
     }
 
     private boolean isDeleted(int deletedCount) {
