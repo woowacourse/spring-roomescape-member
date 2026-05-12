@@ -1,12 +1,11 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -32,7 +31,7 @@ public class ReservationTimeService {
         validateDuplicateStartAt(startAt);
         Long id = reservationTimeRepository.insert(new ReservationTime(startAt));
         return reservationTimeRepository.findBy(id)
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 예약 시간대입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간대입니다."));
     }
 
     private void validateDuplicateStartAt(LocalTime startAt) {
@@ -44,7 +43,7 @@ public class ReservationTimeService {
     @Transactional
     public void delete(Long id) {
         if (!reservationTimeRepository.existsById(id)) {
-            throw new NoSuchElementException("존재하지 않는 예약 시간대입니다.");
+            throw new NotFoundException("존재하지 않는 예약 시간대입니다.");
         }
         if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("해당 시간에 예약이 존재합니다.");
