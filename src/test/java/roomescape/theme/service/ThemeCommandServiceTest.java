@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.fixture.ThemeFixture;
+import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.infra.JdbcReservationRepository;
 import roomescape.support.TestDataHelper;
@@ -58,7 +59,7 @@ public class ThemeCommandServiceTest {
         testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
 
         assertThatThrownBy(() -> themeCommandService.save(ThemeFixture.horrorThemeCreateCommand()))
-                .isInstanceOf(RoomEscapeException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage("이름과 설명이 같은 테마가 이미 존재합니다.");
     }
 

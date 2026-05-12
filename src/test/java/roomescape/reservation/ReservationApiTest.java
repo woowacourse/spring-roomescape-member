@@ -76,7 +76,7 @@ class ReservationApiTest {
                 .statusCode(204);
     }
 
-    @DisplayName("과거 날짜로 예약 생성 요청 시 400 응답 반환을 테스트합니다.")
+    @DisplayName("과거 날짜로 예약 생성 요청 시 422 응답 반환을 테스트합니다.")
     @Test
     void save_reservation_with_past_date() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
@@ -89,7 +89,7 @@ class ReservationApiTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(422)
                 .body("errorMessage", equalTo("현재 시간보다 이전 시간으로 예약을 할 수 없습니다."));
     }
 
@@ -129,7 +129,7 @@ class ReservationApiTest {
                 .body("errorMessage", equalTo("날짜 형식은 yyyy-MM-dd 이어야 합니다."));
     }
 
-    @DisplayName("이미 예약된 날짜와 시간으로 예약 시 400 응답 반환을 테스트합니다.")
+    @DisplayName("이미 예약된 날짜와 시간으로 예약 시 409 응답 반환을 테스트합니다.")
     @Test
     void save_duplicated_reservation() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
@@ -143,7 +143,7 @@ class ReservationApiTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(409)
                 .body("errorMessage", equalTo("이미 해당 날짜와 시간에 예약이 존재합니다."));
     }
 
@@ -193,7 +193,7 @@ class ReservationApiTest {
                 .body("errorMessage", equalTo("존재하지 않는 예약입니다."));
     }
 
-    @DisplayName("변경하려는 날짜와 시간에 이미 예약이 존재할 시 400 응답 반환을 테스트합니다.")
+    @DisplayName("변경하려는 날짜와 시간에 이미 예약이 존재할 시 409 응답 반환을 테스트합니다.")
     @Test
     void update_duplicated_reservation() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
@@ -214,11 +214,11 @@ class ReservationApiTest {
                 .body(params)
                 .when().patch("/reservations/{id}", reservationId)
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(409)
                 .body("errorMessage", equalTo("변경하려는 날짜와 시간에 이미 예약이 존재합니다."));
     }
 
-    @DisplayName("과거 날짜로 예약 변경 요청 시 400 응답 반환을 테스트합니다.")
+    @DisplayName("과거 날짜로 예약 변경 요청 시 422 응답 반환을 테스트합니다.")
     @Test
     void update_reservation_with_past_date() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
@@ -237,7 +237,7 @@ class ReservationApiTest {
                 .body(params)
                 .when().patch("/reservations/{id}", reservationId)
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(422)
                 .body("errorMessage", equalTo("현재 시간보다 이전 시간으로 예약을 할 수 없습니다."));
     }
 
@@ -327,7 +327,7 @@ class ReservationApiTest {
                 .body("[1].theme.name", equalTo("공포 테마"));
     }
 
-    @DisplayName("이미 지나간 시간의 예약을 삭제 시 400 응답 반환을 테스트합니다.")
+    @DisplayName("이미 지나간 시간의 예약을 삭제 시 422 응답 반환을 테스트합니다.")
     @Test
     void delete_past_reservation() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
@@ -338,7 +338,7 @@ class ReservationApiTest {
         RestAssured.given()
                 .when().delete("/reservations/{id}", reservationId)
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(422)
                 .body("errorMessage", equalTo("이미 지나간 예약은 삭제할 수 없습니다."));
     }
 }

@@ -63,7 +63,7 @@ class ReservationTimeApiTest {
                 .body("errorMessage", equalTo("시간은 비어있을 수 없습니다."));
     }
 
-    @DisplayName("중복된 시간으로 예약 시간 추가 시 400 응답을 반환합니다.")
+    @DisplayName("중복된 시간으로 예약 시간 추가 시 409 응답을 반환합니다.")
     @Test
     void save_duplicated_time() {
         RestAssured.given()
@@ -77,7 +77,7 @@ class ReservationTimeApiTest {
                 .body(Map.of("startAt", "09:00"))
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(409)
                 .body("errorMessage", equalTo("시간 09:00이(가) 이미 존재합니다."));
     }
 

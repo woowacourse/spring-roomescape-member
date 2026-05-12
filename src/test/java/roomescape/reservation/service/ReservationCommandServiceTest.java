@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ThemeFixture;
+import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationResult;
@@ -82,7 +83,7 @@ class ReservationCommandServiceTest {
 
         ReservationCreateCommand request = ReservationFixture.futureKayaCreateCommand(themeId, timeId);
         assertThatThrownBy(() -> reservationCommandService.save(request))
-                .isInstanceOf(RoomEscapeException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage("이미 해당 날짜와 시간에 예약이 존재합니다.");
     }
 
@@ -206,7 +207,7 @@ class ReservationCommandServiceTest {
                 starkReservationId,
                 ReservationFixture.futureStarkUpdateCommand(elevenTimeId))
         )
-                .isInstanceOf(RoomEscapeException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage("변경하려는 날짜와 시간에 이미 예약이 존재합니다.");
     }
 

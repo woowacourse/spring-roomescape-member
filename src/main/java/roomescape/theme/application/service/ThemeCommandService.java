@@ -3,6 +3,7 @@ package roomescape.theme.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservation.domain.repository.ReservationRepository;
@@ -38,7 +39,7 @@ public class ThemeCommandService {
 
     private void validateDuplicateTheme(Theme theme) {
         if (themeRepository.existsByNameAndDescription(theme)) {
-            throw new RoomEscapeException("이름과 설명이 같은 테마가 이미 존재합니다.");
+            throw new ConflictException("이름과 설명이 같은 테마가 이미 존재합니다.");
         }
     }
 }

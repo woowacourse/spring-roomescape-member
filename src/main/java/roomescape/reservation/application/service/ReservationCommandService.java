@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
@@ -93,7 +94,7 @@ public class ReservationCommandService {
         );
 
         if (alreadyExist) {
-            throw new RoomEscapeException("변경하려는 날짜와 시간에 이미 예약이 존재합니다.");
+            throw new ConflictException("변경하려는 날짜와 시간에 이미 예약이 존재합니다.");
         }
     }
 
@@ -105,7 +106,7 @@ public class ReservationCommandService {
         );
 
         if (existsByDateAndTime) {
-            throw new RoomEscapeException("이미 해당 날짜와 시간에 예약이 존재합니다.");
+            throw new ConflictException("이미 해당 날짜와 시간에 예약이 존재합니다.");
         }
     }
 }

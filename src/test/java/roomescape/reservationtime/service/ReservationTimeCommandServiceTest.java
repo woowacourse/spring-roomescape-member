@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.infra.JdbcReservationRepository;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
@@ -62,7 +63,7 @@ public class ReservationTimeCommandServiceTest {
         testHelper.insertReservationTime(LocalTime.of(9, 0));
 
         assertThatThrownBy(() -> timeCommandService.save(new ReservationTimeCreateCommand(LocalTime.of(9, 0))))
-                .isInstanceOf(RoomEscapeException.class)
+                .isInstanceOf(ConflictException.class)
                 .hasMessage("시간 09:00이(가) 이미 존재합니다.");
     }
 

@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
             Long.class, "ID값은 정수여야 합니다."
     );
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler
     public ErrorResponse handleRoomEscape(RoomEscapeException e) {
         return new ErrorResponse(e.getMessage());
@@ -33,6 +33,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler
     public ErrorResponse handleNotFound(NotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler
+    public ErrorResponse handleConflict(ConflictException e) {
         return new ErrorResponse(e.getMessage());
     }
 

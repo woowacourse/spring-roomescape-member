@@ -101,7 +101,7 @@ public class ThemeApiTest {
                 .body("errorMessage", equalTo("썸네일 이미지 URL은 비어있을 수 없습니다."));
     }
 
-    @DisplayName("중복된 테마 생성 시 400 응답을 반환합니다.")
+    @DisplayName("중복된 테마 생성 시 409 응답을 반환합니다.")
     @Test
     void create_duplicated_theme() {
         RestAssured.given()
@@ -115,7 +115,7 @@ public class ThemeApiTest {
                 .body(ThemeFixture.horrorThemeParams())
                 .when().post("/admin/themes")
                 .then().log().all()
-                .statusCode(400)
+                .statusCode(409)
                 .body("errorMessage", equalTo("이름과 설명이 같은 테마가 이미 존재합니다."));
     }
 

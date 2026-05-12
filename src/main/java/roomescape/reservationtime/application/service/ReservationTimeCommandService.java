@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservation.domain.repository.ReservationRepository;
@@ -42,7 +43,7 @@ public class ReservationTimeCommandService {
     
     private void validateDuplicateTime(LocalTime startAt) {
         if (timeRepository.existsByStartAt(startAt)) {
-            throw new RoomEscapeException(String.format("시간 %s이(가) 이미 존재합니다.",
+            throw new ConflictException(String.format("시간 %s이(가) 이미 존재합니다.",
                     startAt.format(DateTimeFormatter.ofPattern("HH:mm"))));
         }
     }
