@@ -2,10 +2,8 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.CreateReservationTimeRequest;
-import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.ReservationTimeInUseException;
 import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.repository.ReservationDao;
@@ -33,7 +31,7 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        if(reservationDao.existsByTimeId(id)){
+        if (reservationDao.existsByTimeId(id)) {
             throw new ReservationTimeInUseException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
         }
         reservationTimeDao.deleteById(id);

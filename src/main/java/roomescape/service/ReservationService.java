@@ -60,7 +60,7 @@ public class ReservationService {
         ReservationTime time = reservationTimeDao.findById(request.timeId())
                 .orElseThrow(() -> new ReservationTimeNotFoundException("존재하지 않는 예약 시간입니다."));
         LocalDateTime reservationAt = LocalDateTime.of(request.date(), time.getStartAt());
-        if(reservationAt.isBefore(LocalDateTime.now())){
+        if (reservationAt.isBefore(LocalDateTime.now())) {
             throw new PastReservationException("지난 날짜는 예약할 수 없습니다. 오늘 이후 날짜를 선택해주세요.");
         }
     }

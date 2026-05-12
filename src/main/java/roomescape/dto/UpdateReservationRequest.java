@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import roomescape.exception.InvalidInputException;
 
 public record UpdateReservationRequest(LocalDate date, Long timeId) {
-    public UpdateReservationRequest{
+    public UpdateReservationRequest {
         if (date == null) {
             throw new InvalidInputException("변경할 날짜는 필수입니다.");
         }
