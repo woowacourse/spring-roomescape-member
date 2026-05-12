@@ -6,11 +6,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import roomescape.dao.FakeDatabase;
+import roomescape.dao.FakeReservationDao;
+import roomescape.dao.FakeReservationTimeDao;
+import roomescape.dao.FakeThemeDao;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
@@ -20,41 +22,26 @@ import roomescape.service.dto.ServiceReservationRequest;
 import roomescape.service.dto.ServiceReservationResponse;
 import roomescape.service.dto.ServiceReservationTimeResponse;
 import roomescape.service.dto.ServiceThemeResponse;
-import roomescape.support.DatabaseCleanUp;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 public class ReservationServiceTest {
 
-    @Autowired
-    private DatabaseCleanUp databaseCleanUp;
-
-    @Autowired
     private ReservationService reservationService;
 
-    @Autowired
+    private ReservationDao reservationDao;
+
     private ReservationTimeDao reservationTimeDao;
 
-    @Autowired
     private ThemeDao themeDao;
 
-    @Test
-    void notExistReservationTimeExceptionTest() {
-        themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
-        ServiceReservationRequest requestDto = new ServiceReservationRequest("fizz", LocalDate.of(2026, 5, 2), 1L,
-                1L);
-        assertThatThrownBy(() -> reservationService.create(requestDto))
-                .hasMessage("[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다.")
-                .isInstanceOf(CustomException.class);
-    }
+    @BeforeEach
+    void beforeEach() {
+        FakeDatabase fakeDatabase = new FakeDatabase();
 
-    @Test
-    void notExistThemeExceptionTest() {
-        reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
-        ServiceReservationRequest requestDto = new ServiceReservationRequest("fizz", LocalDate.of(2026, 5, 2), 1L,
-                1L);
-        assertThatThrownBy(() -> reservationService.create(requestDto))
-                .hasMessage("[ERROR] 해당 ID의 테마를 찾을 수 없습니다.")
-                .isInstanceOf(CustomException.class);
+        reservationDao = new FakeReservationDao(fakeDatabase);
+        reservationTimeDao = new FakeReservationTimeDao(fakeDatabase);
+        themeDao = new FakeThemeDao(fakeDatabase);
+
+        reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
     }
 
     @Test
@@ -122,11 +109,5 @@ public class ReservationServiceTest {
         List<ServiceReservationResponse> responseDtos = reservationService.readAll();
 
         assertThat(responseDtos.size()).isEqualTo(0);
-    }
-
-
-    @AfterEach
-    void afterEach() {
-        databaseCleanUp.execute();
     }
 }

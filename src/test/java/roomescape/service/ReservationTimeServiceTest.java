@@ -5,25 +5,42 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.context.jdbc.Sql;
+import roomescape.dao.FakeDatabase;
+import roomescape.dao.FakeReservationDao;
+import roomescape.dao.FakeReservationTimeDao;
+import roomescape.dao.FakeThemeDao;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.service.dto.ServiceReservationTimeAvailabilityResponse;
 import roomescape.service.dto.ServiceReservationTimeRequest;
 import roomescape.service.dto.ServiceReservationTimeResponse;
-import roomescape.support.DatabaseCleanUp;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 public class ReservationTimeServiceTest {
 
-    @Autowired
-    private DatabaseCleanUp databaseCleanUp;
-
-    @Autowired
     private ReservationTimeService reservationTimeService;
+
+    private ReservationDao reservationDao;
+
+    private ReservationTimeDao reservationTimeDao;
+
+    private ThemeDao themeDao;
+
+    @BeforeEach
+    void beforeEach() {
+        FakeDatabase fakeDatabase = new FakeDatabase();
+
+        reservationDao = new FakeReservationDao(fakeDatabase);
+        reservationTimeDao = new FakeReservationTimeDao(fakeDatabase);
+        themeDao = new FakeThemeDao(fakeDatabase);
+
+        reservationTimeService = new ReservationTimeService(reservationTimeDao, themeDao, reservationDao);
+    }
 
     @Test
     void createTest() {
@@ -45,12 +62,18 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-    @Sql(scripts = "/available-time-test-data.sql")
     void readAvailabilityByDateAndThemeTest() {
-        List<ServiceReservationTimeAvailabilityResponse> responseDtos = reservationTimeService.readAvailabilityByDateAndTheme(
-                LocalDate.of(2026, 5, 1), 1L);
+        ReservationTime reservationTime = reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
+        reservationTimeDao.create(new ReservationTime(LocalTime.of(11, 0)));
 
-        assertThat(responseDtos.getFirst().available()).isFalse();
+        Theme theme = themeDao.create(new Theme("방탈출1", "방탈출1 설명", "url.jpg"));
+
+        reservationDao.create(new Reservation("fizz", LocalDate.of(2026, 5, 2), reservationTime, theme));
+
+        List<ServiceReservationTimeAvailabilityResponse> responseDtos = reservationTimeService.readAvailabilityByDateAndTheme(
+                LocalDate.of(2026, 5, 2), theme.getId());
+
+        assertThat(responseDtos.get(0).available()).isFalse();
         assertThat(responseDtos.get(1).available()).isTrue();
     }
 
@@ -62,10 +85,5 @@ public class ReservationTimeServiceTest {
         List<ServiceReservationTimeResponse> responseDtos = reservationTimeService.readAll();
 
         assertThat(responseDtos.size()).isEqualTo(0);
-    }
-
-    @AfterEach
-    void afterEach() {
-        databaseCleanUp.execute();
     }
 }
