@@ -182,4 +182,28 @@ class ReservationJdbcTemplateRepositoryTest {
 
         Assertions.assertTrue(deleteTargetFindResult.isEmpty());
     }
+
+    @Test
+    @DisplayName("date, timeId, themeId가 모두 일치하는 예약을 조회한다.")
+    void findByDateAndTimeIdAndThemeId_success() {
+        // given
+        Reservation savedReservation = reservationRepository.save(
+                Reservation.create(TEST_NAME, DATE_TODAY, savedTime1, savedTheme1)
+        );
+
+        reservationRepository.save(
+                Reservation.create(TEST_NAME + "2", DATE_TODAY, savedTime2, savedTheme1)
+        );
+
+        // when
+        Optional<Reservation> result = reservationRepository.findByDateAndTimeIdAndThemeId(
+                DATE_TODAY,
+                savedTime1.getId(),
+                savedTheme1.getId()
+        );
+
+        // then
+        Assertions.assertTrue(result.isPresent());
+        Assertions.assertEquals(savedReservation.getId(), result.get().getId());
+    }
 }
