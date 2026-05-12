@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.exception.DuplicateTimeException;
 import roomescape.time.exception.TimeInUseException;
-import roomescape.time.exception.TimeNotFoundException;
 
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
@@ -45,22 +43,6 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
-    @DisplayName("기존에 이미 존재하는 시간을 추가하면 예외가 발생한다.")
-    void saveTest_duplicate() {
-        // given
-        reservationTimeRepository.save(
-                new ReservationTime(null, LocalTime.of(10, 0))
-        );
-
-        // when & then
-        assertThatThrownBy(
-                () ->   reservationTimeRepository.save(
-                        new ReservationTime(null, LocalTime.of(10, 0))
-                )
-        ).isInstanceOf(DuplicateTimeException.class);
-    }
-
-    @Test
     @DisplayName("ID를 통해 시간 정보를 삭제한다.")
     void deleteByIdTest() {
         // given
@@ -72,14 +54,6 @@ class JdbcReservationTimeRepositoryTest {
         // then
         List<ReservationTime> all = reservationTimeRepository.findAll();
         assertThat(all).isEmpty();
-    }
-
-    @Test
-    @DisplayName("ID가 없으면 예외가 발생한다.")
-    void deleteByIdTest_id_not_exist() {
-        assertThatThrownBy(
-                () -> reservationTimeRepository.deleteById(999L)
-        ).isInstanceOf(TimeNotFoundException.class);
     }
 
     @Test

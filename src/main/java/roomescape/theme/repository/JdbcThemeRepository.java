@@ -10,9 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.DuplicateThemeException;
 import roomescape.theme.exception.ThemeInUseException;
-import roomescape.theme.exception.ThemeNotFoundException;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -38,28 +36,24 @@ public class JdbcThemeRepository implements ThemeRepository {
                VALUES (?, ?, ?)
                """;
 
-        try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-                ps.setString(1, theme.getName());
-                ps.setString(2, theme.getDescription());
-                ps.setString(3, theme.getThumbnailUrl());
-                return ps;
-            }, keyHolder);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, theme.getName());
+            ps.setString(2, theme.getDescription());
+            ps.setString(3, theme.getThumbnailUrl());
+            return ps;
+        }, keyHolder);
 
-            Long id = keyHolder.getKey().longValue();
+        Long id = keyHolder.getKey().longValue();
 
-            return new Theme(
-                    id,
-                    theme.getName(),
-                    theme.getDescription(),
-                    theme.getThumbnailUrl()
-            );
-        } catch (DataIntegrityViolationException e) {
-            throw new DuplicateThemeException();
-        }
+        return new Theme(
+                id,
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnailUrl()
+        );
     }
 
     @Override
@@ -70,11 +64,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                """;
 
         try {
-            int affectedRow = jdbcTemplate.update(sql, id);
-
-            if(affectedRow == 0) {
-                throw new ThemeNotFoundException();
-            }
+            jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
             throw new ThemeInUseException();
         }
@@ -90,6 +80,20 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         return jdbcTemplate.query(sql, ThemeMapper, id)
                 .stream().findFirst();
+    }
+
+    @Override
+    public boolean existByName(String name) {
+        String sql = """
+               SELECT EXISTS(
+                   SELECT 1
+                   FROM theme
+                   WHERE name = ?   
+               )
+               """;
+
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, name);
+        return Boolean.TRUE.equals(exists);
     }
 
     @Override

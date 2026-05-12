@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.exception.DuplicateThemeException;
 import roomescape.theme.exception.ThemeInUseException;
-import roomescape.theme.exception.ThemeNotFoundException;
 
 @JdbcTest
 class JdbcThemeRepositoryTest {
@@ -26,30 +24,6 @@ class JdbcThemeRepositoryTest {
     @Autowired
     public JdbcThemeRepositoryTest(JdbcTemplate jdbcTemplate) {
         this.themeRepository = new JdbcThemeRepository(jdbcTemplate);
-    }
-
-    @Test
-    @DisplayName("기존에 이미 존재하는 시간을 추가하면 예외가 발생한다.")
-    void saveTest_duplicate() {
-        // given
-        themeRepository.save(
-                new Theme(null, "테마", "테마 설명", "썸네일_url")
-        );
-
-        // when & then
-        assertThatThrownBy(
-                () ->  themeRepository.save(
-                        new Theme(null, "테마", "테마 설명", "썸네일_url")
-                )
-        ).isInstanceOf(DuplicateThemeException.class);
-    }
-
-    @Test
-    @DisplayName("ID가 없으면 예외가 발생한다.")
-    void deleteByIdTest_id_not_exist() {
-        assertThatThrownBy(
-                () -> themeRepository.deleteById(999L)
-        ).isInstanceOf(ThemeNotFoundException.class);
     }
 
     @Test

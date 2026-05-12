@@ -3,6 +3,7 @@ package roomescape.time.repository;
 import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,9 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.exception.DuplicateTimeException;
 import roomescape.time.exception.TimeInUseException;
-import roomescape.time.exception.TimeNotFoundException;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -37,21 +36,18 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                INSERT INTO reservation_time (start_at)
                VALUES (?)
                """;
-        try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
 
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-                ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
-                return ps;
-            }, keyHolder);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-            Long id = keyHolder.getKey().longValue();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
+            return ps;
+        }, keyHolder);
 
-            return new ReservationTime(id, reservationTime.getStartAt());
-        } catch (DataIntegrityViolationException e) {
-            throw new DuplicateTimeException();
-        }
+        Long id = keyHolder.getKey().longValue();
+
+        return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     @Override
@@ -62,11 +58,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                """;
 
         try {
-            int affectedRow = jdbcTemplate.update(sql, id);
-
-            if(affectedRow == 0) {
-                throw new TimeNotFoundException();
-            }
+            jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
             throw new TimeInUseException();
         }
@@ -85,6 +77,20 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 reservationTimeRowMapper,
                 id
         ).stream().findFirst();
+    }
+
+    @Override
+    public boolean existByStartAt(LocalTime localTime) {
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation_time
+                WHERE start_at = ?
+            )
+            """;
+
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, localTime);
+        return Boolean.TRUE.equals(exists);
     }
 
     @Override

@@ -58,37 +58,6 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("기존에 이미 존재하는 시간을 추가하면 예외가 발생한다.")
-    void saveTest_duplicate() {
-        // given
-        ReservationTime time = createTime(LocalTime.of(10, 0));
-        Theme theme = createTheme("우테코", "우테코 전용 테마", "https://example.com");
-
-        reservationRepository.save(
-                new Reservation(
-                        null,
-                        "브라운",
-                        LocalDate.of(2024, 5, 1),
-                        time,
-                        theme
-                )
-        );
-
-        // when & then
-        assertThatThrownBy(
-                () -> reservationRepository.save(
-                        new Reservation(
-                                null,
-                                "브라운",
-                                LocalDate.of(2024, 5, 1),
-                                time,
-                                theme
-                        )
-                )
-        ).isInstanceOf(DuplicateReservationException.class);
-    }
-
-    @Test
     @DisplayName("ID를 통해 예약을 삭제한다.")
     void deleteByIdTest() {
         // given
@@ -103,14 +72,6 @@ class JdbcReservationRepositoryTest {
         // then
         List<Reservation> reservations = reservationRepository.findAllByName("브라");
         assertThat(reservations).isEmpty();
-    }
-
-    @Test
-    @DisplayName("ID가 없으면 예외가 발생한다.")
-    void deleteByIdTest_id_not_exist() {
-        assertThatThrownBy(
-                () -> reservationRepository.deleteById(999L)
-        ).isInstanceOf(ReservationNotFoundException.class);
     }
 
     @Test

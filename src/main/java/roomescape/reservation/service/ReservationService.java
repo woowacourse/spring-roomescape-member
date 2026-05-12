@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.exception.DuplicateReservationException;
 import roomescape.reservation.exception.InvalidReservationDateException;
 import roomescape.reservation.exception.NotReservationOwnerException;
 import roomescape.reservation.exception.ReservationNotFoundException;
@@ -41,12 +42,15 @@ public class ReservationService {
 
     @Transactional
     public Reservation makeReservation(ReservationCommand command) {
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(command.date(), command.timeId(), command.themeId())) {
+            throw new DuplicateReservationException();
+        }
+
         ReservationTime time = getReservationTime(command.timeId());
+        validateExpiry(command.date(), time.getStartAt());
 
         Theme theme = themeRepository.findById(command.themeId())
                 .orElseThrow(ThemeNotFoundException::new);
-
-        validate(command.date(), time.getStartAt());
 
         return reservationRepository.save(
                 Reservation.of(command.name(), command.date(), time, theme)
@@ -58,7 +62,7 @@ public class ReservationService {
                 .orElseThrow(TimeNotFoundException::new);
     }
 
-    private void validate(LocalDate date, LocalTime startAt) {
+    private void validateExpiry(LocalDate date, LocalTime startAt) {
         LocalDate nowDate = LocalDate.now(clock);
 
         if (nowDate.isAfter(date)) {
@@ -72,8 +76,12 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservationById(Long id) {
+        if (reservationRepository.findById(id).isEmpty()) {
+            throw new ReservationNotFoundException();
+        }
+
         Reservation reservation = getReservation(id);
-        validate(reservation.getDate(), reservation.getTime().getStartAt());
+        validateExpiry(reservation.getDate(), reservation.getTime().getStartAt());
         reservationRepository.deleteById(id);
     }
 
@@ -81,14 +89,14 @@ public class ReservationService {
     public void updateReservation(ReservationUpdateCommand command, Long id) {
         Reservation reservation = getReservation(id);
 
-        validate(
+        validateExpiry(
                 reservation.getDate(),
                 reservation.getTime().getStartAt()
         );
 
         Reservation updated = updateField(command, reservation);
 
-        validate(
+        validateExpiry(
                 updated.getDate(),
                 updated.getTime().getStartAt()
         );

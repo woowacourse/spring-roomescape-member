@@ -55,30 +55,26 @@ public class JdbcReservationRepository implements ReservationRepository {
                 VALUES (?, ?, ?, ?)
                 """;
 
-        try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-                ps.setString(1, reservation.getName());
-                ps.setDate(2, Date.valueOf(reservation.getDate()));
-                ps.setLong(3, reservation.getTime().getId());
-                ps.setLong(4, reservation.getTheme().getId());
-                return ps;
-            }, keyHolder);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, reservation.getName());
+            ps.setDate(2, Date.valueOf(reservation.getDate()));
+            ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
+            return ps;
+        }, keyHolder);
 
-            long id = keyHolder.getKey().longValue();
+        long id = keyHolder.getKey().longValue();
 
-            return new Reservation(
-                    id,
-                    reservation.getName(),
-                    reservation.getDate(),
-                    reservation.getTime(),
-                    reservation.getTheme()
-            );
-        } catch (DataIntegrityViolationException e) {
-            throw new DuplicateReservationException();
-        }
+        return new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
     }
 
     @Override
@@ -88,11 +84,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                WHERE id = ?
                """;
 
-        int affectedRow = jdbcTemplate.update(sql, id);
-
-        if(affectedRow == 0) {
-            throw new ReservationNotFoundException();
-        }
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
@@ -166,6 +158,20 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return jdbcTemplate.query(sql, reservationRowMapper, id)
                 .stream().findFirst();
+    }
+
+    @Override
+    public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM reservation
+            WHERE reservation_date = ? AND time_id = ? AND theme_id = ?
+        )
+        """;
+
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+        return Boolean.TRUE.equals(exists);
     }
 
     @Override

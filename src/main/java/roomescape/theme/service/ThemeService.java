@@ -4,6 +4,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.DuplicateThemeException;
+import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.ThemeCommand;
 
@@ -18,6 +20,10 @@ public class ThemeService {
 
     @Transactional
     public Theme registerTheme(ThemeCommand command) {
+        if (themeRepository.existByName(command.name())) {
+            throw new DuplicateThemeException();
+        }
+
         return themeRepository.save(
                 Theme.of(
                         command.name(),
@@ -29,6 +35,10 @@ public class ThemeService {
 
     @Transactional
     public void removeThemeById(Long id) {
+        if (themeRepository.findById(id).isEmpty()) {
+            throw new ThemeNotFoundException();
+        }
+
         themeRepository.deleteById(id);
     }
 
