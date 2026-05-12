@@ -52,11 +52,11 @@ public class ReservationRepositoryTest {
         // then
         assertAll(
                 () -> assertEquals(18, reservationRepository.findAll().size()),
-                () -> assertEquals(18L, saved.getId()),
-                () -> assertEquals("포비", saved.getName()),
-                () -> assertEquals(LocalDate.of(2026, 5, 5), saved.getDate()),
-                () -> assertEquals(1L, saved.getTime().getId()),
-                () -> assertEquals(1L, saved.getTheme().getId())
+                () -> assertEquals(18L, saved.id()),
+                () -> assertEquals("포비", saved.name()),
+                () -> assertEquals(LocalDate.of(2026, 5, 5), saved.date()),
+                () -> assertEquals(1L, saved.time().getId()),
+                () -> assertEquals(1L, saved.theme().getId())
         );
     }
 }

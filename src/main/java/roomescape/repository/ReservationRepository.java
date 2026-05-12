@@ -57,17 +57,17 @@ public class ReservationRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setObject(2, reservation.getDate());
-            ps.setLong(3, reservation.getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
+            ps.setString(1, reservation.name());
+            ps.setObject(2, reservation.date());
+            ps.setLong(3, reservation.time().getId());
+            ps.setLong(4, reservation.theme().getId());
             return ps;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(),
-                reservation.getTime(), reservation.getTheme());
+        return new Reservation(id, reservation.name(), reservation.date(),
+                reservation.time(), reservation.theme());
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {

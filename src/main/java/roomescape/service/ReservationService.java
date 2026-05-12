@@ -44,10 +44,11 @@ public class ReservationService {
     }
 
     public ReservationResponse register(ReservationRequest reservationRequest) {
+        reservationRequestValidate(reservationRequest);
         ReservationTime time = timeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIMEID_NOT_FOUND));
         Theme theme = themeRepository.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_THEMEID_NOT_FOUND));
 
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservationRequest.date(),
                 reservationRequest.timeId(),
@@ -59,5 +60,20 @@ public class ReservationService {
                 time, theme);
         Reservation saved = reservationRepository.save(reservation);
         return ReservationResponse.from(saved);
+    }
+
+    private void reservationRequestValidate(ReservationRequest reservationRequest) {
+        if (reservationRequest.name() == null) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_BLANK_NAME);
+        }
+        if (reservationRequest.date() == null) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_BLANK_DATE);
+        }
+        if (reservationRequest.themeId() == null) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_BLANK_THEMEID);
+        }
+        if (reservationRequest.timeId() == null) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_BLANK_TIMEID);
+        }
     }
 }

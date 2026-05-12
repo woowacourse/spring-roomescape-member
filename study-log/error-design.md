@@ -105,16 +105,16 @@
 
 ### POST /reservations
 
-- [ ] RESERVATION_BLANK_NAME — 필수 값 누락 (name 없음)
-- [ ] RESERVATION_BLANK_DATE — 필수 값 누락 (date 없음)
-- [ ] RESERVATION_BLANK_TIMEID — 필수 값 누락 (timeId 없음)
-- [ ] RESERVATION_BLANK_THEMEID — 필수 값 누락 (themeId 없음)
-- [ ] RESERVATION_WRONG_NAME — 이름 길이 위반 (2~20자)
+- [x] RESERVATION_BLANK_NAME — 필수 값 누락 (name 없음)
+- [x] RESERVATION_BLANK_DATE — 필수 값 누락 (date 없음)
+- [x] RESERVATION_BLANK_TIMEID — 필수 값 누락 (timeId 없음)
+- [x] RESERVATION_BLANK_THEMEID — 필수 값 누락 (themeId 없음)
+- [x] RESERVATION_WRONG_NAME — 이름 길이 위반 (2~20자)
 - [ ] RESERVATION_INVALID_DATE — 잘못된 날짜 형식
 - [ ] RESERVATION_WRONG_DATE — 이미 지난 날짜로 예약
 - [ ] RESERVATION_WRONG_TIME — 오늘 날짜인데 이미 지난 시간으로 예약
-- [ ] RESERVATION_TIMEID_NOT_FOUND — 존재하지 않는 timeId
-- [ ] RESERVATION_THEMEID_NOT_FOUND — 존재하지 않는 themeId
+- [x] RESERVATION_TIMEID_NOT_FOUND — 존재하지 않는 timeId
+- [x] RESERVATION_THEMEID_NOT_FOUND — 존재하지 않는 themeId
 - [x] RESERVATION_DUPLICATE — 같은 날짜+시간+테마 중복 예약
 
 ### DELETE /reservations/{id}
