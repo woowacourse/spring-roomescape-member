@@ -8,7 +8,7 @@ import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.exception.DataReferencedException;
-import roomescape.exception.ErrorMessage;
+import roomescape.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
@@ -103,7 +103,7 @@ public class ReservationTimeServiceTest {
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
-                .hasMessage(ErrorMessage.CANNOT_DELETE_RESERVATION_TIME_IN_USE.getMessage());
+                .hasMessage(ErrorCode.CANNOT_DELETE_RESERVATION_TIME_IN_USE.getMessage());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class ReservationTimeServiceTest {
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
-                .hasMessage(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE.getMessage());
+                .hasMessage(ErrorCode.INTEGRITY_VIOLATION_ON_DELETE.getMessage());
     }
 
 }

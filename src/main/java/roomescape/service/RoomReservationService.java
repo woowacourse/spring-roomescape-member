@@ -11,7 +11,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.reservation.ReservationCondition;
 import roomescape.exception.DuplicatedReservationRequestException;
-import roomescape.exception.ErrorMessage;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
@@ -42,17 +42,17 @@ public class RoomReservationService {
         validateDate(addReservationRequest.date());
 
         ReservationTime reservationTime = reservationTimeRepository.getReservationTime(addReservationRequest.timeId())
-                .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_RESERVATION_TIME_ID));
+                .orElseThrow(() -> new NotFoundResourceException(ErrorCode.INVALID_RESERVATION_TIME_ID));
 
         if (addReservationRequest.date().isEqual(LocalDate.now())) {
             validateTime(reservationTime.startAt());
         }
 
         Theme theme = themeRepository.getTheme(addReservationRequest.themeId())
-                .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_THEME_ID));
+                .orElseThrow(() -> new NotFoundResourceException(ErrorCode.INVALID_THEME_ID));
 
         if (reservationRepository.existsByTimeIdAndThemeIdAndDate(addReservationRequest.timeId(), addReservationRequest.themeId(), addReservationRequest.date())) {
-            throw new DuplicatedReservationRequestException(ErrorMessage.DUPLICATED_RESERVATION_REQUEST);
+            throw new DuplicatedReservationRequestException(ErrorCode.DUPLICATED_RESERVATION_REQUEST);
         }
 
         return reservationRepository.addReservation(addReservationRequest.toEntity(reservationTime, theme));

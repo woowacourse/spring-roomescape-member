@@ -1,7 +1,7 @@
 package roomescape.exception;
 
 public class NotFoundResourceException extends BaseCustomException {
-    public NotFoundResourceException(ErrorMessage errorMessage) {
-        super(errorMessage);
+    public NotFoundResourceException(ErrorCode errorCode) {
+        super(errorCode);
     }
 }

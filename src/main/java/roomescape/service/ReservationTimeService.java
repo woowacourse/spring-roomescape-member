@@ -8,7 +8,7 @@ import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.dto.reservationTime.AddReservationTimeRequest;
 import roomescape.exception.DataReferencedException;
-import roomescape.exception.ErrorMessage;
+import roomescape.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
@@ -38,13 +38,13 @@ public class ReservationTimeService {
         boolean hasTimeId = reservationRepository.existsByTimeId(id);
 
         if(hasTimeId) {
-            throw new DataReferencedException(ErrorMessage.CANNOT_DELETE_RESERVATION_TIME_IN_USE);
+            throw new DataReferencedException(ErrorCode.CANNOT_DELETE_RESERVATION_TIME_IN_USE);
         }
 
         try {
             reservationTimeRepository.deleteReservationTime(id);
         }  catch(DataIntegrityViolationException e) {
-            throw new DataReferencedException(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE);
+            throw new DataReferencedException(ErrorCode.INTEGRITY_VIOLATION_ON_DELETE);
         }
     }
 

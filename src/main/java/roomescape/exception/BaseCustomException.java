@@ -1,15 +1,15 @@
 package roomescape.exception;
 
 public class BaseCustomException extends RuntimeException implements CustomException {
-    private final ErrorMessage errorMessage;
+    private final ErrorCode errorCode;
 
-    public BaseCustomException(ErrorMessage errorMessage) {
-        super(errorMessage.getMessage());
-        this.errorMessage = errorMessage;
+    public BaseCustomException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
     }
 
     @Override
-    public ErrorMessage getErrorMessage() {
-        return errorMessage;
+    public ErrorCode getErrorMessage() {
+        return errorCode;
     }
 }

@@ -8,7 +8,7 @@ import roomescape.domain.theme.ThemeWithCount;
 import roomescape.dto.theme.AddThemeRequest;
 import roomescape.dto.theme.PopularConditionRequest;
 import roomescape.exception.DataReferencedException;
-import roomescape.exception.ErrorMessage;
+import roomescape.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 
@@ -39,13 +39,13 @@ public class ThemeService {
         boolean hasTheme = reservationRepository.existsByThemeId(id);
 
         if(hasTheme) {
-            throw new DataReferencedException(ErrorMessage.CANNOT_DELETE_THEME_IN_USE);
+            throw new DataReferencedException(ErrorCode.CANNOT_DELETE_THEME_IN_USE);
         }
 
         try {
             themeRepository.deleteTheme(id);
         } catch (DataIntegrityViolationException e) {
-            throw new DataReferencedException(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE);
+            throw new DataReferencedException(ErrorCode.INTEGRITY_VIOLATION_ON_DELETE);
         }
     }
 

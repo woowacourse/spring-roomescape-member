@@ -1,6 +1,6 @@
 package roomescape.exception;
 
-import static roomescape.exception.ErrorMessage.*;
+import static roomescape.exception.ErrorCode.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,16 +25,16 @@ public enum HttpErrorMapping {
     ;
 
     private final HttpStatus httpStatus;
-    private final List<ErrorMessage> errorMessages;
+    private final List<ErrorCode> errorCodes;
 
-    HttpErrorMapping(HttpStatus httpStatus, List<ErrorMessage> errorMessages) {
+    HttpErrorMapping(HttpStatus httpStatus, List<ErrorCode> errorCodes) {
         this.httpStatus = httpStatus;
-        this.errorMessages = errorMessages;
+        this.errorCodes = errorCodes;
     }
 
-    public static HttpStatus getHttpStatus(ErrorMessage message) {
+    public static HttpStatus getHttpStatus(ErrorCode message) {
         return Arrays.stream(values())
-                .filter(errorCode -> errorCode.errorMessages.contains(message))
+                .filter(errorCode -> errorCode.errorCodes.contains(message))
                 .findFirst()
                 .map(mapper -> mapper.httpStatus)
                 .orElse(HttpStatus.INTERNAL_SERVER_ERROR);

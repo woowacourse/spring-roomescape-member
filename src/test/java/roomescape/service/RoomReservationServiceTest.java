@@ -10,7 +10,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.theme.PopularThemeCondition;
 import roomescape.domain.theme.ThemeWithCount;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.reservationTime.ReservationTime;
@@ -19,7 +18,7 @@ import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.theme.PopularConditionRequest;
 import roomescape.exception.DuplicatedReservationRequestException;
-import roomescape.exception.ErrorMessage;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
@@ -218,7 +217,7 @@ public class RoomReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.addReservation(addReservationRequest))
                 .isExactlyInstanceOf(NotFoundResourceException.class)
-                .hasMessage(ErrorMessage.INVALID_RESERVATION_TIME_ID.getMessage());
+                .hasMessage(ErrorCode.INVALID_RESERVATION_TIME_ID.getMessage());
     }
 
     @Test
@@ -231,7 +230,7 @@ public class RoomReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.addReservation(addReservationRequest))
                 .isExactlyInstanceOf(NotFoundResourceException.class)
-                .hasMessage(ErrorMessage.INVALID_THEME_ID.getMessage());
+                .hasMessage(ErrorCode.INVALID_THEME_ID.getMessage());
     }
 
     @Test
@@ -249,7 +248,7 @@ public class RoomReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.addReservation(new AddReservationRequest("test", futureDate, 1L, 1L)))
                 .isExactlyInstanceOf(DuplicatedReservationRequestException.class)
-                .hasMessage(ErrorMessage.DUPLICATED_RESERVATION_REQUEST.getMessage()
+                .hasMessage(ErrorCode.DUPLICATED_RESERVATION_REQUEST.getMessage()
         );
     }
 }

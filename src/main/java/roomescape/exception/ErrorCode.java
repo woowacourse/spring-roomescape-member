@@ -1,6 +1,6 @@
 package roomescape.exception;
 
-public enum ErrorMessage {
+public enum ErrorCode {
     INVALID_NAME_BLANK( "이름은 필수입니다."),
     INVALID_NAME_LENGTH("이름은 20자를 초과할 수 없습니다."),
     INVALID_DATE_NULL("날짜는 필수입니다."),
@@ -25,7 +25,7 @@ public enum ErrorMessage {
 
     private final String message;
 
-    ErrorMessage(String message) {
+    ErrorCode(String message) {
         this.message = message;
     }
 

@@ -4,12 +4,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.theme.PopularThemeCondition;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeWithCount;
 import roomescape.dto.theme.PopularConditionRequest;
 import roomescape.exception.DataReferencedException;
-import roomescape.exception.ErrorMessage;
+import roomescape.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 
@@ -105,7 +104,7 @@ public class ThemeServiceTest {
 
         assertThatThrownBy(() -> themeService.deleteTheme(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
-                .hasMessage(ErrorMessage.CANNOT_DELETE_THEME_IN_USE.getMessage());
+                .hasMessage(ErrorCode.CANNOT_DELETE_THEME_IN_USE.getMessage());
     }
 
     @Test
@@ -120,6 +119,6 @@ public class ThemeServiceTest {
 
         assertThatThrownBy(() -> themeService.deleteTheme(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
-                .hasMessage(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE.getMessage());
+                .hasMessage(ErrorCode.INTEGRITY_VIOLATION_ON_DELETE.getMessage());
     }
 }
