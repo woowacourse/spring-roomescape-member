@@ -1,8 +1,10 @@
 package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,10 +12,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.PopularThemeRepository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.fake.FakePopularThemeRepository;
+import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeThemeRepository;
+import roomescape.global.exception.BusinessException;
 
 class ThemeServiceTest {
 
@@ -25,6 +31,7 @@ class ThemeServiceTest {
     private ThemeRepository themeRepository;
     private PopularThemeRepository popularThemeRepository;
     private ThemeService themeService;
+    private ReservationRepository reservationRepository;
 
     @BeforeEach
     void setUp() {
@@ -34,7 +41,8 @@ class ThemeServiceTest {
                 reservations,
                 themeRepository.findAll()
         );
-        themeService = new ThemeService(themeRepository, popularThemeRepository);
+        reservationRepository = new FakeReservationRepository();
+        themeService = new ThemeService(themeRepository, popularThemeRepository, reservationRepository);
     }
 
     @Test
@@ -103,7 +111,7 @@ class ThemeServiceTest {
         reservations.add(Reservation.create("테스터2", today, null, firstTheme));
         reservations.add(Reservation.create("테스터3", today, null, secondTheme));
         popularThemeRepository = new FakePopularThemeRepository(reservations, themeRepository.findAll());
-        themeService = new ThemeService(themeRepository, popularThemeRepository);
+        themeService = new ThemeService(themeRepository, popularThemeRepository, reservationRepository);
 
         // when
         List<Theme> themes = themeService.findTopNByPeriod(
@@ -115,5 +123,20 @@ class ThemeServiceTest {
 
         // then
         assertThat(themes).containsExactly(firstTheme, secondTheme);
+    }
+
+    @Test
+    @DisplayName("예약 테마 id가 참조되고 있으면 삭제할 때 예외가 발생한다")
+    void deleteTimeWithReferencedReservationTime() {
+        // given
+        ReservationTime time = ReservationTime.create(LocalTime.now().plusHours(1));
+        Theme theme = themeRepository.save(Theme.create("인기 테마", "설명", "https://good.com/thumb-nail/1"));
+        reservationRepository.save(Reservation.create("테스터", LocalDate.now(), time, theme));
+
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteById(theme.getId()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("참조하고 있는 테마여서 삭제할 수 없습니다.");
+        assertThat(themeRepository.findById(theme.getId())).contains(theme);
     }
 }
