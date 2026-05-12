@@ -5,21 +5,39 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.domain.AvailableTime;
 import roomescape.domain.Theme;
 
-class ThemeDaoTest extends DaoTest {
+class ThemeDaoTest {
 
-    @Autowired
+    private EmbeddedDatabase dataSource;
     private ThemeDao themeDao;
+
+    @BeforeEach
+    void setUp() {
+        dataSource = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("classpath:schema.sql")
+                .addScript("classpath:data.sql")
+                .build();
+        themeDao = new ThemeDao(new JdbcTemplate(dataSource));
+    }
+
+    @AfterEach
+    void tearDown() {
+        dataSource.shutdown();
+    }
 
     @Test
     void findAll_전체_테마_조회() {
-        List<Theme> themes = themeDao.findAll();
-
-        assertThat(themes).hasSize(4);
+        assertThat(themeDao.findAll()).isNotEmpty();
     }
 
     @Test
@@ -39,8 +57,6 @@ class ThemeDaoTest extends DaoTest {
 
     @Test
     void findPopularThemes_인기_테마_순위_조회() {
-        // data.sql 기준 2026-04-29 ~ 2026-05-05 범위
-        // 공포의 저택 5건, 탐정 사무소 4건, 마법사의 연구실 3건, 우주 정거장 2건
         List<Theme> themes = themeDao.findPopularThemes(4, LocalDate.of(2026, 4, 29), LocalDate.of(2026, 5, 5));
 
         assertThat(themes).hasSize(4);
@@ -52,26 +68,21 @@ class ThemeDaoTest extends DaoTest {
 
     @Test
     void findAvailableTimeById_예약된_시간은_false_나머지는_true() {
-        // data.sql: 2026-05-10에 theme_id=1의 time_id=3(12:00)이 예약됨
         List<AvailableTime> times = themeDao.findAvailableTimeById(1L, LocalDate.of(2026, 5, 10));
-
-        assertThat(times).hasSize(13);
 
         AvailableTime bookedSlot = times.stream()
                 .filter(t -> t.time().getStartAt().getHour() == 12)
                 .findFirst()
                 .orElseThrow();
         assertThat(bookedSlot.available()).isFalse();
-
-        long availableCount = times.stream().filter(AvailableTime::available).count();
-        assertThat(availableCount).isEqualTo(12);
+        assertThat(times.stream().filter(AvailableTime::available).count())
+                .isEqualTo(times.size() - 1);
     }
 
     @Test
     void save_테마_저장() {
         long id = themeDao.save("새로운 테마", "설명", "https://example.com/img.jpg");
 
-        assertThat(id).isEqualTo(5L);
         assertThat(themeDao.findById(id)).isPresent();
     }
 

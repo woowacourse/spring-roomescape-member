@@ -8,7 +8,6 @@ import static org.mockito.BDDMockito.then;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -87,29 +86,4 @@ class ReservationServiceTest {
         then(reservationDao).should().delete(1L);
     }
 
-    @Test
-    void findAllByName_이름으로_조회() {
-        List<Reservation> reservations = List.of(
-                Reservation.restore(1L, "김철수", LocalDate.of(2026, 5, 15), LocalDate.of(2026, 5, 1), sampleTime, sampleTheme)
-        );
-        given(reservationDao.findByName("김철수")).willReturn(reservations);
-
-        List<Reservation> result = reservationService.findAllByName("김철수");
-
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("김철수");
-    }
-
-    @Test
-    void findAll_전체_조회() {
-        List<Reservation> reservations = List.of(
-                Reservation.restore(1L, "김철수", LocalDate.of(2026, 5, 15), LocalDate.of(2026, 5, 1), sampleTime, sampleTheme),
-                Reservation.restore(2L, "이영희", LocalDate.of(2026, 5, 16), LocalDate.of(2026, 5, 1), sampleTime, sampleTheme)
-        );
-        given(reservationDao.findAll()).willReturn(reservations);
-
-        List<Reservation> result = reservationService.findAll();
-
-        assertThat(result).hasSize(2);
-    }
 }

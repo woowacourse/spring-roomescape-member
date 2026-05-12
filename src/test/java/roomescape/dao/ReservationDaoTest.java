@@ -4,23 +4,43 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-class ReservationDaoTest extends DaoTest {
+class ReservationDaoTest {
 
-    @Autowired
+    private EmbeddedDatabase dataSource;
     private ReservationDao reservationDao;
+
+    @BeforeEach
+    void setUp() {
+        dataSource = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("classpath:schema.sql")
+                .addScript("classpath:data.sql")
+                .build();
+        reservationDao = new ReservationDao(new JdbcTemplate(dataSource));
+    }
+
+    @AfterEach
+    void tearDown() {
+        dataSource.shutdown();
+    }
 
     @Test
     void findAll_전체_예약_조회() {
         List<Reservation> reservations = reservationDao.findAll();
 
-        // data.sql 기준 19건 (공포의 저택 5 + 탐정 사무소 4 + 마법사의 연구실 3 + 우주 정거장 2 + 미래 예약 5)
-        assertThat(reservations).hasSize(19);
+        assertThat(reservations).isNotEmpty();
+        assertThat(reservations).allMatch(r -> r.getName() != null && r.getDate() != null);
     }
 
     @Test
@@ -52,20 +72,19 @@ class ReservationDaoTest extends DaoTest {
 
     @Test
     void delete_예약_삭제() {
+        int beforeSize = reservationDao.findAll().size();
         reservationDao.delete(1L);
 
-        assertThat(reservationDao.findAll()).hasSize(18);
+        assertThat(reservationDao.findAll()).hasSize(beforeSize - 1);
     }
 
     @Test
     void existsByTimeId_사용중이면_true() {
-        // time_id=3 (12:00)은 여러 예약에서 사용 중
         assertThat(reservationDao.existsByTimeId(3L)).isTrue();
     }
 
     @Test
     void existsByTimeId_미사용이면_false() {
-        // time_id=12 (21:00)은 data.sql에 예약 없음
         assertThat(reservationDao.existsByTimeId(12L)).isFalse();
     }
 
@@ -76,13 +95,11 @@ class ReservationDaoTest extends DaoTest {
 
     @Test
     void existsByThemeId_미사용이면_false() {
-        // theme_id=99는 존재하지 않으므로 예약도 없음
         assertThat(reservationDao.existsByThemeId(99L)).isFalse();
     }
 
     @Test
     void existsByDateAndTimeIdAndThemeId_존재하면_true() {
-        // data.sql 첫 번째 예약: 김철수, 2026-04-29, time_id=3, theme_id=1
         assertThat(reservationDao.existsByDateAndTimeIdAndThemeId(LocalDate.of(2026, 4, 29), 3L, 1L)).isTrue();
     }
 

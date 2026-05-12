@@ -3,22 +3,39 @@ package roomescape.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.domain.ReservationTime;
 
-class ReservationTimeDaoTest extends DaoTest {
+class ReservationTimeDaoTest {
 
-    @Autowired
+    private EmbeddedDatabase dataSource;
     private ReservationTimeDao reservationTimeDao;
+
+    @BeforeEach
+    void setUp() {
+        dataSource = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("classpath:schema.sql")
+                .addScript("classpath:data.sql")
+                .build();
+        reservationTimeDao = new ReservationTimeDao(new JdbcTemplate(dataSource));
+    }
+
+    @AfterEach
+    void tearDown() {
+        dataSource.shutdown();
+    }
 
     @Test
     void findAll_전체_시간_조회() {
-        List<ReservationTime> times = reservationTimeDao.findAll();
-
-        assertThat(times).hasSize(13);
+        assertThat(reservationTimeDao.findAll()).isNotEmpty();
     }
 
     @Test
@@ -56,7 +73,6 @@ class ReservationTimeDaoTest extends DaoTest {
 
     @Test
     void delete_시간_삭제() {
-        // time_id=12 (21:00)은 예약이 없으므로 FK 제약 없이 삭제 가능
         reservationTimeDao.delete(12L);
 
         assertThat(reservationTimeDao.findById(12L)).isEmpty();

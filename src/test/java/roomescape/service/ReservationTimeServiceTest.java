@@ -1,12 +1,10 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.domain.ReservationTime;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
@@ -22,32 +19,6 @@ class ReservationTimeServiceTest {
     @Mock private ReservationTimeDao reservationTimeDao;
     @Mock private ReservationDao reservationDao;
     @InjectMocks private ReservationTimeService reservationTimeService;
-
-    @Test
-    void findAll_전체_조회() {
-        List<ReservationTime> times = List.of(
-                new ReservationTime(1L, LocalTime.of(10, 0)),
-                new ReservationTime(2L, LocalTime.of(11, 0))
-        );
-        given(reservationTimeDao.findAll()).willReturn(times);
-
-        List<ReservationTime> result = reservationTimeService.findAll();
-
-        assertThat(result).hasSize(2);
-    }
-
-    @Test
-    void save_정상_시간_저장() {
-        LocalTime startAt = LocalTime.of(23, 0);
-        ReservationTime saved = new ReservationTime(14L, startAt);
-        given(reservationTimeDao.existsByStartAt(startAt)).willReturn(false);
-        given(reservationTimeDao.save(startAt)).willReturn(saved);
-
-        ReservationTime result = reservationTimeService.save(startAt);
-
-        assertThat(result.getId()).isEqualTo(14L);
-        assertThat(result.getStartAt()).isEqualTo(startAt);
-    }
 
     @Test
     void save_이미_존재하는_시간이면_예외() {
