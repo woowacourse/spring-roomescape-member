@@ -38,6 +38,21 @@ public class ReservationService {
     }
 
     @Transactional
+    public Reservation update(long id, LocalDate date, long timeId) {
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+        final ReservationTime newTime = reservationTimeDao.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+        if (LocalDateTime.of(date, newTime.getStartAt()).isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("과거 날짜로는 예약할 수 없습니다.");
+        }
+        if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, reservation.getTheme().getId())) {
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+        }
+        return reservationDao.update(id, date, timeId);
+    }
+
+    @Transactional
     public void delete(long id) {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));

@@ -90,6 +90,11 @@ public class ReservationDao {
         return count > 0;
     }
 
+    public Reservation update(long id, LocalDate date, long timeId) {
+        jdbcTemplate.update("UPDATE reservation SET date = ?, time_id = ? WHERE id = ?", date, timeId, id);
+        return findById(id).orElseThrow();
+    }
+
     public void delete(long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }

@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
+import roomescape.controller.dto.ReservationUpdateRequest;
 import roomescape.controller.dto.ReservationsResponse;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
@@ -43,6 +45,14 @@ public class ReservationController {
         final ReservationResponse response = ReservationResponse.from(reservation, reservation.getTheme());
         final URI location = URI.create("/reservations/" + response.id());
         return ResponseEntity.created(location).body(response);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable long id,
+            @Valid @RequestBody ReservationUpdateRequest request) {
+        final Reservation reservation = reservationService.update(id, request.date(), request.timeId());
+        return ResponseEntity.ok(ReservationResponse.from(reservation, reservation.getTheme()));
     }
 
     @DeleteMapping("/{id}")
