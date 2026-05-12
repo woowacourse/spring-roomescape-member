@@ -179,7 +179,7 @@ function goBackToSelectStep() {
 }
 
 async function loadAvailableTimes() {
-    const response = await fetch(`/member/times?date=${selectedDate.date}&themeId=${selectedTheme.id}`);
+    const response = await fetch(`/member/times?dateId=${selectedDate.id}&themeId=${selectedTheme.id}`);
 
     if (!response.ok) {
         alert("예약 가능 시간을 불러오지 못했습니다.");
