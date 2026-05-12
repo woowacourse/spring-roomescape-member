@@ -2,10 +2,9 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
-import java.util.UUID;
 
 public record ReservationTime(
-        UUID id,
+        EntityId id,
         LocalTime startAt
 ) {
 
@@ -14,7 +13,7 @@ public record ReservationTime(
         validateStartAt(startAt);
     }
 
-    private void validateId(UUID id) {
+    private void validateId(EntityId id) {
         if (id == null) {
             throw new IllegalArgumentException("예약 시간엔 식별자가 존재해야 합니다.");
         }

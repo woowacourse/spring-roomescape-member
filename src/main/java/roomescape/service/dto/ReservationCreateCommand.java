@@ -1,12 +1,12 @@
 package roomescape.service.dto;
 
 import java.time.LocalDate;
-import java.util.UUID;
+import roomescape.domain.EntityId;
 
 public record ReservationCreateCommand(
         String name,
         LocalDate date,
-        UUID timeId,
-        UUID themeId
+        EntityId timeId,
+        EntityId themeId
 ) {
 }

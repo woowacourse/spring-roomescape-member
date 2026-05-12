@@ -1,14 +1,16 @@
 package roomescape.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Duration;
+import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
 
 @Repository
@@ -27,11 +29,11 @@ public class ReservationRepository {
 
     public Reservation persist(Reservation reservation) {
         simpleJdbcInsert.execute(Map.of(
-                "id", reservation.id().toString(),
+                "id", reservation.id().toBytes(),
                 "name", reservation.name(),
                 "date", reservation.date(),
-                "time_id", reservation.timeId().toString(),
-                "theme_id", reservation.themeId().toString()
+                "time_id", reservation.timeId().toBytes(),
+                "theme_id", reservation.themeId().toBytes()
         ));
 
         return reservation;
@@ -57,7 +59,7 @@ public class ReservationRepository {
         );
     }
 
-    public List<Reservation> findByDateAndThemeId(LocalDate date, UUID themeId) {
+    public List<Reservation> findByDateAndThemeId(LocalDate date, EntityId themeId) {
         String findSql = "SELECT id, name, date, time_id, theme_id"
                 + " FROM reservation r"
                 + " WHERE date = ? AND theme_id = ?";
@@ -66,15 +68,15 @@ public class ReservationRepository {
                 findSql,
                 reservationRowMapper(),
                 date,
-                themeId
+                themeId.toBytes()
         );
     }
 
-    public boolean delete(UUID reservationId) {
+    public boolean delete(EntityId reservationId) {
         String deleteSql = "DELETE FROM reservation"
                 + " WHERE id = ?";
 
-        int deletedRowCount = jdbcTemplate.update(deleteSql, reservationId.toString());
+        int deletedRowCount = jdbcTemplate.update(deleteSql, reservationId.toBytes());
 
         return isDeleted(deletedRowCount);
     }
@@ -85,11 +87,15 @@ public class ReservationRepository {
 
     private RowMapper<Reservation> reservationRowMapper() {
         return (resultSet, rowNum) -> new Reservation(
-                UUID.fromString(resultSet.getString("id")),
+                readEntityId(resultSet, "id"),
                 resultSet.getString("name"),
                 resultSet.getObject("date", LocalDate.class),
-                UUID.fromString(resultSet.getString("time_id")),
-                UUID.fromString(resultSet.getString("theme_id"))
+                readEntityId(resultSet, "time_id"),
+                readEntityId(resultSet, "theme_id")
         );
+    }
+
+    private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
+        return EntityId.fromBytes(resultSet.getBytes(column));
     }
 }

@@ -2,11 +2,12 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -20,6 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.Duration;
+import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
 import roomescape.test.util.TestDatabaseUtils;
 
@@ -30,15 +32,15 @@ class ReservationRepositoryTest {
     private static boolean persistTestSuccessful = false;
     private static boolean findAllTestSuccessful = false;
 
-    private static final UUID DEFAULT_RESERVATION_ID = UUID.fromString("33333333-3333-3333-3333-333333333301");
-    private static final UUID NOT_EXIST_ID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
+    private static final EntityId DEFAULT_RESERVATION_ID = EntityId.random();
+    private static final EntityId NOT_EXIST_ID = EntityId.random();
     private static final String DEFAULT_RESERVATION_NAME = "name";
     private static final LocalDate DEFAULT_RESERVATION_DATE = LocalDate.of(2025, 1, 1);
 
-    private static final UUID DEFAULT_TIME_ID = UUID.fromString("11111111-1111-1111-1111-111111111101");
+    private static final EntityId DEFAULT_TIME_ID = EntityId.random();
     private static final LocalTime DEFAULT_TIME_START_AT = LocalTime.of(1, 1);
 
-    private static final UUID DEFAULT_THEME_ID = UUID.fromString("22222222-2222-2222-2222-222222222201");
+    private static final EntityId DEFAULT_THEME_ID = EntityId.random();
     private static final String DEFAULT_THEME_NAME = "themeName";
     private static final String DEFAULT_THEME_DESCRIPTION = "themeDescription";
     private static final String DEFAULT_THEME_URL = "themeUrl";
@@ -132,7 +134,7 @@ class ReservationRepositoryTest {
             LocalDate endDate = LocalDate.of(3000, 1, 1);
 
             Reservation outOfDurationReservation = new Reservation(
-                    UUID.randomUUID(),
+                    EntityId.random(),
                     "outReservationName",
                     LocalDate.of(1000, 1, 1),
                     DEFAULT_TIME_ID,
@@ -141,7 +143,7 @@ class ReservationRepositoryTest {
             reservationRepository.persist(outOfDurationReservation);
 
             Reservation withinDurationReservation = new Reservation(
-                    UUID.randomUUID(),
+                    EntityId.random(),
                     "withinReservationName",
                     LocalDate.of(2500, 1, 1),
                     DEFAULT_TIME_ID,
@@ -264,18 +266,18 @@ class ReservationRepositoryTest {
         }
     }
 
-    private void persistTime(UUID id, LocalTime startAt) {
+    private void persistTime(EntityId id, LocalTime startAt) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time");
 
         simpleJdbcInsert.execute(Map.of(
-                "id", id.toString(),
+                "id", id.toBytes(),
                 "start_at", startAt
         ));
     }
 
     private void persistTheme(
-            UUID id,
+            EntityId id,
             String name,
             String description,
             String imageUrl
@@ -284,7 +286,7 @@ class ReservationRepositoryTest {
                 .withTableName("theme");
 
         simpleJdbcInsert.execute(Map.of(
-                "id", id.toString(),
+                "id", id.toBytes(),
                 "name", name,
                 "description", description,
                 "image_url", imageUrl
@@ -293,12 +295,16 @@ class ReservationRepositoryTest {
 
     private RowMapper<Reservation> reservationRowMapper() {
         return (resultSet, rowNum) -> new Reservation(
-                UUID.fromString(resultSet.getString("id")),
+                readEntityId(resultSet, "id"),
                 resultSet.getString("name"),
                 resultSet.getObject("date", LocalDate.class),
-                UUID.fromString(resultSet.getString("time_id")),
-                UUID.fromString(resultSet.getString("theme_id"))
+                readEntityId(resultSet, "time_id"),
+                readEntityId(resultSet, "theme_id")
         );
+    }
+
+    private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
+        return EntityId.fromBytes(resultSet.getBytes(column));
     }
 
     private static void skipIfPersistTestFailed() {

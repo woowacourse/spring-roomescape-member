@@ -2,10 +2,11 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import roomescape.domain.EntityId;
 import roomescape.domain.Theme;
 import roomescape.test.util.TestDatabaseUtils;
 
@@ -27,8 +29,8 @@ class ThemeRepositoryTest {
     private static boolean persistTestSuccessful = false;
     private static boolean findAllTestSuccessful = false;
 
-    private static final UUID DEFAULT_ID = UUID.fromString("22222222-2222-2222-2222-222222222201");
-    private static final UUID NOT_EXIST_ID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
+    private static final EntityId DEFAULT_ID = EntityId.random();
+    private static final EntityId NOT_EXIST_ID = EntityId.random();
 
     private static final String DEFAULT_NAME = "name";
     private static final String DEFAULT_DESCRIPTION = "description";
@@ -108,8 +110,8 @@ class ThemeRepositoryTest {
             @Test
             void ID_목록와_일치하는_테마들을_조회한다() {
                 // given
-                UUID idA = UUID.randomUUID();
-                UUID idB = UUID.randomUUID();
+                EntityId idA = EntityId.random();
+                EntityId idB = EntityId.random();
 
                 Theme transientThemeA = new Theme(
                         idA,
@@ -127,13 +129,13 @@ class ThemeRepositoryTest {
                 );
                 Theme persistedThemeB = themeRepository.persist(transientThemeB);
 
-                Map<UUID, Theme> expected = Map.of(
+                Map<EntityId, Theme> expected = Map.of(
                         idA, persistedThemeA,
                         idB, persistedThemeB
                 );
 
                 // when
-                Map<UUID, Theme> actual = themeRepository.findByIds(List.of(idA, idB));
+                Map<EntityId, Theme> actual = themeRepository.findByIds(List.of(idA, idB));
 
                 // then
                 assertThat(actual).containsExactlyInAnyOrderEntriesOf(expected);
@@ -151,7 +153,7 @@ class ThemeRepositoryTest {
                 themeRepository.persist(transientTheme);
 
                 // when
-                Map<UUID, Theme> foundThemes = themeRepository.findByIds(List.of(NOT_EXIST_ID));
+                Map<EntityId, Theme> foundThemes = themeRepository.findByIds(List.of(NOT_EXIST_ID));
 
                 // then
                 assertThat(foundThemes).isEmpty();
@@ -160,10 +162,10 @@ class ThemeRepositoryTest {
             @Test
             void ID_목록이_비어_있다면_빈_컬렉션을_반환한다() {
                 // given
-                List<UUID> emptyIds = List.of();
+                List<EntityId> emptyIds = List.of();
 
                 // when
-                Map<UUID, Theme> foundThemes = themeRepository.findByIds(emptyIds);
+                Map<EntityId, Theme> foundThemes = themeRepository.findByIds(emptyIds);
 
                 // then
                 assertThat(foundThemes).isEmpty();
@@ -253,13 +255,17 @@ class ThemeRepositoryTest {
 
     private RowMapper<Theme> themeRowMapper() {
         return (resultSet, rowNum) -> {
-            UUID id = UUID.fromString(resultSet.getString("id"));
+            EntityId id = readEntityId(resultSet, "id");
             String name = resultSet.getString("name");
             String description = resultSet.getString("description");
             String imageUrl = resultSet.getString("image_url");
 
             return new Theme(id, name, description, imageUrl);
         };
+    }
+
+    private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
+        return EntityId.fromBytes(resultSet.getBytes(column));
     }
 
     private static void skipIfPersistTestFailed() {

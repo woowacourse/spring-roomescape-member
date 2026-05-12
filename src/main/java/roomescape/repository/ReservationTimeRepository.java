@@ -1,16 +1,18 @@
 package roomescape.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.EntityId;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.DataReferencedException;
 
@@ -30,7 +32,7 @@ public class ReservationTimeRepository {
 
     public ReservationTime persist(ReservationTime reservationTime) {
         simpleJdbcInsert.execute(Map.of(
-                "id", reservationTime.id().toString(),
+                "id", reservationTime.id().toBytes(),
                 "start_at", reservationTime.startAt()
         ));
 
@@ -44,7 +46,7 @@ public class ReservationTimeRepository {
         return jdbcTemplate.query(findSql, reservationTimeRowMapper());
     }
 
-    public Optional<ReservationTime> findById(UUID id) {
+    public Optional<ReservationTime> findById(EntityId id) {
         try {
             String findSql = "SELECT id, start_at"
                     + " FROM reservation_time"
@@ -53,7 +55,7 @@ public class ReservationTimeRepository {
             ReservationTime reservationTime = jdbcTemplate.queryForObject(
                     findSql,
                     reservationTimeRowMapper(),
-                    id.toString()
+                    id.toBytes()
             );
             return Optional.ofNullable(reservationTime);
         } catch (EmptyResultDataAccessException exception) {
@@ -61,11 +63,11 @@ public class ReservationTimeRepository {
         }
     }
 
-    public boolean delete(UUID timeId) {
+    public boolean delete(EntityId timeId) {
         try {
             String deleteSql = "DELETE FROM reservation_time"
                     + " WHERE id = ?";
-            int deletedRowCount = jdbcTemplate.update(deleteSql, timeId.toString());
+            int deletedRowCount = jdbcTemplate.update(deleteSql, timeId.toBytes());
 
             return isDeleted(deletedRowCount);
         } catch (DataIntegrityViolationException exception) {
@@ -94,10 +96,14 @@ public class ReservationTimeRepository {
 
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
         return (resultSet, rowNum) -> {
-            UUID id = UUID.fromString(resultSet.getString("id"));
+            EntityId id = readEntityId(resultSet, "id");
             LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
 
             return new ReservationTime(id, startAt);
         };
+    }
+
+    private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
+        return EntityId.fromBytes(resultSet.getBytes(column));
     }
 }

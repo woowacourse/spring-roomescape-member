@@ -1,12 +1,13 @@
 package roomescape.controller.mapper;
 
-import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.controller.dto.ReservationDetailResponse;
 import roomescape.controller.dto.ReservationSummaryResponse;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.controller.dto.ThemeResponse;
+import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
 import roomescape.service.dto.AssembledReservation;
 import roomescape.service.dto.ReservationCreateCommand;
@@ -24,8 +25,8 @@ public class ReservationMapper {
         return new ReservationCreateCommand(
                 request.name(),
                 request.date(),
-                request.timeId(),
-                request.themeId()
+                EntityId.fromString(request.timeId().toString()),
+                EntityId.fromString(request.themeId().toString())
         );
     }
 
@@ -33,11 +34,11 @@ public class ReservationMapper {
             Reservation reservation
     ) {
         return new ReservationSummaryResponse(
-                reservation.id(),
+                reservation.id().getValueAsString(),
                 reservation.name(),
                 reservation.date(),
-                reservation.timeId(),
-                reservation.themeId()
+                reservation.timeId().getValueAsString(),
+                reservation.themeId().getValueAsString()
         );
     }
 
@@ -49,7 +50,7 @@ public class ReservationMapper {
         ThemeResponse theme = themeMapper.mapToResponse(assembledReservation.theme());
 
         return new ReservationDetailResponse(
-                reservation.id(),
+                reservation.id().getValueAsString(),
                 reservation.name(),
                 reservation.date(),
                 time,

@@ -3,12 +3,11 @@ package roomescape.domain;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 class ReservationTimeTest {
 
-    private static final UUID DEFAULT_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
+    private static final EntityId DEFAULT_ID = EntityId.random();
 
     @Test
     void 식별자가_없다면_예외를_던진다() {

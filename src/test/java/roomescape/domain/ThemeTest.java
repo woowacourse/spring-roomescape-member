@@ -2,13 +2,12 @@ package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class ThemeTest {
 
-    private static final UUID DEFAULT_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
+    private static final EntityId DEFAULT_ID = EntityId.random();
     private static final String DEFAULT_NAME = "name";
     private static final String DEFAULT_DESCRIPTION = "description";
     private static final String DEFAULT_IMAGE_URL = "imageUrl";

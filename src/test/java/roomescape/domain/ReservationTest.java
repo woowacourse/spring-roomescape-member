@@ -3,7 +3,6 @@ package roomescape.domain;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
-import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,9 +10,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class ReservationTest {
 
-    private static final UUID DEFAULT_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
-    private static final UUID TIME_ID = UUID.fromString("00000000-0000-0000-0000-000000000002");
-    private static final UUID THEME_ID = UUID.fromString("00000000-0000-0000-0000-000000000003");
+    private static final EntityId DEFAULT_ID = EntityId.random();
+    private static final EntityId TIME_ID = EntityId.random();
+    private static final EntityId THEME_ID = EntityId.random();
     private static final String DEFAULT_NAME = "name";
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2025, 1, 1);
 

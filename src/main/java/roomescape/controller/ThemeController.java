@@ -2,7 +2,6 @@ package roomescape.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,7 @@ import roomescape.controller.dto.ThemeCreateRequest;
 import roomescape.controller.dto.ThemeResponse;
 import roomescape.controller.mapper.ThemeMapper;
 import roomescape.domain.Duration;
+import roomescape.domain.EntityId;
 import roomescape.domain.Theme;
 import roomescape.repository.dto.ReservedTheme;
 import roomescape.service.ThemeService;
@@ -55,9 +55,9 @@ public class ThemeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
-            @PathVariable UUID id
+            @PathVariable String id
     ) {
-        service.delete(id);
+        service.delete(EntityId.fromString(id));
         return ResponseEntity.ok().build();
     }
 

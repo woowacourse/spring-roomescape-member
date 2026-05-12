@@ -2,10 +2,11 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import roomescape.domain.EntityId;
 import roomescape.domain.ReservationTime;
 import roomescape.test.util.TestDatabaseUtils;
 
@@ -27,8 +29,8 @@ class ReservationTimeRepositoryTest {
     private static boolean persistTestSuccessful = false;
     private static boolean findAllTestSuccessful = false;
 
-    private static final UUID DEFAULT_ID = UUID.fromString("11111111-1111-1111-1111-111111111101");
-    private static final UUID NOT_EXIST_ID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
+    private static final EntityId DEFAULT_ID = EntityId.random();
+    private static final EntityId NOT_EXIST_ID = EntityId.random();
 
     private static final LocalTime DEFAULT_START_AT = LocalTime.of(1, 1);
 
@@ -158,11 +160,15 @@ class ReservationTimeRepositoryTest {
 
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
         return (resultSet, rowNum) -> {
-            UUID id = UUID.fromString(resultSet.getString("id"));
+            EntityId id = readEntityId(resultSet, "id");
             LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
 
             return new ReservationTime(id, startAt);
         };
+    }
+
+    private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
+        return EntityId.fromBytes(resultSet.getBytes(column));
     }
 
     private static void skipIfPersistTestFailed() {

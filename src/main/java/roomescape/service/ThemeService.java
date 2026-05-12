@@ -2,13 +2,13 @@ package roomescape.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Duration;
+import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.exception.DataReferencedException;
@@ -31,7 +31,7 @@ public class ThemeService {
     public Theme create(
             ThemeCreateCommand command
     ) {
-        UUID id = UUID.randomUUID();
+        EntityId id = EntityId.random();
         Theme theme = new Theme(
                 id,
                 command.name(),
@@ -53,19 +53,19 @@ public class ThemeService {
             Duration duration
     ) {
         List<Reservation> reservations = reservationRepository.findBetweenDuration(duration);
-        Map<UUID, Long> themeReservedCounts = collectCountByThemeId(reservations);
-        Map<UUID, Theme> themes = themeRepository.findByIds(themeReservedCounts.keySet());
+        Map<EntityId, Long> themeReservedCounts = collectCountByThemeId(reservations);
+        Map<EntityId, Theme> themes = themeRepository.findByIds(themeReservedCounts.keySet());
 
         return themeReservedCounts.entrySet()
                 .stream()
-                .sorted(Map.Entry.<UUID, Long>comparingByValue().reversed())
+                .sorted(Map.Entry.<EntityId, Long>comparingByValue().reversed())
                 .limit(limit)
                 .map(countEntry -> mapToReservedTheme(countEntry, themes))
                 .toList();
     }
 
     @Transactional
-    public void delete(UUID themeId) {
+    public void delete(EntityId themeId) {
         try {
             boolean deleted = themeRepository.delete(themeId);
             validateDeleted(deleted, themeId);
@@ -78,7 +78,7 @@ public class ThemeService {
         }
     }
 
-    private void validateDeleted(boolean deleted, UUID themeId) {
+    private void validateDeleted(boolean deleted, EntityId themeId) {
         if (!deleted) {
             throw new EntityNotFoundException(
                     "삭제할 테마를 조회하지 못했습니다.",
@@ -87,7 +87,7 @@ public class ThemeService {
         }
     }
 
-    private Map<UUID, Long> collectCountByThemeId(List<Reservation> reservations) {
+    private Map<EntityId, Long> collectCountByThemeId(List<Reservation> reservations) {
         return reservations.stream()
                 .collect(Collectors.groupingBy(
                         Reservation::themeId,
@@ -96,10 +96,10 @@ public class ThemeService {
     }
 
     private ReservedTheme mapToReservedTheme(
-            Map.Entry<UUID, Long> themeReservedCount,
-            Map<UUID, Theme> themes
+            Map.Entry<EntityId, Long> themeReservedCount,
+            Map<EntityId, Theme> themes
     ) {
-        UUID themeId = themeReservedCount.getKey();
+        EntityId themeId = themeReservedCount.getKey();
         Theme theme = themes.get(themeId);
 
         if (theme == null) {
@@ -110,7 +110,7 @@ public class ThemeService {
         }
 
         return new ReservedTheme(
-                theme.id(),
+                theme.id().getValueAsString(),
                 theme.name(),
                 theme.description(),
                 theme.imageUrl(),

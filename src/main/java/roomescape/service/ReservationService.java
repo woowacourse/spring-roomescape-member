@@ -1,11 +1,11 @@
 package roomescape.service;
 
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -29,7 +29,7 @@ public class ReservationService {
     public Reservation create(
             ReservationCreateCommand command
     ) {
-        UUID reservationId = UUID.randomUUID();
+        EntityId reservationId = EntityId.random();
         Reservation reservation = new Reservation(
                 reservationId,
                 command.name(),
@@ -50,7 +50,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public void delete(UUID reservationId) {
+    public void delete(EntityId reservationId) {
         boolean deleted = reservationRepository.delete(reservationId);
 
         if (!deleted) {
@@ -68,7 +68,7 @@ public class ReservationService {
         return new AssembledReservation(reservation, time, theme);
     }
 
-    private ReservationTime findTimeById(UUID timeId) {
+    private ReservationTime findTimeById(EntityId timeId) {
         return timeRepository.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "예약 시간을 조회할 수 없습니다.",
@@ -76,7 +76,7 @@ public class ReservationService {
                 ));
     }
 
-    private Theme findThemeById(UUID themeId) {
+    private Theme findThemeById(EntityId themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "테마를 조회할 수 없습니다.",

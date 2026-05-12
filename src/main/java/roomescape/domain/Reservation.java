@@ -2,15 +2,14 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.UUID;
 import org.springframework.util.StringUtils;
 
 public record Reservation(
-        UUID id,
+        EntityId id,
         String name,
         LocalDate date,
-        UUID timeId,
-        UUID themeId
+        EntityId timeId,
+        EntityId themeId
 ) {
 
     public Reservation {
@@ -21,7 +20,7 @@ public record Reservation(
         validateTheme(themeId);
     }
 
-    private void validateId(UUID id) {
+    private void validateId(EntityId id) {
         if (id == null) {
             throw new IllegalArgumentException("예약엔 식별자가 존재해야 합니다.");
         }
@@ -39,13 +38,13 @@ public record Reservation(
         }
     }
 
-    private void validateTime(UUID timeId) {
+    private void validateTime(EntityId timeId) {
         if (timeId == null) {
             throw new IllegalArgumentException("예약엔 시간이 존재해야 합니다.");
         }
     }
 
-    private void validateTheme(UUID themeId) {
+    private void validateTheme(EntityId themeId) {
         if (themeId == null) {
             throw new IllegalArgumentException("예약엔 테마가 존재해야 합니다.");
         }

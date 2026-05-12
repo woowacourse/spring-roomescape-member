@@ -19,7 +19,7 @@ public class ReservationTimeMapper {
             ReservationTime reservationTime
     ) {
         return new ReservationTimeResponse(
-                reservationTime.id(),
+                reservationTime.id().getValueAsString(),
                 reservationTime.startAt()
         );
     }

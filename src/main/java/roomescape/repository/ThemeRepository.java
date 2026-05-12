@@ -1,10 +1,11 @@
 package roomescape.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,6 +15,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.EntityId;
 import roomescape.domain.Theme;
 import roomescape.exception.DataReferencedException;
 
@@ -33,7 +35,7 @@ public class ThemeRepository {
 
     public Theme persist(Theme theme) {
         simpleJdbcInsert.execute(Map.of(
-                "id", theme.id().toString(),
+                "id", theme.id().toBytes(),
                 "name", theme.name(),
                 "description", theme.description(),
                 "image_url", theme.imageUrl()
@@ -49,7 +51,7 @@ public class ThemeRepository {
         return namedParameterJdbcTemplate.query(findSql, themeRowMapper());
     }
 
-    public Optional<Theme> findById(UUID id) {
+    public Optional<Theme> findById(EntityId id) {
         try {
             String findSql = "SELECT id, name, description, image_url"
                     + " FROM theme"
@@ -57,7 +59,7 @@ public class ThemeRepository {
 
             Theme theme = namedParameterJdbcTemplate.queryForObject(
                     findSql,
-                    Map.of("id", id.toString()),
+                    Map.of("id", id.toBytes()),
                     themeRowMapper()
             );
             return Optional.ofNullable(theme);
@@ -66,7 +68,7 @@ public class ThemeRepository {
         }
     }
 
-    public Map<UUID, Theme> findByIds(Collection<UUID> ids) {
+    public Map<EntityId, Theme> findByIds(Collection<EntityId> ids) {
         if (ids.isEmpty()) {
             return Map.of();
         }
@@ -74,13 +76,13 @@ public class ThemeRepository {
         String findSql = "SELECT id, name, description, image_url"
                 + " FROM theme"
                 + " WHERE id IN (:ids)";
-        List<String> stringIds = ids.stream()
-                .map(UUID::toString)
+        List<byte[]> idBytes = ids.stream()
+                .map(EntityId::toBytes)
                 .toList();
 
         List<Theme> themes = namedParameterJdbcTemplate.query(
                 findSql,
-                Map.of("ids", stringIds),
+                Map.of("ids", idBytes),
                 themeRowMapper()
         );
 
@@ -91,14 +93,14 @@ public class ThemeRepository {
                 ));
     }
 
-    public boolean delete(UUID themeId) {
+    public boolean delete(EntityId themeId) {
         try {
             String deleteSql = "DELETE FROM theme"
                     + " WHERE id = :id";
 
             int deletedRowCount = namedParameterJdbcTemplate.update(
                     deleteSql,
-                    Map.of("id", themeId)
+                    Map.of("id", themeId.toBytes())
             );
 
             return isDeleted(deletedRowCount);
@@ -128,12 +130,16 @@ public class ThemeRepository {
 
     private RowMapper<Theme> themeRowMapper() {
         return (resultSet, rowNum) -> {
-            UUID id = UUID.fromString(resultSet.getString("id"));
+            EntityId id = readEntityId(resultSet, "id");
             String name = resultSet.getString("name");
             String description = resultSet.getString("description");
             String imageUrl = resultSet.getString("image_url");
 
             return new Theme(id, name, description, imageUrl);
         };
+    }
+
+    private static EntityId readEntityId(ResultSet resultSet, String column) throws SQLException {
+        return EntityId.fromBytes(resultSet.getBytes(column));
     }
 }

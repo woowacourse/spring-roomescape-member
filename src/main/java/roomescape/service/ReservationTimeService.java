@@ -3,12 +3,12 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.DataReferencedException;
@@ -30,7 +30,7 @@ public class ReservationTimeService {
     public ReservationTime create(
             ReservationTimeCreateCommand command
     ) {
-        UUID id = UUID.randomUUID();
+        EntityId id = EntityId.random();
         ReservationTime reservationTime = new ReservationTime(id, command.startAt());
 
         return timeRepository.persist(reservationTime);
@@ -43,13 +43,13 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public List<ReservationTime> findAvailableTimes(
-            UUID themeId,
+            EntityId themeId,
             LocalDate date
     ) {
         List<ReservationTime> allTimes = timeRepository.findAll();
         List<Reservation> existReservations = reservationRepository.findByDateAndThemeId(date, themeId);
 
-        Set<UUID> inUsedTimeIds = existReservations.stream()
+        Set<EntityId> inUsedTimeIds = existReservations.stream()
                 .map(Reservation::timeId)
                 .collect(Collectors.toUnmodifiableSet());
 
@@ -59,7 +59,7 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public void delete(UUID timeId) {
+    public void delete(EntityId timeId) {
         try {
             boolean deleted = timeRepository.delete(timeId);
             validateDeleted(deleted, timeId);
@@ -72,7 +72,7 @@ public class ReservationTimeService {
         }
     }
 
-    private void validateDeleted(boolean deleted, UUID timeId) {
+    private void validateDeleted(boolean deleted, EntityId timeId) {
         if (!deleted) {
             throw new EntityNotFoundException(
                     "삭제할 시간을 조회하지 못했습니다.",

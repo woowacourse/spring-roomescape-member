@@ -23,7 +23,7 @@ public class ThemeMapper {
             Theme theme
     ) {
         return new ThemeResponse(
-                theme.id(),
+                theme.id().getValueAsString(),
                 theme.name(),
                 theme.description(),
                 theme.imageUrl()

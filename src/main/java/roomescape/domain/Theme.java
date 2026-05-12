@@ -1,11 +1,10 @@
 package roomescape.domain;
 
 import java.util.Objects;
-import java.util.UUID;
 import org.springframework.util.StringUtils;
 
 public record Theme(
-        UUID id,
+        EntityId id,
         String name,
         String description,
         String imageUrl
@@ -18,7 +17,7 @@ public record Theme(
         validateImageUrl(imageUrl);
     }
 
-    private void validateId(UUID id) {
+    private void validateId(EntityId id) {
         if (id == null) {
             throw new IllegalArgumentException("테마엔 식별자가 존재해야 합니다.");
         }
