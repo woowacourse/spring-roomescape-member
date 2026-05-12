@@ -2,7 +2,7 @@ POST localhost:8080/reservations HTTP/1.1
 Content-Type: application/json
 
 {
-  "date": "2026-05-07",
+  "date": "2028-05-05",
   "name": "브라운",
   "timeId": 1,
   "themeId": 1

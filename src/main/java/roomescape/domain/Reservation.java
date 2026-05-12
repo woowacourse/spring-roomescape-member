@@ -46,13 +46,13 @@ public record Reservation(Long id, String name, LocalDate date, TimeSlot timeSlo
 
     private void validateTimeSlot(TimeSlot timeSlot) {
         if (timeSlot == null) {
-            throw new IllegalArgumentException("유효하지 않은 예약 시간대입니다.");
+            throw new IllegalArgumentException("존재하지 않는 예약 시간대입니다.");
         }
     }
 
     private void validateTheme(Theme theme) {
         if (theme == null) {
-            throw new IllegalArgumentException("유효하지 않은 테마입니다.");
+            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
         }
     }
 }

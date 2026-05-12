@@ -11,6 +11,25 @@
 
 ---
 
+## 2단계 - 에러 응답 설계
+
+- [x] 서비스 정책 위반, 유효하지 않은 입력, 존재하지 않는 리소스 등에 대해 의도된 에러 응답을 반환한다.
+    - `IllegalArgumentException`
+        - 지나간 날짜/시간
+        - 유효하지 않은 입력값
+    - `NoSuchElementException`
+        - 존재하지 않는 리소스
+    - `DuplicateKeyException`
+        - 중복 예약
+    - `DataIntegrityViolationException`
+        - 예약이 존재하는 시간
+- [o] 500(서버 에러)이 사용자에게 노출되지 않도록 한다.
+- [x] 에러 응답 본문에 어떤 정보를 담을지 결정한다.
+    - 에러 발생의 원인과 해결 방안 유추/유도
+- [x] 브라우저에서 에러 발생 시 사용자에게 의미 있는 메시지가 표시되어야 한다.
+
+---
+
 - [ ] 거부되어야 하는 요청
     - [x] 존재하지 않는 예약에 대한 수정/삭제 `NoSuchElementException`
     - [ ] 다른 사용자의 예약에 대한 수정/삭제 `AccessDeniedException `
