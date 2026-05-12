@@ -39,3 +39,6 @@ CREATE TABLE holiday
     date        DATE        NOT NULL,
     PRIMARY KEY (id)
 );
+
+CREATE INDEX idx_reservation_theme_date ON reservation (theme_id, date);
+CREATE INDEX idx_holiday_date ON holiday (date);
