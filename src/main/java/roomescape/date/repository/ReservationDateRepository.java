@@ -17,6 +17,8 @@ public interface ReservationDateRepository {
 
     ReservationDate save(ReservationDate reservationDate);
 
+    boolean updateStatus(ReservationDate reservationDate);
+
     boolean delete(Long id);
 
 }

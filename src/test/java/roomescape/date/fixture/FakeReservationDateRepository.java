@@ -32,7 +32,7 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
     @Override
     public ReservationDate save(ReservationDate reservationDate) {
         autoIncrement();
-        ReservationDate savedReservationDate = ReservationDate.load(autoIncrement, reservationDate.date());
+        ReservationDate savedReservationDate = ReservationDate.load(autoIncrement, reservationDate.date(), false);
         this.reservationDates.add(savedReservationDate);
         return savedReservationDate;
     }
@@ -43,6 +43,17 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
             savedReservationDates.add(save(reservationDate));
         }
         return savedReservationDates;
+    }
+
+    @Override
+    public boolean updateStatus(ReservationDate reservationDate) {
+        boolean isActive = reservationDate.isActive();
+        Optional<ReservationDate> target = findById(reservationDate.id());
+        if (target.isEmpty()) {
+            return false;
+        }
+        target.get().updateStatus(isActive);
+        return true;
     }
 
     @Override

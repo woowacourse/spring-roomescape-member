@@ -91,6 +91,21 @@ class ReservationDateRepositoryTest {
     }
 
     @Test
+    @DisplayName("")
+    void updateStatus() {
+        // given
+        ReservationDate saved = save(ReservationDate.create(DEFAULT_DATE));
+        saved.updateStatus(true);
+
+        // when
+        reservationDateRepository.updateStatus(saved);
+
+        // then
+        Assertions.assertThat(reservationDateRepository.findById(saved.id()).get().isActive())
+                .isTrue();
+    }
+
+    @Test
     @DisplayName("등록된 예약 날짜 2개 중 한 개를 삭제하면 데이터 수는 1개가 된다.")
     void delete() {
         // given

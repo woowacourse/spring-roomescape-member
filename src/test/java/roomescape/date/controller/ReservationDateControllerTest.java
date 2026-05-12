@@ -2,13 +2,12 @@ package roomescape.date.controller;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
+import static roomescape.date.fixture.ReservationDateApiFixture.updateDateStatus;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,16 +44,8 @@ class ReservationDateControllerTest {
     @DisplayName("사용자는 오늘 이후의 예약 날짜 목록을 조회한다.")
     void getReservationDatesAfterToday() {
         String tomorrow = LocalDate.now().plusDays(1).toString();
-
-        Map<String, String> params = new HashMap<>();
-        params.put("date", tomorrow);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/dates")
-                .then().log().all()
-                .statusCode(200);
+        Integer id = createReservationDate(tomorrow);
+        updateDateStatus(id, true);
 
         RestAssured.given().log().all()
                 .when().get("/member/dates")
@@ -65,29 +56,14 @@ class ReservationDateControllerTest {
 
     @Test
     @DisplayName("사용자는 오늘 이전의 예약 날짜는 조회할 수 없다.")
+    @Sql(
+            scripts = "classpath:past-reservation-date.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     void getReservationDatesExcludePastDates() {
-        String yesterday = LocalDate.now().minusDays(1).toString();
         String tomorrow = LocalDate.now().plusDays(1).toString();
-
-        Map<String, String> pastDate = new HashMap<>();
-        pastDate.put("date", yesterday);
-
-        Map<String, String> futureDate = new HashMap<>();
-        futureDate.put("date", tomorrow);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(pastDate)
-                .when().post("/admin/dates")
-                .then().log().all()
-                .statusCode(400);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(futureDate)
-                .when().post("/admin/dates")
-                .then().log().all()
-                .statusCode(200);
+        Integer futureDateId = createReservationDate(tomorrow);
+        updateDateStatus(futureDateId, true);
 
         RestAssured.given().log().all()
                 .when().get("/member/dates")

@@ -21,7 +21,8 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
     private final RowMapper<ReservationDate> reservationDateRowMapper = (resultSet, rowMapper) ->
             ReservationDate.load(
                     resultSet.getLong("id"),
-                    resultSet.getDate("date").toLocalDate()
+                    resultSet.getDate("date").toLocalDate(),
+                    resultSet.getBoolean("is_active")
             );
 
     public JdbcReservationDateRepository(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -33,7 +34,7 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
 
     @Override
     public Optional<ReservationDate> findById(Long id) {
-        String sql = "SELECT * FROM reservation_date where id = :id";
+        String sql = "SELECT id, date, is_active FROM reservation_date where id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
@@ -46,13 +47,19 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
 
     @Override
     public List<ReservationDate> findAll() {
-        String sql = "SELECT * FROM reservation_date";
+        String sql = "SELECT id, date, is_active FROM reservation_date";
         return jdbcTemplate.query(sql, reservationDateRowMapper);
     }
 
     @Override
     public List<ReservationDate> findAllAfterToday() {
-        String sql = "SELECT id, date FROM reservation_date WHERE date >= :today ORDER BY date ASC";
+        String sql = """
+                SELECT id, date, is_active
+                FROM reservation_date 
+                WHERE date >= :today
+                AND is_active = true
+                ORDER BY date ASC
+                """;
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("today", LocalDate.now());
 
@@ -62,9 +69,25 @@ public class JdbcReservationDateRepository implements ReservationDateRepository 
     @Override
     public ReservationDate save(ReservationDate reservationDate) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("date", reservationDate.date());
+                .addValue("date", reservationDate.date())
+                .addValue("is_active", reservationDate.isActive());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return ReservationDate.load(id, reservationDate.date());
+        return ReservationDate.load(id, reservationDate.date(), reservationDate.isActive());
+    }
+
+    @Override
+    public boolean updateStatus(ReservationDate reservationDate) {
+        String sql = """
+                UPDATE reservation_date 
+                SET is_active = :is_active
+                WHERE id = :id
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", reservationDate.id())
+                .addValue("is_active", reservationDate.isActive());
+
+        int updateCount = jdbcTemplate.update(sql, params);
+        return updateCount > 0;
     }
 
     @Override

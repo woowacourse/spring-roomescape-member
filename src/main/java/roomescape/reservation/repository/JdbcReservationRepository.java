@@ -25,7 +25,8 @@ public class JdbcReservationRepository implements ReservationRepository {
             resultSet.getString("name"),
             ReservationDate.load(
                     resultSet.getLong("date_id"),
-                    resultSet.getDate("date").toLocalDate()
+                    resultSet.getDate("date").toLocalDate(),
+                    resultSet.getBoolean("date_is_active")
             ),
             ReservationTime.load(
                     resultSet.getLong("time_id"),
@@ -57,6 +58,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.status,
                     d.id as date_id,
                     d.date,
+                    d.is_active as date_is_active,
                     t.id as time_id,
                     t.start_at,
                     th.id AS theme_id,
@@ -82,6 +84,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.status,
                     d.id as date_id,
                     d.date,
+                    d.is_active as date_is_active,
                     t.id as time_id,
                     t.start_at,
                     th.id AS theme_id,
@@ -112,6 +115,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.status,
                     d.id AS date_id,
                     d.date,
+                    d.is_active as date_is_active,
                     t.id AS time_id,
                     t.start_at,
                     th.id AS theme_id,

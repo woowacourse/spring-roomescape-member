@@ -62,7 +62,7 @@ class MockReservationDateServiceTest {
     void readDate() {
         // given
         Long dateId = 1L;
-        ReservationDate saved = ReservationDate.load(dateId, DEFAULT_DATE);
+        ReservationDate saved = ReservationDate.load(dateId, DEFAULT_DATE, false);
         when(reservationDateRepository.findById(dateId))
                 .thenReturn(Optional.of(saved));
 
@@ -117,7 +117,7 @@ class MockReservationDateServiceTest {
     void delete() {
         // given
         Long registeredId = 1L;
-        ReservationDate reservationDate = ReservationDate.load(registeredId, DEFAULT_DATE);
+        ReservationDate reservationDate = ReservationDate.load(registeredId, DEFAULT_DATE, false);
 
         when(reservationDateRepository.findById(registeredId))
                 .thenReturn(Optional.of(reservationDate));
@@ -161,7 +161,7 @@ class MockReservationDateServiceTest {
     void delete_already_reserved() {
         // given
         Long dateId = 1L;
-        ReservationDate reservationDate = ReservationDate.load(dateId, DEFAULT_DATE);
+        ReservationDate reservationDate = ReservationDate.load(dateId, DEFAULT_DATE, false);
 
         when(reservationDateRepository.findById(dateId))
                 .thenReturn(Optional.of(reservationDate));

@@ -4,15 +4,10 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.date.domain.ReservationDate;
 import roomescape.date.dto.request.ReservationDateSaveDto;
+import roomescape.date.dto.request.ReservationDateStatusUpdateDto;
 import roomescape.date.dto.response.ReservationDateDetailDto;
 import roomescape.date.service.ReservationDateService;
 
@@ -46,6 +41,14 @@ public class ReservationDateAdminController {
     @DeleteMapping("/dates/{id}")
     public ResponseEntity<ReservationDateDetailDto> delete(@PathVariable Long id) {
         ReservationDate reservationDate = reservationDateService.deregister(id);
+        ReservationDateDetailDto responseData = ReservationDateDetailDto.from(reservationDate);
+        return ResponseEntity.ok(responseData);
+    }
+
+    @PatchMapping("/dates/{id}/status")
+    public ResponseEntity<ReservationDateDetailDto> updateStatus(
+            @PathVariable Long id, @RequestBody ReservationDateStatusUpdateDto dto) {
+        ReservationDate reservationDate = reservationDateService.updateStatus(id, dto.isActive());
         ReservationDateDetailDto responseData = ReservationDateDetailDto.from(reservationDate);
         return ResponseEntity.ok(responseData);
     }

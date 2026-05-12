@@ -53,7 +53,7 @@ class ReservationDateTest {
 
         // when & then
         Assertions.assertThatCode(() -> {
-            ReservationDate.load(loadValidId, loadValidDate);
+            ReservationDate.load(loadValidId, loadValidDate, false);
         }).doesNotThrowAnyException();
     }
 
@@ -64,7 +64,7 @@ class ReservationDateTest {
         Long loadValidId = 1L;
         LocalDate loadValidDate = LocalDate.of(2099, 1, 1);
         ReservationDate createdDate = ReservationDate.create(loadValidDate);
-        ReservationDate loadedDate = ReservationDate.load(loadValidId, loadValidDate);
+        ReservationDate loadedDate = ReservationDate.load(loadValidId, loadValidDate, false);
 
         // when & then
         Assertions.assertThat(createdDate)
@@ -81,7 +81,7 @@ class ReservationDateTest {
         LocalDate validDate = LocalDate.of(2099, 1, 1);
 
         // when & then
-        Assertions.assertThatThrownBy(() -> ReservationDate.load(nullId, validDate))
+        Assertions.assertThatThrownBy(() -> ReservationDate.load(nullId, validDate, false))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약날짜 ID는 필수입니다.");
     }

@@ -15,23 +15,23 @@ MERGE INTO reservation_time (start_at) KEY (start_at)
     ('22:00:00');
 
 -- Reservation Date
-MERGE INTO reservation_date (date) KEY (date)
+MERGE INTO reservation_date (date, is_active) KEY (date)
     VALUES
-    (DATEADD('DAY', -7, CURRENT_DATE)),
-    (DATEADD('DAY', -6, CURRENT_DATE)),
-    (DATEADD('DAY', -5, CURRENT_DATE)),
-    (DATEADD('DAY', -4, CURRENT_DATE)),
-    (DATEADD('DAY', -3, CURRENT_DATE)),
-    (DATEADD('DAY', -2, CURRENT_DATE)),
-    (DATEADD('DAY', -1, CURRENT_DATE)),
-    (CURRENT_DATE),
-    (DATEADD('DAY', 1, CURRENT_DATE)),
-    (DATEADD('DAY', 2, CURRENT_DATE)),
-    (DATEADD('DAY', 3, CURRENT_DATE)),
-    (DATEADD('DAY', 4, CURRENT_DATE)),
-    (DATEADD('DAY', 5, CURRENT_DATE)),
-    (DATEADD('DAY', 6, CURRENT_DATE)),
-    (DATEADD('DAY', 7, CURRENT_DATE));
+    (DATEADD('DAY', -7, CURRENT_DATE), true),
+    (DATEADD('DAY', -6, CURRENT_DATE), true),
+    (DATEADD('DAY', -5, CURRENT_DATE), true),
+    (DATEADD('DAY', -4, CURRENT_DATE), true),
+    (DATEADD('DAY', -3, CURRENT_DATE), true),
+    (DATEADD('DAY', -2, CURRENT_DATE), true),
+    (DATEADD('DAY', -1, CURRENT_DATE), true),
+    (CURRENT_DATE, true),
+    (DATEADD('DAY', 1, CURRENT_DATE), true),
+    (DATEADD('DAY', 2, CURRENT_DATE), true),
+    (DATEADD('DAY', 3, CURRENT_DATE), false),
+    (DATEADD('DAY', 4, CURRENT_DATE), true),
+    (DATEADD('DAY', 5, CURRENT_DATE), true),
+    (DATEADD('DAY', 6, CURRENT_DATE), true),
+    (DATEADD('DAY', 7, CURRENT_DATE), true);
 
 -- Theme
 INSERT INTO theme (name, description, thumbnail_url, is_active)

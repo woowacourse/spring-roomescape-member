@@ -2,6 +2,7 @@ package roomescape.date.controller;
 
 import static org.hamcrest.Matchers.is;
 import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
+import static roomescape.date.fixture.ReservationDateApiFixture.updateDateStatus;
 import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
 import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
 import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
@@ -125,6 +126,24 @@ class ReservationDateAdminControllerTest {
                 .when().post("/admin/dates")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("사용자는 오늘 이후의 예약 날짜 목록을 조회한다.")
+    @Sql(
+            scripts = "classpath:past-reservation-date.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    void getReservationDatesAfterToday() {
+        String tomorrow = LocalDate.now().plusDays(1).toString();
+        Integer id = createReservationDate(tomorrow);
+        updateDateStatus(id, true);
+
+        RestAssured.given().log().all()
+                .when().get("/admin/dates")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
     }
 
     @Test

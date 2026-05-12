@@ -39,6 +39,14 @@ public class ReservationDateService {
     }
 
     @Transactional
+    public ReservationDate updateStatus(Long dateId, boolean isActive) {
+        ReservationDate reservationDate = getReservationDate(dateId);
+        reservationDate.updateStatus(isActive);
+        reservationDateRepository.updateStatus(reservationDate);
+        return reservationDate;
+    }
+
+    @Transactional
     public ReservationDate deregister(Long id) {
         ReservationDate reservationDate = getReservationDate(id);
         validateAlreadyReserved(reservationDate.id());

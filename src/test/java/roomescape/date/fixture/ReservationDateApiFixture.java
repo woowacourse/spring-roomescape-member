@@ -25,4 +25,16 @@ public class ReservationDateApiFixture {
                 .path("id");
     }
 
+    public static void updateDateStatus(Integer futureDateId, boolean isActive) {
+        Map<String, Object> updateActive = new HashMap<>();
+        updateActive.put("isActive", isActive);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateActive)
+                .when().patch("/admin/dates/" + futureDateId + "/status")
+                .then().log().all()
+                .statusCode(200);
+    }
+
 }
