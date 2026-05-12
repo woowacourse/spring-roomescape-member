@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.domain.Reservation;
+import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
-import roomescape.dto.request.ReservationUpdateDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.service.ReservationService;
 
@@ -52,9 +52,9 @@ public class AdminReservationController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ReservationResponseDto> update(
+    public ResponseEntity<ReservationResponseDto> patch(
             @PathVariable Long id,
-            @Valid @RequestBody ReservationUpdateDto request) {
+            @Valid @RequestBody ReservationPatchDto request) {
         Reservation updated = reservationService.update(id, request);
         return ResponseEntity.ok(ReservationResponseDto.from(updated));
     }

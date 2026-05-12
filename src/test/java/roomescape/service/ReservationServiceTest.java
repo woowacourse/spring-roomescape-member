@@ -27,8 +27,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
+import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
-import roomescape.dto.request.ReservationUpdateDto;
 
 @JdbcTest
 @Import({ReservationService.class, ReservationJdbcDao.class, TimeJdbcDao.class, ThemeJdbcDao.class})
@@ -153,7 +153,7 @@ class ReservationServiceTest {
         void updatesReservation() {
             Reservation saved = reservationService.create(requestDto1);
             LocalDate newDate = LocalDate.of(2026, 5, 4);
-            ReservationUpdateDto updateDto = new ReservationUpdateDto(newDate, savedTime2.getId());
+            ReservationPatchDto updateDto = new ReservationPatchDto(newDate, savedTime2.getId());
 
             Reservation updated = reservationService.update(saved.getId(), updateDto);
 
@@ -164,7 +164,7 @@ class ReservationServiceTest {
         @Test
         @DisplayName("존재하지 않는 id를 수정하면 예외를 반환한다")
         void throwsWhenIdNotFound() {
-            ReservationUpdateDto updateDto = new ReservationUpdateDto(LocalDate.of(2026, 5, 4),
+            ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.of(2026, 5, 4),
                     savedTime1.getId());
 
             assertThatThrownBy(() -> reservationService.update(-1L, updateDto))
@@ -175,7 +175,7 @@ class ReservationServiceTest {
         @DisplayName("존재하지 않는 시간으로 수정하면 예외를 반환한다")
         void throwsWhenTimeNotFound() {
             Reservation saved = reservationService.create(requestDto1);
-            ReservationUpdateDto updateDto = new ReservationUpdateDto(LocalDate.of(2026, 5, 4), -1L);
+            ReservationPatchDto updateDto = new ReservationPatchDto(LocalDate.of(2026, 5, 4), -1L);
 
             assertThatThrownBy(() -> reservationService.update(saved.getId(), updateDto))
                     .isInstanceOf(NotFoundException.class);

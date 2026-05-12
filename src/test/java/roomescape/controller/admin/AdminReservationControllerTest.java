@@ -26,8 +26,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
 import roomescape.domain.vo.Name;
+import roomescape.dto.request.ReservationPatchDto;
 import roomescape.dto.request.ReservationRequestDto;
-import roomescape.dto.request.ReservationUpdateDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.service.ReservationService;
 
@@ -117,8 +117,8 @@ class AdminReservationControllerTest {
         @Test
         @DisplayName("유효한 요청으로 예약을 수정하면 200을 반환한다")
         void updatesReservation() {
-            ReservationUpdateDto requestDto = new ReservationUpdateDto(LocalDate.now().plusDays(2), time.getId());
-            given(reservationService.update(eq(reservation.getId()), any(ReservationUpdateDto.class)))
+            ReservationPatchDto requestDto = new ReservationPatchDto(LocalDate.now().plusDays(2), time.getId());
+            given(reservationService.update(eq(reservation.getId()), any(ReservationPatchDto.class)))
                     .willReturn(reservation);
             ReservationResponseDto expected = ReservationResponseDto.from(reservation);
 
