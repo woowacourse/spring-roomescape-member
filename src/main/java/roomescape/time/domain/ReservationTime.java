@@ -24,6 +24,13 @@ public class ReservationTime {
                 .build();
     }
 
+    public void checkRegisterable(LocalDate date, Clock clock) {
+        LocalDateTime time = LocalDateTime.of(date, startAt);
+        if (time.isBefore(LocalDateTime.now(clock))) {
+            throw new IllegalReservationDateTimeException("과거의 시간으로 예약을 할 수 없습니다.");
+        }
+    }
+
     public void checkChangeable(LocalDate date, Clock clock) {
         LocalDateTime newReservationDateTime = LocalDateTime.of(date, startAt);
         if (newReservationDateTime.isBefore(LocalDateTime.now(clock))) {

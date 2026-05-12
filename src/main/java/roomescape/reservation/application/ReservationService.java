@@ -40,6 +40,7 @@ public class ReservationService {
 
     public Reservation addReservation(ReservationCreateCommand command) {
         ReservationTime time = timeRepository.getById(command.timeId());
+        time.checkRegisterable(command.date(), clock);
         Theme theme = themeRepository.getById(command.themeId());
         if (reservationRepository.existsByReservationTimeAndThemeAndDate(time.getId(), theme.getId(), command.date())) {
             throw new ReservationInUseException("이미 예약이 존재합니다.");
