@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,7 @@ public class AdminThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createTheme(@RequestBody ThemeRequest themeRequest) {
+    public ResponseEntity<Void> createTheme(@Valid @RequestBody ThemeRequest themeRequest) {
         final long themeId = themeService.save(themeRequest.name(), themeRequest.description(), themeRequest.thumbnailUrl());
         final URI location = URI.create("/themes/" + themeId);
         return ResponseEntity.created(location).build();

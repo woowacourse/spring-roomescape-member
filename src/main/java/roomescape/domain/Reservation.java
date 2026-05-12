@@ -1,17 +1,18 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Reservation {
     private final Long id;
     private final String name;
     private final LocalDate date;
-    private final LocalDate createdAt;
+    private final LocalDateTime createdAt;
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(Long id, String name, LocalDate date, LocalDate createdAt, ReservationTime time, Theme theme) {
+    private Reservation(Long id, String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
         validate(name, date, time, theme);
         this.id = id;
         this.name = name;
@@ -21,14 +22,14 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation create(String name, LocalDate date, LocalDate createdAt, ReservationTime time, Theme theme) {
-        if (date.isBefore(createdAt)) {
+    public static Reservation create(String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(createdAt)) {
             throw new IllegalArgumentException("과거 날짜로는 예약할 수 없습니다.");
         }
         return new Reservation(null, name, date, createdAt, time, theme);
     }
 
-    public static Reservation restore(Long id, String name, LocalDate date, LocalDate createdAt, ReservationTime time, Theme theme) {
+    public static Reservation restore(Long id, String name, LocalDate date, LocalDateTime createdAt, ReservationTime time, Theme theme) {
         return new Reservation(id, name, date, createdAt, time, theme);
     }
 
@@ -44,7 +45,7 @@ public class Reservation {
         return date;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 

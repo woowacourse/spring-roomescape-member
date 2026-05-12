@@ -1,6 +1,7 @@
 package roomescape.controller.dto;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 
-public record ReservationTimeRequest(LocalTime startAt) {
+public record ReservationTimeRequest(@NotNull LocalTime startAt) {
 }

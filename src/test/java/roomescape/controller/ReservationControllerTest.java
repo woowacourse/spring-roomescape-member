@@ -32,10 +32,21 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("사용자 예약 삭제")
     @Test
     void 사용자_예약_삭제() {
-        RestAssured.given().log().all()
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", LocalDate.now().plusDays(1).toString());
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        long id = RestAssured.given()
                 .contentType(ContentType.JSON)
-                .pathParam("id", 1)
-                .when().delete("/reservations/{id}")
+                .body(params)
+                .when().post("/reservations")
+                .then().statusCode(201)
+                .extract().jsonPath().getLong("id");
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/{id}", id)
                 .then().log().all()
                 .statusCode(204);
     }

@@ -6,7 +6,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
+import java.util.Optional;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -39,7 +42,7 @@ class ReservationServiceTest {
         given(themeDao.findById(1L)).willReturn(Optional.of(sampleTheme));
         given(reservationDao.existsByDateAndTimeIdAndThemeId(futureDate, 1L, 1L)).willReturn(false);
         given(reservationDao.save(any(Reservation.class)))
-                .willReturn(Reservation.restore(10L, "브라운", futureDate, LocalDate.now(), sampleTime, sampleTheme));
+                .willReturn(Reservation.restore(10L, "브라운", futureDate, LocalDateTime.now(), sampleTime, sampleTheme));
 
         Reservation result = reservationService.save("브라운", futureDate, 1L, 1L);
 
@@ -81,6 +84,10 @@ class ReservationServiceTest {
 
     @Test
     void delete_정상_삭제() {
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+        Reservation reservation = Reservation.restore(1L, "브라운", futureDate, LocalDateTime.now().minusHours(1), sampleTime, sampleTheme);
+        given(reservationDao.findById(1L)).willReturn(Optional.of(reservation));
+
         reservationService.delete(1L);
 
         then(reservationDao).should().delete(1L);

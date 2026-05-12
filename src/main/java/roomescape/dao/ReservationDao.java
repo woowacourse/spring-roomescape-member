@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -20,7 +21,7 @@ public class ReservationDao {
             rs.getLong("reservation_id"),
             rs.getString("name"),
             rs.getDate("date").toLocalDate(),
-            rs.getDate("created_at").toLocalDate(),
+            rs.getTimestamp("created_at").toLocalDateTime(),
             new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
             new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"),
                     rs.getString("theme_thumbnail"))
@@ -43,6 +44,19 @@ public class ReservationDao {
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    public Optional<Reservation> findById(long id) {
+        final String sql = """
+                SELECT r.id AS reservation_id, r.name, r.date, r.created_at,
+                       t.id AS time_id, t.start_at AS time_value,
+                       th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail_url AS theme_thumbnail
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE r.id = ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, id).stream().findFirst();
     }
 
     public Reservation save(Reservation reservation) {

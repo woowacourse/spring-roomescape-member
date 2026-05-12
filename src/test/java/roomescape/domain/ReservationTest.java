@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,7 @@ class ReservationTest {
 
     private final ReservationTime time;
     private final Theme theme;
-    private final LocalDate createdAt = LocalDate.of(2023, 8, 1);
+    private final LocalDateTime createdAt = LocalDateTime.of(2023, 8, 1, 0, 0);
 
     public ReservationTest() {
         this.time = new ReservationTime(1L, LocalTime.of(15, 40));
@@ -55,17 +56,17 @@ class ReservationTest {
 
     @Test
     void 과거_날짜로_예약하면_예외() {
-        LocalDate today = LocalDate.of(2026, 5, 10);
-        LocalDate yesterday = today.minusDays(1);
+        LocalDateTime now = LocalDateTime.of(2026, 5, 10, 15, 0);
+        LocalDate yesterday = now.toLocalDate().minusDays(1);
 
-        assertThatThrownBy(() -> Reservation.create("브라운", yesterday, today, time, theme))
+        assertThatThrownBy(() -> Reservation.create("브라운", yesterday, now, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("과거 날짜로는 예약할 수 없습니다.");
     }
 
     @Test
     void restore는_과거_날짜_검증_스킵() {
-        assertThat(Reservation.restore(1L, "브라운", LocalDate.of(2023, 8, 5), LocalDate.now(), time, theme))
+        assertThat(Reservation.restore(1L, "브라운", LocalDate.of(2023, 8, 5), LocalDateTime.now(), time, theme))
                 .isNotNull();
     }
 

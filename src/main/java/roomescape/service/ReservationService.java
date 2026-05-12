@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,12 +33,17 @@ public class ReservationService {
         if (reservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
-        final Reservation reservation = Reservation.create(name, date, LocalDate.now(), time, theme);
+        final Reservation reservation = Reservation.create(name, date, LocalDateTime.now(), time, theme);
         return reservationDao.save(reservation);
     }
 
     @Transactional
     public void delete(long id) {
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+        if (LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt()).isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("이미 지난 예약은 취소할 수 없습니다.");
+        }
         reservationDao.delete(id);
     }
 

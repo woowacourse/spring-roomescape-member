@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +37,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
         final Reservation reservation = reservationService.save(
                 request.name(), request.date(), request.timeId(), request.themeId());
         final ReservationResponse response = ReservationResponse.from(reservation, reservation.getTheme());
