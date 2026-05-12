@@ -1,6 +1,7 @@
 package roomescape.domain.reservation;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationRepository {
 
@@ -19,4 +20,6 @@ public interface ReservationRepository {
     int countByThemeId(Long id);
 
     List<Reservation> findByName(String name);
+
+    Optional<Reservation> findById(Long id);
 }

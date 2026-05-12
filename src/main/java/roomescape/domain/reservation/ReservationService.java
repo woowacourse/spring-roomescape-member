@@ -1,5 +1,6 @@
 package roomescape.domain.reservation;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import roomescape.domain.reservationtime.ReservationTimeRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
 import roomescape.support.exception.ReservationDateErrorCode;
+import roomescape.support.exception.ReservationErrorCode;
 import roomescape.support.exception.ReservationTimeErrorCode;
 import roomescape.support.exception.RoomescapeException;
 import roomescape.support.exception.ThemeErrorCode;
@@ -57,5 +59,16 @@ public class ReservationService {
         return reservationRepository.findByName(name).stream()
             .map(ReservationResponse::from)
             .toList();
+    }
+
+    public void cancelReservation(Long id) {
+        LocalDate today = LocalDate.now();
+        Reservation reservation = reservationRepository.findById(id)
+            .orElseThrow(() -> new RoomescapeException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+        LocalDate playDay = reservation.getDate().getPlayDay();
+        if (playDay.isBefore(today) || playDay.isEqual(today)) {
+            throw new RoomescapeException(ReservationErrorCode.RESERVATION_CANNOT_CANCEL);
+        }
+        reservationRepository.deleteById(id);
     }
 }

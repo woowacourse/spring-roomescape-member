@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -72,6 +73,19 @@ public class JdbcReservationRepository implements ReservationRepository {
             join theme th on r.theme_id = th.id
             where r.name  = ?
             order by rd.play_day
+            """;
+
+    private static final String FIND_BY_ID_SQL =
+        """
+            select r.id, r.name,
+                   rd.id as date_id, rd.play_day,
+                   rt.id as time_id, rt.start_at,
+                   th.id as theme_id, th.name as theme_name, th.content as theme_content, th.url as theme_url
+            from reservation r
+            join reservation_date rd on r.date_id = rd.id
+            join reservation_time rt on r.time_id = rt.id
+            join theme th on r.theme_id = th.id
+            where r.id  = ?
             """;
 
     private final JdbcTemplate jdbcTemplate;
@@ -142,6 +156,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findByName(String name) {
         return jdbcTemplate.query(FIND_BY_NAME_SQL, reservationRowMapper(), name);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        return jdbcTemplate.query(FIND_BY_ID_SQL, reservationRowMapper(), id)
+            .stream()
+            .findFirst();
     }
 
     private RowMapper<Reservation> reservationRowMapper() {
