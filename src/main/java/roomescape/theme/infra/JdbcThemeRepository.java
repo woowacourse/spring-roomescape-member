@@ -84,4 +84,10 @@ public class JdbcThemeRepository implements ThemeRepository {
 
         return jdbcTemplate.query(sql, params, rowMapper);
     }
+
+    @Override
+    public boolean existsByName(String name) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE name=:name)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Map.of("name", name), Boolean.class));
+    }
 }

@@ -11,6 +11,7 @@ public interface ThemeRepository {
     Optional<Theme> findById(Long id);
     List<Theme> findAll();
     List<Theme> findByReservationCountWithLimit(LocalDate startDate, LocalDate endDate, int limit);
+    boolean existsByName(String name);
 
     default Theme getById(Long id) {
         return findById(id)

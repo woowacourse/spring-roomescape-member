@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.theme.application.exception.DuplicateThemeException;
 import roomescape.theme.application.exception.ThemeInUseException;
 import roomescape.theme.domain.exception.ThemeNotFoundException;
 import roomescape.theme.domain.Theme;
@@ -26,6 +27,9 @@ public class ThemeService {
     private final ReservationRepository reservationRepository;
 
     public Theme addTheme(Theme theme) {
+        if (themeRepository.existsByName(theme.getName())) {
+            throw new DuplicateThemeException("이미 존재하는 테마입니다.");
+        }
         return themeRepository.save(theme);
     }
 
