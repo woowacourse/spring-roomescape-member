@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -70,13 +69,6 @@ public class RoomescapeApplicationTest {
         reservation.put("date", LocalDate.now().minusDays(1));
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")

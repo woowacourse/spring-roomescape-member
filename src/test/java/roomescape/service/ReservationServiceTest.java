@@ -1,21 +1,21 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeThemeRepository;
 import roomescape.repository.FakeTimeSlotRepository;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationServiceTest {
 
@@ -51,7 +51,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(
                 () -> reservationService.saveReservation("토미", futureDate, savedTimeSlot.id(), savedTheme.id()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicateKeyException.class)
                 .hasMessage("선택하신 시간과 테마는 이미 예약되었습니다.");
     }
 
