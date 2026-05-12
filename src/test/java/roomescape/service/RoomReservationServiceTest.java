@@ -180,6 +180,35 @@ public class RoomReservationServiceTest {
     }
 
     @Test
+    @DisplayName("오늘 날짜에서 지난 시간 예약 시 예외 발생 테스트")
+    void addReservationFailByPastTimeTest() {
+
+        LocalTime fixedNow = LocalTime.of(12, 0);
+
+        ReservationTime reservationTime =
+                new ReservationTime(1L, fixedNow.minusHours(1)); // 11:00
+
+        Theme theme = new Theme(1L, "name", "description", "image");
+
+        RoomReservationService reservationService = new RoomReservationService(
+                createReservationRepository(false),
+                createReservationTimeRepository(reservationTime),
+                createThemeRepository(theme)
+        );
+
+        AddReservationRequest request = new AddReservationRequest(
+                "브라운",
+                LocalDate.now(),
+                1L,
+                1L
+        );
+
+        assertThatThrownBy(() -> reservationService.addReservation(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지난 시간에는 예약할 수 없습니다.");
+    }
+
+    @Test
     @DisplayName("예약 생성 시 존재하지 않는 시간ID인 경우 예외 테스트")
     void addReservationFailByInvalidTimeIdTest() {
         RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(null), createThemeRepository(new Theme(1L, "테마1", "설명", "url")));

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,10 @@ public class RoomReservationService {
         ReservationTime reservationTime = reservationTimeRepository.getReservationTime(addReservationRequest.timeId())
                 .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_RESERVATION_TIME_ID));
 
+        if (addReservationRequest.date().isEqual(LocalDate.now())) {
+            validateTime(reservationTime.startAt());
+        }
+
         Theme theme = themeRepository.getTheme(addReservationRequest.themeId())
                 .orElseThrow(() -> new NotFoundResourceException(ErrorMessage.INVALID_THEME_ID));
 
@@ -63,6 +68,14 @@ public class RoomReservationService {
 
         if (reservationDate.isBefore(today)) {
             throw new IllegalArgumentException("지난 날짜에는 예약할 수 없습니다.");
+        }
+    }
+
+    private void validateTime(LocalTime startAt) {
+        LocalTime now = LocalTime.now();
+
+        if (startAt.isBefore(now)) {
+            throw new IllegalArgumentException("지난 시간에는 예약할 수 없습니다.");
         }
     }
 }
