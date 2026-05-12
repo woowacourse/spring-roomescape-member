@@ -1,8 +1,10 @@
 package roomescape.domain.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,7 +15,9 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.exception.ThemeDeleteConflictException;
 import roomescape.domain.theme.repository.PopularThemeResult;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.request.ThemeCreateRequest;
@@ -139,5 +143,18 @@ class ThemeServiceTest {
 
         // then
         verify(themeRepository).deleteById(themeId);
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 테마를 삭제하면 예외가 발생한다.")
+    void deleteThemeById_throwsException_whenReservationExists() {
+        // given
+        Long themeId = 1L;
+        doThrow(DataIntegrityViolationException.class)
+                .when(themeRepository).deleteById(themeId);
+
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteThemeById(themeId))
+                .isInstanceOf(ThemeDeleteConflictException.class);
     }
 }

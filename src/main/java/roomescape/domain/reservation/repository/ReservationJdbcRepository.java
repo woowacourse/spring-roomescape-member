@@ -100,4 +100,9 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 DELETE_RESERVATION_BY_ID_QUERY,
                 parameters);
     }
+
+    @Override
+    public boolean existsByThemeIdAndDateAndTimeId(Long themeId, LocalDate date, Long timeId) {
+        return false;
+    }
 }

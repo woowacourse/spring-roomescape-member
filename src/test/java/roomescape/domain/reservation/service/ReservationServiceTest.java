@@ -22,6 +22,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.reservation.entity.Reservation;
+import roomescape.domain.reservation.exception.DuplicateReservationException;
+import roomescape.domain.reservation.exception.PastReservationException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
@@ -53,7 +55,7 @@ class ReservationServiceTest {
     @BeforeEach
     void setUp() {
         Clock fixedClock = Clock.fixed(
-                FIXED_DATE.atStartOfDay(ZONE_ID).toInstant(),
+                FIXED_DATE.atTime(14, 0).atZone(ZONE_ID).toInstant(),
                 ZONE_ID
         );
 
@@ -127,6 +129,85 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("해당 id의 ReservationTime이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("지나간 날짜에 대한 예약 생성은 불가능하다.")
+    void saveReservationByUserWithPastDateThrowException() {
+        // given
+        Long timeId = 1L;
+        Long themeId = 1L;
+        LocalDate pastDate = FIXED_DATE.minusDays(1);
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                "브라운",
+                themeId,
+                pastDate,
+                timeId
+        );
+
+        when(reservationTimeRepository.findById(timeId))
+                .thenReturn(Optional.of(ReservationTime.of(timeId, LocalTime.of(10, 0))));
+
+        when(themeRepository.findById(themeId))
+                .thenReturn(Optional.of(Theme.of(themeId, "theme", "desc", "url")));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
+                .isInstanceOf(PastReservationException.class);
+    }
+
+    @Test
+    @DisplayName("당일 지나간 시간에 대한 예약 생성은 불가능하다.")
+    void saveReservationByUserWithPastTimeOnSameDateThrowException() {
+        // given
+        Long timeId = 1L;
+        Long themeId = 1L;
+        LocalDate sameDate = FIXED_DATE;
+        LocalTime pastTime = LocalTime.of(13, 0);
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                "브라운",
+                themeId,
+                sameDate,
+                timeId
+        );
+
+        when(reservationTimeRepository.findById(timeId))
+                .thenReturn(Optional.of(ReservationTime.of(timeId, pastTime)));
+
+        when(themeRepository.findById(themeId))
+                .thenReturn(Optional.of(Theme.of(themeId, "theme", "desc", "url")));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
+                .isInstanceOf(PastReservationException.class);
+    }
+
+    @Test
+    @DisplayName("이미 동일한 테마, 날짜, 시간에 예약이 존재하면 예약이 불가능하다.")
+    void saveReservationByUserWithDuplicateThrowException() {
+        // given
+        Long timeId = 1L;
+        Long themeId = 1L;
+        LocalDate date = FIXED_DATE.plusDays(1);
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                "브라운",
+                themeId,
+                date,
+                timeId
+        );
+
+        when(reservationTimeRepository.findById(timeId))
+                .thenReturn(Optional.of(ReservationTime.of(timeId, LocalTime.of(10, 0))));
+
+        when(themeRepository.findById(themeId))
+                .thenReturn(Optional.of(Theme.of(themeId, "theme", "desc", "url")));
+
+        when(reservationRepository.existsByThemeIdAndDateAndTimeId(themeId, date, timeId))
+                .thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
+                .isInstanceOf(DuplicateReservationException.class);
     }
 
     @Test

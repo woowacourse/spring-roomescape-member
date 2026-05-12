@@ -32,7 +32,8 @@ class ReservationControllerTest {
         Clock fixedClock() {
             return Clock.fixed(
                     LocalDate.of(2026, 5, 6)
-                            .atStartOfDay(ZoneId.systemDefault())
+                            .atTime(14, 0)
+                            .atZone(ZoneId.systemDefault())
                             .toInstant(),
                     ZoneId.systemDefault()
             );
@@ -91,6 +92,98 @@ class ReservationControllerTest {
                 .body("date", is("2026-05-08"))
                 .body("time.id", is(6))
                 .body("time.startAt", is("15:00"));
+    }
+
+    @Test
+    @DisplayName("중복된 예약을 생성하면 에러가 발생한다.")
+    void createDuplicateReservationThrowException() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "테스터");
+        params.put("themeId", 1);
+        params.put("date", "2026-05-10");
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    @DisplayName("과거 날짜로 예약을 생성하면 에러가 발생한다.")
+    void createReservationWithPastDateThrowException() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "테스터");
+        params.put("themeId", 1);
+        params.put("date", "2026-05-05");
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("오늘 날짜의 지난 시간으로 예약을 생성하면 에러가 발생한다.")
+    void createReservationWithPastTimeThrowException() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "테스터");
+        params.put("themeId", 1);
+        params.put("date", "2026-05-06");
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 입력값으로 예약을 생성하면 에러가 발생한다.")
+    void createReservationWithInvalidInputThrowException() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "");
+        params.put("themeId", 1);
+        params.put("date", "2026-05-10");
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("잘못된 날짜 형식으로 예약을 생성하면 에러가 발생한다.")
+    void createReservationWithInvalidDateFormatThrowException() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "테스터");
+        params.put("themeId", 1);
+        params.put("date", "2026/05/10");
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @Test

@@ -19,7 +19,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.theme.entity.Theme;
-import roomescape.domain.theme.response.ThemeReservationTimeResponse;
 
 @JdbcTest
 class ThemeJdbcRepositoryTest {

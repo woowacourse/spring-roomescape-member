@@ -3,9 +3,11 @@ package roomescape.domain.theme.service;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.exception.ThemeDeleteConflictException;
 import roomescape.domain.theme.repository.PopularThemeResult;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.repository.ThemeReservationTimeResult;
@@ -39,7 +41,6 @@ public class ThemeService {
     }
 
     public ThemeReservationTimesResponse findAllThemeReservationTimes(Long themeId, LocalDate date) {
-        // TODO: 잘못된 입력 예외 처리 (사이클 2)
         List<ThemeReservationTimeResult> timeResults = themeRepository.findAllReservationTimesByThemeIdAndDate(
                 themeId,
                 date
@@ -85,6 +86,10 @@ public class ThemeService {
 
     @Transactional
     public void deleteThemeById(Long themeId) {
-        themeRepository.deleteById(themeId);
+        try {
+            themeRepository.deleteById(themeId);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ThemeDeleteConflictException(exception);
+        }
     }
 }
