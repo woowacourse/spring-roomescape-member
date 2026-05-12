@@ -25,17 +25,17 @@ import roomescape.presentation.dto.ReservationResponse;
 @RequestMapping("/reservations")
 public class ReservationController {
 
-    private final ReservationService service;
+    private final ReservationService reservationService;
 
-    public ReservationController(ReservationService service) {
-        this.service = service;
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody ReservationRequest request
     ) {
-        Reservation created = service.save(
+        Reservation created = reservationService.save(
                 request.name(),
                 request.date(),
                 request.timeId(),
@@ -57,7 +57,7 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> readAllReservations() {
-        List<Reservation> reservations = service.findAll();
+        List<Reservation> reservations = reservationService.findAll();
         List<ReservationResponse> response = convertToReservationResponse(reservations);
         return ResponseEntity.ok(response);
     }
@@ -65,7 +65,7 @@ public class ReservationController {
     @GetMapping(params = {"date", "themeId"})
     public ResponseEntity<List<AvailableReservationResponse>> readReservationsByDateAndTheme(
             @RequestParam LocalDate date, @RequestParam Long themeId) {
-        List<Reservation> reservations = service.findAllByDateAndThemeId(date, themeId);
+        List<Reservation> reservations = reservationService.findAllByDateAndThemeId(date, themeId);
         List<AvailableReservationResponse> response = convertToAvailableReservationResponse(reservations);
         return ResponseEntity.ok(response);
     }
@@ -87,7 +87,7 @@ public class ReservationController {
         if (id == null) {
             throw new InvalidRequestException(ErrorCode.RESERVATION_ID_NULL);
         }
-        service.deleteById(id);
+        reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
