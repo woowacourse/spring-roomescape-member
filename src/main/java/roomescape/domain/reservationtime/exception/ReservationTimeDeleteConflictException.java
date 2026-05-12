@@ -1,4 +1,4 @@
-package roomescape.domain.reservation.exception;
+package roomescape.domain.reservationtime.exception;
 
 import roomescape.common.exception.BusinessException;
 import roomescape.common.exception.ErrorCode;
