@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -75,8 +77,8 @@ class ReservationTimeServiceTest {
     void 존재하지않는_time_id_삭제_시_예외_발생() {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(999L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("[ERROR] 존재하지 않는 ID입니다.");
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 예약 시간대입니다.");
     }
 
     @Test
@@ -89,8 +91,8 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(timeId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 해당 시간에 예약이 존재합니다.");
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
     }
 
     private Long createTheme() {

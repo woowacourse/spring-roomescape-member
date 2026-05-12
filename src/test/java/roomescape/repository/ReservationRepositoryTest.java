@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import roomescape.domain.Theme;
 @JdbcTest
 class ReservationRepositoryTest {
     private static final LocalDate DATE = LocalDate.of(2026, 5, 5);
+    private static final LocalDateTime TEST_DATE_TIME = LocalDateTime.of(2000, 1, 1, 0, 0);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -37,17 +39,14 @@ class ReservationRepositoryTest {
         // given
         ReservationTime time = findTimeByStartAt("15:00");
         Theme theme = new Theme(1L, "테마 이름", "테마 설명", "썸네일");
-        Reservation reservation = new Reservation("브라운", DATE, time, theme);
+        Reservation reservation = new Reservation("브라운", DATE, time, theme, TEST_DATE_TIME);
 
-        // when
-        Long id = reservationRepository.insert(reservation);
-
-        // then
+        // when & then
+        Reservation savedReservation = reservationRepository.insert(reservation);
         List<Reservation> reservations = reservationRepository.findAll();
-        Reservation savedReservation = reservationRepository.findById(id).get();
         assertAll(
-                () -> assertThat(id).isNotNull(),
                 () -> assertThat(reservations).hasSize(1),
+                () -> assertThat(savedReservation.getId()).isNotNull(),
                 () -> assertThat(savedReservation.getName()).isEqualTo(reservation.getName()),
                 () -> assertThat(savedReservation.getDate()).isEqualTo(reservation.getDate()),
                 () -> assertThat(savedReservation.getTime().getStartAt()).isEqualTo(
@@ -61,10 +60,10 @@ class ReservationRepositoryTest {
         Theme theme1 = new Theme(1L, "테마 이름1", "테마 설명1", "썸네일1");
         ReservationTime time2 = findTimeByStartAt("12:00");
         Theme theme2 = new Theme(2L, "테마 이름2", "테마 설명2", "썸네일2");
-        Reservation reservation1 = new Reservation("브라운", DATE, time1, theme1);
-        Reservation reservation2 = new Reservation("구구", DATE, time2, theme2);
-        Long id1 = reservationRepository.insert(reservation1);
-        Long id2 = reservationRepository.insert(reservation2);
+        Reservation reservation1 = new Reservation("브라운", DATE, time1, theme1, TEST_DATE_TIME);
+        Reservation reservation2 = new Reservation("구구", DATE, time2, theme2, TEST_DATE_TIME);
+        Long id1 = reservationRepository.insert(reservation1).getId();
+        Long id2 = reservationRepository.insert(reservation2).getId();
 
         // when
         int deletedCount = reservationRepository.delete(id1);
@@ -74,7 +73,7 @@ class ReservationRepositoryTest {
         assertAll(
                 () -> assertThat(deletedCount).isEqualTo(1),
                 () -> assertThat(reservations).hasSize(1),
-                () -> assertThat(reservationRepository.findById(id1)).isEmpty());
+                () -> assertThat(reservationRepository.existsById(id1)).isFalse());
     }
 
     private ReservationTime findTimeByStartAt(String startAt) {
@@ -82,10 +81,9 @@ class ReservationRepositoryTest {
         return jdbcTemplate.queryForObject(
                 sql,
                 (resultSet, rowNum) -> {
-                    ReservationTime reservationTime = new ReservationTime(
+                    return new ReservationTime(
                             resultSet.getLong("id"),
                             resultSet.getObject("start_at", LocalTime.class));
-                    return reservationTime;
                 }, startAt);
     }
 }

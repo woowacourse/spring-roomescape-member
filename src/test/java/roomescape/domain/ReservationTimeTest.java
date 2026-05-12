@@ -13,7 +13,7 @@ class ReservationTimeTest {
         // when & then
         assertThatThrownBy(() -> new ReservationTime(1L, null))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 시간은 비어 있을 수 없습니다.");
+                .hasMessage("시간은 비어 있을 수 없습니다.");
     }
 
     @Test

@@ -17,7 +17,7 @@ class ThemeTest {
         // when
         assertThatThrownBy(() -> new Theme(name, "설명", "썸네일 경로"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마 이름은 비어 있을 수 없습니다.");
+                .hasMessage("테마 이름은 비어 있을 수 없습니다.");
     }
 
     @Test
@@ -28,7 +28,7 @@ class ThemeTest {
         // when & then
         assertThatThrownBy(() -> new Theme(name, "설명", "썸네일 경로"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마 이름은 255자를 넘을 수 없습니다.");
+                .hasMessage("테마 이름은 255자를 넘을 수 없습니다.");
     }
 
     @Test
@@ -39,7 +39,7 @@ class ThemeTest {
         // when & then
         assertThatThrownBy(() -> new Theme("테마이름", description, "썸네일 경로"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마 설명은 255자를 넘을 수 없습니다.");
+                .hasMessage("테마 설명은 255자를 넘을 수 없습니다.");
     }
 
     @Test
@@ -50,7 +50,7 @@ class ThemeTest {
         // when & then
         assertThatThrownBy(() -> new Theme("테마이름", "설명", thumbnail))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 썸네일 경로는 255자를 넘을 수 없습니다.");
+                .hasMessage("썸네일 경로는 255자를 넘을 수 없습니다.");
     }
 
     @Test

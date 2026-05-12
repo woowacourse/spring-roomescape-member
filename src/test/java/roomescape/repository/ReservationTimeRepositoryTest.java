@@ -31,14 +31,11 @@ class ReservationTimeRepositoryTest {
         // given
         ReservationTime time = new ReservationTime(LocalTime.of(8, 0));
 
-        // when
-        Long id = reservationTimeRepository.insert(time);
-
-        // then
+        // when & then
+        ReservationTime savedTime = reservationTimeRepository.insert(time);
         List<ReservationTime> times = reservationTimeRepository.findAll();
-        ReservationTime savedTime = reservationTimeRepository.findBy(id).get();
         assertAll(
-                () -> assertThat(id).isNotNull(),
+                () -> assertThat(savedTime.getId()).isNotNull(),
                 () -> assertThat(times).hasSize(1),
                 () -> assertThat(savedTime.getStartAt()).isEqualTo(time.getStartAt()));
     }
@@ -48,8 +45,8 @@ class ReservationTimeRepositoryTest {
         // given
         ReservationTime time1 = new ReservationTime(LocalTime.of(8, 0));
         ReservationTime time2 = new ReservationTime(LocalTime.of(21, 0));
-        Long id1 = reservationTimeRepository.insert(time1);
-        Long id2 = reservationTimeRepository.insert(time2);
+        Long id1 = reservationTimeRepository.insert(time1).getId();
+        Long id2 = reservationTimeRepository.insert(time2).getId();
 
         // when
         int deletedCount = reservationTimeRepository.delete(id1);
@@ -59,6 +56,6 @@ class ReservationTimeRepositoryTest {
         assertAll(
                 () -> assertThat(deletedCount).isEqualTo(1),
                 () -> assertThat(times).hasSize(1),
-                () -> assertThat(reservationTimeRepository.findBy(id1)).isEmpty());
+                () -> assertThat(reservationTimeRepository.existsById(id1)).isFalse());
     }
 }

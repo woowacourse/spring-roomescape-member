@@ -30,14 +30,11 @@ class ThemeRepositoryTest {
         // given
         Theme theme = new Theme("새로운 테마", "새로운 테마 설명", "새로운 썸네일 링크");
 
-        // when
-        Long id = themeRepository.insert(theme);
-
-        // then
+        // when & then
+        Theme savedTheme = themeRepository.insert(theme);
         List<Theme> themes = themeRepository.findAll();
-        Theme savedTheme = themeRepository.findBy(id).get();
         assertAll(
-                () -> assertThat(id).isNotNull(),
+                () -> assertThat(savedTheme.getId()).isNotNull(),
                 () -> assertThat(themes).hasSize(1),
                 () -> assertThat(savedTheme.getName()).isEqualTo(theme.getName()));
     }
@@ -47,8 +44,8 @@ class ThemeRepositoryTest {
         // given
         Theme theme1 = new Theme("새로운 테마1", "새로운 테마 설명1", "새로운 썸네일 링크1");
         Theme theme2 = new Theme("새로운 테마2", "새로운 테마 설명2", "새로운 썸네일 링크2");
-        Long id1 = themeRepository.insert(theme1);
-        Long id2 = themeRepository.insert(theme2);
+        Long id1 = themeRepository.insert(theme1).getId();
+        Long id2 = themeRepository.insert(theme2).getId();
 
         // when
         int deletedCount = themeRepository.delete(id1);
@@ -58,6 +55,7 @@ class ThemeRepositoryTest {
         assertAll(
                 () -> assertThat(deletedCount).isEqualTo(1),
                 () -> assertThat(themes).hasSize(1),
-                () -> assertThat(themeRepository.findBy(id1)).isEmpty());
+                () -> assertThat(themeRepository.existsById(id1)).isFalse(),
+                () -> assertThat(themeRepository.existsById(id2)).isTrue());
     }
 }
