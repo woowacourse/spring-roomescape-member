@@ -60,9 +60,9 @@ public class RoomescapeApplicationTest {
     void 예약과_시간_연결() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().plusDays(1));
+        reservation.put("date", LocalDate.now().plusDays(2));
         reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
+        reservation.put("themeId", 5);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
