@@ -31,7 +31,7 @@ public class ThemeRepository {
         return result.stream().findAny();
     }
 
-    public Long insert(Theme theme) {
+    public Theme insert(Theme theme) {
         String sql = "INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -44,7 +44,7 @@ public class ThemeRepository {
             return pstmt;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return new Theme(keyHolder.getKey().longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     public int delete(Long id) {

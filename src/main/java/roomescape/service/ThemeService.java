@@ -38,9 +38,7 @@ public class ThemeService {
     public Theme create(String name, String description, String thumbnail) {
         validateDuplicateName(name);
         Theme theme = new Theme(name, description, thumbnail);
-        Long id = themeRepository.insert(theme);
-        return themeRepository.findBy(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+        return themeRepository.insert(theme);
     }
 
     private void validateDuplicateName(String name) {
