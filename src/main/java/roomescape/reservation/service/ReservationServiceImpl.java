@@ -11,8 +11,9 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
-import roomescape.time.service.TimeService;
+import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.service.TimeService;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -59,7 +60,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new IllegalArgumentException("테마는 필수입니다.");
         }
         if (!themeRepository.existsById(themeId)) {
-            throw new IllegalArgumentException("테마가 존재하지 않습니다. id=" + themeId);
+            throw new ThemeNotFoundException(themeId);
         }
     }
 
