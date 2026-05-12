@@ -13,5 +13,4 @@ public record ReservationResponses(List<ReservationResponse> reservations) {
                         .toList()
         );
     }
-
 }

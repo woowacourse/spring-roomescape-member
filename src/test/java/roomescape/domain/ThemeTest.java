@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class ThemeTest {
 
     @Test
-    void 테마_이름은_비어있을_수_없다(){
+    void 테마_이름은_비어있을_수_없다() {
         assertThatThrownBy(() -> new Theme("", "설명", "썸네일"))
                 .isInstanceOf(IllegalArgumentException.class);
     }

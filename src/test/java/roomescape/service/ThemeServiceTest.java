@@ -42,7 +42,7 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 예약_가능한_시간_필터링(){
+    void 예약_가능한_시간_필터링() {
         LocalDate targetDate = LocalDate.of(2030, 5, 6);
 
         ReservationTime targetTime1 = reservationTimeService.save(new ReservationTime(LocalTime.of(10, 0)));

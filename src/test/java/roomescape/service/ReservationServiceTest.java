@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,7 +37,7 @@ class ReservationServiceTest {
                 savedTheme.getId());
 
         //when
-        List<Reservation> reservations = reservationService.findAll(0,20);
+        List<Reservation> reservations = reservationService.findAll(0, 20);
 
         //then
         assertThat(reservations.getFirst().getId()).isEqualTo(savedReservation.getId());
@@ -54,7 +55,7 @@ class ReservationServiceTest {
         reservationService.deleteById(savedReservation.getId());
 
         //then
-        assertThat(reservationService.findAll(0,20)).hasSize(0);
+        assertThat(reservationService.findAll(0, 20)).hasSize(0);
     }
 
     @Test
