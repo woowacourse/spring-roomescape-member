@@ -48,4 +48,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                 themeId,
                 timeId);
     }
+
+    @Override
+    public Boolean existsByTime(Long timeId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)",
+                Boolean.class,
+                timeId);
+    }
 }

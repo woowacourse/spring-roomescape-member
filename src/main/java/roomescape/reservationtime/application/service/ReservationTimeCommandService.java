@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.NotFoundException;
 import roomescape.global.exception.RoomEscapeException;
+import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
@@ -17,6 +18,7 @@ import roomescape.reservationtime.domain.repository.ReservationTimeRepository;
 @Service
 public class ReservationTimeCommandService {
 
+    private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
 
     public ReservationTimeResult save(ReservationTimeCreateCommand request) {
@@ -29,6 +31,10 @@ public class ReservationTimeCommandService {
     }
 
     public void delete(Long id) {
+        if (reservationRepository.existsByTime(id)) {
+            throw new RoomEscapeException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
+        }
+
         if (timeRepository.delete(id) == 0) {
             throw new NotFoundException("존재하지 않는 시간입니다.");
         }

@@ -18,6 +18,7 @@ import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
 import roomescape.reservationtime.application.service.ReservationTimeCommandService;
 import roomescape.reservationtime.application.service.ReservationTimeQueryService;
+import roomescape.reservation.infra.JdbcReservationRepository;
 import roomescape.reservationtime.infra.JdbcAvailableTimeDao;
 import roomescape.reservationtime.infra.JdbcReservationTimeRepository;
 import roomescape.support.TestDataHelper;
@@ -27,6 +28,7 @@ import roomescape.support.TestDataHelper;
         ReservationTimeCommandService.class,
         ReservationTimeQueryService.class,
         JdbcReservationTimeRepository.class,
+        JdbcReservationRepository.class,
         JdbcAvailableTimeDao.class
 })
 public class ReservationTimeQueryServiceTest {
