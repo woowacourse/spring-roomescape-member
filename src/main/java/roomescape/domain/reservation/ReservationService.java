@@ -19,6 +19,7 @@ import roomescape.domain.theme.ThemeRepository;
 import roomescape.support.exception.BadRequestException;
 import roomescape.support.exception.NotFoundException;
 import roomescape.support.exception.ReservationDateErrorCode;
+import roomescape.support.exception.ReservationErrorCode;
 import roomescape.support.exception.ReservationTimeErrorCode;
 import roomescape.support.exception.ThemeErrorCode;
 
@@ -41,6 +42,7 @@ public class ReservationService {
         checkReservationDateAndReservationTime(reservationDate, reservationTime);
         Theme theme = themeRepository.findById(request.themeId())
             .orElseThrow(() -> new NotFoundException(ThemeErrorCode.THEME_NOT_EXIST));
+        checkDuplicated(reservationTime, reservationDate, theme);
         Reservation savedReservation = reservationRepository.save(
             request.toEntity(reservationDate, reservationTime, theme));
         return CreateReservationResponse.from(savedReservation);
@@ -75,6 +77,12 @@ public class ReservationService {
                 ReservationTimeErrorCode.RESERVATION_TIME_SHOULD_BE_NOW_OR_LATER,
                 LocalTime.now(clock)
             );
+        }
+    }
+
+    private void checkDuplicated(ReservationTime reservationTime, ReservationDate reservationDate, Theme theme) {
+        if (reservationRepository.existsReservation(reservationTime.getId(), reservationDate.getId(), theme.getId())) {
+            throw new BadRequestException(ReservationErrorCode.DUPLICATED_RESERVATION);
         }
     }
 }

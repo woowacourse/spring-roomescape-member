@@ -95,8 +95,15 @@ public class FakeReservationRepository implements ReservationRepository {
         return count;
     }
 
-    public void insert(Reservation reservation) {
-        storage.put(reservation.getId(), reservation);
-        sequence = Math.max(sequence, reservation.getId() + 1);
+    @Override
+    public boolean existsReservation(Long timeId, Long dateId, Long themeId) {
+        for (Reservation reservation : storage.values()) {
+            if (timeId.equals(reservation.getTime().getId())
+                && dateId.equals(reservation.getDate().getId())
+                && themeId.equals(reservation.getTheme().getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

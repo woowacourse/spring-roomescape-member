@@ -21,4 +21,6 @@ public interface ReservationRepository {
     List<Theme> findPopularThemes(int rankLimit, LocalDate startDay, LocalDate today);
 
     int countByThemeId(Long id);
+
+    boolean existsReservation(Long timeId, Long dateId, Long themeId);
 }

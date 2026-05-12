@@ -311,6 +311,36 @@ class ReservationServiceTest {
         );
     }
 
+    @Test
+    void 중복된_예약은_예외가_발생한다() {
+        // given
+        Clock now = fixedClockAt(LocalDateTime.of(2026, 5, 12, 13, 0));
+        ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        ReservationDate reservationDate = ReservationDate.createWithoutId(LocalDate.of(2026, 5, 13));
+        ReservationDate savedReservationDate = reservationDateRepository.save(reservationDate);
+        Theme theme = themeRepository.save(Theme.createWithoutId("공포", "무서운 테마", "theme-url"));
+        ReservationService reservationService = new ReservationService(
+            reservationRepository,
+            reservationTimeRepository,
+            reservationDateRepository,
+            themeRepository,
+            now
+        );
+        CreateReservationRequest request = new CreateReservationRequest(
+            "보예",
+            savedReservationDate.getId(),
+            savedReservationTime.getId(),
+            theme.getId()
+        );
+        reservationService.createReservation(request);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+            .isInstanceOf(BadRequestException.class)
+            .hasMessage("중복 예약입니다. 예약 정보를 다시 확인해주세요.");
+    }
+
     private Clock fixedClockAt(LocalDateTime dateTime) {
         return Clock.fixed(dateTime.atZone(ZONE_ID).toInstant(), ZONE_ID);
     }

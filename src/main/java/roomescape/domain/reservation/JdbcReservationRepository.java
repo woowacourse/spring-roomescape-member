@@ -85,7 +85,12 @@ public class JdbcReservationRepository implements ReservationRepository {
             from reservation
             where theme_id = ?
             """;
-    ;
+    private static final String COUNT_RESERVATION_BY_TIME_AND_DATE_AND_THEME =
+        """
+            select count(*)
+            from reservation r
+            where time_id = ? and date_id = ? and theme_id = ?
+            """;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -149,6 +154,18 @@ public class JdbcReservationRepository implements ReservationRepository {
             return 0;
         }
         return count;
+    }
+
+    @Override
+    public boolean existsReservation(Long timeId, Long dateId, Long themeId) {
+        Integer count = jdbcTemplate.queryForObject(
+            COUNT_RESERVATION_BY_TIME_AND_DATE_AND_THEME,
+            Integer.class,
+            timeId,
+            themeId,
+            dateId
+        );
+        return count != null && count > 0;
     }
 
     private RowMapper<Reservation> reservationRowMapper() {
