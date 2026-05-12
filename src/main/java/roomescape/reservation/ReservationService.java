@@ -1,7 +1,8 @@
 package roomescape.reservation;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ErrorCode;
@@ -20,12 +21,15 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
+                              Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     @Transactional
@@ -40,7 +44,8 @@ public class ReservationService {
                 reservationRequest.userName(),
                 theme,
                 reservationRequest.date(),
-                reservationTime
+                reservationTime,
+                LocalDateTime.now(clock)
         );
         if (reservationRepository.existsActiveByDateAndThemeAndTime(reservation.getDate(), theme.getId(),
                 reservationTime.getId())) {

@@ -1,6 +1,9 @@
 package roomescape.reservation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.theme.Theme;
 import roomescape.time.ReservationTime;
 
@@ -20,7 +23,11 @@ public class Reservation {
         this.time = time;
     }
 
-    public Reservation(String userName, Theme theme, LocalDate date, ReservationTime time) {
+    public Reservation(String userName, Theme theme, LocalDate date, ReservationTime time, LocalDateTime now) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new RoomescapeException(ErrorCode.PAST_RESERVATION);
+        }
         this.userName = userName;
         this.theme = theme;
         this.date = date;
