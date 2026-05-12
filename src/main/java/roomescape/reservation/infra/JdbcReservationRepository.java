@@ -69,17 +69,16 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void updateByIdAndUsername(Long id, String username, Reservation reservation) {
+    public void updateById(Long id, Reservation reservation) {
         String sql = "UPDATE reservation "
                 + "SET date = :date, time_id = :timeId, theme_id = :themeId "
-                + "WHERE id = :id AND name = :username";
+                + "WHERE id = :id";
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", reservation.getDate())
                 .addValue("timeId", reservation.getTime().getId())
                 .addValue("themeId", reservation.getTheme().getId())
-                .addValue("id", id)
-                .addValue("username", username);
+                .addValue("id", id);
 
         jdbcTemplate.update(sql, params);
     }

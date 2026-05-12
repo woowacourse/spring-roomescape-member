@@ -71,7 +71,7 @@ public class ReservationService {
             throw new ReservationInUseException("이미 다른 예약이 존재합니다.");
         }
         Reservation changedReservation = reservation.changeTime(command.date(), time, theme);
-        reservationRepository.updateByIdAndUsername(id, command.username(), changedReservation);
+        reservationRepository.updateById(id, changedReservation);
         return reservation;
     }
 }

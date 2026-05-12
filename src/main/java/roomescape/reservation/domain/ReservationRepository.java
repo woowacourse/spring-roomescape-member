@@ -7,7 +7,7 @@ import roomescape.reservation.application.exception.ReservationNotFoundException
 
 public interface ReservationRepository {
     Reservation save(Reservation reservation);
-    void updateByIdAndUsername(Long id, String username, Reservation reservation);
+    void updateById(Long id, Reservation changedReservation);
     Optional<Reservation> findById(Long id);
     List<Reservation> findAll();
     List<Reservation> findByThemeAndDate(Long themeId, LocalDate date);
