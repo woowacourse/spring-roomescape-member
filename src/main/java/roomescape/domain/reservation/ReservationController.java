@@ -1,4 +1,4 @@
-package roomescape.user.reservation;
+package roomescape.domain.reservation;
 
 import jakarta.validation.Valid;
 import java.time.LocalDate;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.user.reservation.dto.ReservationRequest;
-import roomescape.user.reservation.dto.ReservationResponse;
-import roomescape.user.reservationtime.dto.TimeResponse;
+import roomescape.domain.reservation.dto.ReservationRequest;
+import roomescape.domain.reservation.dto.ReservationResponse;
+import roomescape.domain.reservationtime.dto.TimeResponse;
 
 
 @RestController

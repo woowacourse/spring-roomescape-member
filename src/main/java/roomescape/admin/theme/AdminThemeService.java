@@ -6,10 +6,10 @@ import roomescape.admin.theme.dto.AdminThemeResponse;
 import roomescape.admin.theme.dto.AdminThemesResponse;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
-import roomescape.user.reservation.ReservationRepository;
+import roomescape.domain.reservation.ReservationRepository;
 
 import java.util.List;
-import roomescape.user.theme.Theme;
+import roomescape.domain.theme.Theme;
 
 @Service
 public class AdminThemeService {

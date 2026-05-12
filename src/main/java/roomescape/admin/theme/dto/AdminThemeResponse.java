@@ -1,6 +1,6 @@
 package roomescape.admin.theme.dto;
 
-import roomescape.user.theme.Theme;
+import roomescape.domain.theme.Theme;
 
 public record AdminThemeResponse(
         Long id,

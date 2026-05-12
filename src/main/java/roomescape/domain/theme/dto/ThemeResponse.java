@@ -1,6 +1,6 @@
-package roomescape.user.theme.dto;
+package roomescape.domain.theme.dto;
 
-import roomescape.user.theme.Theme;
+import roomescape.domain.theme.Theme;
 
 public record ThemeResponse(
     Long id,

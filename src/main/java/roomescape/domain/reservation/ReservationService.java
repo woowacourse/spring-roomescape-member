@@ -1,4 +1,4 @@
-package roomescape.user.reservation;
+package roomescape.domain.reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -7,13 +7,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
-import roomescape.user.theme.Theme;
+import roomescape.domain.theme.Theme;
 import roomescape.admin.theme.AdminThemeRepository;
-import roomescape.user.reservationtime.ReservationTime;
-import roomescape.user.reservation.dto.ReservationRequest;
-import roomescape.user.reservation.dto.ReservationResponse;
-import roomescape.user.reservationtime.dto.TimeResponse;
-import roomescape.user.reservationtime.ReservationTimeRepository;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.reservation.dto.ReservationRequest;
+import roomescape.domain.reservation.dto.ReservationResponse;
+import roomescape.domain.reservationtime.dto.TimeResponse;
+import roomescape.domain.reservationtime.ReservationTimeRepository;
 
 @Service
 public class ReservationService {

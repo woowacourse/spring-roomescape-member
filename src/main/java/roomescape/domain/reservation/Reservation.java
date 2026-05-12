@@ -1,8 +1,8 @@
-package roomescape.user.reservation;
+package roomescape.domain.reservation;
 
 import java.time.LocalDate;
-import roomescape.user.theme.Theme;
-import roomescape.user.reservationtime.ReservationTime;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.reservationtime.ReservationTime;
 
 public class Reservation {
 

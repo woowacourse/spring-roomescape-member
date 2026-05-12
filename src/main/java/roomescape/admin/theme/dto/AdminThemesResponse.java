@@ -1,7 +1,7 @@
 package roomescape.admin.theme.dto;
 
 import java.util.List;
-import roomescape.user.theme.Theme;
+import roomescape.domain.theme.Theme;
 
 public record AdminThemesResponse(
     List<AdminThemeResponse> themes

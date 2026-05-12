@@ -1,4 +1,4 @@
-package roomescape.user.theme;
+package roomescape.domain.theme;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
