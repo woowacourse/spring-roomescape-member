@@ -25,7 +25,7 @@ public class Reservation {
     public static Reservation create(ReservationCreateData data) {
         return new Reservation(
                 null,
-                PersonName.from(data.name()),
+                new PersonName(data.name()),
                 data.date(),
                 data.time(),
                 data.theme()
@@ -40,7 +40,7 @@ public class Reservation {
             final Theme theme) {
         return new Reservation(
                 id,
-                PersonName.from(name),
+                new PersonName(name),
                 date,
                 time,
                 theme

@@ -21,7 +21,7 @@ public class Theme {
     public static Theme create(final ThemeCreateData data) {
         return new Theme(
                 null,
-                ThemeName.from(data.name()),
+                new ThemeName(data.name()),
                 data.description(),
                 data.thumbnailUrl()
         );
@@ -35,7 +35,7 @@ public class Theme {
     ) {
         return new Theme(
                 id,
-                ThemeName.from(name),
+                new ThemeName(name),
                 description,
                 thumbnailUrl
         );
