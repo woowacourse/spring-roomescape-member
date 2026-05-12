@@ -1,26 +1,30 @@
 package roomescape.reservation.domain;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.config.TestTimeConfig;
+import roomescape.reservation.infra.JdbcReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.infra.JdbcThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeRepository;
+import roomescape.time.infra.JdbcReservationTimeRepository;
 
-@Transactional
-@SpringBootTest
-@Import(TestTimeConfig.class)
+@JdbcTest
+@Import({
+        TestTimeConfig.class,
+        JdbcReservationRepository.class,
+        JdbcThemeRepository.class,
+        JdbcReservationTimeRepository.class
+})
 class ReservationRepositoryTest {
 
     @Autowired
