@@ -125,8 +125,8 @@ class JdbcTemplateThemeRepositoryTest {
         addReservation("A", outOfRange, 1, 1);
         addReservation("B", outOfRange, 2, 1);
         addReservation("C", outOfRange, 3, 1);
-        addReservation("D", outOfRange, 1, 1);
-        addReservation("E", outOfRange, 2, 1);
+        addReservation("D", outOfRange, 1, 2);
+        addReservation("E", outOfRange, 2, 3);
         addReservation("F", inRange, 1, 1);
 
         addReservation("G", inRange, 2, 2);

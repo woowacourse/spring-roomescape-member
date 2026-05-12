@@ -29,6 +29,7 @@ public class ReservationController {
     public ResponseEntity<List<ReservationResponse>> getReservations(@RequestParam("name") String name) {
         try {
             List<ReservationResponse> responses = ReservationResponse.from(reservationService.findReservationsByName(name));
+
             return ResponseEntity.ok(responses);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();

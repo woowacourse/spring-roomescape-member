@@ -35,18 +35,21 @@ public class AdminViewController {
         model.addAttribute("reservations", ReservationResponse.from(reservationService.findAllReservations()));
         model.addAttribute("themes", ThemeResponse.from(themeService.getThemes()));
         model.addAttribute("times", ReservationTimeResponse.from(reservationTimeService.findAllReservationTimes()));
+
         return "admin/reservation";
     }
 
     @GetMapping("/admin/time")
     public String time(Model model) {
         model.addAttribute("times", ReservationTimeResponse.from(reservationTimeService.findAllReservationTimes()));
+
         return "admin/time";
     }
 
     @GetMapping("/admin/theme")
     public String theme(Model model) {
         model.addAttribute("themes", ThemeResponse.from(themeService.getThemes()));
+
         return "admin/theme";
     }
 }

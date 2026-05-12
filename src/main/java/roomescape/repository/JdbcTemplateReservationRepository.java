@@ -45,6 +45,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                     rs.getString("theme_name"),
                     rs.getString("theme_description"),
                     rs.getString("theme_thumbnail_url"));
+
             return new Reservation(
                     rs.getLong("reservation_id"),
                     rs.getString("reservation_name"),

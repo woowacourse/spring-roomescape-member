@@ -169,4 +169,53 @@ class ReservationServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지난 날짜와 시간은 예약할 수 없습니다.");
     }
+
+    @Test
+    @DisplayName("같은 날짜, 시간, 테마의 예약이 이미 존재하면 예외를 던진다")
+    void throwException_WhenSameDateTimeAndThemeReservationExists() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        LocalDate date = LocalDate.now().plusDays(1);
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand(
+                "브라운",
+                date,
+                TIME_ID,
+                THEME_ID
+        );
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+        given(reservationRepository.existsByDateAndTimeIdAndThemeId(date, TIME_ID, THEME_ID))
+                .willReturn(true);
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 존재하는 예약입니다.");
+    }
+
+
+    @Test
+    @DisplayName("중복 예약이 아니면 예약을 생성한다")
+    void saveReservation_WhenReservationDoesNotExist() {
+        LocalDate date = LocalDate.now().plusDays(1);
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand(
+                "브라운",
+                date,
+                TIME_ID,
+                THEME_ID
+        );
+        Reservation savedReseravtion = new Reservation(99L, "브라운", date, time, theme);
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+        given(reservationRepository.existsByDateAndTimeIdAndThemeId(date, TIME_ID, THEME_ID))
+                .willReturn(false);
+        given(reservationRepository.addReservation(any(Reservation.class))).willReturn(savedReseravtion);
+
+        Reservation saved = reservationService.saveReservation(saveCommand);
+
+        assertThat(saved).isEqualTo(savedReseravtion);
+    }
 }

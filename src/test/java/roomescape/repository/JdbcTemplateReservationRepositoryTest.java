@@ -1,5 +1,10 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +16,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @JdbcTest
 @Sql({"/test-theme.sql", "/test-reservation-time.sql"})
 @Import({JdbcTemplateReservationRepository.class, JdbcTemplateThemeRepository.class})
@@ -24,6 +23,8 @@ class JdbcTemplateReservationRepositoryTest {
 
     private static final long TIME_ID = 1L;
     private static final long THEME_ID = 1L;
+    private static final long OTHER_TIME_ID = 2L;
+    private static final long OTHER_THEME_ID = 2L;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -33,12 +34,6 @@ class JdbcTemplateReservationRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    private Reservation addReservation(String name, LocalDate date) {
-        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
-        Theme theme = themeRepository.findById(THEME_ID).get();
-        return reservationRepository.addReservation(new Reservation(null, name, date, time, theme));
-    }
 
     @Test
     @DisplayName("예약을 저장하면 id가 포함된 예약을 반환한다")
@@ -68,7 +63,7 @@ class JdbcTemplateReservationRepositoryTest {
     void findReservationsByName() {
         addReservation("브라운", LocalDate.of(2026, 5, 3));
         addReservation("브라운", LocalDate.of(2026, 5, 4));
-        addReservation("조이", LocalDate.of(2026, 5, 4));
+        addReservation("조이", LocalDate.of(2026, 5, 6));
 
         List<Reservation> reservations = reservationRepository.findReservationsByName("브라운");
 
@@ -92,5 +87,68 @@ class JdbcTemplateReservationRepositoryTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM reservation", Integer.class);
         assertThat(count).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("같은 날짜, 같은 시간, 같은 테마의 예약이 존재하면 중복 예약으로 판단한다")
+    void existsReservation() {
+        LocalDate date = LocalDate.of(2026, 5, 3);
+        addReservation("브라운", date);
+
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(date, TIME_ID, THEME_ID);
+
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("날짜가 다르면 같은 시간과 같은 테마라도 중복 예약으로 판단하지 않는다")
+    void notExistsReservation_WhenDateIsDifferent() {
+        LocalDate date = LocalDate.of(2026, 5, 3);
+        addReservation("브라운", date);
+
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                date.plusDays(1),
+                TIME_ID,
+                THEME_ID
+        );
+
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("시간이 다르면 같은 날짜와 같은 테마라도 중복 예약으로 판단하지 않는다")
+    void notExistsReservation_WhenTimeIsDifferent() {
+        LocalDate date = LocalDate.of(2026, 5, 3);
+        addReservation("브라운", date);
+
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                date,
+                OTHER_TIME_ID,
+                THEME_ID
+        );
+
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("테마가 다르면 같은 날짜와 같은 시간이라도 중복 예약으로 판단하지 않는다")
+    void notExistsReservation_WhenThemeIsDifferent() {
+        LocalDate date = LocalDate.of(2026, 5, 3);
+        addReservation("브라운", date);
+
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                date,
+                TIME_ID,
+                OTHER_THEME_ID
+        );
+
+        assertThat(exists).isFalse();
+    }
+
+    private Reservation addReservation(String name, LocalDate date) {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = themeRepository.findById(THEME_ID).get();
+        
+        return reservationRepository.addReservation(new Reservation(null, name, date, time, theme));
     }
 }

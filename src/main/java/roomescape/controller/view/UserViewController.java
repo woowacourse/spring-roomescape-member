@@ -1,5 +1,6 @@
 package roomescape.controller.view;
 
+import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.domain.Theme;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
-
-import java.util.List;
 
 @Controller
 public class UserViewController {
@@ -30,12 +29,14 @@ public class UserViewController {
         }
         model.addAttribute("popularThemes", ThemeResponse.from(popular));
         model.addAttribute("themes", ThemeResponse.from(allThemes));
+
         return "index";
     }
 
     @GetMapping("/popular")
     public String popular(Model model) {
         model.addAttribute("popularThemes", ThemeResponse.from(themeService.findPopularThemes()));
+
         return "popular";
     }
 
@@ -44,6 +45,7 @@ public class UserViewController {
         if (themeId != null) {
             model.addAttribute("selectedTheme", ThemeResponse.from(themeService.findById(themeId)));
         }
+
         return "reservation";
     }
 
