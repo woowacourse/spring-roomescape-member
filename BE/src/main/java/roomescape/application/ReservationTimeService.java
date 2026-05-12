@@ -54,7 +54,7 @@ public class ReservationTimeService {
     @Transactional
     public void deleteTime(Long id) {
         if (reservationRepository.existsByReservationTimeId(id)) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "참조하고 있는 예약 시간이어서 삭제할 수 없습니다.");
+            throw new BusinessException("참조하고 있는 예약 시간이어서 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(id);
     }

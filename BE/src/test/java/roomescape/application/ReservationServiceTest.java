@@ -18,6 +18,7 @@ import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.presentation.dto.ReservationRequest;
 
 class ReservationServiceTest {
@@ -87,7 +88,7 @@ class ReservationServiceTest {
                 request.timeId(),
                 request.themeId()
             )
-        ).isInstanceOf(BusinessException.class);
+        ).isInstanceOf(EntityNotFoundException.class);
         assertThat(reservationRepository.findAll()).isEmpty();
     }
 
@@ -114,7 +115,7 @@ class ReservationServiceTest {
                         request.timeId(),
                         request.themeId()
                 )
-        ).isInstanceOf(BusinessException.class);
+        ).isInstanceOf(EntityNotFoundException.class);
         assertThat(reservationRepository.findAll()).isEmpty();
     }
 

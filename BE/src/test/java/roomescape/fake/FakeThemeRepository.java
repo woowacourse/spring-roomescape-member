@@ -10,6 +10,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.domain.ThemeSortType;
 import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.EntityNotFoundException;
 
 public class FakeThemeRepository implements ThemeRepository {
 
@@ -43,7 +44,7 @@ public class FakeThemeRepository implements ThemeRepository {
     public void deleteById(Long id) {
         Theme removed = store.remove(id);
         if (removed == null) {
-            throw new BusinessException(HttpStatus.NOT_FOUND, "테마를 찾을 수 없습니다.");
+            throw new EntityNotFoundException("테마를 찾을 수 없습니다.");
         }
     }
 

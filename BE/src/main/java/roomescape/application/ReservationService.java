@@ -14,6 +14,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.global.exception.EntityNotFoundException;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,9 +37,9 @@ public class ReservationService {
     @Transactional
     public Reservation saveReservation(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "예약 시간 ID를 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("예약 시간 ID를 찾을 수 없습니다."));
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "테마 ID를 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("테마 ID를 찾을 수 없습니다."));
         validateSaveReservation(date, time, themeId);
         Reservation reservation = Reservation.create(
                 name,
@@ -60,7 +61,7 @@ public class ReservationService {
     @Transactional
     public void deleteReservation(Long id) {
         if (id == null) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "테마 ID가 비어있습니다.");
+            throw new EntityNotFoundException("테마 ID가 비어있습니다.");
         }
         reservationRepository.deleteById(id);
     }
@@ -81,19 +82,19 @@ public class ReservationService {
                 .isPresent();
 
         if (exists) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "이미 예약된 시간입니다.");
+            throw new BusinessException("이미 예약된 시간입니다.");
         }
     }
 
     private void validatePastDateReservation(LocalDate date) {
         if (date.isBefore(LocalDate.now())) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "이미 지난 날짜입니다.");
+            throw new BusinessException("이미 지난 날짜입니다.");
         }
     }
 
     private void validatePastTimeReservation(LocalDate date, ReservationTime time) {
         if (date.isEqual(LocalDate.now()) && time.getStartAt().isBefore(LocalTime.now())) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "예약 시간이 현재보다 이전일 수 없습니다.");
+            throw new BusinessException("예약 시간이 현재보다 이전일 수 없습니다.");
         }
     }
 }
