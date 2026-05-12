@@ -30,7 +30,7 @@ class TimeServiceTest {
         fakeThemeDao = new FakeThemeDao();
         fakeThemeSlotDao = new FakeThemeSlotDao();
 
-        reservationTimeService = new TimeService(fakeTimeDao, new FakeReservationDao(), fakeThemeSlotDao, fakeThemeDao);
+        reservationTimeService = new TimeService(fakeTimeDao, fakeThemeSlotDao, fakeThemeDao);
     }
 
     @Test

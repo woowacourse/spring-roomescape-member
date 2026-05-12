@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeSlot;
 import roomescape.domain.Time;
+import roomescape.global.exception.CustomException;
+import roomescape.global.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.ThemeSlotRepository;
@@ -19,18 +21,15 @@ import roomescape.repository.TimeRepository;
 public class TimeService {
 
     private final TimeRepository timeRepository;
-    private final ReservationRepository reservationRepository;
     private final ThemeSlotRepository themeSlotRepository;
     private final ThemeRepository themeRepository;
 
     public TimeService(
             TimeRepository timeRepository,
-            ReservationRepository reservationRepository,
             ThemeSlotRepository themeSlotRepository,
             ThemeRepository themeRepository
     ) {
         this.timeRepository = timeRepository;
-        this.reservationRepository = reservationRepository;
         this.themeSlotRepository = themeSlotRepository;
         this.themeRepository = themeRepository;
     }
@@ -55,12 +54,10 @@ public class TimeService {
 
     public List<ThemeSlot> findThemeSlotBy(long themeId, LocalDate date) {
         boolean isExist = themeSlotRepository.isExistBy(themeId, date);
-        // 존재하면 해당 테마, 해당 날짜 데이터 조회후 반환
         if (isExist) {
             return themeSlotRepository.findByThemeIdAndDate(themeId, date);
         }
 
-        // 존재하지 않으면 생성, 저장 후 반환
         Theme theme = getThemeOrElseThrow(themeId);
         List<Time> times = timeRepository.findAll();
         List<ThemeSlot> themeSlots = new ArrayList<>();
@@ -71,12 +68,12 @@ public class TimeService {
     @NonNull
     private Theme getThemeOrElseThrow(long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
     }
 
     @NonNull
     private Time getTimeOrElseThrow(long timeId) {
         return timeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("타임 id가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.TIME_NOT_FOUND));
     }
 }

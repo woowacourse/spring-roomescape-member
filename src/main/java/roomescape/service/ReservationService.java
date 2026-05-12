@@ -10,6 +10,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeSlot;
 import roomescape.domain.Time;
+import roomescape.global.exception.CustomException;
+import roomescape.global.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.ThemeSlotRepository;
@@ -52,7 +54,7 @@ public class ReservationService {
 
     private void validateIsExistBy(LocalDate date, Long reservationTimeId, Long themeId) {
         if (reservationRepository.isExistBy(themeId, date, reservationTimeId)) {
-            throw new IllegalArgumentException("해당 테마, 날짜, 시간에 예약이 존재합니다.");
+            throw new CustomException(ErrorCode.RESERVATION_ALREADY_EXIST);
         }
     }
 
@@ -68,18 +70,18 @@ public class ReservationService {
     @NonNull
     private Theme getThemeOrElseThrow(Long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("테마 id가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.THEME_NOT_FOUND));
     }
 
     @NonNull
     private Time getTimeOrElseThrow(Long reservationTimeId) {
         return timeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new IllegalArgumentException("시간 id가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.TIME_NOT_FOUND));
     }
 
     @NonNull
     private Reservation getReservationOrElseThrow(long reservationId) {
         return reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("예약 id가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
     }
 }
