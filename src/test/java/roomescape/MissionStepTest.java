@@ -7,6 +7,7 @@ import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +84,7 @@ class MissionStepTest {
         dataInitializer.initializeTheme("hello", "world", "/resources/image/...");
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now());
         params.put("timeId", 1);
         params.put("themeId", 1);
 
