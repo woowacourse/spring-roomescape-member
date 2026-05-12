@@ -1,6 +1,7 @@
 package roomescape.service.reservation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
@@ -33,6 +34,11 @@ public class ReservationService {
     public Reservation save(final String name, final LocalDate date, final Long themeId, final Long timeId) {
         Theme theme = themeService.getById(themeId);
         ReservationTime reservationTime = reservationTimeService.getById(timeId);
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, reservationTime.getStartAt());
+
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("[ERROR] 과거 날짜와 시간으로는 예약을 할 수 없습니다.");
+        }
 
         if(reservationRepository.existsByDateAndThemeIdAndTimeId(date, themeId, timeId)){
             throw new IllegalArgumentException("[ERROR] 동일한 시기에 예약을 할 수 없습니다.");
@@ -45,4 +51,6 @@ public class ReservationService {
     public void deleteById(final long id) {
         reservationRepository.deleteById(id);
     }
+
+
 }

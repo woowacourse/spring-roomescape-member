@@ -52,6 +52,34 @@ class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("과거 날짜로는 예약할 수 없다")
+    void savePastDate() {
+        Fixture fixture = new Fixture();
+        Theme theme = fixture.themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        ReservationTime time = fixture.reservationTimeService.save(LocalTime.parse("10:00"));
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> fixture.reservationService.save("쿠다", LocalDate.now().minusDays(1), theme.getId(), time.getId())
+        );
+    }
+
+    @Test
+    @DisplayName("오늘 날짜라도 이미 지난 시간으로는 예약할 수 없다")
+    void savePastTimeToday() {
+        Fixture fixture = new Fixture();
+        Theme theme = fixture.themeService.save("미술관의 밤", "추리 테마", "https://example.com/theme.png");
+        LocalTime now = LocalTime.now().withSecond(0).withNano(0);
+        LocalTime pastTime = now.equals(LocalTime.MIDNIGHT) ? now : now.minusMinutes(1);
+        ReservationTime time = fixture.reservationTimeService.save(pastTime);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> fixture.reservationService.save("쿠다", LocalDate.now(), theme.getId(), time.getId())
+        );
+    }
+
+    @Test
     @DisplayName("예약을 삭제한다")
     void deleteById() {
         Fixture fixture = new Fixture();
