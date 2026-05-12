@@ -76,19 +76,34 @@ function initTimeSelectBox() {
 // 날짜 관리
 async function loadDates() {
     const response = await fetch("/admin/dates");
+
+    if (!response.ok) {
+        alert("날짜 목록을 불러오지 못했습니다.");
+        return;
+    }
+
     const dates = await response.json();
 
     const tbody = document.getElementById("date-table-body");
     tbody.innerHTML = "";
 
     dates.forEach(date => {
+        const badgeClass = date.isActive ? "active" : "inactive";
+        const badgeText = date.isActive ? "활성" : "비활성";
+        const nextStatus = !date.isActive;
+        const buttonText = date.isActive ? "비활성화" : "활성화";
+
         tbody.insertAdjacentHTML("beforeend", `
             <tr>
                 <td>${date.id}</td>
                 <td>${date.date}</td>
+                <td>
+                    <span class="badge ${badgeClass}">${badgeText}</span>
+                </td>
                 <td class="align-right">
-                    <button class="delete-button" type="button" onclick="deleteDate(${date.id})">
-                        🗑
+                    <button class="status-button" type="button"
+                            onclick="updateDateStatus(${date.id}, ${nextStatus})">
+                        ${buttonText}
                     </button>
                 </td>
             </tr>
@@ -106,7 +121,7 @@ async function createDate() {
         return;
     }
 
-    await fetch("/admin/dates", {
+    const response = await fetch("/admin/dates", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -114,20 +129,38 @@ async function createDate() {
         body: JSON.stringify({ date })
     });
 
+    if (!response.ok) {
+        alert("날짜 추가에 실패했습니다.");
+        return;
+    }
+
     dateInput.value = "";
     selectedDateText.textContent = "날짜를 선택하세요";
 
     await loadDates();
 }
 
-async function deleteDate(id) {
-    if (!confirm("해당 날짜를 삭제하시겠습니까?")) {
+async function updateDateStatus(id, isActive) {
+    const message = isActive
+        ? "해당 날짜를 활성화하시겠습니까?"
+        : "해당 날짜를 비활성화하시겠습니까?";
+
+    if (!confirm(message)) {
         return;
     }
 
-    await fetch(`/admin/dates/${id}`, {
-        method: "DELETE"
+    const response = await fetch(`/admin/dates/${id}/status`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ isActive })
     });
+
+    if (!response.ok) {
+        alert("날짜 상태 변경에 실패했습니다.");
+        return;
+    }
 
     await loadDates();
 }
