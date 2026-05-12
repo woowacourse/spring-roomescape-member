@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.CreateReservationTimeRequest;
+import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.ReservationTimeInUseException;
+import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 
@@ -26,7 +28,8 @@ public class ReservationTimeService {
 
     public ReservationTime createReservationTime(CreateReservationTimeRequest request) {
         Long newReservationTimeId = reservationTimeDao.save(request);
-        return reservationTimeDao.findById(newReservationTimeId);
+        return reservationTimeDao.findById(newReservationTimeId)
+                .orElseThrow(() -> new ReservationTimeNotFoundException("예약 시간 저장에 실패했습니다."));
     }
 
     public void deleteReservationTime(Long id) {
