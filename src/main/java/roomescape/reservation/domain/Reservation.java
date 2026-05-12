@@ -34,6 +34,26 @@ public class Reservation {
         }
     }
 
+    public Reservation updateDate(LocalDate date) {
+        return new Reservation(
+                this.id,
+                this.name,
+                date,
+                this.time,
+                this.theme
+        );
+    }
+
+    public Reservation updateTime(ReservationTime time) {
+        return new Reservation(
+                this.id,
+                this.name,
+                this.date,
+                time,
+                this.theme
+        );
+    }
+
     public Long getId() {
         return id;
     }

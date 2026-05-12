@@ -96,6 +96,32 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public void update(Reservation reservation) {
+        String sql = """
+                UPDATE reservation
+                SET name = ?, reservation_date = ?, time_id = ?, theme_id = ?
+                WHERE id = ?
+                """;
+
+        try {
+            int affectedRow = jdbcTemplate.update(
+                    sql,
+                    reservation.getName(),
+                    reservation.getDate(),
+                    reservation.getTime().getId(),
+                    reservation.getTheme().getId(),
+                    reservation.getId()
+            );
+
+            if (affectedRow == 0) {
+                throw new ReservationNotFoundException();
+            }
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateReservationException();
+        }
+    }
+
+    @Override
     public List<Reservation> findAllByName(String name) {
         String sql = """
         SELECT r.id AS reservation_id,

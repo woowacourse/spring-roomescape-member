@@ -107,9 +107,21 @@ button:hover { filter: brightness(1.05); }
 .reservation-text {
   color: var(--muted);
 }
+.reservation-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.reservation-update {
+  width: auto;
+}
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .chip { background: #0369a1; }
+.chip-selected {
+  background: #0284c7;
+  outline: 2px solid #075985;
+}
 .list { color: var(--muted); }
 .rank-list { margin: 12px 0 0; padding-left: 20px; }
 .rank-list li { margin-bottom: 8px; }

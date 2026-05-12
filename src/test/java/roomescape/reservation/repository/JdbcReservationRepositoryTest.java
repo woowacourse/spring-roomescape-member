@@ -147,6 +147,89 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
+    @DisplayName("예약을 수정한다.")
+    void updateTest() {
+        // given
+        ReservationTime time = createTime(LocalTime.of(10, 0));
+        Theme theme = createTheme("우테코", "우테코 전용 테마", "https://example.com");
+
+        Reservation saved = reservationRepository.save(
+                new Reservation(
+                        null,
+                        "브라운",
+                        LocalDate.of(2024, 5, 1),
+                        time,
+                        theme
+                )
+        );
+
+        Reservation updated = saved.updateDate(LocalDate.of(2024, 5, 5));
+
+        // when
+        reservationRepository.update(updated);
+
+        // then
+        assertThat(updated.getId()).isNotNull();
+        assertThat(updated.getDate()).isEqualTo(LocalDate.of(2024, 5, 5));
+    }
+
+    @Test
+    @DisplayName("저장돼 있지 않은 예약을 수정하면 예외가 발생한다.")
+    void updateTest_do_not_exist() {
+        // given
+        ReservationTime time = createTime(LocalTime.of(10, 0));
+        Theme theme = createTheme("우테코", "우테코 전용 테마", "https://example.com");
+
+        // when & then
+        assertThatThrownBy(
+                () -> reservationRepository.update(
+                        new Reservation(
+                                999L,
+                                "브라운",
+                                LocalDate.of(2024, 5, 1),
+                                time,
+                                theme
+                        )
+                )
+        ).isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("수정하려는 예약이 이미 존재하면 예외가 발생한다.")
+    void updateTest_duplicate() {
+        // given
+        ReservationTime time = createTime(LocalTime.of(10, 0));
+        Theme theme = createTheme("우테코", "우테코 전용 테마", "https://example.com");
+
+        reservationRepository.save(
+                new Reservation(
+                        null,
+                        "브라운",
+                        LocalDate.of(2024, 5, 5),
+                        time,
+                        theme
+                )
+        );
+
+        Reservation saved = reservationRepository.save(
+                new Reservation(
+                        null,
+                        "브라운",
+                        LocalDate.of(2024, 5, 1),
+                        time,
+                        theme
+                )
+        );
+
+        Reservation updated = saved.updateDate(LocalDate.of(2024, 5, 5));
+
+        // when & then
+        assertThatThrownBy(
+                () -> reservationRepository.update(updated)
+        ).isInstanceOf(DuplicateReservationException.class);
+    }
+
+    @Test
     @DisplayName("id에 해당하는 예외를 조회한다.")
     void findById() {
         // given

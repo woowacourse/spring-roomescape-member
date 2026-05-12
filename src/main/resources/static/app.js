@@ -6,14 +6,15 @@ const state = {
 };
 
 async function api(path, options = {}) {
+  const { headers = {}, ...restOptions } = options;
   const mergedHeaders = {
     "Content-Type": "application/json",
-    ...(options.headers ?? {})
+    ...headers
   };
 
   const response = await fetch(path, {
     headers: mergedHeaders,
-    ...options
+    ...restOptions
   });
 
   if (!response.ok) {
@@ -74,7 +75,10 @@ function renderReservations(reservations) {
     row.className = "reservation-row";
     row.innerHTML = `
       <span class="reservation-text">${reservation.id}. [${reservation.theme?.name ?? "테마 없음"}] ${reservation.date} ${reservation.time.startAt} - ${reservation.name}</span>
-      <button class="danger reservation-delete" data-id="${reservation.id}" type="button">내 예약 취소</button>
+      <div class="reservation-actions">
+        <button class="ghost reservation-update" data-id="${reservation.id}" data-theme-id="${reservation.theme?.id ?? ""}" type="button">변경</button>
+        <button class="danger reservation-delete" data-id="${reservation.id}" type="button">삭제</button>
+      </div>
     `;
     root.appendChild(row);
   });
@@ -200,6 +204,12 @@ $("#reservations").addEventListener("click", async (event) => {
   if (!button) return;
 
   const reservationId = button.dataset.id;
+  if (button.classList.contains("reservation-update")) {
+    const themeId = button.dataset.themeId;
+    window.location.href = `/reservation-update.html?id=${encodeURIComponent(reservationId)}&themeId=${encodeURIComponent(themeId)}`;
+    return;
+  }
+
   window.location.href = `/reservation-cancel.html?id=${encodeURIComponent(reservationId)}`;
 });
 

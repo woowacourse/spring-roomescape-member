@@ -8,14 +8,15 @@ function setMessage(message) {
 }
 
 async function api(path, options = {}) {
+  const { headers = {}, ...restOptions } = options;
   const mergedHeaders = {
     "Content-Type": "application/json",
-    ...(options.headers ?? {})
+    ...headers
   };
 
   const response = await fetch(path, {
     headers: mergedHeaders,
-    ...options
+    ...restOptions
   });
 
   if (!response.ok) {

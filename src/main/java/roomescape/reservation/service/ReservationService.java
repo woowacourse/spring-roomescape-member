@@ -13,10 +13,13 @@ import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.PopularThemesResult;
 import roomescape.reservation.service.dto.ReservationCommand;
+import roomescape.reservation.service.dto.ReservationUpdateCommand;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.exception.InvalidTimeStartAtException;
+import roomescape.time.exception.TimeNotFoundException;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
@@ -39,44 +42,80 @@ public class ReservationService {
 
     @Transactional
     public Reservation makeReservation(ReservationCommand command) {
-        ReservationTime time = reservationTimeRepository.findById(command.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약 시간이 존재하지 않습니다."));
+        ReservationTime time = getReservationTime(command.timeId());
 
         Theme theme = themeRepository.findById(command.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마가 존재하지 않습니다."));
+                .orElseThrow(ThemeNotFoundException::new);
 
-        LocalDate nowDate = LocalDate.now(clock);
-
-        if (nowDate.isAfter(command.date())) {
-            throw new InvalidReservationDateException();
-        }
-
-        if (nowDate.equals(command.date()) && LocalTime.now(clock).isAfter(time.getStartAt())) {
-            throw new InvalidTimeStartAtException();
-        }
+        validate(command.date(), time.getStartAt());
 
         return reservationRepository.save(
                 Reservation.of(command.name(), command.date(), time, theme)
         );
     }
 
+    private ReservationTime getReservationTime(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(TimeNotFoundException::new);
+    }
+
+    private void validate(LocalDate date, LocalTime startAt) {
+        LocalDate nowDate = LocalDate.now(clock);
+
+        if (nowDate.isAfter(date)) {
+            throw new InvalidReservationDateException();
+        }
+
+        if (nowDate.equals(date) && LocalTime.now(clock).isAfter(startAt)) {
+            throw new InvalidTimeStartAtException();
+        }
+    }
+
     @Transactional
     public void deleteReservationById(Long id) {
+        Reservation reservation = getReservation(id);
+        validate(reservation.getDate(), reservation.getTime().getStartAt());
         reservationRepository.deleteById(id);
     }
 
     @Transactional
-    public void deleteMyReservationById(String name, Long id) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(ReservationNotFoundException::new);
+    public void updateReservation(ReservationUpdateCommand command, Long id) {
+        Reservation reservation = getReservation(id);
 
-        if (!reservation.getName().equals(name)) {
-            System.out.println("name: " + name);
-            System.out.println("getName(): " + reservation.getName());
-            throw new NotReservationOwnerException();
+        validate(
+                reservation.getDate(),
+                reservation.getTime().getStartAt()
+        );
+
+        Reservation updated = updateField(command, reservation);
+
+        validate(
+                updated.getDate(),
+                updated.getTime().getStartAt()
+        );
+
+        reservationRepository.update(updated);
+    }
+
+    private Reservation updateField(ReservationUpdateCommand command, Reservation reservation) {
+        Reservation result = reservation;
+
+        if (command.date() != null) {
+            result = reservation.updateDate(command.date());
         }
 
-        reservationRepository.deleteById(id);
+        if (command.timeId() != null) {
+            result = result.updateTime(
+                    getReservationTime(command.timeId())
+            );
+        }
+
+        return result;
+    }
+
+    private Reservation getReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(ReservationNotFoundException::new);
     }
 
     public List<Reservation> findReservationsByName(String name) {
@@ -94,5 +133,13 @@ public class ReservationService {
         return new PopularThemesResult(
                 reservationRepository.findPopularThemes(from, to, limit)
         );
+    }
+
+    public void authorizeOwner(String name, Long id) {
+        Reservation reservation = getReservation(id);
+
+        if (!reservation.getName().equals(name)) {
+            throw new NotReservationOwnerException();
+        }
     }
 }

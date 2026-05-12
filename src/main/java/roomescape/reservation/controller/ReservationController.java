@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.controller.dto.ReservationUpdateRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.ReservationService;
 
@@ -58,7 +60,6 @@ public class ReservationController {
     @DeleteMapping("/admin/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservationById(id);
-
         return ResponseEntity.noContent().build();
     }
 
@@ -67,8 +68,19 @@ public class ReservationController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String name
     ) {
-        reservationService.deleteMyReservationById(name, id);
+        reservationService.authorizeOwner(name, id);
+        reservationService.deleteReservationById(id);
+        return ResponseEntity.noContent().build();
+    }
 
+    @PatchMapping("/reservations/{id}")
+    public ResponseEntity<Void> updateMyReservation(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String name,
+            @RequestBody ReservationUpdateRequest request
+            ) {
+        reservationService.authorizeOwner(name, id);
+        reservationService.updateReservation(request.toCommand(), id);
         return ResponseEntity.noContent().build();
     }
 }
