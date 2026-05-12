@@ -54,6 +54,10 @@ public class ReservationService {
 
     @Transactional
     public void cancelReservation(Long id) {
-        reservationRepository.deleteById(id);
+        int deletedCount = reservationRepository.deleteById(id);
+
+        if (deletedCount == 0) {
+            throw new IllegalArgumentException("이미 삭제되었거나 존재하지 않는 예약입니다.");
+        }
     }
 }

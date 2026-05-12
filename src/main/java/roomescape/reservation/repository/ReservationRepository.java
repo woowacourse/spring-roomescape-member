@@ -41,12 +41,12 @@ public class ReservationRepository {
         return ReservationMapper.toReservation(reservationEntity, reservationTimeEntity, themeEntity);
     }
 
+    /**
+     * @param id Reservation 식별자
+     * @return 삭제된 row 개수
+     */
     @Transactional
-    public void deleteById(Long id) {
-        int deletedCount = reservationDao.deleteById(id);
-
-        if (deletedCount == 0) {
-            throw new IllegalArgumentException("존재하지 않는 예약 번호입니다.");
-        }
+    public int deleteById(Long id) {
+        return reservationDao.deleteById(id);
     }
 }
