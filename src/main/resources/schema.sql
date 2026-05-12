@@ -20,6 +20,12 @@ CREATE TABLE reservation (
      theme_id  BIGINT       NOT NULL,
      created_at DATE DEFAULT CURRENT_DATE,
      PRIMARY KEY (id),
-     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-     FOREIGN KEY (theme_id) REFERENCES theme (id)
+
+     FOREIGN KEY (time_id)
+         REFERENCES reservation_time (id)
+         ON DELETE RESTRICT,
+
+     FOREIGN KEY (theme_id)
+         REFERENCES theme (id)
+         ON DELETE RESTRICT
 );
