@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,13 +73,14 @@ class ThemeTest {
 
         @Test
         void 인기_테마_조회_order_by() {
+            LocalDate now = LocalDate.now();
 
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', '2026-05-01', 1, 1)");  // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', '2026-05-01', 2, 3)");   // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', '2026-05-01', 2, 2)");  // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', '2026-05-06', 3, 2)");  // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', '2026-05-05', 5, 4)");   // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', '2026-05-07', 5, 1)");   // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', ?, 1, 1)", now.minusDays(9));  // 7일 범위 밖
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', ?, 2, 3)", now.minusDays(10));   // 7일 범위 밖
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 2, 2)", now.minusDays(11));  // 7일 범위 밖
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(6));  // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', ?, 5, 4)", now.minusDays(5));   // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', ?, 5, 1)", now.minusDays(4));  // 7일 범위 안
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -90,13 +92,14 @@ class ThemeTest {
 
         @Test
         void 인기_테마_조회_예약_개수_동일() {
+            LocalDate now = LocalDate.now();
 
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', '2026-05-01', 1, 1)");  // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', '2026-05-01', 2, 3)");   // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', '2026-05-09', 3, 2)");  // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', '2026-05-06', 3, 2)");  // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', '2026-05-05', 5, 4)");   // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', '2026-05-07', 5, 1)");   // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', ?, 1, 1)", now.minusDays(9));  // 7일 범위 밖
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', ?, 2, 3)", now.minusDays(10));   // 7일 범위 밖
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(3));   // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(6));  // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', ?, 5, 4)", now.minusDays(5));   // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', ?, 5, 1)", now.minusDays(4));  // 7일 범위 안
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -108,13 +111,14 @@ class ThemeTest {
 
         @Test
         void 인기_테마_조회_예약이_있는_테마() {
+            LocalDate now = LocalDate.now();
 
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', '2026-05-01', 1, 1)");  // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', '2026-05-01', 2, 3)");   // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', '2026-05-01', 2, 2)");  // 7일 범위 밖
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', '2026-05-06', 3, 2)");  // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', '2026-05-05', 5, 4)");   // 7일 범위 안
-            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', '2026-05-07', 5, 1)");   // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('브라운', ?, 1, 1)", now.minusDays(9));  // 7일 범위 밖
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('네오', ?, 2, 3)", now.minusDays(10));   // 7일 범위 밖
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 2, 2)", now.minusDays(11));  // 7일 범위 밖
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('제이슨', ?, 3, 2)", now.minusDays(6));  // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('워니', ?, 5, 4)", now.minusDays(5));   // 7일 범위 안
+            jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES ('포비', ?, 5, 1)", now.minusDays(4));  // 7일 범위 안
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
