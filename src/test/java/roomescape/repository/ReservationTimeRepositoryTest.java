@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.ReservationTime;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.service.BaseIntegrationTest;
 
 class ReservationTimeRepositoryTest extends BaseIntegrationTest {
@@ -64,6 +65,17 @@ class ReservationTimeRepositoryTest extends BaseIntegrationTest {
 
         // then
         assertThat(reservationTimeRepository.findById(saved.getId())).isEmpty();
+    }
+
+    @Test
+    void 삭제할_시간이_존재하지_않으면_예외가_발생한다() {
+        // given
+        Long nonexistentId = 999L;
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeRepository.deleteById(nonexistentId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("존재하지 않는 시간 정보입니다.");
     }
 
     @Test

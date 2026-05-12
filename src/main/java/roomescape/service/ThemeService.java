@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.global.exception.DuplicateEntityException;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -36,14 +37,17 @@ public class ThemeService {
 
     @Transactional
     public void remove(Long id) {
-        themeRepository.findById(id)
-                .ifPresent(existingTheme -> {
-                    existingTheme.deactivate();
-                    themeRepository.update(existingTheme);
-                });
+        Theme theme = themeRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 테마 정보입니다."));
+
+        theme.deactivate();
+        themeRepository.update(theme);
     }
 
     public List<ThemeTimesResponse> getThemeReservationStatus(Long id, LocalDate date) {
+        if (themeRepository.findById(id).isEmpty()) {
+            throw new EntityNotFoundException("존재하지 않는 테마 정보입니다.");
+        }
+
         Set<Long> reservedTimeIds = reservationRepository.findReservedTimeIdsByThemeIdAndDate(id, date);
 
         List<ThemeTimesResponse> responses = new ArrayList<>();

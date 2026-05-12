@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
@@ -26,7 +27,10 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public void deleteById(Long id) {
-        reservationTimes.removeIf(time -> time.getId().equals(id));
+        boolean deleted = reservationTimes.removeIf(time -> time.getId().equals(id));
+        if (!deleted) {
+            throw new EntityNotFoundException("존재하지 않는 시간 정보입니다.");
+        }
     }
 
     @Override

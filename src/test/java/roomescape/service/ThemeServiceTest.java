@@ -140,13 +140,14 @@ class ThemeServiceTest {
     void 테마별_예약_가능한_시간을_조회_시_시점에_따라_상태를_처리한다(LocalDate date, boolean expectedForEarlyTime,
                                              boolean expectedForLateTime) {
         // given
+        Theme theme = themeRepository.save(new Theme("공포테마", "설명", "http://image.png"));
         for (int hour = 0; hour <= 23; hour++) {
             reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(hour, 0)));
         }
         LocalTime nowTime = LocalTime.now();
 
         // when
-        List<ThemeTimesResponse> response = themeService.getThemeReservationStatus(1L, date);
+        List<ThemeTimesResponse> response = themeService.getThemeReservationStatus(theme.getId(), date);
 
         // then
         // 1. 현재 시간보다 이른 시간대 검증
@@ -164,7 +165,7 @@ class ThemeServiceTest {
     void 테마별_예약_가능한_시간_조회_시_이미_예약된_시간은_예약_불가능하다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
-        Theme theme = new Theme(1L, "공포테마", "설명", "http://image.png", true);
+        Theme theme = themeRepository.save(new Theme("공포테마", "설명", "http://image.png"));
         ReservationTime reservedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
         reservationRepository.save(Reservation.of("이프", date, theme, reservedTime));

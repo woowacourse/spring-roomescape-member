@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.service.BaseIntegrationTest;
 
 class ReservationRepositoryTest extends BaseIntegrationTest {
@@ -84,6 +85,17 @@ class ReservationRepositoryTest extends BaseIntegrationTest {
 
         // then
         assertThat(dataSource.hasReservationById(saved.getId())).isFalse();
+    }
+
+    @Test
+    void 삭제할_예약이_존재하지_않으면_예외가_발생한다() {
+        // given
+        Long nonexistentId = 999L;
+
+        // when & then
+        assertThatThrownBy(() -> reservationRepository.deleteById(nonexistentId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("존재하지 않는 예약 정보입니다.");
     }
 
     @Test

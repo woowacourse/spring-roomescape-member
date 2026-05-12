@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.repository.ReservationTimeRepository;
 
 @Repository
@@ -37,7 +38,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+        int affectedRow = jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+        if (affectedRow == 0) {
+            throw new EntityNotFoundException("존재하지 않는 시간 정보입니다.");
+        }
     }
 
     @Override
