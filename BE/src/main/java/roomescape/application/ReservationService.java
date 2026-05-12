@@ -2,6 +2,7 @@ package roomescape.application;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,7 @@ public class ReservationService {
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "예약 시간 ID를 찾을 수 없습니다."));
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "테마 ID를 찾을 수 없습니다."));
+        validateAlreadyReservation(date, timeId, themeId);
         Reservation reservation = Reservation.create(
                 name,
                 date,
@@ -60,5 +62,19 @@ public class ReservationService {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "테마 ID가 비어있습니다.");
         }
         reservationRepository.deleteById(id);
+    }
+
+    private void validateAlreadyReservation(
+            LocalDate date,
+            Long timeId,
+            Long themeId
+    ) {
+        boolean exists = reservationRepository
+                .findByDateAndTimeIdAndThemeId(date, timeId, themeId)
+                .isPresent();
+
+        if (exists) {
+            throw new BusinessException(HttpStatus.NOT_ACCEPTABLE, "이미 예약된 시간입니다.");
+        }
     }
 }
