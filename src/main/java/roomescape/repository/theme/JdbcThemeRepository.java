@@ -22,6 +22,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_DESCRIPTION = "description";
     private static final String COLUMN_IMAGE_URL = "image_url";
+    private static final String COLUMN_COUNT = "count";
 
     private static final String SELECT_ALL_SQL = "SELECT id, name, description, image_url FROM theme";
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM theme WHERE id = ?";
@@ -72,7 +73,13 @@ public class JdbcThemeRepository implements ThemeRepository {
         QueryWithParams queryWithParams = getPopularThemQuery(popularThemeCondition);
         return jdbcTemplate.query(
                 queryWithParams.query(),
-                (rs, i) -> ReservationThemeWithCount.from(rs),
+                (rs, i) -> new ReservationThemeWithCount(
+                        rs.getLong(COLUMN_ID),
+                        rs.getString(COLUMN_NAME),
+                        rs.getString(COLUMN_DESCRIPTION),
+                        rs.getString(COLUMN_IMAGE_URL),
+                        rs.getLong(COLUMN_COUNT)
+                ),
                 queryWithParams.params().toArray()
         );
     }
