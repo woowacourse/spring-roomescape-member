@@ -53,18 +53,18 @@ class UserReservationServiceTest {
 
     @Test
     void 예약을_등록할_수_있다() {
-        Reservation savedReservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        Reservation savedReservation = new Reservation(3L, "브라운", tomorrow, time, theme);
 
         when(reservationTimeRepository.findById(eq(time.id()))).thenReturn(Optional.of(time));
         when(themeRepository.findById(eq(theme.id()))).thenReturn(Optional.of(theme));
-        when(reservationRepository.save(eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(time), eq(theme)))
+        when(reservationRepository.save(eq("브라운"), eq(tomorrow), eq(time), eq(theme)))
                 .thenReturn(savedReservation);
 
-        Reservation saved = userReservationService.createReservation("브라운", LocalDate.of(2026, 5, 1), time.id(),
-                theme.id());
+        Reservation saved = userReservationService.createReservation("브라운", tomorrow, time.id(), theme.id());
 
         assertThat(saved.getName()).isEqualTo("브라운");
-        assertThat(saved.getDate()).isEqualTo(LocalDate.of(2026, 5, 1));
+        assertThat(saved.getDate()).isEqualTo(tomorrow);
         assertThat(saved.getTime().startAt()).isEqualTo(LocalTime.of(10, 0));
         assertThat(saved.getTheme().name()).isEqualTo("Theme A");
     }
@@ -89,7 +89,33 @@ class UserReservationServiceTest {
     }
 
     @Test
+    void 지나간_날짜에_예약하면_예외가_발생한다() {
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        when(reservationTimeRepository.findById(eq(time.id()))).thenReturn(Optional.of(time));
+        when(themeRepository.findById(eq(theme.id()))).thenReturn(Optional.of(theme));
+
+        assertThatThrownBy(
+                () -> userReservationService.createReservation("브라운", yesterday, time.id(), theme.id()))
+                .isInstanceOf(ApiException.class)
+                .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
+    }
+
+    @Test
+    void 지나간_시간에_예약하면_예외가_발생한다() {
+        LocalDate today = LocalDate.now();
+        ReservationTime pastTime = new ReservationTime(time.id(), LocalTime.of(0, 1));
+        when(reservationTimeRepository.findById(eq(pastTime.id()))).thenReturn(Optional.of(pastTime));
+        when(themeRepository.findById(eq(theme.id()))).thenReturn(Optional.of(theme));
+
+        assertThatThrownBy(
+                () -> userReservationService.createReservation("브라운", today, pastTime.id(), theme.id()))
+                .isInstanceOf(ApiException.class)
+                .hasMessage("지나간 날짜·시간에는 예약할 수 없습니다.");
+    }
+
+    @Test
     void 예약이_중복되면_예외가_발생한다() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
         when(reservationTimeRepository.findById(eq(time.id()))).thenReturn(Optional.of(time));
         when(themeRepository.findById(eq(theme.id()))).thenReturn(Optional.of(theme));
 
@@ -97,7 +123,7 @@ class UserReservationServiceTest {
                 .thenThrow(new DuplicateKeyException("DB 레벨의 중복 키 에러 발생"));
 
         assertThatThrownBy(
-                () -> userReservationService.createReservation("코니", LocalDate.of(2026, 5, 1), time.id(), theme.id()))
+                () -> userReservationService.createReservation("코니", tomorrow, time.id(), theme.id()))
                 .isInstanceOf(DuplicateException.class)
                 .hasMessage("해당 날짜의 해당 시간은 이미 예약되었습니다");
     }

@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +37,7 @@ class RoomescapeApplicationTest {
         Map<String, Object> request = new HashMap<>();
         request.put("themeId", 1);
         request.put("name", "캐모");
-        request.put("date", "2026-05-07");
+        request.put("date", LocalDate.now().plusDays(1).toString());
         request.put("timeId", 2);
 
         RestAssured.given().log().all()
@@ -45,6 +46,22 @@ class RoomescapeApplicationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 지나간_날짜에_예약을_시도하면_400_예외가_발생한다() {
+        Map<String, Object> request = new HashMap<>();
+        request.put("themeId", 1);
+        request.put("name", "캐모");
+        request.put("date", LocalDate.now().minusDays(1).toString());
+        request.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

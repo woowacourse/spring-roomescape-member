@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
@@ -37,6 +38,11 @@ public class UserReservationService {
                 .orElseThrow(() -> new NotFoundException("예약 시간을 찾을 수 없습니다"));
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));
+
+        if (LocalDateTime.of(date, reservationTime.startAt()).isBefore(LocalDateTime.now())) {
+            throw new ApiException("지나간 날짜·시간에는 예약할 수 없습니다.");
+        }
+
         try {
             return reservationRepository.save(name, date, reservationTime, theme);
         } catch (DuplicateKeyException e) {

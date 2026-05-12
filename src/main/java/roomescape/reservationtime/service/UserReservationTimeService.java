@@ -1,6 +1,7 @@
 package roomescape.reservationtime.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +40,8 @@ public class UserReservationTimeService {
                 .map(time -> new AvailableTime(
                         time.id(),
                         time.startAt(),
-                        !reservedIdSet.contains(time.id())
+                        !reservedIdSet.contains(time.id()) &&
+                                LocalDateTime.of(date, time.startAt()).isAfter(LocalDateTime.now())
                 ))
                 .toList();
     }
