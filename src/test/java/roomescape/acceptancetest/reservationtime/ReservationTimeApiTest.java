@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.acceptancetest.RoomecapeAcceptanceTest;
@@ -17,7 +18,8 @@ public class ReservationTimeApiTest {
     private AcceptanceTestFixture acceptanceTestFixture;
 
     @Test
-    void 예약_가능_시간_API() {
+    @DisplayName("예약 가능 시간 조회")
+    void findAvailableTimes() {
         acceptanceTestFixture.createTheme("미술관의 밤", "aa", "aa");
         acceptanceTestFixture.createReservationTime("10:00", 1L);
         acceptanceTestFixture.createReservationTime("11:00", 1L);
