@@ -81,6 +81,23 @@ class RoomescapeApplicationTest {
     }
 
     @Test
+    void X_User_Name_헤더_없이_예약을_삭제하면_400이_반환된다() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 예약_ID에_숫자가_아닌_값을_전달하면_400이_반환된다() {
+        RestAssured.given().log().all()
+                .header("X-User-Name", "User1")
+                .when().delete("/reservations/invalid")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
     void 예약자의_이름을_헤더로_전송하여_예약을_삭제할_수_있다() {
         RestAssured.given().log().all()
                 .header("X-User-Name", "User1")
