@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.schedule.dto.AdminScheduleRequest;
 import roomescape.schedule.dto.ScheduleRequest;
-import roomescape.schedule.dto.ScheduleResponse;
 import roomescape.schedule.dto.SchedulesResponse;
 import roomescape.schedule.model.Schedule;
 import roomescape.schedule.repository.ScheduleRepository;
@@ -31,15 +30,13 @@ public class ScheduleService {
     }
 
     public SchedulesResponse findAvailableSchedules(ScheduleRequest request) {
-        List<Schedule> schedules = scheduleRepository.findAllAvailableByThemeAndDate(request.themeId(), request.date());
+        List<Schedule> schedules = scheduleRepository.findReservableSchedules(request.themeId(), request.date());
         return SchedulesResponse.from(schedules);
     }
 
-    public List<ScheduleResponse> findAll() {
+    public SchedulesResponse findAll() {
         List<Schedule> schedules = scheduleRepository.findAll();
-        return schedules.stream()
-                .map(ScheduleResponse::from)
-                .toList();
+        return SchedulesResponse.from(schedules);
     }
 
     public Schedule findById(Long id) {
@@ -68,7 +65,7 @@ public class ScheduleService {
             throw new IllegalArgumentException("오후 8시 이후에는 예약이 불가능합니다.");
         }
 
-        List<Schedule> existingSchedules = scheduleRepository.findAllByThemeIdAndDate(request.themeId(), request.date());
+        List<Schedule> existingSchedules = scheduleRepository.findDailySchedules(request.themeId(), request.date());
         for (Schedule existingSchedule : existingSchedules) {
             if (existingSchedule.getStartAt().isBefore(newEndAt) && existingSchedule.getEndAt().isAfter(newStartAt)) {
                 throw new IllegalArgumentException("선택하신 시간은 다른 예약 시간과 겹쳐서 추가할 수 없습니다.");

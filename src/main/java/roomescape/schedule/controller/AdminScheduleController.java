@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.schedule.dto.AdminScheduleRequest;
 import roomescape.schedule.dto.ScheduleResponse;
+import roomescape.schedule.dto.SchedulesResponse;
 import roomescape.schedule.service.ScheduleService;
 
 import java.util.List;
@@ -24,14 +25,14 @@ public class AdminScheduleController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createSchedule(@RequestBody AdminScheduleRequest request) {
+    public ResponseEntity<Void> create(@RequestBody AdminScheduleRequest request) {
         Long id = scheduleService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<ScheduleResponse>> findAllSchedules() {
-        List<ScheduleResponse> responses = scheduleService.findAll();
+    public ResponseEntity<SchedulesResponse> findAll() {
+        SchedulesResponse responses = scheduleService.findAll();
         return ResponseEntity.ok(responses);
     }
 }

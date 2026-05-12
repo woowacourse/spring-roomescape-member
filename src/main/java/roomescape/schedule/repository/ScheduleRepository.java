@@ -96,7 +96,7 @@ public class ScheduleRepository {
         });
     }
 
-    public List<Schedule> findAllAvailableByThemeAndDate(Long themeId, LocalDate date) {
+    public List<Schedule> findReservableSchedules(Long themeId, LocalDate date) {
         String sql = """
                 SELECT s.id AS schedule_id,
                        s.start_at,
@@ -130,7 +130,7 @@ public class ScheduleRepository {
         }, themeId, startOfDay, endOfDay);
     }
 
-    public List<Schedule> findAllByThemeIdAndDate(Long themeId, LocalDate date) {
+    public List<Schedule> findDailySchedules(Long themeId, LocalDate date) {
         String sql = """
             SELECT s.id AS schedule_id,
                    s.start_at,

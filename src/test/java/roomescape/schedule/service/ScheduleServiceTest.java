@@ -45,7 +45,7 @@ class ScheduleServiceTest {
 
         when(themeService.findById(theme.getId())).thenReturn(theme);
 
-        when(scheduleRepository.findAllByThemeIdAndDate(request.themeId(), request.date()))
+        when(scheduleRepository.findDailySchedules(request.themeId(), request.date()))
                 .thenReturn(Collections.emptyList());
 
         when(scheduleRepository.create(any(Schedule.class))).thenReturn(1L);
@@ -68,7 +68,7 @@ class ScheduleServiceTest {
 
         when(themeService.findById(theme.getId())).thenReturn(theme);
 
-        when(scheduleRepository.findAllByThemeIdAndDate(request.themeId(), request.date()))
+        when(scheduleRepository.findDailySchedules(request.themeId(), request.date()))
                 .thenReturn(List.of(existingSchedule));
 
         // when & then
