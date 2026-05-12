@@ -2,7 +2,6 @@ package roomescape.application;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -14,8 +13,6 @@ import roomescape.entity.ReservationTimeRepository;
 import roomescape.entity.Theme;
 import roomescape.entity.ThemeRepository;
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.customException.ConflictException;
-import roomescape.global.exception.customException.DomainRuleViolationException;
 import roomescape.global.exception.customException.NotFoundException;
 
 @Service
@@ -38,22 +35,32 @@ public class ReservationService {
 
     @Transactional
     public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {
-        ReservationTime time = findTargetTimeById(timeId);
-        validateIsFuture(date, time.startAt());
-        validateUniquenessByDateAndTimeIdAndThemeId(date, timeId, themeId);
         Reservation reservation = Reservation.createWithNullId(
                 name,
                 date,
-                time,
+                findTargetTimeById(timeId),
                 findTargetThemeById(themeId)
         );
+
+        reservation.validateFuture(LocalDateTime.now());
+        reservation.validateUniqueness(
+                reservationRepository.findByDateAndThemeId(reservation.date(), reservation.theme().id()));
+
         return reservationRepository.save(reservation);
     }
 
-    private void validateUniquenessByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED);
-        }
+    @Transactional
+    public Reservation updateDateAndTime(Long id, String name, Optional<LocalDate> date, Optional<Long> timeId) {
+        Reservation target = findById(id);
+        target.checkOwnership(name);
+
+        Reservation updated = target.update(date, timeId.map(this::findTargetTimeById));
+
+        updated.validateFuture(LocalDateTime.now());
+        updated.validateUniqueness(reservationRepository.findByDateAndThemeId(updated.date(), updated.theme().id()));
+
+        reservationRepository.update(updated);
+        return updated;
     }
 
     private Theme findTargetThemeById(Long themeId) {
@@ -64,6 +71,11 @@ public class ReservationService {
     private ReservationTime findTargetTimeById(Long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+    }
+
+    public Reservation findById(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND_BY_ID));
     }
 
     public List<Reservation> findAll() {
@@ -93,15 +105,8 @@ public class ReservationService {
 
         if (deleteTargetWithWrapper.isPresent()) {
             Reservation deleteTarget = deleteTargetWithWrapper.get();
-            validateIsFuture(deleteTarget.date(), deleteTarget.time().startAt());
+            deleteTarget.validateFuture(LocalDateTime.now());
             reservationRepository.deleteById(id);
-        }
-    }
-
-    private void validateIsFuture(LocalDate date, LocalTime time) {
-        LocalDateTime requestDateTime = LocalDateTime.of(date, time);
-        if (requestDateTime.isBefore(LocalDateTime.now())) {
-            throw new DomainRuleViolationException(ErrorCode.ILLEGAL_PAST_DATE);
         }
     }
 }

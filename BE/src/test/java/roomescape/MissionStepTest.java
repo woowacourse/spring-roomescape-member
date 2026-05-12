@@ -22,7 +22,7 @@ import roomescape.presentation.ReservationController;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
-    private static final LocalDate TODAY = LocalDate.now();
+    private static final LocalDate FUTURE_DATE = LocalDate.now().plusDays(1);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -82,7 +82,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", TODAY.toString());
+        reservation.put("date", FUTURE_DATE.toString());
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 

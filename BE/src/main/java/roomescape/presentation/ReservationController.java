@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import roomescape.global.exception.customException.InvalidRequestException;
 import roomescape.presentation.dto.AvailableReservationResponse;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
+import roomescape.presentation.dto.ReservationUpdateRequest;
 
 @RestController
 @RequestMapping("/reservations")
@@ -46,6 +48,18 @@ public class ReservationController {
         ReservationResponse response = ReservationResponse.from(created);
         return ResponseEntity.created(parseCreatedResourceURI(response))
                 .body(response);
+    }
+
+    @PatchMapping(value = "/{id}", params = "name")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable Long id,
+            @RequestBody ReservationUpdateRequest request,
+            @RequestParam String name
+    ) {
+        validateIdNotNull(id);
+        validateNameNotBlank(name);
+        Reservation result = reservationService.updateDateAndTime(id, name, request.date(), request.timeId());
+        return ResponseEntity.ok(ReservationResponse.from(result));
     }
 
     private URI parseCreatedResourceURI(ReservationResponse response) {

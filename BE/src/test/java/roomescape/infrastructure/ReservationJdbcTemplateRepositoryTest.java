@@ -281,10 +281,13 @@ class ReservationJdbcTemplateRepositoryTest {
         Reservation existing = reservationRepository.findById(1L).get();
         ReservationTime newTime = ReservationTime.createWithId(2L, LocalTime.of(11, 0));
 
-        Reservation patched = existing.patch(builder -> {
-            builder.date(DATE_5_6);
-            builder.time(newTime);
-        });
+        Reservation patched = new Reservation(
+                existing.id(),
+                existing.name(),
+                DATE_5_6,
+                newTime,
+                existing.theme()
+        );
 
         // when
         reservationRepository.update(patched);
