@@ -17,7 +17,8 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateNameFormat(name);
+        validateRequired(name, date, time, theme);
+
         this.id = id;
         this.theme = theme;
         this.name = name;
@@ -29,20 +30,22 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
-    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime reservedAt) {
-        validateNotPast(date, time, reservedAt);
+    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime now) {
+        validateRequired(name, date, time, theme);
+        validateNow(now);
+        validateNotPast(date, time, now);
+
         return new Reservation(name, date, time, theme);
     }
 
-    public Long getTimeId() {
-        return time.getId();
+    private static void validateRequired(String name, LocalDate date, ReservationTime time, Theme theme) {
+        validateName(name);
+        validateDate(date);
+        validateTime(time);
+        validateTheme(theme);
     }
 
-    public Long getThemeId() {
-        return theme.getId();
-    }
-
-    private void validateNameFormat(String name) {
+    private static void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름 형식은 " + MIN_NAME_LENGTH + "글자 이상 " + MAX_NAME_LENGTH + "글자 이하입니다.");
         }
@@ -52,11 +55,43 @@ public class Reservation {
         }
     }
 
-    private static void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime reservedAt) {
+    private static void validateDate(LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+        }
+    }
+
+    private static void validateTime(ReservationTime time) {
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간은 필수입니다.");
+        }
+    }
+
+    private static void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("테마는 필수입니다.");
+        }
+    }
+
+    private static void validateNow(LocalDateTime now) {
+        if (now == null) {
+            throw new IllegalArgumentException("현재 시각은 필수입니다.");
+        }
+    }
+
+    private static void validateNotPast(LocalDate date, ReservationTime time, LocalDateTime now) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
 
-        if (reservationDateTime.isBefore(reservedAt)) {
+        if (reservationDateTime.isBefore(now)) {
             throw new IllegalArgumentException("지난 날짜 또는 시간은 예약할 수 없습니다.");
         }
+    }
+
+    public Long getTimeId() {
+        return time.getId();
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
     }
 }
