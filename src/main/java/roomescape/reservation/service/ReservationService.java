@@ -11,6 +11,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.ReservationBadRequestException;
 import roomescape.reservation.exception.ReservationDuplicateException;
 import roomescape.reservation.exception.ReservationErrorCode;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
@@ -60,7 +61,7 @@ public class ReservationService {
     @Transactional
     public void deleteById(final long id, final String name) {
         Reservation reservation = reservationRepository.findById(id)
-                    .orElseThrow(() -> new ReservationBadRequestException(ReservationErrorCode.RESERVATION_NOT_FOUND.getMessage()));
+                    .orElseThrow(ReservationNotFoundException::new);
 
         validateOwner(name, reservation);
 
@@ -70,7 +71,7 @@ public class ReservationService {
     @Transactional
     public void update(final long id, final String name, final LocalDate date, final Long timeId) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new ReservationBadRequestException(ReservationErrorCode.RESERVATION_NOT_FOUND.getMessage()));
+                .orElseThrow(ReservationNotFoundException::new);
 
         validateOwner(name, reservation);
 
