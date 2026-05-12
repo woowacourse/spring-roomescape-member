@@ -39,6 +39,20 @@ public class ReservationJdbcRepository implements ReservationRepository {
             WHERE id = :id
             """;
 
+    private static final String EXISTS_RESERVATION_BY_THEME_ID_AND_DATE_AND_TIME_ID_QUERY = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation AS r
+                INNER JOIN reservation_time AS rt
+                    ON r.time_id = rt.id
+                INNER JOIN theme AS t
+                    ON r.theme_id = t.id
+                WHERE t.id = :themeId
+                    AND r.date = :date
+                    AND rt.id = :timeId
+            );
+            """;
+
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNumber) -> Reservation.of(
             resultSet.getLong("reservation_id"),
             resultSet.getString("username"),
@@ -103,6 +117,17 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     @Override
     public boolean existsByThemeIdAndDateAndTimeId(Long themeId, LocalDate date, Long timeId) {
-        return false;
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("themeId", themeId)
+                .addValue("date", date)
+                .addValue("timeId", timeId);
+
+        Boolean exists = jdbcTemplate.queryForObject(
+                EXISTS_RESERVATION_BY_THEME_ID_AND_DATE_AND_TIME_ID_QUERY,
+                parameters,
+                Boolean.class
+        );
+
+        return Boolean.TRUE.equals(exists);
     }
 }

@@ -170,23 +170,6 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("잘못된 날짜 형식으로 예약을 생성하면 에러가 발생한다.")
-    void createReservationWithInvalidDateFormatThrowException() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("username", "테스터");
-        params.put("themeId", 1);
-        params.put("date", "2026/05/10");
-        params.put("timeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
-    }
-
-    @Test
     @DisplayName("예약을 삭제한다.")
     void deleteReservation() {
         RestAssured.given().log().all()

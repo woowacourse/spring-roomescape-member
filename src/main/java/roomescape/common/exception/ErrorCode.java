@@ -10,7 +10,7 @@ public enum ErrorCode {
 
     INVALID_RESERVATION(HttpStatus.BAD_REQUEST, "예약 정보가 올바르지 않습니다."),
     PAST_RESERVATION(HttpStatus.BAD_REQUEST, "지나간 날짜·시간에 대한 예약은 불가능합니다."),
-    DUPLICATE_RESERVATION(HttpStatus.BAD_REQUEST, "이미 동일한 날짜, 시간, 테마의 예약이 존재합니다."),
+    DUPLICATE_RESERVATION(HttpStatus.CONFLICT, "이미 동일한 날짜, 시간, 테마의 예약이 존재합니다."),
 
     INVALID_THEME(HttpStatus.BAD_REQUEST, "테마 정보가 올바르지 않습니다."),
     INVALID_RESERVATION_TIME(HttpStatus.BAD_REQUEST, "예약 시간 정보가 올바르지 않습니다.");

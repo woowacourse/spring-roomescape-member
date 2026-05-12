@@ -12,6 +12,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -22,6 +23,9 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminReservationControllerTest {
+
+    @Autowired
+    private Clock fixedClock;
 
     @TestConfiguration
     static class FixedClockConfig {
@@ -53,7 +57,7 @@ class AdminReservationControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("username", "어드민");
         params.put("themeId", 1);
-        params.put("date", "2026-05-05");
+        params.put("date", "2000-07-16");
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -63,16 +67,18 @@ class AdminReservationControllerTest {
                 .then().log().all()
                 .statusCode(201)
                 .body("username", is("어드민"))
-                .body("date", is("2026-05-05"));
+                .body("date", is("2000-07-16"));
     }
 
     @Test
     @DisplayName("어드민은 오늘 날짜의 지난 시간에 대한 예약을 생성할 수 있다.")
     void createReservationByAdminWithPastTime() {
+        String today = LocalDate.now(fixedClock).toString();
+
         Map<String, Object> params = new HashMap<>();
         params.put("username", "어드민");
-        params.put("themeId", 1);
-        params.put("date", "2026-05-06");
+        params.put("themeId", 4);
+        params.put("date", today);
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -82,17 +88,19 @@ class AdminReservationControllerTest {
                 .then().log().all()
                 .statusCode(201)
                 .body("username", is("어드민"))
-                .body("date", is("2026-05-06"))
+                .body("date", is(today))
                 .body("time.startAt", is("10:00"));
     }
 
     @Test
     @DisplayName("어드민도 중복된 예약을 생성하면 에러가 발생한다.")
     void createDuplicateReservationByAdminThrowException() {
+        String today = LocalDate.now(fixedClock).toString();
+
         Map<String, Object> params = new HashMap<>();
         params.put("username", "어드민");
-        params.put("themeId", 1);
-        params.put("date", "2026-05-10");
+        params.put("themeId", 4);
+        params.put("date", today);
         params.put("timeId", 1);
 
         RestAssured.given().log().all()

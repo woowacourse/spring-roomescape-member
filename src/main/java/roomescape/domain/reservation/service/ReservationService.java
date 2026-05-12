@@ -2,11 +2,14 @@ package roomescape.domain.reservation.service;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.entity.Reservation;
+import roomescape.domain.reservation.exception.DuplicateReservationException;
+import roomescape.domain.reservation.exception.PastReservationException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.request.ReservationCreateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
@@ -57,7 +60,16 @@ public class ReservationService {
                         "해당 id에 해당하는 theme가 존재하지 않습니다. themeId=" + request.themeId()));
 
         if (request.date().isBefore(LocalDate.now(clock))) {
-            throw new IllegalArgumentException("이전 날짜는 예약할 수 없습니다. date=" + request.date());
+            throw new PastReservationException();
+        }
+
+        if (request.date().isEqual(LocalDate.now(clock)) && time.getStartAt().isBefore(LocalTime.now(clock))) {
+            throw new PastReservationException();
+        }
+
+        if (reservationRepository.existsByThemeIdAndDateAndTimeId(request.themeId(), request.date(),
+                request.timeId())) {
+            throw new DuplicateReservationException();
         }
 
         Reservation reservation = Reservation.create(
@@ -81,6 +93,11 @@ public class ReservationService {
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "해당 id에 해당하는 theme가 존재하지 않습니다. themeId=" + request.themeId()));
+
+        if (reservationRepository.existsByThemeIdAndDateAndTimeId(request.themeId(), request.date(),
+                request.timeId())) {
+            throw new DuplicateReservationException();
+        }
 
         Reservation reservation = Reservation.create(
                 request.username(),
