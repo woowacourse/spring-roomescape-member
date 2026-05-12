@@ -85,4 +85,20 @@ public class ReservationRepositoryTest {
 
         assertThat(count).isEqualTo(0);
     }
+
+    @Test
+    void 사용자가_본인의_예약_목록을_정상적으로_조회한다() {
+        Reservation reservation = new Reservation(user, schedule, theme);
+
+        reservationRepository.create(reservation);
+
+        List<Reservation> reservations = reservationRepository.findAllByUserId(user.getId());
+
+        assertThat(reservations).isNotNull();
+        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservations.getFirst().getUser().getName()).isEqualTo(user.getName());
+        assertThat(reservations.getFirst().getSchedule().getStartAt()).isEqualTo(schedule.getStartAt());
+        assertThat(reservations.getFirst().getTheme().getName()).isEqualTo(theme.getName());
+        assertThat(reservations.getFirst().getUser().getId()).isEqualTo(user.getId());
+    }
 }
