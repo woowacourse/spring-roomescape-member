@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationAllResponse;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -50,7 +52,7 @@ public class ReservationService {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservationRequest.date(),
                 reservationRequest.timeId(),
                 reservationRequest.themeId())) {
-            throw new IllegalArgumentException("이미 존재하는 예약입니다.");
+            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
         }
 
         Reservation reservation = new Reservation(null, reservationRequest.name(), reservationRequest.date(),

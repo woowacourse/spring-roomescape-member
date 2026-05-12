@@ -56,4 +56,17 @@ public class ReservationControllerTest {
                 .statusCode(201)
                 .body("size()", is(5));
     }
+
+    @Test
+    public void 이미_존재하는_예약_생성_API() {
+        ReservationRequest reservationRequest = new ReservationRequest("새로운사용자", LocalDate.now().plusDays(3), 10L, 2L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("RESERVATION_DUPLICATE"));
+    }
 }
