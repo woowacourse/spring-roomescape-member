@@ -1,16 +1,17 @@
 package roomescape.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import roomescape.dto.ErrorResponse;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(RoomescapeException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(RoomescapeException e,
@@ -21,6 +22,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getCode().getAction());
 
         return ResponseEntity.status(e.getCode().getStatus()).body(response);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e,
+                                                                               HttpServletRequest request) {
+        ErrorResponse response = new ErrorResponse("INVALID_REQUEST_BODY", request.getRequestURI(),
+                "입력 형식이 잘못되었습니다.", "입력 형식을 확인하세요.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(Exception.class)
