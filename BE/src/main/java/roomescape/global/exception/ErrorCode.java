@@ -19,7 +19,10 @@ public enum ErrorCode {
     // Conflict - 409
     RESERVATION_DUPLICATED("동일한 날짜, 시간, 테마의 예약이 이미 존재합니다."),
     RESERVATION_TIME_ALREADY_USED("참조하고 있는 예약 시간이어서 삭제할 수 없습니다."),
-    THEME_ALREADY_USED("참조하고 있는 테마이어서 삭제할 수 없습니다.");
+    THEME_ALREADY_USED("참조하고 있는 테마이어서 삭제할 수 없습니다."),
+
+    // Unprocessable Entity - 422
+    PAST_DATE_OR_TIME("지나간 날짜 혹은 시간에 대한 요청은 처리할 수 없습니다.");
 
     private final String message;
 

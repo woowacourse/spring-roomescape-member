@@ -1,6 +1,7 @@
 package roomescape.application;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import roomescape.entity.Theme;
 import roomescape.entity.ThemeRepository;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.customException.ConflictException;
+import roomescape.global.exception.customException.DomainRuleViolationException;
 import roomescape.global.exception.customException.NotFoundException;
 
 @Service
@@ -34,7 +36,9 @@ public class ReservationService {
 
     @Transactional
     public Reservation save(String name, LocalDate date, Long timeId, Long themeId) {
-        validateUniqueByDateAndTimeIdAndThemeId(date, timeId, themeId);
+        validateFutureOrPresentDate(date);
+        validateFutureOrPresentTime(timeId);
+        validateUniquenessByDateAndTimeIdAndThemeId(date, timeId, themeId);
         Reservation reservation = Reservation.createWithNullId(
                 name,
                 date,
@@ -44,7 +48,23 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    private void validateUniqueByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    private void validateFutureOrPresentDate(LocalDate date) {
+        LocalDate now = LocalDate.now();
+        if (date.isBefore(now)) {
+            throw new DomainRuleViolationException(ErrorCode.PAST_DATE_OR_TIME);
+        }
+    }
+
+    private void validateFutureOrPresentTime(Long id) {
+        ReservationTime reservationTime = findTargetTimeById(id);
+        LocalTime requestTimeValue = reservationTime.startAt();
+        LocalTime nowTime = LocalTime.now();
+        if (requestTimeValue.isBefore(nowTime)) {
+            throw new DomainRuleViolationException(ErrorCode.PAST_DATE_OR_TIME);
+        }
+    }
+
+    private void validateUniquenessByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new ConflictException(ErrorCode.RESERVATION_DUPLICATED);
         }
