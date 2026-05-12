@@ -37,6 +37,10 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 예약된 스케줄입니다.");
         }
 
+        if (schedule.isBefore()) {
+            throw new IllegalArgumentException("이미 지나간 시간에는 예약할 수 없습니다.");
+        }
+
         Reservation reservation = new Reservation(user, schedule);
         return reservationRepository.create(reservation);
     }

@@ -19,6 +19,9 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ScheduleService {
 
+    public static final LocalTime OPENING_TIME = LocalTime.of(20, 0);
+    public static final LocalTime CLOSE_TIME = LocalTime.of(20, 0);
+
     private final ScheduleRepository scheduleRepository;
     private final ThemeService themeService;
 
@@ -44,17 +47,28 @@ public class ScheduleService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 스케줄입니다."));
     }
 
+    // TODO: 메서드가 너무 길다. (2026. 5. 12.)
     @Transactional
     public Long create(AdminScheduleRequest request) {
         Theme theme = themeService.findById(request.themeId());
-
         LocalDateTime newStartAt = LocalDateTime.of(request.date(), request.time());
+
+        if (newStartAt.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("과거 날짜/시간에는 스케줄을 생성할 수 없습니다.");
+        }
+
+        if (newStartAt.toLocalTime().isBefore(OPENING_TIME)) {
+            throw new IllegalArgumentException("오전 10시 이전에는 예약이 불가능합니다.");
+        }
+
         LocalTime requiredTime = theme.getRequiredTime();
         LocalDateTime newEndAt = newStartAt.plusHours(requiredTime.getHour())
                 .plusMinutes(requiredTime.getMinute());
+        if (newEndAt.toLocalTime().isAfter(CLOSE_TIME)) {
+            throw new IllegalArgumentException("오후 8시 이후에는 예약이 불가능합니다.");
+        }
 
         List<Schedule> existingSchedules = scheduleRepository.findAllByThemeIdAndDate(request.themeId(), request.date());
-
         for (Schedule existingSchedule : existingSchedules) {
             if (existingSchedule.getStartAt().isBefore(newEndAt) && existingSchedule.getEndAt().isAfter(newStartAt)) {
                 throw new IllegalArgumentException("선택하신 시간은 다른 예약 시간과 겹쳐서 추가할 수 없습니다.");
