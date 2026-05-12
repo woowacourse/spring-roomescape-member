@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,7 +29,7 @@ public class ReservationTimeController {
     @PostMapping("/times")
     public ResponseEntity<ReservationTimeCreateResponse> create(@RequestBody ReservationTimeCreateRequest reservationTime) {
         ReservationTimeCreateResponse saved = reservationFacade.createReservationTime(reservationTime);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @ResponseBody

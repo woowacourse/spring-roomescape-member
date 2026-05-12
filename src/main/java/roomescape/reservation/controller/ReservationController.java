@@ -1,6 +1,9 @@
 package roomescape.reservation.controller;
 
+import java.net.URI;
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,7 +31,7 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity<ReservationCreateResponse> create(@RequestBody ReservationRequest request) {
         ReservationCreateResponse reservationCreateResponse = reservationFacade.createReservation(request);
-        return ResponseEntity.ok(reservationCreateResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationCreateResponse);
     }
 
     @ResponseBody
