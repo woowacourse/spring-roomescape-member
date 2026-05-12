@@ -5,7 +5,9 @@
 ## 📋 목차
 
 - [프로젝트 구조](#-프로젝트-구조)
+- [이번 사이클 구현 기능 목록](#-이번-사이클-구현-기능-목록)
 - [API 명세](#-api-명세)
+- [에러 응답 명세](#-에러-응답-명세)
 - [2단계 - 사용자 예약](#2단계---사용자-예약)
 - [테스트 케이스](#-테스트-케이스)
 
@@ -68,6 +70,37 @@
 
 ---
 
+## 🧩 이번 사이클 구현 기능 목록
+
+### 1단계 - 서비스 정책 적용
+
+- [ ] 과거 날짜·시간 예약 생성 거부
+- [ ] 같은 날짜·시간·테마의 중복 예약 생성 거부
+- [ ] 예약이 존재하는 예약 시간 삭제 거부
+- [ ] 빈 이름, 빈 설명, 잘못된 날짜·시간 형식, 존재하지 않는 ID 등 유효하지 않은 입력 거부
+
+### 2단계 - 에러 응답 설계
+
+- [ ] 서비스 정책 위반, 입력값 오류, 리소스 없음 오류를 일관된 JSON 형식으로 반환
+- [ ] 예상 가능한 예외가 `500 Internal Server Error`로 사용자에게 노출되지 않도록 처리
+- [ ] 브라우저 화면에서 API 에러 메시지를 사용자 친화 문구로 표시
+
+### 3단계 - 내 예약 조회/변경/취소
+
+- [ ] 이름으로 내 예약 목록 조회
+- [ ] 내 예약 취소
+- [ ] 내 예약 날짜·시간 변경
+- [ ] 지난 예약 취소·변경 거부
+- [ ] 이미 예약된 날짜·시간·테마로 변경 거부
+
+### 화면 동작
+
+- [ ] 예약 생성, 조회, 변경, 취소 성공 시 화면 목록 갱신
+- [ ] 잘못된 요청 실패 시 응답 본문의 `message`를 화면에 표시
+- [ ] 서버 내부 오류가 발생해도 기술적 스택트레이스 대신 공통 안내 문구 표시
+
+---
+
 ## API 명세
 
 | 기능        | 메서드 / URL                                     | 요청 본문                           | 응답                               |
@@ -83,9 +116,49 @@
 | 테마 삭제     | `DELETE /themes/{id}`                         | —                               | `204 No Content`                 |
 | 사용 가능 날짜  | `GET /available-dates?month=YYYY-MM`          | —                               | `["yyyy-MM-dd", ...]`            |
 | 테마별 가능 시간 | `GET /themes/{themeId}/times?date=yyyy-MM-dd` | —                               | `[{id, startAt}, ...]`           |
+| 사용자 예약 목록 조회 | `GET /users/reservations?name={name}`         | —                               | `[{id, name, date, time, theme}, ...]` |
 | 사용자 예약 추가 | `POST /users/reservations`                    | `{name, date, themeId, timeId}` | `{id, name, date, time, theme}`  |
+| 사용자 예약 변경 | `PATCH /users/reservations/{id}`              | `{date, timeId}`                | `{id, name, date, time, theme}`  |
 | 사용자 예약 취소 | `DELETE /users/reservations/{id}`             | —                               | `204 No Content`                 |
 | 인기 테마 조회  | `GET /themes/best?date=yyyy-MM-dd`            | —                               | `[{id, name}, ...]`              |
+
+---
+
+## 🚨 에러 응답 명세
+
+### 공통 응답 형식
+
+```json
+{
+  "code": "INVALID_REQUEST",
+  "message": "예약자 이름은 비어 있을 수 없습니다."
+}
+```
+
+| 필드 | 설명 | 예시 |
+|---|---|---|
+| `code` | 클라이언트가 분기할 수 있는 에러 코드 | `DUPLICATE_RESERVATION` |
+| `message` | 사용자가 이해할 수 있는 한국어 메시지 | `이미 예약된 시간입니다.` |
+
+### 상태 코드 결정
+
+| 상황 | HTTP 상태 | code | message 예시 |
+|---|---:|---|---|
+| 빈 이름, 필수 값 누락, 잘못된 날짜·시간 형식 | `400 Bad Request` | `INVALID_REQUEST` | `요청 형식이 올바르지 않습니다.` |
+| 과거 날짜·시간 예약 생성 | `400 Bad Request` | `PAST_RESERVATION_NOT_ALLOWED` | `지난 날짜와 시간으로 예약할 수 없습니다.` |
+| 같은 날짜·시간·테마 중복 예약 | `409 Conflict` | `DUPLICATE_RESERVATION` | `이미 예약된 시간입니다.` |
+| 예약이 존재하는 시간 삭제 | `409 Conflict` | `RESERVED_TIME_DELETE_NOT_ALLOWED` | `예약이 존재하는 시간은 삭제할 수 없습니다.` |
+| 지난 예약 취소 | `400 Bad Request` | `PAST_RESERVATION_CANCEL_NOT_ALLOWED` | `지난 예약은 취소할 수 없습니다.` |
+| 지난 예약 변경 | `400 Bad Request` | `PAST_RESERVATION_CHANGE_NOT_ALLOWED` | `지난 예약은 변경할 수 없습니다.` |
+| 변경하려는 날짜·시간·테마가 이미 예약됨 | `409 Conflict` | `DUPLICATE_RESERVATION` | `이미 예약된 시간입니다.` |
+| 존재하지 않는 예약, 시간, 테마, 휴일 | `404 Not Found` | `*_NOT_FOUND` | `예약을 찾을 수 없습니다.` |
+| 예상하지 못한 서버 오류 | `500 Internal Server Error` | `INTERNAL_SERVER_ERROR` | `서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.` |
+
+### 클라이언트 표시 규칙
+
+- API 호출 실패 시 응답 본문의 `message`를 우선 표시한다.
+- 응답 본문이 없거나 파싱할 수 없으면 `요청 처리 중 오류가 발생했습니다.`를 표시한다.
+- `500` 응답은 내부 구현 정보 없이 공통 안내 문구만 표시한다.
 
 ---
 
