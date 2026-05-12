@@ -7,9 +7,6 @@ import java.time.LocalTime;
 
 public class Schedule {
 
-    private static final LocalTime OPENING_TIME = LocalTime.of(10, 0);
-    private static final LocalTime CLOSE_TIME = LocalTime.of(20, 0);
-
     private Long id;
     private Theme theme;
     private LocalDateTime startAt;
@@ -23,11 +20,11 @@ public class Schedule {
     }
 
     public Schedule(Long id, LocalDateTime startAt, Theme theme) {
-        validateStartAt(id, startAt);
+        validateStartAt(startAt);
         validateTheme(theme);
         this.id = id;
         this.startAt = startAt;
-        this.endAt = calculateEndAt(id, startAt, theme);
+        this.endAt = calculateEndAt(startAt, theme);
         this.theme = theme;
     }
 
@@ -47,41 +44,9 @@ public class Schedule {
         return theme;
     }
 
-    private LocalDateTime calculateEndAt(Long id, LocalDateTime startAt, Theme theme) {
-        LocalTime requiredTime = theme.getRequiredTime();
-
-        LocalDateTime endAt = startAt.plusHours(requiredTime.getHour())
-                .plusMinutes(requiredTime.getMinute());
-
-        validateEndAt(id, endAt);
-        return endAt;
-    }
-
-    private void validateStartAt(Long id, LocalDateTime startAt) {
+    private void validateStartAt(LocalDateTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("예약 시작 시간은 필수입니다.");
-        }
-
-        if (id == null && startAt.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("과거 날짜/시간에는 스케줄을 생성할 수 없습니다.");
-        }
-
-        LocalTime startTime = startAt.toLocalTime();
-
-        if (startTime.isBefore(OPENING_TIME)) {
-            throw new IllegalArgumentException("오전 10시 이전에는 예약이 불가능합니다.");
-        }
-    }
-
-    private void validateEndAt(Long id, LocalDateTime endAt) {
-        if (endAt == null) {
-            throw new IllegalArgumentException("예약 종료 시간은 필수입니다.");
-        }
-
-        LocalTime endTime = endAt.toLocalTime();
-
-        if (endTime.isAfter(CLOSE_TIME)) {
-            throw new IllegalArgumentException("오후 8시 이후에는 예약이 불가능합니다.");
+            throw new IllegalArgumentException("스케줄 시작 시간은 필수입니다.");
         }
     }
 
@@ -89,5 +54,15 @@ public class Schedule {
         if (theme == null) {
             throw new IllegalArgumentException("테마 정보는 필수입니다.");
         }
+    }
+
+    private LocalDateTime calculateEndAt(LocalDateTime startAt, Theme theme) {
+        LocalTime requiredTime = theme.getRequiredTime();
+        return startAt.plusHours(requiredTime.getHour())
+                .plusMinutes(requiredTime.getMinute());
+    }
+
+    public boolean isBefore() {
+        return startAt.isBefore(LocalDateTime.now());
     }
 }
