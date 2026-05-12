@@ -1,7 +1,10 @@
 package roomescape.reservation.domain;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,10 @@ class ReservationRepositoryTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
+    private final Clock fixedClock = Clock.fixed(
+            Instant.parse("2026-05-12T01:00:00Z"),
+            ZoneId.of("Asia/Seoul")
+    );
 
     @Test
     @DisplayName("예약을 추가하면 테마id가 부여된다.")
@@ -31,21 +38,21 @@ class ReservationRepositoryTest {
         Theme theme = Theme.builder()
                 .name("포비")
                 .description("포비가 나와요")
-                .durationTime(LocalTime.of(1, 0))
+                .durationTime(LocalTime.now(fixedClock))
                 .thumbnailImageUrl("http://~~~")
                 .build();
 
         Theme savedTheme = themeRepository.save(theme);
 
         ReservationTime reservationTime = ReservationTime.builder()
-                .startAt(LocalTime.of(1, 0))
+                .startAt(LocalTime.now(fixedClock))
                 .build();
 
         ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
 
         Reservation reservation = Reservation.builder()
                 .name("포비")
-                .date(LocalDate.now())
+                .date(LocalDate.now(fixedClock))
                 .time(savedTime)
                 .theme(savedTheme)
                 .status(Status.ACTIVE)

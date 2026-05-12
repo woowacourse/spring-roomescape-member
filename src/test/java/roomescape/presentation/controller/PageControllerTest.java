@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -37,10 +38,13 @@ class PageControllerTest {
     @MockitoBean
     private ReservationTimeService reservationTimeService;
 
+    @MockitoBean
+    private Clock clock;
+
     @Test
     void reservationPageReturnsTemplateAndModel() throws Exception {
         given(themeService.getThemes()).willReturn(List.of(themeResponse()));
-        given(themeService.getWeeksTopThemes()).willReturn(List.of(themeResponse()));
+        given(themeService.getWeeksTopThemes(clock)).willReturn(List.of(themeResponse()));
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
@@ -52,7 +56,7 @@ class PageControllerTest {
     @Test
     void reservationAliasReturnsTemplateAndModel() throws Exception {
         given(themeService.getThemes()).willReturn(List.of(themeResponse()));
-        given(themeService.getWeeksTopThemes()).willReturn(List.of(themeResponse()));
+        given(themeService.getWeeksTopThemes(clock)).willReturn(List.of(themeResponse()));
 
         mockMvc.perform(get("/reservation"))
                 .andExpect(status().isOk())

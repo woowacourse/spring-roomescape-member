@@ -1,5 +1,6 @@
 package roomescape.theme.application;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.domain.exception.ThemeNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
-import roomescape.theme.presentation.dto.ThemeResponse;
 
 @Service
 @Transactional
@@ -38,10 +38,10 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> getWeeksTopThemes() {
+    public List<Theme> getWeeksTopThemes(Clock clock) {
         return themeRepository.findByReservationCountWithLimit(
-                LocalDate.now().minusWeeks(WEEKS_BOUND),
-                LocalDate.now().minusDays(DAYS_BOUND),
+                LocalDate.now(clock).minusWeeks(WEEKS_BOUND),
+                LocalDate.now(clock).minusDays(DAYS_BOUND),
                 THEME_SIZE_LIMIT
         );
     }

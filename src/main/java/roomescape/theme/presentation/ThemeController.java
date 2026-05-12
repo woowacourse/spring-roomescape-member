@@ -1,5 +1,6 @@
 package roomescape.theme.presentation;
 
+import java.time.Clock;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import roomescape.theme.presentation.dto.ThemeResponse;
 @RequiredArgsConstructor
 public class ThemeController {
 
+    private final Clock clock;
     private final ThemeService service;
 
     @GetMapping
@@ -27,7 +29,7 @@ public class ThemeController {
 
     @GetMapping("/weeks/top")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
-        List<ThemeResponse> responses = service.getWeeksTopThemes()
+        List<ThemeResponse> responses = service.getWeeksTopThemes(clock)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();

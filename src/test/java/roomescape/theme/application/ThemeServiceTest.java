@@ -1,6 +1,9 @@
 package roomescape.theme.application;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +21,11 @@ class ThemeServiceTest {
     @Autowired
     private ThemeService service;
 
+    private final Clock fixedClock = Clock.fixed(
+            Instant.parse("2026-05-12T01:00:00Z"),
+            ZoneId.of("Asia/Seoul")
+    );
+
     @Test
     @DisplayName("존재하지 않는 테마를 삭제하려고 하면 에러를 반환한다.")
     void notExistsThemeIdTest() {
@@ -25,7 +33,7 @@ class ThemeServiceTest {
                 .name("포비")
                 .description("포비가 나와요")
                 .thumbnailImageUrl("https://~~~~")
-                .durationTime(LocalTime.of(1, 0))
+                .durationTime(LocalTime.now(fixedClock))
                 .build();
 
         service.addTheme(ThemeRequest.toEntity(request));
@@ -40,7 +48,7 @@ class ThemeServiceTest {
                 .name("포비")
                 .description("포비가 나와요")
                 .thumbnailImageUrl("https://~~~~")
-                .durationTime(LocalTime.of(1, 0))
+                .durationTime(LocalTime.now(fixedClock))
                 .build();
         Theme theme = service.addTheme(ThemeRequest.toEntity(request));
         Assertions.assertThatCode(() -> service.deleteTheme(theme.getId()))
