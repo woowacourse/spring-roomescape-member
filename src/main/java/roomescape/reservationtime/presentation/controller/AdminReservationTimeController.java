@@ -44,12 +44,7 @@ public class AdminReservationTimeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        int deletedCount = timeCommandService.delete(id);
-
-        if (deletedCount == 0) {
-            return ResponseEntity.notFound().build();
-        }
-
+        timeCommandService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

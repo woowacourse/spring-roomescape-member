@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.NotFoundException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.application.dto.ReservationTimeCreateCommand;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
@@ -27,8 +28,10 @@ public class ReservationTimeCommandService {
         return ReservationTimeResult.from(savedTime);
     }
 
-    public int delete(Long id) {
-        return timeRepository.delete(id);
+    public void delete(Long id) {
+        if (timeRepository.delete(id) == 0) {
+            throw new NotFoundException("존재하지 않는 시간입니다.");
+        }
     }
     
     private void validateDuplicateTime(LocalTime startAt) {

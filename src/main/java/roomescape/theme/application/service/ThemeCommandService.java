@@ -3,6 +3,7 @@ package roomescape.theme.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.NotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.application.dto.ThemeCreateCommand;
 import roomescape.theme.application.dto.ThemeResult;
@@ -23,8 +24,10 @@ public class ThemeCommandService {
         return ThemeResult.from(themeRepository.save(theme));
     }
 
-    public int delete(long id) {
-        return themeRepository.delete(id);
+    public void delete(long id) {
+        if (themeRepository.delete(id) == 0) {
+            throw new NotFoundException("존재하지 않는 테마입니다.");
+        }
     }
 
     private void validateDuplicateTheme(Theme theme) {

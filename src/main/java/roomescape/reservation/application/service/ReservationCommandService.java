@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationResult;
 import roomescape.reservation.application.exception.ReservationException;
@@ -40,8 +41,10 @@ public class ReservationCommandService {
         return ReservationResult.from(reservationRepository.save(reservation), themeResult, timeResult);
     }
 
-    public int delete(Long id) {
-        return reservationRepository.delete(id);
+    public void delete(Long id) {
+        if (reservationRepository.delete(id) == 0) {
+            throw new NotFoundException("존재하지 않는 예약입니다.");
+        }
     }
 
     private void validateDuplicateReservation(Reservation reservation) {
