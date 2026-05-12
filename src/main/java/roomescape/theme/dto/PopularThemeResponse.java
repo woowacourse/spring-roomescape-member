@@ -2,15 +2,15 @@ package roomescape.theme.dto;
 
 import roomescape.theme.domain.Theme;
 
-public record ResponsePopularTheme(
+public record PopularThemeResponse(
         Long id,
         String name,
         String description,
         String thumbnail,
         int rank
 ) {
-    public static ResponsePopularTheme of(Theme theme, int rank) {
-        return new ResponsePopularTheme(
+    public static PopularThemeResponse of(Theme theme, int rank) {
+        return new PopularThemeResponse(
                 theme.getId(),
                 theme.getName(),
                 theme.getDescription(),
