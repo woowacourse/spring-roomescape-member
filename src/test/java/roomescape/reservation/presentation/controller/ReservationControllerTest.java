@@ -5,11 +5,13 @@ import io.restassured.http.ContentType;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import roomescape.config.TestTimeConfig;
 import roomescape.reservation.presentation.dto.ReservationChangeRequest;
@@ -17,9 +19,17 @@ import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.theme.presentation.dto.ThemeRequest;
 import roomescape.time.presentation.dto.ReservationTimeRequest;
 
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Import(TestTimeConfig.class)
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 class ReservationControllerTest {
+
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @Autowired
     private Clock clock;
