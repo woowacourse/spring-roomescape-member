@@ -3,23 +3,34 @@ package roomescape.exception.handler;
 import static roomescape.exception.HttpStatusMapper.STATUS_MAP;
 
 import java.util.Map;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.dto.Response;
 import roomescape.exception.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler({CustomException.class})
-    public ResponseEntity<String> handleCustomException(CustomException customException) {
-        return new ResponseEntity<>(customException.getMessage(), STATUS_MAP.get(customException.getClass()));
+    public ResponseEntity<Response> handleCustomException(CustomException customException) {
+        return getResponse(STATUS_MAP.get(customException.getClass()), customException.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
+    public ResponseEntity<Response> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        String errorMessage = exception.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
 
-        return ResponseEntity.badRequest().body(Map.of("message", errorMessage));
+        return getResponse(HttpStatus.BAD_REQUEST, errorMessage);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Response> handleRuntimeException() {
+        return getResponse(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
+
+    private ResponseEntity<Response> getResponse(HttpStatus httpStatus, String message) {
+        return new ResponseEntity<>(Response.from(httpStatus.value(), message), httpStatus);
     }
 }
