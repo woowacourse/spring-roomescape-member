@@ -27,6 +27,7 @@ test("사용자 예약 후 관리자 예약 페이지에서 예약 내역을 확
   await page.getByRole("button", { name: "예약" }).click();
 
   const reservationRow = page.locator('[data-role="reservation-table"] tr').filter({ hasText: reservationName });
+  await expect(reservationRow).toContainText(selectedTheme.name);
   await expect(reservationRow).toContainText(reservationDate);
   await expect(reservationRow).toContainText(selectedSlot.startAt.slice(0, 5));
 });

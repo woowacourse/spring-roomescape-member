@@ -75,7 +75,7 @@ export default class ReservationSectionView extends View {
     clearElement(this.tableBody);
 
     if (!reservations.length) {
-      this.tableBody.innerHTML = '<tr class="empty-row"><td colspan="5">예약이 없습니다.</td></tr>';
+      this.tableBody.innerHTML = '<tr class="empty-row"><td colspan="6">예약이 없습니다.</td></tr>';
       return;
     }
 
@@ -84,6 +84,7 @@ export default class ReservationSectionView extends View {
       row.innerHTML = `
         <td><span class="badge badge-blue">${reservation.id}</span></td>
         <td class="td-name">${reservation.name}</td>
+        <td class="td-name">${reservation.theme.name}</td>
         <td>${reservation.date}</td>
         <td>${formatTime(reservation.time.startAt)}</td>
         <td><button class="btn-delete" type="button" data-id="${reservation.id}">취소</button></td>

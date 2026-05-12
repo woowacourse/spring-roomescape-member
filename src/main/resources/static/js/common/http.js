@@ -2,7 +2,16 @@ async function parseError(response) {
   const text = await response.text();
 
   if (text) {
-    throw new Error(text);
+    try {
+      const body = JSON.parse(text);
+      throw new Error(body.message || text);
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        throw new Error(text);
+      }
+
+      throw error;
+    }
   }
 
   throw new Error("요청 처리에 실패했습니다.");
