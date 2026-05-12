@@ -36,18 +36,12 @@ public class ReservationService {
     @Transactional
     public ReservationIdResponse create(ReservationCreateInfo info) {
         User user = userService.getUserById(info.userId());
-
         Theme theme = themeRepository.findById(info.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-
-        LocalDateTime startAt = info.startAt();
-
-        Schedule schedule = scheduleRepository.findByThemeIdAndStartAt(theme.getId(), startAt)
+        Schedule schedule = scheduleRepository.findByThemeIdAndStartAt(theme.getId(), info.startAt())
                 .orElseThrow(() -> new IllegalArgumentException("등록된 스케줄이 없습니다."));
 
-        if (reservationRepository.existsByScheduleId(schedule.getId())) {
-            throw new IllegalArgumentException("해당 시간은 이미 예약이 완료되었습니다.");
-        }
+        validateReservation(schedule);
 
         Reservation reservation = new Reservation(user, schedule, theme);
         Reservation savedReservation = reservationRepository.create(reservation);
@@ -62,5 +56,15 @@ public class ReservationService {
     @Transactional
     public void delete(long id) {
         reservationRepository.delete(id);
+    }
+
+    private void validateReservation(Schedule schedule) {
+        if (schedule.getStartAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("과거 날짜/시간에는 스케줄을 생성할 수 없습니다.");
+        }
+
+        if (reservationRepository.existsByScheduleId(schedule.getId())) {
+            throw new IllegalArgumentException("해당 시간은 이미 예약이 완료되었습니다.");
+        }
     }
 }

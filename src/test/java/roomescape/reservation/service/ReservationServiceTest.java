@@ -96,10 +96,19 @@ class ReservationServiceTest {
     @Test
     void 이미_예약이_완료된_스케줄에_중복_예약을_시도하면_예외가_발생한다() {
         ReservationCreateInfo info = new ReservationCreateInfo(1L,
-                LocalDateTime.of(2026, 12, 10, 12, 0), 1L); 
+                LocalDateTime.of(2026, 12, 10, 12, 0), 1L);
 
         assertThatThrownBy(() -> reservationService.create(info))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 시간은 이미 예약이 완료되었습니다.");
+    }
+
+    @Test
+    void 과거의_날짜_시간에_예약을_시도하면_예외가_발생한다() {
+        ReservationCreateInfo info = new ReservationCreateInfo(1L,
+                LocalDateTime.of(2020, 1, 1, 1, 1), 1L);
+
+        assertThatThrownBy(() -> reservationService.create(info))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
