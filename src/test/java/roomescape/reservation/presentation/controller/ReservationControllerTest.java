@@ -2,7 +2,6 @@ package roomescape.reservation.presentation.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.ValidatableResponse;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
