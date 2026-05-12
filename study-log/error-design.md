@@ -150,4 +150,4 @@
 
 ### 공통
 
-- [ ] INTERNAL_ERROR — 처리되지 않은 예외
+- [x] INTERNAL_ERROR — 처리되지 않은 예외
