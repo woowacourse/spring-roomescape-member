@@ -1,4 +1,4 @@
-package roomescape.reservation.domain.exception;
+package roomescape.reservation.application.exception;
 
 import roomescape.common.exception.AlreadyInUseException;
 
