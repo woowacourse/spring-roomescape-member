@@ -1,24 +1,5 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.service.command.ReservationSaveCommand;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,6 +7,24 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
+import roomescape.service.command.ReservationSaveCommand;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -70,7 +69,8 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 시간으로 예약하면 예외가 발생한다")
     void throwException_WhenTimeNotFound() {
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.now().plusDays(1), TIME_ID, THEME_ID);
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.now().plusDays(1), TIME_ID,
+                THEME_ID);
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
@@ -81,7 +81,8 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 테마로 예약하면 예외가 발생한다")
     void throwException_WhenThemeNotFound() {
         ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
-        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.now().plusDays(1), TIME_ID, THEME_ID);
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", LocalDate.now().plusDays(1), TIME_ID,
+                THEME_ID);
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.empty());
 
@@ -133,4 +134,39 @@ class ReservationServiceTest {
         verify(reservationRepository).deleteById(eq(reservationId));
     }
 
+    @Test
+    @DisplayName("지난 날짜에 대한 예약 생성 시 예외가 발생한다")
+    void throwException_WhenPastDate() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand(
+                "브라운",
+                LocalDate.now().minusDays(1),
+                TIME_ID,
+                THEME_ID
+        );
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지난 날짜와 시간은 예약할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("오늘의 지난 시간에 대한 예약 생성 시 예외가 발생한다")
+    void throwException_WhenPastTimeToday() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.now().minusMinutes(1));
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand(
+                "브라운",
+                LocalDate.now(),
+                TIME_ID,
+                THEME_ID
+        );
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지난 날짜와 시간은 예약할 수 없습니다.");
+    }
 }
