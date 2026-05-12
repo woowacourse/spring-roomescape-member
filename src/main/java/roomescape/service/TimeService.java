@@ -40,7 +40,7 @@ public class TimeService {
 
     public void removeById(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
-            throw new IllegalArgumentException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
+            throw new RoomescapeException(ErrorCode.TIME_CANNOT_DELETE);
         }
         int deleteCnt = timeRepository.deleteById(id);
         if (deleteCnt == 0) {
