@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.controller.dto.ReservationCreateRequest;
+import roomescape.reservation.controller.dto.ReservationEditRequest;
 import roomescape.reservation.controller.dto.ReservationListResponse;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
@@ -22,12 +23,12 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(@RequestBody @Valid ReservationCreateRequest reservationCreateRequest) {
+    public ResponseEntity<ReservationResponse> create(@RequestBody @Valid ReservationCreateRequest request) {
         Reservation reservation = reservationService.create(
-                reservationCreateRequest.guestName(),
-                reservationCreateRequest.date(),
-                reservationCreateRequest.timeId(),
-                reservationCreateRequest.themeId()
+                request.guestName(),
+                request.date(),
+                request.timeId(),
+                request.themeId()
         );
 
         return ResponseEntity.status(CREATED)
@@ -43,6 +44,14 @@ public class ReservationController {
                 ReservationListResponse.from(reservations.stream()
                         .map(ReservationResponse::from)
                         .toList()));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> editDateTime(
+            @PathVariable("id") Long id, @RequestBody @Valid ReservationEditRequest request) {
+        return ResponseEntity.ok(
+                ReservationResponse.from(
+                        reservationService.editDateTime(id, request.date(), request.timeId())));
     }
 
 }

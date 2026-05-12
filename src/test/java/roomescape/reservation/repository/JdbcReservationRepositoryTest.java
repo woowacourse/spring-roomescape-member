@@ -17,6 +17,8 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,10 +32,33 @@ class JdbcReservationRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Test
+    @DisplayName("id로 특정 예약을 조회한다.")
+    public void findById() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Reservation reservation = insertReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
+
+        // when
+        Optional<Reservation> optionalReservation = reservationRepository.findById(reservation.getId());
+
+        // then
+        assertThat(optionalReservation).isPresent();
+        Reservation found = optionalReservation.get();
+        assertThat(found)
+                .extracting(
+                        Reservation::getId, Reservation::getGuestName, Reservation::getDate,
+                        Reservation::getTime, Reservation::getTheme
+                ).containsExactly(
+                        reservation.getId(), reservation.getGuestName(), reservation.getDate(),
+                        reservation.getTime(), reservation.getTheme()
+                );
+    }
 
     @Test
     @DisplayName("예약의 목록을 조회한다")
-    void save() {
+    void findAll() {
         // given
         ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
         Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
@@ -57,6 +82,65 @@ class JdbcReservationRepositoryTest {
         assertThat(found.getTheme().getName()).isEqualTo(theme.getName());
         assertThat(found.getTheme().getDescription()).isEqualTo(theme.getDescription());
         assertThat(found.getTheme().getThumbnail()).isEqualTo(theme.getThumbnail());
+    }
+
+    @Test
+    @DisplayName("예약을 저장한다..")
+    public void save() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Reservation reservation = new Reservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
+
+        // when
+        Reservation saved = reservationRepository.save(reservation);
+
+        // then
+        assertThat(saved.getId()).isNotNull();
+        assertThat(saved)
+                .extracting(
+                        Reservation::getGuestName, Reservation::getDate,
+                        Reservation::getTime, Reservation::getTheme
+                ).containsExactly(
+                        reservation.getGuestName(), reservation.getDate(),
+                        reservation.getTime(), reservation.getTheme()
+                );
+    }
+
+    @Test
+    @DisplayName("예약의 날짜 및 시간을 수정한다.")
+    public void updateDateAndTime() {
+        // given
+        ReservationTime time = insertReservationTime(LocalTime.of(10, 0));
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        Reservation reservation = insertReservation("브라운", LocalDate.of(2023, 8, 5), time, theme);
+
+        LocalDate updatedDate = LocalDate.of(2023, 9, 7);
+        ReservationTime updatedTime = insertReservationTime(LocalTime.of(12, 0));
+
+        // when
+        boolean result = reservationRepository.updateDateAndTime(reservation.getId(), updatedDate, updatedTime.getId());
+
+        // then
+        assertThat(result).isTrue();
+
+        Map<String, Object> map = findById(reservation);
+        LocalDate date = ((Date) map.get("date")).toLocalDate();
+        Long timeId = ((Number) map.get("time_id")).longValue();
+        assertThat(date).isEqualTo(updatedDate);
+        assertThat(timeId).isEqualTo(updatedTime.getId());
+    }
+
+    private Map<String, Object> findById(Reservation reservation) {
+        return jdbcTemplate.queryForMap("""
+        SELECT
+            r.date,
+            t.id AS time_id
+        FROM reservation r
+        INNER JOIN reservation_time t
+            ON r.time_id = t.id
+        WHERE r.id = ?
+        """, reservation.getId());
     }
 
     @Test

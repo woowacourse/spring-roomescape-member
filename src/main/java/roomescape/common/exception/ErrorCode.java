@@ -15,6 +15,8 @@ public enum ErrorCode {
     RESERVATION_ALREADY_HAS_ID("이미 식별자가 존재하는 예약입니다.", CONFLICT),
     RESERVATION_ALREADY_EXISTS("이미 존재하는 예약입니다.", CONFLICT),
     RESERVATION_NOT_FOUND("존재하지 않는 예약입니다.", NOT_FOUND),
+    PAST_RESERVATION_NOT_ALLOWED("이미 지난 시간에는 예약할 수 없습니다.", UNPROCESSABLE_ENTITY),
+    CANNOT_EDIT_ALREADY_STARTED_RESERVATION("이미 시작된 예약은 수정할 수 없습니다.", UNPROCESSABLE_ENTITY),
 
     INVALID_RESERVATION_TIME_ID("예약 시간 id는 비어 있을 수 없습니다.", BAD_REQUEST),
     INVALID_RESERVATION_TIME("예약 시간은 비어 있을 수 없습니다.", BAD_REQUEST),
@@ -23,7 +25,6 @@ public enum ErrorCode {
     RESERVATION_TIME_ALREADY_EXISTS("이미 존재하는 예약 시간입니다.", CONFLICT),
     RESERVATION_TIME_NOT_FOUND("존재하지 않는 예약 시간입니다.", NOT_FOUND),
     RESERVATION_TIME_HAS_RESERVATION("예약이 있는 시간은 삭제할 수 없습니다.", CONFLICT),
-    PAST_RESERVATION_NOT_ALLOWED("이미 지난 시간에는 예약할 수 없습니다.", UNPROCESSABLE_ENTITY),
 
     INVALID_THEME_ID("테마 id는 비어 있을 수 없습니다.", BAD_REQUEST),
     INVALID_THEME_NAME("테마 이름은 비어 있을 수 없습니다.", BAD_REQUEST),

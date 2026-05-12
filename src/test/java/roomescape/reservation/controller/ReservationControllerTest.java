@@ -12,6 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import roomescape.reservation.controller.dto.ReservationCreateRequest;
+import roomescape.reservation.controller.dto.ReservationEditRequest;
 import roomescape.reservation.controller.dto.ReservationListResponse;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservationtime.controller.dto.ReservationTimeResponse;
@@ -32,6 +33,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -196,6 +198,88 @@ class ReservationControllerTest {
         then(reservationService)
                 .should()
                 .findByGuestName(guestName);
+    }
+
+    @Test
+    @DisplayName("예약의 날짜 및 시간을 수정하는 요청을 하면 수정된 예약 정보가 응답으로 반환된다.")
+    public void editDateTime_success() throws Exception {
+        // given
+        Long reservationId = 1L;
+        ReservationTime time = new ReservationTime(2L, LocalTime.of(12, 0));
+        Theme theme = new Theme(1L, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme-1.png");
+        Reservation reservation = new Reservation(reservationId, "브라운", LocalDate.of(2023, 8, 10), time, theme);
+
+        given(reservationService.editDateTime(anyLong(), any(), anyLong()))
+                .willReturn(reservation);
+
+        ReservationEditRequest request = new ReservationEditRequest(
+                LocalDate.of(2023, 8, 10),
+                2L
+        );
+
+        // when then
+        MvcResult result = mockMvc.perform(
+                        patch("/reservations/{id}", reservationId)
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ReservationResponse reservationResponse = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                ReservationResponse.class
+        );
+
+        assertReservation(reservationResponse, reservation);
+        assertTime(reservationResponse, time);
+        assertTheme(reservationResponse, theme);
+
+        then(reservationService)
+                .should()
+                .editDateTime(reservationId, request.date(), request.timeId());
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+            ",1",
+            "2023-08-05,"
+    })
+    @DisplayName("예약의 날짜 및 시간을 수정하는 요청을 할 때 특정 요청값이 비어있으면 에러가 발생한다.")
+    public void editDateTime_fail1(String date, Long timeId) throws Exception {
+        // given
+        Long reservationId = 1L;
+        LocalDate reservationDate = date == null ? null : LocalDate.parse(date);
+        ReservationEditRequest request = new ReservationEditRequest(reservationDate, timeId);
+
+        // when then
+        mockMvc.perform(
+                        patch("/reservations/{id}", reservationId)
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("예약의 날짜 및 시간을 수정하는 요청을 할 때 날짜 형식이 올바르지 않으면 에러가 발생한다.")
+    public void editDateTime_fail2() throws Exception {
+        // given
+        Long reservationId = 1L;
+        String request = """
+                {
+                    "date": "2023/08/05",
+                    "timeId": 1
+                }
+                """;
+
+        // when then
+        mockMvc.perform(
+                        patch("/reservations/{id}", reservationId)
+                                .content(request)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
 }

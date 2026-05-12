@@ -10,12 +10,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.controller.dto.ReservationCreateRequest;
+import roomescape.reservation.controller.dto.ReservationEditRequest;
 import roomescape.reservationtime.controller.dto.ReservationTimeCreateRequest;
+import roomescape.test_config.MutableClock;
+import roomescape.test_config.TestClockConfig;
 import roomescape.theme.controller.dto.ThemeCreateRequest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static io.restassured.RestAssured.given;
@@ -23,6 +28,7 @@ import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Import(TestClockConfig.class)
 public class ReservationAcceptanceTest {
 
     @LocalServerPort
@@ -31,10 +37,14 @@ public class ReservationAcceptanceTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        mutableClock.setFixed(LocalDate.of(2026, 5, 12));
     }
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private MutableClock mutableClock;
 
     @Test
     @DisplayName("예약 생성 후 관리자 페이지에서 예약 목록을 조회한다.")
@@ -134,6 +144,151 @@ public class ReservationAcceptanceTest {
                 themeId.longValue());
 
         createReservation(reservationRequest);
+    }
+
+    @Test
+    @DisplayName("예약의 날짜와 시간을 수정한다.")
+    public void scenario4() throws JsonProcessingException {
+        LocalDate originalDate = LocalDate.of(2026, 10, 14);
+        LocalDate editedDate = LocalDate.of(2026, 10, 15);
+
+        Integer reservationTimeId = createReservationTime(
+                new ReservationTimeCreateRequest(LocalTime.of(10, 30)));
+        Integer editedReservationTimeId = createReservationTime(
+                new ReservationTimeCreateRequest(LocalTime.of(11, 30)));
+        Integer themeId = createTheme(
+                new ThemeCreateRequest("테마1", "설명", "섬네일"));
+
+        ReservationCreateRequest reservationRequest = new ReservationCreateRequest(
+                "brown",
+                originalDate,
+                reservationTimeId.longValue(),
+                themeId.longValue());
+        Integer reservationId = createReservation(reservationRequest);
+
+        ReservationEditRequest editRequest = new ReservationEditRequest(
+                editedDate,
+                editedReservationTimeId.longValue());
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(editRequest))
+                .pathParam("id", reservationId)
+                .when()
+                .patch("/reservations/{id}")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", equalTo(reservationId))
+                .body("guestName", equalTo(reservationRequest.guestName()))
+                .body("date", equalTo(editRequest.date().toString()))
+                .body("time.id", equalTo(editedReservationTimeId))
+                .body("theme.id", equalTo(themeId));
+    }
+
+    @Test
+    @DisplayName("수정하려는 날짜와 시간에 같은 테마의 예약이 존재하면 에러가 발생한다.")
+    public void scenario5() throws JsonProcessingException {
+        Integer reservationTimeId = createReservationTime(
+                new ReservationTimeCreateRequest(LocalTime.of(10, 30)));
+        Integer editedReservationTimeId = createReservationTime(
+                new ReservationTimeCreateRequest(LocalTime.of(11, 30)));
+        Integer themeId = createTheme(
+                new ThemeCreateRequest("테마1", "설명", "섬네일"));
+
+        ReservationCreateRequest reservationRequest = new ReservationCreateRequest(
+                "brown",
+                LocalDate.of(2026, 10, 14),
+                reservationTimeId.longValue(),
+                themeId.longValue());
+        createReservation(reservationRequest);
+
+        ReservationCreateRequest targetReservationRequest = new ReservationCreateRequest(
+                "pobi",
+                LocalDate.of(2026, 10, 15),
+                editedReservationTimeId.longValue(),
+                themeId.longValue());
+        Integer targetReservationId = createReservation(targetReservationRequest);
+
+        ReservationEditRequest editRequest = new ReservationEditRequest(
+                reservationRequest.date(),
+                reservationRequest.timeId());
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(editRequest))
+                .pathParam("id", targetReservationId)
+                .when()
+                .patch("/reservations/{id}")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    @DisplayName("이미 시작된 예약은 수정할 수 없다.")
+    public void scenario6() throws JsonProcessingException {
+        LocalDate reservationDate = LocalDate.of(2026, 10, 14);
+
+        Integer reservationTimeId = createReservationTime(
+                new ReservationTimeCreateRequest(LocalTime.of(10, 30)));
+        Integer editedReservationTimeId = createReservationTime(
+                new ReservationTimeCreateRequest(LocalTime.of(11, 30)));
+        Integer themeId = createTheme(
+                new ThemeCreateRequest("테마1", "설명", "섬네일"));
+
+        ReservationCreateRequest reservationRequest = new ReservationCreateRequest(
+                "brown",
+                reservationDate,
+                reservationTimeId.longValue(),
+                themeId.longValue());
+        Integer reservationId = createReservation(reservationRequest);
+
+        mutableClock.setFixed(LocalDateTime.of(2026, 10, 14, 10, 31));
+
+        ReservationEditRequest editRequest = new ReservationEditRequest(
+                LocalDate.of(2026, 10, 15),
+                editedReservationTimeId.longValue());
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(editRequest))
+                .pathParam("id", reservationId)
+                .when()
+                .patch("/reservations/{id}")
+                .then().log().all()
+                .statusCode(422);
+    }
+
+    @Test
+    @DisplayName("이미 지난 날짜와 시간으로 예약을 수정할 수 없다.")
+    public void scenario7() throws JsonProcessingException {
+        Integer reservationTimeId = createReservationTime(
+                new ReservationTimeCreateRequest(LocalTime.of(10, 30)));
+        Integer editedReservationTimeId = createReservationTime(
+                new ReservationTimeCreateRequest(LocalTime.of(11, 30)));
+        Integer themeId = createTheme(
+                new ThemeCreateRequest("테마1", "설명", "섬네일"));
+
+        ReservationCreateRequest reservationRequest = new ReservationCreateRequest(
+                "brown",
+                LocalDate.of(2026, 10, 14),
+                reservationTimeId.longValue(),
+                themeId.longValue());
+        Integer reservationId = createReservation(reservationRequest);
+
+        mutableClock.setFixed(LocalDateTime.of(2026, 10, 10, 12, 0));
+
+        ReservationEditRequest editRequest = new ReservationEditRequest(
+                LocalDate.of(2026, 10, 10),
+                editedReservationTimeId.longValue());
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(editRequest))
+                .pathParam("id", reservationId)
+                .when()
+                .patch("/reservations/{id}")
+                .then().log().all()
+                .statusCode(422);
     }
 
     private Integer createReservationTime(ReservationTimeCreateRequest request) throws JsonProcessingException {

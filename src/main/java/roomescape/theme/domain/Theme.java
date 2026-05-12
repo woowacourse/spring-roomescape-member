@@ -3,6 +3,8 @@ package roomescape.theme.domain;
 import roomescape.common.exception.DomainException;
 import roomescape.common.exception.ErrorCode;
 
+import java.util.Objects;
+
 public class Theme {
     private final Long id;
     private final String name;
@@ -70,5 +72,17 @@ public class Theme {
 
     public String getThumbnail() {
         return thumbnail;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Theme theme)) return false;
+        return id != null && Objects.equals(id, theme.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

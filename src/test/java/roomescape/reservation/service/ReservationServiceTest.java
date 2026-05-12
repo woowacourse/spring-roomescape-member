@@ -2,6 +2,8 @@ package roomescape.reservation.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
@@ -22,8 +24,10 @@ import roomescape.test_config.TestClockConfig;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
@@ -89,6 +93,129 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.delete(id))
                 .isInstanceOf(DomainException.class)
                 .hasMessage(ErrorCode.RESERVATION_NOT_FOUND.message());
+    }
+
+    @Test
+    @DisplayName("예약의 날짜 및 시간을 수정한다.")
+    public void editDateTime_success() {
+        // given
+        ReservationTime existTime = insertReservationTime(LocalTime.of(10, 0));
+        LocalDate existDate = LocalDate.of(2023, 8, 5);
+        Reservation reservation = insertReservation(existDate, existTime);
+
+        LocalDate editedDate = LocalDate.of(2023, 8, 10);
+        ReservationTime editedTime = insertReservationTime(LocalTime.of(12, 0));
+
+        clock.setFixed(LocalDate.of(2023, 7, 20));
+
+        // when
+        Reservation editedReservation =
+                reservationService.editDateTime(reservation.getId(), editedDate, editedTime.getId());
+
+        // then
+        assertThat(editedReservation)
+                .extracting(Reservation::getDate, r -> r.getTime().getId())
+                .containsExactly(editedDate, editedTime.getId());
+    }
+
+    @Test
+    @DisplayName("수정하려는 예약이 존재하지 않으면 예외가 발생한다.")
+    public void editDateTime_fail1() {
+        // given
+        Long reservationId = 1L;
+        LocalDate editedDate = LocalDate.of(2023, 8, 10);
+        ReservationTime editedTime = insertReservationTime(LocalTime.of(12, 0));
+
+        // when then
+        assertThatThrownBy(() -> reservationService.editDateTime(reservationId, editedDate, editedTime.getId()))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(ErrorCode.RESERVATION_NOT_FOUND.message());
+    }
+
+    @Test
+    @DisplayName("수정하려는 예약 시간이 존재하지 않으면 예외가 발생한다.")
+    public void editDateTime_fail2() {
+        // given
+        clock.setFixed(LocalDate.of(2023, 7, 20));
+
+        ReservationTime existTime = insertReservationTime(LocalTime.of(10, 0));
+        LocalDate existDate = LocalDate.of(2023, 8, 5);
+        Reservation reservation = insertReservation(existDate, existTime);
+
+        LocalDate editedDate = LocalDate.of(2023, 8, 10);
+        Long editedTimeId = 999L;
+
+        // when then
+        assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTimeId))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(ErrorCode.RESERVATION_TIME_NOT_FOUND.message());
+    }
+
+    @Test
+    @DisplayName("이미 시작된 예약은 수정할 수 없다.")
+    public void editDateTime_fail3() {
+        // given
+        clock.setFixed(LocalDate.of(2023, 8, 6));
+
+        ReservationTime existTime = insertReservationTime(LocalTime.of(10, 0));
+        LocalDate existDate = LocalDate.of(2023, 8, 5);
+        Reservation reservation = insertReservation(existDate, existTime);
+
+        LocalDate editedDate = LocalDate.of(2023, 8, 10);
+        ReservationTime editedTime = insertReservationTime(LocalTime.of(12, 0));
+
+        // when then
+        assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTime.getId()))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(ErrorCode.CANNOT_EDIT_ALREADY_STARTED_RESERVATION.message());
+    }
+
+    @Test
+    @DisplayName("수정하려는 날짜 및 시간에 예약이 존재하면 예외가 발생한다.")
+    public void editDateTime_fail4() {
+        // given
+        clock.setFixed(LocalDate.of(2023, 7, 6));
+
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+
+        LocalDate editedDate = LocalDate.of(2023, 8, 10);
+        ReservationTime editedTime = insertReservationTime(LocalTime.of(10, 0));
+        insertReservation("브라운", editedDate, editedTime, theme);
+
+        LocalDate existDate = LocalDate.of(2023, 8, 6);
+        ReservationTime existTime = insertReservationTime(LocalTime.of(12, 0));
+        Reservation reservation = insertReservation("포비", existDate, existTime, theme);
+
+        // when then
+        assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), editedDate, editedTime.getId()))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(ErrorCode.RESERVATION_ALREADY_EXISTS.message());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2023-07-05, 10:00", // 날짜가 지난 경우
+            "2023-07-06, 09:59", // 시간이 지난 경우
+    })
+    @DisplayName("이미 지난 날짜 및 시간으로 예약을 수정하려는 경우 예외가 발생한다.")
+    public void editDateTime_fail5(LocalDate ed, LocalTime et) {
+        // given
+        clock.setFixed(LocalDateTime.of(2023, 7, 6, 10, 0));
+        LocalDate existDate = LocalDate.of(2023, 8, 6);
+        ReservationTime existTime = insertReservationTime(LocalTime.of(12, 0));
+        Reservation reservation = insertReservation(existDate, existTime);
+
+        ReservationTime editedTime = insertReservationTime(et);
+
+        // when then
+        assertThatThrownBy(() -> reservationService.editDateTime(reservation.getId(), ed, editedTime.getId()))
+                .isInstanceOf(DomainException.class)
+                .hasMessage(ErrorCode.PAST_RESERVATION_NOT_ALLOWED.message());
+    }
+
+    private Reservation insertReservation(LocalDate existDate, ReservationTime existTime) {
+        Theme theme = insertTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png");
+        return insertReservation("브라운", existDate, existTime, theme);
     }
 
     private ReservationTime insertReservationTime(LocalTime startAt) {

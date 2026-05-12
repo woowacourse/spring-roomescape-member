@@ -16,6 +16,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,6 +24,31 @@ public class JdbcReservationRepository implements ReservationRepository {
 
 
     private final JdbcTemplate jdbcTemplate;
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.guest_name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme th
+                    ON r.theme_id = th.id
+                WHERE r.id = ?
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper, id).stream()
+                .findFirst();
+    }
 
     @Override
     public List<Reservation> findAll() {
@@ -68,16 +94,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        Integer count = jdbcTemplate.queryForObject("""
-                SELECT COUNT(*)
-                FROM reservation
-                WHERE date = ? AND time_id = ? AND theme_id = ?
-                """, Integer.class, date, timeId, themeId);
-        return count != null && count > 0;
-    }
-
-    @Override
     public Reservation save(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -89,12 +105,38 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean updateDateAndTime(Long id, LocalDate date, Long timeId) {
+        String sql = """
+                UPDATE reservation
+                SET date = ?, time_id = ?
+                WHERE id = ? 
+                """;
+
+        int count = jdbcTemplate.update(sql,
+                date,
+                timeId,
+                id);
+
+        return count == 1;
+    }
+
+    @Override
     public boolean deleteById(Long id) {
         int rowCount = jdbcTemplate.update("""
                 DELETE FROM reservation
                 WHERE id = ?
                 """, id);
-        return rowCount > 0;
+        return rowCount == 1;
+    }
+
+    @Override
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        Integer count = jdbcTemplate.queryForObject("""
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE date = ? AND time_id = ? AND theme_id = ?
+                """, Integer.class, date, timeId, themeId);
+        return count != null && count > 0;
     }
 
     @Override
