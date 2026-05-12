@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
+import roomescape.reservation.application.dto.ReservationUpdateCommand;
 
 public class ReservationFixture {
 
@@ -29,6 +30,14 @@ public class ReservationFixture {
         return new ReservationCreateCommand(KAYA, FUTURE_RESERVATION_DATE, themeId, timeId);
     }
 
+    public static ReservationUpdateCommand pastStarkUpdateCommand(Long timeId) {
+        return new ReservationUpdateCommand(PAST_RESERVATION_DATE, timeId);
+    }
+
+    public static ReservationUpdateCommand futureStarkUpdateCommand(Long timeId) {
+        return new ReservationUpdateCommand(FUTURE_RESERVATION_DATE, timeId);
+    }
+
     public static LocalDate pastReservationDate() {
         return PAST_RESERVATION_DATE;
     }
@@ -51,6 +60,20 @@ public class ReservationFixture {
         params.put("name", STARK);
         params.put("date", PAST_RESERVATION_DATE_TEXT);
         params.put("themeId", String.valueOf(themeId));
+        params.put("timeId", String.valueOf(timeId));
+        return params;
+    }
+
+    public static Map<String, String> futureReservationUpdateParams(Long timeId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("date", FUTURE_RESERVATION_DATE_TEXT);
+        params.put("timeId", String.valueOf(timeId));
+        return params;
+    }
+
+    public static Map<String, String> pastReservationUpdateParams(Long timeId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("date", PAST_RESERVATION_DATE_TEXT);
         params.put("timeId", String.valueOf(timeId));
         return params;
     }

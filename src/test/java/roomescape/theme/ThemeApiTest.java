@@ -168,7 +168,7 @@ public class ThemeApiTest {
         Long theme3Id = testHelper.insertTheme(ThemeFixture.themeCreateCommand(3));
         Long theme4Id = testHelper.insertTheme(ThemeFixture.themeCreateCommand(4));
 
-        LocalDate today = TestClockConfig.FIXED_DATE;
+        LocalDate today = TestClockConfig.CURRENT_DATE;
         LocalDate oneDayAgo = today.minusDays(1);
         LocalDate twoDaysAgo = today.minusDays(2);
         LocalDate threeDaysAgo = today.minusDays(3);

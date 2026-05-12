@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Primary;
 public class TestClockConfig {
 
     public static final ZoneId ZONE_ID = ZoneId.of("Asia/Seoul");
-    public static final LocalDate FIXED_DATE = LocalDate.of(2026, 5, 10);
+    public static final LocalDate CURRENT_DATE = LocalDate.of(2026, 5, 10);
 
     @Primary
     @Bean
-    public Clock fixedClock() {
-        return Clock.fixed(FIXED_DATE.atStartOfDay(ZONE_ID).toInstant(), ZONE_ID);
+    public Clock fixedCurrentClock() {
+        return Clock.fixed(CURRENT_DATE.atStartOfDay(ZONE_ID).toInstant(), ZONE_ID);
     }
 }

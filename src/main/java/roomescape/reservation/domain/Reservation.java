@@ -45,6 +45,16 @@ public class Reservation {
         validateNotBefore(startAt, currentDateTime, "이미 지나간 예약은 삭제할 수 없습니다.");
     }
 
+    public Reservation updateDateAndTime(LocalDate date, Long timeId) {
+        return Reservation.builder()
+                .id(this.id)
+                .name(this.name)
+                .date(date)
+                .themeId(this.themeId)
+                .timeId(timeId)
+                .build();
+    }
+
     private void validateNotBefore(LocalTime startAt, LocalDateTime currentDateTime, String errorMessage) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
 

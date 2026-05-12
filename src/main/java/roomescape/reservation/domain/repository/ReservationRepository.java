@@ -9,9 +9,13 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
+    Integer update(Reservation reservation);
+
     Integer delete(Long id);
 
     Boolean existsByDateAndThemeAndTime(LocalDate date, Long themeId, Long timeId);
+
+    Boolean existsByDateAndThemeAndTimeExcluding(LocalDate date, Long themeId, Long timeId, Long excludeId);
 
     Boolean existsByTheme(Long themeId);
 

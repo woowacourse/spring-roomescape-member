@@ -54,6 +54,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Integer update(Reservation reservation) {
+        return jdbcTemplate.update(
+                "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?",
+                reservation.getDate(),
+                reservation.getTimeId(),
+                reservation.getId());
+    }
+
+    @Override
     public Integer delete(Long id) {
         return jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
@@ -66,6 +75,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                 date,
                 themeId,
                 timeId);
+    }
+
+    @Override
+    public Boolean existsByDateAndThemeAndTimeExcluding(LocalDate date, Long themeId, Long timeId, Long excludeId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND theme_id = ? AND time_id = ? AND id != ?)",
+                Boolean.class,
+                date,
+                themeId,
+                timeId,
+                excludeId);
     }
 
     @Override

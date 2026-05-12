@@ -89,4 +89,70 @@ class JdbcReservationRepositoryTest {
 
         assertThat(reservationRepository.delete(reservationId)).isEqualTo(1);
     }
+
+    @DisplayName("특정 ID를 제외하고 테마, 날짜, 시간이 동일한 예약이 있는지 확인을 테스트합니다.")
+    @Test
+    void check_exist_by_theme_date_time_exclude_id() {
+        Long themeId = testHelper.insertTheme("테마1", "설명1", "img1.jpg");
+        Long nineTimeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
+        Long tenTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        Long reservationId = testHelper.insertReservation("스타크", date, themeId, nineTimeId);
+
+        Boolean notExistsWithSelf = reservationRepository.existsByDateAndThemeAndTimeExcluding(
+                date,
+                themeId,
+                nineTimeId,
+                reservationId
+        );
+
+        Boolean existsWithOther = reservationRepository.existsByDateAndThemeAndTimeExcluding(
+                date,
+                themeId,
+                nineTimeId,
+                100L
+        );
+
+        Boolean notExistsWithDifferentTime = reservationRepository.existsByDateAndThemeAndTimeExcluding(
+                date,
+                themeId,
+                tenTimeId,
+                reservationId
+        );
+
+        SoftAssertions.assertSoftly(assertSoftly -> {
+            assertSoftly.assertThat(notExistsWithSelf).isFalse();
+            assertSoftly.assertThat(existsWithOther).isTrue();
+            assertSoftly.assertThat(notExistsWithDifferentTime).isFalse();
+        });
+    }
+
+    @DisplayName("예약 업데이트를 테스트합니다.")
+    @Test
+    void update_reservation() {
+        Long themeId = testHelper.insertTheme("테마1", "설명1", "img1.jpg");
+        Long timeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
+        LocalDate date = LocalDate.of(2026, 5, 6);
+        Long reservationId = testHelper.insertReservation("스타크", date, themeId, timeId);
+
+        LocalDate newDate = LocalDate.of(2026, 5, 8);
+        Long newTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+
+        Reservation updateReservation = Reservation.builder()
+                .id(reservationId)
+                .name("스타크")
+                .date(newDate)
+                .themeId(themeId)
+                .timeId(newTimeId)
+                .build();
+
+        reservationRepository.update(updateReservation);
+
+        Reservation updated = reservationRepository.findById(reservationId).orElseThrow();
+
+        SoftAssertions.assertSoftly(assertSoftly -> {
+            assertSoftly.assertThat(updated.getDate()).isEqualTo(newDate);
+            assertSoftly.assertThat(updated.getTimeId()).isEqualTo(newTimeId);
+        });
+    }
 }

@@ -9,6 +9,7 @@ import roomescape.global.exception.NotFoundException;
 import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationResult;
+import roomescape.reservation.application.dto.ReservationUpdateCommand;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservationtime.application.dto.ReservationTimeResult;
@@ -43,6 +44,26 @@ public class ReservationCommandService {
         return ReservationResult.from(reservationRepository.save(reservation), themeResult, timeResult);
     }
 
+    public ReservationResult update(Long reservationId, ReservationUpdateCommand request) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+
+        ReservationTimeResult timeResult = ReservationTimeResult.from(timeRepository.findById(request.timeId())
+                .orElseThrow(() -> new RoomEscapeException("존재하지 않는 시간입니다.")));
+
+        checkAlreadyExistsDateAndTime(request, reservationId, reservation.getThemeId());
+
+        Reservation updatedReservation = reservation.updateDateAndTime(request.date(), request.timeId());
+        updatedReservation.validateNotPast(timeResult.startAt(), LocalDateTime.now(clock));
+
+        updateReservation(updatedReservation);
+
+        ThemeResult themeResult = ThemeResult.from(themeRepository.findById(reservation.getThemeId())
+                .orElseThrow(() -> new RoomEscapeException("존재하지 않는 테마입니다.")));
+
+        return ReservationResult.from(updatedReservation, themeResult, timeResult);
+    }
+
     public void delete(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
@@ -54,6 +75,25 @@ public class ReservationCommandService {
 
         if (reservationRepository.delete(id) == 0) {
             throw new NotFoundException("존재하지 않는 예약입니다.");
+        }
+    }
+
+    private void updateReservation(Reservation updatedReservation) {
+        if (reservationRepository.update(updatedReservation) == 0) {
+            throw new NotFoundException("존재하지 않는 예약입니다.");
+        }
+    }
+
+    private void checkAlreadyExistsDateAndTime(ReservationUpdateCommand request, Long reservationId, Long themeId) {
+        Boolean alreadyExist = reservationRepository.existsByDateAndThemeAndTimeExcluding(
+                request.date(),
+                themeId,
+                request.timeId(),
+                reservationId
+        );
+
+        if (alreadyExist) {
+            throw new RoomEscapeException("변경하려는 날짜와 시간에 이미 예약이 존재합니다.");
         }
     }
 

@@ -1,13 +1,18 @@
 package roomescape.reservation.service;
 
-import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.stream.Stream;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
@@ -17,6 +22,7 @@ import roomescape.fixture.ThemeFixture;
 import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationResult;
+import roomescape.reservation.application.dto.ReservationUpdateCommand;
 import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservation.application.service.ReservationCommandService;
 import roomescape.reservation.infra.JdbcReservationRepository;
@@ -131,5 +137,97 @@ class ReservationCommandServiceTest {
         assertThatThrownBy(() -> reservationCommandService.delete(reservationId))
                 .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("이미 지나간 예약은 삭제할 수 없습니다.");
+    }
+
+    static Stream<Arguments> futureDates() {
+        return Stream.of(
+                Arguments.of(TestClockConfig.CURRENT_DATE, LocalTime.of(0, 0)),
+                Arguments.of(ReservationFixture.futureReservationDate(), LocalTime.of(11, 0))
+        );
+    }
+
+    @DisplayName("사용자의 방탈출 예약 날짜/시간 변경을 테스트합니다.")
+    @ParameterizedTest
+    @MethodSource("futureDates")
+    void update_reservation(LocalDate updateDate, LocalTime updateTime) {
+        Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
+        Long timeId = testHelper.insertReservationTime(LocalTime.of(0, 0));
+        Long reservationId = testHelper.insertReservation(
+                "스타크",
+                ReservationFixture.pastReservationDate(),
+                themeId,
+                timeId
+        );
+
+        Long updateTimeId = testHelper.insertReservationTime(updateTime);
+        ReservationResult result = reservationCommandService.update(
+                reservationId,
+                new ReservationUpdateCommand(updateDate, updateTimeId)
+        );
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(result.date()).isEqualTo(updateDate);
+            softly.assertThat(result.time().id()).isEqualTo(updateTimeId);
+        });
+    }
+
+    @DisplayName("존재하지 않는 예약 업데이트 시도 시 예외 발생을 테스트합니다.")
+    @Test
+    void update_not_found_reservation_exception() {
+        Long newTimeId = testHelper.insertReservationTime(LocalTime.of(11, 0));
+
+        assertThatThrownBy(
+                () -> reservationCommandService.update(1L, ReservationFixture.futureStarkUpdateCommand(newTimeId)))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("존재하지 않는 예약입니다.");
+    }
+
+    @DisplayName("변경하려는 예약 날짜에 이미 예약이 존재할 시 예외 발생을 테스트합니다.")
+    @Test
+    void update_already_reserved_exception() {
+        Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
+        Long tenTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        Long starkReservationId = testHelper.insertReservation(
+                "스타크",
+                ReservationFixture.pastReservationDate(),
+                themeId,
+                tenTimeId
+        );
+
+        Long elevenTimeId = testHelper.insertReservationTime(LocalTime.of(11, 0));
+        testHelper.insertReservation(
+                "카야",
+                ReservationFixture.futureReservationDate(),
+                themeId,
+                elevenTimeId
+        );
+
+        assertThatThrownBy(() -> reservationCommandService.update(
+                starkReservationId,
+                ReservationFixture.futureStarkUpdateCommand(elevenTimeId))
+        )
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("변경하려는 날짜와 시간에 이미 예약이 존재합니다.");
+    }
+
+    @DisplayName("변경하려는 날짜가 현재 시각보다 이전일 경우 예외 발생을 테스트합니다.")
+    @Test
+    void update_past_date_reservation_exception() {
+        Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
+        Long timeId = testHelper.insertReservationTime(LocalTime.of(0, 0));
+        Long reservationId = testHelper.insertReservation(
+                "스타크",
+                ReservationFixture.futureReservationDate(),
+                themeId,
+                timeId
+        );
+
+        assertThatThrownBy(() ->
+                reservationCommandService.update(
+                        reservationId,
+                        new ReservationUpdateCommand(TestClockConfig.CURRENT_DATE.minusDays(1), timeId)
+                ))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("현재 시간보다 이전 시간으로 예약을 할 수 없습니다.");
     }
 }

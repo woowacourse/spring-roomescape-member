@@ -147,6 +147,100 @@ class ReservationApiTest {
                 .body("errorMessage", equalTo("이미 해당 날짜와 시간에 예약이 존재합니다."));
     }
 
+    @DisplayName("방탈출 예약 날짜와 시간 변경 API를 테스트합니다.")
+    @Test
+    void update_reservation() {
+        Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
+        Long timeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
+        Long updateTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        Long reservationId = testHelper.insertReservation(
+                "스타크",
+                ReservationFixture.pastReservationDate(),
+                themeId,
+                timeId
+        );
+
+        Map<String, String> params = ReservationFixture.futureReservationUpdateParams(updateTimeId);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/{id}", reservationId)
+                .then().log().all()
+                .statusCode(200)
+                .body("id", equalTo(reservationId.intValue()))
+                .body("name", equalTo("스타크"))
+                .body("date", equalTo("2028-05-06"))
+                .body("time.id", equalTo(updateTimeId.intValue()))
+                .body("time.startAt", equalTo("10:00"))
+                .body("theme.id", equalTo(themeId.intValue()))
+                .body("theme.name", equalTo("공포 테마"));
+    }
+
+    @DisplayName("존재하지 않는 예약을 변경 시 404 응답 반환을 테스트합니다.")
+    @Test
+    void update_not_existing_reservation() {
+        Long updateTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+
+        Map<String, String> params = ReservationFixture.futureReservationUpdateParams(updateTimeId);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/{id}", 999L)
+                .then().log().all()
+                .statusCode(404)
+                .body("errorMessage", equalTo("존재하지 않는 예약입니다."));
+    }
+
+    @DisplayName("변경하려는 날짜와 시간에 이미 예약이 존재할 시 400 응답 반환을 테스트합니다.")
+    @Test
+    void update_duplicated_reservation() {
+        Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
+        Long timeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
+        Long updateTimeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
+        Long reservationId = testHelper.insertReservation(
+                "스타크",
+                ReservationFixture.pastReservationDate(),
+                themeId,
+                timeId
+        );
+        testHelper.insertReservation("비밥", ReservationFixture.futureReservationDate(), themeId, updateTimeId);
+
+        Map<String, String> params = ReservationFixture.futureReservationUpdateParams(updateTimeId);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/{id}", reservationId)
+                .then().log().all()
+                .statusCode(400)
+                .body("errorMessage", equalTo("변경하려는 날짜와 시간에 이미 예약이 존재합니다."));
+    }
+
+    @DisplayName("과거 날짜로 예약 변경 요청 시 400 응답 반환을 테스트합니다.")
+    @Test
+    void update_reservation_with_past_date() {
+        Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
+        Long timeId = testHelper.insertReservationTime(LocalTime.of(9, 0));
+        Long reservationId = testHelper.insertReservation(
+                "스타크",
+                ReservationFixture.futureReservationDate(),
+                themeId,
+                timeId
+        );
+
+        Map<String, String> params = ReservationFixture.pastReservationUpdateParams(timeId);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/{id}", reservationId)
+                .then().log().all()
+                .statusCode(400)
+                .body("errorMessage", equalTo("현재 시간보다 이전 시간으로 예약을 할 수 없습니다."));
+    }
+
     @DisplayName("존재하지 않는 예약을 삭제 시 404 응답 반환을 테스트합니다.")
     @Test
     void delete_not_existing_reservation() {
@@ -238,7 +332,8 @@ class ReservationApiTest {
     void delete_past_reservation() {
         Long themeId = testHelper.insertTheme(ThemeFixture.horrorThemeCreateCommand());
         Long timeId = testHelper.insertReservationTime(LocalTime.of(10, 0));
-        Long reservationId = testHelper.insertReservation("스타크", ReservationFixture.pastReservationDate(), themeId, timeId);
+        Long reservationId = testHelper.insertReservation("스타크", ReservationFixture.pastReservationDate(), themeId,
+                timeId);
 
         RestAssured.given()
                 .when().delete("/reservations/{id}", reservationId)
