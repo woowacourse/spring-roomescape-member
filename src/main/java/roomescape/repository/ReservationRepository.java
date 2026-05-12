@@ -141,12 +141,11 @@ public class ReservationRepository {
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail"));
 
-        Reservation reservation = new Reservation(
+        return new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("username"),
                 resultSet.getObject("date", LocalDate.class),
                 time,
                 theme);
-        return reservation;
     };
 }

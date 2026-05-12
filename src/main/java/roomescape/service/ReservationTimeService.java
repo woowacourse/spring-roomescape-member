@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -28,18 +29,25 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTime create(LocalTime startAt) {
+        validateDuplicateStartAt(startAt);
         Long id = reservationTimeRepository.insert(new ReservationTime(startAt));
         return reservationTimeRepository.findBy(id)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 예약 시간대입니다."));
+    }
+
+    private void validateDuplicateStartAt(LocalTime startAt) {
+        if (reservationTimeRepository.existsByStartAt(startAt)) {
+            throw new IllegalArgumentException("이미 추가된 예약 시간대입니다.");
+        }
     }
 
     @Transactional
     public void delete(Long id) {
         if (!reservationTimeRepository.existsById(id)) {
-            throw new NoSuchElementException("[ERROR] 존재하지 않는 ID입니다.");
+            throw new NoSuchElementException("존재하지 않는 예약 시간대입니다.");
         }
         if (reservationRepository.existsByTimeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 해당 시간에 예약이 존재합니다.");
+            throw new IllegalArgumentException("해당 시간에 예약이 존재합니다.");
         }
         reservationTimeRepository.delete(id);
     }

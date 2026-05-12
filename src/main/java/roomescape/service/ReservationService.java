@@ -33,36 +33,36 @@ public class ReservationService {
 
     @Transactional
     public Reservation create(String name, LocalDate date, Long timeId, Long themeId) {
-        validateAlreadyReserved(date, timeId, themeId);
+        validateDuplicateReservation(date, timeId, themeId);
         ReservationTime time = findReservationTime(timeId);
         Theme theme = findTheme(themeId);
         Reservation reservation = new Reservation(name, date, time, theme);
         Long id = reservationRepository.insert(reservation);
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 ID입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 ID입니다."));
     }
 
-    private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
+    private void validateDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateAndTimeAndTheme(date, timeId, themeId)) {
-            throw new IllegalArgumentException("[ERROR] 이미 예약된 시간입니다.");
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
     }
 
     @Transactional
     public void delete(Long id) {
         if (!reservationRepository.existsById(id)) {
-            throw new NoSuchElementException("[ERROR] 존재하지 않는 ID입니다.");
+            throw new NoSuchElementException("존재하지 않는 예약입니다.");
         }
         reservationRepository.delete(id);
     }
 
     private ReservationTime findReservationTime(Long timeId) {
         return reservationTimeRepository.findBy(timeId)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 예약 시간입니다."));
     }
 
     private Theme findTheme(Long themeId) {
         return themeRepository.findBy(themeId)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 테마입니다."));
     }
 }

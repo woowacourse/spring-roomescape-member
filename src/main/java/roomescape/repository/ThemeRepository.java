@@ -77,12 +77,17 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, themeRowMapper, startDate, endDate, limit);
     }
 
+    public boolean existsByName(String name) {
+        String sql = "SELECT count(*) FROM theme WHERE name = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return count != null && count > 0;
+    }
+
     private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> {
-        Theme theme = new Theme(
+        return new Theme(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail"));
-        return theme;
     };
 }

@@ -56,10 +56,15 @@ public class ReservationTimeRepository {
         return count != null && count > 0;
     }
 
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = "SELECT count(*) FROM reservation_time WHERE startAt = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, startAt);
+        return count != null && count > 0;
+    }
+
     private final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) -> {
-        ReservationTime reservationTime = new ReservationTime(
+        return new ReservationTime(
                 resultSet.getLong("id"),
                 resultSet.getObject("start_at", LocalTime.class));
-        return reservationTime;
     };
 }
