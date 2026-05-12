@@ -59,10 +59,18 @@ public class ReservationController {
         return ResponseEntity.created(location).build();
     }
 
+    @Operation(summary = "예약 변경", description = "ID로 기존 예약을 변경합니다. 본인의 예약만 변경 가능합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "예약 변경 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 데이터 또는 과거로의 변경 시도"),
+            @ApiResponse(responseCode = "403", description = "본인의 예약이 아님"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 예약 ID"),
+            @ApiResponse(responseCode = "409", description = "해당 시간에 이미 예약이 존재함")
+    })
     @PatchMapping("/{id}")
     public ResponseEntity<ReservationResponse> updateReservation(
-            @PathVariable Long id,
-            @RequestParam Long userId,
+            @Parameter(description = "변경할 예약 ID", example = "1") @PathVariable Long id,
+            @Parameter(description = "요청자 사용자 ID", example = "1") @RequestParam Long userId,
             @RequestBody UpdateReservationRequest request) {
         Reservation updatedReservation = reservationService.updateReservation(id, userId, request);
         return ResponseEntity.ok(ReservationResponse.from(updatedReservation));
