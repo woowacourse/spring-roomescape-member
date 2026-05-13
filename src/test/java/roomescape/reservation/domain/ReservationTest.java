@@ -1,6 +1,7 @@
 package roomescape.reservation.domain;
 
 import org.junit.jupiter.api.Test;
+import roomescape.global.exception.BusinessException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -30,7 +31,7 @@ class ReservationTest {
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
 
         assertThatThrownBy(() -> new Reservation(1L, "", LocalDate.of(2026, 5, 1), time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -39,7 +40,7 @@ class ReservationTest {
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
 
         assertThatThrownBy(() -> new Reservation(1L, null, LocalDate.of(2026, 5, 1), time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -48,7 +49,7 @@ class ReservationTest {
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
 
         assertThatThrownBy(() -> new Reservation(1L, "브라운", null, time, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -56,6 +57,6 @@ class ReservationTest {
         Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
 
         assertThatThrownBy(() -> new Reservation(1L, "브라운", LocalDate.of(2026, 5, 1), null,theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class);
     }
 }
