@@ -4,7 +4,6 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.request.ThemeCreateRequest;
 import roomescape.service.dto.response.ThemeResponse;
@@ -17,7 +16,6 @@ import java.util.List;
 public class ThemeController {
 
     private final ThemeService themeService;
-    private final ReservationTimeService reservationTimeService;
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes() {
