@@ -38,7 +38,7 @@ public class ReservationService {
         return reservationTimeDao.selectById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
     }
-    
+
     private Theme getTheme(long themeId) {
         return themeDao.selectById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));

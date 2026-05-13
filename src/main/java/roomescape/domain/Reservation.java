@@ -4,15 +4,11 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class Reservation {
-    private Long id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
-
-    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
-        return new Reservation(null, name, date, time, theme);
-    }
+    private final Long id;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
@@ -20,6 +16,10 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(null, name, date, time, theme);
     }
 
     public Long getId() {

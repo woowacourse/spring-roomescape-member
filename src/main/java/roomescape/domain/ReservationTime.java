@@ -5,16 +5,16 @@ import java.util.List;
 import java.util.Objects;
 
 public class ReservationTime {
-    private Long id;
     private final LocalTime startAt;
-
-    public static ReservationTime createWithoutId(LocalTime startAt) {
-        return new ReservationTime(null, startAt);
-    }
+    private final Long id;
 
     public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
+    }
+
+    public static ReservationTime createWithoutId(LocalTime startAt) {
+        return new ReservationTime(null, startAt);
     }
 
     public Long getId() {

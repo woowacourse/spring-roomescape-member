@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Roomescape - 테마 관리</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div id="password-overlay"
@@ -12,9 +12,10 @@
         <div class="card-body">
             <h5 class="card-title">관리자 인증</h5>
             <p class="card-text">비밀번호를 입력하세요.</p>
-            <input type="password" id="admin-password" class="form-control mb-3" placeholder="비밀번호"
-                   onkeyup="if(event.key === 'Enter') checkPassword()">
-            <button onclick="checkPassword()" class="btn btn-primary w-100">확인</button>
+            <input class="form-control mb-3" id="admin-password" onkeyup="if(event.key === 'Enter') checkPassword()"
+                   placeholder="비밀번호"
+                   type="password">
+            <button class="btn btn-primary w-100" onclick="checkPassword()">확인</button>
         </div>
     </div>
 </div>
@@ -24,13 +25,14 @@
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title">테마가 등록되었습니다.</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal" type="button"></button>
             </div>
             <div class="modal-body">
                 <div class="text-center mb-3">
-                    <img id="modal-theme-thumbnail" src="" alt="썸네일" width="80" height="80"
+                    <img alt="썸네일" height="80" id="modal-theme-thumbnail"
+                         onerror="this.src='https://via.placeholder.com/80?text=No'" src=""
                          style="object-fit: cover; border-radius: 8px;"
-                         onerror="this.src='https://via.placeholder.com/80?text=No'">
+                         width="80">
                 </div>
                 <table class="table table-bordered mb-0">
                     <tbody>
@@ -50,7 +52,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">닫기</button>
             </div>
         </div>
     </div>
@@ -77,17 +79,17 @@
             <form id="theme-form">
                 <div class="mb-3">
                     <label class="form-label">테마 이름</label>
-                    <input type="text" id="theme-name" class="form-control" required>
+                    <input class="form-control" id="theme-name" required type="text">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">설명</label>
-                    <textarea id="theme-description" class="form-control" required></textarea>
+                    <textarea class="form-control" id="theme-description" required></textarea>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">썸네일 URL</label>
-                    <input type="url" id="theme-thumbnail" class="form-control" required>
+                    <input class="form-control" id="theme-thumbnail" required type="url">
                 </div>
-                <button type="submit" class="btn btn-primary">추가하기</button>
+                <button class="btn btn-primary" type="submit">추가하기</button>
             </form>
         </div>
     </div>
