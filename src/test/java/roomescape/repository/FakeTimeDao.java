@@ -34,4 +34,9 @@ public class FakeTimeDao implements TimeRepository {
     public void deleteById(long id) {
         storage.remove(id);
     }
+
+    @Override
+    public boolean existsByReferencedId(long timeId) {
+        return false;
+    }
 }
