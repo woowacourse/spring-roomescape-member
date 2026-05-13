@@ -1,18 +1,21 @@
 ## 방탈출 API 명세
 | 기능              | 메서드 / URL                                      | 요청                               | 응답                                                           | 상태 코드 |
 |-----------------|------------------------------------------------|----------------------------------|--------------------------------------------------------------|-------|
-| 사용자 예약 등록      | POST `/reservations`                           | `{name, date, timeId, themeId}`  | `{id, name, date, time, theme}`                              | 201   |
-| 관리자 예약 조회      | GET `/admin/reservations`                      | —                                | `[{id, name, date, time, theme}, ...]`                       | 200   |
-| 관리자 예약 등록      | POST `/admin/reservations`                     | `{name, date, timeId, themeId}`  | `{id, name, date, time, theme}`                              | 201   |
-| 관리자 예약 삭제      | DELETE `/admin/reservations/{id}`              | —                                | —                                                            | 204   |
-| 관리자 시간 조회      | GET `/admin/times`                             | —                                | `[{id, startAt}, ...]`                                       | 200   |
-| 관리자 시간 등록      | POST `/admin/times`                            | `{startAt}`                      | `{id, startAt}`                                              | 201   |
-| 관리자 시간 삭제      | DELETE `/admin/times/{id}`                     | —                                | —                                                            | 204   |
-| 사용자 테마 조회      | GET `/themes`                                  | —                                | `[{id, name, description, thumbnail}, ...]`                  | 200   |
-| 관리자 테마 조회      | GET `/admin/themes`                            | —                                | `[{id, name, description, thumbnail}, ...]`                  | 200   |
-| 관리자 테마 등록      | POST `/admin/themes`                           | `{name, description, thumbnail}` | `{id, name, description, thumbnail}`                         | 201   |
-| 관리자 테마 삭제      | DELETE `/admin/themes/{id}`                    | —                                | —                                                            | 204   |
-| 예약 가능 시간 조회    | GET `/themes/{id}/times?date=2026-05-08`       | —                                | `[{time, available}, ...]`                                   | 200   |
+| 사용자 예약 등록       | POST `/reservations`                           | `{name, date, timeId, themeId}`  | `{id, name, date, time, theme}`                              | 201   |
+| 사용자 본인 예약 조회    | GET `/reservations?name=브라운`                 | —                                | `[{id, name, date, time, theme}, ...]`                       | 200   |
+| 사용자 본인 예약 변경    | PUT `/reservations/{id}`                       | `{name, date, timeId}`           | `{id, name, date, time, theme}`                              | 200   |
+| 사용자 본인 예약 취소    | DELETE `/reservations/{id}?name=브라운`          | —                                | —                                                            | 204   |
+| 관리자 예약 조회       | GET `/admin/reservations`                      | —                                | `[{id, name, date, time, theme}, ...]`                       | 200   |
+| 관리자 예약 등록       | POST `/admin/reservations`                     | `{name, date, timeId, themeId}`  | `{id, name, date, time, theme}`                              | 201   |
+| 관리자 예약 삭제       | DELETE `/admin/reservations/{id}`              | —                                | —                                                            | 204   |
+| 관리자 시간 조회       | GET `/admin/times`                             | —                                | `[{id, startAt}, ...]`                                       | 200   |
+| 관리자 시간 등록       | POST `/admin/times`                            | `{startAt}`                      | `{id, startAt}`                                              | 201   |
+| 관리자 시간 삭제       | DELETE `/admin/times/{id}`                     | —                                | —                                                            | 204   |
+| 사용자 테마 조회       | GET `/themes`                                  | —                                | `[{id, name, description, thumbnail}, ...]`                  | 200   |
+| 관리자 테마 조회       | GET `/admin/themes`                            | —                                | `[{id, name, description, thumbnail}, ...]`                  | 200   |
+| 관리자 테마 등록       | POST `/admin/themes`                           | `{name, description, thumbnail}` | `{id, name, description, thumbnail}`                         | 201   |
+| 관리자 테마 삭제       | DELETE `/admin/themes/{id}`                    | —                                | —                                                            | 204   |
+| 예약 가능 시간 조회     | GET `/themes/{id}/times?date=2026-05-08`       | —                                | `[{time, available}, ...]`                                   | 200   |
 | 인기 테마 상위 10개 조회 | GET `/themes/popular`                          | —                                | `[{id, name, description, thumbnail, reservationCount}, ...]` | 200   |
 
 ## 에러 응답 명세
@@ -40,11 +43,16 @@
 | INVALID_INPUT | date 형식이 올바르지 않습니다. | 400 | 요청 파라미터의 날짜 형식이 올바르지 않음 |
 | INVALID_INPUT | id 형식이 올바르지 않습니다. | 400 | 경로 변수 ID 형식이 올바르지 않음 |
 | INVALID_INPUT | date는 필수입니다. | 400 | 필수 요청 파라미터가 누락됨 |
-| PAST_RESERVATION | 이미 지난 시간으로는 예약할 수 없습니다. | 400 | 사용자가 지난 날짜·시간으로 예약 생성을 요청함 |
+| INVALID_INPUT | name는 필수입니다. | 400 | 내 예약 조회·취소 요청의 이름 파라미터가 누락됨 |
+| PAST_RESERVATION | 이미 지난 시간으로는 예약할 수 없습니다. | 400 | 사용자가 지난 날짜·시간으로 예약 생성·변경을 요청함 |
+| FORBIDDEN_RESERVATION | 본인의 예약만 변경하거나 취소할 수 있습니다. | 403 | 예약은 존재하지만 요청 이름과 예약 이름이 일치하지 않음 |
 | NOT_FOUND | 존재하지 않는 예약 시간입니다. | 404 | 존재하지 않는 예약 시간 ID로 요청함 |
 | NOT_FOUND | 존재하지 않는 테마입니다. | 404 | 존재하지 않는 테마 ID로 요청함 |
+| NOT_FOUND | 존재하지 않는 예약입니다. | 404 | 존재하지 않는 예약 ID로 변경·취소를 요청함 |
 | NOT_FOUND | 존재하지 않는 리소스입니다. | 404 | 존재하지 않는 URL로 요청함 |
-| DUPLICATE_RESERVATION | 이미 예약된 시간입니다. | 409 | 같은 날짜·시간·테마에 이미 예약이 존재함 |
+| DUPLICATE_RESERVATION | 이미 예약된 시간입니다. | 409 | 같은 날짜·시간·테마에 이미 다른 예약이 존재함 |
+| PAST_RESERVATION_LOCKED | 이미 지난 예약은 변경하거나 취소할 수 없습니다. | 409 | 이미 지난 예약 변경·취소를 요청함 |
+| UNCHANGED_RESERVATION | 기존 예약과 같은 날짜·시간으로는 변경할 수 없습니다. | 409 | 기존 날짜·시간과 동일한 예약 변경을 요청함 |
 | RESOURCE_IN_USE | 예약이 존재하는 시간은 삭제할 수 없습니다. | 409 | 예약이 연결된 예약 시간 삭제를 요청함 |
 | RESOURCE_IN_USE | 예약이 존재하는 테마는 삭제할 수 없습니다. | 409 | 예약이 연결된 테마 삭제를 요청함 |
 | INTERNAL_SERVER_ERROR | 서버에 문제가 발생했습니다. | 500 | 예상하지 못한 서버 오류가 발생함 |
@@ -104,6 +112,18 @@
 - [X] RESOURCE_IN_USE 에러 응답 적용
 - [X] INTERNAL_SERVER_ERROR 에러 응답 적용
 - [X] 컨트롤러 테스트 추가 및 기존 인수 테스트 정리
+
+### 3단계 - 내 예약 조회/변경/취소
+- [ ] 내 예약 조회 API 구현
+- [ ] 내 예약 취소 API 구현
+- [ ] 내 예약 변경 API 구현
+- [ ] 예약 변경·취소 권한 검증 적용
+- [ ] 지난 예약 변경·취소 예외 응답 적용
+- [ ] 예약 변경 중복 예외 응답 적용
+- [ ] 기존 날짜·시간과 동일한 예약 변경 예외 응답 적용
+- [ ] 내 예약 조회·변경·취소 테스트 추가
+- [ ] 내 예약 조회 화면 추가
+- [ ] 내 예약 변경·취소 화면 추가
 
 ---
 
