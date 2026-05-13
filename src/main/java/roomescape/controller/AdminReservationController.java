@@ -1,6 +1,8 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +34,9 @@ public class AdminReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
+        LocalDateTime requestDateTime = LocalDateTime.now();
         ReservationResponse reservationResponse = reservationCommandService.create(request.name(), request.date(),
-                request.timeId(), request.themeId());
+                request.timeId(), request.themeId(), requestDateTime);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .build()

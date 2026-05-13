@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -81,5 +82,10 @@ public class ReservationTimeDao {
                 """;
 
         return jdbcTemplate.query(sql, rowMapper, date, themeId, ReservationStatus.AVAILABLE.name(), TimeStatus.AVAILABLE.name());
+    }
+
+    public Optional<ReservationTime> findByTimeId(long timeId) {
+        String sql = "SELECT id, start_at, status FROM reservation_time WHERE id = ? AND status = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, timeId, TimeStatus.AVAILABLE.name()));
     }
 }
