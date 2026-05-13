@@ -102,7 +102,7 @@ public class ThemeDao {
                     WHERE id = ?
                 )
                 """;
-        return jdbcTemplate.queryForObject(sql, boolean.class, themeId);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, themeId));
     }
 
     public boolean existsByName(String name) {
@@ -113,7 +113,7 @@ public class ThemeDao {
                     WHERE name = ?
                 )
                 """;
-        return jdbcTemplate.queryForObject(sql, boolean.class, name);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, boolean.class, name));
     }
 
     public int delete(long themeId) {
