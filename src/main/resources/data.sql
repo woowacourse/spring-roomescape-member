@@ -16,46 +16,34 @@ VALUES (1, '10:00:00'),
        (7, '16:00:00'),
        (8, '17:00:00');
 
--- 2026-05-01 ~ 2026-05-06 사이 예약
--- Theme A: 6건
+-- 최근 7일 윈도우 내 예약: A(4) > B(3) > C(2) > D(1)
+-- Theme A: 4건
 INSERT INTO reservation (id, name, date, time_id, theme_id)
-VALUES (1, 'User1', '2026-05-01', 1, 1),
-       (2, 'User2', '2026-05-02', 2, 1),
-       (3, 'User3', '2026-05-03', 3, 1),
-       (4, 'User4', '2026-05-04', 4, 1),
-       (5, 'User5', '2026-05-05', 1, 1),
-       (6, 'User6', '2026-05-06', 5, 1);
+VALUES (1, 'UserA1', DATEADD('DAY', -6, CURRENT_DATE), 1, 1),
+       (2, 'UserA2', DATEADD('DAY', -5, CURRENT_DATE), 1, 1),
+       (3, 'UserA3', DATEADD('DAY', -4, CURRENT_DATE), 1, 1),
+       (4, 'UserA4', DATEADD('DAY', -3, CURRENT_DATE), 1, 1);
 
--- Theme B: 4건
+-- Theme B: 3건
 INSERT INTO reservation (id, name, date, time_id, theme_id)
-VALUES (7, 'User7', '2026-05-01', 2, 2),
-       (8, 'User8', '2026-05-02', 3, 2),
-       (9, 'User9', '2026-05-06', 4, 2),
-       (10, 'User10', '2026-05-03', 5, 2);
+VALUES (5, 'UserB1', DATEADD('DAY', -6, CURRENT_DATE), 2, 2),
+       (6, 'UserB2', DATEADD('DAY', -5, CURRENT_DATE), 2, 2),
+       (7, 'UserB3', DATEADD('DAY', -4, CURRENT_DATE), 2, 2);
 
 -- Theme C: 2건
 INSERT INTO reservation (id, name, date, time_id, theme_id)
-VALUES (11, 'User11', '2026-05-06', 1, 3),
-       (12, 'User12', '2026-05-02', 2, 3);
+VALUES (8, 'UserC1', DATEADD('DAY', -6, CURRENT_DATE), 3, 3),
+       (9, 'UserC2', DATEADD('DAY', -5, CURRENT_DATE), 3, 3);
 
 -- Theme D: 1건
 INSERT INTO reservation (id, name, date, time_id, theme_id)
-VALUES (13, 'User13', '2026-05-05', 3, 4);
+VALUES (10, 'UserD1', DATEADD('DAY', -6, CURRENT_DATE), 4, 4);
 
--- Theme E: 3건
+-- Theme E, F: 오래된 예약 (랭킹 윈도우 밖)
 INSERT INTO reservation (id, name, date, time_id, theme_id)
-VALUES (14, 'User14', '2026-05-02', 6, 5),
-       (15, 'User15', '2026-05-04', 7, 5),
-       (16, 'User16', '2026-05-06', 8, 5);
+VALUES (11, 'OldUser1', DATEADD('DAY', -30, CURRENT_DATE), 5, 5),
+       (12, 'OldUser2', DATEADD('DAY', -30, CURRENT_DATE), 5, 6);
 
--- Theme F: 2건
-INSERT INTO reservation (id, name, date, time_id, theme_id)
-VALUES (17, 'User17', '2026-05-03', 6, 6),
-       (18, 'User18', '2026-05-05', 7, 6);
-
-ALTER TABLE themes
-    ALTER COLUMN id RESTART WITH 20;
-ALTER TABLE reservation_time
-    ALTER COLUMN id RESTART WITH 20;
-ALTER TABLE reservation
-    ALTER COLUMN id RESTART WITH 40;
+ALTER TABLE themes ALTER COLUMN id RESTART WITH 20;
+ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 20;
+ALTER TABLE reservation ALTER COLUMN id RESTART WITH 40;
