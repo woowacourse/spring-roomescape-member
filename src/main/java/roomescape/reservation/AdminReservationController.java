@@ -8,22 +8,28 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
-    private final AdminReservationService adminReservationService;
+    private final ReservationService reservationService;
 
-    public AdminReservationController(AdminReservationService adminReservationService) {
-        this.adminReservationService = adminReservationService;
+    public AdminReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createForceReservation(@Valid @RequestBody ReservationRequest reservationRequest) {
-        Reservation reservation = adminReservationService.createForceReservation(reservationRequest.name(), reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId());
+    public ResponseEntity<ReservationResponse> createForceReservation(
+            @Valid @RequestBody ReservationRequest reservationRequest) {
+        Reservation reservation = reservationService.save(
+                reservationRequest.name(),
+                reservationRequest.date(),
+                reservationRequest.timeId(),
+                reservationRequest.themeId()
+        );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(reservation));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> forceDeleteReservation(@PathVariable long id) {
-        adminReservationService.forceDeleteReservation(id);
+        reservationService.deleteByAdmin(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

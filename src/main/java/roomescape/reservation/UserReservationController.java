@@ -10,15 +10,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/reservations")
 public class UserReservationController {
-    private final UserReservationService userReservationService;
+    private final ReservationService reservationService;
 
-    public UserReservationController(UserReservationService userReservationService) {
-        this.userReservationService = userReservationService;
+    public UserReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<Reservation> reservations = userReservationService.getReservations();
+        List<Reservation> reservations = reservationService.findAll();
         List<ReservationResponse> response = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -29,16 +29,22 @@ public class UserReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @Valid @RequestBody ReservationRequest reservationRequest) {
-        Reservation reservation = userReservationService.createReservation(reservationRequest.name(),
-                reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId());
+        Reservation reservation = reservationService.save(
+                reservationRequest.name(),
+                reservationRequest.date(),
+                reservationRequest.timeId(),
+                reservationRequest.themeId()
+        );
+
         ReservationResponse response = ReservationResponse.from(reservation);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable long id,
-                                                  @Valid @RequestBody ReservationDeleteRequest reservationDeleteRequest) {
-        userReservationService.deleteReservation(id, reservationDeleteRequest.name());
+    public ResponseEntity<Void> deleteReservation(
+            @PathVariable long id,
+            @Valid @RequestBody ReservationDeleteRequest reservationDeleteRequest) {
+        reservationService.deleteByUser(id, reservationDeleteRequest.name());
         return ResponseEntity.noContent().build();
     }
 }
