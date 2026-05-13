@@ -9,11 +9,15 @@ public record ReservationTimeCondition(LocalDate date, long themeId) {
     private static final String INVALID_DATE_FORMAT = "유효하지 않은 날짜입니다.";
     private static final String INVALID_THEME_ID = "유효하지 않은 테마 id입니다.";
 
-    public ReservationTimeCondition(String date, long themeId) {
-        this(validateDate(date), validateThemeId(themeId));
+    public ReservationTimeCondition {
+        validateThemeId(themeId);
     }
 
-    private static LocalDate validateDate(String date) {
+    public ReservationTimeCondition(String date, long themeId) {
+        this(parseDate(date), themeId);
+    }
+
+    private static LocalDate parseDate(String date) {
         if(date == null || date.isBlank()) {
             throw new InvalidRequestValueException(INVALID_DATE_NULL);
         }
