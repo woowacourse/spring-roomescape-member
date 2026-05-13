@@ -53,7 +53,7 @@ public class MissionStep3Test {
                 .extract()
                 .path("id");
 
-        Map<String, Object> theme = themeRequestBody("테마A", "테마A란...", "www.d.d.d");
+        Map<String, Object> theme = themeRequestBody("테마A", "테마A란...", "https://example.com/themes/theme-1.png");
 
         Integer themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
