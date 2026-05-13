@@ -34,14 +34,14 @@ class ReservationFlowTest {
         insertReservationTime(1L, "10:00:00");
 
         RestAssured.given().log().all()
-                .when().get("/themes/1/times?date=2026-05-06")
+                .when().get("/themes/1/times?date=2026-05-08")
                 .then().log().all()
                 .statusCode(200)
                 .body("times[0].isReserved", equalTo(false));
 
         Map<String, Object> params = Map.of(
                 "name", "브라운",
-                "date", "2026-05-06",
+                "date", "2026-05-08",
                 "timeId", 1,
                 "themeId", 1);
         RestAssured.given().log().all()
@@ -52,7 +52,7 @@ class ReservationFlowTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/themes/1/times?date=2026-05-06")
+                .when().get("/themes/1/times?date=2026-05-08")
                 .then().log().all()
                 .statusCode(200)
                 .body("times[0].isReserved", equalTo(true));

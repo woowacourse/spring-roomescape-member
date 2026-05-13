@@ -11,4 +11,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIllegalState(DuplicateReservationException e) {
         return ResponseEntity.status(e.getStatus()).body(new ErrorResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(InvalidReservationDateTimeException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalState(InvalidReservationDateTimeException e) {
+        return ResponseEntity.status(e.getStatus()).body(new ErrorResponse(e.getMessage()));
+    }
 }

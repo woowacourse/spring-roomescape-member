@@ -14,13 +14,12 @@ import roomescape.domain.Theme;
 import roomescape.dto.theme.CreateThemeRequest;
 import roomescape.dto.theme.ThemeReservationTimeResponse;
 import roomescape.dto.theme.ThemeResponses;
+import roomescape.TestClockConfig;
 import roomescape.repository.fake.FakeReservationRepository;
 import roomescape.repository.fake.FakeReservationTimeRepository;
 import roomescape.repository.fake.FakeThemeRepository;
 
 class ThemeServiceTest {
-
-    private static final LocalDate TODAY = LocalDate.of(2026, 5, 7);
 
     private FakeThemeRepository themeRepository;
     private FakeReservationRepository reservationRepository;
@@ -32,9 +31,8 @@ class ThemeServiceTest {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         themeRepository = new FakeThemeRepository(reservationRepository);
-        TimeProvider timeProvider = () -> TODAY;
         service = new ThemeService(themeRepository, reservationRepository,
-                reservationTimeRepository, timeProvider);
+                reservationTimeRepository, new TestClockConfig().timeProvider());
     }
 
     @Test

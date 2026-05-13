@@ -63,7 +63,7 @@ class ReservationAcceptanceTest {
         insertTime(1L, "10:00");
         Map<String, Object> body = Map.of(
                 "name", "브라운",
-                "date", "2026-05-06",
+                "date", "2026-05-08",
                 "themeId", 1,
                 "timeId", 1);
 
@@ -80,7 +80,27 @@ class ReservationAcceptanceTest {
     void POST_reservations_같은_날짜시간테마_중복이면_409과_메시지를_반환한다() {
         insertTheme(1L, "테마");
         insertTime(1L, "10:00");
-        insertReservation("기존", 1L, "2026-05-06", 1L);
+        insertReservation("기존", 1L, "2026-05-08", 1L);
+
+        Map<String, Object> body = Map.of(
+                "name", "브라운",
+                "date", "2026-05-08",
+                "themeId", 1,
+                "timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", equalTo("해당 날짜·시간·테마에 이미 예약이 존재합니다. 다른 날짜·시간·테마를 선택해주세요."));
+    }
+
+    @Test
+    void POST_reservations_과거_날짜_시간이면_422과_메시지를_반환한다() {
+        insertTheme(1L, "테마");
+        insertTime(1L, "10:00");
 
         Map<String, Object> body = Map.of(
                 "name", "브라운",
@@ -93,8 +113,8 @@ class ReservationAcceptanceTest {
                 .body(body)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(409)
-                .body("message", equalTo("해당 날짜·시간·테마에 이미 예약이 존재합니다."));
+                .statusCode(422)
+                .body("message", equalTo("예약 일정이 유효하지 않습니다. 예약 날짜와 시간은 현시간 이후여야 합니다."));
     }
 
     @Test

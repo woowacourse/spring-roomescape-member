@@ -28,6 +28,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.InvalidReservationDateTimeException;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
@@ -109,7 +110,25 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("해당 날짜·시간·테마에 이미 예약이 존재합니다."));
+                .andExpect(jsonPath("$.message").value("해당 날짜·시간·테마에 이미 예약이 존재합니다. 다른 날짜·시간·테마를 선택해주세요."));
+    }
+
+    @Test
+    void POST_reservations_서비스가_InvalidReservationDateTimeException을_던지면_422_와_메시지를_반환한다() throws Exception {
+        willThrow(new InvalidReservationDateTimeException())
+                .given(reservationService).createReservation(any(CreateReservationRequest.class));
+
+        Map<String, Object> body = Map.of(
+                "name", "브라운",
+                "date", "2026-05-06",
+                "themeId", 1,
+                "timeId", 1);
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.message").value("예약 일정이 유효하지 않습니다. 예약 날짜와 시간은 현시간 이후여야 합니다."));
     }
 
     @Test

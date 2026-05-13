@@ -7,12 +7,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.TestClockConfig;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.InvalidReservationDateTimeException;
 import roomescape.repository.fake.FakeReservationRepository;
 import roomescape.repository.fake.FakeReservationTimeRepository;
 import roomescape.repository.fake.FakeThemeRepository;
@@ -29,7 +31,8 @@ class ReservationServiceTest {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         themeRepository = new FakeThemeRepository(reservationRepository);
-        service = new ReservationService(reservationRepository, themeRepository, reservationTimeRepository);
+        service = new ReservationService(reservationRepository, themeRepository, reservationTimeRepository,
+                new TestClockConfig().timeProvider());
     }
 
     @Test
@@ -37,15 +40,26 @@ class ReservationServiceTest {
         Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "https://thumbnail.url"));
         Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
         CreateReservationRequest request = new CreateReservationRequest(
-                "브라운", themeId, LocalDate.of(2026, 5, 6), timeId);
+                "브라운", themeId, LocalDate.of(2026, 5, 8), timeId);
 
         Reservation created = service.createReservation(request);
 
         assertThat(created.getId()).isPositive();
         assertThat(created.getName()).isEqualTo("브라운");
-        assertThat(created.getDate()).isEqualTo(LocalDate.of(2026, 5, 6));
+        assertThat(created.getDate()).isEqualTo(LocalDate.of(2026, 5, 8));
         assertThat(created.getTheme().getId()).isEqualTo(themeId);
         assertThat(created.getTime().getId()).isEqualTo(timeId);
+    }
+
+    @Test
+    void createReservation_과거의_날짜_시간이면_예외() {
+        Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "https://thumbnail.url"));
+        Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(11, 0)));
+
+        assertThatThrownBy(() -> service.createReservation(new CreateReservationRequest(
+                "브라운", themeId, LocalDate.of(2026, 5, 5), timeId)))
+                .isInstanceOf(InvalidReservationDateTimeException.class)
+                .hasMessage("예약 일정이 유효하지 않습니다. 예약 날짜와 시간은 현시간 이후여야 합니다.");
     }
 
     @Test
@@ -53,12 +67,12 @@ class ReservationServiceTest {
         Long themeId = themeRepository.save(new Theme(null, "공포", "무서움", "https://thumbnail.url"));
         Long timeId = reservationTimeRepository.save(new ReservationTime(null, LocalTime.of(10, 0)));
         service.createReservation(new CreateReservationRequest(
-                "브라운", themeId, LocalDate.of(2026, 5, 6), timeId));
+                "브라운", themeId, LocalDate.of(2026, 5, 8), timeId));
 
         assertThatThrownBy(() -> service.createReservation(new CreateReservationRequest(
-                "다른사람", themeId, LocalDate.of(2026, 5, 6), timeId)))
+                "다른사람", themeId, LocalDate.of(2026, 5, 8), timeId)))
                 .isInstanceOf(DuplicateReservationException.class)
-                .hasMessage("해당 날짜·시간·테마에 이미 예약이 존재합니다.");
+                .hasMessage("해당 날짜·시간·테마에 이미 예약이 존재합니다. 다른 날짜·시간·테마를 선택해주세요.");
     }
 
     @Test

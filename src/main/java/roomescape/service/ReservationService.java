@@ -9,6 +9,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.InvalidReservationDateTimeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -19,12 +20,14 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final TimeProvider timeProvider;
 
     public ReservationService(ReservationRepository reservationRepository, ThemeRepository themeRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, TimeProvider timeProvider) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.timeProvider = timeProvider;
     }
 
     public ReservationResponses getReservations(int page, int size) {
@@ -46,6 +49,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId());
         Reservation newReservation = new Reservation(null, request.name(), theme, request.date(), reservationTime);
 
+        validateNotPastDateTime(newReservation);
         validateNotDuplicated(newReservation);
 
         Long newReservationId = reservationRepository.save(newReservation);
@@ -54,6 +58,12 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    private void validateNotPastDateTime(Reservation reservation) {
+        if (reservation.isInPast(timeProvider.currentDateTime())) {
+            throw new InvalidReservationDateTimeException();
+        }
     }
 
     private void validateNotDuplicated(Reservation reservation) {
