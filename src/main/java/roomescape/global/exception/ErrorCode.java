@@ -12,6 +12,8 @@ public enum ErrorCode {
     RESERVATION_PAST_DATETIME(HttpStatus.BAD_REQUEST, "과거 날짜, 시간으로 예약할 수 없습니다."),
 
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다."),
+    RESERVATION_TIME_IN_USE(HttpStatus.CONFLICT, "예약이 존재하는 시간은 삭제할 수 없습니다."),
+    THEME_IN_USE(HttpStatus.CONFLICT, "예약이 존재하는 테마는 삭제할 수 없습니다."),
     ;
 
     private final HttpStatus status;
