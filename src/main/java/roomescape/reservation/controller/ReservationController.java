@@ -4,10 +4,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.reservation.dto.ReservationCreateInfo;
-import roomescape.reservation.dto.ReservationIdResponse;
-import roomescape.reservation.dto.ReservationRequest;
-import roomescape.reservation.dto.ReservationsResponse;
+import roomescape.reservation.dto.*;
+import roomescape.reservation.model.Reservation;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -40,5 +38,17 @@ public class ReservationController {
         reservationService.cancel(id, userId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateMyReservation(
+            @PathVariable Long id, @RequestBody @Valid ReservationUpdateRequest request,
+            @RequestHeader("X-User-Id") Long userId) {
+        reservationService.changeSchedule(id, request.scheduleId(), userId);
+
+        Reservation reservation = reservationService.findById(id);
+        ReservationResponse response = ReservationResponse.from(reservation);
+
+        return ResponseEntity.ok(response);
     }
 }
