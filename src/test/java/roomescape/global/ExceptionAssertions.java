@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import java.util.function.Supplier;
-import roomescape.domain.global.exception.BadRequestException;
-import roomescape.domain.global.exception.BaseException;
-import roomescape.domain.global.exception.ErrorCode;
-import roomescape.domain.global.exception.ErrorDetail;
+import roomescape.domain.global.exception.custom.BadRequestException;
+import roomescape.domain.global.exception.custom.BaseException;
+import roomescape.domain.global.exception.error.ErrorCode;
+import roomescape.domain.global.exception.error.ErrorDetail;
 
 public final class ExceptionAssertions {
 

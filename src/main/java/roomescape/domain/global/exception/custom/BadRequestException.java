@@ -1,7 +1,9 @@
-package roomescape.domain.global.exception;
+package roomescape.domain.global.exception.custom;
 
 import java.util.Collections;
 import java.util.List;
+import roomescape.domain.global.exception.error.ErrorCode;
+import roomescape.domain.global.exception.error.ErrorDetail;
 
 public class BadRequestException extends RuntimeException implements BaseException {
 

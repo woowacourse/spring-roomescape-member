@@ -12,14 +12,14 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import roomescape.domain.global.exception.BadRequestException;
-import roomescape.domain.global.exception.ConflictException;
-import roomescape.domain.global.exception.ErrorCode;
-import roomescape.domain.global.exception.ErrorDetail;
-import roomescape.domain.global.exception.ErrorResponse;
-import roomescape.domain.global.exception.ForbiddenException;
-import roomescape.domain.global.exception.NotFoundException;
-import roomescape.domain.global.exception.UnprocessableEntityException;
+import roomescape.domain.global.exception.custom.BadRequestException;
+import roomescape.domain.global.exception.custom.ConflictException;
+import roomescape.domain.global.exception.error.ErrorCode;
+import roomescape.domain.global.exception.error.ErrorDetail;
+import roomescape.domain.global.exception.error.ErrorResponse;
+import roomescape.domain.global.exception.custom.ForbiddenException;
+import roomescape.domain.global.exception.custom.NotFoundException;
+import roomescape.domain.global.exception.custom.UnprocessableEntityException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

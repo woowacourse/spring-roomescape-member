@@ -1,4 +1,4 @@
-package roomescape.domain.global.exception;
+package roomescape.domain.global.exception.error;
 
 public enum ErrorCode {
 

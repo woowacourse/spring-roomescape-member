@@ -3,9 +3,9 @@ package roomescape.domain.reservation.dto.request;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import roomescape.domain.global.exception.BadRequestException;
-import roomescape.domain.global.exception.ErrorCode;
-import roomescape.domain.global.exception.ErrorDetail;
+import roomescape.domain.global.exception.custom.BadRequestException;
+import roomescape.domain.global.exception.error.ErrorCode;
+import roomescape.domain.global.exception.error.ErrorDetail;
 
 public record ReservationUpdateRequestDto(LocalDate date, Long timeId) {
 

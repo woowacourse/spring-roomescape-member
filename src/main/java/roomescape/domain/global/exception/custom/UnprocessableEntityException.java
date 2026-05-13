@@ -1,4 +1,6 @@
-package roomescape.domain.global.exception;
+package roomescape.domain.global.exception.custom;
+
+import roomescape.domain.global.exception.error.ErrorCode;
 
 public class UnprocessableEntityException extends RuntimeException implements BaseException {
 

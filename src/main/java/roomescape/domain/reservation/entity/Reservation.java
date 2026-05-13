@@ -3,8 +3,8 @@ package roomescape.domain.reservation.entity;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Objects;
-import roomescape.domain.global.exception.ErrorCode;
-import roomescape.domain.global.exception.UnprocessableEntityException;
+import roomescape.domain.global.exception.error.ErrorCode;
+import roomescape.domain.global.exception.custom.UnprocessableEntityException;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.time.entity.Time;
 
