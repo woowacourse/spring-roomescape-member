@@ -3,6 +3,7 @@ package roomescape.exception.handler;
 import static roomescape.exception.HttpStatusMapper.STATUS_MAP;
 
 import java.util.Map;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,6 +24,11 @@ public class GlobalExceptionHandler {
         String errorMessage = exception.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
 
         return getResponse(HttpStatus.BAD_REQUEST, errorMessage);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Response> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        return getResponse(HttpStatus.BAD_REQUEST, "이미 존재하는 데이터이거나 제약 조건을 위반했습니다.");
     }
 
     @ExceptionHandler(RuntimeException.class)
