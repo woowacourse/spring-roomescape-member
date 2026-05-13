@@ -33,12 +33,12 @@ public class ReservationDao {
     }
 
     public List<ReservationEntity> findAll() {
-        String sql = "select * from reservation;";
+        String sql = "SELECT * FROM reservation;";
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     public Optional<ReservationEntity> findById(Long id) {
-        String sql = "select * from reservation where id = ?;";
+        String sql = "SELECT * FROM reservation WHERE id = ?;";
         return jdbcTemplate.query(sql, reservationRowMapper, id).stream()
                 .findAny();
     }
@@ -48,12 +48,13 @@ public class ReservationDao {
                 .addValue("name", name)
                 .addValue("date", date)
                 .addValue("time_id", timeId)
-                .addValue("theme_id", themeId);
+                .addValue("theme_id", themeId)
+                .addValue("is_deleted", false);
         return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     public int deleteById(Long id) {
-        String sql = "delete from reservation where id = ?;";
+        String sql = "DELETE FROM reservation WHERE id = ?;";
         return jdbcTemplate.update(sql, id);
     }
 
