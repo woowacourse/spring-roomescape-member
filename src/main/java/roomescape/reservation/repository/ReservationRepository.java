@@ -30,8 +30,8 @@ public class ReservationRepository {
         return reservationDao.findAll().stream()
                 .map(reservation ->
                         ReservationMapper.toReservation(reservation,
-                                reservationTimeDao.getById(reservation.getTimeId()),
-                                themeDao.getById(reservation.getThemeId()))
+                                reservationTimeDao.getByIdIncludingDeleted(reservation.getTimeId()),
+                                themeDao.getByIdIncludingDeleted(reservation.getThemeId()))
                 ).toList();
     }
 
@@ -40,16 +40,16 @@ public class ReservationRepository {
                 .orElseThrow(ReservationNotFoundException::new);
 
         return ReservationMapper.toReservation(reservation,
-                reservationTimeDao.getById(reservation.getTimeId()),
-                themeDao.getById(reservation.getThemeId()));
+                reservationTimeDao.getByIdIncludingDeleted(reservation.getTimeId()),
+                themeDao.getByIdIncludingDeleted(reservation.getThemeId()));
     }
 
     public List<Reservation> findReservationsFrom(LocalDate localDate) {
         return reservationDao.findAllOnOrAfter(localDate).stream()
                 .map(reservation ->
                         ReservationMapper.toReservation(reservation,
-                                reservationTimeDao.getById(reservation.getTimeId()),
-                                themeDao.getById(reservation.getThemeId()))
+                                reservationTimeDao.getByIdIncludingDeleted(reservation.getTimeId()),
+                                themeDao.getByIdIncludingDeleted(reservation.getThemeId()))
                 ).toList();
     }
 
@@ -58,8 +58,8 @@ public class ReservationRepository {
         Long id = reservationDao.insert(params.name(), params.date(), params.timeId(), params.themeId());
         ReservationEntity reservationEntity = new ReservationEntity(id, params.name(), params.date(), params.timeId(),
                 params.themeId());
-        ReservationTimeEntity reservationTimeEntity = reservationTimeDao.getById(params.timeId());
-        ThemeEntity themeEntity = themeDao.getById(params.themeId());
+        ReservationTimeEntity reservationTimeEntity = reservationTimeDao.getByIdIncludingDeleted(params.timeId());
+        ThemeEntity themeEntity = themeDao.getByIdIncludingDeleted(params.themeId());
         return ReservationMapper.toReservation(reservationEntity, reservationTimeEntity, themeEntity);
     }
 
