@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.exception.DuplicateReservationException;
 import roomescape.reservation.domain.exception.ReservationNotFoundException;
@@ -27,11 +28,18 @@ public class ReservationService {
     private final ReservationSchedulePolicy reservationSchedulePolicy;
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> getReservations() {
-        return reservationRepository.findAll()
-                .stream()
+    public List<ReservationResponse> getReservations(String name) {
+        List<Reservation> reservations = findReservations(name);
+        return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
+    }
+
+    private List<Reservation> findReservations(String name) {
+        if (name == null || name.isBlank()) {
+            return reservationRepository.findAll();
+        }
+        return reservationRepository.findByName(name);
     }
 
     public ReservationResponse addReservation(ReservationRequest request) {

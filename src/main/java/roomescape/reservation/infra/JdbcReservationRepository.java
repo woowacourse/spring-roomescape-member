@@ -81,6 +81,23 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByName(String name) {
+        String sql = "SELECT "
+                + "r.id AS r_id, r.name AS r_name, r.date AS r_date, "
+                + "t.id AS t_id, t.name AS t_name, t.thumbnail_image_url AS t_thumbnail_image_url, "
+                + "t.description AS t_description, t.duration_time AS t_duration_time, "
+                + "rt.id AS rt_id, rt.start_at AS rt_start_at "
+                + "FROM reservation r "
+                + "INNER JOIN theme t ON r.theme_id = t.id "
+                + "INNER JOIN reservation_time rt ON r.time_id = rt.id "
+                + "WHERE r.name = :name "
+                + "ORDER BY r.date ASC, rt.start_at ASC";
+
+        SqlParameterSource params = new MapSqlParameterSource().addValue("name", name);
+        return jdbcTemplate.query(sql, params, rowMapper);
+    }
+
+    @Override
     public List<Reservation> findByThemeAndDate(Long themeId, LocalDate date) {
         String sql = "SELECT "
                 + "r.id AS r_id, r.name AS r_name, r.date AS r_date, "
