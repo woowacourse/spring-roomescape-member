@@ -170,6 +170,8 @@ public class RoomescapePageController {
             addSuccessMessage(redirectAttributes, "예약을 취소했습니다.");
         } catch (RoomescapeException e) {
             addExpectedErrorMessage(redirectAttributes, e);
+        } catch (RuntimeException e) {
+            addUnexpectedErrorMessage(redirectAttributes, e);
         }
         return "redirect:/dashboard/reservations";
     }
