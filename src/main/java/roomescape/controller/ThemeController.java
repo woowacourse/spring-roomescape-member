@@ -30,7 +30,7 @@ public class ThemeController {
         return ResponseEntity.ok().body(themeResponses);
     }
 
-    @GetMapping(params = {"from", "to"})
+    @GetMapping("/popular")
     public ResponseEntity<List<PopularThemeResponse>> getPopularTheme(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
