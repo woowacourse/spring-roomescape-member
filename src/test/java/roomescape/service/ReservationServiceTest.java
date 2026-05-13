@@ -4,6 +4,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -63,7 +64,59 @@ class ReservationServiceTest {
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-05-03"), 999L,
                 1L);
 
-        Assertions.assertThatThrownBy(() -> reservationService.reserve(request))
+        Assertions.assertThatThrownBy(() -> reservationService.reserve(request, LocalDateTime.MAX))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 지나간_날짜로_예약_시_예외가_발생해야_한다() {
+        ReservationTime reservationTime = ReservationTime.of("11:00");
+        Theme theme = Theme.of(1L, "테마1", "설명", "URL");
+
+        ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-05"), 1L, 1L);
+        given(reservationTimeService.find(1L)).willReturn(reservationTime);
+        given(themeService.find(1L)).willReturn(theme);
+
+        Assertions.assertThatThrownBy(() -> reservationService.reserve(request, LocalDateTime.MAX));
+    }
+
+    @Test
+    void 같은_날짜이며_시간이_1초_전이면_예약에_성공해야_한다() {
+        ReservationTime reservationTime = ReservationTime.of("11:00");
+        Theme theme = Theme.of(1L, "테마1", "설명", "URL");
+
+        ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-05"), 1L, 1L);
+        given(reservationTimeService.find(1L)).willReturn(reservationTime);
+        given(themeService.find(1L)).willReturn(theme);
+
+        Assertions.assertThatNoException()
+                .isThrownBy(() -> reservationService.reserve(request, LocalDateTime.of(2026, 4, 5, 10, 59, 59)));
+    }
+
+    @Test
+    void 같은_날짜이며_시간이_1초_지났다면_예약에_실패해야_한다() {
+        ReservationTime reservationTime = ReservationTime.of("11:00");
+        Theme theme = Theme.of(1L, "테마1", "설명", "URL");
+
+        ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-05"), 1L, 1L);
+        given(reservationTimeService.find(1L)).willReturn(reservationTime);
+        given(themeService.find(1L)).willReturn(theme);
+
+        Assertions.assertThatThrownBy(
+                () -> reservationService.reserve(request, LocalDateTime.of(2026, 4, 5, 11, 0, 1)));
+    }
+
+    @Test
+    void 미래로_예약하면_성공해야_한다() {
+        ReservationTime reservationTime = ReservationTime.of("11:00");
+        Theme theme = Theme.of(1L, "테마1", "설명", "URL");
+
+        ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-06"), 1L, 1L);
+        given(reservationTimeService.find(1L)).willReturn(reservationTime);
+        given(themeService.find(1L)).willReturn(theme);
+
+        Assertions.assertThatNoException().isThrownBy(
+                () -> reservationService.reserve(request, LocalDateTime.of(2026, 4, 5, 11, 0, 1)));
+
     }
 }

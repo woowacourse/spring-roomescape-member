@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,7 +26,7 @@ public class ReservationController {
     @PostMapping("/reservations")
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse create(@RequestBody ReservationCreateRequest request) {
-        Reservation reservation = reservationService.reserve(request);
+        Reservation reservation = reservationService.reserve(request, LocalDateTime.now());
 
         return ReservationResponse.toDto(reservation);
     }

@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,19 +37,20 @@ public class ReservationService {
         return reservationRepository.findById(reservationId).orElseThrow(
                 () -> new IllegalArgumentException(INVALID_RESERVATION_ID));
     }
-    
+
     @Transactional
-    public Reservation reserve(ReservationCreateRequest request) {
+    public Reservation reserve(ReservationCreateRequest request, LocalDateTime now) {
         ReservationTime reservationTime = reservationTimeService.find(request.getTimeId());
         Theme theme = themeService.find(request.getThemeId());
+
+        Reservation reservation = Reservation.reserve(Name.from(request.getName()),
+                ReservationDate.from(request.getDate()),
+                reservationTime, theme, now);
 
         if (reservationRepository.existsByTimeAndThemeAndDate(request.getTimeId(), request.getThemeId(),
                 request.getDate())) {
             throw new IllegalArgumentException(DUPLICATED_RESERVATION);
         }
-
-        Reservation reservation = Reservation.of(Name.from(request.getName()), ReservationDate.from(request.getDate()),
-                reservationTime, theme);
 
         return reservationRepository.save(reservation);
     }
