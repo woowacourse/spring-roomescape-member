@@ -2,17 +2,16 @@ package roomescape.exception.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.exception.dto.ErrorCode;
 import roomescape.exception.dto.ErrorResponse;
 import roomescape.exception.dto.FieldErrorResponse;
 import roomescape.exception.exception.BaseCustomException;
 import roomescape.exception.exception.CustomException;
-import roomescape.exception.dto.ErrorCode;
 
 import java.util.List;
 
@@ -75,7 +74,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {
-        log.error("Unexpected error", e);  // 서버 로그에는 상세히 기록
+        log.error("Unexpected error", e);
 
         return ResponseEntity
                 .status(SERVER_ERROR.getStatus())
