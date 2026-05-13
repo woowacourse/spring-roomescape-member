@@ -11,9 +11,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationStatus;
+import roomescape.domain.reservationStatus.*;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
+import roomescape.global.exception.CustomException;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -134,7 +135,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId(),
-                "status", reservation.getReservationStatus().name()
+                "status", reservation.getReservationStatus().getName()
         );
     }
 
@@ -172,7 +173,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                         rs.getString("theme_description"),
                         rs.getString("theme_thumbnail_url")
                 ),
-                ReservationStatus.valueOf(rs.getString("status"))
+                toStatue(rs.getString("status"))
         );
+    }
+
+    private ReservationStatus toStatue(String statue) {
+        return switch (statue) {
+            case "PENDING"   -> PendingStatus.getInstance();
+            case "CONFIRMED" -> ConfirmedStatus.getInstance();
+            case "COMPLETED" -> CompletedStatus.getInstance();
+            case "CANCELLED" -> CancelledStatus.getInstance();
+            default -> throw new IllegalArgumentException("DB에서 존재하지 않는 예약 상태입니다.");
+        };
     }
 }

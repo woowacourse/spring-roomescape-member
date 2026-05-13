@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.*;
 
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationStatus;
 
 public class FakeReservationDao implements ReservationRepository {
 

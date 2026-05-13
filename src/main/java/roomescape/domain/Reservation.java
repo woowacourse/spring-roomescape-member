@@ -1,5 +1,8 @@
 package roomescape.domain;
 
+import roomescape.domain.reservationStatus.PendingStatus;
+import roomescape.domain.reservationStatus.ReservationStatus;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -19,7 +22,7 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
-        this.reservationStatus = ReservationStatus.PENDING;
+        this.reservationStatus = PendingStatus.getInstance();
     }
 
     public Reservation(Long id, String name, LocalDate date, Time time, Theme theme, ReservationStatus reservationStatus) {
@@ -82,13 +85,20 @@ public class Reservation {
         return reservationStatus;
     }
 
+    public void changeStatus(ReservationStatus reservationStatus) {
+        this.reservationStatus = reservationStatus;
+    }
+
+    public void confirm() {
+        reservationStatus.confirm(this);
+    }
+
     public void cancel() {
+        reservationStatus.cancel(this);
+    }
 
-
-
-
-
-        this.reservationStatus = ReservationStatus.CANCELLED;
+    public void complete() {
+        reservationStatus.complete(this);
     }
 
     @Override
