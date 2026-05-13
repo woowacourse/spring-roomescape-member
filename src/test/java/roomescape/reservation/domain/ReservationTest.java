@@ -1,15 +1,16 @@
 package roomescape.reservation.domain;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.business.PastTimeReservationException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
-
-import java.time.LocalTime;
 
 class ReservationTest {
 
@@ -52,8 +53,7 @@ class ReservationTest {
     @DisplayName("과거 날짜면 예외 발생")
     void 과거_날짜_예외() {
         assertThatThrownBy(() -> Reservation.of("현미밥", LocalDate.now().minusDays(1), time, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("현재보다 이전의 날짜는 예약할 수 없습니다.");
+                .isInstanceOf(PastTimeReservationException.class);
     }
 
     @Test
@@ -70,5 +70,19 @@ class ReservationTest {
         assertThatThrownBy(() -> Reservation.of("현미밥", futureDate, time, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("테마는 필수입니다.");
+    }
+
+    @Test
+    @DisplayName("과거 예약이면 isPast가 true를 반환한다")
+    void isPast_과거면_true() {
+        Reservation past = Reservation.of(1L, "현미밥", LocalDate.now().minusDays(1), time, theme);
+        assertThat(past.isPast()).isTrue();
+    }
+
+    @Test
+    @DisplayName("미래 예약이면 isPast가 false를 반환한다")
+    void isPast_미래면_false() {
+        Reservation future = Reservation.of(1L, "현미밥", LocalDate.now().plusDays(1), time, theme);
+        assertThat(future.isPast()).isFalse();
     }
 }

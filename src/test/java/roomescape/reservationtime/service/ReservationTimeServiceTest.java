@@ -1,6 +1,7 @@
 package roomescape.reservationtime.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,10 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.exception.business.BusinessException;
 import roomescape.reservationtime.dto.TimeRequest;
 import roomescape.reservationtime.dto.TimeResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeServiceTest {
 
@@ -50,5 +52,18 @@ class ReservationTimeServiceTest {
         reservationTimeService.deleteById(created.id());
 
         assertThat(reservationTimeService.getAllTimes()).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("id로 시간 조회 성공")
+    void getById_성공() {
+        assertThat(reservationTimeService.getById(1L).getId()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 id로 시간 조회 시 예외 발생")
+    void getById_없으면_예외() {
+        assertThatThrownBy(() -> reservationTimeService.getById(999L))
+                .isInstanceOf(BusinessException.class);
     }
 }
