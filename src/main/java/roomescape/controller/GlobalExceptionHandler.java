@@ -1,6 +1,7 @@
 package roomescape.controller;
 
-import org.springframework.context.MessageSourceResolvable;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -8,7 +9,6 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.controller.dto.ErrorResponse;
@@ -17,9 +17,7 @@ import roomescape.exception.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({
-            InvalidInputException.class,
-            PastReservationException.class})
+    @ExceptionHandler(PastReservationException.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(RoomescapeException e) {
         return ResponseEntity.badRequest().body(ErrorResponse.from(e));
     }
@@ -35,13 +33,12 @@ public class GlobalExceptionHandler {
         return invalidInput(detail);
     }
 
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<ErrorResponse> handleHandlerMethodValidation(HandlerMethodValidationException e) {
-        String detail = e.getParameterValidationResults()
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException e) {
+        String detail = e.getConstraintViolations()
                 .stream()
-                .flatMap(result -> result.getResolvableErrors().stream())
                 .findFirst()
-                .map(MessageSourceResolvable::getDefaultMessage)
+                .map(ConstraintViolation::getMessage)
                 .orElse("요청 값이 올바르지 않습니다.");
         return invalidInput(detail);
     }
@@ -80,7 +77,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+    public ResponseEntity<ErrorResponse> handleException() {
         return ResponseEntity.internalServerError()
                 .body(new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR.name(), "서버에 문제가 발생했습니다."));
     }

@@ -8,7 +8,7 @@ public class ViewController {
 
     @GetMapping("/")
     public String getHome() {
-        return "/home";
+        return "home";
     }
 
     @GetMapping("/reservation")
