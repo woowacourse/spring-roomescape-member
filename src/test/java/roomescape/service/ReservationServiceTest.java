@@ -10,6 +10,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicationException;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.UnprocessableException;
 import roomescape.policy.UserReservationSavePolicy;
@@ -155,18 +156,14 @@ class ReservationServiceTest {
 
     @Test
     void 같은_날짜_시간_테마에_이미_예약이_있으면_중복_예외가_발생한다() {
-        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
-        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
         LocalDate date = LocalDate.of(2026, 5, 10);
         ReservationSaveCommand saveCommand = new ReservationSaveCommand("브라운", date, TIME_ID, THEME_ID);
-        Reservation existing = new Reservation(1L, "조이", date, time, theme);
 
-        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
-        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
-        given(reservationRepository.findAllReservations()).willReturn(List.of(existing));
+        given(reservationRepository.countReservationsOf(date, TIME_ID, THEME_ID)).willReturn(1);
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
-                .isInstanceOf(DuplicationException.class);
+                .isInstanceOf(DuplicationException.class)
+                .hasMessage(ErrorCode.RESERVATION_DUPLICATED.getMessage());
     }
 
     @Test

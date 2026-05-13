@@ -91,4 +91,13 @@ class JdbcTemplateReservationRepositoryTest {
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM reservation", Integer.class);
         assertThat(count).isEqualTo(0);
     }
+
+    @Test
+    @Sql({"/test-truncate.sql", "/test-theme.sql", "/test-reservation-time.sql"})
+    void 같은_날짜_시간_테마에_이미_예약이_있는지_카운트() {
+        addReservation("브라운", LocalDate.of(2026, 5, 3));
+        int count = reservationRepository.countReservationsOf(LocalDate.of(2026, 5, 3), TIME_ID, THEME_ID);
+
+        assertThat(count).isEqualTo(1);
+    }
 }

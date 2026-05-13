@@ -1,7 +1,9 @@
 package roomescape.repository;
 
+import org.springframework.cglib.core.Local;
 import roomescape.domain.Reservation;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ReservationRepository {
@@ -12,4 +14,6 @@ public interface ReservationRepository {
     void deleteById(Long id);
 
     List<Reservation> findReservationsByName(String name);
+
+    int countReservationsOf(LocalDate date, long timeId, long themeId);
 }

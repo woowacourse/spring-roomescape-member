@@ -10,6 +10,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -98,5 +99,13 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 reservationRowMapper(),
                 name
         );
+    }
+
+    @Override
+    public int countReservationsOf(LocalDate date, long timeId, long themeId) {
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) cnt FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?",
+                Integer.class,
+                date, timeId, themeId));
     }
 }

@@ -5,8 +5,10 @@ import roomescape.command.ReservationSaveCommand;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.DuplicationException;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.UnprocessableException;
 import roomescape.policy.ReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -39,6 +41,7 @@ public class ReservationService {
     }
 
     public Reservation saveReservation(ReservationSaveCommand command, LocalDateTime now, ReservationSavePolicy policy) {
+        checkIfReservationPossible(command);
         ReservationTime reservationTime = reservationTimeRepository.findById(command.timeId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(command.themeId())
@@ -47,6 +50,12 @@ public class ReservationService {
         policy.validate(command, reservationTime, now);
 
         return reservationRepository.addReservation(Reservation.forSave(command, reservationTime, theme));
+    }
+
+    private void checkIfReservationPossible(ReservationSaveCommand command) {
+        if (reservationRepository.countReservationsOf(command.date(), command.timeId(), command.themeId()) > 0) {
+            throw new DuplicationException(ErrorCode.RESERVATION_DUPLICATED);
+        }
     }
 
     public List<Reservation> findReservationsByName(String name) {
