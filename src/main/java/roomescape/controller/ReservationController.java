@@ -53,7 +53,7 @@ public class ReservationController {
     public ResponseEntity<Response> updateReservation(@RequestHeader(required = false) String name, @PathVariable("id") long id,
                                                       @RequestBody @Valid UpdateReservationRequest updateReservationRequest) {
         ReservationCommand reservationCommand = updateReservationRequest.to();
-        reservationService.updateReservation(id, name, reservationCommand);
+        reservationService.updateReservation(id, URLDecoder.decode(name, StandardCharsets.UTF_8), reservationCommand);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
