@@ -41,11 +41,13 @@ class ReservationServiceTest {
     @Nested
     @DisplayName("예약 삭제")
     class deleteById {
+
         @Test
         void 삭제_요청_시_이미_삭제된_예약인_경우_예외가_발생한다() {
             // given
             Long id = 1L;
-            when(reservationRepository.deleteById(id)).thenReturn(0);
+
+            when(reservationRepository.findById(id)).thenThrow(new IllegalArgumentException());
 
             // when & then
             Assertions.assertThatThrownBy(() -> reservationService.cancelReservation(id))
@@ -53,13 +55,33 @@ class ReservationServiceTest {
         }
 
         @Test
-        void 식별자에_해당하는_예약을_삭제한다() {
+        void 과거_예약을_삭제하는_경우_거부한다() {
             // given
-            Long id = 1L;
-            when(reservationRepository.deleteById(id)).thenReturn(1);
+            LocalDate pastDate = LocalDate.now().minusDays(1);
+            Reservation pastReservation = new Reservation(1L, "userA", pastDate,
+                    new ReservationTime(1L, LocalTime.now()),
+                    new Theme(1L, "themeA", "hello", "/image/..."));
+
+            when(reservationRepository.findById(any(Long.class))).thenReturn(pastReservation);
 
             // when & then
-            Assertions.assertThatCode(() -> reservationService.cancelReservation(id))
+            Assertions.assertThatThrownBy(() -> reservationService.cancelReservation(any(Long.class)))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void 식별자에_해당하는_예약을_삭제한다() {
+            // given
+            LocalDate date = LocalDate.now().plusDays(1);
+            Reservation reservation = new Reservation(1L, "userA", date,
+                    new ReservationTime(1L, LocalTime.now()),
+                    new Theme(1L, "themeA", "hello", "/image/..."));
+
+            when(reservationRepository.findById(any(Long.class))).thenReturn(reservation);
+            when(reservationRepository.deleteById(any(Long.class))).thenReturn(1);
+
+            // when & then
+            Assertions.assertThatCode(() -> reservationService.cancelReservation(any(Long.class)))
                     .doesNotThrowAnyException();
         }
     }
@@ -81,8 +103,8 @@ class ReservationServiceTest {
                     .thenReturn(false);
             when(themeRepository.existsById(any(Long.class)))
                     .thenReturn(true);
-            when(reservationTimeRepository.existsById(any(Long.class)))
-                    .thenReturn(true);
+            when(reservationTimeRepository.findById(any(Long.class)))
+                    .thenReturn(new ReservationTime(1L, LocalTime.now().plusMinutes(5)));
 
             // when
             ReservationResponse reservationResponse = reservationService.reserve(request);
@@ -100,8 +122,23 @@ class ReservationServiceTest {
                     .thenReturn(true);
             when(themeRepository.existsById(any(Long.class)))
                     .thenReturn(true);
-            when(reservationTimeRepository.existsById(any(Long.class)))
+            when(reservationTimeRepository.findById(any(Long.class)))
+                    .thenReturn(new ReservationTime(1L, LocalTime.now().plusMinutes(5)));
+
+            //when & then
+            Assertions.assertThatThrownBy(() -> reservationService.reserve(request))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void 예약_시간이_과거인_경우_예약을_거부한다() {
+            //given
+            CreateReservationRequest request = new CreateReservationRequest("userA", LocalDate.now(), 1L, 1L);
+
+            when(themeRepository.existsById(any(Long.class)))
                     .thenReturn(true);
+            when(reservationTimeRepository.findById(any(Long.class)))
+                    .thenReturn(new ReservationTime(1L, LocalTime.now().minusMinutes(5)));
 
             //when & then
             Assertions.assertThatThrownBy(() -> reservationService.reserve(request))

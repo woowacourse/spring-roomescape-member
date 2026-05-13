@@ -84,7 +84,7 @@ class MissionStepTest {
         dataInitializer.initializeTheme("hello", "world", "/resources/image/...");
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", LocalDate.now());
+        params.put("date", LocalDate.now().plusDays(1));
         params.put("timeId", 1);
         params.put("themeId", 1);
 

@@ -33,10 +33,19 @@ public class ReservationRepository {
                 ).toList();
     }
 
+    public Reservation findById(Long id) {
+        ReservationEntity reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+        return ReservationMapper.toReservation(reservation,
+                reservationTimeDao.getById(reservation.getTimeId()),
+                themeDao.getById(reservation.getThemeId()));
+    }
+
     @Transactional
     public Reservation save(CreateReservationParams params) {
         Long id = reservationDao.insert(params.name(), params.date(), params.timeId(), params.themeId());
-        ReservationEntity reservationEntity = new ReservationEntity(id, params.name(), params.date(), params.timeId(), params.themeId());
+        ReservationEntity reservationEntity = new ReservationEntity(id, params.name(), params.date(), params.timeId(),
+                params.themeId());
         ReservationTimeEntity reservationTimeEntity = reservationTimeDao.getById(params.timeId());
         ThemeEntity themeEntity = themeDao.getById(params.themeId());
         return ReservationMapper.toReservation(reservationEntity, reservationTimeEntity, themeEntity);
