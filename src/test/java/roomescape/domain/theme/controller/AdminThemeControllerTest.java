@@ -48,29 +48,6 @@ class AdminThemeControllerTest {
     }
 
     @Test
-    @DisplayName("관리자는 예약이 존재하지 않는 테마를 삭제한다.")
-    void deleteTheme() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "삭제할 테마");
-        params.put("description", "삭제할 테마 설명입니다.");
-        params.put("thumbnailUrl", "https://example.com/delete-theme.png");
-
-        Integer id = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(201)
-                .extract()
-                .path("id");
-
-        RestAssured.given().log().all()
-                .when().delete("/admin/themes/" + id)
-                .then().log().all()
-                .statusCode(204);
-    }
-
-    @Test
     @DisplayName("관리자라도 예약이 존재하는 테마는 삭제할 수 없다.")
     void deleteThemeFailWhenReservationExists() {
         RestAssured.given().log().all()
@@ -93,5 +70,87 @@ class AdminThemeControllerTest {
                 .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("관리자는 테마를 수정한다.")
+    void updateTheme() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "수정된 테마");
+        params.put("description", "수정된 설명");
+        params.put("thumbnailUrl", "https://example.com/updated.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/admin/themes/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(1))
+                .body("name", is("수정된 테마"));
+    }
+
+    @Test
+    @DisplayName("관리자라도 존재하지 않는 테마를 수정하면 에러가 발생한다.")
+    void updateThemeWithNotFoundThrowException() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "수정된 테마");
+        params.put("description", "수정된 설명");
+        params.put("thumbnailUrl", "https://example.com/updated.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/admin/themes/999")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    @DisplayName("관리자라도 이미 존재하는 테마 이름으로 수정하면 에러가 발생한다.")
+    void updateThemeWithDuplicateNameThrowException() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "공포의 지하실"); // 이미 존재하는 테마 이름
+        params.put("description", "수정된 설명");
+        params.put("thumbnailUrl", "https://example.com/updated.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/admin/themes/1")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    @DisplayName("관리자라도 존재하지 않는 테마를 삭제하면 에러가 발생한다.")
+    void deleteThemeWithNotFoundThrowException() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/999")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    @DisplayName("관리자는 예약이 존재하지 않는 테마를 삭제한다.")
+    void deleteTheme() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "삭제할 테마");
+        params.put("description", "삭제할 테마 설명입니다.");
+        params.put("thumbnailUrl", "https://example.com/delete-theme.png");
+
+        Integer id = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/themes")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/" + id)
+                .then().log().all()
+                .statusCode(204);
     }
 }

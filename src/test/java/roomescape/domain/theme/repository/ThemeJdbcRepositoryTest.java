@@ -163,11 +163,47 @@ class ThemeJdbcRepositoryTest {
         long generatedId = insertTheme("to be deleted", "description", "url");
 
         // when
-        themeRepository.deleteById(generatedId);
+        int deletedCount = themeRepository.deleteById(generatedId);
 
         // then
+        assertThat(deletedCount).isEqualTo(1);
         List<Theme> themes = findThemesById(generatedId);
         assertThat(themes).isEmpty();
+    }
+
+    @Test
+    @DisplayName("테마를 수정한다.")
+    void updateTest() {
+        // given
+        long generatedId = insertTheme("old name", "old description", "old url");
+        Theme newTheme = Theme.of(generatedId, "new name", "new description", "new url");
+
+        // when
+        int updatedCount = themeRepository.update(generatedId, newTheme);
+
+        // then
+        assertThat(updatedCount).isEqualTo(1);
+
+        Theme found = findThemeById(generatedId);
+        assertThat(found.getName()).isEqualTo("new name");
+        assertThat(found.getDescription()).isEqualTo("new description");
+        assertThat(found.getThumbnailUrl()).isEqualTo("new url");
+    }
+
+    @Test
+    @DisplayName("이름으로 테마 존재 여부를 확인한다.")
+    void existsByNameTest() {
+        // given
+        String existingName = "워너비";
+        String nonExistingName = "없는 테마";
+
+        // when
+        boolean existing = themeRepository.existsByName(existingName);
+        boolean nonExisting = themeRepository.existsByName(nonExistingName);
+
+        // then
+        assertThat(existing).isTrue();
+        assertThat(nonExisting).isFalse();
     }
 
     private long insertTheme(String name, String description, String thumbnailUrl) {

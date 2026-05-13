@@ -22,6 +22,7 @@ import roomescape.domain.theme.exception.ThemeErrorCode;
 import roomescape.domain.theme.repository.PopularThemeResult;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.request.ThemeCreateRequest;
+import roomescape.domain.theme.request.ThemeUpdateRequest;
 import roomescape.domain.theme.response.PopularThemesResponse;
 import roomescape.domain.theme.response.ThemeResponse;
 
@@ -140,6 +141,7 @@ class ThemeServiceTest {
         Long themeId = 1L;
 
         // when
+        when(themeRepository.deleteById(themeId)).thenReturn(1);
         themeService.deleteThemeById(themeId);
 
         // then
@@ -158,5 +160,70 @@ class ThemeServiceTest {
         assertThatThrownBy(() -> themeService.deleteThemeById(themeId))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ThemeErrorCode.THEME_DELETE_CONFLICT.getMessage());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마를 삭제하면 예외가 발생한다.")
+    void deleteThemeById_throwsException_whenThemeNotFound() {
+        // given
+        Long themeId = 999L;
+        when(themeRepository.deleteById(themeId)).thenReturn(0);
+
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteThemeById(themeId))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ThemeErrorCode.THEME_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("테마를 성공적으로 수정한다.")
+    void updateTheme() {
+        // given
+        Long themeId = 1L;
+        ThemeUpdateRequest request = new ThemeUpdateRequest("새 테마", "새 설명", "www.new.com");
+
+        Theme theme = Theme.of(themeId, "기존 테마", "기존 설명", "www.old.com");
+        when(themeRepository.findById(themeId)).thenReturn(java.util.Optional.of(theme));
+        when(themeRepository.update(org.mockito.ArgumentMatchers.eq(themeId), any(Theme.class))).thenReturn(1);
+
+        // when
+        ThemeResponse response = themeService.updateTheme(themeId, request);
+
+        // then
+        assertThat(response.id()).isEqualTo(themeId);
+        assertThat(response.name()).isEqualTo("새 테마");
+        verify(themeRepository).update(org.mockito.ArgumentMatchers.eq(themeId), any(Theme.class));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마를 수정하려고 하면 예외가 발생한다.")
+    void updateTheme_throwsException_whenThemeNotFound() {
+        // given
+        Long themeId = 999L;
+        ThemeUpdateRequest request = new ThemeUpdateRequest("새 테마", "새 설명", "www.new.com");
+        when(themeRepository.findById(themeId)).thenReturn(java.util.Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> themeService.updateTheme(themeId, request))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ThemeErrorCode.THEME_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 테마 이름으로 수정하려고 하면 예외가 발생한다.")
+    void updateTheme_throwsException_whenThemeDuplicate() {
+        // given
+        Long themeId = 1L;
+        String duplicateName = "이미 있는 이름";
+        ThemeUpdateRequest request = new ThemeUpdateRequest(duplicateName, "새 설명", "www.new.com");
+
+        Theme theme = Theme.of(themeId, "기존 테마", "기존 설명", "www.old.com");
+        when(themeRepository.findById(themeId)).thenReturn(java.util.Optional.of(theme));
+        when(themeRepository.existsByName(duplicateName)).thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> themeService.updateTheme(themeId, request))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ThemeErrorCode.THEME_DUPLICATE.getMessage());
     }
 }
