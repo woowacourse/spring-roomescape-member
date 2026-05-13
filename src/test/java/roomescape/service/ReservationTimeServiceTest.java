@@ -109,6 +109,18 @@ class ReservationTimeServiceTest {
                 .hasMessage(ThemeErrorCode.THEME_NOT_FOUND.getMessage());
     }
 
+    @Test
+    void 이미_존재하는_예약_시간을_저장_시_예외를_반환한다() {
+        // given
+        LocalTime startAt = LocalTime.of(10, 0);
+        saveReservationTime(startAt);
+        ReservationTimeRequest request = new ReservationTimeRequest(startAt);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.create(request))
+                .isInstanceOf(ReservationTimeException.class)
+                .hasMessage(ReservationTimeErrorCode.RESERVATION_TIME_ALREADY_EXISTS.getMessage());
+    }
 
     @Test
     void 예약시간을_삭제할_수_있다() {

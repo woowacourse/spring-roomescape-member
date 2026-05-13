@@ -110,6 +110,19 @@ class ReservationTimeDaoTest {
     }
 
     @Test
+    void 예약_시간이_존재하는지_확인한다() {
+        // given
+        LocalTime startAt = LocalTime.of(10, 0);
+        saveReservationTime(startAt);
+
+        // when
+        boolean result = timeDao.existsByStartAt(startAt);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
     void 예약_시간을_삭제한다() {
         // given
         ReservationTime savedReservationTime = saveReservationTime(LocalTime.of(10, 0));

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -30,12 +31,19 @@ public class ReservationTimeService {
         this.reservationDao = reservationDao;
     }
 
-    //todo: 이미 동일한 시간이 존재한다면 예외처리 (중복 생성 방지)
     //todo: 예약 가능한 시간 10:00 ~ 22:00 & 1시간 단위
     public ReservationTimeResponse create(ReservationTimeRequest request) {
         ReservationTime reservationTime = request.toReservationTime();
+        validateUniqueTime(reservationTime.getStartAt());
         ReservationTime newReservationTime = reservationTimeDao.save(reservationTime);
         return ReservationTimeResponse.from(newReservationTime);
+    }
+
+    private void validateUniqueTime(LocalTime startAt) {
+        boolean exists = reservationTimeDao.existsByStartAt(startAt);
+        if (exists) {
+            throw new ReservationTimeException(ReservationTimeErrorCode.RESERVATION_TIME_ALREADY_EXISTS);
+        }
     }
 
     //todo: 오늘 이전의 date 예외 처리
