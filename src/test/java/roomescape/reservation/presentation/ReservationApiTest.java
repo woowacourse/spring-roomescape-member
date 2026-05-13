@@ -170,7 +170,7 @@ class ReservationApiTest {
     }
 
     @Test
-    @DisplayName("예약을 삭제하면 204를 반환한다")
+    @DisplayName("본인 예약을 삭제하면 204를 반환한다")
     void deleteReservation() {
         Long themeId = createTheme();
         Long timeId = createTime();
@@ -187,6 +187,7 @@ class ReservationApiTest {
                 .then().extract().jsonPath().getLong("id");
 
         given().log().all()
+                .queryParam("name", "포비")
                 .when().delete("/reservations/" + id)
                 .then().log().all()
                 .statusCode(204);
@@ -196,11 +197,67 @@ class ReservationApiTest {
     @DisplayName("존재하지 않는 예약을 삭제하면 404와 공통 에러 응답을 반환한다")
     void deleteReservationWhenNotFound() {
         given().log().all()
+                .queryParam("name", "포비")
                 .when().delete("/reservations/999")
                 .then().log().all()
                 .statusCode(404)
                 .body("status", equalTo(404))
                 .body("message", equalTo("존재하지 않는 예약ID 입니다."));
+    }
+
+    @Test
+    @DisplayName("본인이 아닌 사람이 예약을 삭제하면 404와 공통 에러 응답을 반환한다")
+    void deleteReservationByOtherOwner() {
+        Long themeId = createTheme();
+        Long timeId = createTime();
+
+        Long id = given().contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2026-12-31",
+                        "timeId", timeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations")
+                .then().extract().jsonPath().getLong("id");
+
+        given().log().all()
+                .queryParam("name", "크론")
+                .when().delete("/reservations/" + id)
+                .then().log().all()
+                .statusCode(404)
+                .body("status", equalTo(404))
+                .body("message", equalTo("본인의 예약만 취소할 수 있습니다."));
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 취소하면 409와 공통 에러 응답을 반환한다")
+    void cancelPastReservation() {
+        Long themeId = createTheme();
+        Long timeId = createTime();
+
+        Long id = given().contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2026-12-31",
+                        "timeId", timeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations")
+                .then().extract().jsonPath().getLong("id");
+
+        Instant afterReservation = LocalDateTime.of(2027, 1, 1, 0, 0)
+                .atZone(ASIA_SEOUL)
+                .toInstant();
+        when(clock.instant()).thenReturn(afterReservation);
+
+        given().log().all()
+                .queryParam("name", "포비")
+                .when().delete("/reservations/" + id)
+                .then().log().all()
+                .statusCode(409)
+                .body("status", equalTo(409))
+                .body("message", equalTo("이미 지난 예약은 취소할 수 없습니다."));
     }
 
     @Test
