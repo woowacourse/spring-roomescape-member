@@ -16,9 +16,11 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.global.exception.custom.BadRequestException;
 import roomescape.domain.global.exception.custom.ConflictException;
 import roomescape.domain.global.exception.error.ErrorCode;
 import roomescape.domain.global.exception.custom.NotFoundException;
+import roomescape.domain.global.exception.custom.UnprocessableEntityException;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.FakeReservationRepository;
 import roomescape.domain.reservation.repository.ReservationRepository;
@@ -123,6 +125,34 @@ class ThemeServiceTest {
                 () -> assertEquals("테마10", actual.get(9).name())
             );
         }
+
+        @Test
+        @DisplayName("시작일이 종료일보다 늦으면 예외가 발생한다.")
+        void 실패1() {
+            ExceptionAssertions.assertErrorCode(
+                () -> themeService.getPopularThemes(
+                    LocalDate.of(2026, 5, 31),
+                    LocalDate.of(2026, 5, 1),
+                    10
+                ),
+                UnprocessableEntityException.class,
+                ErrorCode.THEME_INVALID_DATE
+            );
+        }
+
+        @Test
+        @DisplayName("limit이 음수이면 예외가 발생한다.")
+        void 실패2() {
+            ExceptionAssertions.assertErrorCode(
+                () -> themeService.getPopularThemes(
+                    LocalDate.of(2026, 5, 1),
+                    LocalDate.of(2026, 5, 31),
+                    -1
+                ),
+                UnprocessableEntityException.class,
+                ErrorCode.COMMON_INVALID_LIMIT
+            );
+        }
     }
 
     @Nested
@@ -150,6 +180,18 @@ class ThemeServiceTest {
                 () -> assertEquals("테마 설명", actual.description()),
                 () -> assertEquals("https://roomescape.com/images/themes/prison-room.png",
                     actual.imageUrl())
+            );
+        }
+
+        @Test
+        @DisplayName("테마 입력값이 비어 있으면 예외가 발생한다.")
+        void 실패() {
+            ThemeCreateRequestDto request = new ThemeCreateRequestDto("", "", "");
+
+            ExceptionAssertions.assertErrorCode(
+                () -> themeService.saveTheme(request),
+                BadRequestException.class,
+                ErrorCode.COMMON_INVALID_REQUEST
             );
         }
     }
