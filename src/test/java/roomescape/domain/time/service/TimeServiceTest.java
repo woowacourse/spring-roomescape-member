@@ -13,8 +13,10 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.global.exception.BadRequestException;
 import roomescape.domain.global.exception.ConflictException;
 import roomescape.domain.global.exception.ErrorCode;
+import roomescape.domain.global.exception.UnprocessableEntityException;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.FakeReservationRepository;
 import roomescape.domain.reservation.repository.ReservationRepository;
@@ -44,7 +46,7 @@ class TimeServiceTest {
         this.themeRepository = new FakeThemeRepository();
         this.timeRepository = new FakeTimeRepository();
         this.reservationRepository = new FakeReservationRepository();
-        this.timeService = new TimeService(reservationRepository, timeRepository);
+        this.timeService = new TimeService(fixedClock, reservationRepository, themeRepository, timeRepository);
     }
 
     @Nested
@@ -129,6 +131,33 @@ class TimeServiceTest {
 
             // then
             assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("요청한 테마 id가 존재하지 않는 경우 예외가 발생한다.")
+        void 실패1() {
+            LocalDate date = LocalDate.of(2026, 5, 10);
+            Long wrongThemeId = 1L;
+
+            ExceptionAssertions.assertErrorCode(
+                () -> timeService.getAvailableTimes(date, wrongThemeId),
+                BadRequestException.class,
+                ErrorCode.COMMON_INVALID_REQUEST
+            );
+        }
+
+        @Test
+        @DisplayName("지난 날짜로 요청한 경우 예외가 발생한다.")
+        void 실패2() {
+            Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명", "썸네일 url"));
+            LocalDate date = LocalDate.of(2025, 1, 1);
+            Long themeId = theme.getId();
+
+            ExceptionAssertions.assertErrorCode(
+                () -> timeService.getAvailableTimes(date, themeId),
+                UnprocessableEntityException.class,
+                ErrorCode.TIME_INVALID_DATE
+            );
         }
     }
 

@@ -17,7 +17,7 @@ public final class ThemeValidator {
         validateImageUrl(imageUrl, errors);
 
         if (!errors.isEmpty()) {
-            throw new BadRequestException(ErrorCode.THEME_INVALID_REQUEST, errors);
+            throw new BadRequestException(ErrorCode.COMMON_INVALID_REQUEST, errors);
         }
     }
 

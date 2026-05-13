@@ -38,7 +38,7 @@ class ThemeCreateRequestDtoTest {
             ExceptionAssertions.assertErrorCode(
                 () -> new ThemeCreateRequestDto(name, description, imageUrl),
                 BadRequestException.class,
-                ErrorCode.THEME_INVALID_REQUEST
+                ErrorCode.COMMON_INVALID_REQUEST
             );
         }
 
@@ -52,7 +52,7 @@ class ThemeCreateRequestDtoTest {
             ExceptionAssertions.assertErrorCode(
                 () -> new ThemeCreateRequestDto(name, description, imageUrl),
                 BadRequestException.class,
-                ErrorCode.THEME_INVALID_REQUEST
+                ErrorCode.COMMON_INVALID_REQUEST
             );
         }
 
@@ -66,7 +66,7 @@ class ThemeCreateRequestDtoTest {
             ExceptionAssertions.assertErrorCode(
                 () -> new ThemeCreateRequestDto(name, description, imageUrl),
                 BadRequestException.class,
-                ErrorCode.THEME_INVALID_REQUEST
+                ErrorCode.COMMON_INVALID_REQUEST
             );
         }
     }

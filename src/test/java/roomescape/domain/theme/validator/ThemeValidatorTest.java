@@ -38,7 +38,7 @@ class ThemeValidatorTest {
 
             ExceptionAssertions.assertErrorCodeWithErrors(
                 () -> ThemeValidator.validate(name, description, imageUrl),
-                ErrorCode.THEME_INVALID_REQUEST,
+                ErrorCode.COMMON_INVALID_REQUEST,
                 expectedErrors
             );
         }

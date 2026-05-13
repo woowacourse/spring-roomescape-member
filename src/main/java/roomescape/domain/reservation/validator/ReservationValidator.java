@@ -15,7 +15,7 @@ public final class ReservationValidator {
         validateName(name, errors);
 
         if (!errors.isEmpty()) {
-            throw new BadRequestException(ErrorCode.RESERVATION_INVALID_REQUEST, errors);
+            throw new BadRequestException(ErrorCode.COMMON_INVALID_REQUEST, errors);
         }
     }
 
