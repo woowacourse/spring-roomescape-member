@@ -63,6 +63,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("예약이 존재하지 않습니다."));
     }
 
+    @ExceptionHandler(SameScheduleException.class)
+    public ResponseEntity<ErrorResponse> handleSameScheduleExceptions(SameScheduleException ex) {
+        log.warn("동일한 스케줄로 변경 시도: {}", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(new ErrorResponse("기존과 동일한 스케줄로 변경할 수 없습니다."));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
         log.error("예상치 못한 서버 내부 에러 발생!", ex);
