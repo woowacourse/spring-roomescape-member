@@ -17,7 +17,7 @@ public class ReservationUpdatingDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long insert(ReservationRequest reservationReq) {
+    public Long save(ReservationRequest reservationReq) {
         String sql = "insert into reservation(name, date, time_id, theme_id) values(:name, :date, :time_id, :theme_id)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource param = new MapSqlParameterSource()

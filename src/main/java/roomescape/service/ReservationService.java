@@ -17,6 +17,7 @@ import roomescape.repository.ReservationUpdatingDao;
 import roomescape.repository.ThemeQueryingDao;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +37,44 @@ public class ReservationService {
         this.themeQueryingDao = themeQueryingDao;
     }
 
+    @Transactional
+    public ReservationResponse create(ReservationRequest reservationReq) {
+        ReservationTime findReservationTime = reservationTimeQueryingDao.findReservationTimeById(reservationReq.getTimeId())
+                .orElseThrow(() -> new ReservationTimeNotFoundException(reservationReq.getTimeId()));
+        Theme findTheme = themeQueryingDao.findThemeById(reservationReq.getThemeId())
+                .orElseThrow(() -> new ThemeNotFoundException(reservationReq.getThemeId()));
+
+        if (reservationReq.getDate().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("현재보다 이전의 날짜는 예약할 수 없습니다.");
+        }
+
+        Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(findTheme.getId(), reservationReq.getDate(), findReservationTime.getId());
+        if (savedReservation.isPresent()) {
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+        }
+
+        Long generatedId;
+        try {
+            generatedId = reservationUpdatingDao.save(reservationReq);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+        }
+
+        Reservation findReservation = reservationQueryingDao.findReservationById(generatedId)
+                .orElseThrow(() -> new ReservationNotFoundException(generatedId));
+
+        LocalDateTime standard = LocalDateTime.of(
+                findReservation.getDate(),
+                findReservationTime.getStartAt()
+        );
+
+        if (!standard.isAfter(findReservation.getCreatedAt())) {
+            throw new IllegalArgumentException("현재보다 이전의 날짜는 예약할 수 없습니다.");
+        }
+
+        return ReservationResponse.from(findReservation);
+    }
+
     public ReservationResponse read(Long id) {
         Reservation reservationById = reservationQueryingDao.findReservationById(id)
                 .orElseThrow(() -> new ReservationNotFoundException(id));
@@ -44,37 +83,9 @@ public class ReservationService {
 
     public List<ReservationResponse> readAll() {
         List<Reservation> reservations = reservationQueryingDao.findAllReservations();
-         return reservations.stream()
+        return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
-    }
-
-    @Transactional
-    public ReservationResponse create(ReservationRequest reservationReq) {
-        ReservationTime reservationTimeById = reservationTimeQueryingDao.findReservationTimeById(reservationReq.getTimeId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException(reservationReq.getTimeId()));
-        Theme themeById = themeQueryingDao.findThemeById(reservationReq.getThemeId())
-                .orElseThrow(() -> new ThemeNotFoundException(reservationReq.getThemeId()));
-
-        if (reservationReq.getDate().isBefore(LocalDate.now()))
-            throw new IllegalArgumentException("현재보다 이전의 날짜는 예약할 수 없습니다.");
-
-        Optional<Reservation> savedReservation = reservationQueryingDao.findReservationByThemeAndDateAndTime(themeById.getId(), reservationReq.getDate(), reservationTimeById.getId());
-        if (savedReservation.isPresent()) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
-        }
-
-        Long generatedId;
-        try {
-            generatedId = reservationUpdatingDao.insert(reservationReq);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
-        }
-
-        Reservation findReservation = reservationQueryingDao.findReservationById(generatedId)
-                .orElseThrow(() -> new ReservationNotFoundException(generatedId));
-
-        return ReservationResponse.from(findReservation);
     }
 
     @Transactional

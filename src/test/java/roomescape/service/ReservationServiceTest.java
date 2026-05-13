@@ -76,7 +76,7 @@ class ReservationServiceTest {
         when(reservationQueryingDao.findReservationByThemeAndDateAndTime(eq(themeId), eq(date), eq(reservationTimeId)))
                 .thenReturn(Optional.empty());
 
-        when(reservationUpdatingDao.insert(any()))
+        when(reservationUpdatingDao.save(any()))
                 .thenReturn(reservationId);
 
         when(reservationQueryingDao.findReservationById(reservationId))
@@ -125,7 +125,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("현재보다 이전의 날짜를 예약하는 경우 에러를 발생한다.")
-    void 예약_생성_에러_과거_시간_예약() {
+    void 예약_생성_에러_과거_날짜_예약() {
         // given
         ReservationRequest request = new ReservationRequest(name, LocalDate.now().minusDays(3), reservationTimeId, themeId);
 
@@ -159,7 +159,75 @@ class ReservationServiceTest {
         // when & then
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> reservationService.create(request));
-        verify(reservationUpdatingDao, never()).insert(any());
+        verify(reservationUpdatingDao, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("현재보다 과거인 시간 예약 시 에러가 발생한다.")
+    void 예약_생성_에러_과거_시간_예약() {
+        // given
+        Long reservationTimeId2 = 2L;
+        LocalTime startAt2 = LocalTime.of(10, 0);
+        ReservationTime reservationTime2 = new ReservationTime(reservationTimeId2, startAt2);
+
+        Long reservationId2 = 1L;
+        String name2 = "브라운";
+        LocalDate date2 = LocalDate.now();
+        LocalDateTime createdAt = LocalDateTime.of(date2, startAt2.plusMinutes(10));
+
+        Reservation reservation2 = new Reservation(reservationId2, name2, date2, reservationTime2, theme, createdAt);
+
+        ReservationRequest request = new ReservationRequest(name2, date2, reservationTimeId2, themeId);
+
+        when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
+                .thenReturn(Optional.of(reservationTime2));
+
+        when(themeQueryingDao.findThemeById(anyLong()))
+                .thenReturn(Optional.of(theme));
+
+        when(reservationQueryingDao.findReservationByThemeAndDateAndTime(eq(themeId), eq(date2), eq(reservationTimeId2)))
+                .thenReturn(Optional.empty());
+
+        when(reservationQueryingDao.findReservationById(anyLong()))
+                .thenReturn(Optional.of(reservation2));
+
+        // when & then
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> reservationService.create(request));
+    }
+
+    @Test
+    @DisplayName("현재 시간 예약 시 에러가 발생한다.")
+    void 예약_생성_에러_현재_시간_예약() {
+        // given
+        Long reservationTimeId2 = 2L;
+        LocalTime startAt2 = LocalTime.of(10, 0);
+        ReservationTime reservationTime2 = new ReservationTime(reservationTimeId2, startAt2);
+
+        Long reservationId2 = 1L;
+        String name2 = "브라운";
+        LocalDate date2 = LocalDate.now();
+        LocalDateTime createdAt = LocalDateTime.of(date2, startAt2);
+
+        Reservation reservation2 = new Reservation(reservationId2, name2, date2, reservationTime2, theme, createdAt);
+
+        ReservationRequest request = new ReservationRequest(name2, date2, reservationTimeId2, themeId);
+
+        when(reservationTimeQueryingDao.findReservationTimeById(anyLong()))
+                .thenReturn(Optional.of(reservationTime2));
+
+        when(themeQueryingDao.findThemeById(anyLong()))
+                .thenReturn(Optional.of(theme));
+
+        when(reservationQueryingDao.findReservationByThemeAndDateAndTime(eq(themeId), eq(date2), eq(reservationTimeId2)))
+                .thenReturn(Optional.empty());
+
+        when(reservationQueryingDao.findReservationById(anyLong()))
+                .thenReturn(Optional.of(reservation2));
+
+        // when & then
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> reservationService.create(request));
     }
 
     @Test
