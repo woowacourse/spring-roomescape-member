@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.global.exception.validation.ThemeNotFoundException;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
@@ -144,6 +145,20 @@ class ReservationServiceTest {
             //when & then
             Assertions.assertThatThrownBy(() -> reservationService.reserve(request))
                     .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void 테마가_존재하지_않는_경우_예약이_실패한다() {
+            //given
+            Long themeId = 1L;
+            CreateReservationRequest request = new CreateReservationRequest("userA", LocalDate.now(), 1L, themeId);
+
+            when(themeRepository.existsById(themeId))
+                    .thenReturn(false);
+
+            //when & then
+            Assertions.assertThatThrownBy(() -> reservationService.reserve(request))
+                    .isInstanceOf(ThemeNotFoundException.class);
         }
     }
 }
