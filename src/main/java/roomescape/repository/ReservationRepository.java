@@ -20,5 +20,9 @@ public interface ReservationRepository {
 
     boolean isExistBy(Long themeId, LocalDate date, Long reservationTimeId);
 
+    boolean isExistBy(Long reservationId);
+
     List<Reservation> findByName(String name);
+
+    void updateStatus(Reservation reservation);
 }

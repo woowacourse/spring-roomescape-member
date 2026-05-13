@@ -42,7 +42,14 @@ public class FakeReservationDao implements ReservationRepository {
 
     @Override
     public boolean isExistBy(Long themeId, LocalDate date, Long reservationTimeId) {
-        return false;
+        // TODO
+        return true;
+    }
+
+    @Override
+    public boolean isExistBy(Long reservationId) {
+        // TODO
+        return true;
     }
 
     @Override
@@ -50,5 +57,10 @@ public class FakeReservationDao implements ReservationRepository {
         return storage.values().stream()
                 .filter(reservation -> Objects.equals(reservation.getName(), name))
                 .toList();
+    }
+
+    @Override
+    public void updateStatus(Reservation reservation) {
+
     }
 }

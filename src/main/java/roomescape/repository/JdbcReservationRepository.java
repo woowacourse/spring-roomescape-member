@@ -14,7 +14,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.reservationStatus.*;
 import roomescape.domain.Theme;
 import roomescape.domain.Time;
-import roomescape.global.exception.CustomException;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -135,7 +134,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId(),
-                "status", reservation.getReservationStatus().getName()
+                "status", reservation.getReservationStatusName()
         );
     }
 
@@ -159,6 +158,31 @@ public class JdbcReservationRepository implements ReservationRepository {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId, date, reservationTimeId));
     }
 
+    @Override
+    public boolean isExistBy(Long reservationId) {
+        String sql = """
+                        SELECT EXISTS (
+                            SELECT 1
+                            FROM reservation 
+                            WHERE id = ? 
+                        ) 
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, reservationId));
+    }
+
+    @Override
+    public void updateStatus(Reservation reservation) {
+        String sql = """
+                UPDATE reservation 
+                SET status = ? 
+                WHERE id = ?
+                """;
+        jdbcTemplate.update(sql,
+                reservation.getReservationStatusName(),
+                reservation.getId()
+        );
+    }
+
     private RowMapper<Reservation> rowMapper() {
         return (rs, rowNum) -> new Reservation(
                 rs.getLong("r_id"),
@@ -179,7 +203,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private ReservationStatus toStatue(String statue) {
         return switch (statue) {
-            case "PENDING"   -> PendingStatus.getInstance();
+            case "PENDING" -> PendingStatus.getInstance();
             case "CONFIRMED" -> ConfirmedStatus.getInstance();
             case "COMPLETED" -> CompletedStatus.getInstance();
             case "CANCELLED" -> CancelledStatus.getInstance();

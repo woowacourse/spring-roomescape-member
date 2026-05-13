@@ -85,6 +85,10 @@ public class Reservation {
         return reservationStatus;
     }
 
+    public String getReservationStatusName() {
+        return reservationStatus.getName();
+    }
+
     public void changeStatus(ReservationStatus reservationStatus) {
         this.reservationStatus = reservationStatus;
     }

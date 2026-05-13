@@ -1,9 +1,9 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,12 +53,6 @@ public class ReservationService {
         return reservation;
     }
 
-    private void validateIsExistBy(LocalDate date, Long reservationTimeId, Long themeId) {
-        if (reservationRepository.isExistBy(themeId, date, reservationTimeId)) {
-            throw new CustomException(ErrorCode.RESERVATION_ALREADY_EXIST);
-        }
-    }
-
     public void removeReservation(long reservationId) {
         getReservationOrElseThrow(reservationId);
         reservationRepository.deleteById(reservationId);
@@ -70,6 +64,13 @@ public class ReservationService {
 
     public List<Reservation> findReservationBy(String name) {
         return reservationRepository.findByName(name);
+    }
+
+    @Transactional
+    public void cancelReservation(Long reservationId) {
+        Reservation reservation = getReservationOrElseThrow(reservationId);
+        reservation.cancel();
+        reservationRepository.updateStatus(reservation);
     }
 
     @NonNull
