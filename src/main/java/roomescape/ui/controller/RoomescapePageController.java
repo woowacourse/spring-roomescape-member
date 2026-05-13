@@ -19,6 +19,8 @@ import roomescape.holiday.controller.dto.HolidayResponseDto;
 import roomescape.holiday.exception.HolidayNotFoundException;
 import roomescape.holiday.service.HolidayService;
 import roomescape.holiday.service.dto.HolidaySaveServiceDto;
+import roomescape.error.ErrorCode;
+import roomescape.error.RoomescapeException;
 import roomescape.reservation.controller.dto.ReservationResponseDto;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.service.ReservationService;
@@ -113,8 +115,10 @@ public class RoomescapePageController {
         try {
             reservationService.create(new ReservationSaveServiceDto(name, date, themeId, timeId));
             addSuccessMessage(redirectAttributes, "예약을 생성했습니다.");
-        } catch (IllegalArgumentException | ThemeNotFoundException | TimeNotFoundException e) {
-            addExpectedErrorMessage(redirectAttributes, "예약 생성에 실패했습니다. 입력값을 다시 확인해 주세요.", e);
+        } catch (RoomescapeException e) {
+            addExpectedErrorMessage(redirectAttributes, e);
+        } catch (RuntimeException e) {
+            addUnexpectedErrorMessage(redirectAttributes, e);
         }
         return "redirect:/dashboard/reservations";
     }
@@ -177,8 +181,10 @@ public class RoomescapePageController {
         try {
             timeService.deleteById(id);
             addSuccessMessage(redirectAttributes, "시간 슬롯을 삭제했습니다.");
-        } catch (TimeNotFoundException e) {
-            addExpectedErrorMessage(redirectAttributes, "삭제할 시간 슬롯을 찾지 못했습니다.", e);
+        } catch (RoomescapeException e) {
+            addExpectedErrorMessage(redirectAttributes, e);
+        } catch (RuntimeException e) {
+            addUnexpectedErrorMessage(redirectAttributes, e);
         }
         return "redirect:/dashboard/times";
     }
@@ -228,8 +234,18 @@ public class RoomescapePageController {
         redirectAttributes.addFlashAttribute("successMessage", message);
     }
 
+    private void addExpectedErrorMessage(RedirectAttributes redirectAttributes, RoomescapeException e) {
+        log.info("Dashboard request failed: {}", e.getMessage());
+        redirectAttributes.addFlashAttribute("errorMessage", e.getErrorCode().getDefaultMessage());
+    }
+
     private void addExpectedErrorMessage(RedirectAttributes redirectAttributes, String userMessage, RuntimeException e) {
         log.info("Dashboard request failed: {}", e.getMessage());
         redirectAttributes.addFlashAttribute("errorMessage", userMessage);
+    }
+
+    private void addUnexpectedErrorMessage(RedirectAttributes redirectAttributes, RuntimeException e) {
+        log.error("Dashboard request failed unexpectedly", e);
+        redirectAttributes.addFlashAttribute("errorMessage", ErrorCode.INTERNAL_SERVER_ERROR.getDefaultMessage());
     }
 }
