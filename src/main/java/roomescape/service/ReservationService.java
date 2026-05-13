@@ -12,6 +12,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.UserReservationUpdateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.IdNotFoundException;
 
@@ -70,6 +71,11 @@ public class ReservationService {
         Reservation saved = reservationDao.save(reservation);
 
         return ReservationResponse.from(saved);
+    }
+
+    public ReservationResponse update(Long id, UserReservationUpdateRequest request) {
+        Reservation newReservation = reservationDao.update(id, request.date(), request.timeId());
+        return ReservationResponse.from(newReservation);
     }
 
     public void delete(Long id) {
