@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.exception.common.InvalidRequestFormatException;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.controller.dto.ReservationUpdateRequest;
@@ -39,12 +40,20 @@ public class ReservationController {
 
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> getAllReservationsByName(@RequestParam("name") String name) {
+        validateName(name);
+
         List<ReservationResponse> responses = reservationService.findReservationsByName(name)
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
 
         return ResponseEntity.ok(responses);
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidRequestFormatException();
+        }
     }
 
     @PostMapping("/reservations")
@@ -68,6 +77,8 @@ public class ReservationController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String name
     ) {
+        validateName(name);
+
         reservationService.authorizeOwner(name, id);
         reservationService.deleteReservationById(id);
         return ResponseEntity.noContent().build();
@@ -79,6 +90,8 @@ public class ReservationController {
             @RequestHeader("Authorization") String name,
             @RequestBody ReservationUpdateRequest request
             ) {
+        validateName(name);
+
         reservationService.authorizeOwner(name, id);
         reservationService.updateReservation(request.toCommand(), id);
         return ResponseEntity.noContent().build();
