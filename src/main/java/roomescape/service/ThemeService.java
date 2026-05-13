@@ -8,11 +8,14 @@ import roomescape.domain.theme.ThemeWithCount;
 import roomescape.dto.theme.AddThemeRequest;
 import roomescape.dto.theme.PopularConditionRequest;
 import roomescape.exception.DataReferencedException;
+import roomescape.exception.DuplicatedResourceException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 
 import java.util.List;
+
+import static roomescape.exception.ErrorCode.DUPLICATED_THEME;
 
 @Service
 public class ThemeService {
@@ -27,6 +30,10 @@ public class ThemeService {
 
     @Transactional
     public Theme addTheme(AddThemeRequest addThemeRequest) {
+        if (themeRepository.existsByName(addThemeRequest.name())) {
+            throw new DuplicatedResourceException(DUPLICATED_THEME);
+        }
+
         return themeRepository.addTheme(addThemeRequest.toEntity());
     }
 

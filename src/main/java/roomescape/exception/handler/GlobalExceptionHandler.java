@@ -16,13 +16,7 @@ import static roomescape.exception.ErrorCode.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({
-            NotFoundResourceException.class,
-            DataReferencedException.class,
-            ReservationCommandException.class,
-            ReservationTimeConditionException.class,
-            DuplicatedReservationRequestException.class
-    })
+    @ExceptionHandler(BaseCustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
         ErrorCode errorCode = e.getErrorCode();
         ErrorResponse errorResponse = new ErrorResponse(

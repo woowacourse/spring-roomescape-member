@@ -37,6 +37,14 @@ public class JdbcThemeRepository implements ThemeRepository {
         LIMIT ?
     """;
 
+    private static final String EXIST_BY_NAME_SQL = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM theme
+            WHERE name = ?
+        )
+        """;
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -77,5 +85,14 @@ public class JdbcThemeRepository implements ThemeRepository {
                 popularConditionRequest.endDate(),
                 popularConditionRequest.size()
         );
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        return jdbcTemplate.queryForObject(
+                EXIST_BY_NAME_SQL,
+                Boolean.class,
+                name
+        ) == Boolean.TRUE;
     }
 }

@@ -33,44 +33,44 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final String ALIAS_THEME_IMAGE_URL = "themeImageUrl";
 
     private static final String SELECT_ALL_SQL = """
-        SELECT\s
-            r.id AS id,\s
-            r.name AS name,\s
-            r.date AS date,\s
-            rt.id AS timeId,\s
-            rt.start_at AS startAt,\s
-            t.id AS themeId,\s
-            t.name AS themeName,\s
-            t.description AS themeDescription,\s
-            t.image_url AS themeImageUrl\s
-        FROM reservation AS r\s
+        SELECT
+            r.id AS id,
+            r.name AS name,
+            r.date AS date,
+            rt.id AS timeId,
+            rt.start_at AS startAt,
+            t.id AS themeId,
+            t.name AS themeName,
+            t.description AS themeDescription,
+            t.image_url AS themeImageUrl
+        FROM reservation AS r
         JOIN reservation_time AS rt ON r.time_id = rt.id
         JOIN theme AS t ON r.theme_id = t.id
     """;
 
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation WHERE id = ?";
     private static final String EXIST_BY_TIME_ID_SQL = """
-            SELECT EXISTS (\s
-                SELECT 1 \s
-                    FROM reservation \s
-                    WHERE time_id = ?\s
+            SELECT EXISTS (
+                SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
             )
     """;
     private static final String EXIST_BY_THEME_ID_SQL = """
-            SELECT EXISTS (\s
-                SELECT 1 \s
-                    FROM reservation \s
-                    WHERE theme_id = ?\s
+            SELECT EXISTS (
+                SELECT 1
+                    FROM reservation
+                    WHERE theme_id = ?
             )
     """;
 
-    private static final String EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE = """
-            SELECT EXISTS (\s
-                SELECT 1 \s
-                    FROM reservation \s
-                    WHERE time_id = ?\s
-                    AND theme_id = ?\s
-                    AND date = ?\s
+    private static final String EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE_SQL = """
+            SELECT EXISTS (
+                SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
+                    AND theme_id = ?
+                    AND date = ?
             )
             """;
 
@@ -141,7 +141,10 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date) {
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE,
-                Boolean.class, timeId, themeId, date));
+        return jdbcTemplate.queryForObject(
+                EXIST_BY_TIME_ID_AND_THEME_ID_AND_DATE_SQL,
+                Boolean.class,
+                timeId, themeId, date
+        ) == Boolean.TRUE;
     }
 }

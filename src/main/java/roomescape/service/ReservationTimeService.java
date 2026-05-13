@@ -8,11 +8,14 @@ import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.dto.reservationTime.AddReservationTimeRequest;
 import roomescape.exception.DataReferencedException;
+import roomescape.exception.DuplicatedResourceException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 import java.util.List;
+
+import static roomescape.exception.ErrorCode.DUPLICATED_RESERVATION_TIME;
 
 @Service
 public class ReservationTimeService {
@@ -30,6 +33,10 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTime addReservationTime(AddReservationTimeRequest addReservationTimeRequest) {
+        if (reservationTimeRepository.existsByStartAt(addReservationTimeRequest.startAt())) {
+            throw new DuplicatedResourceException(DUPLICATED_RESERVATION_TIME);
+        }
+
         return reservationTimeRepository.addReservationTime(addReservationTimeRequest.toEntity());
     }
 

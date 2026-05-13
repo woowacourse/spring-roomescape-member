@@ -1,5 +1,6 @@
 package roomescape.repository.theme;
 
+import jakarta.validation.constraints.NotBlank;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeWithCount;
 import roomescape.dto.theme.PopularConditionRequest;
@@ -13,4 +14,5 @@ public interface ThemeRepository {
     Optional<Theme> getTheme(long id);
     void deleteTheme(long id);
     List<ThemeWithCount> getPopularTheme(PopularConditionRequest popularConditionRequest);
+    boolean existsByName(String name);
 }

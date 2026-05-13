@@ -18,7 +18,7 @@ import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.theme.PopularConditionRequest;
-import roomescape.exception.DuplicatedReservationRequestException;
+import roomescape.exception.DuplicatedResourceException;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.theme.ThemeRepository;
@@ -65,7 +65,7 @@ public class RoomReservationServiceTest {
         };
     }
 
-    private ReservationTimeRepository createReservationTimeRepository(ReservationTime reservationTime) {
+    private ReservationTimeRepository createReservationTimeRepository(ReservationTime reservationTime, boolean isExist) {
         return new ReservationTimeRepository() {
             @Override
             public ReservationTime addReservationTime(ReservationTime reservationTime1) {
@@ -95,10 +95,15 @@ public class RoomReservationServiceTest {
                     ReservationTimeCondition reservationTimeCondition) {
                 return List.of();
             }
+
+            @Override
+            public boolean existsByStartAt(LocalTime localTime) {
+                return isExist;
+            }
         };
     }
 
-    private ThemeRepository createThemeRepository(Theme theme) {
+    private ThemeRepository createThemeRepository(Theme theme, boolean isExistTheme) {
         return new ThemeRepository() {
             @Override
             public Theme addTheme(Theme theme) {
@@ -127,6 +132,11 @@ public class RoomReservationServiceTest {
             public List<ThemeWithCount> getPopularTheme(PopularConditionRequest popularConditionRequest) {
                 return List.of();
             }
+
+            @Override
+            public boolean existsByName(String name) {
+                return isExistTheme;
+            }
         };
     }
 
@@ -136,8 +146,8 @@ public class RoomReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, "name", "description", "image");
 
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(reservationTime), createThemeRepository(
-                theme));
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(reservationTime, false), createThemeRepository(
+                theme, false));
 
         LocalDate futureDate = LocalDate.now().plusDays(1);
 
@@ -165,8 +175,8 @@ public class RoomReservationServiceTest {
 
         RoomReservationService reservationService = new RoomReservationService(
                 createReservationRepository(false),
-                createReservationTimeRepository(reservationTime),
-                createThemeRepository(theme)
+                createReservationTimeRepository(reservationTime, false),
+                createThemeRepository(theme, false)
         );
 
         LocalDate pastDate = LocalDate.now().minusDays(1);
@@ -192,8 +202,8 @@ public class RoomReservationServiceTest {
 
         RoomReservationService reservationService = new RoomReservationService(
                 createReservationRepository(false),
-                createReservationTimeRepository(reservationTime),
-                createThemeRepository(theme)
+                createReservationTimeRepository(reservationTime, false),
+                createThemeRepository(theme, false)
         );
 
         AddReservationRequest request = new AddReservationRequest(
@@ -211,7 +221,7 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 시간ID인 경우 예외 테스트")
     void addReservationFailByInvalidTimeIdTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(null), createThemeRepository(new Theme(1L, "테마1", "설명", "url")));
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(null, false), createThemeRepository(new Theme(1L, "테마1", "설명", "url"), false));
         LocalDate futureDate = LocalDate.now().plusDays(1);
 
         AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", futureDate, 1L, 1L);
@@ -224,7 +234,7 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 테마 ID인 경우 예외 테스트")
     void addReservationFailByInvalidThemeIdTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(new ReservationTime(1L, LocalTime.parse("10:00"))), createThemeRepository(null));
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(new ReservationTime(1L, LocalTime.parse("10:00")), false), createThemeRepository(null, false));
         LocalDate futureDate = LocalDate.now().plusDays(1);
 
         AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", futureDate, 1L, 1L);
@@ -243,13 +253,13 @@ public class RoomReservationServiceTest {
 
         RoomReservationService reservationService = new RoomReservationService(
                 createReservationRepository(true),
-                createReservationTimeRepository(reservationTime),
-                createThemeRepository(theme)
+                createReservationTimeRepository(reservationTime, false),
+                createThemeRepository(theme, false)
         );
 
         assertThatThrownBy(() -> reservationService.addReservation(new AddReservationRequest("test", futureDate, 1L, 1L)))
-                .isExactlyInstanceOf(DuplicatedReservationRequestException.class)
-                .hasMessage(ErrorCode.DUPLICATED_RESERVATION_REQUEST.getMessage()
+                .isExactlyInstanceOf(DuplicatedResourceException.class)
+                .hasMessage(ErrorCode.DUPLICATED_RESERVATION.getMessage()
         );
     }
 }

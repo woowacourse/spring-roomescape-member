@@ -6,8 +6,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeWithCount;
+import roomescape.dto.theme.AddThemeRequest;
 import roomescape.dto.theme.PopularConditionRequest;
 import roomescape.exception.DataReferencedException;
+import roomescape.exception.DuplicatedResourceException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
@@ -18,6 +20,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.exception.ErrorCode.*;
 
 public class ThemeServiceTest {
     private ReservationRepository createReservationRepository(boolean isExistTheme) {
@@ -60,7 +63,7 @@ public class ThemeServiceTest {
         };
     }
 
-    private ThemeRepository createThemeRepository(Runnable runnable) {
+    private ThemeRepository createThemeRepository(Runnable runnable, boolean isExistName) {
         return new ThemeRepository() {
             @Override
             public Theme addTheme(Theme theme) {
@@ -86,13 +89,33 @@ public class ThemeServiceTest {
             public List<ThemeWithCount> getPopularTheme(PopularConditionRequest popularConditionRequest) {
                 return List.of();
             }
+
+            @Override
+            public boolean existsByName(String name) {
+                return isExistName;
+            }
         };
+    }
+
+    @Test
+    @DisplayName("동일한 이름의 테마가 존재하는 경우 테마 추가 시 예외 테스트")
+    void addThemeFailedWhenDuplicatedTest() {
+        ThemeService themeService = new ThemeService(
+                createThemeRepository(() -> {}, true),
+                createReservationRepository(false)
+        );
+
+        assertThatThrownBy(() -> themeService.addTheme(
+                new AddThemeRequest("테마1", "테마 설명", "image url")
+        ))
+                .isExactlyInstanceOf(DuplicatedResourceException.class)
+                .hasMessage(DUPLICATED_THEME.getMessage());
     }
 
     @Test
     @DisplayName("정상 삭제 테스트")
     void deleteThemeTest() {
-        ThemeService themeService = new ThemeService(createThemeRepository(() -> {}), createReservationRepository(false));
+        ThemeService themeService = new ThemeService(createThemeRepository(() -> {}, false), createReservationRepository(false));
 
         assertThatCode(() -> themeService.deleteTheme(1)).doesNotThrowAnyException();
     }
@@ -100,11 +123,11 @@ public class ThemeServiceTest {
     @Test
     @DisplayName("외부 사용이 되었을 때 삭제 시 예외 테스트")
     void deleteFailedWhenInUseTest() {
-        ThemeService themeService = new ThemeService(createThemeRepository(() -> {}), createReservationRepository(true));
+        ThemeService themeService = new ThemeService(createThemeRepository(() -> {}, false), createReservationRepository(true));
 
         assertThatThrownBy(() -> themeService.deleteTheme(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
-                .hasMessage(ErrorCode.CANNOT_DELETE_THEME_IN_USE.getMessage());
+                .hasMessage(CANNOT_DELETE_THEME_IN_USE.getMessage());
     }
 
     @Test
@@ -113,12 +136,12 @@ public class ThemeServiceTest {
         ThemeService themeService = new ThemeService(
                 createThemeRepository(() -> {
                     throw new DataIntegrityViolationException("정합성 오류");
-                }),
+                }, false),
                 createReservationRepository(false)
         );
 
         assertThatThrownBy(() -> themeService.deleteTheme(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
-                .hasMessage(ErrorCode.INTEGRITY_VIOLATION_ON_DELETE.getMessage());
+                .hasMessage(INTEGRITY_VIOLATION_ON_DELETE.getMessage());
     }
 }

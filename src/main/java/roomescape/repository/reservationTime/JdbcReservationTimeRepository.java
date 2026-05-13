@@ -39,6 +39,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             ) AS r ON r.time_id = t.id
             """;
 
+    private static final String EXIST_BY_START_AT_SQL = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM reservation_time
+            WHERE start_at = ?
+        )
+        """;
+
     private static final RowMapper<ReservationTime> MAPPER = (rs, rowNumber) -> new ReservationTime(
             rs.getLong(COLUMN_ID),
             rs.getObject(COLUMN_START_AT, LocalTime.class)
@@ -94,5 +102,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 reservationTimeCondition.date(),
                 reservationTimeCondition.themeId()
         );
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        return jdbcTemplate.queryForObject(
+                EXIST_BY_START_AT_SQL,
+                Boolean.class,
+                startAt
+        ) == Boolean.TRUE;
     }
 }
