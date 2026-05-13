@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +27,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
@@ -95,8 +95,8 @@ class ReservationControllerTest {
     }
 
     @Test
-    void POST_reservations_서비스가_IllegalStateException을_던지면_400과_메시지를_반환한다() throws Exception {
-        willThrow(new IllegalStateException("해당 날짜·시간·테마에 이미 예약이 존재합니다."))
+    void POST_reservations_서비스가_DuplicateReservationException을_던지면_409과_메시지를_반환한다() throws Exception {
+        willThrow(new DuplicateReservationException())
                 .given(reservationService).createReservation(any(CreateReservationRequest.class));
 
         Map<String, Object> body = Map.of(
@@ -108,8 +108,8 @@ class ReservationControllerTest {
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("해당 날짜·시간·테마에 이미 예약이 존재합니다."));
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("해당 날짜·시간·테마에 이미 예약이 존재합니다."));
     }
 
     @Test

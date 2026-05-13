@@ -12,6 +12,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.CreateReservationRequest;
 import roomescape.dto.reservation.ReservationResponses;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.repository.fake.FakeReservationRepository;
 import roomescape.repository.fake.FakeReservationTimeRepository;
 import roomescape.repository.fake.FakeThemeRepository;
@@ -56,7 +57,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> service.createReservation(new CreateReservationRequest(
                 "다른사람", themeId, LocalDate.of(2026, 5, 6), timeId)))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(DuplicateReservationException.class)
                 .hasMessage("해당 날짜·시간·테마에 이미 예약이 존재합니다.");
     }
 

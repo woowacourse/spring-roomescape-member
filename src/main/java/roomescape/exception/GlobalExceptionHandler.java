@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalState(IllegalStateException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @ExceptionHandler(DuplicateReservationException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalState(DuplicateReservationException e) {
+        return ResponseEntity.status(e.getStatus()).body(new ErrorResponse(e.getMessage()));
     }
 }

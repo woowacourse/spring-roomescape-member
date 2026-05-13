@@ -77,7 +77,7 @@ class ReservationAcceptanceTest {
     }
 
     @Test
-    void POST_reservations_같은_날짜시간테마_중복이면_400과_메시지를_반환한다() {
+    void POST_reservations_같은_날짜시간테마_중복이면_409과_메시지를_반환한다() {
         insertTheme(1L, "테마");
         insertTime(1L, "10:00");
         insertReservation("기존", 1L, "2026-05-06", 1L);
@@ -93,8 +93,8 @@ class ReservationAcceptanceTest {
                 .body(body)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
-                .body(equalTo("해당 날짜·시간·테마에 이미 예약이 존재합니다."));
+                .statusCode(409)
+                .body("message", equalTo("해당 날짜·시간·테마에 이미 예약이 존재합니다."));
     }
 
     @Test
