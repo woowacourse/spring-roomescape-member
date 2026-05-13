@@ -46,8 +46,8 @@ public class ReservationTimeDao {
                 .findFirst();
     }
 
-    public ReservationTimeEntity getById(Long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id = ? AND is_deleted = FALSE;";
+    public ReservationTimeEntity getByIdIncludingDeleted(Long id) {
+        String sql = "SELECT * FROM reservation_time WHERE id = ?;";
         return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
     }
 

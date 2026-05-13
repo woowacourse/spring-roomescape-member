@@ -58,8 +58,8 @@ public class ThemeDao {
                 .findFirst();
     }
 
-    public ThemeEntity getById(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ? AND is_deleted = FALSE;";
+    public ThemeEntity getByIdIncludingDeleted(Long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?;";
         return jdbcTemplate.queryForObject(sql, themeEntityRowMapper, id);
     }
 
