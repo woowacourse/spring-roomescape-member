@@ -2,9 +2,11 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationRepository;
@@ -34,7 +36,7 @@ public class ReservationTimeService {
         if (reservationTimeRepository.existByStartAt(request.startAt())) {
             throw new CustomException(ErrorCode.DUPLICATED_RESERVATION_TIME);
         }
-        
+
         ReservationTime reservationTime = reservationTimeRepository.create(request.toEntity());
         return ServiceReservationTimeResponse.from(reservationTime);
     }
@@ -48,7 +50,13 @@ public class ReservationTimeService {
 
     public List<ServiceReservationTimeAvailabilityResponse> readAvailabilityByDateAndTheme(
             LocalDate date, Long themeId) {
-        themeRepository.read(themeId);
+        Optional<Theme> theme = themeRepository.read(themeId);
+        if (theme.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_THEME);
+        }
+        if (date.isBefore(LocalDate.now())) {
+            throw new CustomException(ErrorCode.PAST_RESERVATION_TIME_READ);
+        }
 
         List<ReservationTime> allReservationTimes = reservationTimeRepository.readAll();
         List<Long> reservedTimeIdByDateAndTheme = reservationTimeRepository.reservedTimeIdByDateAndTheme(date, themeId);

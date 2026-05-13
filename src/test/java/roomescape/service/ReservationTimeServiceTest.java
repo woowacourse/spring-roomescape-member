@@ -3,6 +3,8 @@ package roomescape.service;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static roomescape.exception.ErrorCode.DUPLICATED_RESERVATION_TIME;
+import static roomescape.exception.ErrorCode.NOT_FOUND_THEME;
+import static roomescape.exception.ErrorCode.PAST_RESERVATION_TIME_READ;
 import static roomescape.exception.ErrorCode.REFERENCED_TIME;
 
 import java.time.LocalDate;
@@ -56,6 +58,25 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
+    void readAvailabilityNotFoundThemeExceptionTest() {
+        assertThatThrownBy(() -> reservationTimeService.readAvailabilityByDateAndTheme(LocalDate.now().plusDays(1), 1L))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(NOT_FOUND_THEME.getMessage());
+    }
+
+    @Test
+    void readAvailabilityPastDateExceptionTest() {
+        reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.create(new Theme("방탈출1", "방탈출1 설명", "url.jpg"));
+
+        LocalDate date = LocalDate.now().minusDays(1);
+
+        assertThatThrownBy(() -> reservationTimeService.readAvailabilityByDateAndTheme(date, theme.getId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(PAST_RESERVATION_TIME_READ.getMessage());
+    }
+
+    @Test
     void deleteReferencedReservationTimeExceptionTest() {
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.create(new Theme("방탈출1", "방탈출1 설명", "url.jpg"));
@@ -69,10 +90,10 @@ public class ReservationTimeServiceTest {
 
     @Test
     void createTest() {
-        ServiceReservationTimeResponse responseDto = reservationTimeService.create(
+        ServiceReservationTimeResponse response = reservationTimeService.create(
                 new ServiceReservationTimeCreateRequest(LocalTime.of(10, 0)));
 
-        assertThat(responseDto).isEqualTo(new ServiceReservationTimeResponse(1L, LocalTime.of(10, 0)));
+        assertThat(response).isEqualTo(new ServiceReservationTimeResponse(1L, LocalTime.of(10, 0)));
     }
 
     @Test
@@ -80,26 +101,25 @@ public class ReservationTimeServiceTest {
         reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
         reservationTimeRepository.create(new ReservationTime(LocalTime.of(11, 0)));
 
-        List<ServiceReservationTimeResponse> responseDtos = reservationTimeService.readAll();
+        List<ServiceReservationTimeResponse> responses = reservationTimeService.readAll();
 
-        assertThat(responseDtos.getFirst()).isEqualTo(new ServiceReservationTimeResponse(1L, LocalTime.of(10, 0)));
-        assertThat(responseDtos.get(1)).isEqualTo(new ServiceReservationTimeResponse(2L, LocalTime.of(11, 0)));
+        assertThat(responses.getFirst()).isEqualTo(new ServiceReservationTimeResponse(1L, LocalTime.of(10, 0)));
+        assertThat(responses.get(1)).isEqualTo(new ServiceReservationTimeResponse(2L, LocalTime.of(11, 0)));
     }
 
     @Test
     void readAvailabilityByDateAndThemeTest() {
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
         reservationTimeRepository.create(reservationTime);
-
         Theme theme = themeRepository.create(new Theme("방탈출1", "방탈출1 설명", "url.jpg"));
 
-        reservationRepository.create(new Reservation("fizz", LocalDate.of(2026, 5, 2), reservationTime, theme));
+        reservationRepository.create(new Reservation("fizz", LocalDate.now(), reservationTime, theme));
 
-        List<ServiceReservationTimeAvailabilityResponse> responseDtos = reservationTimeService.readAvailabilityByDateAndTheme(
-                LocalDate.of(2026, 5, 2), theme.getId());
+        List<ServiceReservationTimeAvailabilityResponse> responses = reservationTimeService.readAvailabilityByDateAndTheme(
+                LocalDate.now(), theme.getId());
 
-        assertThat(responseDtos.get(0).available()).isFalse();
-        assertThat(responseDtos.get(1).available()).isTrue();
+        assertThat(responses.get(0).available()).isFalse();
+        assertThat(responses.get(1).available()).isTrue();
     }
 
     @Test

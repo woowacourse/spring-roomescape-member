@@ -56,7 +56,7 @@
 - 중복된 예약 시간 추가를 거부한다.
     - [x] 중복된 예약 시간 추가를 요청하면 409 에러를 발생시킨다.
 - 지나간 날짜로 예약 가능한 시간 조회를 거부한다.
-    - [ ] 지나간 날짜로 예약 가능한 시간을 조회하면 422 에러를 발생시킨다.
+    - [x] 지나간 날짜로 예약 가능한 시간을 조회하면 422 에러를 발생시킨다.
 
 ## 5단계 - 에러 응답 설계
 
@@ -535,7 +535,7 @@
         ]
         ```
 
-        - [ ] 테마 ID로 테마를 찾을 수 없는 경우: `Http Status: 404 Not Found`
+        - [x] 테마 ID로 테마를 찾을 수 없는 경우: `Http Status: 404 Not Found`
         ```text
         {
             "status": "NOT_FOUND",
@@ -543,7 +543,7 @@
         }
         ```
 
-        - [ ] 이미 지나간 날짜로 조회할 경우: `Http Status: 422 Unprocessable Entity`
+        - [x] 이미 지나간 날짜로 조회할 경우: `Http Status: 422 Unprocessable Entity`
         ```text
         {
             "status": "UNPROCESSABLE_ENTITY",
