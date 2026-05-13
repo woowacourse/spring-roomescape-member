@@ -1,5 +1,8 @@
 package roomescape.schedule.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +30,7 @@ public class AdminScheduleController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody AdminScheduleRequest request) {
+    public ResponseEntity<Void> create(@RequestBody @Valid AdminScheduleRequest request) {
         Long id = scheduleService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -39,7 +42,7 @@ public class AdminScheduleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSchedule(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSchedule(@PathVariable @NotNull(message = "스케줄 ID는 필수입니다.") @Positive(message = "스케줄 ID는 양수여야 합니다.") Long id) {
         scheduleService.delete(id);
         return ResponseEntity.noContent().build();
     }

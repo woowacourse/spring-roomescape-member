@@ -80,10 +80,10 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        if (reservationRepository.existsByScheduleId(id)) {
+    public void delete(Long scheduleId) {
+        if (reservationRepository.existsByScheduleId(scheduleId)) {
             throw new IllegalArgumentException("해당 스케줄에 예약이 존재하여 삭제할 수 없습니다.");
         }
-        scheduleRepository.delete(id);
+        scheduleRepository.delete(scheduleId);
     }
 }
