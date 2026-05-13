@@ -4,8 +4,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ConflictException;
+import roomescape.global.exception.InvalidRequestException;
 import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -13,8 +17,11 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,6 +39,22 @@ class ReservationServiceTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @TestConfiguration
+    static class FixedClockConfig {
+
+        @Bean
+        @Primary
+        Clock fixedClock() {
+            ZoneId zoneId = ZoneId.systemDefault();
+            return Clock.fixed(
+                    LocalDateTime.of(2026, 5, 13, 15, 0)
+                            .atZone(zoneId)
+                            .toInstant(),
+                    zoneId
+            );
+        }
+    }
+
     @Test
     @DisplayName("예약을 생성한다.")
     public void create_success() {
@@ -40,7 +63,7 @@ class ReservationServiceTest {
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
 
         // when
-        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 8), time.getId(), theme.getId());
+        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
 
         // then
         assertThat(reservationService.findAll()).containsExactly(reservation);
@@ -51,7 +74,7 @@ class ReservationServiceTest {
     public void create_fail_whenDuplicatedReservation() {
         // given
         String name = "브라운";
-        LocalDate date = LocalDate.of(2026, 5, 8);
+        LocalDate date = LocalDate.of(2026, 5, 14);
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
 
@@ -64,6 +87,26 @@ class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("현재 시각보다 이전 날짜와 시간으로 예약하면 예외가 발생한다.")
+    public void create_fail_whenPastDateTime() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.create(
+                "브라운",
+                LocalDate.of(2026, 5, 13),
+                time.getId(),
+                theme.getId()
+        ))
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessage("현재 시각 이후의 날짜와 시간을 선택해주세요.");
+
+        assertThat(reservationService.findAll()).isEmpty();
+    }
+
+    @Test
     @DisplayName("존재하지 않는 예약 시간으로 예약하면 예외가 발생한다.")
     public void create_fail_whenReservationTimeNotFound() {
         // given
@@ -72,7 +115,7 @@ class ReservationServiceTest {
         // when, then
         assertThatThrownBy(() -> reservationService.create(
                 "브라운",
-                LocalDate.of(2026, 5, 8),
+                LocalDate.of(2026, 5, 14),
                 37L,
                 theme.getId()
         ))
@@ -89,7 +132,7 @@ class ReservationServiceTest {
         // when, then
         assertThatThrownBy(() -> reservationService.create(
                 "브라운",
-                LocalDate.of(2026, 5, 8),
+                LocalDate.of(2026, 5, 14),
                 time.getId(),
                 37L
         ))
@@ -103,7 +146,7 @@ class ReservationServiceTest {
         // given
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
-        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 8), time.getId(), theme.getId());
+        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
 
         // when
         reservationService.delete(reservation.getId());

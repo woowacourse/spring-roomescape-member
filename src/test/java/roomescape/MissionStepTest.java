@@ -11,6 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.controller.ReservationController;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,7 +86,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", LocalDate.now().plusDays(1).toString());
         int timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(time)
@@ -133,6 +134,7 @@ public class MissionStepTest {
         theme.put("name", "예약 가능 시간 테스트");
         theme.put("description", "예약 가능 시간 테스트용 테마");
         theme.put("thumbnail", "https://example.com/availability-theme.png");
+        String date = LocalDate.now().plusDays(1).toString();
 
         int timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -153,14 +155,14 @@ public class MissionStepTest {
                 .path("id");
 
         RestAssured.given().log().all()
-                .when().get("/times/availability?date=2026-06-01&themeId=" + themeId)
+                .when().get("/times/availability?date=" + date + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("availableTimes.find { it.id == " + timeId + " }.isAvailable", is(true));
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2026-06-01");
+        reservation.put("date", date);
         reservation.put("timeId", timeId);
         reservation.put("themeId", themeId);
 
@@ -172,7 +174,7 @@ public class MissionStepTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/times/availability?date=2026-06-01&themeId=" + themeId)
+                .when().get("/times/availability?date=" + date + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .body("availableTimes.find { it.id == " + timeId + " }.isAvailable", is(false));

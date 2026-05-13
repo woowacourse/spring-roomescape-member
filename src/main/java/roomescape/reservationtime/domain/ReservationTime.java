@@ -3,6 +3,8 @@ package roomescape.reservationtime.domain;
 import lombok.Getter;
 import roomescape.global.exception.InvalidRequestException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -41,6 +43,10 @@ public class ReservationTime {
         if (id == null) {
             throw new InvalidRequestException("예약 시간 id는 비어 있을 수 없습니다.");
         }
+    }
+
+    public boolean isPastAt(LocalDate date, LocalDateTime now) {
+        return LocalDateTime.of(date, startAt).isBefore(now);
     }
 
     @Override
