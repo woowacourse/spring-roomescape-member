@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.ErrorMessageResponse;
-import roomescape.exception.ForbiddenAccessException;
+import roomescape.exception.RoomEscapeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -54,8 +53,8 @@ public class GlobalExceptionHandler {
         return parseOf(ErrorCode.NOT_FOUND);
     }
 
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorMessageResponse> handleBusinessException(BusinessException e) {
+    @ExceptionHandler(RoomEscapeException.class)
+    public ResponseEntity<ErrorMessageResponse> handleBusinessException(RoomEscapeException e) {
         printErrorStatus(e);
         return parseOf(e.getCode());
     }
@@ -63,14 +62,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorMessageResponse handleNoSuchElement(NoSuchElementException e) {
-        // TODO: 마이그레이션
-        return new ErrorMessageResponse(null, e.getMessage());
-    }
-
-    @ExceptionHandler(ForbiddenAccessException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorMessageResponse handleIForbiddenAccessException(ForbiddenAccessException e) {
-        printErrorStatus(e);
         // TODO: 마이그레이션
         return new ErrorMessageResponse(null, e.getMessage());
     }

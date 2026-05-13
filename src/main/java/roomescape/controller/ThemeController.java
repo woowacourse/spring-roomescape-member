@@ -17,7 +17,8 @@ import roomescape.dto.ResourceIdResponse;
 import roomescape.dto.theme.PopularThemesResponse;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
-import roomescape.exception.ForbiddenAccessException;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -37,7 +38,7 @@ public class ThemeController {
         @RequestParam(value = "role", required = false) String role
     ) {
         if (!"admin".equals(role)) {
-            throw new ForbiddenAccessException("테마 추가는 관리자만 가능합니다.");
+            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
         }
 
         Theme saved = themeService.addTheme(request);
@@ -51,7 +52,7 @@ public class ThemeController {
         @RequestParam(value = "role", required = false) String role
     ) {
         if (!"admin".equals(role)) {
-            throw new ForbiddenAccessException("테마 삭제는 관리자만 가능합니다.");
+            throw new RoomEscapeException(ErrorCode.FORBIDDEN);
         }
 
         themeService.deleteThemeById(id);
