@@ -95,7 +95,7 @@
 - [X] INVALID_INPUT 에러 응답 적용
 - [X] PAST_RESERVATION 에러 응답 적용
 - [X] NOT_FOUND 에러 응답 적용
-- [ ] DUPLICATE_RESERVATION 에러 응답 적용
+- [X] DUPLICATE_RESERVATION 에러 응답 적용
 - [ ] RESOURCE_IN_USE 에러 응답 적용
 - [ ] INTERNAL_SERVER_ERROR 에러 응답 적용
 - [ ] 에러 응답 테스트 추가

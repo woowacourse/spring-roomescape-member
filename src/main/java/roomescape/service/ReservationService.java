@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.repository.ReservationRepository;
@@ -77,7 +78,7 @@ public class ReservationService {
 
     private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existWith(date, timeId, themeId)) {
-            throw new IllegalArgumentException("[ERROR] 이미 예약된 시간입니다.");
+            throw new DuplicateReservationException("이미 예약된 시간입니다.");
         }
     }
 

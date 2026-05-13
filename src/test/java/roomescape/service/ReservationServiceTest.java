@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.repository.ReservationRepository;
@@ -205,8 +206,8 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> service.createUserReservation("브라운", date, timeId, themeId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 예약된 시간입니다.");
+                .isInstanceOf(DuplicateReservationException.class)
+                .hasMessage("이미 예약된 시간입니다.");
 
         verify(reservationTimeRepository).findBy(timeId);
         verify(reservationRepository).existWith(date, timeId, themeId);
