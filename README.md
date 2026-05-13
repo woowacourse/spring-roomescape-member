@@ -73,11 +73,10 @@
 
 **내 예약 API 명세**
 
-| 구분  | 메서드      | URI                              | 설명           | 요청 바디 | 응답 바디 | 상태 코드 |
-|-----|----------|----------------------------------|--------------|-------|-------|-------|
-| 사용자 | `GET`    | `/reservations/user?name={name}` | 내 예약 목록 조회  | -     | `{ reservations: [{ id, name, date, time, theme }] }` | 200   |
-| 사용자 | `DELETE` | `/reservations/user/{id}`    | 내 예약 취소     | -     | -     | 204   |
-| 사용자 | `PATCH`  | `/reservations/user/{id}`    | 내 예약 날짜, 시간 변경 | `{ name, date, timeId, themeId }` 중에서 수정하려는 필드 | `{ reservations: [{ id, name, date, time, theme }] }` | 200 |
+| 구분  | 메서드     | URI                              | 설명             | 요청 바디                                          | 응답 바디                                                 | 상태 코드 |
+|-----|---------|----------------------------------|----------------|------------------------------------------------|-------------------------------------------------------|-------|
+| 사용자 | `GET`   | `/reservations/user?name={name}` | 내 예약 목록 조회     | -                                              | `{ reservations: [{ id, name, date, time, theme }] }` | 200   |
+| 사용자 | `PATCH` | `/reservations/user/{id}`        | 내 예약 날짜, 시간 변경 | `{ name, date, timeId, themeId }` 중에서 수정하려는 필드 | `{ reservations: [{ id, name, date, time, theme }] }` | 200   |
 
 ---
 

@@ -47,6 +47,23 @@ public class ReservationRepository {
         return jdbcTemplate.query(selectSql, reservationMapper);
     }
 
+    public Reservation update(LocalDate date, Long timeId, Long id) {
+        String updateSql = "UPDATE reservation SET date = ?, time_id = ? WHERE id = ?";
+        jdbcTemplate.update(updateSql, date, timeId, id);
+        return findById(id);
+    }
+
+    public Reservation findById(Long id) {
+        String selectSql =
+                "SELECT r.id, r.username, r.date, t.id as time_id, t.start_at, m.id as theme_id, m.name as theme_name, m.description, m.url  "
+                        +
+                        "FROM reservation r " +
+                        "INNER JOIN reservation_time t ON r.time_id = t.id " +
+                        "INNER JOIN theme m ON r.theme_id = m.id " +
+                        "WHERE r.id = ?";
+        return jdbcTemplate.queryForObject(selectSql, reservationMapper, id);
+    }
+
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);

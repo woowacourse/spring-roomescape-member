@@ -101,4 +101,36 @@ public class ReservationControllerTest {
                 .statusCode(200)
                 .body("reservations.size()", is(4));
     }
+
+    @Test
+    public void 사용자는_예약에서_시간과_날짜를_변경할_수_있다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{\"date\": \"2027-06-25\", \"timeId\": 4}")
+                .when().patch("/reservations/user/11")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    public void 사용자는_예약에서_시간과_날짜를_변경할_수_있지만_예전_날짜로_변경할_수_없다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{\"date\": \"2025-06-25\", \"timeId\": 4}")
+                .when().patch("/reservations/user/11")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("RESERVATION_WRONG_DATE"));
+    }
+
+    @Test
+    public void 사용자는_예약에서_시간과_날짜를_변경할_수_있지만_이미_지난_예약은_변경할_수_없다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("{\"date\": \"2027-06-25\", \"timeId\": 4}")
+                .when().patch("/reservations/user/1")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("RESERVATION_WRONG_DATE"));
+    }
 }

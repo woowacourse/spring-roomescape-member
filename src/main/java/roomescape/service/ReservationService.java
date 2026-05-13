@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationAllResponse;
+import roomescape.dto.ReservationPatchRequest;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.ErrorCode;
@@ -97,5 +98,22 @@ public class ReservationService {
                 .map(ReservationResponse::from)
                 .toList();
         return new ReservationAllResponse(responses);
+    }
+
+    public ReservationResponse patchById(Long id, ReservationPatchRequest reservationPatchRequest) {
+        Reservation reservation = reservationRepository.findById(id);
+        ReservationTime time = timeRepository.findById(reservationPatchRequest.timeId())
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIMEID_NOT_FOUND));
+        reservationRequestDayCheck(reservation.date(), reservation.time());
+        reservationRequestDayCheck(reservationPatchRequest.date(), time);
+
+        Theme theme = reservation.theme();
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(reservationPatchRequest.date(),
+                reservationPatchRequest.timeId(), theme.getId())) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATE);
+        }
+
+        return ReservationResponse.from(
+                reservationRepository.update(reservationPatchRequest.date(), reservationPatchRequest.timeId(), id));
     }
 }
