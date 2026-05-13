@@ -243,7 +243,7 @@ class ReservationControllerTest {
                 .when().patch("/reservations/" + id)
                 .then().log().all()
                 .statusCode(200)
-                .body("id", is(1))
+                .body("id", is((int) id))
                 .body("date", is(futureDate.toString()))
                 .body("time.id", is(2));
     }
@@ -284,10 +284,10 @@ class ReservationControllerTest {
     @DisplayName("중복된 시간으로 예약을 수정하면 에러가 발생한다.")
     void updateReservationWithDuplicateThrowException() {
         Map<String, Object> params = new HashMap<>();
-        params.put("username", "포비2");
+        params.put("username", "포비");
         params.put("themeId", 1L);
         params.put("date", futureDate);
-        params.put("timeId", 2L);
+        params.put("timeId", 1L);
 
         long id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
