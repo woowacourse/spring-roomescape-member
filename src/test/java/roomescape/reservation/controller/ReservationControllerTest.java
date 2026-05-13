@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.global.exception.DuplicateReservationException;
+import roomescape.global.exception.BusinessException;
 import roomescape.global.exception.ErrorCode;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.ReservationService;
@@ -75,7 +75,7 @@ class ReservationControllerTest {
     @Test
     void 중복_예약_요청_시_DuplicateReservationException이_발생하면_400을_반환한다() throws Exception {
         when(reservationService.createReservation(any(), any(), any(), any()))
-                .thenThrow(new DuplicateReservationException("이미 예약된 시간입니다."));
+                .thenThrow(new BusinessException(ErrorCode.RESERVATION_DUPLICATE));
 
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -87,7 +87,8 @@ class ReservationControllerTest {
                                     "themeId": 1
                                   }
                                 """))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.RESERVATION_DUPLICATE.errorCode()));
     }
 
     @Test
