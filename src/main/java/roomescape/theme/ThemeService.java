@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.dto.ThemesResponse;
@@ -19,9 +20,11 @@ public class ThemeService {
     private static final int POPULAR_LIMIT = 10;
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
@@ -46,7 +49,9 @@ public class ThemeService {
 
     @Transactional
     public void delete(Long id) {
-        themeRepository.findById(id).orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new RoomescapeException(ErrorCode.THEME_IN_USE);
+        }
         themeRepository.deleteById(id);
     }
 

@@ -45,8 +45,6 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(Long id) {
-        reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         if (reservationRepository.existsByTimeId(id)) {
             throw new RoomescapeException(ErrorCode.RESERVATION_TIME_IN_USE);
         }
