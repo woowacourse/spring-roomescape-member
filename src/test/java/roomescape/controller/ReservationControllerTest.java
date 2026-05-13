@@ -135,6 +135,17 @@ class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("예약 삭제 시 헤더의 이름과 예약자 이름이 다르면 401을 반환한다")
+    void deleteReservationUnauthorized() throws Exception {
+        long id = createReservationAndGetId("홍길동", LocalDate.now().plusDays(1));
+
+        mockMvc.perform(delete("/reservations/" + id)
+                        .header("name", "테스트"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.errorMessage").value("해당 예약을 삭제할 권한이 없습니다."));
+    }
+
+    @Test
     @DisplayName("이미 지난 날짜의 예약을 삭제하려고 하면 400 에러를 반환한다")
     void deletePastReservation() throws Exception {
         mockMvc.perform(delete("/reservations/2")
@@ -167,7 +178,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("헤더의 이름과 예약자 이름이 다르면 401을 반환한다")
+    @DisplayName("예약 수정 시 헤더의 이름과 예약자 이름이 다르면 401을 반환한다")
     void updateReservationUnauthorized() throws Exception {
         long id = createReservationAndGetId("홍길동", LocalDate.now().plusDays(5));
 
@@ -184,7 +195,7 @@ class ReservationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateParams)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.errorMessage").value("해당 예약을 삭제할 권한이 없습니다."));
+                .andExpect(jsonPath("$.errorMessage").value("해당 예약을 수정할 권한이 없습니다."));
     }
 
     @Test

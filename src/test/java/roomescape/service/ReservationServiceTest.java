@@ -141,6 +141,21 @@ public class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("예약 수정 시 본인의 예약이 아니면 UnauthorizedException 발생")
+    void updateReservationFailByUnauthorizedTest() {
+        Reservation reservation = new Reservation(1, "브라운", LocalDate.now().plusDays(1), 1, 1);
+        ReservationService reservationService = new ReservationService(
+                createReservationRepository(reservation, false, 0), null, null
+        );
+
+        ReservationCommand updateCommand = new ReservationCommand("브라운", LocalDate.now().plusDays(2), 2, 2);
+
+        assertThatThrownBy(() -> reservationService.updateReservation(1, "테스트", updateCommand))
+                .isExactlyInstanceOf(UnauthorizedException.class)
+                .hasMessage("해당 예약을 수정할 권한이 없습니다.");
+    }
+
+    @Test
     @DisplayName("예약 조회 시 존재하지 않는 ID면 NotFoundResourceException 발생")
     void getReservationFailByNotFoundTest() {
         ReservationService reservationService = new ReservationService(
