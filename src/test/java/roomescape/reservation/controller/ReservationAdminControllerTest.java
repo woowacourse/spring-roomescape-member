@@ -67,8 +67,8 @@ class ReservationAdminControllerTest {
     }
 
     @Test
-    @DisplayName("관리자는 예약을 취소한다.")
-    void cancel_reservation() {
+    @DisplayName("관리자는 예약을 취소할 수 있다.")
+    void cancelByManager_reservation() {
         Integer dateId = createReservationDate(date);
         Integer timeId = createReservationTime(startAt);
         Integer themeId = createTheme(themeName);

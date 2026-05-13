@@ -53,7 +53,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation cancel(Long id) {
+    public Reservation cancelByManager(Long id) {
         Reservation reservation = getReservation(id);
         reservation.updateStatus(CANCELED);
         reservationRepository.updateStatus(reservation);

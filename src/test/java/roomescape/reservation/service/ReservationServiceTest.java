@@ -157,7 +157,7 @@ class ReservationServiceTest {
         // given
         Reservation reservation = save(reservation(name, reservationDate1, reservationTime1, theme1));
         ReservationSaveDto duplicated = saveDto(name, reservationDate1, reservationTime1, theme1);
-        cancel(reservation);
+        cancelByManager(reservation);
 
         // when
         Reservation actual = reservationService.reserve(duplicated);
@@ -174,7 +174,7 @@ class ReservationServiceTest {
         String anotherName = "다른사람";
         Reservation reservation = save(reservation(name, reservationDate1, reservationTime1, theme1));
         ReservationSaveDto duplicated = saveDto(anotherName, reservationDate1, reservationTime1, theme1);
-        cancel(reservation);
+        cancelByManager(reservation);
 
         // when
         Reservation actual = reservationService.reserve(duplicated);
@@ -185,13 +185,13 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 취소하면 CANCELED 상태가 된다.")
-    void updateStatus_canceled() {
+    @DisplayName("관리자 전용으로 예약을 취소하면 CANCELED 상태가 된다.")
+    void cancelByManager() {
         // given
         Reservation savedReservation = save(reservation(name, reservationDate1, reservationTime1, theme1));
 
         // when
-        Reservation actual = reservationService.cancel(savedReservation.id());
+        Reservation actual = reservationService.cancelByManager(savedReservation.id());
 
         // then
         Assertions.assertThat(actual.status())
@@ -202,8 +202,8 @@ class ReservationServiceTest {
         return reservationRepository.save(reservation);
     }
 
-    private void cancel(Reservation reservation) {
-        reservationService.cancel(reservation.id());
+    private void cancelByManager(Reservation reservation) {
+        reservationService.cancelByManager(reservation.id());
     }
 
 
