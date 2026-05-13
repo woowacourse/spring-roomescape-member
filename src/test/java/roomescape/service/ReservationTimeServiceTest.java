@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ResourceInUseException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -115,8 +116,8 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> service.delete(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 예약이 존재하는 시간은 삭제할 수 없습니다.");
+                .isInstanceOf(ResourceInUseException.class)
+                .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다.");
 
         verify(reservationRepository).existsByTimeId(id);
         verify(reservationTimeRepository, never()).delete(anyLong());

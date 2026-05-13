@@ -13,6 +13,7 @@ import roomescape.exception.ErrorCode;
 import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
+import roomescape.exception.ResourceInUseException;
 import roomescape.exception.RoomescapeException;
 
 @RestControllerAdvice
@@ -36,7 +37,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(ErrorResponse.from(e));
     }
 
-    @ExceptionHandler(DuplicateReservationException.class)
+    @ExceptionHandler({
+            DuplicateReservationException.class,
+            ResourceInUseException.class
+    })
     public ResponseEntity<ErrorResponse> handleConflict(RoomescapeException e) {
         return ResponseEntity.status(409).body(ErrorResponse.from(e));
     }

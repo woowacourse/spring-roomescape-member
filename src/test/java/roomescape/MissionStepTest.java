@@ -226,8 +226,9 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/1")
                 .then().log().all()
-                .statusCode(400)
-                .body(is("[ERROR] 예약이 존재하는 시간은 삭제할 수 없습니다."));
+                .statusCode(409)
+                .body("code", is("RESOURCE_IN_USE"))
+                .body("detail", is("예약이 존재하는 시간은 삭제할 수 없습니다."));
     }
 
     @Test
@@ -248,8 +249,9 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/1")
                 .then().log().all()
-                .statusCode(400)
-                .body(is("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다."));
+                .statusCode(409)
+                .body("code", is("RESOURCE_IN_USE"))
+                .body("detail", is("예약이 존재하는 테마는 삭제할 수 없습니다."));
     }
 
     @Test
