@@ -66,14 +66,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    void 예약_삭제_요청을_받으면_PathVariable_id를_Service에_전달한다() throws Exception {
-        mockMvc.perform(delete("/reservations/1"))
-                .andExpect(status().isNoContent());
-        verify(reservationService, times(1)).deleteReservation(any());
-    }
-
-    @Test
-    void 중복_예약_요청_시_DuplicateReservationException이_발생하면_400을_반환한다() throws Exception {
+    void 중복_예약_요청_시_발생하면_409를_반환한다() throws Exception {
         when(reservationService.createReservation(any(), any(), any(), any()))
                 .thenThrow(new BusinessException(ErrorCode.RESERVATION_DUPLICATE));
 
@@ -87,7 +80,7 @@ class ReservationControllerTest {
                                     "themeId": 1
                                   }
                                 """))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.RESERVATION_DUPLICATE.errorCode()));
     }
 
@@ -182,6 +175,51 @@ class ReservationControllerTest {
     @Test
     void 쿼리_파라미터_name이_없으면_400을_반환한다() throws Exception {
         mockMvc.perform(get("/reservations"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 본인_예약_취소_요청을_받으면_204를_반환한다() throws Exception {
+        mockMvc.perform(delete("/reservations/1")
+                        .param("name", "어셔"))
+                .andExpect(status().isNoContent());
+
+        verify(reservationService, times(1)).cancelUserReservation(1L, "어셔");
+    }
+
+    @Test
+    void 존재하지_않는_예약취소요청이_오면_404와_RESERVATION_NOT_FOUND를_반환한다() throws Exception {
+        doThrow(new BusinessException(ErrorCode.RESERVATION_NOT_FOUND))
+                .when(reservationService).cancelUserReservation(any(), any());
+
+        mockMvc.perform(delete("/reservations/1").param("name", "어셔"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.RESERVATION_NOT_FOUND.errorCode()));
+    }
+
+    @Test
+    void 본인이_아닌_예약_취소요청이_오면_403과_RESERVATION_FORBIDDEN을_반환한다() throws Exception {
+        doThrow(new BusinessException(ErrorCode.RESERVATION_FORBIDDEN))
+                .when(reservationService).cancelUserReservation(any(), any());
+
+        mockMvc.perform(delete("/reservations/1").param("name", "어셔"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.RESERVATION_FORBIDDEN.errorCode()));
+    }
+
+    @Test
+    void 이미_시간이_지난_예약_취소_요청이_오면_400과_RESERVATION_EXPIRED를_반환한다() throws Exception {
+        doThrow(new BusinessException(ErrorCode.RESERVATION_EXPIRED))
+                .when(reservationService).cancelUserReservation(any(), any());
+
+        mockMvc.perform(delete("/reservations/1").param("name", "어셔"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.RESERVATION_EXPIRED.errorCode()));
+    }
+
+    @Test
+    void 취소_요청할_때_쿼리파라미터가_없으면_400을_반환한다() throws Exception {
+        mockMvc.perform(delete("/reservations/1"))
                 .andExpect(status().isBadRequest());
     }
 }

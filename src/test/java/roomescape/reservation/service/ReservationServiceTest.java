@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.global.exception.BusinessException;
 import roomescape.global.exception.ErrorCode;
-import roomescape.global.exception.ReservationNotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -95,20 +94,22 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약_삭제를_요청하면_Repository_deleteById에_id를_전달한다() {
-        when(reservationRepository.deleteById(any())).thenReturn(1);
+    void 존재하는_예약을_삭제한다() {
+        when(reservationRepository.existsById(any())).thenReturn(true);
 
-        reservationService.deleteReservation(7L);
+        reservationService.deleteReservation(1L);
 
-        verify(reservationRepository).deleteById(7L);
+        verify(reservationRepository).deleteById(1L);
     }
 
     @Test
     void 존재하지_않는_예약을_삭제하면_예외가_발생한다() {
-        when(reservationRepository.deleteById(any())).thenReturn(0);
+        when(reservationRepository.existsById(any())).thenReturn(false);
 
-        assertThatThrownBy(() -> reservationService.deleteReservation(999L))
-                .isInstanceOf(ReservationNotFoundException.class);
+        assertThatThrownBy(() -> reservationService.deleteReservation(1L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_NOT_FOUND);
     }
 
     @Test
@@ -127,6 +128,8 @@ class ReservationServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_DUPLICATE);
+
+        verify(reservationRepository, never()).save(any());
     }
 
     @Test
@@ -158,5 +161,112 @@ class ReservationServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RESERVATION_PAST_DATETIME);
+    }
+
+    @Test
+    void 미래_시간의_예약을_취소하면_성공한다() {
+        // given
+        Reservation reservation = new Reservation(
+                1L, "어셔", LocalDate.now().plusDays(1),
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, "공포방", "무서운 방입니다.", "img-url")
+        );
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
+
+        // when
+        reservationService.cancelUserReservation(1L, "어셔");
+
+        // then
+        verify(reservationRepository).deleteById(1L);
+    }
+
+    @Test
+    void 과거_시간의_예약을_취소하면_RESERVATION_EXPIRED_예외를_던진다() {
+        // given
+        Reservation reservation = new Reservation(
+                1L, "어셔", LocalDate.now().minusDays(1),
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, "공포방", "무서운 방입니다.", "img-url")
+        );
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.cancelUserReservation(1L, "어셔"))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_EXPIRED);
+
+        verify(reservationRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void 존재하지_않는_예약을_취소하면_RESREVATION_NOT_FOUND_예외를_던진다() {
+        // given
+        when(reservationRepository.findById(any())).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.cancelUserReservation(1L, "어셔"))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_NOT_FOUND);
+
+        verify(reservationRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void 본인이_아닌_예약을_취소하면_RESERVATION_FORBIDDEN_예외를_던진다() {
+        // given
+        Reservation reservation = new Reservation(
+                1L, "어셔", LocalDate.now().plusDays(1),
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, "공포방", "무서운 방입니다.", "img-url")
+        );
+        when(reservationRepository.findById(any())).thenReturn(Optional.of(reservation));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.cancelUserReservation(1L, "어셔2"))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_FORBIDDEN);
+
+        verify(reservationRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void 날짜와_시간이_지난_예약을_삭제하면_RESERVATION_EXPIRED를_던지고_예외를_발생한다() {
+        // given
+        Reservation reservation = new Reservation(
+                1L, "어셔", LocalDate.now().minusDays(1),
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, "공포방", "무서운 방입니다.", "img-url")
+        );
+        when(reservationRepository.findById(any())).thenReturn(Optional.of(reservation));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.cancelUserReservation(1L, "어셔"))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_EXPIRED);
+
+        verify(reservationRepository, never()).deleteById(1L);
+    }
+
+    @Test
+    void 오늘_날짜이고_시간이_지난_예약을_삭제하면_RESERVATION_EXPIRED를_던지고_예외를_발생한다() {
+        // given
+        LocalTime now = LocalTime.now();
+        int beforeHour = now.getHour() - 1;
+        Reservation reservation = new Reservation(
+                1L, "어셔", LocalDate.now(),
+                new ReservationTime(1L, LocalTime.of(beforeHour, 0)),
+                new Theme(1L, "공포방", "무서운 방입니다.", "img-url")
+        );
+        when(reservationRepository.findById(any())).thenReturn(Optional.of(reservation));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.cancelUserReservation(1L, "어셔"))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_EXPIRED);
     }
 }

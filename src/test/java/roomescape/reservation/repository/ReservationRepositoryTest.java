@@ -185,9 +185,9 @@ class ReservationRepositoryTest {
     @Test
     void 다른_이름의_사용자_예약은_조회되지_않는다() {
         // given
-        reservationRepository.save(new Reservation(
+        Reservation reservation1 = reservationRepository.save(new Reservation(
                 null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
-        reservationRepository.save(new Reservation(
+        Reservation reservation2 = reservationRepository.save(new Reservation(
                 null, "레서", LocalDate.of(2026, 5, 11), time, theme));
 
         // when
@@ -196,5 +196,27 @@ class ReservationRepositoryTest {
         // then
         assertThat(result).hasSize(1);
         assertThat(result).allMatch(r -> r.getName().equals("어셔"));
+    }
+
+    @Test
+    void 예약_id로_데이터존재여부_조회시_등록된_예약이_존재한다면_true를_반환한다() {
+        // given
+        Reservation reservation = reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
+
+        // when
+        boolean result = reservationRepository.existsById(reservation.getId());
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 예약_id로_데이터존재여부_조회시_예약이_존재하지_않다면_false를_반환한다() {
+        // when
+        boolean result = reservationRepository.existsById(1L);
+
+        // then
+        assertThat(result).isFalse();
     }
 }
