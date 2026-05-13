@@ -55,9 +55,12 @@ public class ReservationService {
         final ReservationTime reservationTime = getReservationTime(data);
         validateReservationTime(reservationTime);
         final Theme theme = getTheme(data);
-        final Reservation reservation = Reservation.create(data.name(), date, reservationTime, theme);
 
-        final Reservation savedReservation = reservationRepository.save(reservation);
+        validateAvailable(data);
+
+        final Reservation newReservation = Reservation.create(data.name(), date, reservationTime, theme);
+
+        final Reservation savedReservation = reservationRepository.save(newReservation);
         return mapDomainToDto(savedReservation);
     }
 
@@ -72,6 +75,18 @@ public class ReservationService {
         final LocalDate today = LocalDate.now(clock);
         if (date.isBefore(today)) {
             throw new IllegalArgumentException("지난 날짜로 예약이 불가합니다.");
+        }
+    }
+
+    private void validateAvailable(final ReservationCreateRequest data) {
+        boolean isAlreadyReserved = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                data.date(),
+                data.timeId(),
+                data.themeId()
+        );
+
+        if (isAlreadyReserved) {
+            throw new IllegalArgumentException("예약이 마감되었습니다.");
         }
     }
 

@@ -44,6 +44,18 @@ public class ReservationRepository {
                 .toList();
     }
 
+    public boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
+        final String sql = """
+                SELECT COUNT(id)
+                FROM reservation
+                WHERE date = ? AND time_id = ? AND theme_id = ?
+                """;
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
+
+        return count != null && count > 0;
+    }
+
     public Reservation save(final Reservation newReservation) {
         final long newReservationId = insertReservation(newReservation);
 
