@@ -104,6 +104,25 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean isDuplicatedExcludingId(Long reservationId, Long themeId, ReservationTime time, LocalDate date) {
+        Integer exists = jdbcTemplate.queryForObject(
+                """
+                        SELECT EXISTS(
+                            SELECT 1
+                            FROM reservation
+                            WHERE theme_id = ? AND time_id = ? AND date = ? AND id <> ?
+                        )
+                        """,
+                Integer.class,
+                themeId,
+                time.getId(),
+                Date.valueOf(date),
+                reservationId
+        );
+        return exists != null && exists == 1;
+    }
+
+    @Override
     public List<Long> findTimeIdsByThemeIdAndDate(Long themeId, LocalDate date) {
         return jdbcTemplate.query(
                 "SELECT time_id FROM reservation WHERE theme_id = ? AND date = ?",
@@ -162,4 +181,3 @@ public class JdbcReservationRepository implements ReservationRepository {
         }
     }
 }
-

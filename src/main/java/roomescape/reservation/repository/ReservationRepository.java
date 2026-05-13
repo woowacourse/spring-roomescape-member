@@ -23,5 +23,7 @@ public interface ReservationRepository {
 
     boolean isDuplicated(Long themeId, ReservationTime time, LocalDate date);
 
+    boolean isDuplicatedExcludingId(Long reservationId, Long themeId, ReservationTime time, LocalDate date);
+
     boolean existsByTimeId(Long timeId);
 }

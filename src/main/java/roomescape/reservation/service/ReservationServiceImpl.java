@@ -112,6 +112,8 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Reservation update(ReservationUpdateServiceDto dto) {
+        validateRequiredFields(dto);
+
         Reservation existing = reservationRepository.findById(dto.id())
                 .orElseThrow(() -> new ReservationException(dto.id()));
         validateOwner(existing, dto.requesterName());
@@ -120,11 +122,26 @@ public class ReservationServiceImpl implements ReservationService {
         Theme newTheme = findTheme(dto.themeId());
         validatePastReservation(dto.date(), newTime);
         validateHoliday(dto.date());
-        validateDuplicatedReservation(newTheme.getId(), newTime, dto.date());
+        validateDuplicatedReservation(dto.id(), newTheme.getId(), newTime, dto.date());
 
         reservationRepository.update(dto.id(), dto.date(), newTime.getId(), newTheme.getId());
         return reservationRepository.findById(dto.id())
                 .orElseThrow(() -> new ReservationException(dto.id()));
+    }
+
+    private void validateRequiredFields(ReservationUpdateServiceDto reservation) {
+        if (reservation.requesterName() == null || reservation.requesterName().isBlank()) {
+            throw new RoomescapeException(ErrorCode.INVALID_REQUEST);
+        }
+        if (reservation.date() == null || reservation.themeId() == null || reservation.timeId() == null) {
+            throw new RoomescapeException(ErrorCode.INVALID_REQUEST);
+        }
+    }
+
+    private void validateDuplicatedReservation(Long reservationId, Long themeId, ReservationTime time, LocalDate date) {
+        if (reservationRepository.isDuplicatedExcludingId(reservationId, themeId, time, date)) {
+            throw new ReservationException(ErrorCode.DUPLICATE_RESERVATION);
+        }
     }
 
     @Override

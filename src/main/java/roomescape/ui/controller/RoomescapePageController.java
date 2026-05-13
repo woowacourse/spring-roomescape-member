@@ -22,9 +22,9 @@ import roomescape.holiday.service.dto.HolidaySaveServiceDto;
 import roomescape.error.ErrorCode;
 import roomescape.error.RoomescapeException;
 import roomescape.reservation.controller.dto.ReservationResponseDto;
-import roomescape.reservation.exception.ReservationException;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
+import roomescape.reservation.service.dto.ReservationUpdateServiceDto;
 import roomescape.theme.controller.dto.ThemeAvailableTimeResponseDto;
 import roomescape.theme.controller.dto.ThemeResponseDto;
 import roomescape.theme.exception.ThemeException;
@@ -65,8 +65,18 @@ public class RoomescapePageController {
     }
 
     @GetMapping("/dashboard/reservations")
-    public String reservationsPage(Model model) {
-        model.addAttribute("reservations", reservationService.getAll().stream().map(ReservationResponseDto::from).toList());
+    public String reservationsPage(
+            @RequestParam(required = false) String name,
+            Model model
+    ) {
+        List<ReservationResponseDto> reservations = (name == null || name.isBlank()
+                ? reservationService.getAll()
+                : reservationService.findByName(name))
+                .stream()
+                .map(ReservationResponseDto::from)
+                .toList();
+        model.addAttribute("reservations", reservations);
+        model.addAttribute("searchName", name);
         model.addAttribute("themes", themeService.getAll().stream().map(ThemeResponseDto::from).toList());
         model.addAttribute("times", timeService.findAll().stream().map(TimeResponseDto::from).toList());
         return "dashboard/reservations";
@@ -123,13 +133,43 @@ public class RoomescapePageController {
         return "redirect:/dashboard/reservations";
     }
 
-    @PostMapping("/dashboard/reservations/{id}/cancel")
-    public String cancelReservation(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    @PostMapping("/dashboard/reservations/{id}/update")
+    public String updateReservation(
+            @PathVariable Long id,
+            @RequestParam String name,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam Long themeId,
+            @RequestParam Long timeId,
+            RedirectAttributes redirectAttributes
+    ) {
         try {
-            reservationService.cancel(id);
+            reservationService.update(new ReservationUpdateServiceDto(id, name, date, timeId, themeId));
+            addSuccessMessage(redirectAttributes, "예약을 변경했습니다.");
+        } catch (RoomescapeException e) {
+            addExpectedErrorMessage(redirectAttributes, e);
+        } catch (RuntimeException e) {
+            addUnexpectedErrorMessage(redirectAttributes, e);
+        }
+        redirectAttributes.addAttribute("name", name);
+        return "redirect:/dashboard/reservations";
+    }
+
+    @PostMapping("/dashboard/reservations/{id}/cancel")
+    public String cancelReservation(
+            @PathVariable Long id,
+            @RequestParam(required = false) String name,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            if (name == null || name.isBlank()) {
+                reservationService.cancel(id);
+            } else {
+                reservationService.cancel(id, name);
+                redirectAttributes.addAttribute("name", name);
+            }
             addSuccessMessage(redirectAttributes, "예약을 취소했습니다.");
-        } catch (ReservationException e) {
-            addExpectedErrorMessage(redirectAttributes, "취소할 예약을 찾지 못했습니다.", e);
+        } catch (RoomescapeException e) {
+            addExpectedErrorMessage(redirectAttributes, e);
         }
         return "redirect:/dashboard/reservations";
     }
