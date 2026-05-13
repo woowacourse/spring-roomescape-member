@@ -210,4 +210,366 @@ PATCH http://localhost:8080/reservations/{reservationId}
 
 ## API 명세서
 
+### 전체 API 목록
+
+| 리소스 | 메서드 | 경로 | 설명 |
+|--------|--------|------|------|
+| 예약 | GET | `/reservations` | 전체 예약 조회 |
+| 예약 | GET | `/reservations?name=` | 이름으로 내 예약 조회 |
+| 예약 | POST | `/reservations` | 예약 등록 |
+| 예약 | PATCH | `/reservations/{id}/cancel` | 예약 취소 |
+| 예약 | PATCH | `/reservations/{id}` | 예약 날짜·시간·테마 변경 |
+| 예약 | DELETE | `/reservations/{id}` | 예약 삭제 |
+| 시간 | GET | `/times` | 전체 시간 조회 |
+| 시간 | GET | `/times?themeId=&date=` | 테마·날짜별 예약 가능 시간 조회 |
+| 시간 | POST | `/times` | 시간 등록 |
+| 시간 | DELETE | `/times/{id}` | 시간 삭제 |
+| 테마 | GET | `/themes` | 전체 테마 조회 |
+| 테마 | GET | `/themes?topCount=&during=` | 인기 테마 조회 |
+| 테마 | POST | `/themes` | 테마 등록 |
+| 테마 | DELETE | `/themes/{id}` | 테마 삭제 |
+
+---
+
+### 공통 에러 응답
+
+모든 API는 오류 발생 시 아래 형식으로 응답한다.
+
+```json
+{
+  "httpStatus": "NOT_FOUND",
+  "errorMessage": "예약이 존재하지 않습니다.",
+  "timeStamp": "2026-05-13T10:00:00",
+  "apiUrl": "/reservations/1",
+  "traceId": "abc-123"
+}
+```
+
+---
+
+### 예약 API
+
+#### 전체 예약 조회
+
+```
+GET /reservations
+```
+
+**응답 200 OK**
+```json
+[
+  {
+    "id": 1,
+    "name": "브라운",
+    "date": "2026-05-15",
+    "time": {
+      "id": 1,
+      "startAt": "10:00",
+      "isAvailable": true
+    },
+    "theme": {
+      "id": 1,
+      "name": "공포의 방",
+      "description": "무서운 방탈출",
+      "thumbnailUrl": "https://example.com/thumbnail.jpg"
+    },
+    "status": "CONFIRMED"
+  }
+]
+```
+
+---
+
+#### 내 예약 조회
+
+```
+GET /reservations?name={name}
+```
+
+| 파라미터 | 타입   | 필수 | 설명      |
+|----------|--------|------|-----------|
+| name     | String | O    | 예약자 이름 |
+
+**응답 200 OK** — 전체 예약 조회와 동일한 형식
+
+---
+
+#### 예약 등록
+
+```
+POST /reservations
+```
+
+**요청 Body**
+```json
+{
+  "name": "브라운",
+  "date": "2026-05-15",
+  "timeId": 1,
+  "themeId": 1
+}
+```
+
+| 필드    | 타입      | 필수 | 설명              |
+|---------|-----------|------|-------------------|
+| name    | String    | O    | 예약자 이름 (공백 불가) |
+| date    | LocalDate | O    | 예약 날짜 (과거 불가)  |
+| timeId  | Long      | O    | 예약 시간 ID       |
+| themeId | Long      | O    | 테마 ID            |
+
+**응답 201 Created** — 등록된 예약 단건 (전체 예약 조회 요소와 동일한 형식)
+
+| 에러 상황 | 상태 코드 |
+|-----------|-----------|
+| 유효하지 않은 입력값 | 400 Bad Request |
+| 과거 날짜 예약 시도 | 422 Unprocessable Entity |
+| 시간 ID 없음 | 404 Not Found |
+| 테마 ID 없음 | 404 Not Found |
+| 같은 날짜·시간·테마에 예약 이미 존재 | 409 Conflict |
+
+---
+
+#### 예약 취소
+
+```
+PATCH /reservations/{reservationId}/cancel
+```
+
+| 경로 변수 | 타입 | 설명   |
+|-----------|------|--------|
+| reservationId | Long | 예약 ID |
+
+**응답 204 No Content**
+
+| 에러 상황 | 상태 코드 |
+|-----------|-----------|
+| 예약 없음 | 404 Not Found |
+| 본인 예약이 아닌 경우 | 403 Forbidden |
+| 이미 취소된 예약 | 409 Conflict |
+| 이미 완료된 예약 | 409 Conflict |
+| 이미 지난 예약 | 422 Unprocessable Entity |
+
+---
+
+#### 예약 날짜·시간·테마 변경
+
+```
+PATCH /reservations/{reservationId}
+```
+
+| 경로 변수 | 타입 | 설명   |
+|-----------|------|--------|
+| reservationId | Long | 예약 ID |
+
+**요청 Body**
+```json
+{
+  "date": "2026-05-20",
+  "timeId": 2,
+  "themeId": 1
+}
+```
+
+| 필드    | 타입      | 필수 | 설명              |
+|---------|-----------|------|-------------------|
+| date    | LocalDate | O    | 변경할 날짜 (과거 불가) |
+| timeId  | Long      | O    | 변경할 시간 ID     |
+| themeId | Long      | O    | 변경할 테마 ID     |
+
+**응답 200 OK** — 변경된 예약 단건 (전체 예약 조회 요소와 동일한 형식)
+
+| 에러 상황 | 상태 코드 |
+|-----------|-----------|
+| 예약 없음 | 404 Not Found |
+| 본인 예약이 아닌 경우 | 403 Forbidden |
+| 과거 날짜로 변경 시도 | 422 Unprocessable Entity |
+| 이미 지난 예약 | 422 Unprocessable Entity |
+| 변경할 시간 ID 없음 | 404 Not Found |
+| 같은 날짜·시간·테마에 예약 이미 존재 | 409 Conflict |
+
+---
+
+#### 예약 삭제
+
+```
+DELETE /reservations/{id}
+```
+
+| 경로 변수 | 타입 | 설명   |
+|-----------|------|--------|
+| id        | Long | 예약 ID |
+
+**응답 204 No Content**
+
+---
+
+### 예약 시간 API
+
+#### 전체 시간 조회
+
+```
+GET /times
+```
+
+**응답 200 OK**
+```json
+[
+  {
+    "id": 1,
+    "startAt": "10:00",
+    "isAvailable": true
+  }
+]
+```
+
+---
+
+#### 테마·날짜별 예약 가능 시간 조회
+
+```
+GET /times?themeId={themeId}&date={date}
+```
+
+| 파라미터 | 타입      | 필수 | 설명     |
+|----------|-----------|------|----------|
+| themeId  | Long      | O    | 테마 ID  |
+| date     | LocalDate | O    | 조회 날짜 |
+
+**응답 200 OK** — `isAvailable` 필드로 예약 가능 여부를 구분한다.
+```json
+[
+  {
+    "id": 1,
+    "startAt": "10:00",
+    "isAvailable": true
+  },
+  {
+    "id": 2,
+    "startAt": "14:00",
+    "isAvailable": false
+  }
+]
+```
+
+---
+
+#### 시간 등록
+
+```
+POST /times
+```
+
+**요청 Body**
+```json
+{
+  "startAt": "10:00"
+}
+```
+
+| 필드    | 타입      | 필수 | 설명      |
+|---------|-----------|------|-----------|
+| startAt | LocalTime | O    | 시작 시간 |
+
+**응답 201 Created**
+```json
+{
+  "id": 1,
+  "startAt": "10:00",
+  "isAvailable": true
+}
+```
+
+---
+
+#### 시간 삭제
+
+```
+DELETE /times/{id}
+```
+
+| 경로 변수 | 타입 | 설명    |
+|-----------|------|---------|
+| id        | Long | 시간 ID |
+
+**응답 204 No Content**
+
+| 에러 상황 | 상태 코드 |
+|-----------|-----------|
+| 해당 시간에 예약이 존재하는 경우 | 422 Unprocessable Entity |
+
+---
+
+### 테마 API
+
+#### 전체 테마 조회
+
+```
+GET /themes
+```
+
+**응답 200 OK**
+```json
+[
+  {
+    "id": 1,
+    "name": "공포의 방",
+    "description": "무서운 방탈출",
+    "thumbnailUrl": "https://example.com/thumbnail.jpg"
+  }
+]
+```
+
+---
+
+#### 인기 테마 조회
+
+```
+GET /themes?topCount={topCount}&during={during}
+```
+
+| 파라미터 | 타입 | 필수 | 설명                     |
+|----------|------|------|--------------------------|
+| topCount | Long | O    | 조회할 테마 수            |
+| during   | Long | O    | 최근 N일 기준으로 집계    |
+
+**응답 200 OK** — 전체 테마 조회와 동일한 형식 (예약 수 내림차순 정렬)
+
+---
+
+#### 테마 등록
+
+```
+POST /themes
+```
+
+**요청 Body**
+```json
+{
+  "name": "공포의 방",
+  "description": "무서운 방탈출",
+  "thumbnailUrl": "https://example.com/thumbnail.jpg"
+}
+```
+
+| 필드         | 타입   | 필수 | 설명              |
+|--------------|--------|------|-------------------|
+| name         | String | O    | 테마 이름 (공백 불가) |
+| description  | String | O    | 테마 설명 (공백 불가) |
+| thumbnailUrl | String | O    | 썸네일 URL (공백 불가) |
+
+**응답 201 Created** — 등록된 테마 단건 (전체 테마 조회 요소와 동일한 형식)
+
+---
+
+#### 테마 삭제
+
+```
+DELETE /themes/{id}
+```
+
+| 경로 변수 | 타입 | 설명    |
+|-----------|------|---------|
+| id        | Long | 테마 ID |
+
+**응답 204 No Content**
 
