@@ -90,7 +90,7 @@ class AdminReservationControllerTest {
         params.put("username", "관리자");
         params.put("themeId", 1);
         params.put("date", futureDate);
-        params.put("timeId", 6); // 15:00 (futureTime)
+        params.put("timeId", 6);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -124,13 +124,11 @@ class AdminReservationControllerTest {
     @Test
     @DisplayName("관리자는 오늘 날짜의 지난 시간에 대한 예약을 생성할 수 있다.")
     void createReservationByAdminWithPastTime() {
-        String today = LocalDate.now(fixedClock).toString();
-
         Map<String, Object> params = new HashMap<>();
         params.put("username", "관리자");
         params.put("themeId", 4);
         params.put("date", nowDate);
-        params.put("timeId", 4); // 13:00 (pastTime)
+        params.put("timeId", 4);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -190,7 +188,7 @@ class AdminReservationControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("themeId", 2L);
         params.put("date", futureDate);
-        params.put("timeId", 6L); // 15:00 (futureTime)
+        params.put("timeId", 6L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

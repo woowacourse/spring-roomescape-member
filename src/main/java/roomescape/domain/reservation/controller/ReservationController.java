@@ -49,13 +49,13 @@ public class ReservationController {
             @PathVariable Long reservationId,
             @RequestBody @Valid ReservationUpdateRequest request
     ) {
-        ReservationResponse response = reservationService.updateReservation(reservationId, request);
+        ReservationResponse response = reservationService.updateReservationByUser(reservationId, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<Void> deleteById(@PathVariable Long reservationId) {
-        reservationService.deleteReservationById(reservationId);
+        reservationService.deleteReservationByUser(reservationId);
         return ResponseEntity.noContent().build();
     }
 }

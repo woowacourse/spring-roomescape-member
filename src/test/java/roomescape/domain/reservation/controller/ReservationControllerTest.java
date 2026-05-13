@@ -218,20 +218,34 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약을 수정한다.")
     void updateReservation() {
+        Map<String, Object> createParams = new HashMap<>();
+        createParams.put("username", "테스터");
+        createParams.put("themeId", 1);
+        createParams.put("date", futureDate);
+        createParams.put("timeId", 1);
+
+        long id = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(createParams)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
+
         Map<String, Object> params = new HashMap<>();
         params.put("themeId", 1L);
         params.put("date", futureDate);
-        params.put("timeId", 1L);
+        params.put("timeId", 2L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().patch("/reservations/1")
+                .when().patch("/reservations/" + id)
                 .then().log().all()
                 .statusCode(200)
                 .body("id", is(1))
                 .body("date", is(futureDate.toString()))
-                .body("time.id", is(1));
+                .body("time.id", is(2));
     }
 
     @Test
@@ -270,22 +284,27 @@ class ReservationControllerTest {
     @DisplayName("중복된 시간으로 예약을 수정하면 에러가 발생한다.")
     void updateReservationWithDuplicateThrowException() {
         Map<String, Object> params = new HashMap<>();
-        params.put("username", "포비");
+        params.put("username", "포비2");
         params.put("themeId", 1L);
         params.put("date", futureDate);
-        params.put("timeId", 1L);
+        params.put("timeId", 2L);
 
-        RestAssured.given().log().all()
+        long id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
+                .then().statusCode(201)
+                .extract().jsonPath().getLong("id");
+
+        Map<String, Object> updateParams = new HashMap<>();
+        updateParams.put("themeId", 1L);
+        updateParams.put("date", futureDate);
+        updateParams.put("timeId", 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
-                .when().patch("/reservations/1")
+                .body(updateParams)
+                .when().patch("/reservations/" + id)
                 .then().log().all()
                 .statusCode(409);
     }
@@ -325,8 +344,21 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약을 삭제한다.")
     void deleteReservation() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "테스터");
+        params.put("themeId", 1);
+        params.put("date", futureDate);
+        params.put("timeId", 1);
+
+        long id = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().statusCode(201)
+                .extract().jsonPath().getLong("id");
+
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/" + id)
                 .then().log().all()
                 .statusCode(204);
     }
@@ -338,5 +370,33 @@ class ReservationControllerTest {
                 .when().delete("/reservations/9999")
                 .then().log().all()
                 .statusCode(404);
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 수정하면 에러가 발생한다.")
+    void updatePastReservationThrowException() {
+        // given
+        Map<String, Object> params = new HashMap<>();
+        params.put("themeId", 1L);
+        params.put("date", futureDate);
+        params.put("timeId", 1L);
+
+        // when
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 삭제하면 에러가 발생한다.")
+    void deletePastReservationThrowException() {
+        // when
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(400);
     }
 }

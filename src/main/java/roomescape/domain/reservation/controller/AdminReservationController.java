@@ -45,13 +45,13 @@ public class AdminReservationController {
             @PathVariable Long reservationId,
             @RequestBody @Valid ReservationUpdateRequest request
     ) {
-        ReservationResponse response = reservationService.updateReservation(reservationId, request);
+        ReservationResponse response = reservationService.updateReservationByAdmin(reservationId, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<Void> deleteById(@PathVariable Long reservationId) {
-        reservationService.deleteReservationById(reservationId);
+        reservationService.deleteReservationByAdmin(reservationId);
         return ResponseEntity.noContent().build();
     }
 }

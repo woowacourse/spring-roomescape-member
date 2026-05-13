@@ -125,7 +125,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse updateReservation(Long id, ReservationUpdateRequest request) {
+    public ReservationResponse updateReservationByUser(Long id, ReservationUpdateRequest request) {
         if (request.date().isBefore(LocalDate.now(clock))) {
             throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
         }
@@ -143,21 +143,66 @@ public class ReservationService {
             throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
         }
 
+        if (reservation.getDate().isBefore(LocalDate.now(clock))) {
+            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
+        }
+
+        if (reservation.getDate().isEqual(LocalDate.now(clock)) && reservation.getTime().getStartAt()
+                .isBefore(LocalTime.now(clock))) {
+            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
+        }
+
         if (reservationRepository.existsByThemeIdAndDateAndTimeId(newTheme.getId(), request.date(), newTime.getId())) {
             throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
         }
 
         reservation.update(newTheme, request.date(), newTime);
-
         reservationRepository.update(id, reservation);
 
         return ReservationResponse.from(reservation);
     }
 
     @Transactional
-    public void deleteReservationById(Long id) {
-        int deletedCount = reservationRepository.deleteById(id);
+    public ReservationResponse updateReservationByAdmin(Long id, ReservationUpdateRequest request) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND));
 
+        Theme newTheme = themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
+
+        ReservationTime newTime = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND));
+
+        if (reservationRepository.existsByThemeIdAndDateAndTimeId(newTheme.getId(), request.date(), newTime.getId())) {
+            throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
+        }
+
+        reservation.update(newTheme, request.date(), newTime);
+        reservationRepository.update(id, reservation);
+
+        return ReservationResponse.from(reservation);
+    }
+
+    @Transactional
+    public void deleteReservationByUser(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+
+        if (reservation.getDate().isBefore(LocalDate.now(clock))) {
+            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
+        }
+
+        if (reservation.getDate().isEqual(LocalDate.now(clock)) && reservation.getTime().getStartAt()
+                .isBefore(LocalTime.now(clock))) {
+            throw new BusinessException(ReservationErrorCode.PAST_RESERVATION);
+        }
+
+        reservationRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteReservationByAdmin(Long id) {
+        int deletedCount = reservationRepository.deleteById(id);
         if (deletedCount == 0) {
             throw new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND);
         }

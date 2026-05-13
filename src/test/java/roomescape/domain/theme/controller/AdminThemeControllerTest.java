@@ -110,7 +110,7 @@ class AdminThemeControllerTest {
     @DisplayName("관리자라도 이미 존재하는 테마 이름으로 수정하면 에러가 발생한다.")
     void updateThemeWithDuplicateNameThrowException() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "공포의 지하실"); // 이미 존재하는 테마 이름
+        params.put("name", "공포의 지하실");
         params.put("description", "수정된 설명");
         params.put("thumbnailUrl", "https://example.com/updated.png");
 
