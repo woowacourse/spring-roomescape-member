@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -18,6 +20,9 @@ public class MissionStepTest {
 
     @LocalServerPort
     int port;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
@@ -371,8 +376,11 @@ public class MissionStepTest {
     @Test
     void 지난_예약을_취소하려하면_400_에러_응답() {
         createThemeAndTime();
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "tester1", "2020-01-01", 1L, 1L
+        );
 
-        // data.sql의 과거 예약(tester1, DATEADD('DAY', -1, CURRENT_DATE))을 취소 시도
         RestAssured.given().log().all()
                 .when().delete("/reservations/1?name=tester1")
                 .then().log().all()

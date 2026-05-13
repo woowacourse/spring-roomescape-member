@@ -181,7 +181,7 @@ class ReservationServiceImplTest {
         when(themeRepository.existsById(1L)).thenReturn(true);
         when(themeRepository.findById(1L)).thenReturn(theme);
         when(holidayService.isHoliday(LocalDate.of(2099, 9, 1))).thenReturn(false);
-        when(reservationRepository.isDuplicated(1L, newTime, LocalDate.of(2099, 9, 1))).thenReturn(true);
+        when(reservationRepository.isDuplicatedExcludingId(1L, 1L, newTime, LocalDate.of(2099, 9, 1))).thenReturn(true);
 
         ReservationUpdateServiceDto dto = new ReservationUpdateServiceDto(1L, "브라운", LocalDate.of(2099, 9, 1), 2L, 1L);
 

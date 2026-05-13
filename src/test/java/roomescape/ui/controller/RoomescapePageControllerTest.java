@@ -165,7 +165,7 @@ class RoomescapePageControllerTest {
 
         mockMvc.perform(post("/dashboard/reservations/21/cancel"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("errorMessage", "취소할 예약을 찾지 못했습니다."));
+                .andExpect(flash().attribute("errorMessage", "예약이 존재하지 않습니다."));
     }
 
     @Test
