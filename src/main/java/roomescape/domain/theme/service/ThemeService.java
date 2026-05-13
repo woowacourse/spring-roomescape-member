@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.global.exception.ConflictException;
 import roomescape.domain.global.exception.ErrorCode;
 import roomescape.domain.global.exception.NotFoundException;
+import roomescape.domain.global.exception.UnprocessableEntityException;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.dto.request.ThemeCreateRequestDto;
 import roomescape.domain.theme.dto.response.ThemeResponseDto;
@@ -29,7 +30,21 @@ public class ThemeService {
     }
 
     public List<ThemeResponseDto> getPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit) {
+        validateDate(startDate, endDate);
+        validateLimit(limit);
         return convertThemesToDto(themeRepository.findPopularThemesDateBetween(startDate, endDate, limit));
+    }
+
+    private void validateDate(LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new UnprocessableEntityException(ErrorCode.THEME_INVALID_DATE);
+        }
+    }
+
+    private void validateLimit(Integer limit) {
+        if (limit < 0) {
+            throw new UnprocessableEntityException(ErrorCode.COMMON_INVALID_LIMIT);
+        }
     }
 
     private List<ThemeResponseDto> convertThemesToDto(List<Theme> themes) {

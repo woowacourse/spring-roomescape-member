@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -36,8 +37,18 @@ public class GlobalExceptionHandler {
                 .getFieldName();
             errors.add(ErrorDetail.of(field, invalidFormatException.getValue(), "형식이 올바르지 않습니다."));
         }
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_REQUEST_BODY, errors));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        List<ErrorDetail> errors = new ArrayList<>();
+        errors.add(ErrorDetail.of(e.getParameterName(), "필수 필드가 누락되었습니다."));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(ErrorCode.COMMON_INVALID_REQUEST, errors));
     }
 
     @ExceptionHandler(BadRequestException.class)
