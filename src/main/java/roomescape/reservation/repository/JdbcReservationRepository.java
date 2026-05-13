@@ -167,6 +167,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE date_id = :date_id
                     AND time_id = :time_id
                     AND theme_id = :theme_id
+                    AND status = 'RESERVED'
                 """;
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date_id", dateId)
