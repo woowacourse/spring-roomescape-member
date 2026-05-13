@@ -69,6 +69,81 @@ class ReservationServiceTest {
     }
 
     @Test
+    @DisplayName("모든 예약을 조회한다.")
+    void findAllReservations() {
+        // given
+        List<Reservation> reservations = new ArrayList<>();
+        Theme theme = Theme.of(1L, "theme1", "description1", "thumbnail url 1");
+        ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
+        ReservationTime time2 = ReservationTime.of(2L, LocalTime.of(11, 0));
+
+        reservations.add(Reservation.of(1L, "브라운", theme, LocalDate.of(2026, 4, 30), time1));
+        reservations.add(Reservation.of(2L, "크루", theme, LocalDate.of(2026, 4, 30), time2));
+        when(reservationRepository.findAll()).thenReturn(reservations);
+
+        // when
+        ReservationsResponse foundReservations = reservationService.findAllReservations();
+
+        // then
+        assertThat(foundReservations.reservations()).hasSize(2)
+                .extracting("username", "theme", "date", "time")
+                .containsExactly(
+                        tuple(
+                                "브라운",
+                                ThemeResponse.from(theme),
+                                LocalDate.of(2026, 4, 30),
+                                ReservationTimeResponse.from(time1)
+                        ),
+                        tuple(
+                                "크루",
+                                ThemeResponse.from(theme),
+                                LocalDate.of(2026, 4, 30),
+                                ReservationTimeResponse.from(time2)
+                        )
+                );
+
+        verify(reservationRepository).findAll();
+    }
+
+    @Test
+    @DisplayName("사용자 이름으로 예약을 조회한다.")
+    void findAllByUsernameTest() {
+        // given
+        String username = "브라운";
+        Theme theme = Theme.of(1L, "theme1", "description1", "thumbnail url 1");
+        ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
+        ReservationTime time2 = ReservationTime.of(2L, LocalTime.of(11, 0));
+        Reservation reservation1 = Reservation.of(1L, username, theme, LocalDate.of(2026, 4, 30), time1);
+        Reservation reservation2 = Reservation.of(2L, username, theme, LocalDate.of(2026, 4, 30), time2);
+        List<Reservation> reservations = List.of(reservation1, reservation2);
+
+        when(reservationRepository.findAllByUsername(username)).thenReturn(reservations);
+
+        // when
+        ReservationsResponse foundReservations = reservationService.findMyReservations(username);
+
+        // then
+        assertThat(foundReservations.reservations()).hasSize(2)
+                .extracting("username", "theme", "date", "time")
+                .containsExactly(
+                        tuple(
+                                username,
+                                ThemeResponse.from(theme),
+                                LocalDate.of(2026, 4, 30),
+                                ReservationTimeResponse.from(time1)
+                        ),
+                        tuple(
+                                username,
+                                ThemeResponse.from(theme),
+                                LocalDate.of(2026, 4, 30),
+                                ReservationTimeResponse.from(time2)
+                        )
+                );
+
+        verify(reservationRepository).findAllByUsername(username);
+    }
+
+    @Test
     @DisplayName("사용자가 예약을 성공적으로 생성한다.")
     void saveReservationByUser() {
         // given
@@ -211,43 +286,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ReservationErrorCode.DUPLICATE_RESERVATION.getMessage());
-    }
-
-    @Test
-    @DisplayName("모든 예약을 조회한다.")
-    void findAllReservations() {
-        // given
-        List<Reservation> reservations = new ArrayList<>();
-        Theme theme = Theme.of(1L, "theme1", "description1", "thumbnail url 1");
-        ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
-        ReservationTime time2 = ReservationTime.of(2L, LocalTime.of(11, 0));
-
-        reservations.add(Reservation.of(1L, "브라운", theme, LocalDate.of(2026, 4, 30), time1));
-        reservations.add(Reservation.of(2L, "크루", theme, LocalDate.of(2026, 4, 30), time2));
-        when(reservationRepository.findAll()).thenReturn(reservations);
-
-        // when
-        ReservationsResponse foundReservations = reservationService.findAllReservations();
-
-        // then
-        assertThat(foundReservations.reservations()).hasSize(2)
-                .extracting("username", "theme", "date", "time")
-                .containsExactly(
-                        tuple(
-                                "브라운",
-                                ThemeResponse.from(theme),
-                                LocalDate.of(2026, 4, 30),
-                                ReservationTimeResponse.from(time1)
-                        ),
-                        tuple(
-                                "크루",
-                                ThemeResponse.from(theme),
-                                LocalDate.of(2026, 4, 30),
-                                ReservationTimeResponse.from(time2)
-                        )
-                );
-
-        verify(reservationRepository).findAll();
     }
 
     @Test
