@@ -3,6 +3,8 @@ package roomescape.reservation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,9 +53,13 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @PathVariable long id,
+            @RequestHeader("X-User-Name") String userName
+    ) {
+        String decodeUserName = URLDecoder.decode(userName, StandardCharsets.UTF_8);
         LocalDateTime now = LocalDateTime.now();
-        reservationService.delete(id, now);
+        reservationService.delete(id, decodeUserName, now);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

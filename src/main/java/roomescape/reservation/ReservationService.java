@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.AlreadyInUseException;
+import roomescape.exception.ForbiddenException;
 import roomescape.exception.InvalidStateException;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.dto.ReservationRequest;
@@ -70,9 +71,24 @@ public class ReservationService {
     }
 
     @Transactional
-    public void delete(Long id, LocalDateTime now) {
+    public void deleteByAdmin(Long id, LocalDateTime now) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
+
+        validateDateTime(now, reservation);
+
+        reservationRepository.deleteById(id);
+    }
+
+
+    @Transactional
+    public void delete(Long id, String userName, LocalDateTime now) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
+
+        if (!reservation.getUserName().equals(userName)) {
+            throw new ForbiddenException("본인의 예약만 삭제할 수 있습니다.");
+        }
 
         validateDateTime(now, reservation);
 
