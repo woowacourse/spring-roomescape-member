@@ -1,5 +1,6 @@
 package roomescape.reservation.repository.dao;
 
+
 import java.time.LocalDate;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -11,7 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.repository.entity.ReservationEntity;
 
-@Sql(scripts = {"/import_theme.sql", "/import_reservation-time.sql"})
+@Sql(scripts = {"/import_reservation-time.sql", "/import_theme.sql"})
 @JdbcTest
 class ReservationDaoTest {
 
@@ -26,32 +27,22 @@ class ReservationDaoTest {
     }
 
     @Test
-    void 저장된_예약을_조회한다() {
-        // given
-        Long id = reservationDao.insert("userA", LocalDate.of(2026, 1, 1), 1L, 1L);
+    void 기준_날짜_이후의_예약만_조회한다() {
+        //given
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
 
-        // when
-        List<Long> reservationIds = reservationDao.findAll().stream()
-                .map(ReservationEntity::getId)
+        reservationDao.insert("userA", yesterday, 1L, 1L);
+        reservationDao.insert("userB", today, 1L, 1L);
+        reservationDao.insert("userC", tomorrow, 1L, 1L);
+
+        //when
+        List<LocalDate> findDates = reservationDao.findAllOnOrAfter(today).stream()
+                .map(ReservationEntity::getDate)
                 .toList();
 
-        // then
-        Assertions.assertThat(reservationIds).containsExactly(id);
-    }
-
-    @Test
-    void 예약을_DB에_저장한다() {
-        // given
-        String name = "userA";
-        LocalDate date = LocalDate.of(2026, 1, 1);
-
-        // when
-        Long savedId = reservationDao.insert(name, date, 1L, 1L);
-        String sql = "SELECT id FROM reservation";
-        List<Long> findIdList = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("id"));
-
-        // then
-        Assertions.assertThat(findIdList.getFirst())
-                .isEqualTo(savedId);
+        //then
+        Assertions.assertThat(findDates).containsExactly(today, tomorrow);
     }
 }
