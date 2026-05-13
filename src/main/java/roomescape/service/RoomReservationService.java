@@ -10,14 +10,14 @@ import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.reservation.ReservationCondition;
-import roomescape.exception.DuplicatedResourceException;
-import roomescape.exception.InvalidRequestException;
-import roomescape.exception.NotFoundResourceException;
+import roomescape.exception.exception.DuplicatedResourceException;
+import roomescape.exception.exception.InvalidRequestException;
+import roomescape.exception.exception.NotFoundResourceException;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
-import static roomescape.exception.ErrorCode.*;
+import static roomescape.exception.exception.ErrorCode.*;
 
 @Service
 public class RoomReservationService {

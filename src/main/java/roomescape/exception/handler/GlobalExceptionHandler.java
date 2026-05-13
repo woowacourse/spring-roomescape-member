@@ -5,13 +5,15 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.exception.*;
 import roomescape.exception.dto.ErrorResponse;
 import roomescape.exception.dto.FieldErrorResponse;
+import roomescape.exception.exception.BaseCustomException;
+import roomescape.exception.exception.CustomException;
+import roomescape.exception.exception.ErrorCode;
 
 import java.util.List;
 
-import static roomescape.exception.ErrorCode.*;
+import static roomescape.exception.exception.ErrorCode.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

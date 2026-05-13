@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.exception.exception;
 
 public class InvalidRequestException extends BaseCustomException {
     public InvalidRequestException(ErrorCode errorCode) {

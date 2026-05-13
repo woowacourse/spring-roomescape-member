@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.exception.exception;
 
 public class BaseCustomException extends RuntimeException implements CustomException {
     private final ErrorCode errorCode;

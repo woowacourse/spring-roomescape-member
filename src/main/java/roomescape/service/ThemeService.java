@@ -7,15 +7,15 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeWithCount;
 import roomescape.dto.theme.AddThemeRequest;
 import roomescape.dto.theme.PopularConditionRequest;
-import roomescape.exception.DataReferencedException;
-import roomescape.exception.DuplicatedResourceException;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.exception.DataReferencedException;
+import roomescape.exception.exception.DuplicatedResourceException;
+import roomescape.exception.exception.ErrorCode;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 
 import java.util.List;
 
-import static roomescape.exception.ErrorCode.DUPLICATED_THEME;
+import static roomescape.exception.exception.ErrorCode.DUPLICATED_THEME;
 
 @Service
 public class ThemeService {

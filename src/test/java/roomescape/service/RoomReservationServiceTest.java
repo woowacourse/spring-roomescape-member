@@ -2,7 +2,7 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.exception.ErrorCode.NOT_FOUND_THEME;
+import static roomescape.exception.exception.ErrorCode.NOT_FOUND_THEME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,9 +18,9 @@ import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.theme.PopularConditionRequest;
-import roomescape.exception.DuplicatedResourceException;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.NotFoundResourceException;
+import roomescape.exception.exception.DuplicatedResourceException;
+import roomescape.exception.exception.ErrorCode;
+import roomescape.exception.exception.NotFoundResourceException;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
