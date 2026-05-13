@@ -1,5 +1,6 @@
 package roomescape.common.advice;
 
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,6 @@ import roomescape.common.exception.DuplicateException;
 import roomescape.common.exception.IllegalDateTimeException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.UnauthorizedException;
-import roomescape.reservation.domain.exception.UnauthorizedReservationChangeException;
 
 @Slf4j
 @RestControllerAdvice
@@ -21,7 +21,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleUnhandledException(Exception e) {
-        log.error("Unhandled Exception 발생 : ", e);
+        String traceId = UUID.randomUUID().toString().substring(0, 8);
+        log.error("[TraceID: {}] Unhandled Exception 발생 : ", traceId, e);
         return ResponseEntity.internalServerError().body("일시적인 서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
     }
 
