@@ -20,4 +20,9 @@ public class PageController {
     public String popular() {
         return "popular";
     }
+
+    @GetMapping("/my-reservations")
+    public String myReservations() {
+        return "my-reservations";
+    }
 }
