@@ -105,6 +105,14 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, ROW_MAPPER, themeId, date);
     }
 
+    public boolean existsByTimeId(long timeId) {
+        String sql = """
+                SELECT COUNT(*) > 0
+                FROM reservation
+                WHERE time_id = ?""";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+    }
+
     public int delete(Long reservationId) {
         String sql = """
                 DELETE FROM reservation

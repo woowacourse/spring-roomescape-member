@@ -61,10 +61,10 @@ public class ReservationTimeDao {
         }
     }
 
-    public int delete(long reservationTimeId) {
+    public void delete(long reservationTimeId) {
         String sql = """
                 DELETE FROM reservation_time
                 WHERE id = ?""";
-        return jdbcTemplate.update(sql, reservationTimeId);
+        jdbcTemplate.update(sql, reservationTimeId);
     }
 }

@@ -2,8 +2,11 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.UnprocessableException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -48,14 +51,20 @@ public class ReservationTimeService {
     private void validateTheme(Long themeId) {
         boolean exists = themeDao.existsById(themeId);
         if (!exists) {
-            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+            throw new NotFoundException("존재하지 않는 테마입니다.");
         }
     }
 
     public void deleteReservationTime(long reservationTimeId) {
-        int deleted = reservationTimeDao.delete(reservationTimeId);
-        if (deleted == 0) {
-            throw new IllegalArgumentException("존재하지 않는 시간입니다.");
+        Optional<ReservationTime> reservationTime = reservationTimeDao.selectById(reservationTimeId);
+        if (reservationTime.isEmpty()) {
+            throw new NotFoundException("예약 시간이 존재하지 않습니다.");
         }
+
+        boolean existsByTimeId = reservationDao.existsByTimeId(reservationTimeId);
+        if (existsByTimeId) {
+            throw new UnprocessableException("예약이 존재하는 시간은 삭제할 수 없습니다.");
+        }
+        reservationTimeDao.delete(reservationTimeId);
     }
 }
