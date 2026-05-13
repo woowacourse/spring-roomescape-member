@@ -95,14 +95,10 @@ public class ThemeService {
             throw new BusinessException(ThemeErrorCode.THEME_DUPLICATE);
         }
 
-        Theme updatedTheme = Theme.of(id, request.name(), request.description(), request.thumbnailUrl());
-        int updatedCount = themeRepository.update(id, updatedTheme);
+        theme.update(request.name(), request.description(), request.thumbnailUrl());
+        themeRepository.update(id, theme);
 
-        if (updatedCount == 0) {
-            throw new BusinessException(ThemeErrorCode.THEME_NOT_FOUND);
-        }
-
-        return ThemeResponse.from(updatedTheme);
+        return ThemeResponse.from(theme);
     }
 
     @Transactional

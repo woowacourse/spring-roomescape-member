@@ -6,11 +6,11 @@ public class Theme {
 
     private Long id;
 
-    private final String name;
+    private String name;
 
-    private final String description;
+    private String description;
 
-    private final String thumbnailUrl;
+    private String thumbnailUrl;
 
     private Theme(Long id, String name, String description, String thumbnailUrl) {
         this.id = id;
@@ -40,6 +40,12 @@ public class Theme {
         if (this.id != null) {
             throw new IllegalStateException("이미 id가 할당된 테마입니다.");
         }
+    }
+
+    public void update(String name, String description, String thumbnailUrl) {
+        this.name = name;
+        this.description = description;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public Long getId() {
