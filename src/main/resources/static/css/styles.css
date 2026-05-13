@@ -307,6 +307,12 @@ img { max-width: 100%; display: block; }
 
 .btn-lg { padding: 13px 24px; font-size: 1rem; border-radius: 10px; }
 
+.btn-sm.btn-sm { padding: 6px 12px; font-size: 0.82rem; line-height: 1.2; min-height: 30px; }
+
+.actions-cell { text-align: right; white-space: nowrap; }
+.actions-cell > .btn + .btn { margin-left: 6px; }
+.actions-cell > .btn { vertical-align: middle; }
+
 /* ─── Section ─── */
 .section { margin-top: 56px; }
 .section:first-of-type { margin-top: 0; }

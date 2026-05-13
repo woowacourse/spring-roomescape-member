@@ -8,10 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function fetchThemes() {
-  fetch(THEME_API)
-    .then(res => res.json())
+  apiFetch(THEME_API)
     .then(data => renderThemes(data.themes))
-    .catch(err => console.error('테마 조회 실패:', err));
+    .catch(showError);
 }
 
 function renderThemes(themes) {
@@ -85,35 +84,27 @@ function saveTheme() {
     alert('이름과 설명을 입력해주세요.');
     return;
   }
-  fetch(THEME_API, {
+  apiFetch(THEME_API, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(body)
   })
-    .then(res => {
-      if (res.ok) return res.json();
-      return res.json().then(err => { throw new Error(err.message); });
-    })
     .then(theme => {
       const grid = document.getElementById('theme-grid');
       document.getElementById('theme-empty').classList.add('d-none');
       grid.appendChild(buildAdminCard(theme));
       closeForm();
     })
-    .catch(err => alert(err.message));
+    .catch(showError);
 }
 
 function deleteTheme(id, cardEl) {
   if (!confirm('이 테마를 삭제하시겠습니까?')) return;
-  fetch(`${THEME_API}/${id}`, { method: 'DELETE' })
-    .then(res => {
-      if (res.status === 204) {
-        cardEl.remove();
-        const grid = document.getElementById('theme-grid');
-        if (!grid.children.length) document.getElementById('theme-empty').classList.remove('d-none');
-        return;
-      }
-      return res.json().then(err => { throw new Error(err.message); });
+  apiFetch(`${THEME_API}/${id}`, { method: 'DELETE' })
+    .then(() => {
+      cardEl.remove();
+      const grid = document.getElementById('theme-grid');
+      if (!grid.children.length) document.getElementById('theme-empty').classList.remove('d-none');
     })
-    .catch(err => alert(err.message));
+    .catch(showError);
 }

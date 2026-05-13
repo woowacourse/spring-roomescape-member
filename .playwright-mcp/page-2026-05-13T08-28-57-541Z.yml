@@ -1,0 +1,44 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link " 관리자" [ref=e4] [cursor=pointer]:
+        - /url: /admin/theme
+        - generic [ref=e5]: 
+        - generic [ref=e6]: 관리자
+      - link " ESCAPE ROOM" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e9]: 
+        - text: ESCAPE ROOM
+      - text: 
+      - navigation [ref=e10]:
+        - link "홈" [ref=e11] [cursor=pointer]:
+          - /url: /
+        - link "인기 테마" [ref=e12] [cursor=pointer]:
+          - /url: /popular
+        - link "예약하기" [ref=e13] [cursor=pointer]:
+          - /url: /reservation
+        - link "예약 관리" [ref=e14] [cursor=pointer]:
+          - /url: /my-reservations
+  - main [ref=e15]:
+    - heading " 내 예약 관리" [level=1] [ref=e16]:
+      - generic [ref=e17]: 
+      - text: 내 예약 관리
+    - paragraph [ref=e18]: 예약자 이름으로 검색하여 내 예약을 조회·수정·삭제할 수 있습니다.
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e22]: 예약자 이름
+        - textbox "예약자 이름" [ref=e23]:
+          - /placeholder: "예: user1"
+      - button " 검색" [ref=e25] [cursor=pointer]:
+        - generic [ref=e26]: 
+        - text: 검색
+    - table [ref=e28]:
+      - rowgroup [ref=e29]:
+        - row "번호 테마 날짜 시간 관리" [ref=e30]:
+          - columnheader "번호" [ref=e31]
+          - columnheader "테마" [ref=e32]
+          - columnheader "날짜" [ref=e33]
+          - columnheader "시간" [ref=e34]
+          - columnheader "관리" [ref=e35]
+      - rowgroup
+    - generic [ref=e36]: 이름을 입력 후 검색 버튼을 눌러주세요.

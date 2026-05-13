@@ -31,10 +31,9 @@ function initCalendar() {
 }
 
 function loadThemes() {
-  fetch(THEME_API)
-    .then(res => res.json())
+  apiFetch(THEME_API)
     .then(renderThemeList)
-    .catch(err => console.error('테마 조회 실패:', err));
+    .catch(showError);
 }
 
 function renderThemeList(themes) {
@@ -99,13 +98,12 @@ function refreshTimes() {
     return;
   }
 
-  fetch(`${RESERVATION_API}?date=${state.date}&themeId=${state.themeId}`)
-    .then(res => res.json())
-    .then(times => renderTimes(times))
+  apiFetch(`${RESERVATION_API}?date=${state.date}&themeId=${state.themeId}`)
+    .then(renderTimes)
     .catch(err => {
-      console.error('시간 조회 실패:', err);
       hint.classList.remove('d-none');
       hint.textContent = '시간을 불러오지 못했습니다.';
+      showError(err);
     });
 }
 
@@ -178,7 +176,7 @@ function confirmBooking() {
     return;
   }
 
-  fetch(RESERVATION_API, {
+  apiFetch(RESERVATION_API, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
@@ -188,13 +186,9 @@ function confirmBooking() {
       themeId: state.themeId
     })
   })
-    .then(res => {
-      if (res.ok) return res.json();
-      return res.json().then(err => { throw new Error(err.message); });
-    })
     .then(() => {
       alert('예약이 완료되었습니다.');
       refreshTimes();
     })
-    .catch(err => alert(err.message));
+    .catch(showError);
 }

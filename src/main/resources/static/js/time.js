@@ -7,10 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function fetchTimes() {
-  fetch(TIME_API)
-    .then(res => res.json())
+  apiFetch(TIME_API)
     .then(renderTimes)
-    .catch(err => console.error('시간 조회 실패:', err));
+    .catch(showError);
 }
 
 function renderTimes(data) {
@@ -67,15 +66,11 @@ function saveRow(event, startInput, finishInput) {
     return;
   }
 
-  fetch(TIME_API, {
+  apiFetch(TIME_API, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(body)
   })
-    .then(res => {
-      if (res.ok) return res.json();
-      return res.json().then(err => { throw new Error(err.message); });
-    })
     .then(data => {
       row.cells[0].textContent = data.id;
       row.cells[1].innerHTML = '';
@@ -84,21 +79,15 @@ function saveRow(event, startInput, finishInput) {
       row.cells[2].appendChild(createButton('삭제', 'btn-danger', deleteRow));
       isEditing = false;
     })
-    .catch(err => alert(err.message));
+    .catch(showError);
 }
 
 function deleteRow(event) {
   const row = event.target.closest('tr');
   const id = row.cells[0].textContent;
-  fetch(`${TIME_API}/${id}`, { method: 'DELETE' })
-    .then(res => {
-      if (res.status === 204) {
-        row.remove();
-        return;
-      }
-      return res.json().then(err => { throw new Error(err.message); });
-    })
-    .catch(err => alert(err.message));
+  apiFetch(`${TIME_API}/${id}`, { method: 'DELETE' })
+    .then(() => row.remove())
+    .catch(showError);
 }
 
 function createInput(type) {

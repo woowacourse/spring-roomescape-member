@@ -3,10 +3,9 @@ const POPULAR_API = '/themes/top';
 document.addEventListener('DOMContentLoaded', fetchPopularThemes);
 
 function fetchPopularThemes() {
-  fetch(POPULAR_API)
-    .then(res => res.json())
+  apiFetch(POPULAR_API)
     .then(renderPopularThemes)
-    .catch(err => console.error('인기 테마 조회 실패:', err));
+    .catch(showError);
 }
 
 function renderPopularThemes(themes) {
