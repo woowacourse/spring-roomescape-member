@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.exception.NotFoundException;
 import roomescape.common.payload.ErrorResponse;
+import roomescape.reservation.exception.PastReservationNotAllowedException;
 import roomescape.reservation.exception.ReservationDuplicatedException;
 
 @RestControllerAdvice
@@ -22,6 +23,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ReservationDuplicatedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleReservationAlreadyExists(ReservationDuplicatedException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(PastReservationNotAllowedException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorResponse handlePastReservationNotAllowed(PastReservationNotAllowedException e) {
         return new ErrorResponse(e.getMessage());
     }
 

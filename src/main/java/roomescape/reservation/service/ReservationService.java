@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.exception.PastReservationNotAllowedException;
 import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservation.payload.ReservationRequest;
 import roomescape.reservation.repository.ReservationRepository;
@@ -49,7 +50,7 @@ public class ReservationService {
                 });
 
         if (isPassed(request.date(), reservationTime.getStartAt())) {
-            throw new IllegalArgumentException("과거로 예약할 수 없습니다.");
+            throw new PastReservationNotAllowedException();
         }
 
         Reservation reservation = Reservation.of(
