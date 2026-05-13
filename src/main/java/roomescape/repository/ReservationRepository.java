@@ -56,19 +56,16 @@ public class ReservationRepository {
         return count != null && count > 0;
     }
 
-    public Reservation save(final Reservation newReservation) {
-        final long newReservationId = insertReservation(newReservation);
-
-        return newReservation.withId(newReservationId);
-    }
-
-    public boolean deleteById(final Long reservationId) {
+    public boolean existsByTimeId(final Long timeId) {
         final String sql = """
-                DELETE FROM reservation
-                WHERE id = ?
+                SELECT COUNT(id)
+                FROM reservation
+                WHERE time_id = ?
                 """;
 
-        return jdbcTemplate.update(sql, reservationId) > 0;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
+
+        return count != null && count > 0;
     }
 
     public List<ReservationTimesWithStatus> findReservationTimeStatusesByDateAndThemeId(final LocalDate date, final Long themeId) {
@@ -95,6 +92,12 @@ public class ReservationRepository {
                         themeId
                 ).stream()
                 .toList();
+    }
+
+    public Reservation save(final Reservation newReservation) {
+        final long newReservationId = insertReservation(newReservation);
+
+        return newReservation.withId(newReservationId);
     }
 
     private long insertReservation(final Reservation reservation) {
@@ -130,6 +133,15 @@ public class ReservationRepository {
         }
 
         return generatedKey.longValue();
+    }
+
+    public boolean deleteById(final Long reservationId) {
+        final String sql = """
+                DELETE FROM reservation
+                WHERE id = ?
+                """;
+
+        return jdbcTemplate.update(sql, reservationId) > 0;
     }
 
     /**
