@@ -43,7 +43,6 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-
     public List<ThemeResponse> readPopularThemes() {
         LocalDate now = LocalDate.now(clock);
         LocalDate start = now.minusDays(7);
