@@ -62,8 +62,8 @@ public class ThemeJdbcDao implements ThemeDao {
     public Optional<Theme> findById(Long id) {
         String sql = """
                 SELECT
-                     id AS theme_id,
-                     name AS theme_name,
+                     id,
+                     name,
                      thumbnail_url,
                      description
                  FROM themes
