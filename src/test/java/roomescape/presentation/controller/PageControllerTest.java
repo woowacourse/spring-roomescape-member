@@ -32,9 +32,6 @@ class PageControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private Clock clock;
-
     @MockitoBean
     private ThemeService themeService;
 
@@ -47,7 +44,7 @@ class PageControllerTest {
     @Test
     void reservationPageReturnsTemplateAndModel() throws Exception {
         given(themeService.getThemes()).willReturn(List.of(themeResponse()));
-        given(themeService.getWeeksTopThemes(clock)).willReturn(List.of(themeResponse()));
+        given(themeService.getWeeksTopThemes()).willReturn(List.of(themeResponse()));
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
@@ -59,7 +56,7 @@ class PageControllerTest {
     @Test
     void reservationAliasReturnsTemplateAndModel() throws Exception {
         given(themeService.getThemes()).willReturn(List.of(themeResponse()));
-        given(themeService.getWeeksTopThemes(clock)).willReturn(List.of(themeResponse()));
+        given(themeService.getWeeksTopThemes()).willReturn(List.of(themeResponse()));
 
         mockMvc.perform(get("/reservation"))
                 .andExpect(status().isOk())

@@ -15,7 +15,6 @@ import roomescape.theme.presentation.dto.ThemeResponse;
 @RequiredArgsConstructor
 public class ThemeController {
 
-    private final Clock clock;
     private final ThemeService service;
 
     @GetMapping
@@ -29,7 +28,7 @@ public class ThemeController {
 
     @GetMapping("/weeks/top")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
-        List<ThemeResponse> responses = service.getWeeksTopThemes(clock)
+        List<ThemeResponse> responses = service.getWeeksTopThemes()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();

@@ -14,7 +14,6 @@ import roomescape.time.application.ReservationTimeService;
 @RequiredArgsConstructor
 public class PageController {
 
-    private final Clock clock;
     private final ThemeService themeService;
     private final ReservationService reservationService;
     private final ReservationTimeService reservationTimeService;
@@ -22,7 +21,7 @@ public class PageController {
     @GetMapping({"/", "/reservation"})
     public String reservationPage(Model model) {
         model.addAttribute("themes", themeService.getThemes());
-        model.addAttribute("popularThemes", themeService.getWeeksTopThemes(clock));
+        model.addAttribute("popularThemes", themeService.getWeeksTopThemes());
         model.addAttribute("today", LocalDate.now());
         return "reservation";
     }

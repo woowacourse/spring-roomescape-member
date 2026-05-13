@@ -23,6 +23,7 @@ public class ThemeService {
     private static final int DAYS_BOUND = 1;
     private static final int THEME_SIZE_LIMIT = 10;
 
+    private final Clock clock;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -48,7 +49,7 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> getWeeksTopThemes(Clock clock) {
+    public List<Theme> getWeeksTopThemes() {
         return themeRepository.findByReservationCountWithLimit(
                 LocalDate.now(clock).minusWeeks(WEEKS_BOUND),
                 LocalDate.now(clock).minusDays(DAYS_BOUND),
