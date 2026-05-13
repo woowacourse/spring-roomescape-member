@@ -17,8 +17,8 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.from(exception.getMessage()));
     }
 
-    @ExceptionHandler(DuplicateException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateException(DuplicateException exception) {
+    @ExceptionHandler(AlreadyExistException.class)
+    public ResponseEntity<ErrorResponse> handleAlreadyExistException(AlreadyExistException exception) {
         return ResponseEntity
                 .status(exception.getStatus())
                 .body(ErrorResponse.from(exception.getMessage()));

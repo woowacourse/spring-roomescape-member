@@ -2,10 +2,10 @@ package roomescape.common.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class DuplicateException extends RuntimeException {
+public class AlreadyExistException extends RuntimeException {
     private final HttpStatus httpStatus;
 
-    public DuplicateException(String message) {
+    public AlreadyExistException(String message) {
         super(message);
         this.httpStatus = HttpStatus.CONFLICT;
     }
