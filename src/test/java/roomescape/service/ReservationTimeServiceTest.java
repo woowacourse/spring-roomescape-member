@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.exception.dto.ErrorCode.DUPLICATED_RESERVATION_TIME;
 
 public class ReservationTimeServiceTest {
-    private ReservationRepository createReservationRepository(boolean isExistTime) {
+    private ReservationRepository createReservationRepository(boolean isExistTime, Reservation reservation) {
         return new ReservationRepository() {
 
             @Override
@@ -50,6 +50,11 @@ public class ReservationTimeServiceTest {
             @Override
             public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date) {
                 return false;
+            }
+
+            @Override
+            public Optional<Reservation> getReservationById(long id) {
+                return Optional.ofNullable(reservation);
             }
 
             @Override
@@ -103,7 +108,7 @@ public class ReservationTimeServiceTest {
     void addReservationTimeFailedWhenDuplicatedTest() {
         ReservationTimeService reservationTimeService = new ReservationTimeService(
                 createReservationTimeRepository(() -> {}, true),
-                createReservationRepository(false)
+                createReservationRepository(false, null)
         );
 
         assertThatThrownBy(() -> reservationTimeService.addReservationTime(
@@ -116,14 +121,14 @@ public class ReservationTimeServiceTest {
     @Test
     @DisplayName("정상 삭제 테스트")
     void deleteReservationTimeTest() {
-        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}, false), createReservationRepository(false));
+        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}, false), createReservationRepository(false, null));
         assertThatCode(() -> reservationTimeService.deleteReservationTime(1)).doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("외부에서 사용이 되었을 때 삭제 시 예외 테스트")
     void deleteFailedWhenInUseTest() {
-        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}, false), createReservationRepository(true));
+        ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}, false), createReservationRepository(true, null));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
@@ -135,7 +140,7 @@ public class ReservationTimeServiceTest {
     void deleteFailedByIntegrityTest() {
         ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {
             throw new DataIntegrityViolationException("정합성 오류");
-        }, false), createReservationRepository(false));
+        }, false), createReservationRepository(false, null));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
                 .isExactlyInstanceOf(DataReferencedException.class)

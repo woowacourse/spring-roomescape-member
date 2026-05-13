@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.exception.dto.ErrorCode.*;
 
 public class ThemeServiceTest {
-    private ReservationRepository createReservationRepository(boolean isExistTheme) {
+    private ReservationRepository createReservationRepository(boolean isExistTheme, Reservation reservation) {
         return new ReservationRepository() {
 
             @Override
@@ -48,6 +48,11 @@ public class ThemeServiceTest {
             @Override
             public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date) {
                 return false;
+            }
+
+            @Override
+            public Optional<Reservation> getReservationById(long id) {
+                return Optional.ofNullable(reservation);
             }
 
             @Override
@@ -101,7 +106,7 @@ public class ThemeServiceTest {
     void addThemeFailedWhenDuplicatedTest() {
         ThemeService themeService = new ThemeService(
                 createThemeRepository(() -> {}, true),
-                createReservationRepository(false)
+                createReservationRepository(false, null)
         );
 
         assertThatThrownBy(() -> themeService.addTheme(
@@ -114,7 +119,7 @@ public class ThemeServiceTest {
     @Test
     @DisplayName("정상 삭제 테스트")
     void deleteThemeTest() {
-        ThemeService themeService = new ThemeService(createThemeRepository(() -> {}, false), createReservationRepository(false));
+        ThemeService themeService = new ThemeService(createThemeRepository(() -> {}, false), createReservationRepository(false, null));
 
         assertThatCode(() -> themeService.deleteTheme(1)).doesNotThrowAnyException();
     }
@@ -122,7 +127,7 @@ public class ThemeServiceTest {
     @Test
     @DisplayName("외부 사용이 되었을 때 삭제 시 예외 테스트")
     void deleteFailedWhenInUseTest() {
-        ThemeService themeService = new ThemeService(createThemeRepository(() -> {}, false), createReservationRepository(true));
+        ThemeService themeService = new ThemeService(createThemeRepository(() -> {}, false), createReservationRepository(true, null));
 
         assertThatThrownBy(() -> themeService.deleteTheme(1))
                 .isExactlyInstanceOf(DataReferencedException.class)
@@ -136,7 +141,7 @@ public class ThemeServiceTest {
                 createThemeRepository(() -> {
                     throw new DataIntegrityViolationException("정합성 오류");
                 }, false),
-                createReservationRepository(false)
+                createReservationRepository(false, null)
         );
 
         assertThatThrownBy(() -> themeService.deleteTheme(1))

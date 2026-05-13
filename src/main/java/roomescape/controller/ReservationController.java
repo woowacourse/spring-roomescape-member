@@ -32,7 +32,9 @@ public class ReservationController {
     }
 
     @PostMapping()
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody @Valid AddReservationRequest addReservationRequest) {
+    public ResponseEntity<ReservationResponse> addReservation(
+            @RequestBody @Valid AddReservationRequest addReservationRequest
+    ) {
         Reservation addedReservation = roomReservationService.addReservation(addReservationRequest);
 
         return new ResponseEntity<>(ReservationResponse.from(addedReservation), HttpStatus.CREATED);
@@ -46,12 +48,24 @@ public class ReservationController {
     }
 
     @GetMapping(params = {"name"})
-    public ResponseEntity<List<ReservationResponse>> getReservation(@ModelAttribute @Valid ReservationCondition reservationCondition) {
-        List<Reservation> reservations = roomReservationService.getAllReservationByName(reservationCondition);
+    public ResponseEntity<List<ReservationResponse>> getReservationsByName(
+            @ModelAttribute @Valid ReservationCondition reservationCondition
+    ) {
+        List<Reservation> reservations = roomReservationService.getAllReservationsByName(reservationCondition);
         List<ReservationResponse> reservationResponses = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
 
         return ResponseEntity.ok(reservationResponses);
+    }
+
+    @DeleteMapping(value = "/{id}", params = {"name"})
+    public ResponseEntity<Void> deleteReservationByName(
+            @PathVariable("id") long id,
+            @ModelAttribute @Valid ReservationCondition reservationCondition
+    ) {
+        roomReservationService.deleteReservation(id);
+
+        return ResponseEntity.noContent().build();
     }
 }

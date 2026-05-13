@@ -10,6 +10,7 @@ import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.reservation.ReservationCondition;
+import roomescape.exception.dto.ErrorCode;
 import roomescape.exception.exception.DuplicatedResourceException;
 import roomescape.exception.exception.InvalidRequestException;
 import roomescape.exception.exception.NotFoundResourceException;
@@ -35,7 +36,7 @@ public class RoomReservationService {
         return reservationRepository.getAllReservation();
     }
 
-    public List<Reservation> getAllReservationByName(ReservationCondition reservationCondition) {
+    public List<Reservation> getAllReservationsByName(ReservationCondition reservationCondition) {
         return reservationRepository.getAllReservationByName(reservationCondition.name());
     }
 
@@ -62,6 +63,18 @@ public class RoomReservationService {
 
     @Transactional
     public void deleteReservation(long id) {
+        reservationRepository.deleteReservation(id);
+    }
+
+    @Transactional
+    public void deleteReservationByName(long id, String name) {
+        Reservation reservation = reservationRepository.getReservationById(id)
+                .orElseThrow(() -> new NotFoundResourceException(NOT_FOUND_RESERVATION));
+
+        if (!reservation.name().equals(name)) {
+            throw new InvalidRequestException(ErrorCode.UNAUTHORIZED_RESERVATION_ACCESS);
+        }
+
         reservationRepository.deleteReservation(id);
     }
 

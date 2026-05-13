@@ -1,7 +1,7 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+import static roomescape.exception.dto.ErrorCode.*;
 import static roomescape.exception.dto.ErrorCode.NOT_FOUND_THEME;
 
 import java.time.LocalDate;
@@ -20,13 +20,14 @@ import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.theme.PopularConditionRequest;
 import roomescape.exception.exception.DuplicatedResourceException;
 import roomescape.exception.dto.ErrorCode;
+import roomescape.exception.exception.InvalidRequestException;
 import roomescape.exception.exception.NotFoundResourceException;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 public class RoomReservationServiceTest {
-    private ReservationRepository createReservationRepository(boolean isExist) {
+    private ReservationRepository createReservationRepository(boolean isExist, Reservation reservation) {
         return new ReservationRepository() {
             @Override
             public List<Reservation> getAllReservation() {
@@ -61,6 +62,11 @@ public class RoomReservationServiceTest {
             @Override
             public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date) {
                 return isExist;
+            }
+
+            @Override
+            public Optional<Reservation> getReservationById(long id) {
+                return Optional.ofNullable(reservation);
             }
         };
     }
@@ -146,7 +152,7 @@ public class RoomReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, "name", "description", "image");
 
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(reservationTime, false), createThemeRepository(
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false, null), createReservationTimeRepository(reservationTime, false), createThemeRepository(
                 theme, false));
 
         LocalDate futureDate = LocalDate.now().plusDays(1);
@@ -174,7 +180,7 @@ public class RoomReservationServiceTest {
         Theme theme = new Theme(1L, "name", "description", "image");
 
         RoomReservationService reservationService = new RoomReservationService(
-                createReservationRepository(false),
+                createReservationRepository(false, null),
                 createReservationTimeRepository(reservationTime, false),
                 createThemeRepository(theme, false)
         );
@@ -185,8 +191,8 @@ public class RoomReservationServiceTest {
                 new AddReservationRequest("브라운", pastDate, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(addReservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("지난 날짜에는 예약할 수 없습니다.");
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessage(INVALID_RESERVATION_DATE.getMessage());
     }
 
     @Test
@@ -201,7 +207,7 @@ public class RoomReservationServiceTest {
         Theme theme = new Theme(1L, "name", "description", "image");
 
         RoomReservationService reservationService = new RoomReservationService(
-                createReservationRepository(false),
+                createReservationRepository(false, null),
                 createReservationTimeRepository(reservationTime, false),
                 createThemeRepository(theme, false)
         );
@@ -214,27 +220,27 @@ public class RoomReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.addReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("지난 시간에는 예약할 수 없습니다.");
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessage(INVALID_RESERVATION_TIME.getMessage());
     }
 
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 시간ID인 경우 예외 테스트")
     void addReservationFailByInvalidTimeIdTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(null, false), createThemeRepository(new Theme(1L, "테마1", "설명", "url"), false));
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false, null), createReservationTimeRepository(null, false), createThemeRepository(new Theme(1L, "테마1", "설명", "url"), false));
         LocalDate futureDate = LocalDate.now().plusDays(1);
 
         AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", futureDate, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(addReservationRequest))
                 .isExactlyInstanceOf(NotFoundResourceException.class)
-                .hasMessage(ErrorCode.NOT_FOUND_RESERVATION_TIME.getMessage());
+                .hasMessage(NOT_FOUND_RESERVATION_TIME.getMessage());
     }
 
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 테마 ID인 경우 예외 테스트")
     void addReservationFailByInvalidThemeIdTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(new ReservationTime(1L, LocalTime.parse("10:00")), false), createThemeRepository(null, false));
+        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false, null), createReservationTimeRepository(new ReservationTime(1L, LocalTime.parse("10:00")), false), createThemeRepository(null, false));
         LocalDate futureDate = LocalDate.now().plusDays(1);
 
         AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", futureDate, 1L, 1L);
@@ -252,14 +258,63 @@ public class RoomReservationServiceTest {
         Theme theme = new Theme(1L, "name", "description", "image");
 
         RoomReservationService reservationService = new RoomReservationService(
-                createReservationRepository(true),
+                createReservationRepository(true, null),
                 createReservationTimeRepository(reservationTime, false),
                 createThemeRepository(theme, false)
         );
 
         assertThatThrownBy(() -> reservationService.addReservation(new AddReservationRequest("test", futureDate, 1L, 1L)))
                 .isExactlyInstanceOf(DuplicatedResourceException.class)
-                .hasMessage(ErrorCode.DUPLICATED_RESERVATION.getMessage()
+                .hasMessage(DUPLICATED_RESERVATION.getMessage()
         );
+    }
+
+    @Test
+    @DisplayName("이름으로 삭제할 경우, 존재하지 않는 예약 id 입력 시 예외 테스트")
+    void deleteReservationByNameFailByNotFoundTest() {
+        RoomReservationService reservationService = new RoomReservationService(
+                createReservationRepository(false, null),
+                createReservationTimeRepository(null, false),
+                createThemeRepository(null, false)
+        );
+
+        assertThatThrownBy(() -> reservationService.deleteReservationByName(1L, "브라운"))
+                .isExactlyInstanceOf(NotFoundResourceException.class)
+                .hasMessage(NOT_FOUND_RESERVATION.getMessage());
+    }
+
+    @Test
+    @DisplayName("이름으로 삭제할 경우, 이름 불일치 시 삭제 예외 테스트")
+    void deleteReservationByNameFailByNameMismatchTest() {
+        Reservation reservation = new Reservation(1L, "브라운", LocalDate.now().plusDays(1),
+                new ReservationTime(1L, LocalTime.parse("10:00")),
+                new Theme(1L, "name", "description", "image"));
+
+        RoomReservationService reservationService = new RoomReservationService(
+                createReservationRepository(false, reservation),
+                createReservationTimeRepository(null, false),
+                createThemeRepository(null, false)
+        );
+
+        assertThatThrownBy(() -> reservationService.deleteReservationByName(1L, "다른이름"))
+                .isExactlyInstanceOf(InvalidRequestException.class)
+                .hasMessage(UNAUTHORIZED_RESERVATION_ACCESS.getMessage());
+    }
+
+    @Test
+    @DisplayName("정상적으로 예약 삭제 테스트")
+    void deleteReservationByNameTest() {
+        Reservation reservation = new Reservation(1L, "브라운", LocalDate.now().plusDays(1),
+                new ReservationTime(1L, LocalTime.parse("10:00")),
+                new Theme(1L, "name", "description", "image"));
+
+        RoomReservationService reservationService = new RoomReservationService(
+                createReservationRepository(false, reservation),
+                createReservationTimeRepository(null, false),
+                createThemeRepository(null, false)
+        );
+
+        assertThatCode(() -> reservationService.deleteReservationByName(1L, "브라운"))
+                .doesNotThrowAnyException();
     }
 }

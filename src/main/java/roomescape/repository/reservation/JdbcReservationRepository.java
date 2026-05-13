@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -73,6 +74,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                     AND date = ?
             )
             """;
+
+    private static final String SELECT_BY_ID_SQL = SELECT_ALL_SQL + "WHERE r.id = ?";
 
     private static final RowMapper<Reservation> MAPPER = (rs, rowNumber) -> new Reservation(
             rs.getLong(COLUMN_ID),
@@ -146,5 +149,11 @@ public class JdbcReservationRepository implements ReservationRepository {
                 Boolean.class,
                 timeId, themeId, date
         ) == Boolean.TRUE;
+    }
+
+    @Override
+    public Optional<Reservation> getReservationById(long id) {
+        List<Reservation> results = jdbcTemplate.query(SELECT_BY_ID_SQL, MAPPER, id);
+        return results.stream().findFirst();
     }
 }
