@@ -17,7 +17,7 @@ public class ReservationExceptionHandler {
     @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<ErrorResponse> handleDateTimeParseException(DateTimeParseException e) {
         log.warn(e.getMessage(), e);
-        return ResponseEntity.status(ErrorCode.INVALID_DATE_FORMAT.getStatus())
-                .body(ErrorResponse.of(ErrorCode.INVALID_DATE_FORMAT, e.getMessage()));
+        return ResponseEntity.status(ErrorCode.INVALID_DATE.getStatus())
+                .body(ErrorResponse.of(ErrorCode.INVALID_DATE, e.getMessage()));
     }
 }
