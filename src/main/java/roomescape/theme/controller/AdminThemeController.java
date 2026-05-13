@@ -11,10 +11,12 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import roomescape.theme.dto.AdminThemeRequest;
 import roomescape.theme.dto.AdminThemeResponse;
 import roomescape.theme.service.AdminThemeService;
 
+@Tag(name = "어드민 테마", description = "테마 생성·조회·삭제 API (관리자용)")
 @RestController
 @RequestMapping("/admin/themes")
 public class AdminThemeController {

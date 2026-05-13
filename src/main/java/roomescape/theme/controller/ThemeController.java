@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
+@Tag(name = "테마", description = "인기 테마 조회 API")
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
