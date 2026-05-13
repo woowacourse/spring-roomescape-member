@@ -122,7 +122,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 + "FROM reservation r "
                 + "INNER JOIN theme t ON r.theme_id = t.id "
                 + "INNER JOIN reservation_time rt ON r.time_id = rt.id "
-                + "WHERE r.theme_id = :themeId AND r.date = :date";
+                + "WHERE r.theme_id = :themeId AND r.date = :date AND r.status = 'ACTIVE'";
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("themeId", themeId)
