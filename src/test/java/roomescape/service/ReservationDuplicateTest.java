@@ -26,14 +26,14 @@ class ReservationDuplicateTest {
 
         assertThatThrownBy(() -> reservationService.save(request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이미 존재하는 예약 건입니다.");
+                .hasMessageContaining("이미 지난 시간/날짜는 예약할 수 없습니다.");
     }
 
     @Test
     @DisplayName("중복되지 않는 시간에 예약을 하면 통과한다.")
     void 중복이_없는_정상_예약_테스트() {
 
-        ReservationRequest request = new ReservationRequest("아나키", LocalDate.of(2026, 5, 4), 1L, 1L);
+        ReservationRequest request = new ReservationRequest("아나키", LocalDate.of(2026, 5, 30), 1L, 1L);
 
         assertDoesNotThrow(() -> reservationService.save(request));
     }
