@@ -3,6 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -38,10 +39,10 @@ public class ReservationService {
 
     public ReservationResult create(ReservationCreateCommand command) {
         ReservationTimeEntity timeEntity = reservationTimeRepository.findById(command.getTimeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다: " + command.getTimeId()));
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 시간입니다: " + command.getTimeId()));
 
         ThemeEntity themeEntity = themeRepository.findById(command.getThemeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다: " + command.getThemeId()));
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다: " + command.getThemeId()));
 
         Reservation reservation = new Reservation(
                 command.getName(),
