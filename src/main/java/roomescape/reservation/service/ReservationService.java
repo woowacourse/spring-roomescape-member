@@ -68,6 +68,18 @@ public class ReservationService {
         return reservation;
     }
 
+    // 파라미터 Dto 고려
+    @Transactional
+    public Reservation changeSchedule(Long id, String requesterName, Long dateId, Long timeId) {
+        Reservation reservation = getReservation(id);
+        ReservationDate newDate = getReservationDate(dateId);
+        ReservationTime newTime = getReservationTime(timeId);
+
+        reservation.changeSchedule(requesterName, newDate, newTime);
+        reservationRepository.updateSchedule(reservation);
+        return reservation;
+    }
+
     private ReservationTime getReservationTime(Long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
