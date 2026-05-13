@@ -14,6 +14,7 @@ public interface ReservationRepository {
     List<ReservationInfo> getAllReservation(String name);
     ReservationInfo addReservation(ReservationCommand reservationCommand, ReservationTime reservationTime, Theme theme);
     void deleteReservation(long id);
+    int updateAll(long id, ReservationCommand reservationCommand);
     boolean existsByTimeId(long timeId);
     boolean existsByThemeId(long themeId);
     boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date);

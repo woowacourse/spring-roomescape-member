@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -56,6 +57,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final String CONDITION_NAME_SQL = "WHERE r.name = ?";
 
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation WHERE id = ?";
+
+    private static final String UPDATE_ALL_SPECIFIC_ID_SQL = "UPDATE reservation SET name = ?, date = ?, time_id = ?, theme_id = ? WHERE id = ?";
+
     private static final String EXIST_BY_TIME_ID_SQL = """
             SELECT EXISTS (\s
                 SELECT 1 \s
@@ -144,6 +148,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public void deleteReservation(long id) {
         jdbcTemplate.update(DELETE_SPECIFIC_ID_SQL, id);
+    }
+
+    @Override
+    public int updateAll(long id, ReservationCommand command) {
+        return jdbcTemplate.update(UPDATE_ALL_SPECIFIC_ID_SQL, command.name(), command.date(), command.timeId(), command.themeId(), id);
     }
 
     @Override
