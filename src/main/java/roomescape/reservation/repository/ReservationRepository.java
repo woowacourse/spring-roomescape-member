@@ -107,6 +107,25 @@ public class ReservationRepository {
                 .findFirst();
     }
 
+    public List<Reservation> findByName(String name) {
+        String sql = """
+                SELECT r.id          AS reservation_id,
+                       r.name        AS reservation_name,
+                       r.date        AS reservation_date,
+                       t.id          AS time_id,
+                       t.start_at    AS time_start_at,
+                       th.id    AS theme_id,
+                       th.name    AS theme_name,
+                       th.description    AS theme_description,
+                       th.thumbnail    AS theme_thumbnail
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
+                WHERE r.name = ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowsMapper(), name);
+    }
+
     private RowMapper<Reservation> reservationRowsMapper() {
         return (rs, rowNum) -> {
             ReservationTime time = new ReservationTime(

@@ -4,6 +4,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.service.ReservationService;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
@@ -13,16 +16,20 @@ import roomescape.time.dto.ReservationTimeRequest;
 import roomescape.time.dto.ReservationTimeResponse;
 import roomescape.time.service.ReservationTimeService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
 
     private final ThemeService themeService;
     private final ReservationTimeService reservationTimeService;
+    private final ReservationService reservationService;
 
-    public AdminController(ThemeService themeService, ReservationTimeService reservationTimeService) {
+    public AdminController(ThemeService themeService, ReservationTimeService reservationTimeService, ReservationService reservationService) {
         this.themeService = themeService;
         this.reservationTimeService = reservationTimeService;
+        this.reservationService = reservationService;
     }
 
     @PostMapping("/themes")
@@ -51,5 +58,14 @@ public class AdminController {
     public ResponseEntity<Void> removeTime(@PathVariable Long id) {
         reservationTimeService.removeTime(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/reservations")
+    public ResponseEntity<List<ReservationResponse>> getReservations() {
+        List<Reservation> reservations = reservationService.getReservations();
+        List<ReservationResponse> response = reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

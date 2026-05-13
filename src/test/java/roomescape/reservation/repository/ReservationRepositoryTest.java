@@ -156,4 +156,45 @@ class ReservationRepositoryTest {
         // then
         assertThat(result).isFalse();
     }
+
+    @Test
+    void 사용자_이름으로_등록된_예약이_존재한다면_이름과_동일한_예약들을_반환한다() {
+        // given
+        reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 11), time, theme));
+
+        // when
+        List<Reservation> result = reservationRepository.findByName("어셔");
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result).allMatch(r -> r.getName().equals("어셔"));
+    }
+
+    @Test
+    void 동일한_사용자_이름으로_등록된_예약이_존재하지_않는다면_빈값을_반환한다() {
+        // given
+        List<Reservation> result = reservationRepository.findByName("어셔");
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void 다른_이름의_사용자_예약은_조회되지_않는다() {
+        // given
+        reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
+        reservationRepository.save(new Reservation(
+                null, "레서", LocalDate.of(2026, 5, 11), time, theme));
+
+        // when
+        List<Reservation> result = reservationRepository.findByName("어셔");
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result).allMatch(r -> r.getName().equals("어셔"));
+    }
 }

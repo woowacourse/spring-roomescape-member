@@ -3,6 +3,7 @@ package roomescape.global.exception;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -42,5 +43,11 @@ public class GlobalExceptionHandler {
         ErrorCode error = ErrorCode.INVALID_VALUE;
         return ResponseEntity.status(error.status())
                 .body(ErrorResponse.of(error, message));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingQueryParameter(MissingServletRequestParameterException e) {
+        return ResponseEntity.status(ErrorCode.MISSING_PARAMETER.status())
+                .body(ErrorResponse.of(ErrorCode.MISSING_PARAMETER));
     }
 }

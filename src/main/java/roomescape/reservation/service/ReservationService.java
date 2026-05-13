@@ -67,4 +67,8 @@ public class ReservationService {
             throw new BusinessException(ErrorCode.RESERVATION_PAST_DATETIME);
         }
     }
+
+    public List<Reservation> getUserReservations(String name) {
+        return reservationRepository.findByName(name);
+    }
 }

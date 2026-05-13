@@ -21,15 +21,6 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<Reservation> reservations = reservationService.getReservations();
-        List<ReservationResponse> response = reservations.stream()
-                .map(ReservationResponse::from)
-                .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @Valid @RequestBody ReservationRequest request) {
@@ -52,6 +43,15 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> getReservation(@PathVariable("id") Long id) {
         Reservation reservation = reservationService.getReservation(id);
         ReservationResponse response = ReservationResponse.from(reservation);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationResponse>> getUserReservations(@RequestParam("name") String name) {
+        List<Reservation> userReservation = reservationService.getUserReservations(name);
+        List<ReservationResponse> response = userReservation.stream()
+                .map(ReservationResponse::from)
+                .toList();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
