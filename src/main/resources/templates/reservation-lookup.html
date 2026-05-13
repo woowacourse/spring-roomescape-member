@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ENIGMA ROOMS - 예약 조회</title>
+    <link rel="stylesheet" th:href="@{/css/user.css}">
+</head>
+<body>
+<header class="header">
+    <a class="logo" href="/">ENIGMA ROOMS</a>
+
+    <nav class="nav">
+        <a href="/">예약하기</a>
+        <a href="/reservation-lookup">예약 조회</a>
+        <a href="/admin-page">관리자</a>
+    </nav>
+</header>
+
+<main class="container lookup-container">
+    <section class="lookup-hero">
+        <h1>예약 조회</h1>
+        <p>예약자 성함을 입력하여 예약 내역을 확인하세요.</p>
+    </section>
+
+    <section class="lookup-search-box">
+        <div class="search-input-box">
+            <span>⌕</span>
+            <input id="lookup-name-input" type="text" placeholder="예약자 성함을 입력하세요">
+        </div>
+
+        <button class="primary-button search" type="button" onclick="searchReservations()">
+            조회
+        </button>
+    </section>
+
+    <section id="lookup-result-section" class="lookup-result-section hidden">
+        <h2><span id="lookup-name-text"></span> 님의 예약 내역</h2>
+        <div id="reservation-result-list" class="reservation-result-list"></div>
+    </section>
+</main>
+
+<script th:src="@{/js/reservation-lookup.js}"></script>
+</body>
+</html>
