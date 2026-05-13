@@ -28,16 +28,7 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<ReservationResponse> responses = reservationService.getReservations()
-                .stream()
-                .map(ReservationResponse::from)
-                .toList();
-        return ResponseEntity.ok(responses);
-    }
-
-    @GetMapping("/{username}")
-    public ResponseEntity<List<ReservationResponse>> getReservationsByName(@PathVariable String username) {
+    public ResponseEntity<List<ReservationResponse>> getReservationsByName(@RequestParam String username) {
         List<ReservationResponse> responses = reservationService.getReservationsByName(username)
                 .stream()
                 .map(ReservationResponse::from)

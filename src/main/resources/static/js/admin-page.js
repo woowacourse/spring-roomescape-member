@@ -127,7 +127,7 @@ function renderThemes(themes) {
 }
 
 async function refreshReservations() {
-    const reservations = await request("/reservations", { method: "GET" });
+    const reservations = await request("/admin/reservations", { method: "GET" });
     renderReservations(reservations);
 }
 
