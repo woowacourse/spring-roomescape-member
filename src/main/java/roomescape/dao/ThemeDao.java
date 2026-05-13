@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.dto.PopularThemeResult;
+import roomescape.exception.ResourceNotFoundException;
 
 @Repository
 public class ThemeDao {
@@ -31,7 +32,7 @@ public class ThemeDao {
                             resultSet.getString("thumbnail")
                     ), id);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다.");
+            throw new ResourceNotFoundException("존재하지 않는 테마입니다.", "RESOURCE_NOT_FOUND");
         }
     }
 

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.DuplicatedResourceException;
 
 @Service
 public class ReservationTimeService {
@@ -24,7 +25,7 @@ public class ReservationTimeService {
 
     public ReservationTime save(ReservationTime reservationTime) {
         if (reservationTimeDao.existsByStartAt(reservationTime.getStartAt())) {
-            throw new IllegalArgumentException("이미 존재하는 예약시간입니다.");
+            throw new DuplicatedResourceException("이미 존재하는 예약시간입니다.", "DUPLICATED_TIME");
         }
         return reservationTimeDao.save(reservationTime);
     }

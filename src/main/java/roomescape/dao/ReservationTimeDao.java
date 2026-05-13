@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ResourceNotFoundException;
 
 @Repository
 public class ReservationTimeDao {
@@ -30,7 +31,7 @@ public class ReservationTimeDao {
                             LocalTime.parse(resultSet.getString("start_at"))
                     ), id);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 시간입니다.");
+            throw new ResourceNotFoundException("존재하지 않는 시간입니다.", "RESOURCE_NOT_FOUND");
         }
     }
 

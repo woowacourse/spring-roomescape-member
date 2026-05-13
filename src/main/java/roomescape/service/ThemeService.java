@@ -14,6 +14,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.PopularThemeResponse;
 import roomescape.dto.ReservationTimeStatusResponse;
+import roomescape.exception.DuplicatedResourceException;
+import roomescape.exception.ResourceDeleteConflicted;
 
 @Service
 public class ThemeService {
@@ -49,14 +51,14 @@ public class ThemeService {
 
     public Theme save(Theme theme) {
         if (themeDao.existsByName(theme.getName())) {
-            throw new IllegalArgumentException("이미 존재하는 테마 이름입니다.");
+            throw new DuplicatedResourceException("이미 존재하는 테마 이름입니다.", "DUPLICATED_TIME");
         }
         return themeDao.save(theme);
     }
 
     public void deleteById(Long id) {
         if (reservationDao.existsByThemeId(id)) {
-            throw new IllegalArgumentException("기존 예약이 존재하는 테마는 삭제할 수 없습니다.");
+            throw new ResourceDeleteConflicted("기존 예약이 존재하는 테마는 삭제할 수 없습니다.", "DUPLICATED_TIME");
         }
         themeDao.deleteById(id);
     }
