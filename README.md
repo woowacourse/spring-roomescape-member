@@ -34,35 +34,85 @@
 | theme thumbnail url | 테마 썸네일  |
 | theme runtime       | 테마 소요시간 |
 
-# 💻 기능 요구 사항 (member)
+## 📝API 명세
 
-## 테마 + 사용자 예약 단계 - 지난 미션까지는 관리자가 전화·현장 예약을 받아 시스템에 직접 등록했다. 이번 사이클부터는 사용자가 브라우저에서 직접 예약하는 서비스로 발전시킨다. 별도의 로그인은 없으며, 사용자는 이름으로 식별된다.
+| 기능           | 메서드 / URL                       | 요청 본문                                | 응답 본문                                                                                                 |
+|--------------|---------------------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------|
+| (어드민)        |                                 |
+| 시간 추가        | `POST /admin/times`             | `{startAt}`                          | `{id, startAt}`                                                                                       |
+| 시간 삭제        | `DELETE /admin/times/{id}`      |                                      |                                                                                                       |
+| 테마 추가        | `POST /admin/themes`            | `{name, description, thumbnail_url}` | `{theme_id, name, description, thumbnail_url, rumtime}`                                               |
+| 테마 삭제        | `DELETE /admin/themes/{id}`     |                                      |                                                                                                       |
+| (유저)         |                                 |                                      |
+| 예약 추가        | `POST /reservations`            | `{name, date, time_id, theme_id}`    | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
+| 예약 삭제        | `DELETE /reservations/{id}`     |                                      |                                                                                                       |
+| 예약 조회        | `GET /reservations`             |                                      | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
+| 시간 조회        | `GET /times`                    |                                      | `[{id, startAt}, ...]`                                                                                |
+| 예약 가능한 시간 조회 | `GET /times?date={}&themeId={}` |                                      | `[{id, startAt}, ...]`                                                                                |
+| 테마 조회        | `GET /themes`                   |                                      | `[{theme_id, name, description, thumbnail_url, rumtime}, ...]`                                        |
+| 인기 있는 테마 조회  | `GET /themes?days={}&limits={}` |                                      | `[{theme_id, name, description, thumbnail_url, rumtime}, ...]`                                        |
 
-### 단계 1 - 테마 도메인 추가
+## 예외 처리
 
-- [x] 방탈출 게임에 theme 정보를 추가한다.
-    - [x] theme는 theme name, theme description, theme thumbnail url을 가진다.
-    - [x] 모든 theme의 start at과 runtime은 동일하다고 가정한다.
-- [x] reservation에 theme 정보를 포함하도록 기존 코드를 변경한다.
-    - [x] 기존 테스트코드를 변경된 api에 맞게 수정한다.
-- [x] admin이 theme를 추가·삭제할 수 있다.
+에러 시 적절한 응답 코드와 함께 `{ "message": "에러 메시지" }` 로 반환한다.
 
-### 단계 2 - 사용자 예약
+### 예외 상황 및 에러 메시지
 
-- [x] 사용자가 date와 theme를 선택하면 예약 가능한 시간 목록이 표시된다.
-    - [x] 예약 가능한 시간이란, admin이 등록한 reservation time 중 해당 date + theme에 아직 reservation이 없는 time이다.
-- [x] 사용자가 예약 가능한 시간을 선택하여 본인의 name으로 예약한다.
-    - [x] 예약 가능한 시간이 아니라면 에러를 반환한다.
-- [x] 같은 date·time이라도 theme가 다르면 각각 예약 가능하다.
+| 상황                          | 응답 코드                       | 메시지                                                            |
+|-----------------------------|-----------------------------|----------------------------------------------------------------|
+| 요청 본문의 필수값이 없음              | `400 Bad Request`           | `입력값이 잘못되었습니다.`                                                |
+| 요청 본문의 형식이 잘못됨              | `400 Bad Request`           | `입력 형식이 잘못되었습니다`                                               |
+| query parameter 조합이 올바르지 않음 | `400 Bad Request`           | `잘못된 요청입니다.`                                                   |
+| 존재하지 않는 예약 시간으로 예약 생성       | `404 Not Found`             | `존재하지 않는 예약 시간입니다. id={id}`                                    |
+| 존재하지 않는 테마로 예약 생성           | `404 Not Found`             | `존재하지 않는 테마입니다. id={id}`                                       |
+| 존재하지 않는 예약 삭제               | `404 Not Found`             | `존재하지 않는 예약입니다. id={id}`                                       |
+| 존재하지 않는 예약 시간 삭제            | `404 Not Found`             | `존재하지 않는 예약 시간입니다. id={id}`                                    |
+| 존재하지 않는 테마 삭제               | `404 Not Found`             | `존재하지 않는 테마입니다. id={id}`                                       |
+| 같은 날짜 + 시간 + 테마에 이미 예약이 있음  | `409 Conflict`              | `이미 예약이 있습니다. date= ..., reservationTimeId= ..., themeId= ...` |
+| 서버에서 예상하지 못한 오류 발생          | `500 Internal Server Error` | `예상하지 못한 오류가 발생했습니다.`                                          |
 
-### 단계 3 - 인기 테마 조회
+### 예외 처리 TODO
 
-- [x] 최근 1주 동안 reservation이 많았던 theme 상위 10개를 조회한다.
-    - [x] 오늘 5월 8일이면, date가 5월 1일~5월 7일인 reservation을 집계해 인기 순서대로 10개를 응답한다.
+| 상황                          | 권장 응답 코드                            | 처리 방향                                     |
+|-----------------------------|-------------------------------------|-------------------------------------------|
+| 지나간 날짜·시간에 대한 예약 생성         | `400 Bad Request`                   | 과거 예약은 생성하지 못하게 막는다.                      |
+| 예약이 존재하는 시간을 삭제             | `400 Bad Request` 또는 `409 Conflict` | 현재는 예약까지 함께 삭제되므로, 삭제를 거부하도록 바꾸는 것이 안전하다. |
+| 예약이 존재하는 테마를 삭제             | `400 Bad Request` 또는 `409 Conflict` | 현재는 예약까지 함께 삭제되므로, 삭제를 거부하도록 바꾸는 것이 안전하다. |
+| 이미 존재하는 예약 시간 생성            | `409 Conflict`                      | DB 중복 오류를 클라이언트 예외로 변환한다.                 |
+| 잘못된 path/query parameter 형식 | `400 Bad Request`                   | 숫자나 날짜 변환 실패를 명시적으로 처리한다.                 |
+| `days`, `limits`가 0 이하      | `400 Bad Request`                   | 인기 테마 조회 조건을 검증한다.                        |
 
-# 💻 기능 요구 사항 (admin)
+## 응답 코드
 
-## 방탈출 예약 관리 - 방탈출 카페 관리자가 전화·현장 예약을 직접 등록·관리하는 상황에 필요한 예약 관리 서비스를 만든다.
+| 응답 코드                       | 상황                 |
+|-----------------------------|--------------------|
+| `200 Ok`                    | 정상적으로 조회됨          |
+| `201 Created`               | 정상적으로 생성됨          |
+| `204 No Content`            | 반환값이 없음            |
+| `400 Bad Request`           | 클라이언트 요청값이 올바르지 않음 |
+| `404 Not Found`             | 없는 자원에 대한 접근       |
+| `409 Conflict`              | 서버의 현재 상태와 충돌      |
+| `500 Internal Server Error` | 서버 내부 오류           |
+
+## 예약 변경/취소와 에러 처리
+
+- 지금까지는 정상 흐름(예약 가능 시간 조회 → 예약 생성)만 만들었다. 이번 사이클은 잘못된 요청에 대한 응답을 설계하고, 사용자가 본인의 예약을 조회·변경·취소할 수 있도록 발전시킨다.
+
+### 단계 1 - 서비스 정책 적용
+
+- [ ] 다음 정책을 만족하지 않는 요청은 거부한다.
+    - [ ] 지나간 날짜·시간에 대한 예약 생성은 불가능하다.
+    - [ ] 같은 날짜+시간+테마에 이미 예약이 있으면 중복 예약을 거부한다.
+    - [ ] 예약이 존재하는 시간을 삭제할 수 없다.
+    - [ ] 유효하지 않은 입력값(빈 이름, 잘못된 날짜 형식 등)을 거부한다.
+
+<details>
+
+<summary> admin 기능 구현</summary>
+
+## 방탈출 예약 관리
+
+- 방탈출 카페 관리자가 전화·현장 예약을 직접 등록·관리하는 상황에 필요한 예약 관리 서비스를 만든다.
 
 ### 단계 1 - 웹 요청,응답
 
@@ -182,32 +232,36 @@ Content-Type: application/json
 - [x] 레이어별 책임과 역할에 따라 클래스를 분리하고, 분리한 클래스를 Spring Bean으로 등록한다.
     - [x] ReservationController에 JdbcTemplate 필드가 남아있지 않아야 한다
 
-# 📝API 명세
+</details>
 
-| 기능           | 메서드 / URL                       | 요청 본문                                | 응답 본문                                                                                                 |
-|--------------|---------------------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------|
-| (어드민)        |                                 |
-| 시간 추가        | `POST /admin/times`             | `{startAt}`                          | `{id, startAt}`                                                                                       |
-| 시간 삭제        | `DELETE /admin/times/{id}`      |                                      |                                                                                                       |
-| 테마 추가        | `POST /admin/themes`            | `{name, description, thumbnail_url}` | `{theme_id, name, description, thumbnail_url, rumtime}`                                               |
-| 테마 삭제        | `DELETE /admin/themes/{id}`     |                                      |                                                                                                       |
-| (유저)         |                                 |                                      |
-| 예약 추가        | `POST /reservations`            | `{name, date, time_id, theme_id}`    | `{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}`        |
-| 예약 삭제        | `DELETE /reservations/{id}`     |                                      |                                                                                                       |
-| 예약 조회        | `GET /reservations`             |                                      | `[{id, name, date, {time_id, start_at}, {theme_id, name, description, thumbnail_url, rumtime}}, ...]` |
-| 시간 조회        | `GET /times`                    |                                      | `[{id, startAt}, ...]`                                                                                |
-| 예약 가능한 시간 조회 | `GET /times?date={}&themeId={}` |                                      | `[{id, startAt}, ...]`                                                                                |
-| 테마 조회        | `GET /themes`                   |                                      | `[{theme_id, name, description, thumbnail_url, rumtime}, ...]`                                        |
-| 인기 있는 테마 조회  | `GET /themes?days={}&limits={}` |                                      | `[{theme_id, name, description, thumbnail_url, rumtime}, ...]`                                        |
+<details>
 
-# 응답 코드
+<summary>member 기능 구현</summary>
 
-| 응답 코드                       | 상황                 |
-|-----------------------------|--------------------|
-| `200 Ok`                    | 정상적으로 조회됨          |
-| `201 Created`               | 정상적으로 생성됨          |
-| `204 No Content`            | 반환값이 없음            |
-| `400 Bad Request`           | 클라이언트 요청값이 올바르지 않음 |
-| `404 Not Found`             | 없는 자원에 대한 접근       |
-| `409 Conflict`              | 서버의 현재 상태와 충돌      |
-| `500 Internal Server Error` | 서버 내부 오류           |
+## 테마 + 사용자 예약 단계
+
+- 지난 미션까지는 관리자가 전화·현장 예약을 받아 시스템에 직접 등록했다. 이번 사이클부터는 사용자가 브라우저에서 직접 예약하는 서비스로 발전시킨다. 별도의 로그인은 없으며, 사용자는 이름으로 식별된다.
+
+### 단계 1 - 테마 도메인 추가
+
+- [x] 방탈출 게임에 theme 정보를 추가한다.
+    - [x] theme는 theme name, theme description, theme thumbnail url을 가진다.
+    - [x] 모든 theme의 start at과 runtime은 동일하다고 가정한다.
+- [x] reservation에 theme 정보를 포함하도록 기존 코드를 변경한다.
+    - [x] 기존 테스트코드를 변경된 api에 맞게 수정한다.
+- [x] admin이 theme를 추가·삭제할 수 있다.
+
+### 단계 2 - 사용자 예약
+
+- [x] 사용자가 date와 theme를 선택하면 예약 가능한 시간 목록이 표시된다.
+    - [x] 예약 가능한 시간이란, admin이 등록한 reservation time 중 해당 date + theme에 아직 reservation이 없는 time이다.
+- [x] 사용자가 예약 가능한 시간을 선택하여 본인의 name으로 예약한다.
+    - [x] 예약 가능한 시간이 아니라면 에러를 반환한다.
+- [x] 같은 date·time이라도 theme가 다르면 각각 예약 가능하다.
+
+### 단계 3 - 인기 테마 조회
+
+- [x] 최근 1주 동안 reservation이 많았던 theme 상위 10개를 조회한다.
+    - [x] 오늘 5월 8일이면, date가 5월 1일~5월 7일인 reservation을 집계해 인기 순서대로 10개를 응답한다.
+
+</details>
