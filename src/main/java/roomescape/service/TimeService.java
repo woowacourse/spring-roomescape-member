@@ -39,13 +39,11 @@ public class TimeService {
 
     public void removeById(Long id) {
         timeRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("[ERROR] 삭제하고자 하는 시간 ID가 없습니다.")
+                () -> new RoomescapeException(ErrorCode.TIME_NOT_FOUND)
         );
-
         if (reservationRepository.existsByTimeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 현재 예약이 존재하는 시간은 삭제할 수 없습니다.");
+            throw new RoomescapeException(ErrorCode.TIME_HAS_RESERVATIONS);
         }
-
         timeRepository.deleteById(id);
     }
 
@@ -56,7 +54,6 @@ public class TimeService {
         if (timeRepository.existsByStartAt(timeRequest.startAt())) {
             throw new RoomescapeException(ErrorCode.TIME_DUPLICATED);
         }
-
         ReservationTime reservationTime = timeRepository.save(timeRequest.startAt());
         return TimeResponse.from(reservationTime);
     }
