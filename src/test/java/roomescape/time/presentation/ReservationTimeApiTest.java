@@ -4,9 +4,14 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Mockito.when;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
@@ -21,12 +27,22 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeApiTest {
 
+    private static final ZoneId ASIA_SEOUL = ZoneId.of("Asia/Seoul");
+    private static final Instant FIXED_INSTANT = LocalDateTime.of(2026, 5, 12, 10, 0)
+            .atZone(ASIA_SEOUL)
+            .toInstant();
+
     @LocalServerPort
     private int port;
+
+    @MockBean
+    private Clock clock;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        when(clock.getZone()).thenReturn(ASIA_SEOUL);
+        when(clock.instant()).thenReturn(FIXED_INSTANT);
     }
 
     @Test
@@ -136,5 +152,36 @@ class ReservationTimeApiTest {
                 .statusCode(200)
                 .body("theme.id", equalTo(themeId.intValue()))
                 .body("times", hasSize(2));
+    }
+
+    @Test
+    @DisplayName("오늘 예약 가능 시간을 조회하면 이미 지난 시간은 제외한다")
+    void getAvailableReservationTimeWithoutPastTimesToday() {
+        Long themeId = given().contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "테마A",
+                        "description", "설명",
+                        "thumbnailImageUrl", "https://example.com/a.png",
+                        "durationTime", "01:00:00"
+                ))
+                .when().post("/admin/themes")
+                .then().extract().jsonPath().getLong("id");
+
+        given().contentType(ContentType.JSON)
+                .body(Map.of("startAt", "09:00"))
+                .when().post("/times");
+        given().contentType(ContentType.JSON)
+                .body(Map.of("startAt", "11:00"))
+                .when().post("/times");
+
+        given().log().all()
+                .queryParam("themeId", themeId)
+                .queryParam("date", "2026-05-12")
+                .when().get("/times/available")
+                .then().log().all()
+                .statusCode(200)
+                .body("theme.id", equalTo(themeId.intValue()))
+                .body("times", hasSize(1))
+                .body("times[0].startAt", equalTo("11:00:00"));
     }
 }

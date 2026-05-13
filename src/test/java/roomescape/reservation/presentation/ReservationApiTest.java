@@ -4,9 +4,14 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Mockito.when;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
@@ -22,12 +28,22 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationApiTest {
 
+    private static final ZoneId ASIA_SEOUL = ZoneId.of("Asia/Seoul");
+    private static final Instant FIXED_INSTANT = LocalDateTime.of(2026, 5, 12, 10, 0)
+            .atZone(ASIA_SEOUL)
+            .toInstant();
+
     @LocalServerPort
     private int port;
+
+    @MockBean
+    private Clock clock;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        when(clock.getZone()).thenReturn(ASIA_SEOUL);
+        when(clock.instant()).thenReturn(FIXED_INSTANT);
     }
 
     @Test
@@ -180,6 +196,48 @@ class ReservationApiTest {
                 .body("message", equalTo("이미 해당 시간에 예약이 존재합니다."));
     }
 
+    @Test
+    @DisplayName("지나간 날짜로 예약을 생성하면 409와 공통 에러 응답을 반환한다")
+    void createReservationInPastDate() {
+        Long themeId = createTheme();
+        Long timeId = createTime();
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2026-05-11",
+                        "timeId", timeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("status", equalTo(409))
+                .body("message", equalTo("지나간 날짜/시간으로는 예약할 수 없습니다."));
+    }
+
+    @Test
+    @DisplayName("오늘 지난 시간으로 예약을 생성하면 409와 공통 에러 응답을 반환한다")
+    void createReservationInPastTimeToday() {
+        Long themeId = createTheme();
+        Long timeId = createTime("09:00");
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2026-05-12",
+                        "timeId", timeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("status", equalTo(409))
+                .body("message", equalTo("지나간 날짜/시간으로는 예약할 수 없습니다."));
+    }
+
     private Long createTheme() {
         return given().contentType(ContentType.JSON)
                 .body(Map.of(
@@ -193,8 +251,12 @@ class ReservationApiTest {
     }
 
     private Long createTime() {
+        return createTime("10:00");
+    }
+
+    private Long createTime(String startAt) {
         return given().contentType(ContentType.JSON)
-                .body(Map.of("startAt", "10:00"))
+                .body(Map.of("startAt", startAt))
                 .when().post("/times")
                 .then().extract().jsonPath().getLong("id");
     }
