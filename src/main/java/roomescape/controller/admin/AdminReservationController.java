@@ -1,5 +1,6 @@
 package roomescape.controller.admin;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class AdminReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> saveReservation(@Valid @RequestBody ReservationRequest request) {
         try {
             Reservation reservationReturned = reservationService.saveReservation(request.toSaveCommand());
             ReservationResponse reservationResponse = ReservationResponse.from(reservationReturned);

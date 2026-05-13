@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    private static final int MAX_NAME_LENGTH = 30;
+
     public Reservation {
         validateName(name);
         validateDate(date);
@@ -27,8 +29,13 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
         if (Objects.isNull(name)) {
             throw new IllegalArgumentException("유효하지 않은 이름입니다.");
         }
+
         if (name.isBlank()) {
             throw new IllegalArgumentException("이름은 공백일 수 없습니다.");
+        }
+
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new IllegalArgumentException("이름은 30자 이하여야 합니다.");
         }
     }
 
