@@ -5,8 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -86,7 +87,9 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.createReservation(
                 "브라운", LocalDate.of(2026, 5, 10), 999L, 2L))
-                .isInstanceOf(InvalidReservationTimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.RESERVATION_TIME_NOT_FOUND);
 
         verify(themeRepository, never()).findById(2L);
         verify(reservationRepository, never()).save(any(Reservation.class));

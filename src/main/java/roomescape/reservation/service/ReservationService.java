@@ -2,8 +2,9 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -34,7 +35,7 @@ public class ReservationService {
     @Transactional
     public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new InvalidReservationTimeException(timeId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(themeId);
         Reservation reservation = new Reservation(null, name, date, time, theme);
 
