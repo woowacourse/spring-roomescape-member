@@ -328,6 +328,145 @@ class ReservationApiTest {
                 .body("message", equalTo("지나간 날짜/시간으로는 예약할 수 없습니다."));
     }
 
+    @Test
+    @DisplayName("본인 예약의 날짜와 시간을 변경하면 200과 변경된 예약을 반환한다")
+    void updateReservation() {
+        Long themeId = createTheme();
+        Long timeId = createTime();
+        Long newTimeId = createTime("11:00");
+
+        Long id = given().contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2026-12-31",
+                        "timeId", timeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations")
+                .then().extract().jsonPath().getLong("id");
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2027-01-15",
+                        "timeId", newTimeId
+                ))
+                .when().patch("/reservations/" + id)
+                .then().log().all()
+                .statusCode(200)
+                .body("id", equalTo(id.intValue()))
+                .body("date", equalTo("2027-01-15"))
+                .body("time.id", equalTo(newTimeId.intValue()));
+    }
+
+    @Test
+    @DisplayName("본인이 아닌 사람이 예약을 변경하면 404와 공통 에러 응답을 반환한다")
+    void updateReservationByOtherOwner() {
+        Long themeId = createTheme();
+        Long timeId = createTime();
+        Long newTimeId = createTime("11:00");
+
+        Long id = given().contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2026-12-31",
+                        "timeId", timeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations")
+                .then().extract().jsonPath().getLong("id");
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "크론",
+                        "date", "2027-01-15",
+                        "timeId", newTimeId
+                ))
+                .when().patch("/reservations/" + id)
+                .then().log().all()
+                .statusCode(404)
+                .body("status", equalTo(404))
+                .body("message", equalTo("본인의 예약만 변경할 수 있습니다."));
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 변경하면 409와 공통 에러 응답을 반환한다")
+    void updatePastReservation() {
+        Long themeId = createTheme();
+        Long timeId = createTime();
+        Long newTimeId = createTime("11:00");
+
+        Long id = given().contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2026-12-31",
+                        "timeId", timeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations")
+                .then().extract().jsonPath().getLong("id");
+
+        Instant afterReservation = LocalDateTime.of(2027, 1, 1, 0, 0)
+                .atZone(ASIA_SEOUL)
+                .toInstant();
+        when(clock.instant()).thenReturn(afterReservation);
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2027-02-01",
+                        "timeId", newTimeId
+                ))
+                .when().patch("/reservations/" + id)
+                .then().log().all()
+                .statusCode(409)
+                .body("status", equalTo(409))
+                .body("message", equalTo("이미 지난 예약은 변경할 수 없습니다."));
+    }
+
+    @Test
+    @DisplayName("변경하려는 슬롯에 다른 예약이 있으면 409와 공통 에러 응답을 반환한다")
+    void updateReservationToDuplicateSlot() {
+        Long themeId = createTheme();
+        Long timeId = createTime();
+        Long otherTimeId = createTime("11:00");
+
+        Long myReservationId = given().contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2026-12-31",
+                        "timeId", timeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations")
+                .then().extract().jsonPath().getLong("id");
+
+        given().contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "크론",
+                        "date", "2026-12-31",
+                        "timeId", otherTimeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations");
+
+        given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2026-12-31",
+                        "timeId", otherTimeId
+                ))
+                .when().patch("/reservations/" + myReservationId)
+                .then().log().all()
+                .statusCode(409)
+                .body("status", equalTo(409))
+                .body("message", equalTo("이미 해당 시간에 예약이 존재합니다."));
+    }
+
     private Long createTheme() {
         return given().contentType(ContentType.JSON)
                 .body(Map.of(
