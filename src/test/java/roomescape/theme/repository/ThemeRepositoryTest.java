@@ -47,7 +47,7 @@ class ThemeRepositoryTest {
     void 존재하는_id로_조회하면_테마를_반환한다() {
         Theme saved = themeRepository.save(new Theme(null,"공포방", "무서운방입니다.", "image-url"));
 
-        Theme result = themeRepository.findById(saved.getId());
+        Theme result = themeRepository.findById(saved.getId()).get();
 
         assertThat(result.getId()).isEqualTo(saved.getId());
         assertThat(result.getName()).isEqualTo("공포방");

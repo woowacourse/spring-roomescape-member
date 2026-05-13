@@ -5,10 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.ErrorCode;
+import roomescape.global.exception.ReservationNotFoundException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.DuplicateReservationException;
-import roomescape.reservation.exception.InvalidReservationTimeException;
-import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -45,7 +45,7 @@ class ReservationServiceTest {
                 new Reservation(
                         1L,
                         "브라운",
-                        LocalDate.of(2026, 5, 10),
+                        LocalDate.now().plusDays(1),
                         new ReservationTime(1L, LocalTime.of(10, 0)),
                         new Theme(1L, "공포방", "무서운방입니다.", "image-url")
                 )
@@ -62,20 +62,20 @@ class ReservationServiceTest {
     void 예약을_생성하면_시간과_테마를_조회하고_예약을_저장한_뒤_예약을_반환한다() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(2L, "공포방", "무서운방입니다.", "image-url");
-        Reservation reservation = new Reservation(1L, "어셔", LocalDate.of(2026, 5, 10), time, theme);
+        Reservation reservation = new Reservation(1L, "어셔", LocalDate.now().plusDays(1), time, theme);
 
         when(reservationTimeRepository.findById(any())).thenReturn(Optional.of(time));
-        when(themeRepository.findById(any())).thenReturn(theme);
+        when(themeRepository.findById(any())).thenReturn(Optional.of(theme));
         when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
 
-        Reservation result = reservationService.createReservation("어셔", LocalDate.of(2026, 5, 10), 1L, 2L);
+        Reservation result = reservationService.createReservation("어셔", LocalDate.now().plusDays(1), 1L, 2L);
 
         verify(reservationTimeRepository).findById(any());
         verify(themeRepository).findById(any());
         verify(reservationRepository).save(any(Reservation.class));
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getName()).isEqualTo("어셔");
-        assertThat(result.getDate()).isEqualTo(LocalDate.of(2026, 5, 10));
+        assertThat(result.getDate()).isEqualTo(LocalDate.now().plusDays(1));
         assertThat(result.getTime()).isSameAs(time);
         assertThat(result.getTheme()).isSameAs(theme);
     }
@@ -86,7 +86,9 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.createReservation(
                 "브라운", LocalDate.of(2026, 5, 10), 999L, 2L))
-                .isInstanceOf(InvalidReservationTimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_TIME_NOT_FOUND);
 
         verify(themeRepository, never()).findById(2L);
         verify(reservationRepository, never()).save(any(Reservation.class));
@@ -116,12 +118,45 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(time));
         Theme theme = new Theme(1L, "공포", "무서운 테마", "image");
         when(themeRepository.findById(1L))
-                .thenReturn(theme);
-        when(reservationRepository.existsByTimeIdAndThemeId(LocalDate.of(2026, 5, 9), 1L, 1L))
+                .thenReturn(Optional.of(theme));
+        when(reservationRepository.existsByTimeIdAndThemeId(LocalDate.now().plusDays(1), 1L, 1L))
                 .thenReturn(true);
 
         assertThatThrownBy(() -> reservationService.createReservation(
-                "어셔", LocalDate.of(2026, 5, 9), 1L, 1L))
-                .isInstanceOf(DuplicateReservationException.class);
+                "어셔", LocalDate.now().plusDays(1), 1L, 1L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_DUPLICATE);
+    }
+
+    @Test
+    void 과거_날짜로_예약을_생성하면_예외가_발생한다() {
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
+        when(reservationTimeRepository.findById(any())).thenReturn(Optional.of(time));
+        when(themeRepository.findById(any())).thenReturn(Optional.of(theme));
+
+        assertThatThrownBy(() -> reservationService.createReservation(
+                "어셔", LocalDate.now().minusDays(1), 1L, 1L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_PAST_DATETIME);
+
+        verify(reservationRepository, never()).save(any());
+    }
+
+    @Test
+    void 오늘_날짜_지난_시간으로_예약을_생성하면_예외가_발생한다() {
+        ReservationTime time = new ReservationTime(1L, LocalTime.MIN);  // 00:00
+        Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
+
+        when(reservationTimeRepository.findById(any())).thenReturn(Optional.of(time));
+        when(themeRepository.findById(any())).thenReturn(Optional.of(theme));
+
+        assertThatThrownBy(() -> reservationService.createReservation(
+                "어셔", LocalDate.now(), 1L, 1L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RESERVATION_PAST_DATETIME);
     }
 }

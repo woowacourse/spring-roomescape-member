@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,8 +64,9 @@ class ReservationE2ETest {
     @DisplayName("POST /reservations - 예약을 생성하면 201과 ResponseReservation을 반환한다")
     void createReservation() {
         Map<String, Object> body = new HashMap<>();
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
         body.put("name", "브라운");
-        body.put("date", "2025-12-25");
+        body.put("date", tomorrow.toString());
         body.put("timeId", 1);
         body.put("themeId", 1);
 
@@ -76,7 +78,7 @@ class ReservationE2ETest {
                 .statusCode(201)
                 .body("id", notNullValue())
                 .body("name", is("브라운"))
-                .body("date", is("2025-12-25"))
+                .body("date", is(tomorrow.toString()))
                 .body("time.id", is(1))
                 .body("theme.id", is(1));
     }
@@ -113,6 +115,6 @@ class ReservationE2ETest {
                 .body(body)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(404);
     }
 }
