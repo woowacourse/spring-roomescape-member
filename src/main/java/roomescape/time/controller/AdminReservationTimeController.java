@@ -20,15 +20,15 @@ import roomescape.time.service.ReservationTimeService;
 
 @Slf4j
 @RestController
-@RequestMapping("/admin")
-public class ReservationTimeAdminController {
+@RequestMapping("/admin/times")
+public class AdminReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeAdminController(ReservationTimeService reservationTimeService) {
+    public AdminReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping("/times")
+    @GetMapping
     @Operation(summary = "Read reservation times", description = "예약 시간을 조회하는 api")
     public ResponseEntity<List<ReservationTimeDetailDto>> getReservationTimes() {
         List<ReservationTimeDetailDto> responseData = reservationTimeService.findAll().stream()
@@ -37,7 +37,7 @@ public class ReservationTimeAdminController {
         return ResponseEntity.ok(responseData);
     }
 
-    @PostMapping("/times")
+    @PostMapping
     @Operation(summary = "Create reservation time", description = "예약 시간을 생성하는 api")
     public ResponseEntity<ReservationTimeDetailDto> createReservationTime(
             @Valid @RequestBody ReservationTimeSaveDto reservationTimeSaveDto) {
@@ -46,7 +46,7 @@ public class ReservationTimeAdminController {
         return ResponseEntity.status(CREATED).body(responseData);
     }
 
-    @DeleteMapping("/times/{id}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Delete reservation time", description = "예약 시간을 삭제하는 api")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
         reservationTimeService.delete(id);

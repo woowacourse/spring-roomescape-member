@@ -18,15 +18,15 @@ import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
-@RequestMapping("/admin")
-public class ReservationAdminController {
+@RequestMapping("/admin/reservations")
+public class AdminReservationController {
     private final ReservationService reservationService;
 
-    public ReservationAdminController(ReservationService reservationService) {
+    public AdminReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/reservations")
+    @GetMapping
     @Operation(summary = "Read all reservations", description = "예약 전체 목록을 조회하는 api")
     public ResponseEntity<List<ReservationResponse>> getReservations() {
         List<ReservationResponse> responseData = reservationService.findAll().stream()
@@ -35,7 +35,7 @@ public class ReservationAdminController {
         return ResponseEntity.ok(responseData);
     }
 
-    @PostMapping("/reservations")
+    @PostMapping
     @Operation(summary = "Create a reservation", description = "예약을 생성하는 api")
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationSaveDto dto) {
         ReservationResponse responseData = ReservationResponse.from(
@@ -43,7 +43,7 @@ public class ReservationAdminController {
         return ResponseEntity.status(CREATED).body(responseData);
     }
 
-    @PatchMapping("/reservations/{id}")
+    @PatchMapping("/{id}")
     @Operation(summary = "Cancel a reservation", description = "예약을 취소하는 api")
     public ResponseEntity<ReservationResponse> cancelReservation(@PathVariable Long id) {
         ReservationResponse responseData = ReservationResponse.from(reservationService.cancel(id));

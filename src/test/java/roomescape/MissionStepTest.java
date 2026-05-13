@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.controller.ReservationAdminController;
+import roomescape.reservation.controller.AdminReservationController;
 import roomescape.reservation.domain.Reservation;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -151,14 +151,14 @@ class MissionStepTest {
     }
 
     @Autowired
-    private ReservationAdminController reservationAdminController;
+    private AdminReservationController adminReservationController;
 
     @Test
     @DisplayName("계층화 리팩터링")
     void 계층화_리팩터링() {
         boolean isJdbcTemplateInjected = false;
 
-        for (Field field : reservationAdminController.getClass().getDeclaredFields()) {
+        for (Field field : adminReservationController.getClass().getDeclaredFields()) {
             if (field.getType().equals(JdbcTemplate.class)) {
                 isJdbcTemplateInjected = true;
                 break;
