@@ -22,6 +22,10 @@ public class ReservationService {
 
     public ReservationSaveResponse save(ReservationSaveRequest body) {
         long scheduleId = scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(body.date(), body.timeId(), body.themeId());
+        if (reservationRepository.existsByScheduleId(scheduleId)) {
+            throw new IllegalStateException("해당 스케줄을 사용중인 예약이 이미 존재합니다.");
+        }
+        scheduleService.validateSchedule(body.date(), body.timeId(), body.themeId());
         Reservation reservation = reservationRepository.save(body.toDomain(scheduleId));
 
         return ReservationSaveResponse.from(reservation);
@@ -63,7 +67,7 @@ public class ReservationService {
         long newTimeId = Objects.requireNonNullElse(request.timeId(), oldReservation.getTimeId());
         long scheduleId = scheduleService.findScheduleIdByDateAndTimeIdAndThemeId(newDate, newTimeId, oldReservation.getThemeId());
 
-        if (reservationRepository.isDuplicateReservation(reservationId, scheduleId)) {
+        if (reservationRepository.existsByScheduleIdAndIdNot(scheduleId, reservationId)) {
             throw new IllegalStateException("중복된 예약이 있어 예약을 수정할 수 없습니다.");
         }
 

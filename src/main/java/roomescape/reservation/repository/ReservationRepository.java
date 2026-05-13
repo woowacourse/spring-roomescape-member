@@ -23,9 +23,11 @@ public interface ReservationRepository {
 
     Optional<ReservationDetailProjection> findDetailByIdAndName(long reservationId, String name);
 
-    boolean isDuplicateReservation(long reservationId, long scheduleId);
+    boolean existsByScheduleIdAndIdNot(long scheduleId, long reservationId);
 
     int updateScheduleByIdAndName(long id, String name, long scheduleId);
 
     Optional<Reservation> findByIdAndName(long reservationId, String name);
+
+    boolean existsByScheduleId(long scheduleId);
 }

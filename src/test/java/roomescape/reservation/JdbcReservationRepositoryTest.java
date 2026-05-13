@@ -129,9 +129,9 @@ class JdbcReservationRepositoryTest {
 
     @Test
     @DisplayName("같은 스케줄에 본인 제외 다른 예약이 있으면 true를 반환한다.")
-    void isDuplicateReservation_true반환_테스트() {
+    void existsByScheduleIdAndIdNot_true반환_테스트() {
         // when
-        boolean result = reservationRepository.isDuplicateReservation(1, 2);
+        boolean result = reservationRepository.existsByScheduleIdAndIdNot(2, 1);
 
         // then
         assertThat(result).isTrue();
@@ -139,9 +139,9 @@ class JdbcReservationRepositoryTest {
 
     @Test
     @DisplayName("같은 스케줄에 본인 제외 다른 예약이 없으면 false를 반환한다.")
-    void isDuplicateReservation_false반환_테스트() {
+    void existsByScheduleIdAndIdNot_false반환_테스트() {
         // when
-        boolean result = reservationRepository.isDuplicateReservation(1, 4);
+        boolean result = reservationRepository.existsByScheduleIdAndIdNot(4, 1);
 
         // then
         assertThat(result).isFalse();

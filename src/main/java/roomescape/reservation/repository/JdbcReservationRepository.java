@@ -177,7 +177,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean isDuplicateReservation(long reservationId, long scheduleId) {
+    public boolean existsByScheduleIdAndIdNot(long scheduleId, long reservationId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation r WHERE r.schedule_id = :scheduleId AND r.id <> :reservationId)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -217,5 +217,15 @@ public class JdbcReservationRepository implements ReservationRepository {
                         resultSet.getLong("schedule_id")
                 )
         ).stream().findFirst();
+    }
+
+    @Override
+    public boolean existsByScheduleId(long scheduleId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id = :id)";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", scheduleId);
+
+        return Boolean.TRUE.equals(template.queryForObject(sql, params, Boolean.class));
     }
 }
