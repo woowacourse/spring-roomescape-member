@@ -24,7 +24,7 @@ public class AdminReservationTimeController {
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(@Valid @RequestBody ReservationTimeRequest request) {
         ReservationTimeResponse response = ReservationTimeResponse.from(
-                service.addReservationTime(request.toEntity())
+                service.addReservationTime(request.toCommand())
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

@@ -18,6 +18,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.exception.ThemeNotFoundException;
 import roomescape.theme.presentation.dto.ThemeRequest;
 import roomescape.time.application.ReservationTimeService;
+import roomescape.time.application.dto.ReservationTimeCommand;
 import roomescape.time.domain.ReservationTime;
 
 @Transactional
@@ -70,7 +71,7 @@ class ThemeServiceTest {
     @DisplayName("예약이 존재하는 테마를 삭제하려고 하면 에러를 반환한다.")
     void themeInUseTest() {
         ReservationTime time = reservationTimeService.addReservationTime(
-                ReservationTime.builder()
+                ReservationTimeCommand.builder()
                         .startAt(LocalTime.now(clock))
                         .build()
         );

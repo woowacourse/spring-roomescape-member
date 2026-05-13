@@ -48,9 +48,9 @@ class ReservationTimeServiceTest {
                 .durationTime(LocalTime.now(clock))
                 .build();
         Theme savedTheme = themeService.addTheme(theme.toEntity());
-        ReservationTime time = timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now(clock)).toEntity());
-        timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now(clock).plusHours(1)).toEntity());
-        timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now(clock).plusHours(2)).toEntity());
+        ReservationTime time = timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now(clock)).toCommand());
+        timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now(clock).plusHours(1)).toCommand());
+        timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now(clock).plusHours(2)).toCommand());
         reservationService.addReservation(new ReservationCreateCommand("포비", LocalDate.now(clock), time.getId(), savedTheme.getId()));
         AvailableReservationTimeRequest availableReservationTimeRequest = new AvailableReservationTimeRequest(
                 savedTheme.getId(), LocalDate.now(clock));
@@ -70,11 +70,11 @@ class ReservationTimeServiceTest {
                 .build();
         Theme savedTheme = themeService.addTheme(theme.toEntity());
         ReservationTime time1 = timeService.addReservationTime(
-                new ReservationTimeRequest(LocalTime.now(clock)).toEntity());
+                new ReservationTimeRequest(LocalTime.now(clock)).toCommand());
         ReservationTime time2 = timeService.addReservationTime(
-                new ReservationTimeRequest(LocalTime.now(clock).plusHours(1)).toEntity());
+                new ReservationTimeRequest(LocalTime.now(clock).plusHours(1)).toCommand());
         timeService.addReservationTime(
-                new ReservationTimeRequest(LocalTime.now(clock).plusHours(2)).toEntity());
+                new ReservationTimeRequest(LocalTime.now(clock).plusHours(2)).toCommand());
 
         Reservation reservation = reservationService.addReservation(
                 new ReservationCreateCommand("포비", LocalDate.now(clock), time1.getId(), savedTheme.getId()));
@@ -100,11 +100,11 @@ class ReservationTimeServiceTest {
                 .build();
         Theme savedTheme = themeService.addTheme(theme.toEntity());
         ReservationTime time1 = timeService.addReservationTime(
-                new ReservationTimeRequest(LocalTime.now(clock)).toEntity());
+                new ReservationTimeRequest(LocalTime.now(clock)).toCommand());
         ReservationTime time2 = timeService.addReservationTime(
-                new ReservationTimeRequest(LocalTime.now(clock).plusHours(1)).toEntity());
+                new ReservationTimeRequest(LocalTime.now(clock).plusHours(1)).toCommand());
         ReservationTime time3 = timeService.addReservationTime(
-                new ReservationTimeRequest(LocalTime.now(clock).plusHours(2)).toEntity());
+                new ReservationTimeRequest(LocalTime.now(clock).plusHours(2)).toCommand());
 
         Reservation reservation1 = reservationService.addReservation(
                 new ReservationCreateCommand("포비", LocalDate.now(clock), time1.getId(), savedTheme.getId()));

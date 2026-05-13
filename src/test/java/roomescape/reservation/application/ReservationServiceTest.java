@@ -17,6 +17,7 @@ import roomescape.reservation.application.exception.ReservationInUseException;
 import roomescape.theme.application.ThemeService;
 import roomescape.theme.domain.Theme;
 import roomescape.time.application.ReservationTimeService;
+import roomescape.time.application.dto.ReservationTimeCommand;
 import roomescape.time.domain.ReservationTime;
 
 @Transactional
@@ -39,7 +40,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약이 취소되면 다음 예약을 할 수 있다.")
     void canReservationAfterCancel() {
-        ReservationTime time = reservationTimeService.addReservationTime(ReservationTime.builder()
+        ReservationTime time = reservationTimeService.addReservationTime(ReservationTimeCommand.builder()
                 .startAt(LocalTime.now(clock))
                 .build()
         );
@@ -77,7 +78,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("자신의 ID를 시간 변경 없이 그대로 수정해도 수정된다.")
     void canChangeTest() {
-        ReservationTime time = reservationTimeService.addReservationTime(ReservationTime.builder()
+        ReservationTime time = reservationTimeService.addReservationTime(ReservationTimeCommand.builder()
                 .startAt(LocalTime.now(clock))
                 .build()
         );

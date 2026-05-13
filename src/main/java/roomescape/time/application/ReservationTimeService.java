@@ -12,6 +12,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.time.application.dto.AvailableReservationTimeFindCommand;
 import roomescape.time.application.dto.AvailableReservationTimeInfo;
+import roomescape.time.application.dto.ReservationTimeCommand;
 import roomescape.time.application.exception.DuplicateReservationTimeException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.application.exception.ReservationTimeInUseException;
@@ -34,11 +35,11 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-    public ReservationTime addReservationTime(ReservationTime time) {
-        if (reservationTimeRepository.existsByStartAt(time.getStartAt())) {
+    public ReservationTime addReservationTime(ReservationTimeCommand time) {
+        if (reservationTimeRepository.existsByStartAt(time.startAt())) {
             throw new DuplicateReservationTimeException("이미 존재하는 시간입니다.");
         }
-        return reservationTimeRepository.save(time);
+        return reservationTimeRepository.save(time.toEntity());
     }
 
     public void deleteReservationTime(Long id) {
