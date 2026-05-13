@@ -1,8 +1,10 @@
 package roomescape.exception;
 
+import roomescape.exception.code.ConflictCode;
+
 public class DuplicationException extends BaseException {
 
-    public DuplicationException(ErrorCode errorCode) {
-        super(errorCode);
+    public DuplicationException(ConflictCode code) {
+        super(code);
     }
 }

@@ -9,6 +9,9 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.exception.code.BadRequestCode;
+import roomescape.exception.code.ErrorCode;
+import roomescape.exception.code.ServerErrorCode;
 import roomescape.response.ErrorResponse;
 
 @RestControllerAdvice
@@ -26,16 +29,6 @@ public class GlobalExceptionHandler {
         return toResponse(e.getCode(), request, e.getMessage());
     }
 
-    private ResponseEntity<ErrorResponse> toResponse(ErrorCode code, HttpServletRequest request, String message) {
-        ErrorResponse body = new ErrorResponse(
-                code.name(),
-                request.getRequestURI(),
-                message,
-                code.getAction()
-        );
-        return ResponseEntity.status(code.getStatus()).body(body);
-    }
-
     @ExceptionHandler(DuplicationException.class)
     public ResponseEntity<ErrorResponse> handleDuplicationException(DuplicationException e, HttpServletRequest request) {
         return toResponse(e.getCode(), request, e.getMessage());
@@ -48,7 +41,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
-        ErrorCode code = ErrorCode.INVALID_REQUEST;
+        BadRequestCode code = BadRequestCode.INVALID_REQUEST;
         String message = e.getMessage();
         if (message == null || message.isBlank()) {
             message = code.getMessage();
@@ -58,7 +51,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
-        ErrorCode code = ErrorCode.VALIDATION_FAILED;
+        BadRequestCode code = BadRequestCode.VALIDATION_FAILED;
         FieldError fieldError = e.getBindingResult().getFieldError();
         String message = code.getMessage();
         if (fieldError != null) {
@@ -67,16 +60,27 @@ public class GlobalExceptionHandler {
         return toResponse(code, request, message);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e, HttpServletRequest request) {
-        LOGGER.error("예상치 못한 예외 발생: {} {}", request.getMethod(), request.getRequestURI(), e);
-        ErrorCode code = ErrorCode.INTERNAL_SERVER_ERROR;
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request) {
+        LOGGER.warn("요청 본문 파싱 실패: {} {}: {}", request.getMethod(), request.getRequestURI(), e.getMostSpecificCause().getMessage());
+        BadRequestCode code = BadRequestCode.VALIDATION_FAILED;
         return toResponse(code, request, code.getMessage());
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request) {
-        ErrorCode code = ErrorCode.VALIDATION_FAILED;
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e, HttpServletRequest request) {
+        LOGGER.error("예상치 못한 예외 발생: {} {}", request.getMethod(), request.getRequestURI(), e);
+        ServerErrorCode code = ServerErrorCode.INTERNAL_SERVER_ERROR;
         return toResponse(code, request, code.getMessage());
+    }
+
+    private ResponseEntity<ErrorResponse> toResponse(ErrorCode code, HttpServletRequest request, String message) {
+        ErrorResponse body = new ErrorResponse(
+                code.name(),
+                request.getRequestURI(),
+                message,
+                code.getAction()
+        );
+        return ResponseEntity.status(code.getStatus()).body(body);
     }
 }

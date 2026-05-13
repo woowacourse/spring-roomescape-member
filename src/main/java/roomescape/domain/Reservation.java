@@ -2,7 +2,7 @@ package roomescape.domain;
 
 import roomescape.command.ReservationSaveCommand;
 import roomescape.exception.BadRequestException;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.code.BadRequestCode;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -17,28 +17,28 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
 
     private void validateTheme(Theme theme) {
         if (Objects.isNull(theme)) {
-            throw new BadRequestException(ErrorCode.INVALID_RESERVATION_THEME);
+            throw new BadRequestException(BadRequestCode.INVALID_RESERVATION_THEME);
         }
     }
 
     private void validateTime(ReservationTime time) {
         if (Objects.isNull(time)) {
-            throw new BadRequestException(ErrorCode.INVALID_RESERVATION_TIME);
+            throw new BadRequestException(BadRequestCode.INVALID_RESERVATION_TIME);
         }
     }
 
     private void validateName(String name) {
         if (Objects.isNull(name)) {
-            throw new BadRequestException(ErrorCode.INVALID_RESERVATION_NAME);
+            throw new BadRequestException(BadRequestCode.INVALID_RESERVATION_NAME);
         }
         if (name.isBlank()) {
-            throw new BadRequestException(ErrorCode.BLANK_RESERVATION_NAME);
+            throw new BadRequestException(BadRequestCode.BLANK_RESERVATION_NAME);
         }
     }
 
     private void validateDate(LocalDate date) {
         if (Objects.isNull(date)) {
-            throw new BadRequestException(ErrorCode.INVALID_RESERVATION_DATE);
+            throw new BadRequestException(BadRequestCode.INVALID_RESERVATION_DATE);
         }
     }
 
