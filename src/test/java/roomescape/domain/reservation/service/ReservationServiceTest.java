@@ -20,6 +20,7 @@ import roomescape.domain.global.exception.ConflictException;
 import roomescape.domain.global.exception.ErrorCode;
 import roomescape.domain.global.exception.ErrorDetail;
 import roomescape.domain.global.exception.ForbiddenException;
+import roomescape.domain.global.exception.NotFoundException;
 import roomescape.domain.global.exception.UnprocessableEntityException;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.request.ReservationUpdateRequestDto;
@@ -383,6 +384,82 @@ class ReservationServiceTest {
                 () -> assertEquals("시오", actual.getFirst().name())
             );
 
+        }
+    }
+
+    @Nested
+    @DisplayName("deleteMemberReservationById 테스트")
+    class DeleteMemberReservationByIdTest {
+
+        @Test
+        @DisplayName("본인의 예약을 삭제한다.")
+        void 성공() {
+            String name = "시오";
+            Reservation savedReservation = reservationRepository.save(
+                Reservation.create(name, LocalDate.of(2026, 5, 3),
+                    Time.reconstruct(1L, LocalTime.of(13, 0)),
+                    Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+            reservationRepository.save(
+                Reservation.create("다른 이름", LocalDate.of(2026, 5, 4),
+                    Time.reconstruct(2L, LocalTime.of(14, 0)),
+                    Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+
+            reservationService.deleteMemberReservationById(name, savedReservation.getId());
+
+            List<ReservationResponseDto> actual = reservationService.getReservations();
+            assertAll(
+                () -> assertEquals(1, actual.size()),
+                () -> assertEquals("다른 이름", actual.getFirst().name())
+            );
+        }
+
+        @Test
+        @DisplayName("다른 사용자의 예약을 삭제하려고 하면 예외가 발생한다.")
+        void 실패1() {
+            Reservation savedReservation = reservationRepository.save(
+                Reservation.create("시오", LocalDate.of(2026, 5, 3),
+                    Time.reconstruct(1L, LocalTime.of(13, 0)),
+                    Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                        "https://roomescape.com/images/themes/ring-banner.png"), fixedClock));
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.deleteMemberReservationById("다른 이름",
+                    savedReservation.getId()),
+                ForbiddenException.class,
+                ErrorCode.RESERVATION_FORBIDDEN
+            );
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 예약을 삭제하려고 하면 예외가 발생한다.")
+        void 실패2() {
+            Long notFoundId = 99999L;
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.deleteMemberReservationById("시오", notFoundId),
+                NotFoundException.class,
+                ErrorCode.RESERVATION_NOT_FOUND
+            );
+        }
+
+        @Test
+        @DisplayName("지난 예약을 삭제하려고 하면 예외가 발생한다.")
+        void 실패3() {
+            String name = "시오";
+            Reservation savedReservation = reservationRepository.save(
+                Reservation.reconstruct(1L, name, LocalDate.of(2025, 12, 31),
+                    Time.reconstruct(1L, LocalTime.of(13, 0)),
+                    Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                        "https://roomescape.com/images/themes/ring-banner.png")));
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.deleteMemberReservationById(name,
+                    savedReservation.getId()),
+                UnprocessableEntityException.class,
+                ErrorCode.RESERVATION_ALREADY_PASSED
+            );
         }
     }
 }

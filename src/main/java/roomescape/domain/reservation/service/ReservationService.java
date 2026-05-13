@@ -86,7 +86,7 @@ public class ReservationService {
         validateTimeExists(requestDto.timeId());
         validateDuplicatesExceptMe(id, requestDto.date(), requestDto.timeId(),
             reservation.getTheme().getId());
-        validateDateUpdatable(reservation);
+        validateDateAccessable(reservation);
         validateDateTimeChangeable(requestDto.date(), requestDto.timeId());
 
         reservationRepository.updateReservationById(id, requestDto.date(), requestDto.timeId());
@@ -104,12 +104,6 @@ public class ReservationService {
         if (!timeRepository.existsById(timeId)) {
             throw new BadRequestException(ErrorCode.COMMON_INVALID_REQUEST_BODY,
                 List.of(ErrorDetail.of("timeId", timeId, "요청한 시간 id가 존재하지 않습니다.")));
-        }
-    }
-
-    private void validateDateUpdatable(Reservation reservation) {
-        if (reservation.isPast(clock)) {
-            throw new UnprocessableEntityException(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
     }
 
@@ -136,12 +130,19 @@ public class ReservationService {
     public void deleteMemberReservationById(String name, Long id) {
         Reservation reservation = getReservationById(id);
         validateOwner(name, reservation);
+        validateDateAccessable(reservation);
         reservationRepository.deleteReservationById(id);
     }
 
     private void validateOwner(String name, Reservation reservation) {
         if (!reservation.isOwner(name)) {
             throw new ForbiddenException(ErrorCode.RESERVATION_FORBIDDEN);
+        }
+    }
+
+    private void validateDateAccessable(Reservation reservation) {
+        if (reservation.isPast(clock)) {
+            throw new UnprocessableEntityException(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
     }
 }

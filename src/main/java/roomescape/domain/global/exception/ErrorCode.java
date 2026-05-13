@@ -10,7 +10,7 @@ public enum ErrorCode {
     RESERVATION_FORBIDDEN("요청한 예약에 접근할 권한이 없습니다."),
     RESERVATION_NOT_FOUND("요청한 예약을 찾을 수 없습니다."),
     RESERVATION_DUPLICATE("이미 존재하는 예약입니다."),
-    RESERVATION_ALREADY_PASSED("지난 예약은 생성 또는 변경할 수 없습니다."),
+    RESERVATION_ALREADY_PASSED("지난 예약은 접근할 수 없습니다."),
     RESERVATION_TIME_ALREADY_PASSED("지난 시점으로는 변경할 수 없습니다."),
 
     TIME_NOT_FOUND("요청한 시간을 찾을 수 없습니다."),
