@@ -31,7 +31,7 @@ public class ReservationController {
                 .body(reservationResponse);
     }
 
-    @GetMapping
+    @GetMapping(params = {"username"})
     public ResponseEntity<List<ReservationResponse>> readAllByName(@RequestParam String username) {
         List<ReservationResponse> reservationResponses = reservationService.readAllByName(username);
         return ResponseEntity.ok(reservationResponses);

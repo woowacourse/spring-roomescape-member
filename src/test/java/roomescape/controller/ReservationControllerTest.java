@@ -51,6 +51,17 @@ public class ReservationControllerTest {
                 .body("size()", is(5));
     }
 
+    @Test
+    public void 사용자_이름_예약_조회_API() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations?username=토리")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+    }
+
+
     @ParameterizedTest
     @MethodSource("emptyReservationRequest")
     public void 예약_생성_시_필드가_빈값이면_400을_반환한다(ReservationRequest reservationRequest) {

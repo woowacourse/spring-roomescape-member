@@ -87,7 +87,13 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findAllByName(String username) {
-        String sql = "SELECT id, username, date, time_id, theme_id FROM reservation WHERE username = ?";
+        String sql =
+                "SELECT r.id, r.username, r.date, t.id as time_id, t.start_at, m.id as theme_id, m.name as theme_name, m.description, m.url  "
+                        +
+                        "FROM reservation r " +
+                        "INNER JOIN reservation_time t ON r.time_id = t.id " +
+                        "INNER JOIN theme m ON r.theme_id = m.id " +
+                        "WHERE r.username = ?";
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, username);
     }
 
