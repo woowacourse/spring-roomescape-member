@@ -4,18 +4,23 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RequestMapping("/themes")
 @RestController
+@Validated
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -42,6 +47,7 @@ public class ThemeController {
     @GetMapping("/{id}/available-times")
     public List<AvailableReservationTimeResponse> getReservationTimes(
             @PathVariable long id,
+            @NotBlank(message = "날짜를 입력해주세요.")
             @RequestParam String date) {
         return themeService.getAvailableTimeResponses(id, date);
     }
