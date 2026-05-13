@@ -13,6 +13,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.IdNotFoundException;
 
 @Service
 public class ReservationService {
@@ -37,13 +38,13 @@ public class ReservationService {
         ReservationTime time = reservationTimeDao.findTimeById(request.timeId());
 
         if (time == null) {
-            throw new IllegalArgumentException("요청하신 시간 ID가 존재하지 않습니다.");
+            throw new IdNotFoundException("요청하신 시간 ID가 존재하지 않습니다.");
         }
 
         Theme theme = themeDao.findThemeById(request.themeId());
 
         if (theme == null) {
-            throw new IllegalArgumentException("요청하신 테마 ID가 존재하지 않습니다.");
+            throw new IdNotFoundException("요청하신 테마 ID가 존재하지 않습니다.");
         }
 
         if (time.getStartAt().isBefore(LocalTime.now()) && request.date().isBefore(LocalDate.now())) {

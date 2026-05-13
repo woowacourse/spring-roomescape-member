@@ -22,4 +22,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(new GlobalErrorResponse("이미 예약된 날짜/시간/테마입니다."));
     }
+
+    @ExceptionHandler(IdNotFoundException.class)
+    public ResponseEntity<GlobalErrorResponse> handleIdNotFoundException(IdNotFoundException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new GlobalErrorResponse(e.getMessage()));
+    }
 }
