@@ -13,6 +13,7 @@ import roomescape.domain.theme.repository.PopularThemeResult;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.repository.ThemeReservationTimeResult;
 import roomescape.domain.theme.request.ThemeCreateRequest;
+import roomescape.domain.theme.request.ThemeUpdateRequest;
 import roomescape.domain.theme.response.PopularThemeResponse;
 import roomescape.domain.theme.response.PopularThemesResponse;
 import roomescape.domain.theme.response.ThemeReservationTimeResponse;
@@ -88,9 +89,31 @@ public class ThemeService {
     @Transactional
     public void deleteThemeById(Long themeId) {
         try {
-            themeRepository.deleteById(themeId);
+            int deletedCount = themeRepository.deleteById(themeId);
+            if (deletedCount == 0) {
+                throw new BusinessException(ThemeErrorCode.THEME_NOT_FOUND);
+            }
         } catch (DataIntegrityViolationException exception) {
             throw new BusinessException(ThemeErrorCode.THEME_DELETE_CONFLICT, exception);
         }
+    }
+
+    @Transactional
+    public ThemeResponse updateTheme(Long id, ThemeUpdateRequest request) {
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
+
+        if (!theme.getName().equals(request.name()) && themeRepository.existsByName(request.name())) {
+            throw new BusinessException(ThemeErrorCode.THEME_DUPLICATE);
+        }
+
+        Theme updatedTheme = Theme.of(id, request.name(), request.description(), request.thumbnailUrl());
+        int updatedCount = themeRepository.update(id, updatedTheme);
+
+        if (updatedCount == 0) {
+            throw new BusinessException(ThemeErrorCode.THEME_NOT_FOUND);
+        }
+
+        return ThemeResponse.from(updatedTheme);
     }
 }

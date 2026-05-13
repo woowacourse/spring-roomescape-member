@@ -47,6 +47,22 @@ public class ThemeJdbcRepository implements ThemeRepository {
             WHERE id = :id;
             """;
 
+    private static final String UPDATE_THEME_QUERY = """
+            UPDATE theme
+            SET name = :name,
+                description = :description,
+                thumbnail_url = :thumbnailUrl
+            WHERE id = :id;
+            """;
+
+    private static final String EXISTS_BY_NAME_QUERY = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM theme
+                WHERE name = :name
+            );
+            """;
+
     private static final String FIND_POPULAR_THEMES_QUERY = """
             SELECT
                 t.id,
@@ -167,13 +183,32 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int update(Long id, Theme theme) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnailUrl", theme.getThumbnailUrl());
+
+        return jdbcTemplate.update(UPDATE_THEME_QUERY, parameters);
+    }
+
+    @Override
+    public int deleteById(Long id) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("id", id);
 
-        jdbcTemplate.update(
+        return jdbcTemplate.update(
                 DELETE_THEME_BY_ID_QUERY,
                 parameters
         );
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", name);
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXISTS_BY_NAME_QUERY, parameters, Boolean.class));
     }
 }
