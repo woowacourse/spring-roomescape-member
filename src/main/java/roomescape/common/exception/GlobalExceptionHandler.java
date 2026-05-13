@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
                 .getFirst()
                 .getDefaultMessage();
         return ResponseEntity
-                .status(exception.getStatus())
+                .status(exception.getStatusCode())
                 .body(ErrorResponse.from(message));
     }
 }
