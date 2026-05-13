@@ -52,7 +52,6 @@ INSERT INTO reservation (name, date, status, time_id, theme_id) VALUES
 
 -- 4. 테마 슬롯(Theme_Slot) 동기화
 -- 취소된 예약을 제외하고 활성화된 예약들을 슬롯에 반영합니다.
-INSERT INTO theme_slot (theme_id, date, time_id, is_reserved)
-SELECT theme_id, date, time_id, TRUE
-FROM reservation
-WHERE status != 'CANCELLED';
+MERGE INTO theme_slot (theme_id, date, time_id, is_reserved)
+    KEY(theme_id, date, time_id)
+SELECT theme_id, date, time_id, TRUE FROM reservation WHERE status != 'CANCELLED';
