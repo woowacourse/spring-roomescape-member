@@ -9,6 +9,8 @@ import roomescape.schedule.model.Schedule;
 import roomescape.schedule.repository.ScheduleRepository;
 import roomescape.theme.model.Theme;
 import roomescape.theme.service.ThemeService;
+import roomescape.exception.CustomBusinessException;
+import roomescape.exception.ErrorCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -76,7 +78,7 @@ class ScheduleServiceTest {
 
         // when & then
         assertThatThrownBy(() -> scheduleService.create(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("선택하신 시간은 다른 예약 시간과 겹쳐서 추가할 수 없습니다.");
+                .isInstanceOf(CustomBusinessException.class)
+                .hasMessage(ErrorCode.DUPLICATE_SCHEDULE_TIME.getMessage());
     }
 }

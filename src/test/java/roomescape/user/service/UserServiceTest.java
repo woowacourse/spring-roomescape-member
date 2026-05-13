@@ -10,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import roomescape.exception.CustomBusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.user.dto.UserRequest;
 import roomescape.user.dto.UserResponse;
 import roomescape.user.model.Role;
@@ -55,8 +57,8 @@ class UserServiceTest {
 
         // when & then
         assertThatThrownBy(() -> userService.findByName(nonExistingName))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("가입되지 않은 유저입니다. 로그인을 다시 확인해주세요.");
+                .isInstanceOf(CustomBusinessException.class)
+                .hasMessage(ErrorCode.USER_NOT_FOUND.getMessage());
         verify(userRepository).findByName(nonExistingName);
     }
 }

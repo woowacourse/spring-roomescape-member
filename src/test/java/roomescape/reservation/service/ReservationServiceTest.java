@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import roomescape.exception.CustomBusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -75,7 +77,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 예약된 스케줄입니다.");
+                .isInstanceOf(CustomBusinessException.class)
+                .hasMessage(ErrorCode.ALREADY_RESERVED_SCHEDULE.getMessage());
     }
 }
