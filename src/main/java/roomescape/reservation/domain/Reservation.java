@@ -37,6 +37,24 @@ public class Reservation {
         return new Reservation(id, name, reservationDate, time, theme, status);
     }
 
+    public void cancel(String requesterName) {
+        validateOwner(requesterName);
+        validateNotCanceled();
+        validateNotPast(date.date(), time.startAt());
+
+        this.status = ReservationStatus.CANCELED;
+    }
+
+    public void changeSchedule(String requesterName, ReservationDate newDate, ReservationTime newTime) {
+        validateOwner(requesterName);
+        validateNotCanceled();
+        validateNotPast(date.date(), time.startAt());
+        validateNewScheduleIsPast(newDate.date(), newTime.startAt());
+
+        this.date = newDate;
+        this.time = newTime;
+    }
+
     private static void validate(String name, ReservationDate reservationDate, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(reservationDate);
@@ -80,6 +98,42 @@ public class Reservation {
         }
     }
 
+    public void updateStatus(ReservationStatus status) {
+        this.status = status;
+    }
+
+    private void validateOwner(String requesterName) {
+        if (!isOwner(requesterName)) {
+            throw new IllegalArgumentException("본인의 예약만 취소할 수 있습니다.");
+        }
+    }
+
+    private void validateNotCanceled() {
+        if (status == ReservationStatus.CANCELED) {
+            throw new IllegalArgumentException("이미 취소된 예약입니다.");
+        }
+    }
+
+    private void validateNotPast(LocalDate date, LocalTime time) {
+        if (isPast(date, time)) {
+            throw new IllegalArgumentException("이미 지난 예약입니다.");
+        }
+    }
+
+    private void validateNewScheduleIsPast(LocalDate date, LocalTime time) {
+        if (isPast(date, time)) {
+            throw new IllegalArgumentException("이미 지난 날짜/시간을 예약할 수 없습니다.");
+        }
+    }
+
+    private boolean isOwner(String requesterName) {
+        return this.name.equals(requesterName);
+    }
+
+    private static boolean isPast(LocalDate date, LocalTime time) {
+        return LocalDateTime.of(date, time).isBefore(LocalDateTime.now());
+    }
+
     public Long id() {
         return id;
     }
@@ -102,44 +156,6 @@ public class Reservation {
 
     public ReservationStatus status() {
         return status;
-    }
-
-    public void updateStatus(ReservationStatus status) {
-        this.status = status;
-    }
-
-    public void cancel(String requesterName) {
-        validateOwner(requesterName);
-        validateNotCanceled();
-        validateNotPast(date.date(), time.startAt());
-
-        this.status = ReservationStatus.CANCELED;
-    }
-
-    private void validateOwner(String requesterName) {
-        if (!isOwner(requesterName)) {
-            throw new IllegalArgumentException("본인의 예약만 취소할 수 있습니다.");
-        }
-    }
-
-    private void validateNotCanceled() {
-        if (status == ReservationStatus.CANCELED) {
-            throw new IllegalArgumentException("이미 취소된 예약입니다.");
-        }
-    }
-
-    private void validateNotPast(LocalDate date, LocalTime time) {
-        if (isPast(date, time)) {
-            throw new IllegalArgumentException("이미 지난 예약입니다.");
-        }
-    }
-
-    private boolean isOwner(String requesterName) {
-        return this.name.equals(requesterName);
-    }
-
-    private static boolean isPast(LocalDate date, LocalTime time) {
-        return LocalDateTime.of(date, time).isBefore(LocalDateTime.now());
     }
 
 }

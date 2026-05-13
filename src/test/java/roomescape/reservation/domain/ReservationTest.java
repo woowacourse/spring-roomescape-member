@@ -9,12 +9,15 @@ import static roomescape.reservation.domain.ReservationStatus.RESERVED;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.date.domain.ReservationDate;
+import roomescape.date.fixture.ReservationDateFixture;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.fixture.ReservationTimeFixture;
 
 class ReservationTest {
 
@@ -159,11 +162,10 @@ class ReservationTest {
     @DisplayName("아직 지나지 않은 본인의 예약은 취소할 수 있다.")
     void cancel() {
         // given
-        String reservationName = "송송";
-        Reservation reserved = ReservationFixture.reservation(reservationName, reservationDate, reservationTime, theme);
+        Reservation reserved = ReservationFixture.reservation(name, reservationDate, reservationTime, theme);
 
         // when
-        reserved.cancel(reservationName);
+        reserved.cancel(name);
 
         // then
         assertThat(reserved.status())
@@ -174,12 +176,11 @@ class ReservationTest {
     @DisplayName("본인의 예약이 아닌데 취소를하면 예외가 발생한다.")
     void cancel_not_owner() {
         // given
-        String reservationName = "송송";
-        String anotherName = "주주";
-        Reservation reserved = ReservationFixture.reservation(reservationName, reservationDate, reservationTime, theme);
+        String notOwerName = "주주";
+        Reservation reserved = ReservationFixture.reservation(name, reservationDate, reservationTime, theme);
 
         // when & then
-        assertThatThrownBy(() -> reserved.cancel(anotherName))
+        assertThatThrownBy(() -> reserved.cancel(notOwerName))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("본인의 예약만 취소할 수 있습니다.");
     }
@@ -188,27 +189,98 @@ class ReservationTest {
     @DisplayName("이미 취소된 예약을 취소하면 예외가 발생한다.")
     void cancel_already_canceled() {
         // given
-        String reservationName = "송송";
-        Reservation reserved = ReservationFixture.reservation(reservationName, reservationDate, reservationTime, theme);
+        Reservation reserved = ReservationFixture.reservation(name, reservationDate, reservationTime, theme);
         reserved.updateStatus(CANCELED);
 
         // when & then
-        assertThatThrownBy(() -> reserved.cancel(reservationName))
+        assertThatThrownBy(() -> reserved.cancel(name))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 취소된 예약입니다.");
     }
 
     @Test
     @DisplayName("이미 지난 예약을 취소하면 예외가 발생한다.")
-    void cancel_not_past() {
+    void cancel_past() {
         // given
-        String reservationName = "송송";
-        Reservation reserved = Reservation.load(2L, reservationName, pastDate, reservationTime, theme, RESERVED);
+        Reservation reserved = Reservation.load(2L, name, pastDate, reservationTime, theme, RESERVED);
 
         // when & then
-        assertThatThrownBy(() -> reserved.cancel(reservationName))
+        assertThatThrownBy(() -> reserved.cancel(name))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 지난 예약입니다.");
+    }
+
+    @Test
+    @DisplayName("예약 가능한 날짜로 변경할 수 있다.")
+    void changeSchedule() {
+        // given
+        Reservation reserved = ReservationFixture.reservation(name, reservationDate, reservationTime, theme);
+        ReservationDate changedDate = ReservationDateFixture.activeOneWeekLater();
+        ReservationTime changedTime = ReservationTimeFixture.activeTime15();
+
+        // when
+        reserved.changeSchedule(name, changedDate, changedTime);
+
+        // then
+        assertThat(reserved.date())
+                .usingRecursiveComparison()
+                .isEqualTo(changedDate);
+        assertThat(reserved.time())
+                .usingRecursiveComparison()
+                .isEqualTo(changedTime);
+    }
+
+    @Test
+    @DisplayName("본인의 예약이 아닌데 변경을 시도하면 예외가 발생한다.")
+    void changeSchedule_not_owner() {
+        // given
+        String notOwerName = "다른사람";
+        Reservation reserved = ReservationFixture.reservation(name, reservationDate, reservationTime, theme);
+        ReservationDate changedDate = ReservationDateFixture.activeOneWeekLater();
+
+        // when && then
+        Assertions.assertThatThrownBy(() -> reserved.changeSchedule(notOwerName, changedDate, reservationTime))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("본인의 예약만 취소할 수 있습니다.");
+    }
+
+    @Test
+    @DisplayName("이미 취소된 예약을 변경하면 예외가 발생한다.")
+    void changeSchedule_already_canceled() {
+        // given
+        Reservation reserved = ReservationFixture.reservation(name, reservationDate, reservationTime, theme);
+        reserved.updateStatus(CANCELED);
+        ReservationDate changedDate = ReservationDateFixture.activeOneWeekLater();
+
+        // when && then
+        Assertions.assertThatThrownBy(() -> reserved.changeSchedule(name, changedDate, reservationTime))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 취소된 예약입니다.");
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 변경하면 예외가 발생한다.")
+    void changeSchedule_past() {
+        // given
+        Reservation reserved = Reservation.load(2L, name, pastDate, reservationTime, theme, RESERVED);
+        ReservationDate changedDate = ReservationDateFixture.activeOneWeekLater();
+
+        // when & then
+        assertThatThrownBy(() -> reserved.changeSchedule(name, changedDate, reservationTime))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 지난 예약입니다.");
+    }
+
+    @Test
+    @DisplayName("지난 날짜/시간으로 예약을 변경하면 예외가 발생한다.")
+    void changeSchedule_new_datetime_is_past() {
+        // given
+        Reservation reserved = Reservation.load(2L, name, reservationDate, reservationTime, theme, RESERVED);
+
+        // when & then
+        assertThatThrownBy(() -> reserved.changeSchedule(name, pastDate, reservationTime))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 지난 날짜/시간을 예약할 수 없습니다.");
     }
 
 }
