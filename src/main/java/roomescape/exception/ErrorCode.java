@@ -12,8 +12,8 @@ public enum ErrorCode {
             "description 필드의 값을 1~1000자로 맞춰 보내주세요."),
     THEME_URL_BLANK(HttpStatus.BAD_REQUEST, "테마 URL은 빈값일 수 없습니다.", "url에 값을 채워서 다시 요청해주세요."),
     THEME_DUPLICATED(HttpStatus.CONFLICT, "이미 존재하는 테마입니다.", null),
-    THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다.", null),
-    THEME_HAS_RESERVATIONS(HttpStatus.CONFLICT, "예약이 존재하는 테마는 삭제할 수 없습니다.", null),
+    THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다.", "존재하는 테마 ID로 다시 요청해주세요."),
+    THEME_HAS_RESERVATIONS(HttpStatus.CONFLICT, "예약 내역이 존재하는 테마입니다.", null),
 
     // 예약 시간
     TIME_NULL(HttpStatus.BAD_REQUEST, "예약 시작 시간은 필수입니다.", "startAt에 값을 채워서 다시 요청해주세요."),
@@ -21,7 +21,7 @@ public enum ErrorCode {
             "startAt 값을 정각(HH:00 형식)으로 맞춰 보내주세요."),
     TIME_DUPLICATED(HttpStatus.CONFLICT, "이미 존재하는 예약 시간입니다.", null),
     TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약 시간입니다.", null),
-    TIME_HAS_RESERVATIONS(HttpStatus.CONFLICT, "예약이 존재하는 시간은 삭제할 수 없습니다.", null),
+    TIME_HAS_RESERVATIONS(HttpStatus.CONFLICT, "해당 시간에 예약 내역이 존재합니다. ", null),
 
     // 예약
     RESERVATION_NAME_BLANK(HttpStatus.BAD_REQUEST, "예약자 이름은 빈값일 수 없습니다.", "name에 값을 채워서 다시 요청해주세요."),

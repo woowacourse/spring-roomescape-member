@@ -9,6 +9,7 @@ import roomescape.dto.ThemeResponse;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.model.Theme;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
@@ -17,9 +18,11 @@ public class ThemeService {
     private static final int RANKS_LIMIT_COUNT = 10;
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ThemeResponse register(ThemeRequest themeRequest) {
@@ -32,8 +35,11 @@ public class ThemeService {
 
     public void removeById(Long id) {
         themeRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("[ERROR] 삭제하고자 하는 테마 ID가 없습니다.")
+                () -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND)
         );
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new RoomescapeException(ErrorCode.THEME_HAS_RESERVATIONS);
+        }
         themeRepository.deleteById(id);
     }
 
