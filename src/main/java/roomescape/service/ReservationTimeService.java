@@ -9,6 +9,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDTO;
 import roomescape.dto.ReservationTimeResponseDTO;
 import roomescape.exception.CannotDeleteReservationTimeException;
+import roomescape.exception.ReservationTimeDoesNotExistsException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -42,13 +43,19 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<ReservationTime> findReservedTimes(LocalDate selectedDate, Long themeId) {
-        return reservationTimeRepository.findReservedTimes(selectedDate, themeId);
+    public List<ReservationTimeResponseDTO> findReservedTimes(LocalDate selectedDate, Long themeId) {
+        return reservationTimeRepository.findReservedTimes(selectedDate, themeId)
+                .stream()
+                .map(ReservationTimeResponseDTO::from)
+                .toList();
     }
 
     public void deleteReservationTime(Long id) {
         if (reservationRepository.existByTimeId(id)) {
             throw new CannotDeleteReservationTimeException("다른 예약에서 사용중입니다.");
+        }
+        if (reservationTimeRepository.findById(id).isEmpty()) {
+            throw new ReservationTimeDoesNotExistsException();
         }
         reservationTimeRepository.delete(id);
     }

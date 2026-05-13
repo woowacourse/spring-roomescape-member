@@ -16,6 +16,7 @@ import roomescape.exception.CannotDeleteReservationTimeException;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.EmptyNameException;
 import roomescape.exception.ReservationByPastDateTimeException;
+import roomescape.exception.ReservationTimeDoesNotExistsException;
 
 @WebMvcTest(Void.class)
 class GlobalExceptionHandlerTest {
@@ -24,6 +25,16 @@ class GlobalExceptionHandlerTest {
     MockMvc mockMvc;
     @MockitoBean
     TestController testController;
+
+    @DisplayName("ReservationTimeDoesNotExistsException이 발생하면 404 Not Found로 변환하여 응답한다")
+    @Test
+    void ReservationTimeDoesNotExistsException을_404로_변환한다() throws Exception {
+        Mockito.doThrow(ReservationTimeDoesNotExistsException.class)
+                .when(testController).throwException();
+
+        mockMvc.perform(get("/exception-handling-test"))
+                .andExpect(status().isNotFound());
+    }
 
     @Nested
     class 예외를_409_Conflict로_변환한다 {

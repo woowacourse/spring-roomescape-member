@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.controller;
 
 import static org.hamcrest.Matchers.is;
 
@@ -12,29 +12,28 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class MissionStep3Test {
+class ThemeControllerE2ETest {
 
     @Test
-    void 시간_관리_API() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+    void 테마_추가하고_조회() {
+        Map<String, String> requestBody = Map.of(
+                "name", "귀신찾기",
+                "description", "귀신찾기을 찾는 테마입니다.",
+                "imageUrl", "https://image.png"
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/times")
+                .body(requestBody)
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
-
-        RestAssured.given().log().all()
-                .when().delete("/admin/times/1")
-                .then().log().all()
-                .statusCode(204);
     }
+
 }

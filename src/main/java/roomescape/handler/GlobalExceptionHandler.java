@@ -9,6 +9,7 @@ import roomescape.exception.CannotDeleteReservationTimeException;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.EmptyNameException;
 import roomescape.exception.ReservationByPastDateTimeException;
+import roomescape.exception.ReservationTimeDoesNotExistsException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -45,6 +46,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDateTimeParseException(DateTimeParseException ex) {
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ReservationTimeDoesNotExistsException.class)
+    public ResponseEntity<String> handleReservationTimeDoesNotExistsException(
+            ReservationTimeDoesNotExistsException ex
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND.value())
                 .body(ex.getMessage());
     }
 }

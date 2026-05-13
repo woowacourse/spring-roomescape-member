@@ -15,6 +15,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDTO;
 import roomescape.dto.ReservationTimeResponseDTO;
 import roomescape.exception.CannotDeleteReservationTimeException;
+import roomescape.exception.ReservationTimeDoesNotExistsException;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
 
@@ -64,7 +65,7 @@ class ReservationTimeServiceTest {
     @Sql("/data.sql")
     @Test
     void 특정_테마의_특정_날짜의_예약된_시간을_조회한다() {
-        List<ReservationTime> reservedTimes = reservationTimeService.findReservedTimes(
+        List<ReservationTimeResponseDTO> reservedTimes = reservationTimeService.findReservedTimes(
                 LocalDate.now(),
                 11L
         );
@@ -90,5 +91,12 @@ class ReservationTimeServiceTest {
     void 삭제하려는_예약_시간에_대한_예약이_존재한다면_CannotDeleteReservationTimeException을_던진다() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
                 .isExactlyInstanceOf(CannotDeleteReservationTimeException.class);
+    }
+
+    @DisplayName("존재하지 않는 예약 시간의 삭제를 거부한다")
+    @Test
+    void 삭제하려는_예약_시간이_존재하지_않으면_ReservationTimeDoesNotExistsException을_던진다() {
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
+                .isExactlyInstanceOf(ReservationTimeDoesNotExistsException.class);
     }
 }
