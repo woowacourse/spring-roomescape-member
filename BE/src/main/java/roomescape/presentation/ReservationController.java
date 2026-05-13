@@ -87,7 +87,7 @@ public class ReservationController {
     }
 
     @GetMapping(params = "name")
-    public ResponseEntity<List<ReservationResponse>> readReservationsByDateAndTheme(@RequestParam String name) {
+    public ResponseEntity<List<ReservationResponse>> readReservationsByName(@RequestParam String name) {
         validateNameNotBlank(name);
         List<Reservation> reservations = reservationService.findByName(name);
         List<ReservationResponse> response = convertToReservationResponse(reservations);
