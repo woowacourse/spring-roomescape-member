@@ -14,24 +14,24 @@ public class ReservationTime {
 
     public ReservationTime(Long id, LocalTime startAt) {
         validateStartAtNotNull(startAt);
-        validateStartAtUnit(startAt);
         this.id = id;
         this.startAt = startAt;
     }
 
-    public static ReservationTime create(LocalTime startAt) {
+    public static ReservationTime fromValidTimeUnit(LocalTime startAt) {
+        validateStartAtUnit(startAt);
         return new ReservationTime(null, startAt);
+    }
+
+    private static void validateStartAtUnit(LocalTime startAt) {
+        if (startAt.getMinute() % UNIT != 0) {
+            throw new BusinessRuleViolationException("예약은 30분 단위로 입력해야 합니다.");
+        }
     }
 
     private void validateStartAtNotNull(LocalTime startAt) {
         if (startAt == null) {
             throw new InvalidRequestException("예약 시간은 반드시 입력해야 합니다.");
-        }
-    }
-
-    private void validateStartAtUnit(LocalTime startAt) {
-        if (startAt.getMinute() % UNIT != 0) {
-            throw new BusinessRuleViolationException("예약은 30분 단위로 입력해야 합니다.");
         }
     }
 

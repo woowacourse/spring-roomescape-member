@@ -11,7 +11,6 @@ import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,18 +22,15 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
-    private final Clock clock;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeService reservationTimeService,
-            ThemeService themeService,
-            Clock clock
+            ThemeService themeService
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
-        this.clock = clock;
     }
 
     @Transactional
@@ -53,7 +49,7 @@ public class ReservationService {
                 request.date(),
                 time,
                 theme,
-                LocalDateTime.now(clock)
+                LocalDateTime.now()
         );
 
         return reservationRepository.save(reservation);
