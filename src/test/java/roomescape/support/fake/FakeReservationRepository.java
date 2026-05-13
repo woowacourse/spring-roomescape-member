@@ -109,12 +109,35 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsOtherReservation(Long id, Long timeId, Long dateId, Long themeId) {
+        for (Reservation reservation : storage.values()) {
+            if (!id.equals(reservation.getId())
+                && timeId.equals(reservation.getTime().getId())
+                && dateId.equals(reservation.getDate().getId())
+                && themeId.equals(reservation.getTheme().getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public List<Reservation> findByName(String name) {
         List<Reservation> reservations = new ArrayList<>(storage.values().stream()
             .filter(reservation -> name.equals(reservation.getName()))
             .toList());
         reservations.sort(latestReservationFirst());
         return reservations;
+    }
+
+    @Override
+    public Optional<Reservation> update(Long id, Reservation withoutId) {
+        if (!storage.containsKey(id)) {
+            return Optional.empty();
+        }
+        Reservation updatedReservation = Reservation.createWithId(id, withoutId);
+        storage.put(id, updatedReservation);
+        return Optional.of(updatedReservation);
     }
 
     private Comparator<Reservation> latestReservationFirst() {

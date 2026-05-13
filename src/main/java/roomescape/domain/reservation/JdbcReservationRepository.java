@@ -92,6 +92,12 @@ public class JdbcReservationRepository implements ReservationRepository {
             from reservation r
             where time_id = ? and date_id = ? and theme_id = ?
             """;
+    private static final String COUNT_OTHER_RESERVATION_BY_TIME_AND_DATE_AND_THEME_SQL =
+        """
+            select count(*)
+            from reservation r
+            where r.id <> ? and time_id = ? and date_id = ? and theme_id = ?
+            """;
     private static final String FIND_BY_NAME_SQL =
         """
             select r.id, r.name,
@@ -116,6 +122,12 @@ public class JdbcReservationRepository implements ReservationRepository {
             join reservation_time rt on r.time_id = rt.id
             join theme th on r.theme_id = th.id
             where r.id = ?
+            """;
+    private static final String UPDATE_SQL =
+        """
+            update reservation
+            set name = ?, date_id = ?, time_id = ?, theme_id = ?
+            where id = ?
             """;
 
     private final JdbcTemplate jdbcTemplate;
@@ -195,6 +207,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsOtherReservation(Long id, Long timeId, Long dateId, Long themeId) {
+        Integer count = jdbcTemplate.queryForObject(
+            COUNT_OTHER_RESERVATION_BY_TIME_AND_DATE_AND_THEME_SQL,
+            Integer.class,
+            id,
+            timeId,
+            dateId,
+            themeId
+        );
+        return count != null && count > 0;
+    }
+
+    @Override
     public List<Reservation> findByName(String name) {
         return jdbcTemplate.query(FIND_BY_NAME_SQL, reservationRowMapper(), name);
     }
@@ -203,6 +228,22 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Optional<Reservation> findById(Long id) {
         List<Reservation> result = jdbcTemplate.query(FIND_BY_ID_SQL, reservationRowMapper(), id);
         return result.stream().findFirst();
+    }
+
+    @Override
+    public Optional<Reservation> update(Long id, Reservation withoutId) {
+        int updatedCount = jdbcTemplate.update(
+            UPDATE_SQL,
+            withoutId.getName(),
+            withoutId.getDate().getId(),
+            withoutId.getTime().getId(),
+            withoutId.getTheme().getId(),
+            id
+        );
+        if (updatedCount == 0) {
+            return Optional.empty();
+        }
+        return findById(id);
     }
 
     private RowMapper<Reservation> reservationRowMapper() {

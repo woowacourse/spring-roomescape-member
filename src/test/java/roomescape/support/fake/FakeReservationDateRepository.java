@@ -1,5 +1,6 @@
 package roomescape.support.fake;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -43,5 +44,12 @@ public class FakeReservationDateRepository implements ReservationDateRepository 
             return 0;
         }
         return 1;
+    }
+
+    @Override
+    public Optional<ReservationDate> findByDate(LocalDate startWhen) {
+        return storage.values().stream()
+            .filter(reservationDate -> startWhen.equals(reservationDate.getDate()))
+            .findFirst();
     }
 }
