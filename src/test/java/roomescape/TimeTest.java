@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.config.FixedClockConfig.FUTURE_DATE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -41,7 +42,7 @@ public class TimeTest {
     void 예약과_시간_연결() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2026-05-05");
+        reservation.put("date", FUTURE_DATE);
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
@@ -56,6 +57,6 @@ public class TimeTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(24));
+                .body("size()", is(25));
     }
 }

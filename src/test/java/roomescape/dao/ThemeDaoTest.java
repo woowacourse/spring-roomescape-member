@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.config.FixedClockConfig.TODAY;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,27 +27,27 @@ class ThemeDaoTest {
     void 예약되지_않은_시간_조회_테스트() {
         // given
         Long themeId = 1L;
-        String date = LocalDate.now().minusDays(7).toString();
+        LocalDate date = LocalDate.parse(TODAY).minusDays(7);
+        String expectedTime = "15:00";
 
         // when
         List<ReservationTime> availableTimes = themeDao.findAvailableTime(themeId, date);
 
         // then
         assertThat(availableTimes).hasSize(4);
-        assertThat(availableTimes.get(0).getStartAt()).isEqualTo("15:00");
+        assertThat(availableTimes.get(0).getStartAt()).isEqualTo(expectedTime);
     }
 
     @Test
     @DisplayName("최근 7일간 예약이 많은 순서대로 테마를 조회한다.")
     void 최근_7일간_예약이_많은_테마_조회_테스트() {
-        // given
         List<String> expectedNames = List.of(
                 "우테코 공포물", "미래 도시", "고대 이집트", "우주 탐험", "마법 학교",
                 "해저 왕국", "좀비 아포칼립스", "탐정 사무소", "시간 여행", "서부 개척시대"
         );
+        LocalDate today = LocalDate.parse(TODAY);
 
-        // when
-        List<Theme> topThemes = themeDao.findTopThemes(10L);
+        List<Theme> topThemes = themeDao.findTopThemes(10L, today);
 
         // then
         assertThat(topThemes).hasSize(expectedNames.size());

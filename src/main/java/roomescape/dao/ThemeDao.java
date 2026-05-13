@@ -3,6 +3,7 @@ package roomescape.dao;
 import static roomescape.dao.rowMapper.ReservationTimeMapper.RESERVATION_TIME_ROW_MAPPER;
 import static roomescape.dao.rowMapper.ThemeMapper.THEME_ROW_MAPPER;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class ThemeDao {
         );
     }
 
-    public List<Theme> findTopThemes(Long count) {
+    public List<Theme> findTopThemes(Long count, LocalDate today) {
         return jdbcTemplate.query(
                 """
                            SELECT
@@ -56,13 +57,15 @@ public class ThemeDao {
                            INNER JOIN (
                                SELECT theme_id, COUNT(id) AS reservation_count
                                FROM reservation
-                               WHERE date >= CURRENT_DATE - 7 AND date < CURRENT_DATE
+                               WHERE date >= ? AND date < ?
                                GROUP BY theme_id
                            ) r ON t.id = r.theme_id
                            ORDER BY r.reservation_count DESC
                            LIMIT ?;
                         """,
                 THEME_ROW_MAPPER,
+                today.minusDays(7),
+                today,
                 count
         );
     }
@@ -88,7 +91,7 @@ public class ThemeDao {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 
-    public List<ReservationTime> findAvailableTime(Long id, String date) {
+    public List<ReservationTime> findAvailableTime(Long id, LocalDate date) {
         return jdbcTemplate.query(
                 """
                              SELECT t.id AS time_id, t.start_at
@@ -99,7 +102,8 @@ public class ThemeDao {
                              WHERE r.id is NULL
                         """,
                 RESERVATION_TIME_ROW_MAPPER,
-                id, date
+                id,
+                date
         );
     }
 }

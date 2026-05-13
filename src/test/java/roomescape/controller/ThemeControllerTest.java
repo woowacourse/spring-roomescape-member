@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.config.FixedClockConfig.TODAY;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -18,25 +19,24 @@ class ThemeControllerTest {
 
     @Test
     void 예약_가능한_시간_조회_API() {
-        // given
-        String date = LocalDate.now().minusDays(7).toString();
+        LocalDate now = LocalDate.parse(TODAY);
 
-        // when & then
         RestAssured.given().log().all()
-                .when().get("/themes/1/available-time?date=" + date)
+                .when().get("/themes/1/available-time?date=" + now)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4));
+                .body("size()", is(9));
     }
 
     @Test
     @DisplayName("최근 1주동안 예약이 많았던 테마를 조회하는 정상 테스트")
     void 테마_조회_API() {
-        // when & then
+        int expectedSize = 10;
+
         RestAssured.given().log().all()
                 .when().get("/themes/popular?limit=10")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(10));
+                .body("size()", is(expectedSize));
     }
 }

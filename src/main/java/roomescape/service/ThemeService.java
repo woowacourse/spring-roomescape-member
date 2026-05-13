@@ -2,9 +2,10 @@ package roomescape.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.expression.spel.ast.Literal;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import roomescape.dao.ThemeDao;
@@ -16,11 +17,14 @@ import roomescape.dto.response.ThemeResponse;
 
 @Service
 public class ThemeService {
-    private final String uploadDir = System.getProperty("user.dir") +"/src/main/resources/static/images/";
-    private final ThemeDao themeDao;
+    private static final String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/images/";
 
-    public ThemeService(ThemeDao themeDao) {
+    private final ThemeDao themeDao;
+    private final Clock clock;
+
+    public ThemeService(ThemeDao themeDao, Clock clock) {
         this.themeDao = themeDao;
+        this.clock = clock;
     }
 
     public List<ThemeResponse> findAllThemes() {
@@ -31,7 +35,8 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findTopTheme(Long count) {
-        List<Theme> topTheme = themeDao.findTopThemes(count);
+        LocalDate today = LocalDate.now(clock);
+        List<Theme> topTheme = themeDao.findTopThemes(count, today);
         return topTheme.stream()
                 .map(ThemeResponse::from)
                 .toList();
@@ -72,7 +77,7 @@ public class ThemeService {
         themeDao.delete(id);
     }
 
-    public List<ReservationTimeResponse> findAvailableTime(Long id, String date) {
+    public List<ReservationTimeResponse> findAvailableTime(Long id, LocalDate date) {
         List<ReservationTime> availableTimes = themeDao.findAvailableTime(id, date);
 
         return availableTimes.stream()
