@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.exception.PastReservationNotAllowedException;
+import roomescape.reservation.exception.ReservationAccessDeniedException;
 import roomescape.reservation.exception.ReservationDuplicatedException;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.payload.ReservationRequest;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.entity.ReservationTime;
@@ -78,4 +80,13 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    @Transactional
+    public void cancelByIdAndName(Long id, String name) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException(id));
+        if (!reservation.getName().equals(name)) {
+            throw new ReservationAccessDeniedException();
+        }
+        reservationRepository.deleteById(id);
+    }
 }

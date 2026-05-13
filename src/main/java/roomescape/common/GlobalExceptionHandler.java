@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,6 +18,7 @@ import roomescape.common.exception.NotFoundException;
 import roomescape.common.exception.ResourceInUseException;
 import roomescape.common.payload.ErrorResponse;
 import roomescape.reservation.exception.PastReservationNotAllowedException;
+import roomescape.reservation.exception.ReservationAccessDeniedException;
 import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
@@ -60,6 +63,11 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler(ReservationAccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleReservationAccessDenied(ReservationAccessDeniedException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -93,10 +101,22 @@ public class GlobalExceptionHandler {
         return new ErrorResponse("%s: 입력 형식이 잘못되었습니다.".formatted(e.getName()));
     }
 
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        return new ErrorResponse("%s: 입력값이 필요합니다.".formatted(e.getParameterName()));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return new ErrorResponse("입력 형식이 잘못되었습니다.");
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleHttpMessageNotReadableException(HttpRequestMethodNotSupportedException e) {
+        return new ErrorResponse("API 메서드가 잘못되었습니다.");
     }
 
     @ExceptionHandler(Exception.class)

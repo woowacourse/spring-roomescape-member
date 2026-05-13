@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.exception.ReservationAccessDeniedException;
 import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.payload.ReservationRequest;
@@ -92,5 +93,31 @@ class ReservationServiceTest {
     void 없는_예약을_삭제하면_에러를_던진다() {
         assertThatThrownBy(() -> reservationService.deleteById(999L))
                 .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @Test
+    void 예약자_이름이_같으면_예약을_취소한다() {
+        ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
+        Reservation reservation = reservationService.save(reservationRequest);
+
+        reservationService.cancelByIdAndName(reservation.getId(), "봉구스");
+
+        List<Reservation> reservations = reservationService.findAll();
+        assertThat(reservations).doesNotContain(reservation);
+    }
+
+    @Test
+    void 없는_예약을_이름으로_취소하면_에러를_던진다() {
+        assertThatThrownBy(() -> reservationService.cancelByIdAndName(999L, "봉구스"))
+                .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @Test
+    void 예약자_이름이_다르면_예약을_취소할_수_없다() {
+        ReservationRequest reservationRequest = new ReservationRequest("봉구스", LocalDate.of(2099, 5, 6), 1L, 1L);
+        Reservation reservation = reservationService.save(reservationRequest);
+
+        assertThatThrownBy(() -> reservationService.cancelByIdAndName(reservation.getId(), "다른이름"))
+                .isInstanceOf(ReservationAccessDeniedException.class);
     }
 }

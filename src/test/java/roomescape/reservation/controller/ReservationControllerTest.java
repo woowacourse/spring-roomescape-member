@@ -79,6 +79,7 @@ class ReservationControllerTest {
                 .path("id");
 
         RestAssured.given().log().all()
+                .queryParam("name", "밀란")
                 .when().delete("/reservations/" + id)
                 .then().log().all()
                 .statusCode(204);
@@ -93,6 +94,7 @@ class ReservationControllerTest {
     @Test
     void 존재하지_않는_예약을_삭제하면_404를_응답한다() {
         RestAssured.given().log().all()
+                .queryParam("name", "밀란")
                 .when().delete("/reservations/999")
                 .then().log().all()
                 .statusCode(404)
@@ -100,8 +102,43 @@ class ReservationControllerTest {
     }
 
     @Test
+    void 예약자_이름이_다르면_예약_삭제_시_403을_응답한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "밀란");
+        params.put("date", "2099-05-03");
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
+
+        Integer id = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        RestAssured.given().log().all()
+                .queryParam("name", "다른이름")
+                .when().delete("/reservations/" + id)
+                .then().log().all()
+                .statusCode(403)
+                .body("message", is("예약을 수정/삭제할 권한이 없습니다."));
+    }
+
+    @Test
+    void 예약_삭제_시_이름을_입력하지_않으면_400을_응답한다() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("name: 입력값이 필요합니다."));
+    }
+
+    @Test
     void 경로_변수_형식이_올바르지_않으면_400을_응답한다() {
         RestAssured.given().log().all()
+                .queryParam("name", "밀란")
                 .when().delete("/reservations/abc")
                 .then().log().all()
                 .statusCode(400)
