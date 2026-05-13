@@ -90,6 +90,22 @@ class ReservationServiceTest {
             // then
             Assertions.assertThat(reservationResponse.id()).isEqualTo(1L);
         }
-    }
 
+        @Test
+        void 이미_예약이_존재하는_경우_예약을_거부한다() {
+            //given
+            CreateReservationRequest request = new CreateReservationRequest("userA", LocalDate.now(), 1L, 1L);
+
+            when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(DuplicateReservationCondition.class)))
+                    .thenReturn(true);
+            when(themeRepository.existsById(any(Long.class)))
+                    .thenReturn(true);
+            when(reservationTimeRepository.existsById(any(Long.class)))
+                    .thenReturn(true);
+
+            //when & then
+            Assertions.assertThatThrownBy(() -> reservationService.reserve(request))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+    }
 }
