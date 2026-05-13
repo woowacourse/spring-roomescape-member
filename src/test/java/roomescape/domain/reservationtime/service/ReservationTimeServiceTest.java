@@ -21,6 +21,7 @@ import roomescape.domain.reservationtime.entity.ReservationTime;
 import roomescape.domain.reservationtime.exception.TimeErrorCode;
 import roomescape.domain.reservationtime.repository.ReservationTimeRepository;
 import roomescape.domain.reservationtime.request.ReservationTimeCreateRequest;
+import roomescape.domain.reservationtime.request.ReservationTimeUpdateRequest;
 import roomescape.domain.reservationtime.response.ReservationTimeResponse;
 import roomescape.domain.reservationtime.response.ReservationTimesResponse;
 
@@ -78,10 +79,65 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("예약 시간을 성공적으로 수정한다.")
+    void updateReservationTime() {
+        // given
+        Long timeId = 1L;
+        LocalTime newStartTime = LocalTime.of(12, 0);
+        ReservationTimeUpdateRequest request = new ReservationTimeUpdateRequest(newStartTime);
+
+        ReservationTime time = ReservationTime.of(timeId, LocalTime.of(10, 0));
+        when(reservationTimeRepository.findById(timeId)).thenReturn(java.util.Optional.of(time));
+        when(reservationTimeRepository.update(org.mockito.ArgumentMatchers.eq(timeId),
+                any(ReservationTime.class))).thenReturn(1);
+
+        // when
+        ReservationTimeResponse response = reservationTimeService.updateReservationTime(timeId, request);
+
+        // then
+        assertThat(response.id()).isEqualTo(timeId);
+        assertThat(response.startAt()).isEqualTo(newStartTime);
+        verify(reservationTimeRepository).update(org.mockito.ArgumentMatchers.eq(timeId), any(ReservationTime.class));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간을 수정하려고 하면 예외가 발생한다.")
+    void updateReservationTime_throwsException_whenTimeNotFound() {
+        // given
+        Long timeId = 999L;
+        ReservationTimeUpdateRequest request = new ReservationTimeUpdateRequest(LocalTime.of(12, 0));
+        when(reservationTimeRepository.findById(timeId)).thenReturn(java.util.Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.updateReservationTime(timeId, request))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(TimeErrorCode.RESERVATION_TIME_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 예약 시간으로 수정하려고 하면 예외가 발생한다.")
+    void updateReservationTime_throwsException_whenTimeDuplicate() {
+        // given
+        Long timeId = 1L;
+        LocalTime duplicateTime = LocalTime.of(12, 0);
+        ReservationTimeUpdateRequest request = new ReservationTimeUpdateRequest(duplicateTime);
+
+        ReservationTime time = ReservationTime.of(timeId, LocalTime.of(10, 0));
+        when(reservationTimeRepository.findById(timeId)).thenReturn(java.util.Optional.of(time));
+        when(reservationTimeRepository.existsByStartAt(duplicateTime)).thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.updateReservationTime(timeId, request))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(TimeErrorCode.RESERVATION_TIME_DUPLICATE.getMessage());
+    }
+
+    @Test
     @DisplayName("예약 시간을 삭제한다.")
     void deleteReservationTimeBy() {
         // given
         Long timeId = 1L;
+        when(reservationTimeRepository.deleteById(timeId)).thenReturn(1);
 
         // when
         reservationTimeService.deleteReservationTimeBy(timeId);
@@ -102,5 +158,18 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeBy(timeId))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(TimeErrorCode.RESERVATION_TIME_DELETE_CONFLICT.getMessage());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간을 삭제하면 예외가 발생한다.")
+    void deleteReservationTimeBy_throwsException_whenTimeNotFound() {
+        // given
+        Long timeId = 999L;
+        when(reservationTimeRepository.deleteById(timeId)).thenReturn(0);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeBy(timeId))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(TimeErrorCode.RESERVATION_TIME_NOT_FOUND.getMessage());
     }
 }

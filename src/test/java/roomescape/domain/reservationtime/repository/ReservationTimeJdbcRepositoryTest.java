@@ -92,15 +92,32 @@ class ReservationTimeJdbcRepositoryTest {
     }
 
     @Test
+    @DisplayName("예약 시간을 수정한다.")
+    void updateTest() {
+        // given
+        long generatedId = insertReservationTime(LocalTime.of(18, 0));
+        ReservationTime newTime = ReservationTime.of(generatedId, LocalTime.of(19, 0));
+
+        // when
+        int updatedCount = reservationTimeRepository.update(generatedId, newTime);
+
+        // then
+        assertThat(updatedCount).isEqualTo(1);
+        ReservationTime found = findReservationTimeById(generatedId);
+        assertThat(found.getStartAt()).isEqualTo(LocalTime.of(19, 0));
+    }
+
+    @Test
     @DisplayName("ID로 예약 시간을 삭제한다.")
     void deleteByIdTest() {
         // given
         long generatedId = insertReservationTime(LocalTime.of(22, 0));
 
         // when
-        reservationTimeRepository.deleteById(generatedId);
+        int deletedCount = reservationTimeRepository.deleteById(generatedId);
 
         // then
+        assertThat(deletedCount).isEqualTo(1);
         List<ReservationTime> times = findReservationTimesById(generatedId);
         assertThat(times).isEmpty();
     }

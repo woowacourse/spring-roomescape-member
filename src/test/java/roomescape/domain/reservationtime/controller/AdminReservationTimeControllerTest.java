@@ -86,4 +86,43 @@ class AdminReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(400);
     }
+
+    @Test
+    @DisplayName("관리자는 예약 시간을 수정한다.")
+    void updateReservationTime() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "16:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/admin/times/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("id", is(1))
+                .body("startAt", is("16:00"));
+    }
+
+    @Test
+    @DisplayName("관리자라도 존재하지 않는 예약 시간을 수정하면 에러가 발생한다.")
+    void updateReservationTimeWithNotFoundThrowException() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "12:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().patch("/admin/times/999")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    @DisplayName("관리자라도 존재하지 않는 예약 시간을 삭제하면 에러가 발생한다.")
+    void deleteReservationTimeWithNotFoundThrowException() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/times/999")
+                .then().log().all()
+                .statusCode(404);
+    }
 }
