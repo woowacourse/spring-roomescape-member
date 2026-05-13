@@ -47,6 +47,7 @@ reservation_time ||--o{ reservation : "has (1:N)"
         BIGINT id PK
         VARCHAR name
         VARCHAR date
+        VARCHAR status
         BIGINT time_id FK
         BIGINT theme_id FK
     }
