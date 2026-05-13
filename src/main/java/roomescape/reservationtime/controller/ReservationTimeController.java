@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,7 +28,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> createTime(@RequestBody TimeRequest request) {
+    public ResponseEntity<TimeResponse> createTime(@Valid @RequestBody TimeRequest request) {
         TimeResponse response = reservationTimeService.createTime(request);
         return ResponseEntity.created(URI.create("/times/" + response.id())).body(response);
     }
