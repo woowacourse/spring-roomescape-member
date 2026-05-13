@@ -9,12 +9,10 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import roomescape.exception.EntityNotFoundException;
-import roomescape.exception.InUseEntityException;
 
 @RestControllerAdvice
 @Slf4j
-public class GlobalExceptionHandler {
+public class HttpRequestExceptionHandler {
 
     @ExceptionHandler(MissingPathVariableException.class)
     public ResponseEntity<ErrorResponse> handleMissingPathVariable(
@@ -76,29 +74,6 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(message);
 
         return ResponseEntity.badRequest()
-                .body(response);
-    }
-
-    @ExceptionHandler({
-            IllegalArgumentException.class,
-            IllegalStateException.class,
-            EntityNotFoundException.class,
-            InUseEntityException.class
-    })
-    public ResponseEntity<ErrorResponse> handleBadRequest(Exception exception) {
-        log.warn("[Bad Request]", exception);
-        ErrorResponse response = new ErrorResponse(exception.getMessage());
-
-        return ResponseEntity.badRequest()
-                .body(response);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleInternalServerError(Exception exception) {
-        log.error("[Internal Server Error]", exception);
-        ErrorResponse response = new ErrorResponse("예상하지 못한 예외가 발생했습니다.");
-
-        return ResponseEntity.internalServerError()
                 .body(response);
     }
 }
