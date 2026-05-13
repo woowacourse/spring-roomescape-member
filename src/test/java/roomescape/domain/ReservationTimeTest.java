@@ -13,16 +13,16 @@ class ReservationTimeTest {
     @Test
     void 올바른_형식의_시간으로_생성한다() {
         // given
-        ReservationTime time = new ReservationTime("13:24");
+        ReservationTime time = new ReservationTime("13:00");
 
         // when & then
-        assertThat(time.getStartAt()).isEqualTo("13:24");
+        assertThat(time.getStartAt()).isEqualTo("13:00");
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"12-30", "12.30", "9:30", "12:5", "12:30:15",
-        "25:00", "12:60", "13:99", "-01:30",
-        "오전 10:30", "10:30 AM", "ten:30", "12 : 30", "!!:!!",
+    @ValueSource(strings = {"12-00", "12.00", "9:00", "12:5", "12:00:15",
+        "25:00", "12:60", "13:99", "-01:00",
+        "오전 10:00", "10:00 AM", "ten:00", "12 : 00", "!!:!!",
         "", " ", "2023-10-27"})
     void 형식외_시간_생성시_예외가_발생한다(String time) {
         // when & then
@@ -75,7 +75,7 @@ class ReservationTimeTest {
     private ReservationTime reservationTime() {
         return new ReservationTime(
             null,
-            LocalTime.of(12, 30)
+            LocalTime.of(12, 0)
         );
     }
 }

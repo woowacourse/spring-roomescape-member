@@ -55,10 +55,12 @@ public class ReservationService {
     }
 
     public void deleteReservation(final long id) {
-        if (reservationRepository.existsById(id)) {
-            throw new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND);
+        Reservation reservation = reservationRepository.findById(id)
+            .orElseThrow(() -> new RoomEscapeException(ErrorCode.RESERVATION_NOT_FOUND));
+        if (reservation.isBeforeNow()) {
+            throw new RoomEscapeException(ErrorCode.PAST_RESERVATION_CANCEL);
         }
-        
+
         reservationRepository.deleteById(id);
     }
 

@@ -61,15 +61,21 @@ class ReservationServiceTest {
     @Test
     void 예약을_삭제한다() {
         // given
-        when(reservationRepository.existsById(anyLong()))
-            .thenReturn(false);
+        Reservation futureReservation = new Reservation(
+            1L, new MemberName("n"),
+            new ReservationLocalDate(LocalDate.now().plusDays(1)),
+            new ReservationTime(1L, "12:00"),
+            SAVED_THEME
+        );
+        when(reservationRepository.findById(anyLong()))
+            .thenReturn(Optional.of(futureReservation));
 
         // when & then
         Long id = reservation().getId();
         assertThatCode(() -> reservationService.deleteReservation(id))
             .doesNotThrowAnyException();
 
-        verify(reservationRepository, times(1)).existsById(id);
+        verify(reservationRepository, times(1)).findById(id);
         verify(reservationRepository, times(1)).deleteById(id);
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
@@ -77,8 +83,8 @@ class ReservationServiceTest {
     @Test
     void 없는_예약을_삭제하는_경우_예외가_발생한다() {
         // given
-        when(reservationRepository.existsById(anyLong()))
-            .thenReturn(true);
+        when(reservationRepository.findById(anyLong()))
+            .thenReturn(Optional.empty());
 
         // when & then
         Long id = reservation().getId();
@@ -86,7 +92,31 @@ class ReservationServiceTest {
             .isInstanceOf(RoomEscapeException.class)
             .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
 
-        verify(reservationRepository, times(1)).existsById(id);
+        verify(reservationRepository, times(1)).findById(id);
+        verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
+    }
+
+    @Test
+    void 현재시간_이전의_예약을_삭제하는_경우_예외가_발생한다() {
+        // given
+        Reservation reservation = new Reservation(
+            1L,
+            new MemberName("n"),
+            new ReservationLocalDate(LocalDate.now().minusDays(1)),
+            new ReservationTime(1L, "12:00"),
+            new Theme(1L, new ThemeName("n"), "d", ThemeImageUrl.defaultImageUrl())
+        );
+
+        when(reservationRepository.findById(anyLong()))
+            .thenReturn(Optional.of(reservation));
+
+        // when & then
+        Long id = reservation().getId();
+        assertThatThrownBy(() -> reservationService.deleteReservation(id))
+            .isInstanceOf(RoomEscapeException.class)
+            .hasMessageContaining(ErrorCode.PAST_RESERVATION_CANCEL.getMessage());
+
+        verify(reservationRepository, times(1)).findById(id);
         verifyNoMoreInteractions(themeRepository, timeRepository, reservationRepository);
     }
 

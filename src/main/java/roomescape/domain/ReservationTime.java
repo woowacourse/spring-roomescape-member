@@ -4,10 +4,12 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 
 public class ReservationTime {
 
-    private static final Pattern TIME_PATTERN = Pattern.compile("^\\d{2}:\\d{2}$");
+    private static final Pattern TIME_PATTERN = Pattern.compile("^\\d{2}:(00|30)+$");
 
     private final Long id;
     private final LocalTime startAt;
@@ -15,6 +17,13 @@ public class ReservationTime {
     public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
+        validateTime(startAt);
+    }
+
+    private void validateTime(LocalTime startAt) {
+        if (startAt.getMinute() != 0) {
+            throw new RoomEscapeException(ErrorCode.INVALID_TIME_FORMAT);
+        }
     }
 
     public ReservationTime(Long id, String startAt) {

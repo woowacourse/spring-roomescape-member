@@ -3,6 +3,7 @@ package roomescape.repository.reservation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ import roomescape.repository.time.ReservationTimeRepository;
 @JdbcTest
 class JdbcReservationRepositoryTest {
 
-    private static final ReservationTime RESERVATION_TIME = new ReservationTime("12:30");
+    private static final ReservationTime RESERVATION_TIME = new ReservationTime(LocalTime.of(12, 0));
     private static final Theme THEME = new Theme("테마명", "설명", ThemeImageUrl.defaultImageUrl().value());
 
     private final ReservationRepository reservationRepository;
@@ -63,7 +64,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void 전체_예약_목록을_조회한다() {
         // given
-        ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime("13:43"));
+        ReservationTime savedTime1 = timeRepository.createReservationTime(new ReservationTime("13:00"));
         ReservationTime savedTime2 = timeRepository.createReservationTime(new ReservationTime("10:00"));
 
         Theme savedTheme = themeRepository.createTheme(THEME);
@@ -156,7 +157,12 @@ class JdbcReservationRepositoryTest {
 
         LocalDate today = LocalDate.now();
         Reservation saved = reservationRepository.createReservation(
-            new Reservation("n", today, savedTime, savedTheme));
+            new Reservation(
+                null,
+                new MemberName("n"),
+                new ReservationLocalDate(today),
+                savedTime,
+                savedTheme));
 
         // when
         boolean exists = reservationRepository.existsByTimeIdAndDateOnOrAfter(saved.getTimeId(), LocalDate.now());

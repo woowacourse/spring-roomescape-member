@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationLocalDate;
@@ -55,6 +56,11 @@ public class Reservation {
 
     public Reservation withId(Long key) {
         return new Reservation(key, this.memberName, this.date, this.time, this.theme);
+    }
+
+    public boolean isBeforeNow() {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date.value(), time.getStartAt());
+        return reservationDateTime.isBefore(LocalDateTime.now());
     }
 
     @Override

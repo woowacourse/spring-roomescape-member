@@ -3,6 +3,8 @@ package roomescape.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationLocalDate;
@@ -54,6 +56,37 @@ class ReservationTest {
 
         // then
         assertThat(saved.getId()).isEqualTo(1L);
+    }
+
+    @Nested
+    @DisplayName("현재 시간 이전의 예약인지 조회한다")
+    class isBeforeNow {
+
+        @Test
+        void 과거_날짜_예약인_경우_TRUE를_반환한다() {
+            //given
+            ReservationLocalDate yesterday = new ReservationLocalDate(LocalDate.now().minusDays(1));
+            Reservation reservation = new Reservation(1L, new MemberName("n"), yesterday, TIME, THEME);
+
+            //when
+            boolean beforeNow = reservation.isBeforeNow();
+
+            //then
+            assertThat(beforeNow).isTrue();
+        }
+
+        @Test
+        void 미래_날짜_예약인_경우_FALSE를_반환한다() {
+            //given
+            ReservationLocalDate tomorrow = new ReservationLocalDate(LocalDate.now().plusDays(1));
+            Reservation reservation = new Reservation(1L, new MemberName("n"), tomorrow, TIME, THEME);
+
+            //when
+            boolean beforeNow = reservation.isBeforeNow();
+
+            //then
+            assertThat(beforeNow).isFalse();
+        }
     }
 
     private Reservation reservation() {

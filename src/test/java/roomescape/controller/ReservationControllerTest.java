@@ -88,7 +88,7 @@ class ReservationControllerTest {
         Reservation reservation = reservation();
         ReservationRequest request = requestDtoFrom(reservation);
         doThrow(exception)
-            .when(reservationService.addReservation(any()));
+            .when(reservationService).addReservation(any());
 
         // when
         Response response = RestAssured
@@ -183,6 +183,30 @@ class ReservationControllerTest {
         verify(reservationService, times(1)).deleteReservation(id);
         verifyNoMoreInteractions(reservationService);
     }
+
+    @Test
+    void 오늘_이전의_예약을_삭제하는_경우_예외_응답을_반환한다() {
+        // given
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.PAST_RESERVATION_CANCEL);
+        doThrow(exception)
+            .when(reservationService).deleteReservation(anyLong());
+
+        // when
+        long id = 1L;
+        Response response = RestAssured
+            .given().log().all()
+            .pathParam("id", id)
+            .when().delete("/reservations/{id}");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+
+        verify(reservationService, times(1)).deleteReservation(id);
+        verifyNoMoreInteractions(reservationService);
+    }
+
 
     private Reservation reservation() {
         return new Reservation("이름", LocalDate.now().plusDays(1L), TIME, THEME);
