@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.dto.ErrorResponse;
 import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -25,5 +26,14 @@ public class GlobalExceptionHandler {
             errors.add(errorResponse);
         });
         return ResponseEntity.status(e.getStatusCode()).body(errors);
+    }
+
+    @ExceptionHandler(RoomescapeException.class)
+    public ResponseEntity<ErrorResponse> handleRoomescapeException(RoomescapeException e, HttpServletRequest request) {
+        ErrorCode error = e.getErrorCode();
+        ErrorResponse errorResponse = new ErrorResponse(
+                error.getCode(), request.getRequestURI(), error.getMessage(), error.getAction()
+        );
+        return ResponseEntity.status(error.getStatus()).body(errorResponse);
     }
 }
