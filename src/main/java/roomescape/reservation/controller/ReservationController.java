@@ -33,4 +33,12 @@ public class ReservationController {
         ReservationsResponse response = reservationService.findAllByUserId(id);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelMyReservation(
+            @PathVariable Long id, @RequestHeader("X-User-Id") Long userId) {
+        reservationService.cancel(id, userId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
