@@ -2,6 +2,7 @@ package roomescape.reservation.repository.dao;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -34,6 +35,12 @@ public class ReservationDao {
     public List<ReservationEntity> findAll() {
         String sql = "select * from reservation;";
         return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    public Optional<ReservationEntity> findById(Long id) {
+        String sql = "select * from reservation where id = ?;";
+        return jdbcTemplate.query(sql, reservationRowMapper, id).stream()
+                .findAny();
     }
 
     public Long insert(String name, LocalDate date, Long timeId, Long themeId) {

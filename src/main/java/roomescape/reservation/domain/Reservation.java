@@ -1,6 +1,7 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -40,5 +41,9 @@ public class Reservation {
         if(Objects.isNull(id) || id <= 0) {
             throw new IllegalArgumentException("ID 비어있거나 음수일 수 없습니다.");
         }
+    }
+
+    public LocalDateTime getReservationDateTime() {
+        return LocalDateTime.of(date, time.getStartAt());
     }
 }
