@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.global.exception.DuplicateEntityException;
+import roomescape.global.exception.EntityNotFoundException;
+import roomescape.global.exception.ForbiddenException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.web.dto.reservationTime.ReservationTimeRequest;
 import roomescape.web.dto.reservationTime.ReservationTimeResponse;
@@ -17,6 +20,7 @@ import roomescape.web.dto.reservationTime.ReservationTimeResponse;
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
     @Transactional
     public ReservationTimeResponse register(ReservationTimeRequest request) {
@@ -29,14 +33,19 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public void remove(Long id) {
-        reservationTimeRepository.deleteById(id);
+    public void deactivate(Long id) {
+        ReservationTime time = reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 시간 정보입니다."));
+
+        time.deactivate();
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new ForbiddenException("예약이 존재하는 시간대는 삭제할 수 없습니다.");
+        }
+        reservationTimeRepository.update(time);
     }
 
     public List<ReservationTimeResponse> getAllReservationTimesByPaging(int page, int size) {
-        return reservationTimeRepository.findAllByPaging(page, size)
-                .stream()
-                .map(ReservationTimeResponse::from)
+        return reservationTimeRepository.findAllByPaging(page, size).stream().map(ReservationTimeResponse::from)
                 .toList();
     }
 

@@ -41,13 +41,8 @@ public class JdbcReservationRepository implements ReservationRepository {
         }, keyHolder);
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Reservation(id,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTheme(),
-                reservation.getTime(),
-                reservation.getStatus()
-        );
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTheme(),
+                reservation.getTime(), reservation.getStatus());
     }
 
     @Override
@@ -58,14 +53,13 @@ public class JdbcReservationRepository implements ReservationRepository {
                     WHERE id=?
                 """;
 
-        jdbcTemplate.update(sql,
-                reservation.getName(),
-                reservation.getDate(),
+        int affectedRow = jdbcTemplate.update(sql, reservation.getName(), reservation.getDate(),
                 reservation.getTheme().getId(),
-                reservation.getTime().getId(),
-                reservation.getStatus().toString(),
-                reservation.getId()
-        );
+                reservation.getTime().getId(), reservation.getStatus().toString(), reservation.getId());
+
+        if (affectedRow == 0) {
+            throw new EntityNotFoundException("존재하지 않는 예약입니다.");
+        }
     }
 
     @Override
@@ -85,14 +79,6 @@ public class JdbcReservationRepository implements ReservationRepository {
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
-        }
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        int affectedRow = jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
-        if (affectedRow == 0) {
-            throw new EntityNotFoundException("존재하지 않는 예약 정보입니다.");
         }
     }
 
@@ -128,6 +114,13 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
 
         return new HashSet<>(jdbcTemplate.queryForList(sql, Long.class, themeId, date));
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ? AND status = 'RESERVED')";
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+        return Boolean.TRUE.equals(result);
     }
 
     @Override

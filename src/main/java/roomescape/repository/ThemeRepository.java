@@ -7,11 +7,11 @@ import roomescape.domain.Theme;
 
 public interface ThemeRepository {
 
-    boolean isActiveByName(String name);
-
     Theme save(Theme theme);
 
     void update(Theme theme);
+
+    boolean isActiveByName(String name);
 
     Optional<Theme> findById(Long id);
 

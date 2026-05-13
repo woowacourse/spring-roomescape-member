@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationStatus;
-import roomescape.global.exception.EntityNotFoundException;
 import roomescape.repository.ReservationRepository;
 
 public class FakeReservationRepository implements ReservationRepository {
@@ -20,14 +19,8 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        Reservation saved = new Reservation(
-                counter.getAndIncrement(),
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTheme(),
-                reservation.getTime(),
-                reservation.getStatus()
-        );
+        Reservation saved = new Reservation(counter.getAndIncrement(), reservation.getName(), reservation.getDate(),
+                reservation.getTheme(), reservation.getTime(), reservation.getStatus());
         reservations.add(saved);
         return saved;
     }
@@ -42,60 +35,45 @@ public class FakeReservationRepository implements ReservationRepository {
                 return;
             }
         }
-
     }
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        return reservations.stream()
-                .filter(reservation -> reservation.getId().equals(id))
-                .findFirst();
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        boolean deleted = reservations.removeIf(reservation -> reservation.getId().equals(id));
-        if (!deleted) {
-            throw new EntityNotFoundException("존재하지 않는 예약 정보입니다.");
-        }
+        return reservations.stream().filter(reservation -> reservation.getId().equals(id)).findFirst();
     }
 
     @Override
     public boolean existsReservedReservation(LocalDate date, Long timeId, Long themeId) {
-        return reservations.stream()
-                .anyMatch(reservation ->
-                        reservation.getDate().equals(date)
-                                && reservation.getTime().getId().equals(timeId)
-                                && reservation.getTheme().getId().equals(themeId)
-                                && reservation.getStatus().equals(ReservationStatus.RESERVED)
-                );
+        return reservations.stream().anyMatch(
+                reservation -> reservation.getDate().equals(date) && reservation.getTime().getId().equals(timeId)
+                        && reservation.getTheme().getId().equals(themeId) && reservation.getStatus()
+                        .equals(ReservationStatus.RESERVED));
     }
 
     @Override
     public List<Reservation> findAllByPaging(int page, int size) {
         int offset = page * size;
 
-        return reservations.stream()
-                .sorted(Comparator.comparing(Reservation::getId).reversed())
-                .skip(offset)
-                .limit(size)
-                .toList();
+        return reservations.stream().sorted(Comparator.comparing(Reservation::getId).reversed()).skip(offset)
+                .limit(size).toList();
     }
 
     @Override
     public Set<Long> findUnavailableTimeIdsByThemeIdAndDate(Long themeId, LocalDate date) {
-        return reservations.stream()
-                .filter(reservation -> reservation.getStatus().equals(ReservationStatus.RESERVED))
+        return reservations.stream().filter(reservation -> reservation.getStatus().equals(ReservationStatus.RESERVED))
                 .filter(reservation -> reservation.getTheme().getId().equals(themeId))
                 .filter(reservation -> reservation.getDate().equals(date))
-                .map(reservation -> reservation.getTime().getId())
-                .collect(Collectors.toSet());
+                .map(reservation -> reservation.getTime().getId()).collect(Collectors.toSet());
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getStatus().equals(ReservationStatus.RESERVED));
     }
 
     @Override
     public List<Reservation> findAllByUserName(String name) {
-        return reservations.stream()
-                .filter(reservation -> reservation.getName().equals(name))
-                .toList();
+        return reservations.stream().filter(reservation -> reservation.getName().equals(name)).toList();
     }
 }

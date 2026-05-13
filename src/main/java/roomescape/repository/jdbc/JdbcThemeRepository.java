@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.global.exception.EntityNotFoundException;
 import roomescape.repository.ThemeRepository;
 
 @Repository
@@ -56,13 +57,17 @@ public class JdbcThemeRepository implements ThemeRepository {
                     SET name = ?, description = ?, thumbnail_image_url = ?, is_active = ?
                     WHERE id=?
                 """;
-        jdbcTemplate.update(sql,
+        int affectedRow = jdbcTemplate.update(sql,
                 theme.getName(),
                 theme.getDescription(),
                 theme.getThumbnailImageUrl(),
                 theme.isActive(),
                 theme.getId()
         );
+
+        if (affectedRow == 0) {
+            throw new EntityNotFoundException("존재하지 않는 테마 정보입니다.");
+        }
     }
 
     @Override

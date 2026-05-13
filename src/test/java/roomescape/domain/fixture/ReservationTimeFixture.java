@@ -9,7 +9,7 @@ public final class ReservationTimeFixture {
     }
 
     public static ReservationTime createDefaultReservationTime() {
-        return new ReservationTime(1L, LocalTime.of(10, 0));
+        return new ReservationTime(1L, LocalTime.of(10, 0), true);
     }
 
     public static ReservationTime createReservationTime(LocalTime startAt) {
@@ -17,6 +17,6 @@ public final class ReservationTimeFixture {
     }
 
     public static ReservationTime createReservationTimeWithId(Long id, LocalTime startAt) {
-        return new ReservationTime(id, startAt);
+        return new ReservationTime(id, startAt, true);
     }
 }

@@ -11,7 +11,8 @@ public final class ReservationEntityMapper {
     public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) -> {
         ReservationTime time = new ReservationTime(
                 rs.getLong("time_id"),
-                rs.getTime("time_start").toLocalTime()
+                rs.getTime("time_start").toLocalTime(),
+                rs.getBoolean("is_active")
         );
         Theme theme = new Theme(
                 rs.getLong("theme_id"),

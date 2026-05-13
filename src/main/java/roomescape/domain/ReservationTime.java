@@ -14,17 +14,19 @@ public class ReservationTime {
 
     private final Long id;
     private final LocalTime startAt;
+    private boolean isActive;
 
-    public ReservationTime(Long id, LocalTime startAt) {
+    public ReservationTime(Long id, LocalTime startAt, boolean isActive) {
         if (startAt == null) {
             throw new IllegalArgumentException("추가 할 예약 시작 시간 정보가 누락되었습니다.");
         }
         this.id = id;
         this.startAt = startAt;
+        this.isActive = isActive;
     }
 
     public ReservationTime(LocalTime startAt) {
-        this(null, startAt);
+        this(null, startAt, true);
     }
 
     public LocalDateTime toReservationDateTime(LocalDate date) {
@@ -33,5 +35,9 @@ public class ReservationTime {
 
     public boolean isAvailableAt(LocalDate date) {
         return !toReservationDateTime(date).isBefore(LocalDateTime.now());
+    }
+
+    public void deactivate() {
+        this.isActive = false;
     }
 }

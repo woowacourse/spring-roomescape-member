@@ -44,7 +44,7 @@ public class ReservationController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/cancel")
     public ResponseEntity<Void> cancel(
             @PathVariable
             @Positive(message = "예약 식별자는 양수여야 합니다.") Long id,

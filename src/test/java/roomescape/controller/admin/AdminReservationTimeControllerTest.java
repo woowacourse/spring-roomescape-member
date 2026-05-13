@@ -74,23 +74,23 @@ class AdminReservationTimeControllerTest extends BaseControllerUnitTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, -1})
-    void 시간_삭제를_요청하는_식별자가_양수가_아니라면_예외가_발생한다(int timeId) {
+    void 시간_비활성화를_요청하는_식별자가_양수가_아니라면_예외가_발생한다(int timeId) {
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
-                .when().delete("/api/admin/times/" + timeId)
+                .when().patch("/api/admin/times/" + timeId)
                 .then().log().all()
                 .status(HttpStatus.BAD_REQUEST)
                 .body(containsString("예약 시간 식별자는 양수여야 합니다."));
     }
 
     @Test
-    void 정상적인_ID로_시간_삭제_요청_시_204_NO_CONTENT를_응답한다() {
+    void 정상적인_ID로_시간_비활성화_요청_시_204_NO_CONTENT를_응답한다() {
         // when & then
         RestAssuredMockMvc.given().spec(adminSpec()).log().all()
-                .when().delete("/api/admin/times/1")
+                .when().patch("/api/admin/times/1")
                 .then().log().all()
                 .status(HttpStatus.NO_CONTENT);
-        verify(reservationTimeService, times(1)).remove(anyLong());
+        verify(reservationTimeService, times(1)).deactivate(anyLong());
     }
 
     @Test

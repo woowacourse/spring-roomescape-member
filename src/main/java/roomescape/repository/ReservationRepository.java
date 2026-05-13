@@ -14,13 +14,13 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
-    void deleteById(Long id);
-
     boolean existsReservedReservation(LocalDate date, Long timeId, Long themeId);
 
     List<Reservation> findAllByPaging(int page, int size);
 
     Set<Long> findUnavailableTimeIdsByThemeIdAndDate(Long themeId, LocalDate date);
+
+    boolean existsByTimeId(Long timeId);
 
     List<Reservation> findAllByUserName(String name);
 }

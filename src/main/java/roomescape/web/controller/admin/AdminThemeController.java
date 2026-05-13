@@ -35,7 +35,7 @@ public class AdminThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> remove(
+    public ResponseEntity<Void> deactivate(
             @PathVariable
             @Positive(message = "테마 식별자는 양수여야 합니다.") Long id
     ) {
