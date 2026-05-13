@@ -1,5 +1,7 @@
 package roomescape.reservation.domain;
 
+import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.ErrorCode;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -14,15 +16,11 @@ public class Reservation {
     private Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 비어 있을 수 없습니다.");
-        }
-        if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 비어 있을 수 없습니다.");
-        }
-        if (time == null) {
-            throw new IllegalArgumentException("예약 시간은 비어 있을 수 없습니다.");
-        }
+        validateReservationName(name);
+        validateReservationDate(date);
+        validateReservationTime(time);
+        validateTheme(theme);
+
         this.id = id;
         this.name = name;
         this.date = date;
@@ -48,5 +46,29 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    private void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
+        }
+    }
+
+    private void validateReservationTime(ReservationTime time) {
+        if (time == null) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
+        }
+    }
+
+    private void validateReservationDate(LocalDate date) {
+        if (date == null) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
+        }
+    }
+
+    private static void validateReservationName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
+        }
     }
 }
