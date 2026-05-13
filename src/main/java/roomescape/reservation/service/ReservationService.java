@@ -60,4 +60,22 @@ public class ReservationService {
     public void delete(Long id) {
         reservationRepository.delete(id);
     }
+
+    @Transactional
+    public void delete(Long reservationId, String userName) {
+        User currentUser = userService.findByName(userName);
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+
+        if (!reservation.getUser().getId().equals(currentUser.getId())) {
+            throw new IllegalArgumentException("본인의 예약만 취소할 수 있습니다.");
+        }
+
+        if (reservation.getSchedule().isBefore()) {
+            throw new IllegalArgumentException("이미 지나간 예약은 취소할 수 없습니다.");
+        }
+
+        reservationRepository.delete(reservationId);
+    }
 }
