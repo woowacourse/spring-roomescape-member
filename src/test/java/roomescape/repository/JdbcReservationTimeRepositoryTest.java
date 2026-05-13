@@ -3,6 +3,7 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
@@ -20,6 +23,7 @@ import roomescape.theme.repository.JdbcThemeRepository;
 @RoomescapeRepositoryTest
 class JdbcReservationTimeRepositoryTest {
 
+    private JdbcReservationRepository jdbcReservationRepository;
     private JdbcReservationTimeRepository jdbcReservationTimeRepository;
     private JdbcThemeRepository jdbcThemeRepository;
 
@@ -28,6 +32,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @BeforeEach
     void setup() {
+        jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate);
         jdbcReservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
         jdbcThemeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
@@ -97,6 +102,28 @@ class JdbcReservationTimeRepositoryTest {
         assertThrows(DataIntegrityViolationException.class, () -> {
             jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
         });
+    }
+
+    @Test
+    @DisplayName("예약 가능 시간 조회")
+    void reservationTime_findAvailableTimes_success() {
+        //given
+        LocalTime time1 = LocalTime.parse("11:00");
+        LocalTime time2 = LocalTime.parse("13:00");
+        Theme theme = createTheme("미술관의 밤");
+        ReservationTime reservationTime1 = jdbcReservationTimeRepository.save(ReservationTime.createNew(time1, theme));
+        ReservationTime reservationTime2 = jdbcReservationTimeRepository.save(ReservationTime.createNew(time2, theme));
+
+        jdbcReservationRepository.save(
+                Reservation.createNew("쿠다", java.time.LocalDate.now().plusDays(1), reservationTime1)
+        );
+
+        // when
+        List<ReservationTime> availableTimes = jdbcReservationTimeRepository.findAvailableTimes(LocalDate.now().plusDays(1), theme.getId());
+
+        // then
+        assertThat(availableTimes).hasSize(1);
+        assertThat(availableTimes.getFirst()).isEqualTo(reservationTime2);
     }
 
     @Test

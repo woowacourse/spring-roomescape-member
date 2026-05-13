@@ -2,6 +2,7 @@ package roomescape.reservationtime.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                    t.description,
                    t.thumbnail_url
             FROM reservation_time AS rt
-            JOIN theme AS t ON rt.theme_id = t.id
+            INNER JOIN theme AS t ON rt.theme_id = t.id
             """;
 
     private static final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) -> {
@@ -89,6 +90,20 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return jdbcTemplate.query(sql, reservationTimeRowMapper, timeId)
                 .stream()
                 .findFirst();
+    }
+
+    @Override
+    public List<ReservationTime> findAvailableTimes(final LocalDate date, final Long themeId) {
+        String sql = RESERVATION_TIME_BASE_SELECT + """
+                LEFT JOIN reservation r
+                       ON r.time_id = rt.id
+                      AND r.date = ?
+                WHERE rt.theme_id = ?
+                  AND r.id IS NULL
+                ORDER BY rt.start_at
+                """;
+
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, date, themeId);
     }
 
     @Override

@@ -61,15 +61,7 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResult> findAvailableTimes(final LocalDate date, final long themeId) {
-        List<ReservationTime> reservationTimes =
-                reservationTimeRepository.findAllByThemeId(themeId);
-
-        Set<Long> reservedTimeIds = new HashSet<>(
-                reservationRepository.findAllByDateAndThemeId(date, themeId)
-        );
-
-        return reservationTimes.stream()
-                .filter(time -> !reservedTimeIds.contains(time.getId()))
+        return reservationTimeRepository.findAvailableTimes(date, themeId).stream()
                 .map(ReservationTimeResult::from)
                 .toList();
     }

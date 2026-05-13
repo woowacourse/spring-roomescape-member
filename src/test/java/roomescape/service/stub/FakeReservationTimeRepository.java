@@ -1,8 +1,10 @@
 package roomescape.service.stub;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
@@ -29,6 +31,13 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
         return storage.stream()
                 .filter(time -> time.getId().equals(timeId))
                 .findFirst();
+    }
+
+    @Override
+    public List<ReservationTime> findAvailableTimes(LocalDate date, Long themeId) {
+        return storage.stream()
+                .filter(time -> Objects.equals(time.getTheme().getId(), themeId))
+                .toList();
     }
 
     @Override
