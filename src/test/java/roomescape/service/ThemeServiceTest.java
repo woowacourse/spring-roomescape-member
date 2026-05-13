@@ -2,22 +2,38 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.restassured.RestAssured;
+import java.time.Clock;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
+import roomescape.TestTimeConfig;
 import roomescape.dto.ThemeResponseDTO;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Transactional
-@Sql("/data.sql")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Import(TestTimeConfig.class)
+@Sql(scripts = "/empty.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeServiceTest {
 
+    @LocalServerPort
+    int port;
+    @Autowired
+    Clock clock;
     @Autowired
     private ThemeService themeService;
+
+    @BeforeEach
+    public void init() {
+        RestAssured.port = port;
+    }
 
     @DisplayName("인기 테마를 조회한다")
     @Test

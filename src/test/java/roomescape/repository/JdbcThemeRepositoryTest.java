@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -9,14 +10,21 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
+import roomescape.TestTimeConfig;
 import roomescape.domain.Theme;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Transactional
+@JdbcTest
+@Import({
+        JdbcThemeRepository.class,
+        TestTimeConfig.class
+})
 class JdbcThemeRepositoryTest {
+
+    @Autowired
+    Clock clock;
 
     @Autowired
     ThemeRepository themeRepository;
@@ -81,8 +89,8 @@ class JdbcThemeRepositoryTest {
     @Sql("/data.sql")
     void 최근_1주_동안의_예약_상위_10개의_테마를_조회한다() {
         List<Long> popularThemes = themeRepository.findPopularThemes(
-                LocalDate.now().minusWeeks(1),
-                LocalDate.now(),
+                LocalDate.now(clock).minusWeeks(1),
+                LocalDate.now(clock),
                 10L
         ).stream().map(Theme::getId).collect(Collectors.toList());
 
