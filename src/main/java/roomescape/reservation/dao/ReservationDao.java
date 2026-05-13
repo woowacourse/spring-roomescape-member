@@ -122,7 +122,7 @@ public class ReservationDao {
        return selectById(id);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
     }

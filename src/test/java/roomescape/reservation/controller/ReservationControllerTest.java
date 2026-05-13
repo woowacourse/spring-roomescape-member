@@ -165,4 +165,28 @@ public class ReservationControllerTest {
                 .statusCode(409)
                 .body("code", is("RESERVATION_ALREADY_EXISTS"));
     }
+
+    @Test
+    void 본인_예약_삭제_성공() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/my/1?name=로치")
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @Test
+    void 본인이_아닌_예약_삭제_실패() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/my/1?name=브라운")
+                .then().log().all()
+                .statusCode(403);
+    }
+
+    @Test
+    void 없는_예약_삭제_실패() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/my/17?name=로치")
+                .then().log().all()
+                .statusCode(404);
+    }
 }

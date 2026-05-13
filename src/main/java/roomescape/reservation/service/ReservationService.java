@@ -70,8 +70,21 @@ public class ReservationService {
                 .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
     }
 
-    public void delete(Long id) {
-        reservationDao.delete(id);
+    public void deleteById(Long id) {
+        reservationDao.deleteById(id);
+    }
+
+    public void deleteIdByName(Long id, String name) {
+        Reservation originReservation = reservationDao.selectById(id)
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        if (!originReservation.getName().equals(name)) {
+            throw new RoomescapeException(ErrorCode.CANNOT_DELETE_OTHER_RESERVATION);
+        }
+
+        validateDateTime(originReservation.getDate(), originReservation.getTime());
+
+        reservationDao.deleteById(id);
     }
 
     private void validateReserved(Long timeId, ReservationTime reservedTime) {

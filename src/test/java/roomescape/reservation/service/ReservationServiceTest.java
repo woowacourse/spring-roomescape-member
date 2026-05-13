@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -173,6 +175,73 @@ public class ReservationServiceTest {
                 request.themeId(),
                 request.date(),
                 request.timeId()))
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    void 본인_예약_취소_성공() {
+        Long reservationId = 1L;
+        String name = "로치";
+        Long themeId = 1L;
+        LocalDate date = LocalDate.of(2026, 5, 20);
+        Long timeId = 2L;
+        ReservationTime time = new ReservationTime(timeId, LocalTime.of(12, 0));
+
+        Reservation originReservation = new Reservation(
+                reservationId,
+                name,
+                themeId,
+                LocalDate.of(2026, 5, 23),
+                new ReservationTime(3L, LocalTime.of(10, 0))
+        );
+
+        given(reservationDao.selectById(reservationId))
+                .willReturn(Optional.of(originReservation));
+
+        reservationService.deleteIdByName(reservationId, name);
+
+        verify(reservationDao, times(1)).deleteById(reservationId);
+    }
+
+    @Test
+    void 다른_사람의_예약은_취소할_수_없다() {
+        Long reservationId = 1L;
+        Reservation reservation = new Reservation(
+                reservationId,
+                "로치",
+                1L,
+                LocalDate.of(2026, 5, 23),
+                new ReservationTime(3L, LocalTime.of(12, 0))
+        );
+
+        ReservationChangeRequest request = new ReservationChangeRequest(
+                "브라운",
+                1L,
+                LocalDate.of(2026, 5, 20),
+                2L
+        );
+
+        given(reservationDao.selectById(reservationId))
+                .willReturn(Optional.of(reservation));
+
+        assertThatThrownBy(() -> reservationService.deleteIdByName(reservationId, request.name()))
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessageContaining(ErrorCode.CANNOT_DELETE_OTHER_RESERVATION.getMessage());
+    }
+
+    @Test
+    void 존재하지_않는_예약은_취소할_수_없다() {
+        Long notFoundId = 999L;
+
+        ReservationChangeRequest request = new ReservationChangeRequest(
+                "로치",
+                1L,
+                LocalDate.of(2026, 5, 20),
+                2L
+        );
+
+        assertThatThrownBy(() -> reservationService.deleteIdByName(notFoundId, request.name()))
                 .isInstanceOf(RoomescapeException.class)
                 .hasMessageContaining(ErrorCode.RESERVATION_NOT_FOUND.getMessage());
     }
