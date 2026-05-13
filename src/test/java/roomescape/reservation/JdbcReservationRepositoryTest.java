@@ -126,4 +126,31 @@ class JdbcReservationRepositoryTest {
                 .extracting(ReservationDetailProjection::id)
                 .contains(1L);
     }
+
+    @Test
+    @DisplayName("같은 스케줄에 본인 제외 다른 예약이 있으면 true를 반환한다.")
+    void isDuplicateReservation_true반환_테스트() {
+        // when
+        boolean result = reservationRepository.isDuplicateReservation(1, 2);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("같은 스케줄에 본인 제외 다른 예약이 없으면 false를 반환한다.")
+    void isDuplicateReservation_false반환_테스트() {
+        // when
+        boolean result = reservationRepository.isDuplicateReservation(1, 4);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    @DisplayName("본인의 기존 예약을 변경가능한 스케줄로 변경할 수 있다.")
+    void updateScheduleByIdAndName_테스트() {
+        int affectedRow = reservationRepository.updateScheduleByIdAndName(1L, "a", 4L);
+        assertThat(affectedRow).isEqualTo(1);
+    }
 }

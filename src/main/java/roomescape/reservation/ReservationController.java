@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.dto.request.ReservationSaveRequest;
+import roomescape.reservation.dto.request.ReservationUpdateRequest;
 import roomescape.reservation.dto.response.ReservationDetailFindResponse;
 import roomescape.reservation.dto.response.ReservationSaveResponse;
 
@@ -64,5 +66,15 @@ public class ReservationController {
     ) {
         reservationService.deleteByIdAndName(id, name);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PutMapping(value = "/{id}", params = "name")
+    public ResponseEntity<ReservationSaveResponse> update(
+            @RequestBody @Valid ReservationUpdateRequest request,
+            @PathVariable @Positive long id,
+            @RequestParam @NotBlank String name
+    ) {
+        ReservationSaveResponse response = reservationService.update(request, id, name);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

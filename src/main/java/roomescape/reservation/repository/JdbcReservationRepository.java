@@ -14,6 +14,7 @@ import roomescape.theme.dto.response.ThemeFindResponse;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -146,5 +147,75 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("name", name);
 
         return template.update(sql, params);
+    }
+
+    @Override
+    public Optional<ReservationDetailProjection> findDetailByIdAndName(long reservationId, String name) {
+        String sql = """
+                SELECT
+                     r.id AS reservation_id,
+                     r.name AS reservation_name,
+                     s.date,
+                     t.id AS theme_id,
+                     t.name AS theme_name,
+                     t.description AS theme_description,
+                     t.thumbnail_url AS theme_thumbnail_url,
+                     rt.id AS time_id,
+                     rt.start_at
+                 FROM reservation r
+                 JOIN schedule s ON r.schedule_id = s.id
+                 JOIN theme t ON s.theme_id = t.id
+                 JOIN reservation_time rt ON s.time_id = rt.id
+                 WHERE r.id = :id AND r.name = :name
+                """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", reservationId)
+                .addValue("name", name);
+
+        return template.query(sql, params, reservationDetailFindRowMapper).stream().findFirst();
+    }
+
+    @Override
+    public boolean isDuplicateReservation(long reservationId, long scheduleId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation r WHERE r.schedule_id = :scheduleId AND r.id <> :reservationId)";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("reservationId", reservationId)
+                .addValue("scheduleId", scheduleId);
+
+        return Boolean.TRUE.equals(template.queryForObject(sql, params, Boolean.class));
+    }
+
+    @Override
+    public int updateScheduleByIdAndName(long id, String name, long scheduleId) {
+        String sql = """ 
+                UPDATE reservation
+                SET schedule_id = :scheduleId
+                WHERE id = :id AND name = :name
+                """;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", name)
+                .addValue("scheduleId", scheduleId)
+                .addValue("id", id);
+
+        return template.update(sql, params);
+    }
+
+    @Override
+    public Optional<Reservation> findByIdAndName(long reservationId, String name) {
+        String sql = "SELECT * FROM reservation WHERE id = :id AND name = :name";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", reservationId)
+                .addValue("name", name);
+
+        return template.query(sql, params,
+                (resultSet, rowNum) -> new Reservation(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getLong("schedule_id")
+                )
+        ).stream().findFirst();
     }
 }

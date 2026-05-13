@@ -27,7 +27,7 @@ public class ScheduleService {
         }
     }
 
-    public Long findScheduleIdByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
+    public long findScheduleIdByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
         return scheduleRepository.findScheduleIdByDateAndTimeIdAndThemeId(date, timeId, themeId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "해당 조건을 가진 일정이 없습니다. date: " + date + "timeId: " + timeId + "themeId: " + themeId
