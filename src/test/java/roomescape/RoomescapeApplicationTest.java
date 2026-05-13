@@ -103,9 +103,10 @@ class RoomescapeApplicationTest {
 
     @Test
     void 예약자의_이름을_헤더로_전송하여_예약을_삭제할_수_있다() {
+        // reservation(id=21): ScheduleTest, 2099-12-31 (미래)
         RestAssured.given().log().all()
-                .header("X-User-Name", "User1")
-                .when().delete("/reservations/1")
+                .header("X-User-Name", "ScheduleTest")
+                .when().delete("/reservations/21")
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }
@@ -200,6 +201,65 @@ class RoomescapeApplicationTest {
                 .body("date", is("2099-12-31"))
                 .body("schedules.find { it.timeId == 1 }.isAvailable", is(false))
                 .body("schedules.find { it.timeId == 2 }.isAvailable", is(true));
+    }
+
+    @Test
+    void 본인의_예약_목록을_조회할_수_있다() {
+        RestAssured.given().log().all()
+                .header("X-User-Name", "User1")
+                .when().get("/reservations/my")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(1));
+    }
+
+    @Test
+    void 이미_지난_예약을_취소하려_하면_400이_반환된다() {
+        RestAssured.given().log().all()
+                .header("X-User-Name", "User1")
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 예약의_날짜와_시간을_변경할_수_있다() {
+        Map<String, Object> request = new HashMap<>();
+        request.put("date", LocalDate.now().plusDays(2).toString());
+        request.put("timeId", 2);
+
+        RestAssured.given().log().all()
+                .header("X-User-Name", "ScheduleTest")
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().patch("/reservations/21")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    void 변경하려는_시간이_이미_차있으면_409가_반환된다() {
+        // 먼저 같은 날짜/테마에 time=2 슬롯을 선점
+        Map<String, Object> occupy = new HashMap<>();
+        occupy.put("themeId", 1);
+        occupy.put("name", "다른사람");
+        occupy.put("date", "2099-12-31");
+        occupy.put("timeId", 2);
+        RestAssured.given().contentType(ContentType.JSON).body(occupy)
+                .when().post("/reservations").then().statusCode(HttpStatus.CREATED.value());
+
+        // reservation(id=21, ScheduleTest, 2099-12-31, time=1)을 time=2로 변경 시도 → 409
+        Map<String, Object> request = new HashMap<>();
+        request.put("date", "2099-12-31");
+        request.put("timeId", 2);
+
+        RestAssured.given().log().all()
+                .header("X-User-Name", "ScheduleTest")
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().patch("/reservations/21")
+                .then().log().all()
+                .statusCode(HttpStatus.CONFLICT.value());
     }
 
     @Test

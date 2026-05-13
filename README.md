@@ -16,9 +16,10 @@ JSON
 }
 ```
 ### GlobalExceptionHandler 기준 공통 상태 코드:  
-- 400 Bad Request: 검증 실패, 예약/시간/테마 중복, 예약 제약 위반.  
+- 400 Bad Request: 검증 실패, 지나간 날짜·시간 예약, 이미 지난 예약 취소·변경.  
+- 403 Forbidden: 타인의 예약 접근.  
 - 404 Not Found: 리소스를 찾을 수 없음.  
-- 409 Conflict: 의존성이 있어 삭제 불가.  
+- 409 Conflict: 예약 슬롯 중복, 의존성이 있어 삭제 불가.  
 - 500 Internal Server Error: 서버 내부 예외.  
 
 ## 테마
@@ -49,7 +50,7 @@ JSON
 
 서버 기본값:
 - endDate: 오늘 날짜
-- startDate: endDate - 7 days
+- startDate: endDate - 6 days (오늘 포함 7일 윈도우)
 
 응답: 200 OK
 
@@ -127,7 +128,35 @@ JSON
 
 ## 예약
 ### GET /reservations
+전체 예약 목록을 조회합니다.
+
+응답: 200 OK
+
+``` JSON
+[
+  {
+    "id": 1,
+    "name": "Brown",
+    "date": "2026-05-01",
+    "time": {
+      "id": 1,
+      "startAt": "10:00:00"
+    },
+    "theme": {
+      "id": 2,
+      "name": "Roomescape A",
+      "description": "...",
+      "thumbnail": "https://example.com/a.png"
+    }
+  }
+]
+```
+
+### GET /reservations/my
 본인의 예약 목록을 조회합니다.
+
+요청 헤더:
+- `X-User-Name`: 예약자 이름 (필수)
 
 응답: 200 OK
 
@@ -166,17 +195,44 @@ JSON
 ```
 응답: 201 Created
 
-### DELETE /reservations/{id}
-본인의 예약을 취소합니다. (본인 확인을 위해 이름을 포함합니다)
+오류:
+- 400: 지나간 날짜·시간
+- 409: 해당 슬롯 이미 예약됨
 
-요청 본문 (JSON):
+### PATCH /reservations/{id}
+본인의 예약 날짜·시간을 변경합니다.
+
+요청 헤더:
+- `X-User-Name`: 예약자 이름 (필수)
+
+요청 본문:
 
 ``` JSON
 {
-  "name": "Brown"
+  "date": "2026-06-01",
+  "timeId": 2
 }
 ```
+응답: 200 OK
+
+오류:
+- 400: 지나간 날짜·시간으로 변경, 또는 현재 예약이 이미 지난 예약
+- 403: 타인의 예약 변경 시도
+- 404: 예약 또는 예약 시간 없음
+- 409: 변경하려는 슬롯 이미 예약됨
+
+### DELETE /reservations/{id}
+본인의 예약을 취소합니다.
+
+요청 헤더:
+- `X-User-Name`: 예약자 이름 (필수)
+
 응답: 204 No Content
+
+오류:
+- 400: 이미 지난 예약 취소 시도
+- 403: 타인의 예약 취소 시도
+- 404: 예약 없음
 
 ## 관리자 예약
 ### POST /admin/reservations
