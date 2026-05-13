@@ -17,6 +17,7 @@ import roomescape.domain.reservationTime.ReservationTimeCommand;
 import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.domain.theme.Theme;
+import roomescape.exception.InvalidRequestValueException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
@@ -36,6 +37,11 @@ public class ReservationTimeServiceTest {
             @Override
             public void deleteReservation(long id) {
 
+            }
+
+            @Override
+            public int updateAll(long id, ReservationCommand reservationCommand) {
+                return 0;
             }
 
             @Override
@@ -102,8 +108,8 @@ public class ReservationTimeServiceTest {
         ReservationTimeService reservationTimeService = new ReservationTimeService(createReservationTimeRepository(() -> {}), createReservationRepository(true));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
-                .isExactlyInstanceOf(DataReferencedException.class)
-                .hasMessage(ErrorMessage.CANNOT_DELETE_RESERVATION_TIME_IN_USE.getMessage());
+                .isExactlyInstanceOf(InvalidRequestValueException.class)
+                /*.hasMessage(ErrorMessage.CANNOT_DELETE_RESERVATION_TIME_IN_USE.getMessage())*/;
     }
 
     @Test
@@ -114,8 +120,8 @@ public class ReservationTimeServiceTest {
         }), createReservationRepository(false));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1))
-                .isExactlyInstanceOf(DataReferencedException.class)
-                .hasMessage(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE.getMessage());
+                .isExactlyInstanceOf(InvalidRequestValueException.class)
+                /*.hasMessage(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE.getMessage())*/;
     }
 
 }

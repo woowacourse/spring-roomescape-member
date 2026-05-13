@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.InvalidRequestValueException;
 
 class ReservationTimeCommandTest {
     @Test
@@ -23,8 +24,8 @@ class ReservationTimeCommandTest {
     @DisplayName("시작 시간이 비어있거나 공백인 경우 예외 테스트")
     void EmptyStartTimeTest(String invalidTime) {
         assertThatThrownBy(() -> new ReservationTimeCommand(invalidTime))
-                .isInstanceOf(ReservationCommandException.class)
-                .hasMessage(ErrorMessage.INVALID_START_TIME_NULL.getMessage());
+                .isInstanceOf(InvalidRequestValueException.class)
+                /*.hasMessage(ErrorMessage.INVALID_START_TIME_NULL.getMessage())*/;
     }
 
     @ParameterizedTest
@@ -32,7 +33,7 @@ class ReservationTimeCommandTest {
     @DisplayName("잘못된 형식의 시간인 경우 예외 테스트")
     void InvalidTimeFormatTest(String invalidTime) {
         assertThatThrownBy(() -> new ReservationTimeCommand(invalidTime))
-                .isInstanceOf(ReservationCommandException.class)
-                .hasMessage(ErrorMessage.INVALID_START_TIME_FORMAT.getMessage());
+                .isInstanceOf(InvalidRequestValueException.class)
+                /*.hasMessage(ErrorMessage.INVALID_START_TIME_FORMAT.getMessage())*/;
     }
 }

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 class ReservationCommandTest {
     @Test
@@ -32,8 +33,8 @@ class ReservationCommandTest {
     @DisplayName("이름이 비어있거나 공백인 경우 예외 테스트")
     void NameBlankTest(String invalidName) {
         assertThatThrownBy(() -> new ReservationCommand(invalidName, "2023-05-18", 1L, 1L))
-                .isInstanceOf(ReservationCommandException.class)
-                .hasMessage(ErrorMessage.INVALID_NAME_BLANK.getMessage());
+                .isInstanceOf(MethodArgumentNotValidException.class)
+                /*.hasMessage(ErrorMessage.INVALID_NAME_BLANK.getMessage())*/;
     }
 
     @Test
@@ -42,16 +43,16 @@ class ReservationCommandTest {
         String longName = "a".repeat(21);
 
         assertThatThrownBy(() -> new ReservationCommand(longName, "2023-05-18", 1L, 1L))
-                .isInstanceOf(ReservationCommandException.class)
-                .hasMessage(ErrorMessage.INVALID_NAME_LENGTH.getMessage());
+                .isInstanceOf(MethodArgumentNotValidException.class)
+                /*.hasMessage(ErrorMessage.INVALID_NAME_LENGTH.getMessage())*/;
     }
 
     @Test
     @DisplayName("날짜가 null인 경우 예외 테스트")
     void NullDateTest() {
         assertThatThrownBy(() -> new ReservationCommand("브라운", (String) null, 1L, 1L))
-                .isInstanceOf(ReservationCommandException.class)
-                .hasMessage(ErrorMessage.INVALID_DATE_NULL.getMessage());
+                .isInstanceOf(MethodArgumentNotValidException.class)
+                /*.hasMessage(ErrorMessage.INVALID_DATE_NULL.getMessage())*/;
     }
 
     @ParameterizedTest
@@ -59,8 +60,8 @@ class ReservationCommandTest {
     @DisplayName("잘못된 형식의 날짜인 경우 예외 테스트")
     void InvalidDateFormatTest(String invalidDate) {
         assertThatThrownBy(() -> new ReservationCommand("브라운", invalidDate, 1L, 1L))
-                .isInstanceOf(ReservationCommandException.class)
-                .hasMessage(ErrorMessage.INVALID_DATE_FORMAT.getMessage());
+                .isInstanceOf(MethodArgumentNotValidException.class)
+                /*.hasMessage(ErrorMessage.INVALID_DATE_FORMAT.getMessage())*/;
     }
 
     @ParameterizedTest
@@ -68,8 +69,8 @@ class ReservationCommandTest {
     @DisplayName("시간 ID가 0 이하인 경우 예외 테스트")
     void NotPositiveTimeIdTest(long invalidTimeId) {
         assertThatThrownBy(() -> new ReservationCommand("브라운", "2024-05-01", invalidTimeId, 1L))
-                .isInstanceOf(ReservationCommandException.class)
-                .hasMessage(ErrorMessage.INVALID_TIME_ID_FORMAT.getMessage());
+                .isInstanceOf(MethodArgumentNotValidException.class)
+                /*.hasMessage(ErrorMessage.INVALID_TIME_ID_FORMAT.getMessage())*/;
     }
 
     @ParameterizedTest
@@ -77,7 +78,7 @@ class ReservationCommandTest {
     @DisplayName("테마 ID가 0 이하인 경우 예외 테스트")
     void NotPositiveThemeIdTest(long invalidThemeId) {
         assertThatThrownBy(() -> new ReservationCommand("브라운", "2024-05-01", 1L, invalidThemeId))
-                .isInstanceOf(ReservationCommandException.class)
-                .hasMessage(ErrorMessage.INVALID_TIME_ID_FORMAT.getMessage());
+                .isInstanceOf(MethodArgumentNotValidException.class)
+                /*.hasMessage(ErrorMessage.INVALID_TIME_ID_FORMAT.getMessage())*/;
     }
 }

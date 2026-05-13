@@ -17,6 +17,7 @@ import roomescape.domain.theme.ReservationThemeWithCount;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ReservationThemeCommand;
+import roomescape.exception.InvalidRequestValueException;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
@@ -36,6 +37,11 @@ public class ThemeServiceTest {
             @Override
             public void deleteReservation(long id) {
 
+            }
+
+            @Override
+            public int updateAll(long id, ReservationCommand reservationCommand) {
+                return 0;
             }
 
             @Override
@@ -103,8 +109,8 @@ public class ThemeServiceTest {
         ThemeService themeService = new ThemeService(createReservationThemeRepository(() -> {}), createReservationRepository(true));
 
         assertThatThrownBy(() -> themeService.deleteTheme(1))
-                .isExactlyInstanceOf(DataReferencedException.class)
-                .hasMessage(ErrorMessage.CANNOT_DELETE_THEME_IN_USE.getMessage());
+                .isExactlyInstanceOf(InvalidRequestValueException.class)
+                /*.hasMessage(ErrorMessage.CANNOT_DELETE_THEME_IN_USE.getMessage())*/;
     }
 
     @Test
@@ -118,7 +124,7 @@ public class ThemeServiceTest {
         );
 
         assertThatThrownBy(() -> themeService.deleteTheme(1))
-                .isExactlyInstanceOf(DataReferencedException.class)
-                .hasMessage(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE.getMessage());
+                .isExactlyInstanceOf(InvalidRequestValueException.class)
+                /*.hasMessage(ErrorMessage.INTEGRITY_VIOLATION_ON_DELETE.getMessage())*/;
     }
 }

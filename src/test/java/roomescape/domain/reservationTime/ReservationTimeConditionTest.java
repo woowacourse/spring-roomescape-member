@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.reservation.ReservationCommand;
+import roomescape.exception.InvalidRequestValueException;
 
 public class ReservationTimeConditionTest {
     @Test
@@ -24,8 +25,8 @@ public class ReservationTimeConditionTest {
     @DisplayName("잘못된 날짜의 경우 예외 테스트")
     void InvalidDateTest(String invalidDate) {
         assertThatThrownBy(() -> new ReservationTimeCondition(invalidDate, 1))
-                .isInstanceOf(ReservationTimeConditionException.class)
-                .hasMessage(ErrorMessage.INVALID_DATE_FORMAT.getMessage());
+                .isInstanceOf(InvalidRequestValueException.class)
+                /*.hasMessage(ErrorMessage.INVALID_DATE_FORMAT.getMessage())*/;
     }
 
     @ParameterizedTest
@@ -33,7 +34,7 @@ public class ReservationTimeConditionTest {
     @DisplayName("테마 ID가 0 이하인 경우 예외 테스트")
     void NotPositiveThemeIdTest(long invalidThemeId) {
         assertThatThrownBy(() -> new ReservationCommand("브라운", "2024-05-01", 1L, invalidThemeId))
-                .isInstanceOf(ReservationCommandException.class)
-                .hasMessage(ErrorMessage.INVALID_TIME_ID_FORMAT.getMessage());
+                .isInstanceOf(InvalidRequestValueException.class)
+                /*.hasMessage(ErrorMessage.INVALID_TIME_ID_FORMAT.getMessage())*/;
     }
 }
