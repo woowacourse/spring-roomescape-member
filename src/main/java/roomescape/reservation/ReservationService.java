@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.AlreadyInUseException;
 import roomescape.exception.InvalidStateException;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.dto.ReservationRequest;
@@ -44,13 +45,11 @@ public class ReservationService {
                 reservationTime
         );
 
-        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(),
-                reservation.getTime().getStartAt());
-        if (reservationDateTime.isBefore(now)) {
-            throw new InvalidStateException("이미 지난 날짜와 시간으로 예약할 수 없습니다.");
-        }
+        validateDuplicate(reservation);
+        validateDateTime(now, reservation);
 
         Reservation saved = reservationRepository.save(reservation);
+
         return ReservationResponse.from(saved);
     }
 
@@ -75,10 +74,26 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("예약을 찾을 수 없습니다."));
 
-        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
-        if (reservationDateTime.isBefore(now)) {
-            throw new InvalidStateException("이미 지난 날짜와 시간의 예약은 삭제할 수 없습니다.");
-        }
+        validateDateTime(now, reservation);
+
         reservationRepository.deleteById(id);
+    }
+
+    private void validateDuplicate(Reservation reservation) {
+        if (reservationRepository.existsByThemeIdAndDateAndTimeId(
+                reservation.getTheme().getId(),
+                reservation.getDate(),
+                reservation.getTime().getId())
+        ) {
+            throw new AlreadyInUseException("이미 예약된 테마•날짜•시간입니다.");
+        }
+    }
+
+    private void validateDateTime(LocalDateTime now, Reservation reservation) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(),
+                reservation.getTime().getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new InvalidStateException("이미 지난 날짜와 시간입니다.");
+        }
     }
 }

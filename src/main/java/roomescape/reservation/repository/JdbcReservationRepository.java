@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.cglib.core.Local;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -126,5 +127,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existsByThemeId(long themeId) {
         String sql = "SELECT EXISTS (SELECT * FROM reservation WHERE theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
+    }
+
+    @Override
+    public boolean existsByThemeIdAndDateAndTimeId(long themeId, LocalDate date, long timeId) {
+        String sql = "SELECT EXISTS (SELECT * FROM reservation WHERE theme_id = ? AND date = ? AND time_id = ?";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId, date, timeId);
     }
 }
