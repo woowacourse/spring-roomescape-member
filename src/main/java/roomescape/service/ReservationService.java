@@ -53,7 +53,7 @@ public class ReservationService {
         final LocalDate date = data.date();
         validateDate(date);
         final ReservationTime reservationTime = getReservationTime(data);
-        validateReservationTime(reservationTime);
+        validateReservationTime(date, reservationTime);
         final Theme theme = getTheme(data);
 
         validateAvailable(data);
@@ -64,17 +64,18 @@ public class ReservationService {
         return mapDomainToDto(savedReservation);
     }
 
-    private void validateReservationTime(final ReservationTime reservationTime) {
-        final LocalTime now = LocalTime.now(clock);
-        if (reservationTime.isBefore(now)) {
-            throw new IllegalArgumentException("지난 시간대로 예약이 불가합니다.");
-        }
-    }
-
     private void validateDate(final LocalDate date) {
         final LocalDate today = LocalDate.now(clock);
         if (date.isBefore(today)) {
             throw new IllegalArgumentException("지난 날짜로 예약이 불가합니다.");
+        }
+    }
+
+    private void validateReservationTime(final LocalDate date, final ReservationTime reservationTime) {
+        final LocalDate today = LocalDate.now(clock);
+        final LocalTime now = LocalTime.now(clock);
+        if (date.equals(today) && reservationTime.isBefore(now)) {
+            throw new IllegalArgumentException("지난 시간대로 예약이 불가합니다.");
         }
     }
 
