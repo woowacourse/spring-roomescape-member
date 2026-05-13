@@ -15,7 +15,7 @@ public class Reservation {
     private final Theme theme;
 
     private Reservation(final Long id, final Name customerName, final LocalDate date, final ReservationTime time, final Theme theme) {
-        validateDateTime(date, time);
+        validateRequiredValues(date, time);
 
         this.id = id;
         this.customerName = customerName;
@@ -24,14 +24,23 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation create(final String name, final LocalDate date, final ReservationTime reservationTime, final Theme theme) {
-        return new Reservation(
+    public static Reservation create(
+            final String name,
+            final LocalDate date,
+            final ReservationTime reservationTime,
+            final Theme theme,
+            final LocalDateTime now
+    ) {
+        final Reservation reservation = new Reservation(
                 null,
                 Name.from(name),
                 date,
                 reservationTime,
                 theme
         );
+
+        reservation.validateNotPast(now);
+        return reservation;
     }
 
     public static Reservation of(
@@ -49,23 +58,37 @@ public class Reservation {
         );
     }
 
+
     public String getCustomerName() {
         return customerName.getName();
     }
 
-    private void validateDateTime(final LocalDate date, final ReservationTime time) {
+    public boolean canCancel(final LocalDateTime now) {
+        return !isPast(now);
+    }
+
+
+    private void validateRequiredValues(final LocalDate date, final ReservationTime time) {
         if (date == null) {
             throw new IllegalArgumentException("예약일을 입력해야 합니다.");
         }
 
-        validateNotPast(date, time);
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간을 입력해야 합니다.");
+        }
     }
 
-    private void validateNotPast(final LocalDate date, final ReservationTime time) {
-        final LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("현재 이전 시간으로는 예약할 수 없습니다.");
+    private void validateNotPast(final LocalDateTime now) {
+        if (isPast(now)) {
+            throw new IllegalArgumentException("과거 시간으로는 예약할 수 없습니다.");
         }
+    }
+
+    private boolean isPast(final LocalDateTime now) {
+        return reservationDateTime().isBefore(now);
+    }
+
+    private LocalDateTime reservationDateTime() {
+        return LocalDateTime.of(date, time.getStartAt());
     }
 }

@@ -1,6 +1,7 @@
 package roomescape.repository.jdbc;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -21,6 +22,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -54,6 +56,33 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Optional<Reservation> findById(final Long reservationId) {
+        final String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
+                    r.date AS reservation_date,
+                    r.theme_id AS theme_id,
+                    t.id AS time_id,
+                    t.start_at AS time_start_at,
+                    t.end_at AS time_end_at,
+                    h.name AS theme_name,
+                    h.description AS theme_description,
+                    h.thumbnail_url AS theme_thumbnail_url
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme h ON r.theme_id = h.id
+                WHERE r.id = ?
+                """;
+
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, this::mapToDomain, reservationId));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Reservation save(final Reservation newReservation) {
         final ReservationEntity reservationEntity = toEntity(newReservation);
 
@@ -69,13 +98,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean deleteById(final Long reservationId) {
+    public void deleteById(final Long reservationId) {
         final String sql = """
                 DELETE FROM reservation
                 WHERE id = ?
                 """;
 
-        return jdbcTemplate.update(sql, reservationId) > 0;
+        jdbcTemplate.update(sql, reservationId);
     }
 
     @Override
@@ -104,6 +133,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 ).stream()
                 .toList();
     }
+
 
     private long insertReservation(final ReservationEntity reservationEntity) {
         final String sql = """

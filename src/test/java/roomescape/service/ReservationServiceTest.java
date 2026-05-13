@@ -2,7 +2,9 @@ package roomescape.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.service.dto.request.ReservationCreateRequest;
@@ -24,7 +26,8 @@ class ReservationServiceTest {
 
     private static final Clock FIXED_CLOCK = Clock.fixed(
             LocalDate.of(2026, 5, 8)
-                    .atStartOfDay(ZoneId.of("Asia/Seoul"))
+                    .atTime(10, 30)
+                    .atZone(ZoneId.of("Asia/Seoul"))
                     .toInstant(),
             ZoneId.of("Asia/Seoul")
     );
@@ -50,12 +53,12 @@ class ReservationServiceTest {
     @Test
     void 예약을_생성한다() {
         // given
-        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)));
+        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(11, 0), LocalTime.of(11, 30)));
         themeRepository.add(Theme.of(1L, "링", "공포 테마", "http:~"));
 
         // when
         ReservationResponse response = reservationService.create(
-                new ReservationCreateRequest("브라운", LocalDate.of(2026, 8, 5), 1L, 1L)
+                new ReservationCreateRequest("브라운", LocalDate.of(2026, 5, 8), 1L, 1L)
         );
 
         // then
@@ -65,13 +68,25 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 현재_이전_시간으로_예약하면_예외가_발생한다() {
+        // given
+        reservationTimeRepository.add(ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)));
+        themeRepository.add(Theme.of(1L, "링", "공포 테마", "http:~"));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.create(
+                new ReservationCreateRequest("브라운", LocalDate.of(2026, 5, 8), 1L, 1L)
+        ))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void 존재하지_않는_예약_시간으로_예약하면_예외가_발생한다() {
         // when & then
         assertThatThrownBy(() -> reservationService.create(
                 new ReservationCreateRequest("브라운", LocalDate.of(2026, 8, 5), 1L, 1L)
         ))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -83,8 +98,7 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.create(
                 new ReservationCreateRequest("브라운", LocalDate.of(2026, 8, 5), 1L, 1L)
         ))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 테마입니다.");
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -106,13 +120,25 @@ class ReservationServiceTest {
 
     @Test
     void 존재하지_않는_예약을_삭제하면_예외가_발생한다() {
+        // when & then
+        assertThatThrownBy(() -> reservationService.delete(1L))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void 현재_이전_예약을_삭제하면_예외가_발생한다() {
         // given
-        reservationRepository.failToDelete();
+        reservationRepository.add(Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 5, 8),
+                ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                Theme.of(1L, "링", "공포 테마", "http:~")
+        ));
 
         // when & then
         assertThatThrownBy(() -> reservationService.delete(1L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약입니다.");
+                .isInstanceOf(ConflictException.class);
     }
 
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -17,6 +18,7 @@ import roomescape.service.dto.response.ThemeResponse;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -52,7 +54,8 @@ public class ReservationService {
                 data.name(),
                 data.date(),
                 reservationTime,
-                theme
+                theme,
+                LocalDateTime.now(clock)
         );
 
         final Reservation savedReservation = reservationRepository.save(reservation);
@@ -61,11 +64,14 @@ public class ReservationService {
     }
 
     public void delete(final Long reservationId) {
-        final boolean deleted = reservationRepository.deleteById(reservationId);
+        final Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
 
-        if (!deleted) {
-            throw new NotFoundException("존재하지 않는 예약입니다.");
+        if (!reservation.canCancel(LocalDateTime.now(clock))) {
+            throw new ConflictException("과거 예약은 취소할 수 없습니다.");
         }
+
+        reservationRepository.deleteById(reservationId);
     }
 
     public ReservationOptionResponse getReservationOptions() {

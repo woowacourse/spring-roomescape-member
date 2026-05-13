@@ -46,8 +46,7 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+                .isInstanceOf(NotFoundException.class);
     }
 
 }

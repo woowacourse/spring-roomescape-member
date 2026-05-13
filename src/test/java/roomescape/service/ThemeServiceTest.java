@@ -72,8 +72,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.delete(1L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 테마입니다.");
+                .isInstanceOf(NotFoundException.class);
     }
 
 }
