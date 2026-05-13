@@ -6,7 +6,6 @@ public enum ErrorCode {
     RESERVATION_BLANK_TIMEID(400, "timeId가 누락되었습니다.", "requestBody에 timeId 값을 추가해주세요."),
     RESERVATION_BLANK_THEMEID(400, "themeId가 누락되었습니다.", "requestBody에 themeId 값을 추가해주세요."),
     RESERVATION_WRONG_NAME(400, "이름은 2자 이상 20자 이하 입니다.", null),
-    RESERVATION_INVALID_DATE(400, "날짜 형식이 잘못되었습니다.", "날짜 형식은 2026-05-11 형태여야 합니다."),
     RESERVATION_WRONG_DATE(400, "이미 지난 날짜로는 예약이 불가능합니다.", null),
     RESERVATION_WRONG_TIME(400, "이미 지난 시간으로는 예약이 불가능합니다.", null),
     RESERVATION_TIMEID_NOT_FOUND(404, "해당 시간은 존재하지 않습니다.", null),
@@ -28,7 +27,6 @@ public enum ErrorCode {
 
     THEME_NOT_FOUND(404, "해당 테마가 존재하지 않아서 삭제할 수 없습니다.", "테마 아이디를 확인해주세요."),
 
-    THEME_RANK_BLANK_LIMIT(400, "limit 값이 누락되었습니다.", "queryString에 limit값을 추가해주세요."),
     THEME_RANK_INVALID_LIMIT(400, "limit는 0 이하일 수 없습니다.", null),
 
     INTERNAL_ERROR(500, "요청 처리에 문제가 발생했습니다.", null);
