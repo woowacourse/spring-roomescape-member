@@ -71,13 +71,13 @@
 
 #### Reservation 도메인
 
-| 에러 코드                     | HTTP | 메시지                         | 상황                 |
-|---------------------------|------|-----------------------------|--------------------|
-| RESERVATION_NOT_FOUND     | 404  | 존재하지 않는 예약입니다.              | 예약이 없음             |
-| RESERVATION_DUPLICATE     | 409  | 이미 예약된 일정입니다.               | 중복 예약 발생(날짜+시간+테마) |
-| RESERVATION_PAST_DATETIME | 400  | 과거 날짜, 시간으로 예약할 수 없습니다.     | 지난 날짜/시간으로 예약      |
-| RESERVATION_EXPIRED       | 400  | 이미 지난 예약은 변경하거나 취소할 수 없습니다. | 이미 지난 예약 취소/변경     |
-| RESERVATION_FORBIDDEN     | 403  | 예약을 변경 및 취소할 권한이 없습니다.      | 본인 예약이 아닌데 변경/취소   |
+| 에러 코드                     | HTTP | 메시지                             | 상황                 |
+|---------------------------|------|---------------------------------|--------------------|
+| RESERVATION_NOT_FOUND     | 404  | 존재하지 않는 예약입니다.                  | 예약이 없음             |
+| RESERVATION_DUPLICATE     | 409  | 이미 예약된 일정입니다.                   | 중복 예약 발생(날짜+시간+테마) |
+| RESERVATION_PAST_DATETIME | 400  | 과거 날짜, 시간으로 예약할 수 없습니다.         | 지난 날짜/시간으로 예약      |
+| RESERVATION_EXPIRED       | 400  | 이미 시간이 지난 예약은 변경하거나 취소할 수 없습니다. | 이미 시간 지난 예약 취소/변경  |
+| RESERVATION_FORBIDDEN     | 403  | 예약을 변경 및 취소할 권한이 없습니다.          | 본인 예약이 아닌데 변경/취소   |
 
 #### ReservationTime 도메인
 
@@ -116,7 +116,7 @@
 
 #### 사용자
 - [x] `GET /reservations?name={name}` API 추가
-- [ ] `DELETE /reservations/{id}?name={name}` 취소 API 수정
+- [x] `DELETE /reservations/{id}?name={name}` 취소 API 수정
 - [ ] `PATCH /reservations/{id}?name={name}` 날짜/시간 변경 API
     ```json
     {
