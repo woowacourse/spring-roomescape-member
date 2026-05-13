@@ -33,6 +33,10 @@ public class ThemeService {
         );
     }
 
+    public List<Theme> findAllThemes() {
+        return themeRepository.findAll();
+    }
+
     @Transactional
     public void removeThemeById(Long id) {
         if (themeRepository.findById(id).isEmpty()) {
@@ -40,9 +44,5 @@ public class ThemeService {
         }
 
         themeRepository.deleteById(id);
-    }
-
-    public List<Theme> findAllThemes() {
-        return themeRepository.findAll();
     }
 }

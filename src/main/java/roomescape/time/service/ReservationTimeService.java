@@ -37,15 +37,6 @@ public class ReservationTimeService {
         return reservationTimeRepository.save(reservationTime);
     }
 
-    @Transactional
-    public void removeReservationTimeById(Long id) {
-        if (reservationTimeRepository.findById(id).isEmpty()) {
-            throw new TimeNotFoundException();
-        }
-
-        reservationTimeRepository.deleteById(id);
-    }
-
     public List<ReservationTime> findAllReservationTimes() {
         return reservationTimeRepository.findAll();
     }
@@ -60,5 +51,14 @@ public class ReservationTimeService {
         }
 
         return new AvailableTimesResult(reservationTimeRepository.findAvailableTimes(themeId, date));
+    }
+
+    @Transactional
+    public void removeReservationTimeById(Long id) {
+        if (reservationTimeRepository.findById(id).isEmpty()) {
+            throw new TimeNotFoundException();
+        }
+
+        reservationTimeRepository.deleteById(id);
     }
 }

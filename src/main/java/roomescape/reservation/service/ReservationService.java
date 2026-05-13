@@ -83,23 +83,23 @@ public class ReservationService {
         }
     }
 
-    @Transactional
-    public void deleteReservationById(Long id) {
-        if (reservationRepository.findById(id).isEmpty()) {
-            throw new ReservationNotFoundException();
-        }
-
-        Reservation reservation = getReservation(id);
-        validateExpiry(
-                reservation.getDate(),
-                reservation.getTime().getStartAt()
-        );
-        reservationRepository.deleteById(id);
+    public List<Reservation> findReservationsByName(String name) {
+        return reservationRepository.findAllByName(name);
     }
 
-    private Reservation getReservation(Long id) {
-        return reservationRepository.findById(id)
-                .orElseThrow(ReservationNotFoundException::new);
+    public List<Reservation> findReservations() {
+        return reservationRepository.findAll();
+    }
+
+    public PopularThemesResult findPopularThemes(int period, int limit) {
+        int oneDayDifference = 1;
+
+        LocalDate to = LocalDate.now(clock).minusDays(oneDayDifference);
+        LocalDate from = to.minusDays(period).plusDays(oneDayDifference);
+
+        return new PopularThemesResult(
+                reservationRepository.findPopularThemes(from, to, limit)
+        );
     }
 
     @Transactional
@@ -121,6 +121,11 @@ public class ReservationService {
         reservationRepository.update(updated);
     }
 
+    private Reservation getReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(ReservationNotFoundException::new);
+    }
+
     private Reservation updateField(ReservationUpdateCommand command, Reservation reservation) {
         Reservation result = reservation;
 
@@ -137,23 +142,18 @@ public class ReservationService {
         return result;
     }
 
-    public List<Reservation> findReservationsByName(String name) {
-        return reservationRepository.findAllByName(name);
-    }
+    @Transactional
+    public void deleteReservationById(Long id) {
+        if (reservationRepository.findById(id).isEmpty()) {
+            throw new ReservationNotFoundException();
+        }
 
-    public List<Reservation> findReservations() {
-        return reservationRepository.findAll();
-    }
-
-    public PopularThemesResult findPopularThemes(int period, int limit) {
-        int oneDayDifference = 1;
-
-        LocalDate to = LocalDate.now(clock).minusDays(oneDayDifference);
-        LocalDate from = to.minusDays(period).plusDays(oneDayDifference);
-
-        return new PopularThemesResult(
-                reservationRepository.findPopularThemes(from, to, limit)
+        Reservation reservation = getReservation(id);
+        validateExpiry(
+                reservation.getDate(),
+                reservation.getTime().getStartAt()
         );
+        reservationRepository.deleteById(id);
     }
 
     public void authorizeOwner(String name, Long id) {
