@@ -37,9 +37,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> handleException(Exception exception) {
+    public ResponseEntity<ErrorResponse> handleException(Exception exception) {
         log.error("예상하지 못한 서버 예외가 발생했습니다.", exception);
 
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.internalServerError()
+                .body(ErrorResponse.of(CommonErrorCode.INTERNAL_SERVER_ERROR));
     }
 }
