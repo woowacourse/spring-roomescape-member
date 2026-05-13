@@ -28,7 +28,7 @@ public class UserThemeController {
                 .map(ThemeResponse::from)
                 .toList();
 
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/rank")
@@ -47,6 +47,6 @@ public class UserThemeController {
                 .map(ThemeResponse::from)
                 .toList();
 
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok(response);
     }
 }
