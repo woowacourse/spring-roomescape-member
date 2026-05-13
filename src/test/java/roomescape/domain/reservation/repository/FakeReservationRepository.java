@@ -57,6 +57,12 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByThemeId(Long themeId) {
+        return reservations.stream()
+            .anyMatch(reservation -> reservation.getTheme().getId().equals(themeId));
+    }
+
+    @Override
     public int deleteReservationById(Long id) {
         int beforeSize = reservations.size();
         reservations.removeIf(reservation -> Objects.equals(reservation.getId(), id));

@@ -16,26 +16,37 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.global.exception.ConflictException;
+import roomescape.domain.global.exception.ErrorCode;
+import roomescape.domain.global.exception.NotFoundException;
 import roomescape.domain.reservation.entity.Reservation;
+import roomescape.domain.reservation.repository.FakeReservationRepository;
+import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.dto.request.ThemeCreateRequestDto;
 import roomescape.domain.theme.dto.response.ThemeResponseDto;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.FakeThemeRepository;
 import roomescape.domain.time.entity.Time;
+import roomescape.domain.time.repository.FakeTimeRepository;
+import roomescape.global.ExceptionAssertions;
 
 class ThemeServiceTest {
 
     private final Clock fixedClock;
-    private final ThemeService themeService;
+    private final FakeTimeRepository timeRepository;
     private final FakeThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
+    private final ThemeService themeService;
 
     ThemeServiceTest() {
         this.fixedClock = Clock.fixed(
             Instant.parse("2026-01-01T10:00:00Z"),
             ZoneId.of("UTC")
         );
+        this.timeRepository = new FakeTimeRepository();
         this.themeRepository = new FakeThemeRepository();
-        this.themeService = new ThemeService(themeRepository);
+        this.reservationRepository = new FakeReservationRepository();
+        this.themeService = new ThemeService(reservationRepository, themeRepository);
     }
 
     @Nested
@@ -137,7 +148,8 @@ class ThemeServiceTest {
                 () -> assertEquals(1L, actual.id()),
                 () -> assertEquals("피온", actual.name()),
                 () -> assertEquals("테마 설명", actual.description()),
-                () -> assertEquals("https://roomescape.com/images/themes/prison-room.png", actual.imageUrl())
+                () -> assertEquals("https://roomescape.com/images/themes/prison-room.png",
+                    actual.imageUrl())
             );
         }
     }
@@ -151,7 +163,8 @@ class ThemeServiceTest {
         void 성공() {
 
             // given
-            themeRepository.save(Theme.create("브라운", "테마 설명", "https://roomescape.com/images/themes/prison-room.png"));
+            themeRepository.save(Theme.create("브라운", "테마 설명",
+                "https://roomescape.com/images/themes/prison-room.png"));
 
             // when
             themeService.deleteThemeById(1L);
@@ -161,6 +174,35 @@ class ThemeServiceTest {
 
             assertThat(actual).asInstanceOf(InstanceOfAssertFactories.LIST)
                 .hasSize(0);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 테마 id인 경우 예외가 발생한다.")
+        void 실패1() {
+            Long wrongId = 1000L;
+
+            ExceptionAssertions.assertErrorCode(
+                () -> themeService.deleteThemeById(wrongId),
+                NotFoundException.class,
+                ErrorCode.THEME_NOT_FOUND
+            );
+        }
+
+        @Test
+        @DisplayName("어떤 예약이 요청한 테마 id를 참조하는 경우 예외가 발생한다.")
+        void 실패2() {
+            Time time = timeRepository.save(Time.create(LocalTime.of(20, 30)));
+            Theme theme = themeRepository.save(Theme.create("테마명", "테마 설명",
+                "https://roomescape.com/images/themes/prison-room.png"));
+            reservationRepository.save(
+                Reservation.create("브라운", LocalDate.of(2026, 5, 12), time, theme, fixedClock));
+            Long referencedId = theme.getId();
+
+            ExceptionAssertions.assertErrorCode(
+                () -> themeService.deleteThemeById(referencedId),
+                ConflictException.class,
+                ErrorCode.THEME_REFERENCED_BY_RESERVATION
+            );
         }
     }
 }

@@ -11,7 +11,7 @@ public interface ThemeRepository {
 
     Theme save(Theme theme);
 
-    void deleteThemeById(Long id);
+    int deleteThemeById(Long id);
 
     Optional<Theme> findThemeById(Long id);
 
