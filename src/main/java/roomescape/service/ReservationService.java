@@ -6,7 +6,6 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -71,15 +70,20 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
+    public void cancel(final Long reservationId) {
+        final Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+
+        reservation.validateCancelableByCustomer(LocalDate.now(clock));
+
+        reservationRepository.deleteById(reservationId);
+    }
+
     public void delete(final Long reservationId) {
         final Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
 
-        if (!reservation.canCancel(LocalDateTime.now(clock))) {
-            throw new ConflictException("과거 예약은 취소할 수 없습니다.");
-        }
-
-        reservationRepository.deleteById(reservationId);
+        reservationRepository.deleteById(reservation.getId());
     }
 
     public ReservationOptionResponse getReservationOptions() {

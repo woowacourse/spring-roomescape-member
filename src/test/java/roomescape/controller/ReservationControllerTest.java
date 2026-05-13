@@ -114,6 +114,26 @@ class ReservationControllerTest {
 
     @Test
     @Sql("/clear.sql")
+    void 예약_가능한_시간_조회시_날짜_형식이_잘못되면_400을_응답한다() {
+        RestAssured.given().log().all()
+                .when().get("/reservations/available-times?date=invalid-date&themeId=1")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", org.hamcrest.Matchers.is("잘못된 요청입니다."));
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 예약_가능한_시간_조회시_테마_id가_없으면_400을_응답한다() {
+        RestAssured.given().log().all()
+                .when().get("/reservations/available-times?date=2026-05-05")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", org.hamcrest.Matchers.is("잘못된 요청입니다."));
+    }
+
+    @Test
+    @Sql("/clear.sql")
     void 예약자_이름으로_예약_목록을_조회한다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "11:00", "11:30");
@@ -164,6 +184,19 @@ class ReservationControllerTest {
 
     @Test
     @Sql("/clear.sql")
+    void 예약일_하루_전에는_사용자가_예약을_취소할_수_없다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-05-02", "1", "1");
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    @Sql("/clear.sql")
     void 존재하지_않는_예약_시간으로_예약하면_404를_응답한다() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
 
@@ -178,6 +211,24 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(404);
+    }
+
+    @Test
+    @Sql("/clear.sql")
+    void 예약_시간을_선택하지_않으면_400을_응답한다() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "브라운",
+                        "date", "2026-05-05",
+                        "themeId", 1
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", org.hamcrest.Matchers.is("예약 시간을 선택해야 합니다."));
     }
 
     @Test

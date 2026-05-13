@@ -1,12 +1,14 @@
 package roomescape.domain;
 
 import org.junit.jupiter.api.Test;
+import roomescape.domain.exception.ReservationCancellationException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTest {
@@ -54,28 +56,30 @@ class ReservationTest {
     }
 
     @Test
-    void 과거_예약은_취소할_수_없다() {
+    void 예약일_하루_전에는_사용자가_예약을_취소할_수_없다() {
         Reservation reservation = Reservation.of(
                 1L,
                 "브라운",
-                LocalDate.of(2026, 5, 8),
-                PAST_TIME,
-                THEME
-        );
-
-        assertThat(reservation.canCancel(NOW)).isFalse();
-    }
-
-    @Test
-    void 현재_이후_예약은_취소할_수_있다() {
-        Reservation reservation = Reservation.of(
-                1L,
-                "브라운",
-                LocalDate.of(2026, 5, 8),
+                LocalDate.of(2026, 5, 9),
                 FUTURE_TIME,
                 THEME
         );
 
-        assertThat(reservation.canCancel(NOW)).isTrue();
+        assertThatThrownBy(() -> reservation.validateCancelableByCustomer(LocalDate.of(2026, 5, 8)))
+                .isInstanceOf(ReservationCancellationException.class);
+    }
+
+    @Test
+    void 예약일_이틀_전에는_사용자가_예약을_취소할_수_있다() {
+        Reservation reservation = Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 5, 10),
+                FUTURE_TIME,
+                THEME
+        );
+
+        assertThatCode(() -> reservation.validateCancelableByCustomer(LocalDate.of(2026, 5, 8)))
+                .doesNotThrowAnyException();
     }
 }

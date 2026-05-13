@@ -84,4 +84,20 @@ class AdminReservationControllerTest {
                 .statusCode(200)
                 .body("size()", is(1));
     }
+
+    @Test
+    @Sql("/clear.sql")
+    void 관리자는_예약을_삭제할_수_있다() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail_url) VALUES (?, ?, ?)", "링", "공포 테마", "http:~");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2026-08-05", "1", "1");
+
+        RestAssured.given().log().all()
+                .when().delete("/admin/reservations/1")
+                .then().log().all()
+                .statusCode(204);
+
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        assertThat(count).isZero();
+    }
 }

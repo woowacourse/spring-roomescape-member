@@ -28,7 +28,7 @@ public class ReservationController {
         return ResponseEntity.ok(results);
     }
 
-    @GetMapping(path = "/available-times", params = {"date", "themeId"})
+    @GetMapping("/available-times")
     public ResponseEntity<List<ReservationTimesWithStatus>> getReservationTimeStatuses(
             @RequestParam(value = "date") LocalDate date,
             @RequestParam(value = "themeId") Long themeId
@@ -53,10 +53,10 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{reservation-id}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<Void> cancel(
             @PathVariable("reservation-id") Long reservationId
     ) {
-        reservationService.delete(reservationId);
+        reservationService.cancel(reservationId);
         return ResponseEntity.noContent().build();
     }
 }

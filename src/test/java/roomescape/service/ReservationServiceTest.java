@@ -2,11 +2,11 @@ package roomescape.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.common.exception.ConflictException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.exception.ReservationCancellationException;
 import roomescape.service.dto.request.ReservationCreateRequest;
 import roomescape.service.dto.response.ReservationOptionResponse;
 import roomescape.service.dto.response.ReservationResponse;
@@ -146,26 +146,44 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 존재하지_않는_예약을_삭제하면_예외가_발생한다() {
+    void 존재하지_않는_예약을_취소하면_예외가_발생한다() {
         // when & then
-        assertThatThrownBy(() -> reservationService.delete(1L))
+        assertThatThrownBy(() -> reservationService.cancel(1L))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @Test
-    void 현재_이전_예약을_삭제하면_예외가_발생한다() {
+    void 예약일_하루_전에는_사용자가_예약을_취소할_수_없다() {
         // given
         reservationRepository.add(Reservation.of(
                 1L,
                 "브라운",
-                LocalDate.of(2026, 5, 8),
+                LocalDate.of(2026, 5, 9),
                 ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
                 Theme.of(1L, "링", "공포 테마", "http:~")
         ));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.delete(1L))
-                .isInstanceOf(ConflictException.class);
+        assertThatThrownBy(() -> reservationService.cancel(1L))
+                .isInstanceOf(ReservationCancellationException.class);
+    }
+
+    @Test
+    void 관리자는_예약일_하루_전에도_예약을_삭제할_수_있다() {
+        // given
+        reservationRepository.add(Reservation.of(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 5, 9),
+                ReservationTime.of(1L, LocalTime.of(10, 0), LocalTime.of(10, 30)),
+                Theme.of(1L, "링", "공포 테마", "http:~")
+        ));
+
+        // when
+        reservationService.delete(1L);
+
+        // then
+        assertThat(reservationRepository.findById(1L)).isEmpty();
     }
 
 }
