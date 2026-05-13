@@ -62,7 +62,7 @@ public class MissionStepTest {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2099-08-05");
         params.put("themeId", 1);
         params.put("timeId", 1);
 
@@ -134,7 +134,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation1 = new HashMap<>();
         reservation1.put("name", "브라운");
-        reservation1.put("date", "2023-08-05");
+        reservation1.put("date", "2099-08-05");
         reservation1.put("themeId", 1);
         reservation1.put("timeId", 1);
 
@@ -148,7 +148,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation2 = new HashMap<>();
         reservation2.put("name", "초코");
-        reservation2.put("date", "2023-08-05");
+        reservation2.put("date", "2099-08-05");
         reservation2.put("themeId", 2);
         reservation2.put("timeId", 1);
 
@@ -174,7 +174,7 @@ public class MissionStepTest {
             .then().log().all()
             .statusCode(404)
             .body("code", is("RESERVATION_NOT_FOUND"))
-            .body("message", is("예약이 존재하지 않습니다. id=999"));
+            .body("message", is("예약이 존재하지 않습니다."));
     }
 
     @Test
@@ -227,7 +227,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2099-08-05");
         reservation.put("themeId", 1);
         reservation.put("timeId", 1);
 
@@ -251,7 +251,7 @@ public class MissionStepTest {
     void 예약_시간이_없으면_400_에러_응답() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2099-08-05");
         reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
@@ -261,7 +261,80 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("code", is("INVALID_REQUEST"))
-                .body("message", is("예약 시간은 필수입니다."));
+                .body("message", is("요청이 올바르지 않습니다."));
+    }
+
+
+    @Test
+    void 지난_날짜_시간_예약은_거부한다() {
+        createThemeAndTime();
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2020-08-05");
+        reservation.put("themeId", 1);
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("PAST_RESERVATION_NOT_ALLOWED"))
+                .body("message", is("지난 날짜와 시간으로 예약할 수 없습니다."));
+    }
+
+    @Test
+    void 같은_날짜_시간_테마_중복_예약은_거부한다() {
+        createThemeAndTime();
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2099-08-05");
+        reservation.put("themeId", 1);
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("message", is("이미 예약된 시간입니다."));
+    }
+
+    private void createThemeAndTime() {
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "테마");
+        theme.put("description", "설명");
+        theme.put("imageUrl", "https://example.com/theme.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, String> time = new HashMap<>();
+        time.put("startAt", "10:00");
+        time.put("endAt", "16:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(time)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
     }
 
 }

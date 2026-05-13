@@ -18,6 +18,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import roomescape.availability.service.AvailabilityService;
+import roomescape.error.ErrorCode;
+import roomescape.error.RoomescapeException;
 import roomescape.holiday.domain.Holiday;
 import roomescape.holiday.exception.HolidayNotFoundException;
 import roomescape.holiday.service.HolidayService;
@@ -124,7 +126,7 @@ class RoomescapePageControllerTest {
     @Test
     void createReservation_redirectsWithSafeFailureMessage() throws Exception {
         Mockito.when(reservationService.create(Mockito.any(ReservationSaveServiceDto.class)))
-                .thenThrow(new IllegalArgumentException("중복 예약은 불가합니다."));
+                .thenThrow(new RoomescapeException(ErrorCode.DUPLICATE_RESERVATION));
 
         mockMvc.perform(post("/dashboard/reservations")
                         .param("name", "브라운")
@@ -132,7 +134,7 @@ class RoomescapePageControllerTest {
                         .param("themeId", "1")
                         .param("timeId", "1"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("errorMessage", "예약 생성에 실패했습니다. 입력값을 다시 확인해 주세요."));
+                .andExpect(flash().attribute("errorMessage", "이미 예약된 시간입니다."));
     }
 
     @Test
@@ -153,7 +155,7 @@ class RoomescapePageControllerTest {
 
         mockMvc.perform(post("/dashboard/times/12/delete"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(flash().attribute("errorMessage", "삭제할 시간 슬롯을 찾지 못했습니다."));
+                .andExpect(flash().attribute("errorMessage", "예약 시간이 존재하지 않습니다."));
     }
 
     @Test
@@ -174,5 +176,20 @@ class RoomescapePageControllerTest {
         mockMvc.perform(post("/dashboard/holidays/7/delete"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("errorMessage", "삭제할 휴일을 찾지 못했습니다."));
+    }
+
+    @Test
+    void createReservation_예상못한오류는_공통문구를_보여준다() throws Exception {
+        Mockito.when(reservationService.create(Mockito.any(ReservationSaveServiceDto.class)))
+                .thenThrow(new RuntimeException("boom"));
+
+        mockMvc.perform(post("/dashboard/reservations")
+                        .param("name", "브라운")
+                        .param("date", "2026-05-06")
+                        .param("themeId", "1")
+                        .param("timeId", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/dashboard/reservations"))
+                .andExpect(flash().attribute("errorMessage", "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
     }
 }

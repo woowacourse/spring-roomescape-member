@@ -3,6 +3,7 @@ package roomescape.theme.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
@@ -111,5 +112,26 @@ class ThemeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
-}
 
+
+    @Test
+    void create_예상못한오류면_안전한_500_응답() throws Exception {
+        Mockito.when(themeService.create(Mockito.any(ThemeSaveServiceDto.class)))
+                .thenThrow(new RuntimeException("boom"));
+
+        String requestBody = """
+                {
+                    "name": "이름",
+                    "description": "설명",
+                    "imageUrl": "https://img.test/a.png"
+                }
+                """;
+
+        mockMvc.perform(post("/themes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code").value("INTERNAL_SERVER_ERROR"))
+                .andExpect(jsonPath("$.message").value("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
+    }
+}

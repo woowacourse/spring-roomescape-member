@@ -57,7 +57,7 @@ public class TimeTest {
         .then().log().all()
         .statusCode(404)
         .body("code", is("TIME_NOT_FOUND"))
-        .body("message", is("예약 시간이 존재하지 않습니다. id=999"));
+        .body("message", is("예약 시간이 존재하지 않습니다."));
   }
 
   @Test
@@ -87,7 +87,7 @@ public class TimeTest {
 
     Map<String, Object> reservation = new HashMap<>();
     reservation.put("name", "브라운");
-    reservation.put("date", "2023-08-05");
+    reservation.put("date", "2099-08-05");
     reservation.put("themeId", 1);
     reservation.put("timeId", 1);
 
@@ -105,4 +105,50 @@ public class TimeTest {
         .body("size()", is(1));
   }
 
+
+  @Test
+  void 예약이_존재하는_시간은_삭제할_수_없다() {
+    Map<String, String> theme = new HashMap<>();
+    theme.put("name", "테마");
+    theme.put("description", "설명");
+    theme.put("imageUrl", "https://example.com/theme.png");
+
+    RestAssured.given().log().all()
+        .contentType(ContentType.JSON)
+        .body(theme)
+        .when().post("/themes")
+        .then().log().all()
+        .statusCode(201);
+
+    Map<String, String> time = new HashMap<>();
+    time.put("startAt", "10:00");
+    time.put("endAt", "16:00");
+
+    RestAssured.given().log().all()
+        .contentType(ContentType.JSON)
+        .body(time)
+        .when().post("/times")
+        .then().log().all()
+        .statusCode(201);
+
+    Map<String, Object> reservation = new HashMap<>();
+    reservation.put("name", "브라운");
+    reservation.put("date", "2099-08-05");
+    reservation.put("themeId", 1);
+    reservation.put("timeId", 1);
+
+    RestAssured.given().log().all()
+        .contentType(ContentType.JSON)
+        .body(reservation)
+        .when().post("/reservations")
+        .then().log().all()
+        .statusCode(201);
+
+    RestAssured.given().log().all()
+        .when().delete("/times/1")
+        .then().log().all()
+        .statusCode(409)
+        .body("code", is("RESERVED_TIME_DELETE_NOT_ALLOWED"))
+        .body("message", is("예약이 존재하는 시간은 삭제할 수 없습니다."));
+  }
 }

@@ -93,7 +93,7 @@ class ThemeIntegrationTest {
                 .then().log().all()
                 .statusCode(404)
                 .body("code", is("THEME_NOT_FOUND"))
-                .body("message", is("테마가 존재하지 않습니다. id=999"));
+                .body("message", is("테마가 존재하지 않습니다."));
     }
 
     private static Map<String, String> themeBody() {
