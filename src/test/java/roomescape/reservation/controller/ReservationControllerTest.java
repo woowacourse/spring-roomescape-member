@@ -332,7 +332,7 @@ class ReservationControllerTest {
                 .when().patch("/member/reservations/" + sqlSavedId + "/cancel")
                 .then().log().all()
                 .statusCode(400)
-                .body("message", is("이미 지난 예약은 취소할 수 없습니다."));
+                .body("message", is("이미 지난 예약입니다."));
     }
 
 }

@@ -208,7 +208,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> reserved.cancel(reservationName))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 지난 예약은 취소할 수 없습니다.");
+                .hasMessage("이미 지난 예약입니다.");
     }
 
 }

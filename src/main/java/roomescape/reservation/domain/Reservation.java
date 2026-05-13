@@ -111,7 +111,7 @@ public class Reservation {
     public void cancel(String requesterName) {
         validateOwner(requesterName);
         validateNotCanceled();
-        validateNotPast();
+        validateNotPast(date.date(), time.startAt());
 
         this.status = ReservationStatus.CANCELED;
     }
@@ -128,9 +128,9 @@ public class Reservation {
         }
     }
 
-    private void validateNotPast() {
-        if (isPast(date.date(), time.startAt())) {
-            throw new IllegalArgumentException("이미 지난 예약은 취소할 수 없습니다.");
+    private void validateNotPast(LocalDate date, LocalTime time) {
+        if (isPast(date, time)) {
+            throw new IllegalArgumentException("이미 지난 예약입니다.");
         }
     }
 
