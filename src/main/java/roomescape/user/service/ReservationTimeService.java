@@ -1,0 +1,27 @@
+package roomescape.user.service;
+
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.TimeAvailability;
+import roomescape.user.dao.ReservationTimeDao;
+import roomescape.user.dto.AvailableTimeResponse;
+
+@Service
+public class ReservationTimeService {
+
+    private final ReservationTimeDao timeDao;
+
+    public ReservationTimeService(ReservationTimeDao timeDao) {
+        this.timeDao = timeDao;
+    }
+
+    public List<ReservationTime> findAll() {
+        return timeDao.selectAll();
+    }
+
+    public List<TimeAvailability> findByThemeIdAndDate(Long themeId, LocalDate date) {
+        return timeDao.selectByThemeIdAndDate(themeId, date);
+    }
+}
