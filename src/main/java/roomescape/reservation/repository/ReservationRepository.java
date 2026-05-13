@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.validation.ReservationNotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.mapper.ReservationMapper;
 import roomescape.reservation.repository.dao.ReservationDao;
@@ -36,10 +37,20 @@ public class ReservationRepository {
 
     public Reservation findById(Long id) {
         ReservationEntity reservation = reservationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+                .orElseThrow(ReservationNotFoundException::new);
+
         return ReservationMapper.toReservation(reservation,
                 reservationTimeDao.getById(reservation.getTimeId()),
                 themeDao.getById(reservation.getThemeId()));
+    }
+
+    public List<Reservation> findReservationsFrom(LocalDate localDate) {
+        return reservationDao.findAllOnOrAfter(localDate).stream()
+                .map(reservation ->
+                        ReservationMapper.toReservation(reservation,
+                                reservationTimeDao.getById(reservation.getTimeId()),
+                                themeDao.getById(reservation.getThemeId()))
+                ).toList();
     }
 
     @Transactional
@@ -63,14 +74,5 @@ public class ReservationRepository {
 
     public boolean existsByDateAndTimeIdAndThemeId(DuplicateReservationCondition condition) {
         return reservationDao.existsReservationAt(condition.themeId(), condition.date(), condition.timeId());
-    }
-
-    public List<Reservation> findReservationsFrom(LocalDate localDate) {
-        return reservationDao.findAllOnOrAfter(localDate).stream()
-                .map(reservation ->
-                        ReservationMapper.toReservation(reservation,
-                                reservationTimeDao.getById(reservation.getTimeId()),
-                                themeDao.getById(reservation.getThemeId()))
-                ).toList();
     }
 }
