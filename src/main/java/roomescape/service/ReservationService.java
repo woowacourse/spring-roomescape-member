@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ReservationCreateRequest;
@@ -32,12 +31,13 @@ public class ReservationService {
     }
 
     public Reservation reserve(ReservationCreateRequest request) {
-        LocalDate date = ReservationDate.from(request.getDate()).getDate();
+        ReservationDate reservationDate = ReservationDate.from(request.getDate());
         ReservationTime reservationTime = reservationTimeService.find(request.getTimeId());
         Theme theme = themeService.find(request.getThemeId());
 
-        boolean isExists = reservationRepository.findByDateAndTimeAndTheme(
-                date, request.getTimeId(), request.getThemeId()).isPresent();
+        boolean isExists = reservationRepository.findByTimeAndTheme(request.getTimeId(), request.getThemeId())
+                .stream()
+                .anyMatch(r -> r.getDate().equals(reservationDate));
 
         if (isExists) {
             throw new IllegalArgumentException(DUPLICATED_RESERVATION);
