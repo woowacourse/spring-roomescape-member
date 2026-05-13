@@ -14,7 +14,6 @@ import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.service.ReservationService;
-import roomescape.domain.reservation.validator.ReservationValidator;
 
 @RestController
 @RequestMapping("/api/admin/reservations")
@@ -35,8 +34,6 @@ public class AdminReservationController {
     @PostMapping()
     public ResponseEntity<ReservationCreateResponseDto> saveReservation(
         @RequestBody ReservationCreateRequestDto requestDto) {
-        ReservationValidator.validate(requestDto.name());
-
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(reservationService.saveReservation(requestDto));
     }

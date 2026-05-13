@@ -25,7 +25,6 @@ public class AdminThemeController {
 
     @PostMapping()
     public ResponseEntity<ThemeResponseDto> saveTheme(@RequestBody ThemeCreateRequestDto requestDto) {
-        ThemeValidator.validate(requestDto.name(), requestDto.description(), requestDto.imageUrl());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(themeService.saveTheme(requestDto));
     }

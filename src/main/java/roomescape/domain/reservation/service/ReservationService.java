@@ -13,6 +13,7 @@ import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
+import roomescape.domain.reservation.validator.ReservationValidator;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.entity.Time;
@@ -61,6 +62,8 @@ public class ReservationService {
     }
 
     private Reservation createReservation(ReservationCreateRequestDto requestDto) {
+        ReservationValidator.validate(requestDto.name());
+
         Time time = timeRepository.findTimeById(requestDto.timeId())
             .orElseThrow(() -> new BadRequestException(ErrorCode.TIME_NOT_FOUND, List.of()));
         Theme theme = themeRepository.findThemeById(requestDto.themeId())
