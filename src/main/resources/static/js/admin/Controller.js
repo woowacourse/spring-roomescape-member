@@ -17,10 +17,6 @@ export default class Controller {
       .on("@create-theme", (event) => this.createTheme(event.detail))
       .on("@delete-theme", (event) => this.deleteTheme(event.detail.id));
 
-    this.views.reservationSectionView
-      .on("@create-reservation", (event) => this.createReservation(event.detail))
-      .on("@delete-reservation", (event) => this.deleteReservation(event.detail.id));
-
     this.views.timeSectionView
       .on("@create-time", (event) => this.createTime(event.detail))
       .on("@delete-time", (event) => this.deleteTime(event.detail.id));
@@ -67,32 +63,6 @@ export default class Controller {
     }
   }
 
-  async createReservation(payload) {
-    if (!payload.name || !payload.date || !payload.themeId || !payload.timeId) {
-      this.views.toastView.show("모든 항목을 입력하세요.", "error");
-      return;
-    }
-
-    try {
-      await this.store.addReservation(payload);
-      this.views.reservationSectionView.resetForm();
-      this.views.toastView.show("예약이 추가되었습니다.", "success");
-      await this.refreshAll();
-    } catch (error) {
-      this.views.toastView.show(error.message, "error");
-    }
-  }
-
-  async deleteReservation(id) {
-    try {
-      await this.store.removeReservation(id);
-      this.views.toastView.show("예약이 취소되었습니다.");
-      await this.refreshAll();
-    } catch (error) {
-      this.views.toastView.show(error.message, "error");
-    }
-  }
-
   async createTime(payload) {
     if (!payload.startAt) {
       this.views.toastView.show("시간을 입력하세요.", "error");
@@ -112,7 +82,7 @@ export default class Controller {
   async deleteTime(id) {
     try {
       await this.store.removeTime(id);
-      this.views.toastView.show("시간이 삭제되었습니다.");
+      this.views.toastView.show("시간이 비활성화되었습니다.");
       await this.refreshAll();
     } catch (error) {
       this.views.toastView.show(error.message, "error");

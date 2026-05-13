@@ -51,21 +51,6 @@ export function fetchReservations() {
   }).then(unwrapResponses);
 }
 
-export function createReservation(payload) {
-  return requestJson("/api/admin/reservations", {
-    method: "POST",
-    headers: ADMIN_HEADERS,
-    body: JSON.stringify(payload)
-  });
-}
-
-export function deleteReservation(id) {
-  return requestJson(`/api/admin/reservations/${id}`, {
-    method: "DELETE",
-    headers: ADMIN_ONLY_HEADERS
-  });
-}
-
 export function fetchTimes() {
   const searchParams = new URLSearchParams({
     page: String(DEFAULT_PAGE),
@@ -85,9 +70,9 @@ export function createTime(payload) {
   });
 }
 
-export function deleteTime(id) {
+export function deactivateTime(id) {
   return requestJson(`/api/admin/times/${id}`, {
-    method: "DELETE",
+    method: "PATCH",
     headers: ADMIN_ONLY_HEADERS
   });
 }

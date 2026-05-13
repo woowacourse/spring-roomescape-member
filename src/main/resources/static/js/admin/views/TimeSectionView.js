@@ -42,7 +42,7 @@ export default class TimeSectionView extends View {
       row.innerHTML = `
         <td><span class="badge badge-gray">${time.id}</span></td>
         <td class="td-name">${formatTime(time.startAt)}</td>
-        <td><button class="btn-delete" type="button" data-id="${time.id}">삭제</button></td>
+        <td><button class="btn-delete" type="button" data-id="${time.id}">비활성화</button></td>
       `;
       this.tableBody.appendChild(row);
     });

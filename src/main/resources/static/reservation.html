@@ -52,6 +52,37 @@
 
       <button class="btn-submit" data-role="submit-button" type="submit" disabled>예약 확정</button>
     </form>
+
+    <section class="reservation-list-section" data-role="user-reservations">
+      <div class="card">
+        <h2 class="section-title">내 예약</h2>
+        <form class="lookup-form" data-role="reservation-search-form">
+          <input id="reservationSearchName" class="text-input" type="text" placeholder="예약자 이름" maxlength="20" />
+          <button class="btn-inline" type="submit">조회</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table class="reservation-table">
+            <thead>
+              <tr>
+                <th>예약자</th>
+                <th>테마</th>
+                <th>날짜</th>
+                <th>시간</th>
+                <th>상태</th>
+                <th>수정</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody data-role="user-reservation-table">
+              <tr class="empty-row"><td colspan="7">예약자 이름으로 조회하세요.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </main>
 
   <div class="toast" data-role="toast"></div>

@@ -21,7 +21,7 @@ test("사용자 예약 후 관리자 예약 페이지에서 예약 내역을 확
   await page.getByRole("button", { name: selectedSlot.startAt.slice(0, 5), exact: true }).click();
   await page.getByRole("button", { name: "예약 확정" }).click();
 
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator('[data-role="toast"]')).toContainText("예약이 완료되었습니다.");
 
   await page.goto(ADMIN_PATH);
   await page.getByRole("button", { name: "예약" }).click();
@@ -83,7 +83,7 @@ test("예약된 시간은 비활성화되고 관리자 취소 후 다시 예약 
   await page.fill("#dateInput", reservationDate);
   await page.getByRole("button", { name: slotLabel, exact: true }).click();
   await page.getByRole("button", { name: "예약 확정" }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator('[data-role="toast"]')).toContainText("예약이 완료되었습니다.");
 
   await page.goto(RESERVE_PATH);
   await page.selectOption("#themeSelect", String(selectedTheme.id));
@@ -91,16 +91,44 @@ test("예약된 시간은 비활성화되고 관리자 취소 후 다시 예약 
   const disabledSlot = page.locator(".slot-btn.disabled", { hasText: slotLabel });
   await expect(disabledSlot).toHaveCount(1);
 
-  await page.goto(ADMIN_PATH);
-  await page.getByRole("button", { name: "예약" }).click();
+  await lookupReservation(page, reservationName);
   await cancelReservation(page, reservationName);
-  await expect(page.locator('[data-role="reservation-table"] tr').filter({ hasText: reservationName })).toHaveCount(0);
+  await expect(page.locator('[data-role="user-reservation-table"] tr').filter({ hasText: reservationName })).toContainText("CANCELED");
 
   await page.goto(RESERVE_PATH);
   await page.selectOption("#themeSelect", String(selectedTheme.id));
   await page.fill("#dateInput", reservationDate);
   await expect(page.locator(".slot-btn.disabled", { hasText: slotLabel })).toHaveCount(0);
   await expect(page.getByRole("button", { name: slotLabel, exact: true })).toBeEnabled();
+});
+
+test("사용자가 내 예약의 날짜와 시간을 수정할 수 있다", async ({ page, request }) => {
+  const suffix = uniqueSuffix();
+  const reservationName = `modify-${suffix}`;
+  const reservationDate = futureDate(34);
+
+  const themes = await fetchThemes(request);
+  const selectedTheme = themes[0];
+  const selectedSlot = await findFirstReservableSlot(request, selectedTheme.id, reservationDate);
+
+  await page.goto(RESERVE_PATH);
+  await page.selectOption("#themeSelect", String(selectedTheme.id));
+  await page.fill("#nameInput", reservationName);
+  await page.fill("#dateInput", reservationDate);
+  await page.getByRole("button", { name: selectedSlot.startAt.slice(0, 5), exact: true }).click();
+  await page.getByRole("button", { name: "예약 확정" }).click();
+  await expect(page.locator('[data-role="toast"]')).toContainText("예약이 완료되었습니다.");
+
+  await lookupReservation(page, reservationName);
+  const row = page.locator('[data-role="user-reservation-table"] tr').filter({ hasText: reservationName });
+  await row.getByRole("button", { name: "시간 조회" }).click();
+  await expect(row.locator(".modify-time")).not.toHaveValue("");
+
+  const modifiedTimeLabel = await row.locator(".modify-time option").first().textContent();
+  await row.getByRole("button", { name: "수정" }).click();
+  await expect(page.locator('[data-role="toast"]')).toContainText("예약이 수정되었습니다.");
+
+  await expect(row).toContainText(modifiedTimeLabel.trim());
 });
 
 async function fetchThemes(request) {
@@ -111,7 +139,7 @@ async function fetchThemes(request) {
 }
 
 async function findFirstReservableSlot(request, themeId, date) {
-  const response = await request.get(`/api/themes/${themeId}/times?date=${date}`);
+  const response = await request.get(`/api/reservations/themes/${themeId}/times?date=${date}`);
   expect(response.ok()).toBeTruthy();
 
   const body = await response.json();
@@ -137,9 +165,15 @@ async function deleteTheme(page, themeName) {
 }
 
 async function cancelReservation(page, reservationName) {
-  const row = page.locator('[data-role="reservation-table"] tr').filter({ hasText: reservationName });
+  const row = page.locator('[data-role="user-reservation-table"] tr').filter({ hasText: reservationName });
   await row.getByRole("button", { name: "취소" }).click();
   await expect(page.locator('[data-role="toast"]')).toContainText("예약이 취소되었습니다.");
+}
+
+async function lookupReservation(page, reservationName) {
+  await page.fill("#reservationSearchName", reservationName);
+  await page.getByRole("button", { name: "조회", exact: true }).click();
+  await expect(page.locator('[data-role="user-reservation-table"] tr').filter({ hasText: reservationName })).toHaveCount(1);
 }
 
 function futureDate(daysToAdd) {
