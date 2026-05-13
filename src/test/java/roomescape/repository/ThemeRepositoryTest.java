@@ -22,10 +22,8 @@ public class ThemeRepositoryTest {
 
     @Test
     public void 새로운_테마를_등록할_수_있다() {
-        // given
         Theme theme = new Theme(null, "테스트 테마", "테스트 테마입니다", "url.com");
 
-        // when
         Theme newTheme = themeRepository.save(theme);
 
         // then
@@ -39,34 +37,26 @@ public class ThemeRepositoryTest {
 
     @Test
     public void 저장된_테마를_모두_조회할_수_있다() {
-        // when
         List<Theme> themes = themeRepository.findAll();
         int themeSize = 17;
-        // then
         assertEquals(themeSize, themes.size());
     }
 
     @Test
     public void 저장된_테마를_삭제할_수_있다() {
-        // given
         Long themeId = 7L;
 
-        // when
         themeRepository.deleteById(themeId);
 
-        // then
         assertEquals(themeRepository.findAll().size(), 16);
     }
 
     @Test
     public void 특정_테마_아이디를_통해서_테마를_조회할_수_있다() {
-        // given
         Long themeId = 2L;
 
-        // when
         Optional<Theme> theme = themeRepository.findById(themeId);
 
-        // then
         assertAll(
                 () -> assertEquals(themeId, theme.get().getId()),
                 () -> assertEquals("루팡의 예고장", theme.get().getName()),
@@ -78,16 +68,13 @@ public class ThemeRepositoryTest {
 
     @Test
     public void 지난_일주일간_가장_예약이_많았던_상위_10개_테마를_가져온다() {
-        // given
         LocalDate currentDate = LocalDate.now().minusDays(1);
         LocalDate lastWeekDate = LocalDate.now().minusDays(8);
         int limit = 10;
 
-        // when
         List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(currentDate.toString(),
                 lastWeekDate.toString(), limit);
 
-        // then
         assertAll(
                 () -> assertEquals(themes.get(0).getId(), 5),
                 () -> assertEquals(themes.get(1).getId(), 2),

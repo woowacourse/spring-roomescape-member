@@ -18,14 +18,12 @@ public class ReservationServiceTest {
 
     @Test
     void 존재하지_않는_예약을_삭제할_경우_예외가_발생한다() {
-        // when
         Assertions.assertThatThrownBy(() -> reservationService.removeById(-1L))
                 .isInstanceOf(RoomescapeException.class);
     }
 
     @Test
     void 존재하는_예약에_대해서_삭제할_수_있다() {
-        // when
         Assertions.assertThatCode(() -> reservationService.removeById(1L))
                 .doesNotThrowAnyException();
     }
@@ -67,21 +65,17 @@ public class ReservationServiceTest {
 
     @Test
     void 존재하는_예약을_추가할_경우_예외가_발생한다() {
-        // given
         LocalDate date = LocalDate.now().plusDays(3);
         ReservationRequest reservationRequest = new ReservationRequest("구바", date, 8L, 2L);
 
-        // when
         Assertions.assertThatThrownBy(() -> reservationService.register(reservationRequest))
                 .isInstanceOf(RoomescapeException.class);
     }
 
     @Test
     void 존재하지_않는_예약을_정상적으로_추가할_수_있다() {
-        // given
         ReservationRequest reservationRequest = new ReservationRequest("무빙", LocalDate.now().plusDays(2), 2L, 2L);
 
-        // when
         Assertions.assertThatCode(() -> reservationService.register(reservationRequest))
                 .doesNotThrowAnyException();
     }
