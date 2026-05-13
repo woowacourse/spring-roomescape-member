@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,8 +80,8 @@ public class ThemeRepositoryTest {
     @Test
     public void 지난_일주일간_가장_예약이_많았던_상위_10개_테마를_가져온다() {
         // given
-        String currentDate = "2026-05-05";
-        String lastWeekDate = "2026-04-28";
+        LocalDate currentDate = LocalDate.of(2026, 5, 5);
+        LocalDate lastWeekDate = LocalDate.of(2026, 4, 28);
         int limit = 10;
 
         // when

@@ -42,8 +42,8 @@ public class ThemeService {
     public List<ThemeResponse> readRanks(LocalDate today) {
         LocalDate endDate = today.minusDays(1);
         LocalDate startDate = today.minusDays(7);
-        List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(endDate.toString(),
-                startDate.toString(),
+        List<Theme> themes = themeRepository.findByCurrentDateAndLastWeekDateAndLimit(endDate,
+                startDate,
                 RANKS_LIMIT_COUNT);
         return themes.stream()
                 .map(ThemeResponse::from)

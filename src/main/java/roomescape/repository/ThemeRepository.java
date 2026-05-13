@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -57,7 +58,8 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
     }
 
-    public List<Theme> findByCurrentDateAndLastWeekDateAndLimit(String currentDate, String lastWeekDate, int limit) {
+    public List<Theme> findByCurrentDateAndLastWeekDateAndLimit(LocalDate endDate, LocalDate startDate,
+                                                                int limit) {
         String sql = """
                 SELECT
                     t.id,
@@ -71,6 +73,6 @@ public class ThemeRepository {
                 ORDER BY (COUNT(r.id)) DESC , t.id ASC
                 LIMIT ?;
                 """;
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, lastWeekDate, currentDate, limit);
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, limit);
     }
 }
