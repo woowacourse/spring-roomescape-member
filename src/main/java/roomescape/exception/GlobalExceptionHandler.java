@@ -1,7 +1,10 @@
 package roomescape.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,9 +14,21 @@ import roomescape.response.ErrorResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e, HttpServletRequest request) {
         return toResponse(e.getCode(), request, e.getMessage());
+    }
+
+    private ResponseEntity<ErrorResponse> toResponse(ErrorCode code, HttpServletRequest request, String message) {
+        ErrorResponse body = new ErrorResponse(
+                code.name(),
+                request.getRequestURI(),
+                message,
+                code.getAction()
+        );
+        return ResponseEntity.status(code.getStatus()).body(body);
     }
 
     @ExceptionHandler(DuplicationException.class)
@@ -49,17 +64,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e, HttpServletRequest request) {
+        LOGGER.error("예상치 못한 예외 발생: {} {}", request.getMethod(), request.getRequestURI(), e);
         ErrorCode code = ErrorCode.INTERNAL_SERVER_ERROR;
         return toResponse(code, request, code.getMessage());
     }
 
-    private ResponseEntity<ErrorResponse> toResponse(ErrorCode code, HttpServletRequest request, String message) {
-        ErrorResponse body = new ErrorResponse(
-                code.name(),
-                request.getRequestURI(),
-                message,
-                code.getAction()
-        );
-        return ResponseEntity.status(code.getStatus()).body(body);
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request) {
+        ErrorCode code = ErrorCode.VALIDATION_FAILED;
+        return toResponse(code, request, code.getMessage());
     }
 }
