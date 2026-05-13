@@ -95,7 +95,8 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/999")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(404)
+                .body("message", is("존재하지 않는 예약입니다. id=999"));
     }
 
     @Test
@@ -127,7 +128,27 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(409)
+                .body("message", is(
+                        "이미 예약이 있습니다. date= 2099-05-06, reservationTimeId= 1, themeId= 1"
+                ));
+    }
+
+    @Test
+    void 과거_날짜_시간으로_예약을_등록하면_422를_응답한다() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "밀란");
+        params.put("date", "2000-01-01");
+        params.put("timeId", 1L);
+        params.put("themeId", 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(422)
+                .body("message", is("과거로 예약할 수 없습니다."));
     }
 
     @ParameterizedTest(name = "{0}은 1에서 10자 이내의 예약자 이름이 아니다")

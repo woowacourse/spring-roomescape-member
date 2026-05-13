@@ -54,7 +54,18 @@ class ReservationTimeControllerTest {
                 .queryParam("date", "2099-05-06")
                 .when().get("/times")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .body("message", is("날짜와 테마는 함께 입력해야 합니다."));
+    }
+
+    @Test
+    void 날짜와_테마_중_테마만_있으면_400을_응답한다() {
+        RestAssured.given().log().all()
+                .queryParam("themeId", 1)
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", is("날짜와 테마는 함께 입력해야 합니다."));
     }
 
     @Test

@@ -69,7 +69,8 @@ class AdminReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/999")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(404)
+                .body("message", is("존재하지 않는 예약 시간입니다. id=999"));
     }
 
     @Sql("/create_reservation_time.sql")
@@ -91,7 +92,8 @@ class AdminReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/times/1")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(409)
+                .body("message", is("예약이 존재하는 시간은 삭제할 수 없습니다. id=1"));
     }
 
     @ParameterizedTest(name = "{0}은 예약 시간 형식이 아니다")

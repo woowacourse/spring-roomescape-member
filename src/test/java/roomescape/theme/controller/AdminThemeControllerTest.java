@@ -55,6 +55,15 @@ class AdminThemeControllerTest {
                 .statusCode(204);
     }
 
+    @Test
+    void 존재하지_않는_테마를_삭제하면_404를_응답한다() {
+        RestAssured.given().log().all()
+                .when().delete("/admin/themes/999")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", is("존재하지 않는 테마입니다. id=999"));
+    }
+
     @Sql("/create_reservation_time.sql")
     @Test
     void 예약이_존재하는_테마를_삭제하면_409를_응답한다() {
@@ -74,6 +83,7 @@ class AdminThemeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/admin/themes/1")
                 .then().log().all()
-                .statusCode(409);
+                .statusCode(409)
+                .body("message", is("예약이 존재하는 테마는 삭제할 수 없습니다. id=1"));
     }
 }
