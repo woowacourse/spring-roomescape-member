@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.global.exception.ErrorCode;
 import roomescape.global.exception.ErrorResponse;
+import roomescape.global.exception.RoomescapeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -29,5 +30,12 @@ public class GlobalExceptionHandler {
                 ErrorCode.INVALID_DATE_FORMAT.getMessage());
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(RoomescapeException.class)
+    protected ResponseEntity<ErrorResponse> handleRoomescapeException(RoomescapeException ex) {
+        ErrorCode error = ex.getErrorCode();
+
+        return ResponseEntity.status(error.getStatus()).body(ErrorResponse.of(error.name(), error.getMessage()));
     }
 }
