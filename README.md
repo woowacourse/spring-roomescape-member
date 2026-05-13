@@ -44,9 +44,9 @@
 - 브라우저에서 에러 발생 시 사용자에게 의미 있는 메시지가 표시되어야 한다.
 
 ### 응답 본문 형식
-- [ ] ErrorCode 및 ErrorResponse 정의
-- [ ] 기존 예외 제거 및 BusinessException 추가
-- [ ] 전역 예외 핸들러 추가
+- [x] ErrorCode 및 ErrorResponse 정의
+- [x] 기존 예외 제거 및 BusinessException 추가
+- [x] 전역 예외 핸들러 추가
 
 모든 에러 응답은 일관된 JSON 형식으로 내려갑니다.
 - 모든 에러 응답은 다음 필드를 포함한다. 
