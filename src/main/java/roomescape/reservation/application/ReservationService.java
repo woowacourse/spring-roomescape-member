@@ -67,7 +67,7 @@ public class ReservationService {
         ReservationTime time = timeRepository.getById(command.timeId());
         time.checkValidDateTime(command.date(), clock);
         Theme theme = themeRepository.getById(command.themeId());
-        if (reservationRepository.existsByReservationTimeAndThemeAndDate(time.getId(), theme.getId(), command.date())) {
+        if (reservationRepository.existsByReservationTimeAndThemeAndDateAndIdNot(id, time.getId(), theme.getId(), command.date())) {
             throw new ReservationInUseException("이미 다른 예약이 존재합니다.");
         }
         Reservation changedReservation = reservation.changeTime(command.date(), time, theme);
