@@ -2,6 +2,8 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.CustomBusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.model.Reservation;
@@ -33,11 +35,11 @@ public class ReservationService {
         Schedule schedule = scheduleService.findById(request.scheduleId());
 
         if (reservationRepository.existsByScheduleId(schedule.getId())) {
-            throw new IllegalArgumentException("이미 예약된 스케줄입니다.");
+            throw new CustomBusinessException(ErrorCode.ALREADY_RESERVED_SCHEDULE);
         }
 
         if (schedule.isBefore()) {
-            throw new IllegalArgumentException("이미 지나간 시간에는 예약할 수 없습니다.");
+            throw new CustomBusinessException(ErrorCode.RESERVATION_PAST_TIME);
         }
 
         Reservation reservation = new Reservation(user, schedule);
@@ -66,14 +68,14 @@ public class ReservationService {
         User currentUser = userService.findByName(userName);
 
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new CustomBusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
         if (!reservation.getUser().getId().equals(currentUser.getId())) {
-            throw new IllegalArgumentException("본인의 예약만 취소할 수 있습니다.");
+            throw new CustomBusinessException(ErrorCode.RESERVATION_NOT_OWNER);
         }
 
         if (reservation.getSchedule().isBefore()) {
-            throw new IllegalArgumentException("이미 지나간 예약은 취소할 수 없습니다.");
+            throw new CustomBusinessException(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
 
         reservationRepository.delete(reservationId);
@@ -85,25 +87,25 @@ public class ReservationService {
         User currentUser = userService.findByName(userName);
         Schedule newSchedule = scheduleService.findById(newScheduleId);
         Reservation reservationToUpdate = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+                .orElseThrow(() -> new CustomBusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
         if (!reservationToUpdate.getUser().getId().equals(currentUser.getId())) {
-            throw new IllegalArgumentException("본인의 예약만 변경할 수 있습니다.");
+            throw new CustomBusinessException(ErrorCode.RESERVATION_NOT_OWNER);
         }
         if (reservationToUpdate.getSchedule().isBefore()) {
-            throw new IllegalArgumentException("이미 지나간 예약은 변경할 수 없습니다.");
+            throw new CustomBusinessException(ErrorCode.RESERVATION_ALREADY_PASSED);
         }
         if (newSchedule.isBefore()) {
-            throw new IllegalArgumentException("지나간 시간으로 예약을 변경할 수 없습니다.");
+            throw new CustomBusinessException(ErrorCode.RESERVATION_PAST_TIME);
         }
         if (reservationRepository.existsByScheduleId(newScheduleId)) {
-            throw new IllegalArgumentException("변경하려는 시간에 이미 예약이 있습니다.");
+            throw new CustomBusinessException(ErrorCode.ALREADY_RESERVED_SCHEDULE);
         }
 
         int updatedRows = reservationRepository.update(reservationId, newSchedule.getId(), currentUser.getId());
 
         if (updatedRows == 0) {
-            throw new IllegalStateException("예약 변경에 실패했습니다. 예약 정보와 사용자 정보를 다시 확인해주세요.");
+            throw new CustomBusinessException(ErrorCode.RESERVATION_UPDATE_FAILED);
         }
     }
 }

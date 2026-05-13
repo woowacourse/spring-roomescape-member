@@ -10,6 +10,8 @@ import roomescape.schedule.model.Schedule;
 import roomescape.schedule.repository.ScheduleRepository;
 import roomescape.theme.model.Theme;
 import roomescape.theme.service.ThemeService;
+import roomescape.exception.CustomBusinessException;
+import roomescape.exception.ErrorCode;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -44,7 +46,7 @@ public class ScheduleService {
 
     public Schedule findById(Long id) {
         return scheduleRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 스케줄입니다."));
+                .orElseThrow(() -> new CustomBusinessException(ErrorCode.SCHEDULE_NOT_FOUND));
     }
 
     // TODO: 메서드가 너무 길다. (2026. 5. 12.)
@@ -54,24 +56,24 @@ public class ScheduleService {
         LocalDateTime newStartAt = LocalDateTime.of(request.date(), request.time());
 
         if (newStartAt.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("과거 날짜/시간에는 스케줄을 생성할 수 없습니다.");
+            throw new CustomBusinessException(ErrorCode.PAST_SCHEDULE_CREATION);
         }
 
         if (newStartAt.toLocalTime().isBefore(OPENING_TIME)) {
-            throw new IllegalArgumentException("오전 10시 이전에는 예약이 불가능합니다.");
+            throw new CustomBusinessException(ErrorCode.INVALID_SCHEDULE_TIME);
         }
 
         LocalTime requiredTime = theme.getRequiredTime();
         LocalDateTime newEndAt = newStartAt.plusHours(requiredTime.getHour())
                 .plusMinutes(requiredTime.getMinute());
         if (newEndAt.toLocalTime().isAfter(CLOSE_TIME)) {
-            throw new IllegalArgumentException("오후 8시 이후에는 예약이 불가능합니다.");
+            throw new CustomBusinessException(ErrorCode.INVALID_SCHEDULE_TIME);
         }
 
         List<Schedule> existingSchedules = scheduleRepository.findDailySchedules(request.themeId(), request.date());
         for (Schedule existingSchedule : existingSchedules) {
             if (existingSchedule.getStartAt().isBefore(newEndAt) && existingSchedule.getEndAt().isAfter(newStartAt)) {
-                throw new IllegalArgumentException("선택하신 시간은 다른 예약 시간과 겹쳐서 추가할 수 없습니다.");
+                throw new CustomBusinessException(ErrorCode.DUPLICATE_SCHEDULE_TIME);
             }
         }
 
@@ -82,7 +84,7 @@ public class ScheduleService {
     @Transactional
     public void delete(Long scheduleId) {
         if (reservationRepository.existsByScheduleId(scheduleId)) {
-            throw new IllegalArgumentException("해당 스케줄에 예약이 존재하여 삭제할 수 없습니다.");
+            throw new CustomBusinessException(ErrorCode.SCHEDULE_IN_USE);
         }
         scheduleRepository.delete(scheduleId);
     }

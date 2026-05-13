@@ -7,6 +7,8 @@ import roomescape.user.dto.UserResponse;
 import roomescape.user.model.Role;
 import roomescape.user.model.User;
 import roomescape.user.repository.UserRepository;
+import roomescape.exception.CustomBusinessException;
+import roomescape.exception.ErrorCode;
 
 @Service
 public class UserService {
@@ -28,6 +30,6 @@ public class UserService {
 
     public User findByName(String name) {
         return userRepository.findByName(name)
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 유저입니다. 로그인을 다시 확인해주세요."));
+                .orElseThrow(() -> new CustomBusinessException(ErrorCode.USER_NOT_FOUND));
     }
 }

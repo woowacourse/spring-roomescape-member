@@ -5,6 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.dto.*;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.exception.CustomBusinessException;
+import roomescape.exception.ErrorCode;
 
 import java.util.List;
 
@@ -40,6 +42,6 @@ public class ThemeService {
 
     public Theme findById(Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new CustomBusinessException(ErrorCode.THEME_NOT_FOUND));
     }
 }
