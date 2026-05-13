@@ -15,6 +15,7 @@ import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 import java.util.List;
 
+import static roomescape.exception.ErrorCode.*;
 import static roomescape.exception.ErrorCode.DUPLICATED_RESERVATION_TIME;
 
 @Service
@@ -45,13 +46,13 @@ public class ReservationTimeService {
         boolean hasTimeId = reservationRepository.existsByTimeId(id);
 
         if(hasTimeId) {
-            throw new DataReferencedException(ErrorCode.CANNOT_DELETE_RESERVATION_TIME_IN_USE);
+            throw new DataReferencedException(CANNOT_DELETE_RESERVATION_TIME_IN_USE);
         }
 
         try {
             reservationTimeRepository.deleteReservationTime(id);
         }  catch(DataIntegrityViolationException e) {
-            throw new DataReferencedException(ErrorCode.INTEGRITY_VIOLATION_ON_DELETE);
+            throw new DataReferencedException(INTEGRITY_VIOLATION_ON_DELETE);
         }
     }
 

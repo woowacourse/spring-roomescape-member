@@ -11,6 +11,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.reservation.ReservationCondition;
 import roomescape.exception.DuplicatedResourceException;
+import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
@@ -68,7 +69,7 @@ public class RoomReservationService {
         LocalDate today = LocalDate.now();
 
         if (reservationDate.isBefore(today)) {
-            throw new IllegalArgumentException("지난 날짜에는 예약할 수 없습니다.");
+            throw new InvalidRequestException(INVALID_RESERVATION_DATE);
         }
     }
 
@@ -76,7 +77,7 @@ public class RoomReservationService {
         LocalTime now = LocalTime.now();
 
         if (startAt.isBefore(now)) {
-            throw new IllegalArgumentException("지난 시간에는 예약할 수 없습니다.");
+            throw new InvalidRequestException(INVALID_RESERVATION_TIME);
         }
     }
 }
