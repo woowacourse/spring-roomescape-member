@@ -101,9 +101,9 @@ public class JdbcReservationRepository implements ReservationRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         int rowCount = insert(reservation, keyHolder);
-        validateCreatedRowCount(rowCount);
+        validateCreatedRowCount(rowCount, reservation);
 
-        Long id = getGeneratedId(keyHolder);
+        Long id = getGeneratedId(keyHolder, reservation);
         return reservation.withId(id);
     }
 
@@ -126,17 +126,30 @@ public class JdbcReservationRepository implements ReservationRepository {
         }, keyHolder);
     }
 
-    private void validateCreatedRowCount(int rowCount) {
+    private void validateCreatedRowCount(int rowCount, Reservation reservation) {
         if (rowCount != 1) {
-            log.error("Reservation insert affected unexpected row count. rowCount={}", rowCount);
+            log.error(
+                    "Reservation insert affected unexpected row count. rowCount={}, name={}, date={}, timeId={}, themeId={}",
+                    rowCount,
+                    reservation.getName(),
+                    reservation.getDate(),
+                    reservation.getTime().getId(),
+                    reservation.getTheme().getId()
+            );
             throw new InfrastructureException("예약 생성에 실패했습니다.");
         }
     }
 
-    private Long getGeneratedId(KeyHolder keyHolder) {
+    private Long getGeneratedId(KeyHolder keyHolder, Reservation reservation) {
         Number key = keyHolder.getKey();
         if (key == null) {
-            log.error("Reservation insert did not return generated id.");
+            log.error(
+                    "Reservation insert did not return generated id. name={}, date={}, timeId={}, themeId={}",
+                    reservation.getName(),
+                    reservation.getDate(),
+                    reservation.getTime().getId(),
+                    reservation.getTheme().getId()
+            );
             throw new InfrastructureException("예약 생성에 실패했습니다.");
         }
         return key.longValue();

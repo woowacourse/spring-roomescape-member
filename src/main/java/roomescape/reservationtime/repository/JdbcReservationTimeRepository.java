@@ -36,9 +36,9 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         int rowCount = insert(reservationTime, keyHolder);
-        validateCreatedRowCount(rowCount);
+        validateCreatedRowCount(rowCount, reservationTime);
 
-        Long id = getGeneratedId(keyHolder);
+        Long id = getGeneratedId(keyHolder, reservationTime);
         return reservationTime.withId(id);
     }
 
@@ -58,17 +58,24 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         }, keyHolder);
     }
 
-    private void validateCreatedRowCount(int rowCount) {
+    private void validateCreatedRowCount(int rowCount, ReservationTime reservationTime) {
         if (rowCount != 1) {
-            log.error("Reservation time insert affected unexpected row count. rowCount={}", rowCount);
+            log.error(
+                    "Reservation time insert affected unexpected row count. rowCount={}, startAt={}",
+                    rowCount,
+                    reservationTime.getStartAt()
+            );
             throw new InfrastructureException("예약 시간 생성에 실패했습니다.");
         }
     }
 
-    private Long getGeneratedId(KeyHolder keyHolder) {
+    private Long getGeneratedId(KeyHolder keyHolder, ReservationTime reservationTime) {
         Number key = keyHolder.getKey();
         if (key == null) {
-            log.error("Reservation time insert did not return generated id.");
+            log.error(
+                    "Reservation time insert did not return generated id. startAt={}",
+                    reservationTime.getStartAt()
+            );
             throw new InfrastructureException("예약 시간 생성에 실패했습니다.");
         }
         return key.longValue();

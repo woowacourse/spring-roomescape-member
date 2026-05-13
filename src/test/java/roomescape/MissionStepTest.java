@@ -52,8 +52,8 @@ public class MissionStepTest {
     }
 
     @Test
-    @DisplayName("중복된 예약 시간을 추가하면 bad request를 반환한다.")
-    void createDuplicatedReservationTime_returnsBadRequest() {
+    @DisplayName("중복된 예약 시간을 추가하면 conflict를 반환한다.")
+    void createDuplicatedReservationTime_returnsConflict() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
@@ -69,7 +69,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/admin/times")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(409);
     }
 
     @Test

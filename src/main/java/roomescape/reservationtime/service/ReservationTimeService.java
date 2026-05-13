@@ -2,8 +2,8 @@ package roomescape.reservationtime.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.ConflictException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.global.exception.InvalidRequestException;
 import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -42,7 +42,7 @@ public class ReservationTimeService {
 
     private void validateNotDuplicated(ReservationTime reservationTime) {
         if (reservationTimeRepository.existsByStartAt(reservationTime.getStartAt())) {
-            throw new InvalidRequestException("이미 존재하는 예약 시간입니다.");
+            throw new ConflictException("이미 등록된 예약 시간입니다. 다른 시간을 입력해주세요.");
         }
     }
 
@@ -77,7 +77,7 @@ public class ReservationTimeService {
 
     private void validateThemeExists(Long themeId) {
         if (!themeRepository.existsById(themeId)) {
-            throw new NotFoundException("존재하지 않는 테마입니다.");
+            throw new NotFoundException("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요.");
         }
     }
 }

@@ -38,9 +38,9 @@ public class JdbcThemeRepository implements ThemeRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         int rowCount = insert(theme, keyHolder);
-        validateCreatedRowCount(rowCount);
+        validateCreatedRowCount(rowCount, theme);
 
-        Long id = getGeneratedId(keyHolder);
+        Long id = getGeneratedId(keyHolder, theme);
         return theme.withId(id);
     }
 
@@ -62,17 +62,28 @@ public class JdbcThemeRepository implements ThemeRepository {
         }, keyHolder);
     }
 
-    private void validateCreatedRowCount(int rowCount) {
+    private void validateCreatedRowCount(int rowCount, Theme theme) {
         if (rowCount != 1) {
-            log.error("Theme insert affected unexpected row count. rowCount={}", rowCount);
+            log.error(
+                    "Theme insert affected unexpected row count. rowCount={}, name={}, descriptionLength={}, thumbnailLength={}",
+                    rowCount,
+                    theme.getName(),
+                    theme.getDescription().length(),
+                    theme.getThumbnail().length()
+            );
             throw new InfrastructureException("테마 생성에 실패했습니다.");
         }
     }
 
-    private Long getGeneratedId(KeyHolder keyHolder) {
+    private Long getGeneratedId(KeyHolder keyHolder, Theme theme) {
         Number key = keyHolder.getKey();
         if (key == null) {
-            log.error("Theme insert did not return generated id.");
+            log.error(
+                    "Theme insert did not return generated id. name={}, descriptionLength={}, thumbnailLength={}",
+                    theme.getName(),
+                    theme.getDescription().length(),
+                    theme.getThumbnail().length()
+            );
             throw new InfrastructureException("테마 생성에 실패했습니다.");
         }
         return key.longValue();

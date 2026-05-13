@@ -2,8 +2,8 @@ package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.ConflictException;
 import roomescape.theme.domain.Theme;
-import roomescape.global.exception.InvalidRequestException;
 import roomescape.theme.repository.ThemeRepository;
 
 import java.time.LocalDate;
@@ -27,7 +27,7 @@ public class ThemeService {
 
     private void validateNotDuplicated(String name) {
         if (themeRepository.existsByName(name)) {
-            throw new InvalidRequestException("이미 존재하는 테마 이름입니다.");
+            throw new ConflictException("이미 등록된 테마 이름입니다. 다른 이름을 입력해주세요.");
         }
     }
 

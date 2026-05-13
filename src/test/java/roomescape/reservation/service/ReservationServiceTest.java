@@ -5,10 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.global.exception.InvalidRequestException;
+import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
@@ -60,8 +59,8 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.create(name, date, time.getId(), theme.getId()))
-                .isInstanceOf(InvalidRequestException.class)
-                .hasMessage("이미 예약된 시간입니다.");
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("선택한 날짜와 시간에는 이미 해당 테마의 예약이 있습니다. 다른 시간을 선택해주세요.");
     }
 
     @Test
@@ -78,7 +77,7 @@ class ReservationServiceTest {
                 theme.getId()
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+                .hasMessage("선택한 예약 시간이 존재하지 않습니다. 다른 시간을 선택해주세요.");
     }
 
     @Test
@@ -95,7 +94,7 @@ class ReservationServiceTest {
                 37L
         ))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 테마입니다.");
+                .hasMessage("선택한 테마가 존재하지 않습니다. 다른 테마를 선택해주세요.");
     }
 
     @Test

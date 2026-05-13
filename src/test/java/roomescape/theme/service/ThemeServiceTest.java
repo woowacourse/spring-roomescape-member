@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.global.exception.InvalidRequestException;
+import roomescape.global.exception.ConflictException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -68,8 +68,8 @@ class ThemeServiceTest {
                 "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://example.com/theme.png"
         ))
-                .isInstanceOf(InvalidRequestException.class)
-                .hasMessage("이미 존재하는 테마 이름입니다.");
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("이미 등록된 테마 이름입니다. 다른 이름을 입력해주세요.");
     }
 
     @Test
