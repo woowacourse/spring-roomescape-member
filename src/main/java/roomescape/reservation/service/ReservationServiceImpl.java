@@ -55,8 +55,6 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Reservation create(ReservationSaveServiceDto reservation) {
-        validateRequiredFields(reservation);
-
         ReservationTime time = timeService.findById(reservation.timeId());
         Theme theme = findTheme(reservation.themeId());
         LocalDate date = reservation.date();
@@ -72,15 +70,6 @@ public class ReservationServiceImpl implements ReservationService {
                 theme
         );
         return reservationRepository.save(newReservation);
-    }
-
-    private void validateRequiredFields(ReservationSaveServiceDto reservation) {
-        if (reservation.name() == null || reservation.name().isBlank()) {
-            throw new RoomescapeException(ErrorCode.INVALID_REQUEST);
-        }
-        if (reservation.date() == null || reservation.themeId() == null || reservation.timeId() == null) {
-            throw new RoomescapeException(ErrorCode.INVALID_REQUEST);
-        }
     }
 
     private void validatePastReservation(LocalDate date, ReservationTime time) {
@@ -108,8 +97,6 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Reservation update(ReservationUpdateServiceDto dto) {
-        validateRequiredFields(dto);
-
         Reservation existing = reservationRepository.findById(dto.id())
                 .orElseThrow(() -> new ReservationException(dto.id()));
         validateOwner(existing, dto.requesterName());
@@ -123,15 +110,6 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.update(dto.id(), dto.date(), newTime.getId(), newTheme.getId());
         return reservationRepository.findById(dto.id())
                 .orElseThrow(() -> new ReservationException(dto.id()));
-    }
-
-    private void validateRequiredFields(ReservationUpdateServiceDto reservation) {
-        if (reservation.requesterName() == null || reservation.requesterName().isBlank()) {
-            throw new RoomescapeException(ErrorCode.INVALID_REQUEST);
-        }
-        if (reservation.date() == null || reservation.themeId() == null || reservation.timeId() == null) {
-            throw new RoomescapeException(ErrorCode.INVALID_REQUEST);
-        }
     }
 
     private void validateDuplicatedReservation(Long reservationId, Long themeId, ReservationTime time, LocalDate date) {

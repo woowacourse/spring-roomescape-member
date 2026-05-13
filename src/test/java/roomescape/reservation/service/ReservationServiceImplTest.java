@@ -64,7 +64,6 @@ class ReservationServiceImplTest {
         ReservationTime time = new ReservationTime(1L, "09:00", "10:00");
 
         when(timeService.findById(1L)).thenReturn(time);
-        when(themeRepository.existsById(1L)).thenReturn(true);
         when(themeRepository.findById(1L)).thenReturn(new Theme("테마", "설명", "url").withId(1L));
 
         assertThatThrownBy(() -> reservationService.create(request))
@@ -76,22 +75,11 @@ class ReservationServiceImplTest {
     }
 
     @Test
-    void 이름이_비어있으면_예외가_발생한다() {
-        ReservationSaveServiceDto request = new ReservationSaveServiceDto(" ", LocalDate.of(2099, 8, 5), 1L, 1L);
-
-        assertThatThrownBy(() -> reservationService.create(request))
-                .isInstanceOf(RoomescapeException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.INVALID_REQUEST);
-    }
-
-    @Test
     void 중복_예약이면_예외가_발생한다() {
         ReservationSaveServiceDto request = new ReservationSaveServiceDto("브라운", LocalDate.of(2099, 8, 5), 1L, 1L);
         ReservationTime time = new ReservationTime(1L, "10:00", "11:00");
 
         when(timeService.findById(1L)).thenReturn(time);
-        when(themeRepository.existsById(1L)).thenReturn(true);
         when(themeRepository.findById(1L)).thenReturn(new Theme("테마", "설명", "url").withId(1L));
         when(holidayService.isHoliday(request.date())).thenReturn(false);
         when(reservationRepository.isDuplicated(1L, time, request.date())).thenReturn(true);
@@ -158,7 +146,6 @@ class ReservationServiceImplTest {
 
         when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
         when(timeService.findById(1L)).thenReturn(newTime);
-        when(themeRepository.existsById(1L)).thenReturn(true);
         when(themeRepository.findById(1L)).thenReturn(theme);
 
         ReservationUpdateServiceDto dto = new ReservationUpdateServiceDto(1L, "브라운", LocalDate.of(2026, 5, 12), 1L, 1L);
@@ -178,7 +165,6 @@ class ReservationServiceImplTest {
 
         when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
         when(timeService.findById(2L)).thenReturn(newTime);
-        when(themeRepository.existsById(1L)).thenReturn(true);
         when(themeRepository.findById(1L)).thenReturn(theme);
         when(holidayService.isHoliday(LocalDate.of(2099, 9, 1))).thenReturn(false);
         when(reservationRepository.isDuplicatedExcludingId(1L, 1L, newTime, LocalDate.of(2099, 9, 1))).thenReturn(true);
