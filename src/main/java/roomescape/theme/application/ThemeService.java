@@ -39,9 +39,9 @@ public class ThemeService {
         if (reservationRepository.existsByTheme(id)) {
             throw new ThemeInUseException("해당 테마의 예약이 존재합니다.");
         }
-        if (themeRepository.delete(id) == DELETE_ROW_COUNTS) {
-            throw new ThemeNotFoundException("존재하지 않는 테마입니다.");
-        }
+        Theme theme = themeRepository.getById(id)
+                .delete(clock);
+        themeRepository.delete(theme);
     }
 
     @Transactional(readOnly = true)

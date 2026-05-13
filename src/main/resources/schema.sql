@@ -4,6 +4,7 @@ CREATE TABLE theme(
                     thumbnail_image_url VARCHAR(255) NOT NULL,
                     description VARCHAR(255) NOT NULL,
                     duration_time VARCHAR(255) NOT NULL,
+                    deleted_at TIMESTAMP,
                     PRIMARY KEY (id)
 );
 

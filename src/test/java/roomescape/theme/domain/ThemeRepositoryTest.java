@@ -67,8 +67,8 @@ class ThemeRepositoryTest {
                 .build();
 
         Theme savedTheme = themeRepository.save(theme);
-
-        Assertions.assertThatCode(() -> themeRepository.delete(savedTheme.getId()))
+        Theme deletedTheme = savedTheme.delete(clock);
+        Assertions.assertThatCode(() -> themeRepository.delete(deletedTheme))
                 .doesNotThrowAnyException();
     }
 
