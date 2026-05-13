@@ -1,6 +1,8 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import roomescape.exception.business.PastTimeReservationException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -36,15 +38,19 @@ public class Reservation {
         if (date == null) {
             throw new IllegalArgumentException("날짜는 필수입니다.");
         }
-        if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("현재보다 이전의 날짜는 예약할 수 없습니다.");
-        }
-        if (time == null) {
+        if (time.getId() == null) {
             throw new IllegalArgumentException("예약 시간은 필수입니다.");
+        }
+        if (LocalDateTime.of(date, time.getStartAt()).isBefore(LocalDateTime.now())) {
+            throw new PastTimeReservationException("이미 지난 시간에는 예약할 수 없습니다.");
         }
         if (theme == null) {
             throw new IllegalArgumentException("테마는 필수입니다.");
         }
+    }
+
+    public boolean isPast() {
+        return LocalDateTime.of(date, time.getStartAt()).isBefore(LocalDateTime.now());
     }
 
     public Long getId() { return id; }

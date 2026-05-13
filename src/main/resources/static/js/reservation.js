@@ -170,11 +170,11 @@ function clearBookingBar() {
 function confirmBooking() {
   const name = document.getElementById('booking-name').value.trim();
   if (!name) {
-    alert('예약자 이름을 입력해주세요.');
+    showToast('예약자 이름을 입력해주세요.');
     return;
   }
   if (!state.date || !state.themeId || !state.timeId) {
-    alert('날짜·테마·시간을 모두 선택해주세요.');
+    showToast('날짜·테마·시간을 모두 선택해주세요.');
     return;
   }
 
@@ -190,11 +190,11 @@ function confirmBooking() {
   })
     .then(res => {
       if (res.status === 201) return res.json();
-      throw new Error('예약 실패');
+      return res.json().then(body => { throw new Error(body.message || '예약에 실패했습니다.'); });
     })
     .then(() => {
-      alert('예약이 완료되었습니다.');
+      showToast('예약이 완료되었습니다.', 'success');
       refreshTimes();
     })
-    .catch(err => alert(err.message));
+    .catch(err => showToast(err.message));
 }

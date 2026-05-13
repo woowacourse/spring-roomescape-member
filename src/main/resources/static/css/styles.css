@@ -522,6 +522,82 @@ table.table tbody tr:hover { background: var(--surface-2); }
 
 table.table td .form-control { height: 36px; padding: 6px 10px; }
 
+/* ─── Modal ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.5);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 28px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ─── Toast notification ─── */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  max-width: 360px;
+  pointer-events: auto;
+  animation: toast-in 0.25s ease;
+}
+
+.toast.toast-error {
+  background: #fef2f2;
+  color: var(--danger);
+  border: 1px solid #fecaca;
+}
+
+.toast.toast-success {
+  background: #f0fdf4;
+  color: var(--success);
+  border: 1px solid #bbf7d0;
+}
+
+.toast.toast-out {
+  animation: toast-out 0.25s ease forwards;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toast-out {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(20px); }
+}
+
 /* ─── Misc ─── */
 .d-none { display: none !important; }
 

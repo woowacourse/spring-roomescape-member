@@ -74,7 +74,7 @@ function saveRow(event, startInput, finishInput) {
   })
     .then(res => {
       if (res.status === 201) return res.json();
-      throw new Error('시간 추가 실패');
+      return res.json().then(b => { throw new Error(b.message || '시간 추가에 실패했습니다.'); });
     })
     .then(data => {
       row.cells[0].textContent = data.id;
@@ -84,15 +84,18 @@ function saveRow(event, startInput, finishInput) {
       row.cells[2].appendChild(createButton('삭제', 'btn-danger', deleteRow));
       isEditing = false;
     })
-    .catch(err => alert(err.message));
+    .catch(err => showToast(err.message));
 }
 
 function deleteRow(event) {
   const row = event.target.closest('tr');
   const id = row.cells[0].textContent;
-  fetch(`${TIME_API}/${id}`, { method: 'DELETE' })
-    .then(res => { if (res.status === 204) row.remove(); })
-    .catch(err => console.error('삭제 실패:', err));
+  fetch(`${TIME_API}/${id}`, {method: 'DELETE'})
+    .then(res => {
+      if (res.status === 204) { row.remove(); return; }
+      return res.json().then(b => { throw new Error(b.message || '삭제에 실패했습니다.'); });
+    })
+    .catch(err => showToast(err.message));
 }
 
 function createInput(type) {
