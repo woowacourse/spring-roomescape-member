@@ -74,6 +74,24 @@ class ReservationDaoTest {
     }
 
     @Test
+    void 이름을_비교하여_예약_목록을_조회한다() {
+        //given
+        String targetUserName = "userA";
+        String otherUserName = "userB";
+
+        reservationDao.insert(targetUserName, LocalDate.now(), 1L, 1L);
+        reservationDao.insert(otherUserName, LocalDate.now().plusDays(1), 1L, 1L);
+
+        //when
+        List<ReservationEntity> reservations = reservationDao.findByName(targetUserName);
+
+        //then
+        Assertions.assertThat(reservations)
+                .extracting(ReservationEntity::getName)
+                .containsExactly(targetUserName);
+    }
+
+    @Test
     void 예약을_삭제한다() {
         //given
         String name = "user";
