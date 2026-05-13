@@ -72,4 +72,17 @@ public class ReservationDao {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
+    public boolean existsByTimeId(Long timeId) {
+        Boolean result = jdbcTemplate.queryForObject("""
+        SELECT EXISTS(
+            SELECT 1
+            FROM reservation
+            WHERE time_id = ?
+        )
+        """,
+                Boolean.class,
+                timeId
+        );
+        return Boolean.TRUE.equals(result);
+    }
 }

@@ -41,7 +41,11 @@ public class ReservationTimeDao {
     }
 
     public void delete(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+        String sql = """
+                DELETE FROM reservation_time WHERE id = ?
+                """;
+
+        jdbcTemplate.update(sql, id);
     }
 
     public Optional<ReservationTime> findTimeById(Long timeId) {
@@ -57,5 +61,19 @@ public class ReservationTimeDao {
                         timeId
                 ).stream()
                 .findFirst();
+    }
+
+    public boolean existsById(Long id) {
+        Boolean result = jdbcTemplate.queryForObject("""
+        SELECT EXISTS(
+            SELECT 1
+            FROM reservation_time
+            WHERE id = ?
+        )
+        """,
+                Boolean.class,
+                id
+        );
+        return Boolean.TRUE.equals(result);
     }
 }
