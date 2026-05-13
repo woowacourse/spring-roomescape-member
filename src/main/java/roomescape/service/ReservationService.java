@@ -37,6 +37,13 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    public List<ReservationResponse> readAllByName(String name) {
+        List<Reservation> reservations = reservationRepository.findAllByName(name);
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .collect(Collectors.toList());
+    }
+
     public void removeById(Long id) {
         reservationRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("[ERROR] 삭제하고자 하는 예약 ID가 없습니다."));

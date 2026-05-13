@@ -86,6 +86,11 @@ public class ReservationRepository {
                 .findFirst();
     }
 
+    public List<Reservation> findAllByName(String username) {
+        String sql = "SELECT id, username, date, time_id, theme_id FROM reservation WHERE username = ?";
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, username);
+    }
+
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
