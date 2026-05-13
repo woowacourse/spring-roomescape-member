@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static roomescape.exception.ErrorCode.REFERENCED_THEME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.CustomException;
 import roomescape.repository.FakeDatabase;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeReservationTimeRepository;
@@ -37,6 +40,18 @@ public class ThemeServiceTest {
         themeRepository = new FakeThemeRepository(fakeDatabase);
 
         themeService = new ThemeService(themeRepository, reservationRepository);
+    }
+
+    @Test
+    void deleteReferencedThemeExceptionTest() {
+        ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.create(new Theme("방탈출1", "방탈출1 설명", "url.jpg"));
+
+        reservationRepository.create(new Reservation("fizz", LocalDate.now().plusDays(1), reservationTime, theme));
+
+        assertThatThrownBy(() -> themeService.delete(1L))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(REFERENCED_THEME.getMessage());
     }
 
     @Test

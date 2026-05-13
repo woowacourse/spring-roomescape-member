@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static roomescape.exception.ErrorCode.REFERENCED_TIME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.CustomException;
 import roomescape.repository.FakeDatabase;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeReservationTimeRepository;
@@ -42,6 +45,18 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
+    void deleteReferencedReservationTimeExceptionTest() {
+        ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.create(new Theme("방탈출1", "방탈출1 설명", "url.jpg"));
+
+        reservationRepository.create(new Reservation("fizz", LocalDate.now().plusDays(1), reservationTime, theme));
+
+        assertThatThrownBy(() -> reservationTimeService.delete(1L))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(REFERENCED_TIME.getMessage());
+    }
+
+    @Test
     void createTest() {
         ServiceReservationTimeResponse responseDto = reservationTimeService.create(
                 new ServiceReservationTimeRequest(LocalTime.of(10, 0)));
@@ -51,8 +66,8 @@ public class ReservationTimeServiceTest {
 
     @Test
     void readAllTest() {
-        reservationTimeService.create(new ServiceReservationTimeRequest(LocalTime.of(10, 0)));
-        reservationTimeService.create(new ServiceReservationTimeRequest(LocalTime.of(11, 0)));
+        reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
+        reservationTimeRepository.create(new ReservationTime(LocalTime.of(11, 0)));
 
         List<ServiceReservationTimeResponse> responseDtos = reservationTimeService.readAll();
 
@@ -63,7 +78,7 @@ public class ReservationTimeServiceTest {
     @Test
     void readAvailabilityByDateAndThemeTest() {
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
-        reservationTimeRepository.create(new ReservationTime(LocalTime.of(11, 0)));
+        reservationTimeRepository.create(reservationTime);
 
         Theme theme = themeRepository.create(new Theme("방탈출1", "방탈출1 설명", "url.jpg"));
 
@@ -78,11 +93,11 @@ public class ReservationTimeServiceTest {
 
     @Test
     void deleteTest() {
-        reservationTimeService.create(new ServiceReservationTimeRequest(LocalTime.of(10, 0)));
+        reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
         reservationTimeService.delete(1L);
 
-        List<ServiceReservationTimeResponse> responseDtos = reservationTimeService.readAll();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.readAll();
 
-        assertThat(responseDtos.size()).isEqualTo(0);
+        assertThat(reservationTimes.size()).isEqualTo(0);
     }
 }
