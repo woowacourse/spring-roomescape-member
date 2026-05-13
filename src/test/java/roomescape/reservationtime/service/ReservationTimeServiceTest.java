@@ -91,6 +91,15 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 예약 시간을 삭제하면 예외가 발생한다.")
+    public void delete_fail_whenReservationTimeNotFound() {
+        // when, then
+        assertThatThrownBy(() -> reservationTimeService.delete(37L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("삭제할 예약 시간이 존재하지 않습니다. 예약 시간 목록을 확인해주세요.");
+    }
+
+    @Test
     @DisplayName("특정 날짜 및 테마의 예약 가능한 시간들을 반환한다.")
     public void findAvailableTimes_success() {
         // given

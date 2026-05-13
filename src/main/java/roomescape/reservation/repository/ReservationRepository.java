@@ -16,5 +16,5 @@ public interface ReservationRepository {
 
     boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 
-    void deleteById(Long id);
+    boolean deleteById(Long id);
 }

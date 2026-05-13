@@ -67,6 +67,8 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        reservationRepository.deleteById(id);
+        if (!reservationRepository.deleteById(id)) {
+            throw new NotFoundException("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
+        }
     }
 }

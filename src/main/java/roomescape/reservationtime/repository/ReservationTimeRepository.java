@@ -11,7 +11,7 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
-    void deleteById(Long id);
+    boolean deleteById(Long id);
 
     Optional<ReservationTime> findById(Long id);
 

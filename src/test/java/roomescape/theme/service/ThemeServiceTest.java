@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ConflictException;
+import roomescape.global.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -87,6 +88,15 @@ class ThemeServiceTest {
 
         // then
         assertThat(themeService.list()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마를 삭제하면 예외가 발생한다.")
+    public void delete_fail_whenThemeNotFound() {
+        // when, then
+        assertThatThrownBy(() -> themeService.delete(37L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("삭제할 테마가 존재하지 않습니다. 테마 목록을 확인해주세요.");
     }
 
     @Test

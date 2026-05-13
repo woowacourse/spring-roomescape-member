@@ -159,12 +159,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         String sql = """
                 DELETE FROM theme
                 WHERE id = ?
                 """;
 
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id) == 1;
     }
 }

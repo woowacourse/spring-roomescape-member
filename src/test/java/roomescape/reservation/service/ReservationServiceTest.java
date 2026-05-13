@@ -154,4 +154,13 @@ class ReservationServiceTest {
         // then
         assertThat(reservationService.findAll()).isEmpty();
     }
+
+    @Test
+    @DisplayName("존재하지 않는 예약을 삭제하면 예외가 발생한다.")
+    public void delete_fail_whenReservationNotFound() {
+        // when, then
+        assertThatThrownBy(() -> reservationService.delete(37L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("삭제할 예약이 존재하지 않습니다. 예약 목록을 확인해주세요.");
+    }
 }

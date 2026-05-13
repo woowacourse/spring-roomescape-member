@@ -19,5 +19,5 @@ public interface ThemeRepository {
 
     boolean existsByName(String name);
 
-    void deleteById(Long id);
+    boolean deleteById(Long id);
 }

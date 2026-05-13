@@ -3,6 +3,7 @@ package roomescape.theme.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ConflictException;
+import roomescape.global.exception.NotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -46,6 +47,8 @@ public class ThemeService {
 
     @Transactional
     public void delete(Long id) {
-        themeRepository.deleteById(id);
+        if (!themeRepository.deleteById(id)) {
+            throw new NotFoundException("삭제할 테마가 존재하지 않습니다. 테마 목록을 확인해주세요.");
+        }
     }
 }
