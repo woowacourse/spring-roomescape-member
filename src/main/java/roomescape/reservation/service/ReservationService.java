@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.policy.ReservationConflictException;
+import roomescape.global.exception.policy.PastReservationNotAllowedException;
 import roomescape.global.exception.validation.ThemeNotFoundException;
 import roomescape.reservation.controller.dto.CreateReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -55,7 +56,7 @@ public class ReservationService {
 
     private void validateDateTimeIsNotPast(LocalDateTime reservationDateTime) {
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("과거 시간은 예약할 수 없습니다. 다른 날짜 및 시간을 선택해주세요.");
+            throw new PastReservationNotAllowedException();
         }
     }
 
