@@ -1,6 +1,9 @@
 package roomescape.controller.admin;
 
+import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.service.ThemeService;
 
 @WebMvcTest(AdminThemeController.class)
@@ -83,5 +88,27 @@ class AdminThemeControllerTest {
                                 }
                                 """.formatted(thumbnailUrl)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마 삭제 시 에러 응답을 반환한다.")
+    void failDelete_WhenThemeNotFound() throws Exception {
+        willThrow(new RoomescapeException(ErrorCode.THEME_NOT_FOUND))
+                .given(themeService)
+                .deleteTheme(1L);
+
+        mockMvc.perform(delete("/admin/themes/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 테마 삭제 시 에러 응답을 반환한다.")
+    void failDelete_WhenThemeInUse() throws Exception {
+        willThrow(new RoomescapeException(ErrorCode.THEME_IN_USE))
+                .given(themeService)
+                .deleteTheme(1L);
+
+        mockMvc.perform(delete("/admin/themes/1"))
+                .andExpect(status().isConflict());
     }
 }

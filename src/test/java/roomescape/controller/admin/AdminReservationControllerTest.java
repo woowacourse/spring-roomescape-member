@@ -2,7 +2,10 @@ package roomescape.controller.admin;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.DisplayName;
@@ -122,5 +125,16 @@ class AdminReservationControllerTest {
                                 }
                                 """))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 삭제 시 에러 응답을 반환한다.")
+    void failDelete_WhenReservationNotFound() throws Exception {
+        willThrow(new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND))
+                .given(reservationService)
+                .deleteById(1L);
+
+        mockMvc.perform(delete("/admin/reservations/1"))
+                .andExpect(status().isNotFound());
     }
 }
