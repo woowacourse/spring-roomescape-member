@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import roomescape.holiday.service.HolidayService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.exception.DuplicateReservationException;
+import roomescape.reservation.exception.PastReservationException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.theme.exception.ThemeNotFoundException;
@@ -48,12 +50,23 @@ public class ReservationServiceImpl implements ReservationService {
         ReservationTime time = findTime(reservation.timeId());
         Long themeId = reservation.themeId();
         LocalDate date = reservation.date();
+        validatePast(date, time);
         validateThemeId(themeId);
         validateNotHoliday(date);
         validateDuplicatedReservation(themeId, time, date);
         Reservation newReservation = new Reservation(reservation.name(), date, time, themeId);
         Reservation saved = reservationRepository.save(newReservation);
         return saved.withTheme(themeRepository.findById(themeId));
+    }
+
+    private void validatePast(LocalDate date, ReservationTime time) {
+        if (date.isBefore(LocalDate.now())) {
+            throw PastReservationException.pastDate();
+        }
+
+        if (date.equals(LocalDate.now()) && time.isStartBefore(LocalTime.now())) {
+            throw PastReservationException.pastTime();
+        }
     }
 
     private void validateThemeId(Long themeId) {

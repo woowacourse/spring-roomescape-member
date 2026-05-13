@@ -10,6 +10,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import roomescape.holiday.exception.HolidayNotFoundException;
 import roomescape.reservation.exception.DuplicateReservationException;
+import roomescape.reservation.exception.PastReservationException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.theme.exception.ThemeNotFoundException;
 import roomescape.time.exception.TimeNotFoundException;
@@ -33,6 +34,12 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleDuplicateReservation(DuplicateReservationException e) {
       return ResponseEntity.status(HttpStatus.CONFLICT)
               .body(ErrorResponse.of(ErrorCode.DUPLICATE_RESERVATION, e.getMessage()));
+  }
+
+  @ExceptionHandler(PastReservationException.class)
+  public ResponseEntity<ErrorResponse> handlePastReservation(PastReservationException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+              .body(ErrorResponse.of(ErrorCode.PAST_RESERVATION, e.getMessage()));
   }
 
   @ExceptionHandler(ThemeNotFoundException.class)
