@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.exception.DuplicateReservationException;
 import roomescape.reservation.exception.InvalidReservationDateValueException;
-import roomescape.reservation.exception.NotReservationOwnerException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.PopularThemesResult;
@@ -154,13 +153,5 @@ public class ReservationService {
                 reservation.getTime().getStartAt()
         );
         reservationRepository.deleteById(id);
-    }
-
-    public void authorizeOwner(String name, Long id) {
-        Reservation reservation = getReservation(id);
-
-        if (!reservation.getName().equals(name)) {
-            throw new NotReservationOwnerException();
-        }
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.auth.Authorized;
 import roomescape.global.exception.common.InvalidRequestFormatException;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -59,6 +60,7 @@ public class ReservationController {
         }
     }
 
+    @Authorized
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateMyReservation(
             @PathVariable Long id,
@@ -66,20 +68,17 @@ public class ReservationController {
             @RequestBody ReservationUpdateRequest request
     ) {
         validateName(name);
-
-        reservationService.authorizeOwner(name, id);
         reservationService.updateReservation(request.toCommand(), id);
         return ResponseEntity.noContent().build();
     }
 
+    @Authorized
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMyReservation(
             @PathVariable Long id,
             @RequestHeader("Authorization") String name
     ) {
         validateName(name);
-
-        reservationService.authorizeOwner(name, id);
         reservationService.deleteReservationById(id);
         return ResponseEntity.noContent().build();
     }
