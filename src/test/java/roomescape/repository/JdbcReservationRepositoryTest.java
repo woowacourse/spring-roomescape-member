@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
@@ -66,16 +67,11 @@ class JdbcReservationRepositoryTest {
         Theme theme = createTheme("미술관의 밤");
 
         ReservationTime reservationTime = jdbcReservationTimeRepository.save(ReservationTime.createNew(time, theme));
+        jdbcReservationRepository.save(Reservation.createNew("쿠다", date, reservationTime));
 
         // when & then
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            jdbcReservationRepository.save(
-                    Reservation.createNew("쿠다", date, reservationTime)
-            );
-            jdbcReservationRepository.save(
-                    Reservation.createNew("아루", date, reservationTime)
-            );
-        });
+        assertThatThrownBy(() -> jdbcReservationRepository.save(Reservation.createNew("아루", date, reservationTime)))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test

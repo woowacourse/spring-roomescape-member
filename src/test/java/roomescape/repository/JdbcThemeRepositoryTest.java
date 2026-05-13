@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
@@ -74,6 +75,8 @@ class JdbcThemeRepositoryTest {
         assertThrows(DataIntegrityViolationException.class, () ->
                 jdbcThemeRepository.save(Theme.createNew("미술관의 밤", "새 설명", "https://example.com/new-theme.png"))
         );
+        assertThatThrownBy(()-> jdbcThemeRepository.save(Theme.createNew("미술관의 밤", "새 설명", "https://example.com/new-theme.png")))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
