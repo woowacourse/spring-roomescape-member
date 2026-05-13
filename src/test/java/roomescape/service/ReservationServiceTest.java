@@ -65,6 +65,26 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 이름으로_예약_목록을_조회한다() {
+        // given
+        String name = "브라운";
+        ReservationTime time = new ReservationTime(1L, LocalTime.parse("08:00"));
+        Theme theme = new Theme(1L, "테스트 테마", "테마 설명", "썸네일 주소");
+        List<Reservation> reservations = List.of(
+                new Reservation(1L, name, date, time, theme),
+                new Reservation(2L, name, date.plusDays(1), time, theme));
+        when(reservationRepository.findByName(name))
+                .thenReturn(reservations);
+
+        // when
+        List<Reservation> result = service.findByName(name);
+
+        // then
+        assertThat(result).isEqualTo(reservations);
+        verify(reservationRepository).findByName(name);
+    }
+
+    @Test
     void 사용자_예약_생성_테스트() {
         // given
         Long id = 1L;

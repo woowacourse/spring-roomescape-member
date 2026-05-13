@@ -16,9 +16,11 @@ import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -56,6 +58,44 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.time.startAt").value("10:00:00"))
                 .andExpect(jsonPath("$.theme.id").value(1))
                 .andExpect(jsonPath("$.theme.name").value("테마"));
+    }
+
+    @Test
+    void 사용자_본인_예약을_조회한다() throws Exception {
+        // given
+        given(reservationService.findByName(eq("브라운")))
+                .willReturn(List.of(reservation()));
+
+        // when & then
+        mockMvc.perform(get("/reservations")
+                        .param("name", "브라운"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("브라운"))
+                .andExpect(jsonPath("$[0].date").value("2099-01-01"))
+                .andExpect(jsonPath("$[0].time.id").value(1))
+                .andExpect(jsonPath("$[0].time.startAt").value("10:00:00"))
+                .andExpect(jsonPath("$[0].theme.id").value(1))
+                .andExpect(jsonPath("$[0].theme.name").value("테마"));
+    }
+
+    @Test
+    void 사용자_본인_예약_조회시_이름이_없으면_에러_응답() throws Exception {
+        // when & then
+        mockMvc.perform(get("/reservations"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.detail").value("name는 필수입니다."));
+    }
+
+    @Test
+    void 사용자_본인_예약_조회시_이름이_비어있으면_에러_응답() throws Exception {
+        // when & then
+        mockMvc.perform(get("/reservations")
+                        .param("name", ""))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.detail").value("name은 비어 있을 수 없습니다."));
     }
 
     @Test

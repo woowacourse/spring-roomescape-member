@@ -35,6 +35,10 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public List<Reservation> findByName(String name) {
+        return reservationRepository.findByName(name);
+    }
+
     @Transactional
     public Reservation createUserReservation(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = findReservationTime(timeId);
