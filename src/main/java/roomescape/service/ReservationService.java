@@ -36,6 +36,7 @@ public class ReservationService {
 
         validateDuplicateReservation(request.date(), time, theme);
         validateInactiveTheme(theme);
+        validateInactiveTime(time);
 
         Reservation reservation = Reservation.of(request.name(), request.date(), theme, time);
         return ReservationResponse.from(reservationRepository.save(reservation));
@@ -72,8 +73,12 @@ public class ReservationService {
         Reservation reservation = findReservationOrThrow(id);
         ReservationTime time = findTimeOrThrow(request.timeId());
         LocalDate date = request.date();
+        Theme theme = reservation.getTheme();
 
-        validateDuplicateReservation(date, time, reservation.getTheme());
+        validateDuplicateReservation(date, time, theme);
+        validateInactiveTheme(theme);
+        validateInactiveTime(time);
+
         reservation.update(date, time);
 
         reservationRepository.update(reservation);
@@ -103,6 +108,12 @@ public class ReservationService {
     private void validateInactiveTheme(Theme theme) {
         if (!theme.isActive()) {
             throw new InactiveException("비활성화 된 테마는 예약할 수 없습니다.");
+        }
+    }
+
+    private void validateInactiveTime(ReservationTime time) {
+        if (!time.isActive()) {
+            throw new InactiveException("비활성화 된 시간대는 예약할 수 없습니다.");
         }
     }
 }

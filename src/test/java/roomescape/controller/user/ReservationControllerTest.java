@@ -30,6 +30,7 @@ import roomescape.domain.fixture.ReservationFixture;
 import roomescape.service.ReservationService;
 import roomescape.web.controller.user.ReservationController;
 import roomescape.web.dto.reservation.ReservationCancelRequest;
+import roomescape.web.dto.reservation.ReservationModifyRequest;
 import roomescape.web.dto.reservation.ReservationRequest;
 import roomescape.web.dto.reservation.ReservationResponse;
 import roomescape.web.dto.reservation.ReservationResponses;
@@ -126,5 +127,42 @@ class ReservationControllerTest extends BaseControllerUnitTest {
         RestAssuredMockMvc.given().spec(adminSpec()).log().all().body(request).when()
                 .patch("/api/reservations/1/cancel").then().log().all().status(HttpStatus.BAD_REQUEST)
                 .body(containsString("예약자 이름 정보는 필수 값입니다."));
+    }
+
+    @Test
+    void 정상적인_예약_ID로_예약_수정_요청_시_204_NO_CONTENT를_응답한다() {
+        // given
+        ReservationModifyRequest request = ReservationRequestFixture.modifySuccessRequestFixture();
+
+        // when & then
+        RestAssuredMockMvc.given().spec(adminSpec()).log().all().body(request).when()
+                .patch("/api/reservations/1/modify").then().log().all().status(HttpStatus.NO_CONTENT);
+
+        verify(reservationService, times(1)).modify(anyLong(), any(ReservationModifyRequest.class));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void 예약_수정을_요청하는_예약_ID가_양수가_아니라면_예외가_발생한다(int reservationId) {
+        // given
+        ReservationModifyRequest request = ReservationRequestFixture.modifySuccessRequestFixture();
+
+        // when & then
+        RestAssuredMockMvc.given().spec(adminSpec()).log().all().body(request).when()
+                .patch("/api/reservations/" + reservationId + "/modify").then().log().all()
+                .status(HttpStatus.BAD_REQUEST).body(containsString("예약 식별자는 양수여야 합니다."));
+    }
+
+    @ParameterizedTest(name = "요청 정보가 {0} 일 때, 예외 메세지 \"{1}\"가 발생한다.")
+    @MethodSource("roomescape.controller.fixture.ReservationRequestFixture#modifyFailRequestFixture")
+    void 예약_수정_요청_시_형식_검증에_실패하면_예외가_발생한다(
+            ReservationModifyRequest body,
+            String exceptionMessage
+    ) {
+        // given
+        // when & then
+        RestAssuredMockMvc.given().spec(adminSpec()).log().all().body(body).when()
+                .patch("/api/reservations/1/modify").then().log().all().status(HttpStatus.BAD_REQUEST)
+                .body(containsString(exceptionMessage));
     }
 }
