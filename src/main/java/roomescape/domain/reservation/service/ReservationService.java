@@ -40,6 +40,12 @@ public class ReservationService {
         return convertReservationsToDto(reservations);
     }
 
+    public List<ReservationResponseDto> getReservationsByName(String name) {
+        ReservationValidator.validate(name);
+        List<Reservation> reservations = reservationRepository.findReservationsByName(name);
+        return convertReservationsToDto(reservations);
+    }
+
     private List<ReservationResponseDto> convertReservationsToDto(List<Reservation> reservations) {
         return reservations.stream()
             .map(ReservationResponseDto::from)

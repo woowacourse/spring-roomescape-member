@@ -44,6 +44,20 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findReservationsByName(String name) {
+        String sql = """
+                SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at, t.id AS theme_id, t.name AS theme_name, t.description, t.image_url
+                FROM reservation r
+                JOIN reservation_time rt ON r.time_id = rt.id
+                JOIN theme t ON r.theme_id = t.id
+                WHERE r.name = :name
+                """;
+        SqlParameterSource parameters = new MapSqlParameterSource("name", name);
+
+        return jdbcTemplate.query(sql, parameters, this::mapReservation);
+    }
+
+    @Override
     public Optional<Reservation> findReservationByDateTimeAndThemeId(LocalDate date, Long timeId,
         Long themeId) {
         String sql = """

@@ -13,7 +13,9 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.global.exception.BadRequestException;
 import roomescape.domain.global.exception.ConflictException;
+import roomescape.domain.global.exception.ErrorCode;
 import roomescape.domain.reservation.dto.request.ReservationCreateRequestDto;
 import roomescape.domain.reservation.dto.response.ReservationCreateResponseDto;
 import roomescape.domain.reservation.dto.response.ReservationResponseDto;
@@ -28,6 +30,7 @@ import roomescape.domain.time.dto.response.TimeResponseDto;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.FakeTimeRepository;
 import roomescape.domain.time.repository.TimeRepository;
+import roomescape.global.ExceptionAssertions;
 
 class ReservationServiceTest {
 
@@ -93,6 +96,51 @@ class ReservationServiceTest {
                         ThemeResponseDto.from(theme)),
                     actual.get(2)
                 )
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("getReservationByName 테스트")
+    class GetReservationByNameTest {
+
+        @Test
+        @DisplayName("사용자의 모든 예약을 조회한다.")
+        void 성공() {
+            LocalDate date = LocalDate.of(2026, 4, 30);
+            Time time = Time.reconstruct(1L, LocalTime.of(10, 0));
+            Theme theme = Theme.reconstruct(1L, "테마 이름", "테마 설명",
+                "https://roomescape.com/images/themes/ring-banner.png");
+
+            reservationRepository.save(Reservation.create("제이콥", date, time, theme, fixedClock));
+            reservationRepository.save(
+                Reservation.create("라이", date.plusDays(1),
+                    Time.reconstruct(2L, LocalTime.of(11, 0)), theme, fixedClock));
+            reservationRepository.save(
+                Reservation.create("티모", date.plusDays(2),
+                    Time.reconstruct(3L, LocalTime.of(12, 0)), theme, fixedClock));
+            String name = "제이콥";
+
+            List<ReservationResponseDto> actual = reservationService.getReservationsByName(name);
+
+            assertAll(
+                () -> assertEquals(1, actual.size()),
+                () -> assertEquals(
+                    new ReservationResponseDto(1L, "제이콥", date, TimeResponseDto.from(time),
+                        ThemeResponseDto.from(theme)),
+                    actual.get(0))
+            );
+        }
+
+        @Test
+        @DisplayName("사용자 이름이 빈 문자열이면 예외가 발생한다.")
+        void 실패() {
+            String wrongName = "";
+
+            ExceptionAssertions.assertErrorCode(
+                () -> reservationService.getReservationsByName(wrongName),
+                BadRequestException.class,
+                ErrorCode.COMMON_INVALID_REQUEST
             );
         }
     }
