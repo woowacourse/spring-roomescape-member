@@ -7,7 +7,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.global.auth.AuthorizationHeaderInterceptor;
-import roomescape.global.exception.BusinessExceptionMappingJackson2HttpMessageConverter;
+import roomescape.global.exception.support.BusinessExceptionMappingJackson2HttpMessageConverter;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {

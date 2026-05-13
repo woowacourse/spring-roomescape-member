@@ -1,4 +1,4 @@
-package roomescape.global.exception;
+package roomescape.global.exception.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;

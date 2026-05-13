@@ -1,4 +1,4 @@
-package roomescape.global.exception;
+package roomescape.global.exception.advice;
 
 import roomescape.global.exception.base.BusinessException;
 
