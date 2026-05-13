@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.global.exception.validation.InvalidNameLengthException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -38,7 +39,7 @@ class ReservationTest {
 
         //when & then
         Assertions.assertThatThrownBy(() -> new Reservation(1L, name, LocalDate.now(), reservationTime, theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidNameLengthException.class);
     }
 
     @ParameterizedTest
