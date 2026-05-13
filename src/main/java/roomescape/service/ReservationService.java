@@ -3,6 +3,8 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.Reservation;
@@ -10,6 +12,7 @@ import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.reservation.ReservationCondition;
+import roomescape.dto.reservation.UpdateReservationRequest;
 import roomescape.exception.dto.ErrorCode;
 import roomescape.exception.exception.DuplicatedResourceException;
 import roomescape.exception.exception.InvalidRequestException;
@@ -76,6 +79,35 @@ public class ReservationService {
         }
 
         reservationRepository.deleteReservation(id);
+    }
+
+    @Transactional
+    public Reservation updateReservation(long id, UpdateReservationRequest updateReservationRequest) {
+        Reservation reservation = reservationRepository.getReservationById(id)
+                .orElseThrow(() -> new NotFoundResourceException(NOT_FOUND_RESERVATION));
+
+        if (!reservation.name().equals(updateReservationRequest.name())) {
+            throw new InvalidRequestException(UNAUTHORIZED_RESERVATION_ACCESS);
+        }
+
+        ReservationTime reservationTime = reservationTimeRepository.getReservationTime(updateReservationRequest.timeId())
+                .orElseThrow(() -> new NotFoundResourceException(NOT_FOUND_RESERVATION_TIME));
+
+        validateDate(updateReservationRequest.date());
+
+        if (updateReservationRequest.date().isEqual(LocalDate.now())) {
+            validateTime(reservationTime.startAt());
+        }
+
+        if (reservationRepository.existsByTimeIdAndThemeIdAndDate(
+                updateReservationRequest.timeId(),
+                reservation.theme().id(),
+                updateReservationRequest.date()
+        )) {
+            throw new DuplicatedResourceException(DUPLICATED_RESERVATION);
+        }
+
+        return reservationRepository.updateReservation(id, updateReservationRequest.date(), reservationTime.id());
     }
 
     private void validateDate(LocalDate reservationDate) {

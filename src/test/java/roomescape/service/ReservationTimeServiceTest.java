@@ -58,6 +58,13 @@ public class ReservationTimeServiceTest {
             }
 
             @Override
+            public Reservation updateReservation(long id, LocalDate date, long reservationTimeId) {
+                return new Reservation(id, reservation.name(), date,
+                        new ReservationTime(reservationTimeId, date.atStartOfDay().toLocalTime()),
+                        reservation.theme());
+            }
+
+            @Override
             public List<Reservation> getAllReservation() {
                 return List.of();
             }

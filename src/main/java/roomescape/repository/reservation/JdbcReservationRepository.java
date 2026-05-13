@@ -75,6 +75,12 @@ public class JdbcReservationRepository implements ReservationRepository {
             )
             """;
 
+    private static final String UPDATE_RESERVATION_SQL = """
+        UPDATE reservation
+        SET date = ?, time_id = ?
+        WHERE id = ?
+        """;
+
     private static final String SELECT_BY_ID_SQL = SELECT_ALL_SQL + "WHERE r.id = ?";
 
     private static final RowMapper<Reservation> MAPPER = (rs, rowNumber) -> new Reservation(
@@ -155,5 +161,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Optional<Reservation> getReservationById(long id) {
         List<Reservation> results = jdbcTemplate.query(SELECT_BY_ID_SQL, MAPPER, id);
         return results.stream().findFirst();
+    }
+
+    @Override
+    public Reservation updateReservation(long id, LocalDate date, long reservationTimeId) {
+        jdbcTemplate.update(UPDATE_RESERVATION_SQL, date, reservationTimeId, id);
+        return getReservationById(id).get();
     }
 }

@@ -8,6 +8,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.reservation.ReservationCondition;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservation.UpdateReservationRequest;
 import roomescape.service.ReservationService;
 
 import java.util.List;
@@ -67,5 +68,15 @@ public class ReservationController {
         reservationService.deleteReservation(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable long id,
+            @RequestBody @Valid UpdateReservationRequest updateReservationRequest
+    ) {
+        Reservation reservation = reservationService.updateReservation(id, updateReservationRequest);
+
+        return ResponseEntity.ok(ReservationResponse.from(reservation));
     }
 }

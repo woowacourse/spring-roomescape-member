@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeWithCount;
 import roomescape.dto.theme.AddThemeRequest;
@@ -53,6 +54,13 @@ public class ThemeServiceTest {
             @Override
             public Optional<Reservation> getReservationById(long id) {
                 return Optional.ofNullable(reservation);
+            }
+
+            @Override
+            public Reservation updateReservation(long id, LocalDate date, long reservationTimeId) {
+                return new Reservation(id, reservation.name(), date,
+                        new ReservationTime(reservationTimeId, date.atStartOfDay().toLocalTime()),
+                        reservation.theme());
             }
 
             @Override
