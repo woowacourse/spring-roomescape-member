@@ -12,6 +12,8 @@ import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.DuplicateException;
 import roomescape.common.exception.IllegalDateTimeException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.UnauthorizedException;
+import roomescape.reservation.domain.exception.UnauthorizedReservationChangeException;
 
 @Slf4j
 @RestControllerAdvice
@@ -63,6 +65,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleIllegalDateTimeException(IllegalDateTimeException e) {
         log.error("Illegal Date Time Exception 발생 : {}", e.getMessage());
         return ResponseEntity.unprocessableEntity().body(e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<String> handleUnauthorizedReservationChangeException(UnauthorizedException e) {
+        log.error("Unauthorized Exception 발생 : {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 
     private ResponseEntity<String> getStringResponseEntity(BindingResult e) {
