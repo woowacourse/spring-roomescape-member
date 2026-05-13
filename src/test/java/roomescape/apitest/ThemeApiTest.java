@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.apitest;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
@@ -7,13 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.controller.ThemeController;
 
 import static org.hamcrest.Matchers.is;
 import static roomescape.config.FixedClockConfig.TODAY;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ThemeControllerTest {
+class ThemeApiTest {
     @Autowired
     private ThemeController themeController;
 
