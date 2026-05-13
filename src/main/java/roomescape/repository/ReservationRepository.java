@@ -1,10 +1,10 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
 import roomescape.domain.Reservation;
 
-public interface ReservationDao {
+public interface ReservationRepository {
 
     Reservation create(Reservation reservationWithoutId);
 

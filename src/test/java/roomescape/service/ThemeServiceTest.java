@@ -7,16 +7,16 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.dao.FakeDatabase;
-import roomescape.dao.FakeReservationDao;
-import roomescape.dao.FakeReservationTimeDao;
-import roomescape.dao.FakeThemeDao;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.FakeDatabase;
+import roomescape.repository.FakeReservationRepository;
+import roomescape.repository.FakeReservationTimeRepository;
+import roomescape.repository.FakeThemeRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.ServiceThemeRequest;
 import roomescape.service.dto.ServiceThemeResponse;
 
@@ -24,19 +24,19 @@ public class ThemeServiceTest {
 
     private ThemeService themeService;
 
-    private ThemeDao themeDao;
-    private ReservationTimeDao reservationTimeDao;
-    private ReservationDao reservationDao;
+    private ThemeRepository themeRepository;
+    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationRepository reservationRepository;
 
     @BeforeEach
     void beforeEach() {
         FakeDatabase fakeDatabase = new FakeDatabase();
 
-        reservationDao = new FakeReservationDao(fakeDatabase);
-        reservationTimeDao = new FakeReservationTimeDao(fakeDatabase);
-        themeDao = new FakeThemeDao(fakeDatabase);
+        reservationRepository = new FakeReservationRepository(fakeDatabase);
+        reservationTimeRepository = new FakeReservationTimeRepository(fakeDatabase);
+        themeRepository = new FakeThemeRepository(fakeDatabase);
 
-        themeService = new ThemeService(themeDao, reservationDao);
+        themeService = new ThemeService(themeRepository, reservationRepository);
     }
 
     @Test
@@ -104,13 +104,13 @@ public class ThemeServiceTest {
 
     @Test
     void readRankingTest() {
-        ReservationTime reservationTime = reservationTimeDao.create(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme1 = themeDao.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
-        Theme theme2 = themeDao.create(new Theme("피즈의 모험2", "모험 이야기", "url.jpg"));
+        ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
+        Theme theme1 = themeRepository.create(new Theme("피즈의 모험", "모험 이야기", "url.jpg"));
+        Theme theme2 = themeRepository.create(new Theme("피즈의 모험2", "모험 이야기", "url.jpg"));
 
-        reservationDao.create(new Reservation("fizz", LocalDate.of(2026, 5, 2), reservationTime, theme1));
-        reservationDao.create(new Reservation("fizz", LocalDate.of(2026, 5, 4), reservationTime, theme1));
-        reservationDao.create(new Reservation("fizz2", LocalDate.of(2026, 5, 4), reservationTime, theme2));
+        reservationRepository.create(new Reservation("fizz", LocalDate.of(2026, 5, 2), reservationTime, theme1));
+        reservationRepository.create(new Reservation("fizz", LocalDate.of(2026, 5, 4), reservationTime, theme1));
+        reservationRepository.create(new Reservation("fizz2", LocalDate.of(2026, 5, 4), reservationTime, theme2));
 
         List<ServiceThemeResponse> responseDtos = themeService.readRanking(LocalDate.of(2026, 5, 1),
                 LocalDate.of(2026, 5, 7));

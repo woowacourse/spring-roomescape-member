@@ -4,11 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.ServiceThemeRequest;
 import roomescape.service.dto.ServiceThemeResponse;
 
@@ -18,37 +18,37 @@ public class ThemeService {
 
     public static final int RANKING_LIMIT = 10;
 
-    private final ThemeDao themeDao;
-    private final ReservationDao reservationDao;
+    private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao) {
-        this.themeDao = themeDao;
-        this.reservationDao = reservationDao;
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
+        this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
     public ServiceThemeResponse create(ServiceThemeRequest requestDto) {
         Theme theme = requestDto.toEntity();
-        return ServiceThemeResponse.from(themeDao.create(theme));
+        return ServiceThemeResponse.from(themeRepository.create(theme));
     }
 
     public List<ServiceThemeResponse> readAll() {
-        return themeDao.readAll().stream()
+        return themeRepository.readAll().stream()
                 .map(ServiceThemeResponse::from)
                 .toList();
     }
 
     public List<ServiceThemeResponse> readRanking(LocalDate startDate, LocalDate endDate) {
-        return themeDao.readRanking(startDate, endDate, RANKING_LIMIT).stream()
+        return themeRepository.readRanking(startDate, endDate, RANKING_LIMIT).stream()
                 .map(ServiceThemeResponse::from)
                 .toList();
     }
 
     @Transactional
     public void delete(Long id) {
-        if (reservationDao.existByThemeId(id)) {
+        if (reservationRepository.existByThemeId(id)) {
             throw new CustomException(ErrorCode.REFERENCED_THEME);
         }
-        themeDao.delete(id);
+        themeRepository.delete(id);
     }
 }

@@ -1,6 +1,6 @@
-package roomescape.dao;
+package roomescape.repository;
 
-import static roomescape.dao.FakeReservationDao.RESERVATION_TABLE;
+import static roomescape.repository.FakeReservationRepository.RESERVATION_TABLE;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -8,14 +8,14 @@ import java.util.Optional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
-public class FakeReservationTimeDao implements ReservationTimeDao {
+public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
     public static final String RESERVATION_TIME_TABLE = "reservationTime";
 
     private final FakeDatabase fakeDatabase;
     private Long currentId = 0L;
 
-    public FakeReservationTimeDao(FakeDatabase fakeDatabase) {
+    public FakeReservationTimeRepository(FakeDatabase fakeDatabase) {
         this.fakeDatabase = fakeDatabase;
     }
 

@@ -1,17 +1,17 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
 import roomescape.domain.Reservation;
 
-public class FakeReservationDao implements ReservationDao {
+public class FakeReservationRepository implements ReservationRepository {
 
     public static final String RESERVATION_TABLE = "reservation";
 
     private final FakeDatabase fakeDatabase;
     private Long currentId = 0L;
 
-    public FakeReservationDao(FakeDatabase fakeDatabase) {
+    public FakeReservationRepository(FakeDatabase fakeDatabase) {
         this.fakeDatabase = fakeDatabase;
     }
 

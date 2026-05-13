@@ -1,8 +1,8 @@
-package roomescape.dao;
+package roomescape.repository;
 
-import static roomescape.dao.FakeReservationDao.RESERVATION_TABLE;
-import static roomescape.dao.FakeReservationTimeDao.RESERVATION_TIME_TABLE;
-import static roomescape.dao.FakeThemeDao.THEME_TABLE;
+import static roomescape.repository.FakeReservationRepository.RESERVATION_TABLE;
+import static roomescape.repository.FakeReservationTimeRepository.RESERVATION_TIME_TABLE;
+import static roomescape.repository.FakeThemeRepository.THEME_TABLE;
 
 import java.util.HashMap;
 import java.util.List;

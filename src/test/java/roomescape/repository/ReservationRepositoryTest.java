@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -19,7 +19,7 @@ import roomescape.domain.Theme;
 import roomescape.support.DatabaseCleanUp;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-public class ReservationDaoTest {
+public class ReservationRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -28,7 +28,7 @@ public class ReservationDaoTest {
     private DatabaseCleanUp databaseCleanUp;
 
     @Autowired
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
 
     private ReservationTime reservationTime;
 
@@ -51,7 +51,7 @@ public class ReservationDaoTest {
     void createTest() {
         Reservation reservationWithoutId = new Reservation("fizz", LocalDate.of(2026, 5, 2), reservationTime, theme);
 
-        Reservation reservation = reservationDao.create(reservationWithoutId);
+        Reservation reservation = reservationRepository.create(reservationWithoutId);
 
         assertThat(reservation.getId()).isEqualTo(1L);
     }
@@ -62,7 +62,7 @@ public class ReservationDaoTest {
         jdbcTemplate.update(sql, "fizz", "2026-05-02", 1L, 1L);
         jdbcTemplate.update(sql, "fizz", "2026-05-02", 2L, 1L);
 
-        List<Reservation> reservations = reservationDao.readAll();
+        List<Reservation> reservations = reservationRepository.readAll();
 
         assertThat(reservations.size()).isEqualTo(2);
     }
@@ -72,7 +72,7 @@ public class ReservationDaoTest {
         String sql = "INSERT INTO `reservation` (`name`, `date`, `time_id`, `theme_id`) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, "fizz", "2026-05-02", 1L, 1L);
 
-        reservationDao.delete(1L);
+        reservationRepository.delete(1L);
 
         String readReservationCountSql = "SELECT COUNT(*) FROM `reservation`";
         int count = jdbcTemplate.queryForObject(readReservationCountSql, Integer.class);
@@ -82,37 +82,37 @@ public class ReservationDaoTest {
 
     @Test
     void existByDateAndTimeIdAndThemeIdTest() {
-        boolean exist = reservationDao.existByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 2), 1L, 1L);
+        boolean exist = reservationRepository.existByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 2), 1L, 1L);
         assertThat(exist).isFalse();
 
         String sql = "INSERT INTO `reservation` (`name`, `date`, `time_id`, `theme_id`) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, "fizz", "2026-05-02", 1L, 1L);
 
-        exist = reservationDao.existByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 2), 1L, 1L);
+        exist = reservationRepository.existByDateAndTimeIdAndThemeId(LocalDate.of(2026, 5, 2), 1L, 1L);
         assertThat(exist).isTrue();
     }
 
     @Test
     void existByTimeIdTest() {
-        boolean exist = reservationDao.existByTimeId(1L);
+        boolean exist = reservationRepository.existByTimeId(1L);
         assertThat(exist).isFalse();
 
         String sql = "INSERT INTO `reservation` (`name`, `date`, `time_id`, `theme_id`) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, "fizz", "2026-05-02", 1L, 1L);
 
-        exist = reservationDao.existByTimeId(1L);
+        exist = reservationRepository.existByTimeId(1L);
         assertThat(exist).isTrue();
     }
 
     @Test
     void existByThemeIdTest() {
-        boolean exist = reservationDao.existByThemeId(1L);
+        boolean exist = reservationRepository.existByThemeId(1L);
         assertThat(exist).isFalse();
 
         String sql = "INSERT INTO `reservation` (`name`, `date`, `time_id`, `theme_id`) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, "fizz", "2026-05-02", 1L, 1L);
 
-        exist = reservationDao.existByThemeId(1L);
+        exist = reservationRepository.existByThemeId(1L);
         assertThat(exist).isTrue();
     }
 

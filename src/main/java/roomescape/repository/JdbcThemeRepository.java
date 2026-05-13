@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -14,11 +14,11 @@ import roomescape.domain.Theme;
 
 @Primary
 @Repository
-public class JdbcThemeDao implements ThemeDao {
+public class JdbcThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcThemeDao(JdbcTemplate jdbcTemplate) {
+    public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

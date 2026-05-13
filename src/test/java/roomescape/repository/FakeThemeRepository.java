@@ -1,6 +1,6 @@
-package roomescape.dao;
+package roomescape.repository;
 
-import static roomescape.dao.FakeReservationDao.RESERVATION_TABLE;
+import static roomescape.repository.FakeReservationRepository.RESERVATION_TABLE;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 
-public class FakeThemeDao implements ThemeDao {
+public class FakeThemeRepository implements ThemeRepository {
 
     public static final String THEME_TABLE = "theme";
 
     private final FakeDatabase fakeDatabase;
     private Long currentId = 0L;
 
-    public FakeThemeDao(FakeDatabase fakeDatabase) {
+    public FakeThemeRepository(FakeDatabase fakeDatabase) {
         this.fakeDatabase = fakeDatabase;
     }
 

@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.CustomException;
 import roomescape.exception.ErrorCode;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.ServiceReservationRequest;
 import roomescape.service.dto.ServiceReservationResponse;
 
@@ -19,42 +19,44 @@ import roomescape.service.dto.ServiceReservationResponse;
 @Transactional(readOnly = true)
 public class ReservationService {
 
-    private final ReservationDao reservationDao;
-    private final ReservationTimeDao reservationTimeDao;
-    private final ThemeDao themeDao;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
-        this.reservationDao = reservationDao;
-        this.reservationTimeDao = reservationTimeDao;
-        this.themeDao = themeDao;
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     @Transactional
     public ServiceReservationResponse create(ServiceReservationRequest requestDto) {
-        Optional<ReservationTime> reservationTime = reservationTimeDao.read(requestDto.timeId());
+        Optional<ReservationTime> reservationTime = reservationTimeRepository.read(requestDto.timeId());
         if (reservationTime.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_RESERVATION_TIME);
         }
 
-        Optional<Theme> theme = themeDao.read(requestDto.themeId());
+        Optional<Theme> theme = themeRepository.read(requestDto.themeId());
         if (theme.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_THEME);
         }
 
-        boolean existReservation = reservationDao.existByDateAndTimeIdAndThemeId(requestDto.date(), requestDto.timeId(),
+        boolean existReservation = reservationRepository.existByDateAndTimeIdAndThemeId(requestDto.date(),
+                requestDto.timeId(),
                 requestDto.themeId());
         if (existReservation) {
             throw new CustomException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
         Reservation reservationWithoutId = requestDto.toEntity(reservationTime.get(), theme.get());
-        Reservation reservation = reservationDao.create(reservationWithoutId);
+        Reservation reservation = reservationRepository.create(reservationWithoutId);
 
         return ServiceReservationResponse.from(reservation);
     }
 
     public List<ServiceReservationResponse> readAll() {
-        List<Reservation> reservations = reservationDao.readAll();
+        List<Reservation> reservations = reservationRepository.readAll();
         return reservations.stream()
                 .map(ServiceReservationResponse::from)
                 .toList();
@@ -62,6 +64,6 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        reservationDao.delete(id);
+        reservationRepository.delete(id);
     }
 }

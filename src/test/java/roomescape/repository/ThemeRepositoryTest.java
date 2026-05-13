@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -16,7 +16,7 @@ import roomescape.domain.Theme;
 import roomescape.support.DatabaseCleanUp;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-public class ThemeDaoTest {
+public class ThemeRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -25,7 +25,7 @@ public class ThemeDaoTest {
     private DatabaseCleanUp databaseCleanUp;
 
     @Autowired
-    private ThemeDao themeDao;
+    private ThemeRepository themeRepository;
 
     @AfterEach
     void afterEach() {
@@ -35,7 +35,7 @@ public class ThemeDaoTest {
     @Test
     void createTest() {
         Theme themeWithoutId = new Theme("방탈출", "설명", "url.jpg");
-        Theme theme = themeDao.create(themeWithoutId);
+        Theme theme = themeRepository.create(themeWithoutId);
 
         assertThat(theme.getId()).isEqualTo(1L);
     }
@@ -45,7 +45,7 @@ public class ThemeDaoTest {
         String sql = "INSERT INTO `theme` (`name`, `description`, `thumbnail_url`) VALUES (?, ?, ?)";
         jdbcTemplate.update(sql, "방탈출1", "방탈출1 설명", "url.jpg");
 
-        Optional<Theme> theme = themeDao.read(1L);
+        Optional<Theme> theme = themeRepository.read(1L);
 
         Assertions.assertThat(theme.orElseThrow().getId()).isEqualTo(1L);
     }
@@ -56,7 +56,7 @@ public class ThemeDaoTest {
         jdbcTemplate.update(sql, "방탈출1", "방탈출1 설명", "url.jpg");
         jdbcTemplate.update(sql, "방탈출2", "방탈출2 설명", "url.jpg");
 
-        List<Theme> themes = themeDao.readAll();
+        List<Theme> themes = themeRepository.readAll();
         Assertions.assertThat(themes.size()).isEqualTo(2);
     }
 
@@ -75,7 +75,7 @@ public class ThemeDaoTest {
         jdbcTemplate.update(insertReservationSql, "fizz", "2026-05-02", 2L, 1L);
         jdbcTemplate.update(insertReservationSql, "fizz", "2026-05-02", 1L, 2L);
 
-        List<Theme> themes = themeDao.readRanking(LocalDate.of(2026, 5, 2), LocalDate.of(2026, 5, 3), 2);
+        List<Theme> themes = themeRepository.readRanking(LocalDate.of(2026, 5, 2), LocalDate.of(2026, 5, 3), 2);
 
         Assertions.assertThat(themes.get(0).getId()).isEqualTo(1L);
         Assertions.assertThat(themes.get(1).getId()).isEqualTo(2L);
@@ -86,7 +86,7 @@ public class ThemeDaoTest {
         String sql = "INSERT INTO `theme` (`name`, `description`, `thumbnail_url`) VALUES (?, ?, ?)";
         jdbcTemplate.update(sql, "방탈출", "설명", "url.jpg");
 
-        themeDao.delete(1L);
+        themeRepository.delete(1L);
 
         String readAllThemeCountSql = "SELECT COUNT(*) FROM `theme`";
         int count = jdbcTemplate.queryForObject(readAllThemeCountSql, Integer.class);
