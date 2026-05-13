@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -57,7 +58,7 @@ public class ReservationController {
     @PatchMapping("/{id}")
     public ResponseEntity<ReservationResponse> update(
             @PathVariable Long id,
-            @RequestBody UserReservationUpdateRequest request) {
+            @Valid @RequestBody UserReservationUpdateRequest request) {
         ReservationResponse updated = reservationService.update(id, request);
         return ResponseEntity.ok(updated);
     }

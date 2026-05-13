@@ -161,7 +161,9 @@ public class ReservationDao {
                     SET date = ?, time_id = ?
                     WHERE id = ?
                 """,
-                date, timeId, id
+                date,
+                timeId,
+                id
         );
         return findById(id);
     }
