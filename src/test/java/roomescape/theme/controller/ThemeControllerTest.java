@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -40,6 +42,17 @@ class ThemeControllerTest {
                 .body("[2].name", is("테마3"))
                 .body("[3].name", is("테마2"))
                 .body("[4].name", is("테마1"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"0, 10", "7, 0", "-1, 10", "7, -1"})
+    void 인기_테마_조회_조건이_1보다_작으면_400을_응답한다(int days, int limits) {
+        RestAssured.given().log().all()
+                .queryParam("days", days)
+                .queryParam("limits", limits)
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(400);
     }
 
 }

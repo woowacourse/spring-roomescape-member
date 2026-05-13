@@ -2,6 +2,7 @@ package roomescape.theme.controller;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,7 @@ public class ThemeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ThemeResponse> getPopularThemes(@ModelAttribute PopularThemeRequest request) {
+    public List<ThemeResponse> getPopularThemes(@Validated @ModelAttribute PopularThemeRequest request) {
         if (request.isEmpty()) {
             return themeService.findAll()
                     .stream()
