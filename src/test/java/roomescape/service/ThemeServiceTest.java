@@ -29,6 +29,7 @@ import roomescape.domain.Time;
 import roomescape.dto.request.PopularThemeRequestDto;
 import roomescape.dto.request.ThemeRequestDto;
 import roomescape.dto.response.AvailableTimeResponseDto;
+import roomescape.dto.response.TimeResponseDto;
 
 @JdbcTest
 @Import({ThemeService.class, ThemeJdbcDao.class, ReservationJdbcDao.class, TimeJdbcDao.class})
@@ -163,8 +164,8 @@ class ThemeServiceTest {
             List<AvailableTimeResponseDto> result = themeService.findAvailableTimesById(savedTheme.getId(), date);
 
             assertThat(result).containsExactlyInAnyOrder(
-                    new AvailableTimeResponseDto(bookedTime.getId(), bookedTime.getStartAt(), true),
-                    new AvailableTimeResponseDto(availableTime.getId(), availableTime.getStartAt(), false)
+                    new AvailableTimeResponseDto(TimeResponseDto.from(bookedTime), true),
+                    new AvailableTimeResponseDto(TimeResponseDto.from(availableTime), false)
             );
         }
     }

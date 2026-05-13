@@ -1,10 +1,9 @@
 package roomescape.dto.response;
 
-import java.time.LocalTime;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record AvailableTimeResponseDto(
-        Long id,
-        LocalTime startAt,
+        @JsonProperty("time") TimeResponseDto timeResponseDto,
         boolean alreadyBooked
 ) {
 }

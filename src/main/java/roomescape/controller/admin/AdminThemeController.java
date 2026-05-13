@@ -38,9 +38,10 @@ public class AdminThemeController {
     @GetMapping
     public ResponseEntity<List<ThemeResponseDto>> findAll() {
         List<Theme> themes = themeService.findAll();
-        return ResponseEntity.ok(themes.stream()
+        List<ThemeResponseDto> responses = themes.stream()
                 .map(ThemeResponseDto::from)
-                .toList());
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")
@@ -50,7 +51,7 @@ public class AdminThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Valid @PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
     }

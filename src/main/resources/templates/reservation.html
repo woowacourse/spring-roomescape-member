@@ -243,8 +243,8 @@ async function onDate(date) {
       const btn = document.createElement('button');
       btn.className = `slot ${t.alreadyBooked ? 'booked' : 'avail'}`;
       btn.disabled = t.alreadyBooked;
-      btn.innerHTML = `${fmt(t.startAt)}<span class="slot-hint">${t.alreadyBooked ? '예약됨' : '예약 가능'}</span>`;
-      if (!t.alreadyBooked) btn.onclick = () => openModal(t.id, fmt(t.startAt));
+      btn.innerHTML = `${fmt(t.time?.startAt)}<span class="slot-hint">${t.alreadyBooked ? '예약됨' : '예약 가능'}</span>`;
+      if (!t.alreadyBooked) btn.onclick = () => openModal(t.time?.id, fmt(t.time?.startAt));
       grid.appendChild(btn);
     });
   } catch {

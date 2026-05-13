@@ -14,6 +14,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.domain.vo.Name;
 import roomescape.dto.response.AvailableTimeResponseDto;
+import roomescape.dto.response.TimeResponseDto;
 
 
 @Repository
@@ -28,8 +29,7 @@ public class ThemeJdbcDao implements ThemeDao {
 
     private static final RowMapper<AvailableTimeResponseDto> AVAILABLE_TIME_MAPPER = (rs, rowNum) ->
             new AvailableTimeResponseDto(
-                    rs.getLong("time_id"),
-                    LocalTime.parse(rs.getString("time_start_at")),
+                    new TimeResponseDto(rs.getLong("time_id"), LocalTime.parse(rs.getString("time_start_at"))),
                     rs.getBoolean("already_booked")
             );
 
