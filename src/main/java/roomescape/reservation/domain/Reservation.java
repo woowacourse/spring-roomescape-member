@@ -25,6 +25,7 @@ public class Reservation {
     private ReservationTime time;
     private Theme theme;
     private Status status;
+    private LocalDateTime deletedAt;
 
     public Reservation withId(Long id) {
         return Reservation.builder()
@@ -57,6 +58,18 @@ public class Reservation {
                 .time(time)
                 .theme(theme)
                 .status(Status.ACTIVE)
+                .build();
+    }
+
+    public Reservation cancel(Clock clock) {
+        return Reservation.builder()
+                .id(id)
+                .name(name)
+                .date(date)
+                .time(time)
+                .theme(theme)
+                .status(Status.CANCELED)
+                .deletedAt(LocalDateTime.now(clock))
                 .build();
     }
 }

@@ -182,8 +182,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void cancelById(Long id) {
-        String sql = "UPDATE reservation SET status = 'CANCELED' WHERE id = :id AND status='ACTIVE'";
-        jdbcTemplate.update(sql, Map.of("id", id));
+    public void cancel(Reservation reservation) {
+        String sql = "UPDATE reservation SET status = 'CANCELED', deleted_at=:date WHERE id = :id AND status='ACTIVE'";
+        jdbcTemplate.update(sql, Map.of("id", reservation.getId(), "date", reservation.getDeletedAt()));
     }
 }

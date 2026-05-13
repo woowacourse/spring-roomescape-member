@@ -3,6 +3,7 @@ package roomescape.reservation.application;
 import java.time.Clock;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.application.dto.ReservationChangeCommand;
@@ -45,7 +46,11 @@ public class ReservationService {
         if (reservationRepository.existsByReservationTimeAndThemeAndDate(time.getId(), theme.getId(), command.date())) {
             throw new ReservationInUseException("이미 예약이 존재합니다.");
         }
-        return reservationRepository.save(command.toEntity(time, theme));
+        try {
+            return reservationRepository.save(command.toEntity(time, theme));
+        } catch (DataIntegrityViolationException e) {
+            throw new ReservationInUseException("이미 예약이 존재합니다.");
+        }
     }
 
     public void deleteReservation(Long id) {
@@ -58,7 +63,8 @@ public class ReservationService {
         if (!reservationRepository.existsByIdAndUsernameAndActive(id, username)) {
             throw new ReservationNotFoundException("해당 예약을 찾을 수 없거나 취소할 권한이 없습니다.");
         }
-        reservationRepository.cancelById(id);
+        Reservation cancelledReservation = reservationRepository.getById(id).cancel(clock);
+        reservationRepository.cancel(cancelledReservation);
     }
 
     public Reservation changeReservation(Long id, ReservationChangeCommand command) {

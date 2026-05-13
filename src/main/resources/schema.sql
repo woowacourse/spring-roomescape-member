@@ -19,8 +19,11 @@ CREATE TABLE reservation (
                              time_id BIGINT,
                              theme_id BIGINT,
                              status  VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
+                             deleted_at TIMESTAMP,
                              PRIMARY KEY (id),
                              FOREIGN KEY (time_id) REFERENCES reservation_time (id),
                              FOREIGN KEY (theme_id) REFERENCES theme (id)
-
 );
+
+CREATE UNIQUE INDEX unique_active_reservation
+ON reservation (date, time_id, theme_id, deleted_at);

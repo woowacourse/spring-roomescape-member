@@ -18,7 +18,7 @@ public interface ReservationRepository {
     boolean existsByReservationTimeAndThemeAndDateAndIdNot(Long id, Long timeId, Long themeId, LocalDate date);
     boolean existsByTheme(Long id);
     int deleteById(Long id);
-    void cancelById(Long id);
+    void cancel(Reservation reservation);
 
     default Reservation getById(Long id) {
         return findById(id).orElseThrow(() -> new ReservationNotFoundException("해당 ID의 예약을 찾을 수 없습니다."));
