@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.holiday.service.HolidayService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.exception.DuplicateReservationException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.theme.domain.Theme;
@@ -127,7 +128,7 @@ class ReservationServiceImplTest {
                 .isInstanceOf(ThemeNotFoundException.class);
     }
 
-    @DisplayName("휴일에 예약을 시도하는 경우, 예외를 던진다.")
+    @DisplayName("휴일에 예약을 시도하는 경우, IllegalArgumentException이 발생한다.")
     @Test
     void create_휴일이면_예외() {
         // given
@@ -144,7 +145,7 @@ class ReservationServiceImplTest {
                 .hasMessage("휴일은 예약이 불가합니다.");
     }
 
-    @DisplayName("같은 날짜/시간/테마에 중복 예약을 시도하는 경우, 예외를 던진다.")
+    @DisplayName("같은 날짜/시간/테마에 중복 예약을 시도하는 경우, IllegalArgumentException이 발생한다.")
     @Test
     void create_중복_예약이면_예외() {
         // given
@@ -158,7 +159,7 @@ class ReservationServiceImplTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(dto))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicateReservationException.class)
                 .hasMessage("중복 예약은 불가합니다.");
     }
 

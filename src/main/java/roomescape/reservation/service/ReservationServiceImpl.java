@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.holiday.service.HolidayService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.exception.DuplicateReservationException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.ReservationSaveServiceDto;
 import roomescape.theme.exception.ThemeNotFoundException;
@@ -72,7 +73,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     private void validateDuplicatedReservation(Long themeId, ReservationTime time, LocalDate date) {
         if (reservationRepository.isDuplicated(themeId, time, date)) {
-            throw new IllegalArgumentException("중복 예약은 불가합니다.");
+            throw new DuplicateReservationException();
         }
     }
 
