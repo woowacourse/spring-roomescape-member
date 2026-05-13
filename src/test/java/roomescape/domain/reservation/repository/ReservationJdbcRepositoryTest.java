@@ -59,6 +59,19 @@ class ReservationJdbcRepositoryTest {
     }
 
     @Test
+    @DisplayName("이름으로 예약을 조회한다.")
+    void findAllByUsernameTest() {
+        // when
+        List<Reservation> reservations = reservationRepository.findAllByUsername("포비");
+
+        // then
+        assertThat(reservations).hasSize(1);
+        assertThat(reservations)
+                .extracting(Reservation::getUsername)
+                .containsExactly("포비");
+    }
+
+    @Test
     @DisplayName("예약을 저장한다.")
     void saveTest() {
         // given

@@ -31,7 +31,26 @@ public class ReservationJdbcRepository implements ReservationRepository {
             INNER JOIN reservation_time AS rt
                 ON r.time_id = rt.id
             INNER JOIN theme AS t
+                ON r.theme_id = t.id;
+            """;
+
+    private static final String FIND_ALL_RESERVATIONS_WITH_TIME_BY_USERNAME_QUERY = """
+            SELECT
+                r.id AS reservation_id,
+                r.username AS username,
+                r.date,
+                t.id AS theme_id,
+                t.name AS theme_name,
+                t.description AS theme_description,
+                t.thumbnail_url AS theme_thumbnail_url,
+                rt.id AS time_id,
+                rt.start_at
+            FROM reservation AS r
+            INNER JOIN reservation_time AS rt
+                ON r.time_id = rt.id
+            INNER JOIN theme AS t
                 ON r.theme_id = t.id
+            WHERE r.username = :username;
             """;
 
     private static final String DELETE_RESERVATION_BY_ID_QUERY = """
@@ -81,6 +100,18 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
                 FIND_ALL_RESERVATIONS_WITH_TIME_QUERY,
+                RESERVATION_ROW_MAPPER
+        );
+    }
+
+    @Override
+    public List<Reservation> findAllByUsername(String username) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("username", username);
+
+        return jdbcTemplate.query(
+                FIND_ALL_RESERVATIONS_WITH_TIME_BY_USERNAME_QUERY,
+                parameters,
                 RESERVATION_ROW_MAPPER
         );
     }
