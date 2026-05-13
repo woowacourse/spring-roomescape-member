@@ -32,7 +32,7 @@ VALUES
     ('어셔', DATEADD('DAY', -6, CURRENT_DATE), 2, 1),
     ('브라운', DATEADD('DAY', -5, CURRENT_DATE), 3, 1),
     ('제이슨', DATEADD('DAY', -4, CURRENT_DATE), 4, 1),
-    ('고릴라', DATEADD('DAY', -3, CURRENT_DATE), 1, 1),
+    ('루드비코', DATEADD('DAY', -3, CURRENT_DATE), 1, 1),
 
     -- 2위: 박물관 침입 (4건) - 최근 4~7일 전 데이터
     ('코코', DATEADD('DAY', -7, CURRENT_DATE), 1, 2),
