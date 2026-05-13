@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -100,5 +101,27 @@ public class ReservationRepositoryTest {
         assertThat(reservations.getFirst().getSchedule().getStartAt()).isEqualTo(schedule.getStartAt());
         assertThat(reservations.getFirst().getTheme().getName()).isEqualTo(theme.getName());
         assertThat(reservations.getFirst().getUser().getId()).isEqualTo(user.getId());
+    }
+
+    @Test
+    void ID로_예약을_조회하면_존재하는_경우_Optional에_담아_반환한다() {
+        Reservation reservation = new Reservation(user, schedule, theme);
+        Reservation savedReservation = reservationRepository.create(reservation);
+        Long savedId = savedReservation.getId();
+
+        Optional<Reservation> foundReservation = reservationRepository.findById(savedId);
+
+        assertThat(foundReservation).isPresent();
+        assertThat(foundReservation.get().getId()).isEqualTo(savedId);
+        assertThat(foundReservation.get().getUser().getId()).isEqualTo(user.getId());
+    }
+
+    @Test
+    void ID로_예약을_조회하면_존재하지_않는_경우_빈_Optional을_반환한다() {
+        Long id = 999L;
+
+        Optional<Reservation> foundReservation = reservationRepository.findById(id);
+
+        assertThat(foundReservation).isEmpty();
     }
 }
