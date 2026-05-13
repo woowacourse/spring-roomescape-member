@@ -11,6 +11,6 @@ public class RestConfig implements WebMvcConfigurer {
         corsRegistry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000", "https://reservation-front-eta.vercel.app")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("name");
+                .allowedHeaders("name", "Content-Type");
     }
 }
