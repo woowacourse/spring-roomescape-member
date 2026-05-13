@@ -4,6 +4,8 @@ import roomescape.domain.vo.MemberName;
 import roomescape.domain.vo.ReservationDate;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -21,10 +23,6 @@ public class Reservation {
         this.date = Objects.requireNonNull(date);
         this.time = Objects.requireNonNull(time);
         this.theme = Objects.requireNonNull(theme);
-    }
-
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, new MemberName(name), ReservationDate.createForSave(date), time, theme);
     }
 
     public Long getId() {
@@ -57,6 +55,18 @@ public class Reservation {
 
     public Reservation withId(Long key) {
         return new Reservation(key, this.memberName, this.date, this.time, this.theme);
+    }
+
+    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme) {
+        validateNotPast(date, time.getStartAt());
+
+        return new Reservation(null, new MemberName(name), new ReservationDate(date), time, theme);
+    }
+
+    private static void validateNotPast(LocalDate date, LocalTime time) {
+        if (LocalDateTime.of(date, time).isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("과거의 날짜와 시간은 예약할 수 없습니다.");
+        }
     }
 
     @Override

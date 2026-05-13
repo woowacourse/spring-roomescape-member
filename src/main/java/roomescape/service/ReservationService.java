@@ -51,7 +51,7 @@ public class ReservationService {
             throw new IllegalArgumentException("해당 테마에서 이미 예약된 날짜입니다.");
         }
 
-        Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), time, theme);
+        Reservation reservation = Reservation.create(requestDto.name(), requestDto.date(), time, theme);
         return reservationRepository.createReservation(reservation);
     }
 
