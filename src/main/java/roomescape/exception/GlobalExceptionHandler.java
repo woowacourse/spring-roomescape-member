@@ -2,6 +2,7 @@ package roomescape.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
@@ -46,6 +47,20 @@ public class GlobalExceptionHandler {
         log.warn("필수 요청 헤더 누락: {}", ex.getMessage());
 
         return ResponseEntity.badRequest().body(new ErrorResponse("필수 요청 헤더 '" + ex.getHeaderName() + "'가 누락되었습니다."));
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationExceptions(AuthorizationException ex) {
+        log.warn("유효하지 않은 접근: {}", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("예약을 취소할 권한이 없습니다."));
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundExceptions(ResourceNotFoundException ex) {
+        log.warn("요청한 리소스를 찾을 수 없음: {}", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("예약이 존재하지 않습니다."));
     }
 
     @ExceptionHandler(Exception.class)
