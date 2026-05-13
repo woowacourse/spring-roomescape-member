@@ -21,6 +21,5 @@ public class DefaultExceptionHandler {
 
         return ResponseEntity.internalServerError()
                 .body(response);
-
     }
 }
