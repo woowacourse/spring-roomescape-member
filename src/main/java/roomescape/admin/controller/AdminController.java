@@ -1,5 +1,6 @@
 package roomescape.admin.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class AdminController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest requestTheme) {
+    public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody ThemeRequest requestTheme) {
         Theme theme = themeService.createTheme(requestTheme.name(), requestTheme.description(), requestTheme.thumbnail());
         ThemeResponse response = ThemeResponse.from(theme);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -38,7 +39,7 @@ public class AdminController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ReservationTimeResponse> createTime(@RequestBody ReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> createTime(@Valid @RequestBody ReservationTimeRequest request) {
         ReservationTime time = reservationTimeService.createTime(request.startAt());
         ReservationTimeResponse response = ReservationTimeResponse.from(time);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
