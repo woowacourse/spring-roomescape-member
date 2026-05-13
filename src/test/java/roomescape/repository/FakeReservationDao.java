@@ -63,4 +63,9 @@ public class FakeReservationDao implements ReservationRepository {
     public void updateStatus(Reservation reservation) {
 
     }
+
+    @Override
+    public void updateDateAndTimeAndTheme(Reservation reservation) {
+
+    }
 }

@@ -7,10 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.controller.dto.ReservationRequest;
-import roomescape.controller.dto.ReservationResponse;
-import roomescape.controller.dto.ThemeResponse;
-import roomescape.controller.dto.TimeResponse;
+import roomescape.controller.dto.*;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 
@@ -42,10 +39,20 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
     }
 
-    // 내 예약 취소
+    @PatchMapping("/{reservationId}/cancel")
+    public ResponseEntity<Void> cancelMyReservation(@PathVariable Long reservationId) {
+        reservationService.cancelReservation(reservationId);
+        return ResponseEntity.noContent().build();
+    }
 
-
-    // 내 예약 변경
+    @PatchMapping("/{reservationId}")
+    public ResponseEntity<ReservationResponse> modifyMyReservation(
+            @PathVariable Long reservationId,
+            @Valid @RequestBody ReservationModifyRequest request
+    ) {
+        Reservation reservation = reservationService.modifyReservation(reservationId, request.date(), request.timeId(), request.themeId());
+        return ResponseEntity.ok().body(toResponse(reservation));
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
@@ -65,7 +72,8 @@ public class ReservationController {
                 reservation.getName(),
                 reservation.getDate(),
                 TimeResponse.from(reservation.getTime()),
-                ThemeResponse.from(reservation.getTheme())
+                ThemeResponse.from(reservation.getTheme()),
+                reservation.getReservationStatusName()
         );
     }
 }

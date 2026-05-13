@@ -73,6 +73,27 @@ public class ReservationService {
         reservationRepository.updateStatus(reservation);
     }
 
+    @Transactional
+    public Reservation modifyReservation(Long reservationId, LocalDate date, Long timeId, Long themeId) {
+        Time time = getTimeOrElseThrow(timeId);
+        Theme theme = getThemeOrElseThrow(themeId);
+        Reservation reservation = getReservationOrElseThrow(reservationId);
+
+        validateIsExistBy(date, timeId, themeId);
+        validateDateTime(date, time);
+
+        Reservation updateReservation = new Reservation(
+                reservationId,
+                reservation.getName(),
+                date,
+                time,
+                theme,
+                reservation.getReservationStatus()
+        );
+        reservationRepository.updateDateAndTimeAndTheme(updateReservation);
+        return updateReservation;
+    }
+
     @NonNull
     private Theme getThemeOrElseThrow(Long themeId) {
         return themeRepository.findById(themeId)
@@ -89,5 +110,17 @@ public class ReservationService {
     private Reservation getReservationOrElseThrow(long reservationId) {
         return reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    private void validateIsExistBy(LocalDate date, Long reservationTimeId, Long themeId) {
+        if (reservationRepository.isExistBy(themeId, date, reservationTimeId)) {
+            throw new CustomException(ErrorCode.RESERVATION_ALREADY_EXIST);
+        }
+    }
+
+    private void validateDateTime(LocalDate date, Time time) {
+        if (date.equals(LocalDate.now()) && time.isBefore(LocalTime.now())) {
+            throw new CustomException(ErrorCode.RESERVATION_TIME_OUT);
+        }
     }
 }

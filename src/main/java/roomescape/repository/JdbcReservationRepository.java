@@ -183,6 +183,24 @@ public class JdbcReservationRepository implements ReservationRepository {
         );
     }
 
+    @Override
+    public void updateDateAndTimeAndTheme(Reservation reservation) {
+        String sql = """
+                UPDATE reservation 
+                SET date = ?,
+                    time_id = ?,
+                    theme_id = ?
+                WHERE id = ?
+                """;
+
+        jdbcTemplate.update(sql,
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId(),
+                reservation.getId()
+        );
+    }
+
     private RowMapper<Reservation> rowMapper() {
         return (rs, rowNum) -> new Reservation(
                 rs.getLong("r_id"),

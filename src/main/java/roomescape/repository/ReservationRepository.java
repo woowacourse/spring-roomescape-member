@@ -25,4 +25,6 @@ public interface ReservationRepository {
     List<Reservation> findByName(String name);
 
     void updateStatus(Reservation reservation);
+
+    void updateDateAndTimeAndTheme(Reservation reservation);
 }
