@@ -25,7 +25,7 @@ class ReservationTimeCommandTest {
     void EmptyStartTimeTest(String invalidTime) {
         assertThatThrownBy(() -> new ReservationTimeCommand(invalidTime))
                 .isInstanceOf(InvalidRequestValueException.class)
-                /*.hasMessage(ErrorMessage.INVALID_START_TIME_NULL.getMessage())*/;
+                .hasMessage("시작 시간은 필수입니다.");
     }
 
     @ParameterizedTest
@@ -34,6 +34,6 @@ class ReservationTimeCommandTest {
     void InvalidTimeFormatTest(String invalidTime) {
         assertThatThrownBy(() -> new ReservationTimeCommand(invalidTime))
                 .isInstanceOf(InvalidRequestValueException.class)
-                /*.hasMessage(ErrorMessage.INVALID_START_TIME_FORMAT.getMessage())*/;
+                .hasMessage("유효하지 않은 시간입니다.");
     }
 }
