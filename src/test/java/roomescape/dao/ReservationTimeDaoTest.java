@@ -32,7 +32,7 @@ class ReservationTimeDaoTest {
     void 예약_시간을_생성한다() {
         // given
         LocalTime startAt = LocalTime.of(10, 0);
-        ReservationTime reservationTime = ReservationTime.createWithoutId(startAt);
+        ReservationTime reservationTime = new ReservationTime(startAt);
 
         // when
         ReservationTime savedReservationTime = timeDao.save(reservationTime);
@@ -136,7 +136,7 @@ class ReservationTimeDaoTest {
     }
 
     private ReservationTime saveReservationTime(LocalTime startAt) {
-        ReservationTime reservationTime = ReservationTime.createWithoutId(startAt);
+        ReservationTime reservationTime = new ReservationTime(startAt);
         return timeDao.save(reservationTime);
     }
 

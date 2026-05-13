@@ -45,7 +45,7 @@ public class ReservationTimeDao {
         parameters.put("start_at", reservationTime.getStartAt());
 
         Number generatedId = jdbcInsert.executeAndReturnKey(parameters);
-        return new ReservationTime(generatedId.longValue(), reservationTime.getStartAt());
+        return reservationTime.createWithId(generatedId.longValue());
     }
 
     public List<ReservationTime> findAll() {

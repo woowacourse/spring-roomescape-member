@@ -118,7 +118,7 @@ class ReservationServiceTest {
     }
 
     private ReservationTime saveReservationTime(LocalTime startAt) {
-        ReservationTime reservationTime = ReservationTime.createWithoutId(startAt);
+        ReservationTime reservationTime = new ReservationTime(startAt);
         return reservationTimeDao.save(reservationTime);
     }
 

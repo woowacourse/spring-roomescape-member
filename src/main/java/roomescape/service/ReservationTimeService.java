@@ -31,7 +31,6 @@ public class ReservationTimeService {
         this.reservationDao = reservationDao;
     }
 
-    //todo: 예약 가능한 시간 10:00 ~ 22:00 & 1시간 단위
     public ReservationTimeResponse create(ReservationTimeRequest request) {
         ReservationTime reservationTime = request.toReservationTime();
         validateUniqueTime(reservationTime.getStartAt());

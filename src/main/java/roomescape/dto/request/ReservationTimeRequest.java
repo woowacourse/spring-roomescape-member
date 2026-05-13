@@ -11,6 +11,6 @@ public record ReservationTimeRequest(
         LocalTime startAt
 ) {
     public ReservationTime toReservationTime() {
-        return ReservationTime.createWithoutId(startAt);
+        return new ReservationTime(startAt);
     }
 }
