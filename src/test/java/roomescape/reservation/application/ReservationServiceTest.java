@@ -15,6 +15,7 @@ import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.application.exception.ReservationInUseException;
 import roomescape.theme.application.ThemeService;
+import roomescape.theme.application.dto.ThemeCommand;
 import roomescape.theme.domain.Theme;
 import roomescape.time.application.ReservationTimeService;
 import roomescape.time.application.dto.ReservationTimeCommand;
@@ -44,7 +45,7 @@ class ReservationServiceTest {
                 .startAt(LocalTime.now(clock))
                 .build()
         );
-        Theme theme = themeService.addTheme(Theme.builder()
+        Theme theme = themeService.addTheme(ThemeCommand.builder()
                 .name("포비")
                 .durationTime(LocalTime.now(clock))
                 .thumbnailImageUrl("https://~~~")
@@ -82,7 +83,7 @@ class ReservationServiceTest {
                 .startAt(LocalTime.now(clock))
                 .build()
         );
-        Theme theme = themeService.addTheme(Theme.builder()
+        Theme theme = themeService.addTheme(ThemeCommand.builder()
                 .name("포비")
                 .durationTime(LocalTime.now(clock))
                 .thumbnailImageUrl("https://~~~")

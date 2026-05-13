@@ -47,7 +47,7 @@ class ReservationTimeServiceTest {
                 .description("추리 테마")
                 .durationTime(LocalTime.now(clock))
                 .build();
-        Theme savedTheme = themeService.addTheme(theme.toEntity());
+        Theme savedTheme = themeService.addTheme(theme.toCommand());
         ReservationTime time = timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now(clock)).toCommand());
         timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now(clock).plusHours(1)).toCommand());
         timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now(clock).plusHours(2)).toCommand());
@@ -68,7 +68,7 @@ class ReservationTimeServiceTest {
                 .description("추리 테마")
                 .durationTime(LocalTime.now(clock))
                 .build();
-        Theme savedTheme = themeService.addTheme(theme.toEntity());
+        Theme savedTheme = themeService.addTheme(theme.toCommand());
         ReservationTime time1 = timeService.addReservationTime(
                 new ReservationTimeRequest(LocalTime.now(clock)).toCommand());
         ReservationTime time2 = timeService.addReservationTime(
@@ -98,7 +98,7 @@ class ReservationTimeServiceTest {
                 .description("추리 테마")
                 .durationTime(LocalTime.now(clock))
                 .build();
-        Theme savedTheme = themeService.addTheme(theme.toEntity());
+        Theme savedTheme = themeService.addTheme(theme.toCommand());
         ReservationTime time1 = timeService.addReservationTime(
                 new ReservationTimeRequest(LocalTime.now(clock)).toCommand());
         ReservationTime time2 = timeService.addReservationTime(

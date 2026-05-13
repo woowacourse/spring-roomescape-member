@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.config.TestTimeConfig;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
+import roomescape.theme.application.dto.ThemeCommand;
 import roomescape.theme.application.exception.ThemeInUseException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.exception.ThemeNotFoundException;
@@ -48,7 +49,7 @@ class ThemeServiceTest {
                 .durationTime(LocalTime.now(clock))
                 .build();
 
-        themeService.addTheme(request.toEntity());
+        themeService.addTheme(request.toCommand());
         Assertions.assertThatThrownBy(() -> themeService.deleteTheme(-1L))
                 .isInstanceOf(ThemeNotFoundException.class);
     }
@@ -62,7 +63,7 @@ class ThemeServiceTest {
                 .thumbnailImageUrl("https://~~~~")
                 .durationTime(LocalTime.now(clock))
                 .build();
-        Theme theme = themeService.addTheme(request.toEntity());
+        Theme theme = themeService.addTheme(request.toCommand());
         Assertions.assertThatCode(() -> themeService.deleteTheme(theme.getId()))
                 .doesNotThrowAnyException();
     }
@@ -77,7 +78,7 @@ class ThemeServiceTest {
         );
 
         Theme theme = themeService.addTheme(
-                Theme.builder()
+                ThemeCommand.builder()
                         .name("판타지")
                         .description("판타지래요")
                         .thumbnailImageUrl("https://~~~~")
