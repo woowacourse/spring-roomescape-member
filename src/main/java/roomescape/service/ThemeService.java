@@ -3,8 +3,8 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Period;
 import roomescape.domain.Theme;
-import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.code.NotFoundCode;
 import roomescape.repository.ThemeRepository;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public class ThemeService {
 
     public Theme findById(Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(NotFoundCode.THEME_NOT_FOUND));
     }
 
     public Theme saveTheme(Theme theme) {

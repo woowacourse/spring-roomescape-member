@@ -2,7 +2,7 @@ package roomescape.domain;
 
 import org.junit.jupiter.api.Test;
 import roomescape.exception.BadRequestException;
-import roomescape.exception.ErrorCode;
+import roomescape.exception.code.BadRequestCode;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,34 +19,34 @@ class ReservationTest {
     void 이름이_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> new Reservation(null, null, DATE, TIME, THEME))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage(ErrorCode.INVALID_RESERVATION_NAME.getMessage());
+                .hasMessage(BadRequestCode.INVALID_RESERVATION_NAME.getMessage());
     }
 
     @Test
     void 이름이_공백이면_예외가_발생한다() {
         assertThatThrownBy(() -> new Reservation(null, " ", DATE, TIME, THEME))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage(ErrorCode.BLANK_RESERVATION_NAME.getMessage());
+                .hasMessage(BadRequestCode.BLANK_RESERVATION_NAME.getMessage());
     }
 
     @Test
     void 날짜가_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> new Reservation(null, "브라운", null, TIME, THEME))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage(ErrorCode.INVALID_RESERVATION_DATE.getMessage());
+                .hasMessage(BadRequestCode.INVALID_RESERVATION_DATE.getMessage());
     }
 
     @Test
     void 시간이_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> new Reservation(null, "브라운", DATE, null, THEME))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage(ErrorCode.INVALID_RESERVATION_TIME.getMessage());
+                .hasMessage(BadRequestCode.INVALID_RESERVATION_TIME.getMessage());
     }
 
     @Test
     void 테마가_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> new Reservation(null, "브라운", DATE, TIME, null))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage(ErrorCode.INVALID_RESERVATION_THEME.getMessage());
+                .hasMessage(BadRequestCode.INVALID_RESERVATION_THEME.getMessage());
     }
 }

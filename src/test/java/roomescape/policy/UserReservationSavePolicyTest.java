@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.command.ReservationSaveCommand;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.ErrorCode;
 import roomescape.exception.UnprocessableException;
+import roomescape.exception.code.UnprocessableCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,7 +35,7 @@ class UserReservationSavePolicyTest {
 
         assertThatThrownBy(() -> policy.validate(command, FUTURE_TIME, FIXED_NOW))
                 .isInstanceOf(UnprocessableException.class)
-                .hasMessage(ErrorCode.RESERVATION_PAST_DATE.getMessage());
+                .hasMessage(UnprocessableCode.RESERVATION_PAST_DATE.getMessage());
     }
 
     @Test
@@ -44,7 +44,7 @@ class UserReservationSavePolicyTest {
 
         assertThatThrownBy(() -> policy.validate(command, PAST_TIME, FIXED_NOW))
                 .isInstanceOf(UnprocessableException.class)
-                .hasMessage(ErrorCode.RESERVATION_PAST_TIME.getMessage());
+                .hasMessage(UnprocessableCode.RESERVATION_PAST_TIME.getMessage());
     }
 
     @Test

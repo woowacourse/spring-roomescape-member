@@ -11,9 +11,10 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicationException;
-import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.UnprocessableException;
+import roomescape.exception.code.BadRequestCode;
+import roomescape.exception.code.ConflictCode;
 import roomescape.policy.UserReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -159,7 +160,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
                 .isInstanceOf(DuplicationException.class)
-                .hasMessage(ErrorCode.RESERVATION_DUPLICATED.getMessage());
+                .hasMessage(ConflictCode.RESERVATION_DUPLICATED.getMessage());
     }
 
     @Test
@@ -172,8 +173,8 @@ class ReservationServiceTest {
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름은 공백일 수 없습니다.");
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(BadRequestCode.BLANK_RESERVATION_NAME.getMessage());
     }
 
     @Test
@@ -187,7 +188,7 @@ class ReservationServiceTest {
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("유효하지 않은 이름입니다.");
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(BadRequestCode.INVALID_RESERVATION_NAME.getMessage());
     }
 }
