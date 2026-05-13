@@ -13,7 +13,7 @@ public record ReservationTimeCommand(LocalTime startAt) {
     }
 
     private static LocalTime validateStartAt(String startAt) {
-        if(startAt == null) {
+        if(startAt == null || startAt.isBlank()) {
             throw new InvalidRequestValueException(INVALID_START_TIME_NULL);
         }
         try {
