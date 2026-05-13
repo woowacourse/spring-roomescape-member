@@ -16,4 +16,6 @@ public interface ReservationRepository {
     List<Reservation> findAllByPaging(int page, int size);
 
     Set<Long> findReservedTimeIdsByThemeIdAndDate(Long themeId, LocalDate date);
+
+    List<Reservation> findAllByUserName(String name);
 }

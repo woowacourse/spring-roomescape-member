@@ -66,4 +66,11 @@ public class FakeReservationRepository implements ReservationRepository {
                 .map(reservation -> reservation.getTime().getId())
                 .collect(Collectors.toSet());
     }
+
+    @Override
+    public List<Reservation> findAllByUserName(String name) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getName().equals(name))
+                .toList();
+    }
 }
