@@ -26,13 +26,17 @@ import roomescape.domain.vo.ThemeImageUrl;
 import roomescape.domain.vo.ThemeName;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.ErrorMessageResponse;
+import roomescape.exception.RoomEscapeException;
 import roomescape.service.ReservationService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationControllerTest {
 
     private static final ReservationTime TIME = new ReservationTime(1L, "12:00");
-    private static final Theme THEME = new Theme(1L, new ThemeName("name"), "description", ThemeImageUrl.defaultImageUrl());
+    private static final Theme THEME = new Theme(1L, new ThemeName("name"), "description",
+        ThemeImageUrl.defaultImageUrl());
 
     @LocalServerPort
     private int port;
@@ -49,7 +53,9 @@ class ReservationControllerTest {
     void 예약을_추가한다() {
         // given
         Reservation reservation = reservation();
-        ReservationRequest request = requestDtoFrom(reservation);
+        ReservationRequest request = requestDtoFrom(
+            reservation
+        );
 
         when(reservationService.addReservation(any()))
             .thenReturn(reservation.withId(1L));
@@ -68,6 +74,35 @@ class ReservationControllerTest {
 
         ReservationResponse responseDto = response.as(ReservationResponse.class);
         assertThat(responseDto.id()).isEqualTo(1L);
+
+        verify(reservationService, times(1)).addReservation(any());
+        verifyNoMoreInteractions(reservationService);
+    }
+
+    @Test
+    void 중복_예약이_존재하는_경우_예외_응답을_반환한다() {
+        // given
+        RoomEscapeException exception = new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
+        Reservation reservation = reservation();
+        ReservationRequest request = requestDtoFrom(reservation);
+        when(reservationService.addReservation(any()))
+            .thenThrow(exception);
+
+        // when
+        Response response = RestAssured
+            .given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/reservations");
+
+        // then
+        response
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+
+        ErrorMessageResponse actualResponse = response.as(ErrorMessageResponse.class);
+        ErrorMessageResponse expectedResponse = ErrorMessageResponse.of(exception.getCode());
+        assertThat(actualResponse).isEqualTo(expectedResponse);
 
         verify(reservationService, times(1)).addReservation(any());
         verifyNoMoreInteractions(reservationService);

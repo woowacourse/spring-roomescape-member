@@ -9,6 +9,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservationTime.ReservationTimeRequest;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.time.ReservationTimeRepository;
@@ -38,14 +40,14 @@ public class ReservationService {
 
     public Reservation addReservation(ReservationRequest requestDto) {
         ReservationTime time = reservationTimeRepository.findById(requestDto.timeId())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+            .orElseThrow(() -> new RoomEscapeException(ErrorCode.TIME_NOT_FOUND));
         Theme theme = themeRepository.findById(requestDto.themeId())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+            .orElseThrow(() -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
 
         List<ReservationTime> availableTimes = reservationTimeRepository
             .findByDateAndThemeId(requestDto.date(), requestDto.themeId());
         if (!availableTimes.contains(time)) {
-            throw new IllegalArgumentException("해당 테마에서 이미 예약된 날짜입니다.");
+            throw new RoomEscapeException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
         Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), time, theme);
@@ -67,9 +69,10 @@ public class ReservationService {
     }
 
     public void deleteReservationTime(final long id) {
-        if (reservationRepository.existsByTimeId(id)) {
-            throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
-        }
+        // TODO : 그럼 시간은 영원히 삭제 못하게 될 수도?
+//        if (reservationRepository.existsByTimeId(id)) {
+//            throw new RoomEscapeException("예약이 존재하는 시간은 삭제할 수 없습니다.");
+//        }
 
         reservationTimeRepository.deleteById(id);
     }
@@ -77,7 +80,7 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<ReservationTime> getAvailableTimes(LocalDate date, final long themeId) {
         Theme theme = themeRepository.findById(themeId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+            .orElseThrow(() -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));
 
         return reservationTimeRepository.findByDateAndThemeId(date, theme.getId());
     }
