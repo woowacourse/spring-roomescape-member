@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static roomescape.exception.ErrorCode.DUPLICATED_RESERVATION_TIME;
 import static roomescape.exception.ErrorCode.REFERENCED_TIME;
 
 import java.time.LocalDate;
@@ -42,6 +43,16 @@ public class ReservationTimeServiceTest {
 
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, themeRepository,
                 reservationRepository);
+    }
+
+    @Test
+    void createDuplicatedReservationTimeExceptionTest() {
+        ServiceReservationTimeCreateRequest request = new ServiceReservationTimeCreateRequest(LocalTime.of(10, 0));
+        reservationTimeService.create(request);
+
+        assertThatThrownBy(() -> reservationTimeService.create(request))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(DUPLICATED_RESERVATION_TIME.getMessage());
     }
 
     @Test

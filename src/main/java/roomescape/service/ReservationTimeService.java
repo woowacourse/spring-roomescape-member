@@ -30,8 +30,12 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ServiceReservationTimeResponse create(ServiceReservationTimeCreateRequest requestDto) {
-        ReservationTime reservationTime = reservationTimeRepository.create(requestDto.toEntity());
+    public ServiceReservationTimeResponse create(ServiceReservationTimeCreateRequest request) {
+        if (reservationTimeRepository.existByStartAt(request.startAt())) {
+            throw new CustomException(ErrorCode.DUPLICATED_RESERVATION_TIME);
+        }
+        
+        ReservationTime reservationTime = reservationTimeRepository.create(request.toEntity());
         return ServiceReservationTimeResponse.from(reservationTime);
     }
 

@@ -3,6 +3,7 @@ package roomescape.repository;
 import static roomescape.repository.FakeReservationRepository.RESERVATION_TABLE;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Reservation;
@@ -54,5 +55,11 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
                 .map(ReservationTime::getId)
                 .filter(reservedTimeId::contains)
                 .toList();
+    }
+
+    @Override
+    public boolean existByStartAt(LocalTime startAt) {
+        return fakeDatabase.readAll(RESERVATION_TIME_TABLE, ReservationTime.class).stream()
+                .anyMatch(reservationTime -> reservationTime.getStartAt().equals(startAt));
     }
 }

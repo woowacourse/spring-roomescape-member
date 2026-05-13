@@ -83,6 +83,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
+    public boolean existByStartAt(LocalTime startAt) {
+        String sql = "SELECT EXISTS ("
+                + "SELECT 1 FROM `reservation_time` WHERE `start_at` = (?) "
+                + ") AS exist";
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
+    }
+
+    @Override
     public void delete(Long id) {
         String sql = "DELETE FROM `reservation_time` WHERE `id` = (?)";
         jdbcTemplate.update(sql, id);

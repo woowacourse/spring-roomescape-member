@@ -12,6 +12,7 @@ public enum ErrorCode {
     PAST_TIME_RESERVATION_DELETE(HttpStatus.UNPROCESSABLE_ENTITY, "[ERROR] 지나간 시간의 예약은 삭제할 수 없습니다."),
 
     NOT_FOUND_RESERVATION_TIME(HttpStatus.NOT_FOUND, "[ERROR] 해당 ID의 예약 시간을 찾을 수 없습니다."),
+    DUPLICATED_RESERVATION_TIME(HttpStatus.CONFLICT, "[ERROR] 동일한 예약 시간이 이미 존재합니다. 시간을 변경해 다시 시도해 주세요."),
     REFERENCED_TIME(HttpStatus.CONFLICT, "[ERROR] 현재 해당 예약 시간을 사용하는 예약이 존재합니다. 연관된 예약을 삭제한 후 다시 시도해 주세요."),
 
     NOT_FOUND_THEME(HttpStatus.NOT_FOUND, "[ERROR] 해당 ID의 테마를 찾을 수 없습니다."),
