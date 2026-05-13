@@ -1,6 +1,7 @@
 ## 구현할 기능 목록
 
 ### 테마
+
 ```
 class Theme
 - id
@@ -10,33 +11,41 @@ class Theme
 ```
 
 ### 방탈출 API 명세
-| 기능              | 메서드 / URL                               | 요청                                  | 응답                                          | 상태 코드 |
-|-----------------|-----------------------------------------|-------------------------------------|---------------------------------------------| ----- |
-| 예약 조회           | GET `/reservations`                     | —                                   | `[{id, name, date, time, theme}, ...]`      | 200   |
-| 예약 등록           | POST `/reservations`                    | `{name, date, timeId, themeId}`     | `{id, name, date, time, theme}`             | 201   |
-| 예약 삭제           | DELETE `/reservations/{id}`             | —                                   |                                             | 204   |
-| 시간 조회           | GET `/times`                            | —                                   | `[{id, startAt}, ...]`                      | 200   |
-| 시간 등록           | POST `/times`                           | `{startAt}`                         | `{id, startAt}`                             | 201   |
-| 시간 삭제           | DELETE `/times/{id}`                    | —                                   |                                             | 204   |
-| 테마 조회           | GET `/themes`                           | —                                   | `[{id, name, description, thumbnail}, ...]` | 200   |
-| 테마 등록           | POST `/themes`                          | `{name, description, thumbnail}`    | `{id, name, description, thumbnail}`        | 201   |
-| 테마 삭제           | DELETE `/themes/{id}`                   | —                                   |                                             | 204   |
-| 예약 가능 시간 조회     | GET `/themes/{id}/times?date=2026-05-08` | —                                   | `[{time, available}, ...]`                  | 200   |
-| 인기 테마 상위 10개 조회 | GET `/themes/weekly-top`                | —                                   | `[{id, name, description, thumbnail}, ...]` | 200   |
+
+| 기능              | 메서드 / URL                            | 요청                               | 응답                                          | 상태 코드 |
+|-----------------|--------------------------------------|----------------------------------|---------------------------------------------|-------|
+| 예약 조회           | GET `/reservations`                  | —                                | `[{id, name, date, time, theme}, ...]`      | 200   |
+| 사용자 이름으로 예약 조회  | GET `/reservations?name={name}`      | —                                | `[{id, name, date, time, theme}, ...]`      | 200   |
+| 예약 등록           | POST `/reservations`                 | `{name, date, timeId, themeId}`  | `{id, name, date, time, theme}`             | 201   |
+| 예약 삭제           | DELETE `/reservations/{id}`          | —                                |                                             | 204   |
+| 예약 변경           | PATCH `/reservations/{id}`           | `{date, timeId}`                 |                                             | 200   |
+| 시간 조회           | GET `/times`                         |                                  | `[{id, startAt}, ...]`                      | 200   |
+| 시간 등록           | POST `/times`                        | `{startAt}`                      | `{id, startAt}`                             | 201   |
+| 시간 삭제           | DELETE `/times/{id}`                 | —                                |                                             | 204   |
+| 테마 조회           | GET `/themes`                        | —                                | `[{id, name, description, thumbnail}, ...]` | 200   |
+| 테마 등록           | POST `/themes`                       | `{name, description, thumbnail}` | `{id, name, description, thumbnail}`        | 201   |
+| 테마 삭제           | DELETE `/themes/{id}`                | —                                |                                             | 204   |
+| 예약 가능 시간 조회     | GET `/themes/{id}/times?date={date}` | —                                | `[{time, available}, ...]`                  | 200   |
+| 인기 테마 상위 10개 조회 | GET `/themes/weekly-top`             | —                                | `[{id, name, description, thumbnail}, ...]` | 200   |
 
 ### 예외 처리
-| 상황                      | 예외 클래스 | 상태 코드 |
-|-------------------------|------|------|
-| 빈 값, 잘못된 입력값            | `IllegalArgumentException` | `400 Bad Request` |
-| 잘못된 날짜/시간 형식            | `HttpMessageNotReadableException` | `400 Bad Request` |
-| 존재하지 않는 데이터 조회/삭제       | `NotFoundException` | `404 Not Found` |
-| 중복 데이터 추가, 참조 데이터 삭제 시도 | `ConflictException` | `409 Conflict` |
-| 지난 시간으로 예약 생성 시도        | `UnprocessableException` | `422 Unprocessable Entity` |
-| 동시 요청으로 인한 중복 데이터 발생  | `DataIntegrityViolationException` | `409 Conflict` |
+
+| 상황                      | 예외 클래스                            | 상태 코드                      |
+|-------------------------|-----------------------------------|----------------------------|
+| 빈 값, 잘못된 입력값            | `IllegalArgumentException`        | `400 Bad Request`          |
+| 잘못된 날짜/시간 형식            | `HttpMessageNotReadableException` | `400 Bad Request`          |
+| 존재하지 않는 데이터 조회/삭제       | `NotFoundException`               | `404 Not Found`            |
+| 중복 데이터 추가, 참조 데이터 삭제 시도 | `ConflictException`               | `409 Conflict`             |
+| 지난 시간으로 예약 생성 시도        | `UnprocessableException`          | `422 Unprocessable Entity` |
+| 지난 날짜로의 예약 변경 시도        | `UnprocessableException`          | `422 Unprocessable Entity` |
+| 지난 날짜의 예약 변경 시도         | `UnprocessableException`          | `422 Unprocessable Entity` |
+| 지난 날짜의 예약 삭제 시도         | `UnprocessableException`          | `422 Unprocessable Entity` |
+| 동시 요청으로 인한 중복 데이터 발생    | `DataIntegrityViolationException` | `409 Conflict`             |
 
 ## 🚀 사이클1 - 미션 (테마 + 사용자 예약)
 
 ### 1단계 - 테마 도메인 추가
+
 - [X] 테마 테이블 스키마 추가
 - [X] 초기 테마 데이터 삽입 쿼리문 추가
 - [X] Theme 클래스 추가
@@ -47,58 +56,63 @@ class Theme
 - [X] 테마 조회, 등록, 삭제 API 구현
 
 ### 2단계 - 사용자 예약
+
 - [X] 예약 가능한 시간 목록 조회 API 구현
 - [X] 클라이언트 화면 추가
-  - [X] 메인 페이지 추가
-  - [X] 예약 페이지 추가
-  - [X] 관리자 페이지 추가
+    - [X] 메인 페이지 추가
+    - [X] 예약 페이지 추가
+    - [X] 관리자 페이지 추가
 
 ### 3단계 - 인기 테마 조회
+
 - [X] 인기 테마 상위 10개 조회 기능 추가
 
 ## 🚀 사이클2 - 미션 (예약 변경/취소와 에러 처리)
 
 ### 1단계 - 서비스 정책 적용
+
 - [X] 지난 날짜 예약 생성 불가 기능 추가
-  - [X] 지난 날짜 검증 기능 추가
+    - [X] 지난 날짜 검증 기능 추가
 - [X] 같은 날짜 + 시간 + 테마에 예약이 있는 경우 중복 예약 불가 기능 추가
 - [X] 예약이 존재하는 시간 삭제 불가 기능 추가
-  - [X] 예약 존재 여부 확인 기능 추가
+    - [X] 예약 존재 여부 확인 기능 추가
 - [X] 유효하지 않은 입력값 예외 발생 기능 추가
-  - [X] 빈 이름 불가
-  - [X] 잘못된 날짜 형식 불가
-  - [X] 빈 날짜 불가
-  - [X] 존재하지 않는 테마, 시간대 불가
-  - [X] 빈 테마, 시간대 불가
+    - [X] 빈 이름 불가
+    - [X] 잘못된 날짜 형식 불가
+    - [X] 빈 날짜 불가
+    - [X] 존재하지 않는 테마, 시간대 불가
+    - [X] 빈 테마, 시간대 불가
 
 ### 2단계 - 에러 응답 설계
+
 - [X] 에러 응답 설계
 - [X] 에러 발생 시 사용자에게 에러 메시지 모달 표시
 
 ### 3단계 - 내 예약 조회/변경/취소
+
 - [X] 이름으로 예약 목록 조회 기능 추가
 - [X] 예약 취소 기능 추가
-  - [X] 이미 지난 날짜의 예약 취소 시 예외 발생
+    - [X] 이미 지난 날짜의 예약 취소 시 예외 발생
 - [X] 사용자 본인 예약의 날짜 및 시간 변경 기능 추가
-  - [X] 과거 시간으로의 예약 변경 시 예외 발생
-  - [X] 변경하려는 시간이 이미 예약되어있는 경우 예외 발생
-  - [X] 과거 시간의 예약 변경 시 예외 발생
+    - [X] 과거 시간으로의 예약 변경 시 예외 발생
+    - [X] 변경하려는 시간이 이미 예약되어있는 경우 예외 발생
+    - [X] 과거 시간의 예약 변경 시 예외 발생
 - [X] 클라이언트 화면 추가
-  - [X] 예약 목록 조회, 삭제, 변경 페이지
-
+    - [X] 예약 목록 조회, 삭제, 변경 페이지
 
 ### 인기 테마 조회를 위한 예약 더미 데이터
-| 순위 | theme_id | 테마명 | 예약 횟수 |
-|------|----------|--------|----------|
-| 1위 | 12 | 한밤중의 도서관 | 14회 |
-| 2위 | 7 | 9회말 2사 만루 | 12회 |
-| 3위 | 4 | 녹화된 마지막 하루 | 11회 |
-| 4위 | 1 | 시간조작자 연구소 | 9회 |
-| 5위 | 9 | 잊혀진 기억의 숲 | 8회 |
-| 6위 | 2 | 사라진 개발자 | 7회 |
-| 7위 | 8 | 새벽 2시의 증류소 | 7회 |
-| 8위 | 3 | 404호의 비밀 | 6회 |
-| 9위 | 6 | 버그 추적자: 죽음의 디버깅 | 6회 |
-| 10위 | 11 | 인공지능의 반란 | 6회 |
-| 11위 | 5 | VIP 전용 금고 | 4회 |
-| 12위 | 10 | 명탐정의 마지막 조각 | 3회 |
+
+| 순위  | theme_id | 테마명             | 예약 횟수 |
+|-----|----------|-----------------|-------|
+| 1위  | 12       | 한밤중의 도서관        | 14회   |
+| 2위  | 7        | 9회말 2사 만루       | 12회   |
+| 3위  | 4        | 녹화된 마지막 하루      | 11회   |
+| 4위  | 1        | 시간조작자 연구소       | 9회    |
+| 5위  | 9        | 잊혀진 기억의 숲       | 8회    |
+| 6위  | 2        | 사라진 개발자         | 7회    |
+| 7위  | 8        | 새벽 2시의 증류소      | 7회    |
+| 8위  | 3        | 404호의 비밀        | 6회    |
+| 9위  | 6        | 버그 추적자: 죽음의 디버깅 | 6회    |
+| 10위 | 11       | 인공지능의 반란        | 6회    |
+| 11위 | 5        | VIP 전용 금고       | 4회    |
+| 12위 | 10       | 명탐정의 마지막 조각     | 3회    |
