@@ -2,6 +2,8 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.AuthorizationException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.dto.ReservationCreateInfo;
 import roomescape.reservation.dto.ReservationIdResponse;
 import roomescape.reservation.dto.ReservationsResponse;
@@ -72,5 +74,17 @@ public class ReservationService {
         userService.getUserById(id);
         List<Reservation> responses = reservationRepository.findAllByUserId(id);
         return ReservationsResponse.from(responses);
+    }
+
+    @Transactional
+    public void cancel(Long reservationId, Long currentUserId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 예약입니다."));
+
+        if (!reservation.isOwnedBy(currentUserId)) {
+            throw new AuthorizationException("예약을 취소할 권한이 없습니다.");
+        }
+
+        reservationRepository.delete(reservationId);
     }
 }
