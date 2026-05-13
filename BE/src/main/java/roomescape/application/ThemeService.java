@@ -45,7 +45,9 @@ public class ThemeService {
 
     public void deleteById(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
-            throw new BusinessException("예약이 연결된 테마는 삭제할 수 없습니다.");
+            throw new BusinessException("예약이 연결된 테마는 삭제할 수 없습니다. themeId: %d"
+                    .formatted(id)
+            );
         }
         themeRepository.deleteById(id);
     }

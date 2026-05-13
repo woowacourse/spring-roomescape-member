@@ -14,15 +14,21 @@ public record ThemeRequest(
     }
 
     private static void validateNameNotEmpty(String name) {
-        validateStringValueNotEmpty(name, new EntityNotFoundException("테마 이름을 입력해 주세요."));
+        validateStringValueNotEmpty(name, new EntityNotFoundException("테마 이름을 입력해 주세요. name: %s"
+                .formatted(name)
+        ));
     }
 
     private static void validateDescriptionNotEmpty(String description) {
-        validateStringValueNotEmpty(description, new EntityNotFoundException("테마 설명을 입력해 주세요."));
+        validateStringValueNotEmpty(description, new EntityNotFoundException("테마 설명을 입력해 주세요. description: %s"
+                .formatted(description))
+        );
     }
 
     private static void validateThumbnailNotEmpty(String thumbnail) {
-        validateStringValueNotEmpty(thumbnail, new EntityNotFoundException("테마 썸네일을 입력해 주세요."));
+        validateStringValueNotEmpty(thumbnail, new EntityNotFoundException("테마 썸네일을 입력해 주세요. thumbnail: %s"
+                .formatted(thumbnail))
+        );
     }
 
     private static void validateStringValueNotEmpty(String description, EntityNotFoundException reservationException) {

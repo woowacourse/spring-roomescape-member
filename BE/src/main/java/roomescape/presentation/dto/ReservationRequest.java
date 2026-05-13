@@ -18,25 +18,33 @@ public record ReservationRequest(
 
     private static void validateNameNotEmpty(String name) {
         if (name == null || name.trim().isBlank()) {
-            throw new EntityNotFoundException("예약자 이름을 입력해 주세요.");
+            throw new EntityNotFoundException("예약자 이름을 입력해 주세요. name: %s"
+                    .formatted(name)
+            );
         }
     }
     
     private static void validateTimeIdNotEmpty(Long timeId) {
         if (timeId == null) {
-            throw new EntityNotFoundException("예약 시간을 선택해 주세요.");
+            throw new EntityNotFoundException("예약 시간을 선택해 주세요. timeId: %d"
+                    .formatted(timeId)
+            );
         }
     }
 
     private static void validateThemeIdNotEmpty(Long themeId) {
         if (themeId == null) {
-            throw new EntityNotFoundException("예약 테마를 선택해 주세요.");
+            throw new EntityNotFoundException("예약 테마를 선택해 주세요. themeId: %d"
+                    .formatted(themeId)
+            );
         }
     }
 
     private static void validateDateNotEmpty(LocalDate date) {
         if (date == null) {
-            throw new EntityNotFoundException("예약 날짜를 선택해 주세요.");
+            throw new EntityNotFoundException("예약 날짜를 선택해 주세요. date: %s"
+                    .formatted(date)
+            );
         }
     }
 }

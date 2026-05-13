@@ -7,12 +7,14 @@ public record ReservationTimeRequest(
         LocalTime startAt
 ) {
     public ReservationTimeRequest {
-        validatStartAtNotEmpty(startAt);
+        validateStartAtNotEmpty(startAt);
     }
 
-    private void validatStartAtNotEmpty(LocalTime startAt) {
+    private void validateStartAtNotEmpty(LocalTime startAt) {
         if (startAt == null) {
-            throw new EntityNotFoundException("예약 시간을 입력해 주세요.");
+            throw new EntityNotFoundException("예약 시간을 입력해 주세요. startAt: %s"
+                    .formatted(startAt)
+            );
         }
     }
 }

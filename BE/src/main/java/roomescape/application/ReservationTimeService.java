@@ -53,7 +53,9 @@ public class ReservationTimeService {
     @Transactional
     public void deleteTime(Long id) {
         if (reservationRepository.existsByReservationTimeId(id)) {
-            throw new BusinessException("예약이 연결된 예약 시간은 삭제할 수 없습니다.");
+            throw new BusinessException("예약이 연결된 예약 시간은 삭제할 수 없습니다. timeId: %d"
+                    .formatted(id)
+            );
         }
         reservationTimeRepository.deleteById(id);
     }
