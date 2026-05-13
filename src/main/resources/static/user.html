@@ -358,9 +358,14 @@
 
     .time-slot.unavailable {
       opacity: 0.35;
-      cursor: not-allowed;
+      cursor: pointer;
       text-decoration: line-through;
       color: var(--muted);
+    }
+
+    .time-slot.unavailable.selected {
+      opacity: 1;
+      color: #0a0d1a;
     }
 
     /* Buttons */
@@ -630,7 +635,7 @@
           <div class="loading-center" id="times-loading"><div class="spinner"></div></div>
           <div class="time-slots" id="time-slots" style="display:none"></div>
           <div class="btn-row" id="time-btn-row" style="display:none">
-            <button class="btn btn-accent" onclick="goToStep4()" id="confirm-time-btn" disabled>예약 확인 →</button>
+            <button class="btn btn-accent" onclick="goToStep4()" id="confirm-time-btn">예약 확인 →</button>
             <button class="btn btn-ghost" onclick="goToStep(2)">← 뒤로</button>
           </div>
         </div>
@@ -706,6 +711,30 @@
     setTimeout(() => { t.className = 'toast'; }, 3000);
   }
 
+  async function readErrorMessage(res, fallback) {
+    try {
+      const data = await res.json();
+      return data.message || fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  async function fetchJson(url, options = {}, fallback = '요청을 처리할 수 없습니다.') {
+    const res = await fetch(url, options);
+    if (!res.ok) {
+      throw new Error(await readErrorMessage(res, fallback));
+    }
+    return res.status === 204 ? null : res.json();
+  }
+
+  async function fetchEmpty(url, options = {}, fallback = '요청을 처리할 수 없습니다.') {
+    const res = await fetch(url, options);
+    if (!res.ok) {
+      throw new Error(await readErrorMessage(res, fallback));
+    }
+  }
+
   function switchSection(name) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -724,8 +753,7 @@
     document.getElementById('popular-empty').style.display = 'none';
 
     try {
-      const res = await fetch(`${API}/themes/popular`);
-      const themes = await res.json();
+      const themes = await fetchJson(`${API}/themes/popular`, {}, '인기 테마를 불러올 수 없습니다.');
 
       document.getElementById('popular-loading').style.display = 'none';
 
@@ -748,7 +776,7 @@
       grid.style.display = 'grid';
     } catch (e) {
       document.getElementById('popular-loading').style.display = 'none';
-      showToast('인기 테마를 불러올 수 없습니다.', 'error');
+      showToast(e.message, 'error');
     }
   }
 
@@ -764,8 +792,7 @@
     document.getElementById('booking-themes-grid').style.display = 'none';
 
     try {
-      const res = await fetch(`${API}/themes`);
-      const themes = await res.json();
+      const themes = await fetchJson(`${API}/themes`, {}, '테마 목록을 불러올 수 없습니다.');
 
       document.getElementById('booking-themes-loading').style.display = 'none';
       const grid = document.getElementById('booking-themes-grid');
@@ -781,15 +808,13 @@
       grid.style.display = 'grid';
     } catch (e) {
       document.getElementById('booking-themes-loading').style.display = 'none';
-      showToast('테마 목록을 불러올 수 없습니다.', 'error');
+      showToast(e.message, 'error');
     }
   }
 
   function selectTheme(theme) {
     selectedTheme = theme;
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    document.getElementById('booking-date').min = tomorrow.toISOString().split('T')[0];
+    document.getElementById('booking-date').removeAttribute('min');
     document.getElementById('booking-date').value = '';
 
     const themeInfoHtml = `
@@ -807,10 +832,6 @@
 
   async function goToStep3() {
     const dateInput = document.getElementById('booking-date');
-    if (!dateInput.value) {
-      showToast('날짜를 선택해주세요.', 'error');
-      return;
-    }
     selectedDate = dateInput.value;
     document.getElementById('selected-date-label').textContent = `📅 ${formatDate(selectedDate)}`;
     selectedTime = null;
@@ -821,8 +842,11 @@
     document.getElementById('time-btn-row').style.display = 'none';
 
     try {
-      const res = await fetch(`${API}/themes/${selectedTheme.id}/available-times?date=${selectedDate}`);
-      const times = await res.json();
+      const times = await fetchJson(
+        `${API}/themes/${selectedTheme.id}/available-times?date=${selectedDate}`,
+        {},
+        '시간 정보를 불러올 수 없습니다.'
+      );
 
       document.getElementById('times-loading').style.display = 'none';
       const container = document.getElementById('time-slots');
@@ -830,7 +854,7 @@
         const available = t.isAvailable !== undefined ? t.isAvailable : t.available;
         return `
           <div class="time-slot ${available ? '' : 'unavailable'}"
-               onclick="${available ? `pickTime(${t.id}, '${t.startAt}')` : ''}"
+               onclick="pickTime(${t.id}, '${t.startAt}')"
                id="slot-${t.id}">
             ${t.startAt}
           </div>
@@ -840,7 +864,7 @@
       document.getElementById('time-btn-row').style.display = 'flex';
     } catch (e) {
       document.getElementById('times-loading').style.display = 'none';
-      showToast('시간 정보를 불러올 수 없습니다.', 'error');
+      showToast(e.message, 'error');
     }
   }
 
@@ -852,37 +876,31 @@
   }
 
   function goToStep4() {
-    if (!selectedTime) {
-      showToast('시간을 선택해주세요.', 'error');
-      return;
-    }
     document.getElementById('confirm-theme').textContent = selectedTheme.name;
     document.getElementById('confirm-date').textContent = formatDate(selectedDate);
-    document.getElementById('confirm-time').textContent = selectedTime.startAt;
+    document.getElementById('confirm-time').textContent = selectedTime?.startAt || '-';
     document.getElementById('confirm-name').textContent = username;
     goToStep(4);
   }
 
   async function submitReservation() {
     try {
-      const res = await fetch(`${API}/reservations`, {
+      await fetchJson(`${API}/reservations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: username,
-          date: selectedDate,
-          timeId: selectedTime.id,
+          date: selectedDate || null,
+          timeId: selectedTime?.id || null,
           themeId: selectedTheme.id
         })
-      });
+      }, '예약에 실패했습니다.');
 
-      if (!res.ok) throw new Error();
-
-      showToast('예약이 완료되었습니다! 🎉');
+      showToast('예약이 완료되었습니다!');
       resetBookingState();
       switchSection('my');
     } catch (e) {
-      showToast('예약에 실패했습니다. 다시 시도해주세요.', 'error');
+      showToast(e.message, 'error');
     }
   }
 
@@ -911,8 +929,11 @@
     document.getElementById('my-empty').style.display = 'none';
 
     try {
-      const res = await fetch(`${API}/reservations?username=${encodeURIComponent(username)}`);
-      const reservations = await res.json();
+      const reservations = await fetchJson(
+        `${API}/reservations?username=${encodeURIComponent(username)}`,
+        {},
+        '예약 목록을 불러올 수 없습니다.'
+      );
 
       document.getElementById('my-loading').style.display = 'none';
 
@@ -935,15 +956,14 @@
       list.style.display = 'flex';
     } catch (e) {
       document.getElementById('my-loading').style.display = 'none';
-      showToast('예약 목록을 불러올 수 없습니다.', 'error');
+      showToast(e.message, 'error');
     }
   }
 
   async function deleteMyReservation(id) {
     if (!confirm('예약을 삭제하시겠습니까?')) return;
     try {
-      const res = await fetch(`${API}/reservations/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
+      await fetchEmpty(`${API}/reservations/${id}`, { method: 'DELETE' }, '삭제에 실패했습니다.');
       document.getElementById(`res-${id}`)?.remove();
       showToast('예약이 삭제되었습니다.');
 
@@ -953,7 +973,7 @@
         document.getElementById('my-empty').style.display = 'block';
       }
     } catch (e) {
-      showToast('삭제에 실패했습니다.', 'error');
+      showToast(e.message, 'error');
     }
   }
 
