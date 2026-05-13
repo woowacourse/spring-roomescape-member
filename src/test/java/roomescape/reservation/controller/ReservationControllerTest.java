@@ -8,8 +8,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.global.exception.DuplicateReservationException;
+import roomescape.global.exception.ErrorCode;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.exception.DuplicateReservationException;
 import roomescape.reservation.service.ReservationService;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -104,13 +106,66 @@ class ReservationControllerTest {
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                              {
-                                "name": "어셔",
-                                "date": "2026-05-10",
-                                "timeId": 1,
-                                "themeId": 1
-                              }
-                            """))
+                                  {
+                                    "name": "어셔",
+                                    "date": "2026-05-10",
+                                    "timeId": 1,
+                                    "themeId": 1
+                                  }
+                                """))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 예약자_이름이_빈_문자열이면_400과_INVALID_INPUT을_반환한다() throws Exception {
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "name": "", 
+                                    "date": "2026-05-13", 
+                                    "timeId": "1",
+                                    "themeId": "1"
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.INVALID_INPUT.errorCode()))
+                .andExpect(jsonPath("$.fieldErrors[0].field").value("name"))
+                .andExpect(jsonPath("$.fieldErrors[0].message").value("예약자 이름은 필수입니다."));
+    }
+
+    @Test
+    void 예약_날짜가_null이면_400과_INVALID_INPUT을_반환한다() throws Exception {
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "name": "어셔",
+                              "date": null,
+                              "timeId": 1,
+                              "themeId": 1
+                            }
+                            """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.INVALID_INPUT.errorCode()))
+                .andExpect(jsonPath("$.fieldErrors[?(@.field == 'date')].message")
+                        .value(hasItem("예약 날짜는 필수입니다.")));
+    }
+
+    @Test
+    void 여러_필드가_동시에_잘못되면_모든_필드_에러가_담긴다() throws Exception {
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "name": "",
+                              "date": null,
+                              "timeId": null,
+                              "themeId": null
+                            }
+                            """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.INVALID_INPUT.errorCode()))
+                .andExpect(jsonPath("$.fieldErrors.length()").value(4));
     }
 }
