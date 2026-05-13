@@ -80,7 +80,7 @@
             padding: 10px 14px; border-radius: 8px; margin-top: 12px; display: none; font-size: 0.9rem;
         }
         .message.success { display: block; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .message.error { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .message.error { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; white-space: pre-line; }
 
         .empty { text-align: center; padding: 30px; color: #999; }
     </style>
@@ -184,12 +184,22 @@
         setTimeout(() => el.style.display = 'none', 3000);
     }
 
+    async function parseError(res) {
+        try {
+            const data = await res.json();
+            return data.message + (data.action ? '\n' + data.action : '');
+        } catch {
+            return '오류가 발생했습니다.';
+        }
+    }
+
     // --- 시간 ---
     async function loadTimes() {
         const tbody = document.getElementById('time-table-body');
         try {
             const res = await fetch('/times');
-            const times = await res.json();
+            const data = await res.json();
+            const times = data.times;
             if (times.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="3" class="empty">등록된 시간이 없습니다</td></tr>';
                 return;
@@ -221,8 +231,7 @@
                 document.getElementById('time-input').value = '';
                 loadTimes();
             } else {
-                const text = await res.text();
-                showMsg('time-message', 'error', text || '추가 실패');
+                showMsg('time-message', 'error', await parseError(res));
             }
         } catch (e) {
             showMsg('time-message', 'error', '네트워크 오류');
@@ -234,10 +243,7 @@
         try {
             const res = await fetch(`/times/${id}`, { method: 'DELETE' });
             if (res.ok) loadTimes();
-            else {
-                const text = await res.text();
-                alert(text || '삭제 실패');
-            }
+            else alert(await parseError(res));
         } catch (e) { alert('네트워크 오류'); }
     }
 
@@ -246,7 +252,8 @@
         const tbody = document.getElementById('theme-table-body');
         try {
             const res = await fetch('/themes');
-            const themes = await res.json();
+            const data = await res.json();
+            const themes = data.themes;
             if (themes.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" class="empty">등록된 테마가 없습니다</td></tr>';
                 return;
@@ -284,8 +291,7 @@
                 document.getElementById('theme-url').value = '';
                 loadThemes();
             } else {
-                const text = await res.text();
-                showMsg('theme-message', 'error', text || '추가 실패');
+                showMsg('theme-message', 'error', await parseError(res));
             }
         } catch (e) {
             showMsg('theme-message', 'error', '네트워크 오류');
@@ -297,10 +303,7 @@
         try {
             const res = await fetch(`/themes/${id}`, { method: 'DELETE' });
             if (res.ok) loadThemes();
-            else {
-                const text = await res.text();
-                alert(text || '삭제 실패');
-            }
+            else alert(await parseError(res));
         } catch (e) { alert('네트워크 오류'); }
     }
 
@@ -309,7 +312,8 @@
         const tbody = document.getElementById('reservation-table-body');
         try {
             const res = await fetch('/reservations');
-            const reservations = await res.json();
+            const data = await res.json();
+            const reservations = data.reservations;
             if (reservations.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="empty">등록된 예약이 없습니다</td></tr>';
                 return;
@@ -319,8 +323,8 @@
                     <td>${r.id}</td>
                     <td>${r.name}</td>
                     <td>${r.date}</td>
-                    <td>${r.time ? r.time.startAt : ''}</td>
-                    <td>${r.theme ? r.theme.name : ''}</td>
+                    <td>${r.time ? r.time.startAt : '-'}</td>
+                    <td>${r.theme ? r.theme.name : '-'}</td>
                     <td><button class="btn btn-delete" onclick="deleteReservation(${r.id})">삭제</button></td>
                 </tr>
             `).join('');
@@ -334,10 +338,7 @@
         try {
             const res = await fetch(`/reservations/${id}`, { method: 'DELETE' });
             if (res.ok) loadReservations();
-            else {
-                const text = await res.text();
-                alert(text || '삭제 실패');
-            }
+            else alert(await parseError(res));
         } catch (e) { alert('네트워크 오류'); }
     }
 
