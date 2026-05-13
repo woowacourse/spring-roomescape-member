@@ -8,22 +8,22 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.reservation.ReservationCondition;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.service.RoomReservationService;
+import roomescape.service.ReservationService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
-    private final RoomReservationService roomReservationService;
+    private final ReservationService reservationService;
 
-    public ReservationController(RoomReservationService roomReservationService) {
-        this.roomReservationService = roomReservationService;
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
     @GetMapping()
     public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<Reservation> reservations = roomReservationService.getAllReservation();
+        List<Reservation> reservations = reservationService.getAllReservation();
         List<ReservationResponse> reservationResponses = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -35,14 +35,14 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> addReservation(
             @RequestBody @Valid AddReservationRequest addReservationRequest
     ) {
-        Reservation addedReservation = roomReservationService.addReservation(addReservationRequest);
+        Reservation addedReservation = reservationService.addReservation(addReservationRequest);
 
         return new ResponseEntity<>(ReservationResponse.from(addedReservation), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable("id") long id) {
-        roomReservationService.deleteReservation(id);
+        reservationService.deleteReservation(id);
 
         return ResponseEntity.noContent().build();
     }
@@ -51,7 +51,7 @@ public class ReservationController {
     public ResponseEntity<List<ReservationResponse>> getReservationsByName(
             @ModelAttribute @Valid ReservationCondition reservationCondition
     ) {
-        List<Reservation> reservations = roomReservationService.getAllReservationsByName(reservationCondition);
+        List<Reservation> reservations = reservationService.getAllReservationsByName(reservationCondition);
         List<ReservationResponse> reservationResponses = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -64,7 +64,7 @@ public class ReservationController {
             @PathVariable("id") long id,
             @ModelAttribute @Valid ReservationCondition reservationCondition
     ) {
-        roomReservationService.deleteReservation(id);
+        reservationService.deleteReservation(id);
 
         return ResponseEntity.noContent().build();
     }

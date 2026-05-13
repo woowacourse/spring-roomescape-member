@@ -19,14 +19,13 @@ import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.theme.PopularConditionRequest;
 import roomescape.exception.exception.DuplicatedResourceException;
-import roomescape.exception.dto.ErrorCode;
 import roomescape.exception.exception.InvalidRequestException;
 import roomescape.exception.exception.NotFoundResourceException;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
-public class RoomReservationServiceTest {
+public class ReservationServiceTest {
     private ReservationRepository createReservationRepository(boolean isExist, Reservation reservation) {
         return new ReservationRepository() {
             @Override
@@ -152,7 +151,7 @@ public class RoomReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, "name", "description", "image");
 
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false, null), createReservationTimeRepository(reservationTime, false), createThemeRepository(
+        ReservationService reservationService = new ReservationService(createReservationRepository(false, null), createReservationTimeRepository(reservationTime, false), createThemeRepository(
                 theme, false));
 
         LocalDate futureDate = LocalDate.now().plusDays(1);
@@ -179,7 +178,7 @@ public class RoomReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, "name", "description", "image");
 
-        RoomReservationService reservationService = new RoomReservationService(
+        ReservationService reservationService = new ReservationService(
                 createReservationRepository(false, null),
                 createReservationTimeRepository(reservationTime, false),
                 createThemeRepository(theme, false)
@@ -206,7 +205,7 @@ public class RoomReservationServiceTest {
 
         Theme theme = new Theme(1L, "name", "description", "image");
 
-        RoomReservationService reservationService = new RoomReservationService(
+        ReservationService reservationService = new ReservationService(
                 createReservationRepository(false, null),
                 createReservationTimeRepository(reservationTime, false),
                 createThemeRepository(theme, false)
@@ -227,7 +226,7 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 시간ID인 경우 예외 테스트")
     void addReservationFailByInvalidTimeIdTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false, null), createReservationTimeRepository(null, false), createThemeRepository(new Theme(1L, "테마1", "설명", "url"), false));
+        ReservationService reservationService = new ReservationService(createReservationRepository(false, null), createReservationTimeRepository(null, false), createThemeRepository(new Theme(1L, "테마1", "설명", "url"), false));
         LocalDate futureDate = LocalDate.now().plusDays(1);
 
         AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", futureDate, 1L, 1L);
@@ -240,7 +239,7 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 테마 ID인 경우 예외 테스트")
     void addReservationFailByInvalidThemeIdTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false, null), createReservationTimeRepository(new ReservationTime(1L, LocalTime.parse("10:00")), false), createThemeRepository(null, false));
+        ReservationService reservationService = new ReservationService(createReservationRepository(false, null), createReservationTimeRepository(new ReservationTime(1L, LocalTime.parse("10:00")), false), createThemeRepository(null, false));
         LocalDate futureDate = LocalDate.now().plusDays(1);
 
         AddReservationRequest addReservationRequest = new AddReservationRequest("브라운", futureDate, 1L, 1L);
@@ -257,7 +256,7 @@ public class RoomReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, "name", "description", "image");
 
-        RoomReservationService reservationService = new RoomReservationService(
+        ReservationService reservationService = new ReservationService(
                 createReservationRepository(true, null),
                 createReservationTimeRepository(reservationTime, false),
                 createThemeRepository(theme, false)
@@ -272,7 +271,7 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("이름으로 삭제할 경우, 존재하지 않는 예약 id 입력 시 예외 테스트")
     void deleteReservationByNameFailByNotFoundTest() {
-        RoomReservationService reservationService = new RoomReservationService(
+        ReservationService reservationService = new ReservationService(
                 createReservationRepository(false, null),
                 createReservationTimeRepository(null, false),
                 createThemeRepository(null, false)
@@ -290,7 +289,7 @@ public class RoomReservationServiceTest {
                 new ReservationTime(1L, LocalTime.parse("10:00")),
                 new Theme(1L, "name", "description", "image"));
 
-        RoomReservationService reservationService = new RoomReservationService(
+        ReservationService reservationService = new ReservationService(
                 createReservationRepository(false, reservation),
                 createReservationTimeRepository(null, false),
                 createThemeRepository(null, false)
@@ -308,7 +307,7 @@ public class RoomReservationServiceTest {
                 new ReservationTime(1L, LocalTime.parse("10:00")),
                 new Theme(1L, "name", "description", "image"));
 
-        RoomReservationService reservationService = new RoomReservationService(
+        ReservationService reservationService = new ReservationService(
                 createReservationRepository(false, reservation),
                 createReservationTimeRepository(null, false),
                 createThemeRepository(null, false)

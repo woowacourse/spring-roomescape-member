@@ -13,7 +13,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.reservationTime.ReservationTime;
 import roomescape.dto.reservation.ReservationCondition;
-import roomescape.service.RoomReservationService;
+import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -33,7 +33,7 @@ class ReservationControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private RoomReservationService roomReservationService;
+    private ReservationService reservationService;
 
     private Reservation reservation;
 
@@ -53,7 +53,7 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약 목록 조회 시 200과 바디를 반환한다")
     void getReservations() throws Exception {
-        given(roomReservationService.getAllReservation())
+        given(reservationService.getAllReservation())
                 .willReturn(List.of(reservation));
 
         mockMvc.perform(get("/reservations"))
@@ -70,7 +70,7 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약 추가 시 201과 바디를 반환한다")
     void addReservation() throws Exception {
-        given(roomReservationService.addReservation(any()))
+        given(reservationService.addReservation(any()))
                 .willReturn(reservation);
 
         String requestBody = """
@@ -104,7 +104,7 @@ class ReservationControllerTest {
     @DisplayName("이름으로 예약 조회 시 200과 바디를 반환한다")
     void getReservationByName() throws Exception {
         ReservationCondition reservationCondition = new ReservationCondition("홍길동");
-        given(roomReservationService.getAllReservationsByName(reservationCondition))
+        given(reservationService.getAllReservationsByName(reservationCondition))
                 .willReturn(List.of(reservation));
 
         mockMvc.perform(get("/reservations")
