@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.dto.ReservationCreateInfo;
 import roomescape.reservation.dto.ReservationIdResponse;
 import roomescape.reservation.dto.ReservationsResponse;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static roomescape.support.TestFixture.SCHEDULE_12시;
 import static roomescape.support.TestFixture.THEME_공포;
 import static roomescape.support.TestFixture.USER_1;
@@ -119,5 +121,36 @@ class ReservationServiceTest {
 
         assertThat(response.getReservationsResponse()).hasSize(1);
         assertThat(response.getReservationsResponse().getFirst().getUserId()).isEqualTo(id);
+    }
+
+    @Test
+    void 사용자가_본인의_예약을_정상적으로_취소한다() {
+        Reservation reservation = reservationRepository.findAll().get(0);
+        Long reservationId = reservation.getId();
+        Long ownerId = reservation.getUser().getId();
+
+        assertDoesNotThrow(() -> reservationService.cancel(reservationId, ownerId));
+        assertThat(reservationRepository.findById(reservationId)).isEmpty();
+    }
+
+    @Test
+    void 존재하지_않는_예약을_취소하려고_하면_예외가_발생한다() {
+        Long nonExistentReservationId = 999L;
+        Long currentUserId = USER_1.getId();
+
+        assertThatThrownBy(() -> reservationService.cancel(nonExistentReservationId, currentUserId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 예약입니다.");
+    }
+
+    @Test
+    void 다른_사람의_예약을_취소하려고_하면_예외가_발생한다() {
+        Reservation reservationOfUser1 = reservationRepository.findAll().get(0);
+        Long reservationId = reservationOfUser1.getId();
+        databaseHelper.insertUser(2L, "user2", "USER");
+
+        assertThatThrownBy(() -> reservationService.cancel(reservationId, 2L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("예약을 취소할 권한이 없습니다.");
     }
 }
