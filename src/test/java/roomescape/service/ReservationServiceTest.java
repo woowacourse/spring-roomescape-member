@@ -16,6 +16,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
+import roomescape.exception.IdNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class ReservationServiceTest {
@@ -39,8 +40,23 @@ public class ReservationServiceTest {
         // when & then
         when(reservationTimeDao.findTimeById(invalidTimeId)).thenReturn(null);
         assertThatThrownBy(() -> reservationService.save(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IdNotFoundException.class)
                 .hasMessageContaining("요청하신 시간 ID가 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 themeId로 예약하면 예외가 발생한다")
+    void save_fail_invalid_theme_id() {
+        // given
+        Long invalidThemeId = 999L;
+        ReservationRequest request = new ReservationRequest("아나키", LocalDate.of(2026, 5, 4), 1L, invalidThemeId);
+
+        // when & then
+        when(reservationTimeDao.findTimeById(1L)).thenReturn(new ReservationTime(1L, LocalTime.of(10, 0)));
+        when(themeDao.findThemeById(invalidThemeId)).thenReturn(null);
+        assertThatThrownBy(() -> reservationService.save(request))
+                .isInstanceOf(IdNotFoundException.class)
+                .hasMessageContaining("요청하신 테마 ID가 존재하지 않습니다.");
     }
 
     @Test
