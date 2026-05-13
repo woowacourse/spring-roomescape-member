@@ -124,4 +124,21 @@ public class ReservationRepositoryTest {
 
         assertThat(foundReservation).isEmpty();
     }
+
+    @Test
+    void 예약의_스케줄을_정상적으로_변경한다() {
+        Reservation reservation = new Reservation(user, schedule, theme);
+        Reservation savedReservation = reservationRepository.create(reservation);
+        Long reservationId = savedReservation.getId();
+
+        databaseHelper.insertSchedule(30L, 1L, "2026-12-11 12:00:00", "2026-12-11 14:00:00");
+
+        Long newScheduleId = 30L;
+
+        reservationRepository.updateSchedule(reservationId, newScheduleId);
+
+        Optional<Reservation> updatedReservation = reservationRepository.findById(reservationId);
+        assertThat(updatedReservation).isPresent();
+        assertThat(updatedReservation.get().getSchedule().getId()).isEqualTo(newScheduleId);
+    }
 }
