@@ -50,6 +50,7 @@ public class ReservationServiceTest {
             @Override public List<ReservationTime> getAllReservationTime() { return List.of(); }
             @Override public void deleteReservationTime(long id) {}
             @Override public List<ReservationTimeWithAvailable> getAvailableReservationTimeByDateAndTheme(ReservationTimeCondition cond) { return List.of(); }
+            @Override public boolean isExistsById(long id) { return false; }
         };
     }
 

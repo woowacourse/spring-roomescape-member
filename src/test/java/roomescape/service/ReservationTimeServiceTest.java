@@ -18,39 +18,41 @@ import roomescape.domain.reservationTime.ReservationTimeCondition;
 import roomescape.domain.reservationTime.ReservationTimeWithAvailable;
 import roomescape.domain.theme.Theme;
 import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundResourceException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 public class ReservationTimeServiceTest {
-    private ReservationRepository createReservationRepository(boolean isExistTime) {
+    private ReservationRepository createReservationRepository(boolean isUsedInReservation) {
         return new ReservationRepository() {
             @Override public Optional<Reservation> getReservation(long id) { return Optional.empty(); }
-            @Override public ReservationInfo addReservation(ReservationCommand command, ReservationTime reservationTime, Theme theme) { return null; }
+            @Override public ReservationInfo addReservation(ReservationCommand command, ReservationTime rt, Theme t) { return null; }
             @Override public void deleteReservation(long id) {}
-            @Override public int updateAll(long id, ReservationCommand reservationCommand) { return 0; }
-            @Override public boolean existsByTimeId(long timeId) { return isExistTime; }
+            @Override public int updateAll(long id, ReservationCommand cmd) { return 0; }
+            @Override public boolean existsByTimeId(long timeId) { return isUsedInReservation; }
             @Override public boolean existsByThemeId(long themeId) { return false; }
-            @Override public boolean existsByTimeIdAndThemeIdAndDate(long timeId, long themeId, LocalDate date) { return false; }
+            @Override public boolean existsByTimeIdAndThemeIdAndDate(long tid, long thid, LocalDate d) { return false; }
             @Override public List<ReservationInfo> getAllReservation(String name) { return List.of(); }
         };
     }
 
-    private ReservationTimeRepository createReservationTimeRepository(Runnable runnable) {
+    private ReservationTimeRepository createReservationTimeRepository(boolean isExist, Runnable runnable) {
         return new ReservationTimeRepository() {
-            @Override public ReservationTime addReservationTime(ReservationTimeCommand reservationTimeCommand) { return null; }
+            @Override public ReservationTime addReservationTime(ReservationTimeCommand cmd) { return null; }
             @Override public Optional<ReservationTime> getReservationTime(long id) { return Optional.empty(); }
             @Override public List<ReservationTime> getAllReservationTime() { return List.of(); }
             @Override public void deleteReservationTime(long id) { runnable.run(); }
-            @Override public List<ReservationTimeWithAvailable> getAvailableReservationTimeByDateAndTheme(ReservationTimeCondition reservationTimeCondition) { return List.of(); }
+            @Override public List<ReservationTimeWithAvailable> getAvailableReservationTimeByDateAndTheme(ReservationTimeCondition cond) { return List.of(); }
+            @Override public boolean isExistsById(long id) { return isExist; }
         };
     }
 
     @Test
-    @DisplayName("정상 삭제 테스트")
+    @DisplayName("정상적으로 예약 시간을 삭제한다")
     void deleteReservationTimeTest() {
         ReservationTimeService reservationTimeService = new ReservationTimeService(
-                createReservationTimeRepository(() -> {}),
-                createReservationRepository(false)
+                createReservationTimeRepository(true, () -> {}), // 시간 존재함
+                createReservationRepository(false)              // 예약에 사용 안 됨
         );
 
         assertThatCode(() -> reservationTimeService.deleteReservationTime(1L))
@@ -58,11 +60,24 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("이미 예약된 시간인 경우 ConflictException 발생")
+    @DisplayName("존재하지 않는 시간 ID 삭제 시 NotFoundResourceException 발생")
+    void deleteFailedByNotFoundTest() {
+        ReservationTimeService reservationTimeService = new ReservationTimeService(
+                createReservationTimeRepository(false, () -> {}), // 시간 존재 안 함
+                createReservationRepository(false)
+        );
+
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
+                .isExactlyInstanceOf(NotFoundResourceException.class)
+                .hasMessage("존재하지 않은 시간 id입니다.");
+    }
+
+    @Test
+    @DisplayName("이미 예약에 사용 중인 시간인 경우 ConflictException 발생")
     void deleteFailedWhenInUseTest() {
         ReservationTimeService reservationTimeService = new ReservationTimeService(
-                createReservationTimeRepository(() -> {}),
-                createReservationRepository(true)
+                createReservationTimeRepository(true, () -> {}), // 시간 존재함
+                createReservationRepository(true)               // 예약에 사용 중
         );
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
@@ -71,11 +86,11 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("데이터베이스 제약 조건 위반 시 ConflictException 발생")
+    @DisplayName("삭제 도중 데이터베이스 무결성 제약 조건 위반 시 ConflictException 발생")
     void deleteFailedByIntegrityTest() {
         ReservationTimeService reservationTimeService = new ReservationTimeService(
-                createReservationTimeRepository(() -> {
-                    throw new DataIntegrityViolationException("데이터 무결성 오류 발생");
+                createReservationTimeRepository(true, () -> {
+                    throw new DataIntegrityViolationException("DB Error");
                 }),
                 createReservationRepository(false)
         );

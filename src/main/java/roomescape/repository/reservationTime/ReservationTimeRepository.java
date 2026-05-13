@@ -13,4 +13,5 @@ public interface ReservationTimeRepository {
     List<ReservationTime> getAllReservationTime();
     void deleteReservationTime(long id);
     List<ReservationTimeWithAvailable> getAvailableReservationTimeByDateAndTheme(ReservationTimeCondition reservationTimeCondition);
+    boolean isExistsById(long id);
 }

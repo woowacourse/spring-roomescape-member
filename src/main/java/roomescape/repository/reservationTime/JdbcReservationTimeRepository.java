@@ -24,6 +24,13 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private static final String SELECT_SPECIFIC_ID_SQL = "SELECT id, start_at FROM reservation_time WHERE id = ?";
     private static final String SELECT_ALL_SQL = "SELECT id, start_at FROM reservation_time";
     private static final String DELETE_SPECIFIC_ID_SQL = "DELETE FROM reservation_time WHERE id = ?";
+    private static final String EXIST_BY_ID_SQL = """
+            SELECT EXISTS (\s
+                SELECT 1 \s
+                    FROM reservation \s
+                    WHERE id = ?\s
+            )
+    """;
     private static final String SELECT_AVAILABLE_SQL = """
             SELECT t.id AS id, t.start_at AS start_at,
             CASE
@@ -93,5 +100,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 reservationTimeCondition.date(),
                 reservationTimeCondition.themeId()
         );
+    }
+
+    @Override
+    public boolean isExistsById(long id) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(EXIST_BY_ID_SQL, Boolean.class, id));
     }
 }
