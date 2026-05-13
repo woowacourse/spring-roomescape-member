@@ -11,9 +11,9 @@ public class Reservation {
 
     private final Long id;
     private final String name;
-    private final LocalDate date;
     private final Theme theme;
-    private final ReservationTime time;
+    private LocalDate date;
+    private ReservationTime time;
     private ReservationStatus status;
 
     public Reservation(Long id, String name, LocalDate date, Theme theme, ReservationTime time,
@@ -69,5 +69,12 @@ public class Reservation {
             throw new IllegalArgumentException("이미 지난 예약은 취소할 수 없습니다.");
         }
         this.status = ReservationStatus.CANCELED;
+    }
+
+    public void update(LocalDate date, ReservationTime time) {
+        validateDateTime(date, time);
+
+        this.date = date;
+        this.time = time;
     }
 }

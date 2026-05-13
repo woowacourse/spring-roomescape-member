@@ -16,6 +16,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.web.dto.reservation.ReservationCancelRequest;
+import roomescape.web.dto.reservation.ReservationModifyRequest;
 import roomescape.web.dto.reservation.ReservationRequest;
 import roomescape.web.dto.reservation.ReservationResponse;
 
@@ -42,8 +43,7 @@ public class ReservationService {
 
     @Transactional
     public void cancel(Long id, ReservationCancelRequest request) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));
+        Reservation reservation = findReservationOrThrow(id);
 
         if (!request.name().equals(reservation.getName())) {
             throw new ForbiddenException("예약자 명이 일치하지 않습니다.");
@@ -67,15 +67,32 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
+    public void modify(Long id, ReservationModifyRequest request) {
+        Reservation reservation = findReservationOrThrow(id);
+        ReservationTime time = findTimeOrThrow(request.timeId());
+        LocalDate date = request.date();
+
+        validateDuplicateReservation(date, time, reservation.getTheme());
+        reservation.update(date, time);
+
+        reservationRepository.update(reservation);
+    }
+
+    private Theme findThemeOrThrow(Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마 정보입니다."));
+    }
+
     private void validateDuplicateReservation(LocalDate date, ReservationTime time, Theme theme) {
         if (reservationRepository.existsReservedReservation(date, time.getId(), theme.getId())) {
             throw new DuplicateEntityException("이미 예약 된 날짜입니다. (%s-%s)", date, time.getStartAt());
         }
     }
 
-    private Theme findThemeOrThrow(Long themeId) {
-        return themeRepository.findById(themeId)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마 정보입니다."));
+    private Reservation findReservationOrThrow(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약입니다."));
     }
 
     private ReservationTime findTimeOrThrow(Long timeId) {

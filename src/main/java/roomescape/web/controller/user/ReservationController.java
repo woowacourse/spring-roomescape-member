@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationService;
 import roomescape.web.dto.reservation.ReservationCancelRequest;
+import roomescape.web.dto.reservation.ReservationModifyRequest;
 import roomescape.web.dto.reservation.ReservationRequest;
 import roomescape.web.dto.reservation.ReservationResponse;
 import roomescape.web.dto.reservation.ReservationResponses;
@@ -52,6 +53,16 @@ public class ReservationController {
     ) {
         reservationService.cancel(id, request);
 
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/modify")
+    public ResponseEntity<Void> modify(
+            @PathVariable
+            @Positive(message = "예약 식별자는 양수여야 합니다.") Long id,
+            @Valid @RequestBody ReservationModifyRequest request
+    ) {
+        reservationService.modify(id, request);
         return ResponseEntity.noContent().build();
     }
 }

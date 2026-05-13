@@ -54,8 +54,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
 
         int affectedRow = jdbcTemplate.update(sql, reservation.getName(), reservation.getDate(),
-                reservation.getTheme().getId(),
-                reservation.getTime().getId(), reservation.getStatus().toString(), reservation.getId());
+                reservation.getTheme().getId(), reservation.getTime().getId(), reservation.getStatus().toString(),
+                reservation.getId());
 
         if (affectedRow == 0) {
             throw new EntityNotFoundException("존재하지 않는 예약입니다.");
