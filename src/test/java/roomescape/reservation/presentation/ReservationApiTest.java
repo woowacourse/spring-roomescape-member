@@ -114,6 +114,39 @@ class ReservationApiTest {
     }
 
     @Test
+    @DisplayName("이름 쿼리 파라미터로 조회하면 해당 이름의 예약만 반환한다")
+    void getReservationsByName() {
+        Long themeId = createTheme();
+        Long timeId = createTime();
+        Long otherTimeId = createTime("11:00");
+
+        given().contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "포비",
+                        "date", "2026-12-31",
+                        "timeId", timeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations");
+        given().contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "크론",
+                        "date", "2026-12-31",
+                        "timeId", otherTimeId,
+                        "themeId", themeId
+                ))
+                .when().post("/reservations");
+
+        given().log().all()
+                .queryParam("name", "포비")
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", equalTo(1))
+                .body("[0].name", equalTo("포비"));
+    }
+
+    @Test
     @DisplayName("예약 목록을 조회하면 200과 예약 목록을 반환한다")
     void getReservations() {
         Long themeId = createTheme();
