@@ -56,4 +56,15 @@ class AdminThemeControllerTest {
                 .then().log().all()
                 .statusCode(204);
     }
+
+    @DisplayName("관리자 테마 삭제 API - 참조되고 있는 값은 삭제 불가능")
+    @Test
+    void 관리자_테마_삭제_API_예외() {
+
+        RestAssured.given().log().all()
+                .pathParam("id", 1)
+                .when().delete("/admin/themes/{id}")
+                .then().log().all()
+                .statusCode(400);
+    }
 }

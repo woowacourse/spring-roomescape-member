@@ -27,7 +27,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                .contentType(ContentType.JSON)
                .body(params)
-               .when().post("/times")
+               .when().post("/admin/times")
                .then().log().all()
                .statusCode(201)
                .body("startAt", equalTo(createStartAt));
@@ -38,7 +38,7 @@ class ReservationTimeControllerTest {
     void 예약_시간_조회_API() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("/times")
+                .when().get("/admin/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", equalTo(13))
@@ -59,7 +59,7 @@ class ReservationTimeControllerTest {
         final long id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201)
                 .body("startAt", equalTo(createStartAt))
@@ -69,13 +69,13 @@ class ReservationTimeControllerTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().delete("/times/" + id)
+                .when().delete("/admin/times/" + id)
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("/times")
+                .when().get("/admin/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", equalTo(13));

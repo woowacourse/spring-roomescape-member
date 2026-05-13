@@ -30,7 +30,7 @@ public class MissionStepTest {
         final String location = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
+                .when().post("/admin/times")
                 .then().log().all()
                 .statusCode(201)
                 .extract()
@@ -38,14 +38,14 @@ public class MissionStepTest {
         final long id = Long.parseLong(location.split("/")[2]);
 
         RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get("/admin/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(14));
 
         RestAssured.given().log().all()
                 .pathParam("id", id)
-                .when().delete("/times/{id}")
+                .when().delete("/admin/times/{id}")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -87,7 +87,6 @@ public class MissionStepTest {
                 break;
             }
         }
-
         assertThat(isJdbcTemplateInjected).isFalse();
     }
 

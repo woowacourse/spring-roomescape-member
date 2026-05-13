@@ -30,7 +30,7 @@ public class ThemeController {
         return themeService.getAllThemes();
     }
 
-    @ResponseStatus
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/popular")
     public List<ThemeResponse> getPopularThemes(
             @RequestParam(defaultValue = "10") int size) {
