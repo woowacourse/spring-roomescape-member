@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
-import roomescape.global.exception.RoomEscapeException;
 import roomescape.reservation.application.dto.ReservationCreateCommand;
 import roomescape.reservation.application.dto.ReservationResult;
 import roomescape.reservation.application.dto.ReservationUpdateCommand;
@@ -32,10 +31,10 @@ public class ReservationCommandService {
 
     public ReservationResult save(ReservationCreateCommand request) {
         ThemeResult themeResult = ThemeResult.from(themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new RoomEscapeException("존재하지 않는 테마입니다.")));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다.")));
 
         ReservationTimeResult timeResult = ReservationTimeResult.from(timeRepository.findById(request.timeId())
-                .orElseThrow(() -> new RoomEscapeException("존재하지 않는 시간입니다.")));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다.")));
 
         Reservation reservation = request.toEntity(themeResult.id(), timeResult.id());
         reservation.validateNotPast(timeResult.startAt(), LocalDateTime.now(clock));
@@ -50,9 +49,9 @@ public class ReservationCommandService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
 
         ReservationTimeResult timeResult = ReservationTimeResult.from(timeRepository.findById(request.timeId())
-                .orElseThrow(() -> new RoomEscapeException("존재하지 않는 시간입니다.")));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다.")));
 
-        checkAlreadyExistsDateAndTime(request, reservationId, reservation.getThemeId());
+        checkAlreadyExistsDateAndTime(request, reservation.getThemeId(), reservationId);
 
         Reservation updatedReservation = reservation.updateDateAndTime(request.date(), request.timeId());
         updatedReservation.validateNotPast(timeResult.startAt(), LocalDateTime.now(clock));
@@ -60,7 +59,7 @@ public class ReservationCommandService {
         updateReservation(updatedReservation);
 
         ThemeResult themeResult = ThemeResult.from(themeRepository.findById(reservation.getThemeId())
-                .orElseThrow(() -> new RoomEscapeException("존재하지 않는 테마입니다.")));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다.")));
 
         return ReservationResult.from(updatedReservation, themeResult, timeResult);
     }
@@ -70,7 +69,7 @@ public class ReservationCommandService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
 
         ReservationTime time = timeRepository.findById(reservation.getTimeId())
-                .orElseThrow(() -> new RoomEscapeException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간입니다."));
 
         reservation.validateDeletable(time.getStartAt(), LocalDateTime.now(clock));
 
@@ -85,7 +84,7 @@ public class ReservationCommandService {
         }
     }
 
-    private void checkAlreadyExistsDateAndTime(ReservationUpdateCommand request, Long reservationId, Long themeId) {
+    private void checkAlreadyExistsDateAndTime(ReservationUpdateCommand request, Long themeId, Long reservationId) {
         Boolean alreadyExist = reservationRepository.existsByDateAndThemeAndTimeExcluding(
                 request.date(),
                 themeId,
