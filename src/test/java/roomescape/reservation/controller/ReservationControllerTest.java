@@ -1,6 +1,10 @@
 package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.date.fixture.ReservationDateApiFixture.createReservationDate;
+import static roomescape.reservation.fixture.ReservationApiFixture.createReservation;
+import static roomescape.theme.fixture.ThemeApiFixture.createTheme;
+import static roomescape.time.fixture.ReservationTimeApiFixture.createReservationTime;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -30,8 +34,6 @@ class ReservationControllerTest {
     private final String otherStartAt = "11:00";
 
     private final String themeName = "테마1";
-    private final String themeDescription = "테마1 설명";
-    private final String thumbnailUrl = "테마1 썸네일";
 
     @LocalServerPort
     private int port;
@@ -44,11 +46,10 @@ class ReservationControllerTest {
     @Test
     @DisplayName("사용자는 예약을 생성한다.")
     void create_reservation() {
-        Integer dateId = createDate(date);
-        Integer timeId = createTime(startAt);
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
         Integer themeId = createTheme(themeName);
-
-        createReservationByMember(reservationName, dateId, timeId, themeId);
+        createReservation(reservationName, dateId, timeId, themeId);
 
         RestAssured.given().log().all()
                 .when().get("/member/reservations/" + reservationName)
@@ -60,14 +61,14 @@ class ReservationControllerTest {
     @Test
     @DisplayName("사용자는 자신의 이름으로 예약 목록을 조회한다.")
     void get_my_reservations() {
-        Integer dateId = createDate(date);
+        Integer dateId = createReservationDate(date);
         Integer themeId = createTheme(themeName);
 
-        Integer timeId = createTime(startAt);
-        Integer otherTimeId = createTime(otherStartAt);
+        Integer timeId = createReservationTime(startAt);
+        Integer otherTimeId = createReservationTime(otherStartAt);
 
-        createReservationByMember(reservationName, dateId, timeId, themeId);
-        createReservationByMember(otherReservationName, dateId, otherTimeId, themeId);
+        createReservation(reservationName, dateId, timeId, themeId);
+        createReservation(otherReservationName, dateId, otherTimeId, themeId);
 
         RestAssured.given().log().all()
                 .when().get("/member/reservations/" + reservationName)
@@ -85,11 +86,11 @@ class ReservationControllerTest {
     @Test
     @DisplayName("사용자는 자신의 예약을 취소한다.")
     void cancel_reservation() {
-        Integer dateId = createDate(date);
-        Integer timeId = createTime(startAt);
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
         Integer themeId = createTheme(themeName);
 
-        Integer reservationId = createReservationByMember(reservationName, dateId, timeId, themeId);
+        Integer reservationId = createReservation(reservationName, dateId, timeId, themeId);
 
         RestAssured.given().log().all()
                 .when().patch("/member/reservations/" + reservationId + "/cancel")
@@ -116,8 +117,8 @@ class ReservationControllerTest {
     @Test
     @DisplayName("name이 없으면 예약 생성에 실패한다.")
     void create_reservation_without_name() {
-        Integer dateId = createDate(date);
-        Integer timeId = createTime(startAt);
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
         Integer themeId = createTheme(themeName);
 
         Map<String, Object> params = new HashMap<>();
@@ -137,7 +138,7 @@ class ReservationControllerTest {
     @Test
     @DisplayName("dateId가 없으면 예약 생성에 실패한다.")
     void create_reservation_without_date_id() {
-        Integer timeId = createTime(startAt);
+        Integer timeId = createReservationTime(startAt);
         Integer themeId = createTheme(themeName);
 
         Map<String, Object> params = new HashMap<>();
@@ -157,7 +158,7 @@ class ReservationControllerTest {
     @Test
     @DisplayName("timeId가 없으면 예약 생성에 실패한다.")
     void create_reservation_without_time_id() {
-        Integer dateId = createDate(date);
+        Integer dateId = createReservationDate(date);
         Integer themeId = createTheme(themeName);
 
         Map<String, Object> params = new HashMap<>();
@@ -177,8 +178,8 @@ class ReservationControllerTest {
     @Test
     @DisplayName("themeId가 없으면 예약 생성에 실패한다.")
     void create_reservation_without_theme_id() {
-        Integer dateId = createDate(date);
-        Integer timeId = createTime(startAt);
+        Integer dateId = createReservationDate(date);
+        Integer timeId = createReservationTime(startAt);
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", reservationName);
@@ -192,67 +193,6 @@ class ReservationControllerTest {
                 .when().post("/member/reservations")
                 .then().log().all()
                 .statusCode(400);
-    }
-
-    private Integer createReservationByMember(String name, Integer dateId, Integer timeId, Integer themeId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("dateId", dateId);
-        params.put("timeId", timeId);
-        params.put("themeId", themeId);
-
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/member/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .path("id");
-    }
-
-    private Integer createDate(String date) {
-        Map<String, String> params = new HashMap<>();
-        params.put("date", date);
-
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/dates")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .path("id");
-    }
-
-    private Integer createTime(String startAt) {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", startAt);
-
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/times")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .path("id");
-    }
-
-    private Integer createTheme(String name) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("description", themeDescription);
-        params.put("thumbnailUrl", thumbnailUrl);
-
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/admin/themes")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .path("id");
     }
 
 }
