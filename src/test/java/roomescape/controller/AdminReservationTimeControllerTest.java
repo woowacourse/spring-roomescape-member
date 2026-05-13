@@ -18,7 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.reservationTime.CreateReservationTimeRequest;
+import roomescape.dto.reservationtime.CreateReservationTimeRequest;
 import roomescape.service.ReservationTimeService;
 
 @WebMvcTest(AdminReservationTimeController.class)

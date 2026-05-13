@@ -6,8 +6,8 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.reservationTime.CreateReservationTimeRequest;
-import roomescape.dto.reservationTime.ReservationTimeResponses;
+import roomescape.dto.reservationtime.CreateReservationTimeRequest;
+import roomescape.dto.reservationtime.ReservationTimeResponses;
 import roomescape.repository.fake.FakeReservationTimeRepository;
 
 class ReservationTimeServiceTest {
