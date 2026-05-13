@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.AuthorizationException;
 import roomescape.exception.ResourceNotFoundException;
+import roomescape.exception.SameScheduleException;
 import roomescape.reservation.dto.ReservationCreateInfo;
 import roomescape.reservation.dto.ReservationIdResponse;
 import roomescape.reservation.dto.ReservationsResponse;
@@ -150,7 +152,81 @@ class ReservationServiceTest {
         databaseHelper.insertUser(2L, "user2", "USER");
 
         assertThatThrownBy(() -> reservationService.cancel(reservationId, 2L))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(AuthorizationException.class)
                 .hasMessage("예약을 취소할 권한이 없습니다.");
+    }
+
+    @Test
+    void 사용자가_본인의_예약_시간을_정상적으로_변경한다() {
+        Reservation reservation = reservationRepository.findAll().get(0);
+        Long reservationId = reservation.getId();
+        Long currentUserId = reservation.getUser().getId();
+        Long newScheduleId = 2L;
+
+        assertDoesNotThrow(() -> reservationService.changeSchedule(reservationId, newScheduleId, currentUserId));
+
+        Reservation updatedReservation = reservationRepository.findById(reservationId).get();
+        assertThat(updatedReservation.getSchedule().getId()).isEqualTo(newScheduleId);
+    }
+
+    @Test
+    void 기존과_동일한_스케줄로_변경을_요청하면_아무_작업_없이_정상_종료된다() {
+        Reservation reservation = reservationRepository.findAll().get(0);
+        Long reservationId = reservation.getId();
+        Long currentUserId = reservation.getUser().getId();
+        Long currentScheduleId = reservation.getSchedule().getId();
+
+        assertThatThrownBy(() -> reservationService.changeSchedule(reservationId, currentScheduleId, currentUserId))
+                .isInstanceOf(SameScheduleException.class)
+                .hasMessage("기존과 동일한 스케줄로 변경할 수 없습니다.");
+    }
+
+    @Test
+    void 존재하지_않는_예약을_변경하려고_하면_예외가_발생한다() {
+        Long nonExistentReservationId = 999L;
+        Long currentUserId = USER_1.getId();
+        Long newScheduleId = 2L;
+
+        assertThatThrownBy(() -> reservationService.changeSchedule(nonExistentReservationId, newScheduleId, currentUserId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 예약입니다.");
+    }
+
+    @Test
+    void 다른_사람의_예약을_변경하려고_하면_예외가_발생한다() {
+        Reservation reservationOfUser1 = reservationRepository.findAll().get(0);
+        Long reservationId = reservationOfUser1.getId();
+        databaseHelper.insertUser(2L, "user2", "USER");
+        Long newScheduleId = 2L;
+
+        assertThatThrownBy(() -> reservationService.changeSchedule(reservationId, newScheduleId, 2L))
+                .isInstanceOf(AuthorizationException.class)
+                .hasMessage("예약을 변경할 권한이 없습니다.");
+    }
+
+    @Test
+    void 존재하지_않는_스케줄로_변경하려고_하면_예외가_발생한다() {
+        Reservation reservation = reservationRepository.findAll().get(0);
+        Long reservationId = reservation.getId();
+        Long currentUserId = reservation.getUser().getId();
+        Long nonExistentScheduleId = 999L;
+
+        assertThatThrownBy(() -> reservationService.changeSchedule(reservationId, nonExistentScheduleId, currentUserId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 스케줄입니다.");
+    }
+
+    @Test
+    void 이미_예약이_완료된_스케줄로_변경하려고_하면_예외가_발생한다() {
+        Reservation reservation = reservationRepository.findAll().get(0);
+        Long reservationId = reservation.getId();
+        Long currentUserId = reservation.getUser().getId();
+
+        databaseHelper.insertUser(2L, "user2", "USER");
+        databaseHelper.insertReservation(2L, 2L, 2L);
+
+        assertThatThrownBy(() -> reservationService.changeSchedule(reservationId, 2L, currentUserId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 시간은 이미 예약이 완료되었습니다.");
     }
 }
