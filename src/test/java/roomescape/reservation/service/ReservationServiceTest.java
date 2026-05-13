@@ -1,8 +1,8 @@
 package roomescape.reservation.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.BusinessException;
@@ -14,8 +14,7 @@ import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +34,15 @@ class ReservationServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
-    @InjectMocks
     private ReservationService reservationService;
+
+    @BeforeEach
+    void setUp() {
+        Clock fixedClock = Clock.fixed(Instant.parse("2026-05-01T00:00:00Z"), ZoneOffset.UTC);
+        reservationService = new ReservationService(
+                reservationRepository, reservationTimeRepository, themeRepository, fixedClock
+        );
+    }
 
     @Test
     void 예약_목록을_조회하면_Repository_findAll_결과를_반환한다() {
@@ -111,6 +117,20 @@ class ReservationServiceTest {
         reservationService.deleteReservation(999L);
 
         verify(reservationRepository).deleteById(999L);
+    }
+
+    @Test
+    void 예약_날짜가_과거인_경우_예외가_발생한다() {
+        ReservationTime newTime = new ReservationTime(1L, LocalTime.of(12, 0));
+        Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
+
+        when(reservationTimeRepository.findById(any())).thenReturn(Optional.of(newTime));
+        when(themeRepository.findById(any())).thenReturn(Optional.of(theme));
+
+        assertThatThrownBy(() -> reservationService.createReservation("레서", LocalDate.of(2026, 4, 1), 1L, 1L))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.PAST_RESERVATION);
     }
 
     @Test
