@@ -2,8 +2,10 @@ package roomescape.presentation;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -32,6 +34,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.global.auth.AdminInterceptor;
+import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.EntityNotFoundException;
 
 @WebMvcTest(ReservationController.class)
 @Import({AdminInterceptor.class, ReservationControllerTest.TestWebConfig.class})
@@ -97,6 +101,83 @@ class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("POST /reservations - 예약자 이름이 비어 있으면 에러 응답을 반환한다.")
+    void createReservation_fail_with_empty_name() throws Exception {
+        // given
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", " ");
+        body.put("date", "2026-05-05");
+        body.put("timeId", 1);
+        body.put("themeId", 1);
+
+        // when & then
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("요청 값의 형식이 올바르지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("POST /reservations - 예약 날짜 형식이 잘못되면 에러 응답을 반환한다.")
+    void createReservation_fail_with_invalid_date_format() throws Exception {
+        // given
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "브라운");
+        body.put("date", "invalid-date");
+        body.put("timeId", 1);
+        body.put("themeId", 1);
+
+        // when & then
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("요청 값의 형식이 올바르지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("POST /reservations - 테마 ID가 비어 있으면 에러 응답을 반환한다.")
+    void createReservation_fail_with_empty_theme_id() throws Exception {
+        // given
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "브라운");
+        body.put("date", "2026-05-05");
+        body.put("timeId", 1);
+        body.put("themeId", null);
+
+        // when & then
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("요청 값의 형식이 올바르지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("POST /reservations - 서비스 정책 위반 시 에러 응답을 반환한다.")
+    void createReservation_fail_with_business_exception() throws Exception {
+        // given
+        LocalDate date = LocalDate.of(2026, 5, 5);
+        willThrow(new BusinessException("이미 예약된 시간입니다."))
+                .given(reservationService)
+                .saveReservation("브라운", date, 1L, 1L);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", "브라운");
+        body.put("date", "2026-05-05");
+        body.put("timeId", 1);
+        body.put("themeId", 1);
+
+        // when & then
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("이미 예약된 시간입니다."));
+    }
+
+    @Test
     @DisplayName("GET /reservations - 필터 없이 호출하면 전체 목록을 반환한다.")
     void readReservations_no_filter() throws Exception {
         // given
@@ -146,6 +227,66 @@ class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("GET /reservations/me - 이름을 기반으로 본인 예약 목록을 반환한다.")
+    void readMyReservations_success() throws Exception {
+        // given
+        Reservation reservation = sampleReservation(
+                1L,
+                "브라운",
+                LocalDate.of(2026, 5, 5),
+                1L,
+                "10:00",
+                1L,
+                "테마A"
+        );
+        given(reservationService.getReservationsByName("브라운")).willReturn(List.of(reservation));
+
+        // when & then
+        mockMvc.perform(get("/reservations/me")
+                        .param("name", "브라운"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("브라운"))
+                .andExpect(jsonPath("$[0].time.startAt").value("10:00"))
+                .andExpect(jsonPath("$[0].theme.name").value("테마A"));
+
+        then(reservationService).should().getReservationsByName("브라운");
+    }
+
+    @Test
+    @DisplayName("PATCH /reservations/me/{id} - 본인 예약 변경 요청을 서비스에 전달하고 204 응답을 반환한다.")
+    void updateMyReservation_success() throws Exception {
+        // when & then
+        mockMvc.perform(patch("/reservations/me/1")
+                        .param("name", "브라운")
+                        .param("date", "2026-05-05")
+                        .param("timeId", "2"))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""));
+
+        then(reservationService).should()
+                .updateReservationSchedule(LocalDate.of(2026, 5, 5), 2L, 1L, "브라운");
+    }
+
+    @Test
+    @DisplayName("PATCH /reservations/me/{id} - 이미 예약된 시간으로 변경하면 에러 응답을 반환한다.")
+    void updateMyReservation_fail_with_duplicate_reservation() throws Exception {
+        // given
+        willThrow(new BusinessException("이미 예약된 시간입니다."))
+                .given(reservationService)
+                .updateReservationSchedule(LocalDate.of(2026, 5, 5), 2L, 1L, "브라운");
+
+        // when & then
+        mockMvc.perform(patch("/reservations/me/1")
+                        .param("name", "브라운")
+                        .param("date", "2026-05-05")
+                        .param("timeId", "2"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("이미 예약된 시간입니다."));
+    }
+
+    @Test
     @DisplayName("DELETE /reservations/{id} - 정상 삭제 시 204와 빈 본문을 반환한다.")
     void deleteReservation_success() throws Exception {
         // when & then
@@ -155,5 +296,62 @@ class ReservationControllerTest {
                 .andExpect(content().string(""));
 
         then(reservationService).should().deleteReservation(1L);
+    }
+
+    @Test
+    @DisplayName("DELETE /reservations/me/{id} - 본인 예약 취소 요청을 서비스에 전달하고 204 응답을 반환한다.")
+    void deleteMyReservation_success() throws Exception {
+        // when & then
+        mockMvc.perform(delete("/reservations/me/1")
+                        .param("name", "브라운"))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""));
+
+        then(reservationService).should().deleteReservationByName(1L, "브라운");
+    }
+
+    @Test
+    @DisplayName("DELETE /reservations/me/{id} - 존재하지 않는 예약이면 에러 응답을 반환한다.")
+    void deleteMyReservation_fail_with_not_found_reservation() throws Exception {
+        // given
+        willThrow(new EntityNotFoundException("예약 ID를 찾을 수 없습니다."))
+                .given(reservationService)
+                .deleteReservationByName(1L, "브라운");
+
+        // when & then
+        mockMvc.perform(delete("/reservations/me/1")
+                        .param("name", "브라운"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("예약 ID를 찾을 수 없습니다."));
+    }
+
+    @Test
+    @DisplayName("DELETE /reservations/me/{id} - 본인 예약이 아니면 에러 응답을 반환한다.")
+    void deleteMyReservation_fail_with_invalid_owner() throws Exception {
+        // given
+        willThrow(new BusinessException("자신의 예약이 아닙니다."))
+                .given(reservationService)
+                .deleteReservationByName(1L, "브라운");
+
+        // when & then
+        mockMvc.perform(delete("/reservations/me/1")
+                        .param("name", "브라운"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("자신의 예약이 아닙니다."));
+    }
+
+    @Test
+    @DisplayName("DELETE /reservations/me/{id} - 지난 예약이면 취소할 수 없다는 에러 응답을 반환한다.")
+    void deleteMyReservation_fail_with_past_reservation() throws Exception {
+        // given
+        willThrow(new BusinessException("이미 지난 예약은 취소할 수 없습니다."))
+                .given(reservationService)
+                .deleteReservationByName(1L, "브라운");
+
+        // when & then
+        mockMvc.perform(delete("/reservations/me/1")
+                        .param("name", "브라운"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("이미 지난 예약은 취소할 수 없습니다."));
     }
 }
