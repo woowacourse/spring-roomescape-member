@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,6 +76,7 @@ public class ReservationService {
         LocalDate date = request.date();
         Theme theme = reservation.getTheme();
 
+        validateUserName(request.name(), reservation.getName());
         validateDuplicateReservation(date, time, theme);
         validateInactiveTheme(theme);
         validateInactiveTime(time);
@@ -92,6 +94,12 @@ public class ReservationService {
     private void validateDuplicateReservation(LocalDate date, ReservationTime time, Theme theme) {
         if (reservationRepository.existsReservedReservation(date, time.getId(), theme.getId())) {
             throw new DuplicateEntityException("이미 예약 된 날짜입니다. (%s-%s)", date, time.getStartAt());
+        }
+    }
+
+    private void validateUserName(String name, String reservedName) {
+        if (!Objects.equals(name, reservedName)) {
+            throw new ForbiddenException("예약자 명이 일치하지 않습니다.");
         }
     }
 

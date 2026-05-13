@@ -229,6 +229,25 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 예약자_이름이_일치하지_않으면_예약_수정_시_예외가_발생한다() {
+        // given
+        Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
+        ReservationTime originalTime = reservationTimeRepository.save(
+                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
+        ReservationTime modifiedTime = reservationTimeRepository.save(
+                ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0)));
+        Reservation reservation = reservationRepository.save(
+                ReservationFixture.createDefaultReservationWithName("바니", theme, originalTime));
+        ReservationModifyRequest request = new ReservationModifyRequest("웨지", LocalDate.now().plusDays(2),
+                modifiedTime.getId());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.modify(reservation.getId(), request))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage("예약자 명이 일치하지 않습니다.");
+    }
+
+    @Test
     void 비활성화된_테마의_예약을_수정하면_예외가_발생한다() {
         // given
         Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());

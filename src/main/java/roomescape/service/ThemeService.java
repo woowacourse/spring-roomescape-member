@@ -75,7 +75,7 @@ public class ThemeService {
     }
 
     private boolean isReservable(ReservationTime time, LocalDate date, Set<Long> reservedTimeIds) {
-        return time.isAvailableAt(date) && !reservedTimeIds.contains(time.getId());
+        return time.isAvailableAt(date) && !reservedTimeIds.contains(time.getId()) && time.isActive();
     }
 
     private void validateDuplicateName(String name) {

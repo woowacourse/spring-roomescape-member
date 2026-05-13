@@ -162,6 +162,27 @@ class ThemeServiceTest {
     }
 
     @Test
+    void 테마별_예약_가능한_시간_조회_시_비활성화된_시간은_예약_불가능하다() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        Theme theme = themeRepository.save(ThemeFixture.createDefaultTheme());
+        ReservationTime activeTime = reservationTimeRepository.save(
+                ReservationTimeFixture.createReservationTime(LocalTime.of(10, 0)));
+        ReservationTime inactiveTime = ReservationTimeFixture.createReservationTime(LocalTime.of(11, 0));
+        inactiveTime.deactivate();
+        ReservationTime savedInactiveTime = reservationTimeRepository.save(inactiveTime);
+
+        // when
+        List<ThemeTimesResponse> response = themeService.getThemeReservationStatus(theme.getId(), date);
+
+        // then
+        assertThat(response).filteredOn(time -> time.id().equals(activeTime.getId())).singleElement()
+                .extracting(ThemeTimesResponse::isReservable).isEqualTo(true);
+        assertThat(response).filteredOn(time -> time.id().equals(savedInactiveTime.getId())).singleElement()
+                .extracting(ThemeTimesResponse::isReservable).isEqualTo(false);
+    }
+
+    @Test
     void 존재하지_않는_테마_정보로_예약_가능한_시간_조회_시_예외가_발생한다() {
         // given
         Long id = 999L;

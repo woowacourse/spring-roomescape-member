@@ -12,14 +12,14 @@ public final class ReservationEntityMapper {
         ReservationTime time = new ReservationTime(
                 rs.getLong("time_id"),
                 rs.getTime("time_start").toLocalTime(),
-                rs.getBoolean("is_active")
+                rs.getBoolean("time_active")
         );
         Theme theme = new Theme(
                 rs.getLong("theme_id"),
                 rs.getString("theme_name"),
                 rs.getString("description"),
                 rs.getString("thumbnail_image_url"),
-                rs.getBoolean("is_active")
+                rs.getBoolean("theme_active")
         );
         return new Reservation(
                 rs.getLong("res_id"),
