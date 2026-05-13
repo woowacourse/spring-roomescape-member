@@ -67,7 +67,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception e) {
-        return ResponseEntity.internalServerError().body("[ERROR] 서버에 문제가 발생했습니다.");
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        return ResponseEntity.internalServerError()
+                .body(new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR.name(), "서버에 문제가 발생했습니다."));
     }
 }

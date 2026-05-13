@@ -97,7 +97,7 @@
 - [X] NOT_FOUND 에러 응답 적용
 - [X] DUPLICATE_RESERVATION 에러 응답 적용
 - [X] RESOURCE_IN_USE 에러 응답 적용
-- [ ] INTERNAL_SERVER_ERROR 에러 응답 적용
+- [X] INTERNAL_SERVER_ERROR 에러 응답 적용
 - [ ] 에러 응답 테스트 추가
 
 ---
