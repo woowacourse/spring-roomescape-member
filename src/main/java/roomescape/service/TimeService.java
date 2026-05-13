@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeRepository;
@@ -48,8 +50,11 @@ public class TimeService {
     }
 
     public TimeResponse register(TimeRequest timeRequest) {
+        if (timeRequest.startAt().getMinute() != 0) {
+            throw new RoomescapeException(ErrorCode.TIME_NOT_ON_THE_HOUR);
+        }
         if (timeRepository.existsByStartAt(timeRequest.startAt())) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 시간입니다.");
+            throw new RoomescapeException(ErrorCode.TIME_DUPLICATED);
         }
 
         ReservationTime reservationTime = timeRepository.save(timeRequest.startAt());
