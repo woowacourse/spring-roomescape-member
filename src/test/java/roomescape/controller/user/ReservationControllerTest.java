@@ -9,6 +9,7 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,10 +20,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.context.WebApplicationContext;
 import roomescape.controller.BaseControllerUnitTest;
 import roomescape.controller.fixture.ReservationRequestFixture;
+import roomescape.domain.Reservation;
+import roomescape.domain.fixture.ReservationFixture;
 import roomescape.service.ReservationService;
 import roomescape.web.controller.user.ReservationController;
 import roomescape.web.dto.reservation.ReservationRequest;
 import roomescape.web.dto.reservation.ReservationResponse;
+import roomescape.web.dto.reservation.ReservationResponses;
 import roomescape.web.dto.reservationTime.ReservationTimeResponse;
 import roomescape.web.dto.theme.ThemeResponse;
 
@@ -67,6 +71,25 @@ class ReservationControllerTest extends BaseControllerUnitTest {
                 .then().log().all()
                 .status(HttpStatus.CREATED)
                 .header("Location", containsString("/api/reservations/1"))
+                .extract().as(new TypeRef<>() {
+                });
+
+        assertThat(response).isEqualTo(expected);
+    }
+
+    @Test
+    void 예약_목록_조회_요청에_성공하면_200_OK와_예약_목록이_반환된다() {
+        // given
+        Reservation reservation = ReservationFixture.createDefaultReservationWithName("웨지");
+        ReservationResponses expected = new ReservationResponses(List.of(ReservationResponse.from(reservation)));
+        when(reservationService.getReservationsByUser(any(String.class))).thenReturn(expected.responses());
+
+        // when & then
+        ReservationResponses response = RestAssuredMockMvc.given().spec(defaultSpec()).log().all()
+                .queryParam("name", "웨지")
+                .when().get("/api/reservations")
+                .then().log().all()
+                .status(HttpStatus.OK)
                 .extract().as(new TypeRef<>() {
                 });
 
