@@ -1,5 +1,8 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +12,7 @@ import roomescape.controller.dto.ReservationDetailResponse;
 import roomescape.controller.dto.ReservationSummaryResponse;
 import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDateTime;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.EntityNotFoundException;
@@ -33,6 +37,9 @@ public class ReservationService {
     public ReservationSummaryResponse create(
             ReservationCreateCommand command
     ) {
+        ReservationTime time = findTimeById(command.timeId());
+        validateReservationAvailable(command.date(), time.startAt());
+
         EntityId reservationId = EntityId.random();
         Reservation reservation = new Reservation(
                 reservationId,
@@ -63,6 +70,11 @@ public class ReservationService {
         if (!deleted) {
             throw new EntityNotFoundException("삭제할 예약을 조회하지 못했습니다. reservationId = " + reservationId);
         }
+    }
+
+    private void validateReservationAvailable(LocalDate dateForReservation, LocalTime timeForReservation) {
+        new ReservationDateTime(dateForReservation, timeForReservation)
+                .validateAvailable(LocalDateTime.now());
     }
 
     private AssembledReservation assembleReservation(Reservation reservation) {

@@ -9,6 +9,7 @@ import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,8 @@ public class MissionStepTest {
 
     private static final int INITIALIZED_RESERVATION_COUNT = 3;
     private static final int INITIALIZED_TIME_COUNT = 2;
+
+    private static final LocalDate FUTURE_DATE = LocalDate.now().plusDays(1);
 
     private static final EntityId MORNING_TIME_ID = EntityId.fromUuid(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa01"));
     private static final EntityId AFTERNOON_TIME_ID = EntityId.fromUuid(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa02"));
@@ -60,7 +63,7 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", FUTURE_DATE.toString());
         params.put("timeId", TEST_TIME_ID.getValueAsString());
         params.put("themeId", TEST_THEME_ID.getValueAsString());
 
@@ -108,7 +111,7 @@ public class MissionStepTest {
 
         EntityId reservationId = EntityId.random();
         String name = "브라운";
-        String date = "2023-08-05";
+        String date = FUTURE_DATE.toString();
 
         jdbcTemplate.update(
                 "INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
@@ -152,7 +155,7 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", FUTURE_DATE.toString());
         params.put("timeId", TEST_TIME_ID.getValueAsString());
         params.put("themeId", TEST_THEME_ID.getValueAsString());
 
@@ -211,7 +214,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", FUTURE_DATE.toString());
         reservation.put("timeId", TEST_TIME_ID.getValueAsString());
         reservation.put("themeId", TEST_THEME_ID.getValueAsString());
 
@@ -247,7 +250,7 @@ public class MissionStepTest {
     void 예약_가능한_시간_조회() {
         Map<String, String> availableTimesParams = Map.of(
                 "themeId", WESTERN_THEME_ID.getValueAsString(),
-                "date", "2026-05-05"
+                "date", FUTURE_DATE.toString()
         );
         List<ReservationTimeResponse> expectedAvailableTimes = List.of(
                 new ReservationTimeResponse(MORNING_TIME_ID.getValueAsString(), LocalTime.parse("10:00:00")),
@@ -273,7 +276,7 @@ public class MissionStepTest {
                 .contentType(ContentType.JSON)
                 .body(Map.of(
                         "name", "브라운",
-                        "date", "2026-05-05",
+                        "date", FUTURE_DATE.toString(),
                         "timeId", reservedTimeId.getValueAsString(),
                         "themeId", WESTERN_THEME_ID.getValueAsString()
                 ))
@@ -285,7 +288,7 @@ public class MissionStepTest {
                 .contentType(ContentType.JSON)
                 .params(Map.of(
                         "themeId", WESTERN_THEME_ID.getValueAsString(),
-                        "date", "2026-05-05"
+                        "date", FUTURE_DATE.toString()
                 ))
                 .when().get("/times/available-times")
                 .then().log().all()

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.domain.EntityId;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDateTime;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -51,15 +53,17 @@ public class ReservationTimeService {
             EntityId themeId,
             LocalDate date
     ) {
-        List<ReservationTime> allTimes = timeRepository.findAll();
         List<Reservation> existReservations = reservationRepository.findByDateAndThemeId(date, themeId);
-
-        Set<EntityId> inUsedTimeIds = existReservations.stream()
+        Set<EntityId> usedTimeIds = existReservations.stream()
                 .map(Reservation::timeId)
                 .collect(Collectors.toUnmodifiableSet());
 
+        List<ReservationTime> allTimes = timeRepository.findAll();
+        LocalDateTime current = LocalDateTime.now();
+
         return allTimes.stream()
-                .filter(time -> !inUsedTimeIds.contains(time.id()))
+                .filter(time -> isReservationAvailableTime(time, date, current))
+                .filter(time -> isNotUsedTime(time, usedTimeIds))
                 .map(reservationTimeResponseMapper::map)
                 .toList();
     }
@@ -70,6 +74,23 @@ public class ReservationTimeService {
 
         boolean deleted = timeRepository.delete(timeId);
         validateDeleted(deleted, timeId);
+    }
+
+    private boolean isReservationAvailableTime(
+            ReservationTime time,
+            LocalDate dateForReservation,
+            LocalDateTime current
+    ) {
+        ReservationDateTime reservationDateTime = new ReservationDateTime(dateForReservation, time.startAt());
+
+        return reservationDateTime.isAvailable(current);
+    }
+
+    private boolean isNotUsedTime(
+            ReservationTime time,
+            Set<EntityId> usedTimeIds
+    ) {
+        return !usedTimeIds.contains(time.id());
     }
 
     private void validateTimeNotUsed(EntityId timeId) {
