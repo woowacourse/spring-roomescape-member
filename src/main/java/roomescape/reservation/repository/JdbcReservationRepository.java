@@ -61,10 +61,10 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "SELECT r.id, r.user_name, r.date, r.deleted_at t.id as time_id, t.start_at, c.id as theme_id, " +
+        String sql = "SELECT r.id, r.user_name, r.date, r.deleted_at, t.id as time_id, t.start_at, c.id as theme_id, " +
                 "c.name as theme_name, c.description as theme_description, c.thumbnail as theme_thumbnail " +
                 "FROM reservation r INNER JOIN reservation_time t ON r.time_id = t.id " +
-                "INNER JOIN theme c ON r.theme_id = c.id WHERE r.deleted_at = IS NULL";
+                "INNER JOIN theme c ON r.theme_id = c.id WHERE r.deleted_at IS NULL";
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 

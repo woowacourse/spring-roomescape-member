@@ -63,6 +63,9 @@ public class Reservation {
         if (this.deletedAt != null) {
             throw new RoomescapeException(ErrorCode.RESERVATION_ALREADY_CANCELED);
         }
+
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        validateReservationTime(reservationDateTime, now);
         this.deletedAt = now;
     }
 
