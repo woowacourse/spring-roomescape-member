@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationCreateRequest;
 import roomescape.controller.dto.ReservationDetailResponse;
@@ -38,18 +39,11 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationDetailResponse>> findAll() {
-        List<ReservationDetailResponse> responses = service.findAllIncludeDetail();
+    public ResponseEntity<List<ReservationDetailResponse>> findByName(
+            @RequestParam String name
+    ) {
+        List<ReservationDetailResponse> responses = service.findAllIncludeDetail(name);
 
         return ResponseEntity.ok(responses);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
-            @PathVariable UUID id
-    ) {
-        service.delete(EntityId.fromUuid(id));
-
-        return ResponseEntity.ok().build();
     }
 }

@@ -56,11 +56,16 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ReservationDetailResponse> findAllIncludeDetail() {
-        return reservationRepository.findAll()
-                .stream()
-                .map(this::assembleReservation)
-                .map(reservationResponseMapper::mapToDetailResponse)
-                .toList();
+        List<Reservation> reservations = reservationRepository.findAll();
+
+        return mapToDetailResponses(reservations);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationDetailResponse> findAllIncludeDetail(String name) {
+        List<Reservation> reservations = reservationRepository.findByName(name);
+
+        return mapToDetailResponses(reservations);
     }
 
     @Transactional
@@ -72,9 +77,11 @@ public class ReservationService {
         }
     }
 
-    private void validateReservationAvailable(LocalDate dateForReservation, LocalTime timeForReservation) {
-        new ReservationDateTime(dateForReservation, timeForReservation)
-                .validateAvailable(LocalDateTime.now());
+    private List<ReservationDetailResponse> mapToDetailResponses(List<Reservation> reservations) {
+        return reservations.stream()
+                .map(this::assembleReservation)
+                .map(this::mapToDetail)
+                .toList();
     }
 
     private AssembledReservation assembleReservation(Reservation reservation) {
@@ -82,6 +89,24 @@ public class ReservationService {
         Theme theme = findThemeById(reservation.themeId());
 
         return new AssembledReservation(reservation, time, theme);
+    }
+
+    private ReservationDetailResponse mapToDetail(AssembledReservation assembledReservation) {
+        Reservation reservation = assembledReservation.reservation();
+        ReservationTime time = assembledReservation.time();
+
+        boolean cancelable = new ReservationDateTime(reservation.date(), time.startAt())
+                .isAvailable(LocalDateTime.now());
+
+        return reservationResponseMapper.mapToDetailResponse(
+                assembledReservation,
+                cancelable
+        );
+    }
+
+    private void validateReservationAvailable(LocalDate dateForReservation, LocalTime timeForReservation) {
+        new ReservationDateTime(dateForReservation, timeForReservation)
+                .validateAvailable(LocalDateTime.now());
     }
 
     private ReservationTime findTimeById(EntityId timeId) {

@@ -7,6 +7,7 @@ public record ReservationDetailResponse(
         String name,
         LocalDate date,
         ReservationTimeResponse time,
-        ThemeResponse theme
+        ThemeResponse theme,
+        boolean cancelable
 ) {
 }

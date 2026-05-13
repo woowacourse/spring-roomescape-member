@@ -11,7 +11,7 @@
 <header th:replace="~{fragments/site :: siteHeader}"></header>
 <main>
     <h1>테마 관리</h1>
-    <p class="muted"><a th:href="@{/admin}">← 관리자 홈</a></p>
+    <p class="muted"><a th:href="@{/view/admin}">← 관리자 홈</a></p>
     <div class="panel">
         <h2>테마 추가</h2>
         <p class="muted">API: <code>POST /themes</code> — 본문 <code>{"name","description","imageUrl"}</code> (201 Created)</p>

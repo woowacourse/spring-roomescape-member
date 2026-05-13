@@ -139,6 +139,16 @@ h1 {
     background: #243040;
 }
 
+.btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+    border-color: var(--border);
+    background: var(--surface);
+}
+
 .btn-primary {
     background: var(--accent);
     border-color: var(--accent);

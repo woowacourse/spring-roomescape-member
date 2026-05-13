@@ -31,13 +31,19 @@
 상태코드는 기본적으로 4XX를 사용합니다.
 단, 서버에서 예상하지 못한 예외 상황일 경우 500으로 응답합니다.
 
-### 예약 (`/reservations`)
+### 관리자 예약 (`/admin/reservations`)
 
-| 메서드 | 경로 | 설명 |
-|--------|------|------|
+| 메서드 | 경로                    | 설명       |
+|--------|-----------------------|----------|
+| `GET` | `/admin/reservations` | 예약 목록 조회 |
+| `DELETE` | `/reservations/{id}`  | 예약 삭제    |
+
+### 사용자 예약 (`/reservations`)
+
+| 메서드 | 경로 | 설명       |
+|--------|------|----------|
 | `GET` | `/reservations` | 예약 목록 조회 |
-| `POST` | `/reservations` | 예약 생성 |
-| `DELETE` | `/reservations/{id}` | 예약 삭제 |
+| `POST` | `/reservations` | 예약 생성    |
 
 ### 예약 시간 (`/times`)
 

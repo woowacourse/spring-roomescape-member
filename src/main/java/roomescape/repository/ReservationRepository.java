@@ -50,6 +50,18 @@ public class ReservationRepository {
         return jdbcTemplate.query(findSql, reservationRowMapper());
     }
 
+    public List<Reservation> findByName(String name) {
+        String findSql = "SELECT id, name, date, time_id, theme_id"
+                + " FROM reservation r"
+                + " WHERE name = ?";
+
+        return jdbcTemplate.query(
+                findSql,
+                reservationRowMapper(),
+                name
+        );
+    }
+
     public List<Reservation> findBetweenDuration(Duration duration) {
         String findSql = "SELECT id, name, date, time_id, theme_id"
                 + " FROM reservation r"

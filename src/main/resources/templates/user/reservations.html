@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="data:,"/>
+    <title>사용자 - 내 예약 보기</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body>
+<header th:replace="~{fragments/site :: siteHeader}"></header>
+<main>
+    <h1>내 예약 보기</h1>
+    <p class="muted"><a th:href="@{/view/user}">← 사용자 홈</a></p>
+    <div class="panel">
+        <div class="form-row">
+            <label>예약자 이름
+                <input type="text" id="memberName" maxlength="255" placeholder="이름"/>
+            </label>
+            <button type="button" class="btn btn-primary" id="searchBtn">조회</button>
+        </div>
+        <p class="muted">이름으로 <code>GET /reservations?name=...</code>를 호출합니다.</p>
+        <p id="status" class="status-msg" style="display:none;"></p>
+    </div>
+    <div class="panel">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>이름</th>
+                <th>날짜</th>
+                <th>시간 ID</th>
+                <th>시작</th>
+                <th>테마</th>
+                <th>취소 가능</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+        </table>
+        <p id="empty" class="muted" style="display:none;">조회 결과가 없습니다.</p>
+    </div>
+</main>
+<script>
+    const memberName = document.getElementById('memberName');
+    const searchBtn = document.getElementById('searchBtn');
+    const status = document.getElementById('status');
+    const rows = document.getElementById('rows');
+    const empty = document.getElementById('empty');
+
+    function showStatus(message, ok) {
+        status.textContent = message;
+        status.className = 'status-msg ' + (ok ? 'ok' : 'err');
+        status.style.display = 'block';
+    }
+
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+
+    function renderReservations(list) {
+        rows.innerHTML = '';
+        empty.style.display = list.length ? 'none' : 'block';
+        for (const r of list) {
+            const canCancel = !!r.cancelable;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${r.id}</td>
+                <td>${escapeHtml(r.name)}</td>
+                <td>${r.date}</td>
+                <td>${r.time.id}</td>
+                <td>${r.time.startAt}</td>
+                <td>${escapeHtml(r.theme.name)}</td>
+                <td>${canCancel ? '가능' : '불가'}</td>
+                <td><button type="button" class="btn btn-danger" data-id="${r.id}" ${canCancel ? '' : 'disabled'}>취소</button></td>
+            `;
+            rows.appendChild(tr);
+        }
+        rows.querySelectorAll('button[data-id]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                showStatus(`예약 취소 기능은 아직 준비 중입니다. (예약 ID: ${btn.dataset.id})`, false);
+            });
+        });
+    }
+
+    async function searchReservations() {
+        const name = memberName.value.trim();
+        status.style.display = 'none';
+        rows.innerHTML = '';
+        empty.style.display = 'none';
+        if (!name) {
+            showStatus('조회할 이름을 입력하세요.', false);
+            return;
+        }
+        try {
+            const params = new URLSearchParams({name});
+            const res = await fetch('/reservations?' + params.toString());
+            if (!res.ok) throw new Error('예약 조회에 실패했습니다.');
+            const list = await res.json();
+            renderReservations(list);
+            if (list.length) {
+                showStatus(`${list.length}건의 예약을 찾았습니다.`, true);
+            }
+        } catch (e) {
+            showStatus(e.message, false);
+        }
+    }
+
+    searchBtn.addEventListener('click', () => {
+        void searchReservations();
+    });
+
+    memberName.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            void searchReservations();
+        }
+    });
+</script>
+</body>
+</html>
