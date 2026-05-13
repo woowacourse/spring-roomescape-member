@@ -1,7 +1,9 @@
 package roomescape.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,12 +13,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 import roomescape.dto.ReservationRequest;
 
 @RequestMapping("/reservations")
 @RestController
+@Validated
 public class ReservationController {
     private final ReservationService reservationService;
 
@@ -32,8 +38,9 @@ public class ReservationController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationResponse createReservation(@RequestBody ReservationRequest request) {
-        return reservationService.save(request);
+    public ReservationResponse createReservation(@Valid @RequestBody ReservationRequest request) {
+        LocalDateTime now = LocalDateTime.now();
+        return reservationService.save(now, request);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
