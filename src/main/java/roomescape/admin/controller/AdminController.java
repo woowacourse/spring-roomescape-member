@@ -1,15 +1,16 @@
 package roomescape.admin.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.RequestTheme;
-import roomescape.theme.dto.ResponseTheme;
+import roomescape.theme.dto.ThemeRequest;
+import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.dto.RequestReservationTime;
-import roomescape.time.dto.ResponseReservationTime;
+import roomescape.time.dto.ReservationTimeRequest;
+import roomescape.time.dto.ReservationTimeResponse;
 import roomescape.time.service.ReservationTimeService;
 
 @RestController
@@ -25,9 +26,10 @@ public class AdminController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ResponseTheme> createTheme(@RequestBody RequestTheme requestTheme) {
-        Theme theme = themeService.createTheme(requestTheme.name(), requestTheme.description(), requestTheme.thumbnail());
-        ResponseTheme response = ResponseTheme.from(theme);
+    public ResponseEntity<ThemeResponse> createTheme(
+            @Valid @RequestBody ThemeRequest themeRequest) {
+        Theme theme = themeService.createTheme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
+        ThemeResponse response = ThemeResponse.from(theme);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -38,9 +40,10 @@ public class AdminController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ResponseReservationTime> createTime(@RequestBody RequestReservationTime request) {
+    public ResponseEntity<ReservationTimeResponse> createTime(
+            @Valid @RequestBody ReservationTimeRequest request) {
         ReservationTime time = reservationTimeService.createTime(request.startAt());
-        ResponseReservationTime response = ResponseReservationTime.from(time);
+        ReservationTimeResponse response = ReservationTimeResponse.from(time);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

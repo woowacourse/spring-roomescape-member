@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.ResponsePopularTheme;
-import roomescape.theme.dto.ResponseTheme;
-import roomescape.theme.dto.ResponseThemeAvailableTime;
+import roomescape.theme.dto.PopularThemeResponse;
+import roomescape.theme.dto.ThemeResponse;
+import roomescape.theme.dto.ThemeAvailableTimeResponse;
 import roomescape.theme.service.AvailableTime;
 import roomescape.theme.service.ThemeService;
 
@@ -25,28 +25,28 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ResponseTheme>> getThemes() {
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
         List<Theme> themes = themeService.getThemes();
-        List<ResponseTheme> response = themes.stream()
-                .map(ResponseTheme::from)
+        List<ThemeResponse> response = themes.stream()
+                .map(ThemeResponse::from)
                 .toList();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{id}/available-times")
-    public ResponseEntity<List<ResponseThemeAvailableTime>> getAvailableTimes(@PathVariable Long id, @RequestParam LocalDate date) {
+    public ResponseEntity<List<ThemeAvailableTimeResponse>> getAvailableTimes(@PathVariable Long id, @RequestParam LocalDate date) {
         List<AvailableTime> availableTimes = themeService.getAvailableTimes(id, date);
-        List<ResponseThemeAvailableTime> response = availableTimes.stream()
-                .map(ResponseThemeAvailableTime::from)
+        List<ThemeAvailableTimeResponse> response = availableTimes.stream()
+                .map(ThemeAvailableTimeResponse::from)
                 .toList();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ResponsePopularTheme>> getPopularThemes(@RequestParam int days, @RequestParam int limit) {
+    public ResponseEntity<List<PopularThemeResponse>> getPopularThemes(@RequestParam int days, @RequestParam int limit) {
         List<Theme> themes = themeService.getPopularThemes(days, limit);
-        List<ResponsePopularTheme> response = IntStream.range(0, themes.size())
-                .mapToObj(i -> ResponsePopularTheme.of(themes.get(i), i + 1))
+        List<PopularThemeResponse> response = IntStream.range(0, themes.size())
+                .mapToObj(i -> PopularThemeResponse.of(themes.get(i), i + 1))
                 .toList();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
