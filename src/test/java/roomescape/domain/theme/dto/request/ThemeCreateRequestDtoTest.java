@@ -1,12 +1,13 @@
 package roomescape.domain.theme.dto.request;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.global.exception.BadRequestException;
+import roomescape.domain.global.exception.ErrorCode;
+import roomescape.global.ExceptionAssertions;
 
 class ThemeCreateRequestDtoTest {
 
@@ -31,9 +32,11 @@ class ThemeCreateRequestDtoTest {
             String description = "테마 설명";
             String imageUrl = "This is image url";
 
-            assertThatThrownBy(() -> new ThemeCreateRequestDto(name, description, imageUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마명은 빈 문자열일 수 없습니다.");
+            ExceptionAssertions.assertErrorCode(
+                () -> new ThemeCreateRequestDto(name, description, imageUrl),
+                BadRequestException.class,
+                ErrorCode.THEME_INVALID_REQUEST
+            );
         }
 
         @Test
@@ -43,9 +46,11 @@ class ThemeCreateRequestDtoTest {
             String description = "";
             String imageUrl = "This is image url";
 
-            assertThatThrownBy(() -> new ThemeCreateRequestDto(name, description, imageUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 설명은 빈 문자열일 수 없습니다.");
+            ExceptionAssertions.assertErrorCode(
+                () -> new ThemeCreateRequestDto(name, description, imageUrl),
+                BadRequestException.class,
+                ErrorCode.THEME_INVALID_REQUEST
+            );
         }
 
         @Test
@@ -55,9 +60,11 @@ class ThemeCreateRequestDtoTest {
             String description = "테마 설명";
             String imageUrl = "";
 
-            assertThatThrownBy(() -> new ThemeCreateRequestDto(name, description, imageUrl))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미지 url은 빈 문자열일 수 없습니다.");
+            ExceptionAssertions.assertErrorCode(
+                () -> new ThemeCreateRequestDto(name, description, imageUrl),
+                BadRequestException.class,
+                ErrorCode.THEME_INVALID_REQUEST
+            );
         }
     }
 

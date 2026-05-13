@@ -4,9 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import java.util.function.Supplier;
+import roomescape.domain.global.exception.BadRequestException;
 import roomescape.domain.global.exception.BaseException;
 import roomescape.domain.global.exception.ErrorCode;
+import roomescape.domain.global.exception.ErrorDetail;
 
 public final class ExceptionAssertions {
 
@@ -37,6 +40,18 @@ public final class ExceptionAssertions {
             }
         );
 
+    }
+
+    public static <T> void assertErrorCodeWithErrors(Runnable runnable, ErrorCode expectedErrorCode, List<ErrorDetail> expectedErrorDetails) {
+        Throwable throwable = toThrowable(runnable);
+        assertThat(throwable).isInstanceOf(BadRequestException.class);
+        BadRequestException exception = BadRequestException.class.cast(throwable);
+
+        assertAll(
+            () -> assertThat(exception.getErrorCode()).isEqualTo(expectedErrorCode),
+            () -> assertThat(exception.getErrors())
+                .containsExactlyInAnyOrderElementsOf(expectedErrorDetails)
+        );
     }
 
     private static <T> Throwable toThrowable(Supplier<T> supplier) {

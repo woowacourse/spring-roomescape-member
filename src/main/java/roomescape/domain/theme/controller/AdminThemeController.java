@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.theme.dto.request.ThemeCreateRequestDto;
 import roomescape.domain.theme.dto.response.ThemeResponseDto;
 import roomescape.domain.theme.service.ThemeService;
+import roomescape.domain.theme.validator.ThemeValidator;
 
 @RestController
 @RequestMapping("/api/admin/themes")
@@ -24,6 +25,7 @@ public class AdminThemeController {
 
     @PostMapping()
     public ResponseEntity<ThemeResponseDto> saveTheme(@RequestBody ThemeCreateRequestDto requestDto) {
+        ThemeValidator.validate(requestDto.name(), requestDto.description(), requestDto.imageUrl());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(themeService.saveTheme(requestDto));
     }
