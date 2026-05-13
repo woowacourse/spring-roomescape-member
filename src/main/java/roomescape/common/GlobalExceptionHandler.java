@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        return new ErrorResponse("입력 형식이 잘못되었습니다");
+        return new ErrorResponse("입력 형식이 잘못되었습니다.");
     }
 
     @ExceptionHandler(Exception.class)
