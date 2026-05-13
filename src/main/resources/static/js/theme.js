@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function fetchThemes() {
   fetch(THEME_API)
     .then(res => res.json())
-    .then(renderThemes)
+    .then(data => renderThemes(data.themes))
     .catch(err => console.error('테마 조회 실패:', err));
 }
 

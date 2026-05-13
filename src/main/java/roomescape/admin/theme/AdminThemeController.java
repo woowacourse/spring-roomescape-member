@@ -39,9 +39,9 @@ public class AdminThemeController {
 
     @DeleteMapping("/admin/themes/{id}")
     public ResponseEntity<Void> deleteTheme(
-        @PathVariable Long themeId
+        @PathVariable Long id
     ) {
-        adminThemeService.deleteTheme(themeId);
+        adminThemeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
 }

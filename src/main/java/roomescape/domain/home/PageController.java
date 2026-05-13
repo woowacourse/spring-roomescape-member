@@ -16,16 +16,6 @@ public class PageController {
         return "reservation";
     }
 
-    @GetMapping("/time")
-    public String time() {
-        return "time";
-    }
-
-    @GetMapping("/theme")
-    public String theme() {
-        return "theme";
-    }
-
     @GetMapping("/popular")
     public String popular() {
         return "popular";
