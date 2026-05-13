@@ -12,7 +12,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationRepositoryTest {
 
@@ -38,8 +38,8 @@ class ReservationRepositoryTest {
     @Test
     @DisplayName("예약 삭제 성공")
     void 예약_삭제_성공() {
-        reservationRepository.deleteById(1L);
+        reservationRepository.deleteById(11L);
 
-        assertThat(timeRepository.findAvailableByDateAndThemeId(LocalDate.of(2026, 5, 10), 1L)).hasSize(3);
+        assertThat(timeRepository.findAvailableByDateAndThemeId(LocalDate.of(2099, 12, 1), 1L)).hasSize(2);
     }
 }

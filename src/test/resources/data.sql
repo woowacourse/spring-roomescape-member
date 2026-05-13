@@ -20,3 +20,6 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user3', '2026-0
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user1', '2026-05-07', 3, 3);
 
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user1', '2026-05-01', 1, 4);
+
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user1', '2099-12-01', 1, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('user2', '2099-12-01', 2, 1);
