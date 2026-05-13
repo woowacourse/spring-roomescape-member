@@ -30,7 +30,7 @@ class AdminReservationControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private AdminReservationService adminReservationService;
+    private ReservationService reservationService;
 
     @Test
     void 관리자가_예약을_생성할_수_있다() throws Exception {
@@ -38,9 +38,9 @@ class AdminReservationControllerTest {
         Theme theme = new Theme(2L, "Theme A", "desc", "thumb");
         Reservation reservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
 
-        ReservationRequest request = new ReservationRequest(2L, "브라운", LocalDate.of(2026, 5, 1), 1L);
+        ReservationRequest request = new ReservationRequest("브라운", LocalDate.of(2026, 5, 1), 1L, 2L);
 
-        when(adminReservationService.createForceReservation(eq(2L), eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(1L)))
+        when(reservationService.save(eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(1L), eq(2L)))
                 .thenReturn(reservation);
 
         mockMvc.perform(post("/admin/reservations")

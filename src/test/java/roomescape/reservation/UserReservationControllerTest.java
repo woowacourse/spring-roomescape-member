@@ -29,7 +29,7 @@ class UserReservationControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private UserReservationService userReservationService;
+    private ReservationService reservationService;
 
     @Test
     void 예약_목록을_조회할_수_있다() throws Exception {
@@ -37,7 +37,7 @@ class UserReservationControllerTest {
         Theme theme = new Theme(2L, "Theme A", "desc", "https://example.com/a.png");
         Reservation reservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
 
-        when(userReservationService.getReservations()).thenReturn(List.of(reservation));
+        when(reservationService.findAll()).thenReturn(List.of(reservation));
 
         mockMvc.perform(get("/reservations")
                         .accept(MediaType.APPLICATION_JSON))
@@ -58,9 +58,9 @@ class UserReservationControllerTest {
         Theme theme = new Theme(2L, "Theme A", "desc", "https://example.com/a.png");
         Reservation reservation = new Reservation(3L, "브라운", LocalDate.of(2026, 5, 1), time, theme);
 
-        ReservationRequest request = new ReservationRequest(2L, "브라운", LocalDate.of(2026, 5, 1), 1L);
+        ReservationRequest request = new ReservationRequest("브라운", LocalDate.of(2026, 5, 1), 1L, 2L);
 
-        when(userReservationService.createReservation(eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(1L), eq(2L)))
+        when(reservationService.save(eq("브라운"), eq(LocalDate.of(2026, 5, 1)), eq(1L), eq(2L)))
                 .thenReturn(reservation);
 
         mockMvc.perform(post("/reservations")
