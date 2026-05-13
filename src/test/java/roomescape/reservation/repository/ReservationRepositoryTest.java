@@ -112,4 +112,48 @@ class ReservationRepositoryTest {
         // then
         assertThat(result).isFalse();
     }
+
+    @Test
+    void 해당_시간에_예약이_존재하면_true를_반환한다() {
+        // given
+        reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
+
+        // when
+        boolean result = reservationRepository.existsByTimeId(time.getId());
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 해당_시간에_예약이_존재하지_않다면_false를_반환한다() {
+        // when
+        boolean result = reservationRepository.existsByTimeId(time.getId());
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void 해당_테마에_예약이_존재하면_true를_반환한다() {
+        // given
+        reservationRepository.save(new Reservation(
+                null, "어셔", LocalDate.of(2026, 5, 10), time, theme));
+
+        // when
+        boolean result = reservationRepository.existsByThemeId(theme.getId());
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 해당_테마에_예약이_존재하지_않다면_false를_반환한다() {
+        // when
+        boolean result = reservationRepository.existsByThemeId(theme.getId());
+
+        // then
+        assertThat(result).isFalse();
+    }
 }

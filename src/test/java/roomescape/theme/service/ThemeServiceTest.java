@@ -5,6 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.ErrorCode;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
@@ -15,6 +18,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +29,9 @@ class ThemeServiceTest {
 
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @InjectMocks
     private ThemeService themeService;
@@ -101,5 +108,26 @@ class ThemeServiceTest {
         verify(themeRepository, times(1)).findPopularThemes(any(), any(), anyInt());
 
         assertThat(result.size()).isEqualTo(10);
+    }
+
+    @Test
+    void 예약이_존재하지_않는_테마는_삭제_가능하다() {
+        when(reservationRepository.existsByThemeId(any())).thenReturn(false);
+
+        themeService.removeTheme(3L);
+
+        verify(themeRepository).remove(3L);
+    }
+
+    @Test
+    void 예약이_있는_테마를_삭제하면_예외가_발생하고_삭제를_하지_않는다() {
+        when(reservationRepository.existsByThemeId(any())).thenReturn(true);
+
+        assertThatThrownBy(() -> themeService.removeTheme(1L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.THEME_IN_USE);
+
+        verify(themeRepository, never()).remove(any());
     }
 }
