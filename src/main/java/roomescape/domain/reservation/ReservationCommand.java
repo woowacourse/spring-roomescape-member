@@ -16,52 +16,55 @@ public record ReservationCommand(String name, LocalDate date, long timeId, long 
     private static final String INVALID_NAME_LENGTH = "이름은 20자를 초과할 수 없습니다.";
 
 
-    public ReservationCommand(String name, String date, long timeId, long themeId) {
-        this(validateName(name), validateDate(date), validateTimeId(timeId), validateThemeId(themeId));
+    public ReservationCommand {
+        validateName(name);
+        validateDateValue(date);
+        validateTimeId(timeId);
+        validateThemeId(themeId);
     }
 
-    private static String validateName(String name) {
+    public ReservationCommand(String name, String date, long timeId, long themeId) {
+        this(name, parseDate(date), timeId, themeId);
+    }
+
+    private static void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new InvalidRequestValueException(INVALID_NAME_BLANK);
         }
-
         if (name.length() > MAX_NAME_LENGTH) {
             throw new InvalidRequestValueException(INVALID_NAME_LENGTH);
         }
-
-        return name;
     }
 
-    private static LocalDate validateDate(String date) {
+    private static LocalDate parseDate(String date) {
         if (date == null || date.isBlank()) {
             throw new InvalidRequestValueException(INVALID_DATE_NULL);
         }
-
         try {
-            LocalDate value = LocalDate.parse(date);
-
-            if(value.isBefore(LocalDate.now())) {
-                throw new InvalidRequestValueException(NOT_RESERVABLE_PAST_DATE);
-            }
             return LocalDate.parse(date);
         } catch (DateTimeParseException e) {
             throw new InvalidRequestValueException(INVALID_DATE_FORMAT);
         }
     }
 
-    private static long validateTimeId(long timeId) {
+    private static void validateDateValue(LocalDate date) {
+        if (date == null) {
+            throw new InvalidRequestValueException(INVALID_DATE_NULL);
+        }
+        if (date.isBefore(LocalDate.now())) {
+            throw new InvalidRequestValueException(NOT_RESERVABLE_PAST_DATE);
+        }
+    }
+
+    private static void validateTimeId(long timeId) {
         if (timeId <= 0) {
             throw new InvalidRequestValueException(INVALID_TIME_ID_FORMAT);
         }
-
-        return timeId;
     }
 
-    private static long validateThemeId(long themeId) {
+    private static void validateThemeId(long themeId) {
         if (themeId <= 0) {
             throw new InvalidRequestValueException(INVALID_THEME_ID_FORMAT);
         }
-
-        return themeId;
     }
 }
