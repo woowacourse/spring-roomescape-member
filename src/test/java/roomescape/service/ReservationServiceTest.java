@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationUpdateRequest;
 import roomescape.exception.RoomescapeException;
 
 @SpringBootTest
@@ -101,6 +102,52 @@ public class ReservationServiceTest {
 
         // when
         Assertions.assertThatThrownBy(() -> reservationService.removeById(reservationId))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
+    public void 예약을_정상적으로_변경할_수_있다() {
+        // given
+        ReservationRequest registerRequest = new ReservationRequest("토리", LocalDate.now().plusDays(1L), 1L, 1L);
+        Long id = reservationService.register(registerRequest).id();
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(2L), 2L);
+
+        // when
+        Assertions.assertThatCode(() -> reservationService.update(id, updateRequest))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void 존재하지_않는_예약을_변경하면_예외가_발생한다() {
+        // given
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(1L), 1L);
+
+        // when
+        Assertions.assertThatThrownBy(() -> reservationService.update(-1L, updateRequest))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
+    public void 이미_지난_예약을_변경하면_예외가_발생한다() {
+        // given
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(1L), 1L);
+
+        // when
+        Assertions.assertThatThrownBy(() -> reservationService.update(1L, updateRequest))
+                .isInstanceOf(RoomescapeException.class);
+    }
+
+    @Test
+    public void 변경하려는_날짜_시간에_이미_예약이_존재하면_예외가_발생한다() {
+        // given
+        ReservationRequest registerRequest = new ReservationRequest("토리", LocalDate.now().plusDays(1L), 1L, 1L);
+        Long id = reservationService.register(registerRequest).id();
+        ReservationRequest anotherRequest = new ReservationRequest("포비", LocalDate.now().plusDays(2L), 2L, 1L);
+        reservationService.register(anotherRequest);
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(2L), 2L);
+
+        // when
+        Assertions.assertThatThrownBy(() -> reservationService.update(id, updateRequest))
                 .isInstanceOf(RoomescapeException.class);
     }
 

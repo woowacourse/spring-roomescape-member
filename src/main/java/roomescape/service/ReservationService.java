@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.ReservationUpdateRequest;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomescapeException;
 import roomescape.model.Reservation;
@@ -87,6 +88,27 @@ public class ReservationService {
                 reservationRequest.timeId(),
                 reservationRequest.themeId(), reservationTime, theme);
         return ReservationResponse.from(reservation);
+    }
+
+    public ReservationResponse update(Long id, ReservationUpdateRequest reservationUpdateRequest) {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(
+                () -> new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND)
+        );
+        if (isOverDateAndTime(reservation.getDate(), reservation.getTime())) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_UPDATE);
+        }
+        ReservationTime reservationTime = timeRepository.findById(reservationUpdateRequest.timeId()).orElseThrow(
+                () -> new RoomescapeException(ErrorCode.TIME_NOT_FOUND));
+        LocalDate updateDate = reservationUpdateRequest.date();
+        if (isOverDateAndTime(updateDate, reservationTime)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_UPDATE);
+        }
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(updateDate, reservationUpdateRequest.timeId(),
+                reservation.getTheme().getId())) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_ALREADY_BOOKED);
+        }
+        Reservation updated = reservationRepository.update(id, updateDate, reservationUpdateRequest.timeId());
+        return ReservationResponse.from(updated);
     }
 
     private boolean isOverDateAndTime(LocalDate date, ReservationTime time) {

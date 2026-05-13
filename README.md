@@ -70,10 +70,10 @@
 - [x] 이미 지난 예약은 취소할 수 없다.
 
 ### 예약 변경
-- [ ] 존재하지 않는 예약은 변경할 수 없다.
-- [ ] 사용자는 자신의 예약 날짜와 시간을 변경할 수 있다.
-- [ ] 이미 지난 예약은 변경할 수 없다.
-- [ ] 변경하려는 날짜·시간에 이미 예약이 존재하면 변경할 수 없다.
+- [x] 존재하지 않는 예약은 변경할 수 없다.
+- [x] 사용자는 자신의 예약 날짜와 시간을 변경할 수 있다.
+- [x] 이미 지난 예약은 변경할 수 없다.
+- [x] 변경하려는 날짜·시간에 이미 예약이 존재하면 변경할 수 없다.
 
 ---
 
@@ -168,10 +168,12 @@
 
 | 구분   | 메서드   | URI                  | 설명           | 요청 바디                           | 응답 바디                                | 상태 코드 |
 | ------ | -------- | -------------------- | -------------- | ----------------------------------- | ---------------------------------------- | --------- |
-| 관리자 | `GET`    | `/reservations`            | 전체 예약 조회      | -                                   | `[{ id, name, date, time, theme } ... ]` | 200       |
-| 관리자 | `DELETE` | `/reservations/{id}`       | 예약 삭제           | -                                   | -                                        | 204       |
-| 사용자 | `POST`   | `/reservations`            | 예약 생성           | `{ name, date, timeId, themeId }`   | `{ id, name, date, time, theme }`        | 201       |
-| 사용자 | `GET`    | `/reservations?name={name}`| 이름으로 예약 조회  | -                                   | `[{ id, name, date, time, theme } ... ]` | 200       |
+| 관리자 | `GET`    | `/reservations`                      | 전체 예약 조회     | -                                 | `[{ id, name, date, time, theme } ... ]` | 200       |
+| 관리자 | `DELETE` | `/reservations/{id}`                 | 예약 삭제          | -                                 | -                                        | 204       |
+| 사용자 | `POST`   | `/reservations`                      | 예약 생성          | `{ name, date, timeId, themeId }` | `{ id, name, date, time, theme }`        | 201       |
+| 사용자 | `GET`    | `/reservations?username={username}`  | 이름으로 예약 조회 | -                                 | `[{ id, name, date, time, theme } ... ]` | 200       |
+| 사용자 | `PATCH`  | `/reservations/{id}`                 | 예약 변경          | `{ date, timeId }`                | `{ id, name, date, time, theme }`        | 200       |
+| 사용자 | `DELETE` | `/reservations/{id}?username={name}` | 예약 취소          | -                                 | -                                        | 204       |
 
 
 

@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationUpdateRequest;
 import roomescape.exception.ErrorCode;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -146,6 +147,80 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(422)
                 .body("message", is(ErrorCode.RESERVATION_PAST_CANCEL.getMessage()));
+    }
+
+    @Test
+    public void 예약_변경_시_정상적으로_변경되면_200을_반환한다() {
+        ReservationRequest registerRequest = new ReservationRequest("포비", LocalDate.now().plusDays(1L), 1L, 1L);
+        int id = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(registerRequest)
+                .when().post("/reservations")
+                .then().statusCode(201)
+                .extract().path("id");
+
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(2L), 2L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateRequest)
+                .when().patch("/reservations/" + id)
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    public void 예약_변경_시_존재하지_않는_예약이면_404를_반환한다() {
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(1L), 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateRequest)
+                .when().patch("/reservations/-1")
+                .then().log().all()
+                .statusCode(404)
+                .body("message", is(ErrorCode.RESERVATION_NOT_FOUND.getMessage()));
+    }
+
+    @Test
+    public void 예약_변경_시_이미_지난_예약이면_422를_반환한다() {
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(1L), 1L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateRequest)
+                .when().patch("/reservations/1")
+                .then().log().all()
+                .statusCode(422)
+                .body("message", is(ErrorCode.RESERVATION_PAST_UPDATE.getMessage()));
+    }
+
+    @Test
+    public void 예약_변경_시_변경하려는_날짜_시간에_이미_예약이_존재하면_409를_반환한다() {
+        ReservationRequest registerRequest = new ReservationRequest("포비", LocalDate.now().plusDays(1L), 1L, 1L);
+        int id = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(registerRequest)
+                .when().post("/reservations")
+                .then().statusCode(201)
+                .extract().path("id");
+
+        ReservationRequest anotherRequest = new ReservationRequest("토리", LocalDate.now().plusDays(2L), 2L, 1L);
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(anotherRequest)
+                .when().post("/reservations")
+                .then().statusCode(201);
+
+        ReservationUpdateRequest updateRequest = new ReservationUpdateRequest(LocalDate.now().plusDays(2L), 2L);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(updateRequest)
+                .when().patch("/reservations/" + id)
+                .then().log().all()
+                .statusCode(409)
+                .body("message", is(ErrorCode.RESERVATION_TIME_ALREADY_BOOKED.getMessage()));
     }
 
     private static Stream<ReservationRequest> emptyReservationRequest() {
