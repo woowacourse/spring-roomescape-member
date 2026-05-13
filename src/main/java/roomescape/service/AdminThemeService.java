@@ -4,6 +4,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ThemeRequest;
+import roomescape.exception.CustomException;
+import roomescape.exception.ErrorCode;
 import roomescape.repository.ThemeDao;
 
 @Service
@@ -19,7 +21,7 @@ public class AdminThemeService {
         try {
             return themeDao.save(request.name(), request.description(), request.thumbnailUrl());
         } catch (DuplicateKeyException e){
-            throw  new IllegalArgumentException("존재하는 테마는 추가할 수 없습니다.");
+            throw new CustomException(ErrorCode.ALREADY_EXISTS_THEME);
         }
     }
 
@@ -27,7 +29,7 @@ public class AdminThemeService {
         try{
             themeDao.delete(id);
         } catch (DataIntegrityViolationException e){
-            throw new IllegalArgumentException("사용중인 테마는 삭제할 수 없습니다.");
+            throw new CustomException(ErrorCode.UNALLOWED_DELETE_EXISTS_THEME);
         }
     }
 }

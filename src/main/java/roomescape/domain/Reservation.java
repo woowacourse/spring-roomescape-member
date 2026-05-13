@@ -2,8 +2,6 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 
-import org.springframework.lang.NonNull;
-
 import roomescape.exception.Validator;
 
 public class Reservation {

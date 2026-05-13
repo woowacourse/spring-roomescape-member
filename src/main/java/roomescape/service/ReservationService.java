@@ -1,16 +1,15 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
-import org.springframework.cglib.core.Local;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationResponse;
+import roomescape.exception.CustomException;
+import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationDao;
 import roomescape.dto.ReservationRequest;
 import roomescape.repository.ReservationTimeDao;
@@ -37,7 +36,7 @@ public class ReservationService {
             Reservation reservation = reservationDao.findById(id);
             return ReservationResponse.from(reservation);
         } catch (DuplicateKeyException e){
-            throw new IllegalArgumentException("중복 예약이 불가능합니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_RESERVATION);
         }
 
     }
@@ -54,7 +53,7 @@ public class ReservationService {
 
     private void validateDateAndTimeNotPast(LocalDateTime now, LocalDateTime reservationTime) {
         if (now.isAfter(reservationTime)) {
-            throw new IllegalArgumentException("과거 날짜/시간은 예약할 수 없습니다.");
+            throw new CustomException(ErrorCode.PAST_DATE_RESERVATION);
         }
     }
 }

@@ -7,6 +7,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.CustomException;
+import roomescape.exception.ErrorCode;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
@@ -25,7 +27,7 @@ public class AdminTimeService {
             ReservationTime saved = reservationTimeDao.findById(id);
             return ReservationTimeResponse.from(saved);
         } catch(DuplicateKeyException e){
-            throw  new IllegalArgumentException("이미 존재하는 시간은 저장할 수 없습니다.");
+            throw new CustomException(ErrorCode.ALREADY_EXISTS_TIME);
         }
 
     }
@@ -40,7 +42,7 @@ public class AdminTimeService {
         try{
             reservationTimeDao.delete(id);
         } catch (DataIntegrityViolationException e){
-            throw new IllegalArgumentException("예약중인 시간은 삭제할 수 없습니다.");
+            throw new CustomException(ErrorCode.UNALLOWED_DELETE_RESERVED_TIME);
         }
 
     }
