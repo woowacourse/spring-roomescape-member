@@ -100,4 +100,19 @@ class JdbcTemplateReservationRepositoryTest {
 
         assertThat(count).isEqualTo(1);
     }
+
+    @Test
+    @Sql({"/test-truncate.sql", "/test-theme.sql", "/test-reservation-time.sql"})
+    void 날짜_시간_테마_중_하나라도_다르면_0건() {
+        addReservation("브라운", LocalDate.of(2026, 5, 3));
+
+        int count = reservationRepository.countReservationsOf(LocalDate.of(2026, 5, 3), 2L, THEME_ID);
+        assertThat(count).isEqualTo(0);
+
+        count = reservationRepository.countReservationsOf(LocalDate.of(2026, 5, 3), TIME_ID, 2L);
+        assertThat(count).isEqualTo(0);
+
+        count = reservationRepository.countReservationsOf(LocalDate.of(2026, 5, 2), TIME_ID, THEME_ID);
+        assertThat(count).isEqualTo(0);
+    }
 }

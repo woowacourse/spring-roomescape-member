@@ -8,7 +8,6 @@ import roomescape.domain.Theme;
 import roomescape.exception.DuplicationException;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
-import roomescape.exception.UnprocessableException;
 import roomescape.policy.ReservationSavePolicy;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;

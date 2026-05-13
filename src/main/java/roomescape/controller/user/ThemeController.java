@@ -48,17 +48,17 @@ public class ThemeController {
         return ResponseEntity.ok(reservationTimeResponses);
     }
 
-    @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
-        List<Theme> themes = themeService.findPopularThemes(Period.lastWeek(clock));
-
-        return ResponseEntity.ok(ThemeResponse.from(themes));
-    }
-
     private LocalDate resolveDate(LocalDate date) {
         if (date == null) {
             return LocalDate.now(clock);
         }
         return date;
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
+        List<Theme> themes = themeService.findPopularThemes(Period.lastWeek(clock));
+
+        return ResponseEntity.ok(ThemeResponse.from(themes));
     }
 }

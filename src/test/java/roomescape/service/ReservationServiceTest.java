@@ -39,18 +39,13 @@ class ReservationServiceTest {
     private static final long THEME_ID = 1L;
     private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 5, 1);
     private static final LocalDateTime now = LocalDateTime.of(FIXED_TODAY, LocalTime.of(12, 0));
-
+    private final UserReservationSavePolicy userPolicy = new UserReservationSavePolicy();
     @Mock
     private ReservationRepository reservationRepository;
-
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
-
     @Mock
     private ThemeRepository themeRepository;
-
-    private final UserReservationSavePolicy userPolicy = new UserReservationSavePolicy();
-
     private ReservationService reservationService;
 
     @BeforeEach
@@ -176,6 +171,22 @@ class ReservationServiceTest {
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이름은 공백일 수 없습니다.");
+    }
+
+    @Test
+    void 이름을_null예약하면_예외가_발생한다() {
+        ReservationTime time = new ReservationTime(TIME_ID, LocalTime.of(10, 0));
+        Theme theme = new Theme(THEME_ID, "우주 정거장", "설명", "https://example.com/1.jpg");
+        ReservationSaveCommand saveCommand = new ReservationSaveCommand(null, LocalDate.of(2026, 5, 10), TIME_ID,
+                THEME_ID);
+
+        given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
+        given(themeRepository.findById(THEME_ID)).willReturn(Optional.of(theme));
+
+        assertThatThrownBy(() -> reservationService.saveReservation(saveCommand, now, userPolicy))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("유효하지 않은 이름입니다.");
     }
 }
