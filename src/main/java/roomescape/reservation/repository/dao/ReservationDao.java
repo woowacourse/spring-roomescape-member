@@ -45,6 +45,11 @@ public class ReservationDao {
                 .findAny();
     }
 
+    public List<ReservationEntity> findByName(String name) {
+        String sql = "SELECT * FROM reservation WHERE name = ? AND is_deleted = FALSE;";
+        return jdbcTemplate.query(sql, reservationRowMapper, name);
+    }
+
     public Long insert(String name, LocalDate date, Long timeId, Long themeId) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name)
