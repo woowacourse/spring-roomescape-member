@@ -26,7 +26,7 @@ import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
-public class RoomReservationServiceTest {
+public class ReservationServiceTest {
     private ReservationRepository createReservationRepository(boolean isExist) {
         return new ReservationRepository() {
             @Override
@@ -142,7 +142,7 @@ public class RoomReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1, LocalTime.parse("10:00"));
         Theme theme = new Theme(1, "name", "description", "image");
 
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(reservationTime), createThemeRepository(
+        ReservationService reservationService = new ReservationService(createReservationRepository(false), createReservationTimeRepository(reservationTime), createThemeRepository(
                 theme));
         ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
 
@@ -154,7 +154,7 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 시간ID인 경우 예외 테스트")
     void addReservationFailByInvalidTimeIdTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(null), createThemeRepository(new Theme(1, "테마1", "설명", "url")));
+        ReservationService reservationService = new ReservationService(createReservationRepository(false), createReservationTimeRepository(null), createThemeRepository(new Theme(1, "테마1", "설명", "url")));
         ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationCommand))
@@ -165,7 +165,7 @@ public class RoomReservationServiceTest {
     @Test
     @DisplayName("예약 생성 시 존재하지 않는 테마 ID인 경우 예외 테스트")
     void addReservationFailByInvalidThemeIdTest() {
-        RoomReservationService reservationService = new RoomReservationService(createReservationRepository(false), createReservationTimeRepository(new ReservationTime(1, LocalTime.parse("10:00"))), createThemeRepository(null));
+        ReservationService reservationService = new ReservationService(createReservationRepository(false), createReservationTimeRepository(new ReservationTime(1, LocalTime.parse("10:00"))), createThemeRepository(null));
         ReservationCommand reservationCommand = new ReservationCommand("브라운", "2023-08-05", 1, 1);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationCommand))
@@ -179,7 +179,7 @@ public class RoomReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1, LocalTime.parse("10:00"));
         Theme theme = new Theme(1, "name", "description", "image");
 
-        RoomReservationService reservationService = new RoomReservationService(
+        ReservationService reservationService = new ReservationService(
                 createReservationRepository(true),
                 createReservationTimeRepository(reservationTime),
                 createThemeRepository(theme)

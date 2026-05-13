@@ -19,7 +19,7 @@ import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationTime.ReservationTimeRepository;
 
 @Service
-public class RoomReservationService {
+public class ReservationService {
     private static final String DUPLICATED_RESERVATION_REQUEST = "해당 날짜, 시간, 테마의 예약이 존재하여 예약할 수 없습니다.";
     private static final String INVALID_THEME_ID = "존재하지 않은 테마 id입니다.";
     private static final String INVALID_RESERVATION_TIME_ID = "존재하지 않은 시간 id입니다.";
@@ -34,7 +34,7 @@ public class RoomReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public RoomReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;

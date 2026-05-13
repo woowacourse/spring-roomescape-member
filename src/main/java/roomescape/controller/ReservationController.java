@@ -7,27 +7,26 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationInfo;
 import roomescape.domain.reservation.ReservationCommand;
 import roomescape.dto.Response;
 import roomescape.dto.reservation.AddReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservation.UpdateReservationRequest;
-import roomescape.service.RoomReservationService;
+import roomescape.service.ReservationService;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
-    private final RoomReservationService roomReservationService;
+    private final ReservationService reservationService;
 
-    public ReservationController(RoomReservationService roomReservationService) {
-        this.roomReservationService = roomReservationService;
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
     @GetMapping
     public ResponseEntity<Response> getReservations(@RequestParam(required = false) String name) {
-        List<ReservationInfo> reservations = roomReservationService.getAllReservation(name);
+        List<ReservationInfo> reservations = reservationService.getAllReservation(name);
         List<ReservationResponse> reservationResponses = reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -38,14 +37,14 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<Response> addReservation(@RequestBody @Valid AddReservationRequest addReservationRequest) {
         ReservationCommand reservationCommand = addReservationRequest.to();
-        ReservationInfo addedReservation = roomReservationService.addReservation(reservationCommand);
+        ReservationInfo addedReservation = reservationService.addReservation(reservationCommand);
 
         return new ResponseEntity<>(Response.from(HttpStatus.CREATED.value(), ReservationResponse.from(addedReservation)), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@RequestHeader(required = false) String name, @PathVariable("id") long id) {
-        roomReservationService.deleteReservation(id, URLDecoder.decode(name, StandardCharsets.UTF_8));
+        reservationService.deleteReservation(id, URLDecoder.decode(name, StandardCharsets.UTF_8));
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -54,7 +53,7 @@ public class ReservationController {
     public ResponseEntity<Response> updateReservation(@RequestHeader(required = false) String name, @PathVariable("id") long id,
                                                       @RequestBody @Valid UpdateReservationRequest updateReservationRequest) {
         ReservationCommand reservationCommand = updateReservationRequest.to();
-        roomReservationService.updateReservation(id, name, reservationCommand);
+        reservationService.updateReservation(id, name, reservationCommand);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
