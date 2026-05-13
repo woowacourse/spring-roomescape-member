@@ -11,11 +11,6 @@ public class ReservationDate {
         this.date = date;
     }
 
-    public static ReservationDate from(String date) {
-        validateIsNull(date);
-        return new ReservationDate(LocalDate.parse(date));
-    }
-
     public static ReservationDate from(LocalDate date) {
         validateIsNull(date);
         return new ReservationDate(date);

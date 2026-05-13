@@ -22,13 +22,8 @@ public class ReservationTime {
         return new ReservationTime(0L, startAt);
     }
 
-    public static ReservationTime of(String startAt) {
-        validateIsNull(startAt);
-        return new ReservationTime(0L, LocalTime.parse(startAt));
-    }
-
-    private static void validateIsNull(Object startAt) {
-        if (startAt == null) {
+    private static void validateIsNull(Object value) {
+        if (value == null) {
             throw new IllegalArgumentException(TIME_SHOULD_NOT_BE_NULL);
         }
     }

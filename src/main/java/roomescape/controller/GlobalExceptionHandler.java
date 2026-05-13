@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -34,6 +35,13 @@ public class GlobalExceptionHandler {
     public String exceptionHandle(Exception e) {
         log.error("서버 내부 오류입니다.", e);
         return UNEXPECTED_ERROR;
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String methodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error("입력 값 검증 중 예외가 발생했습니다.", e);
+        return e.getMessage();
     }
 
     @ExceptionHandler(BeanInstantiationException.class)

@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -64,7 +65,7 @@ class ReservationServiceTest {
 
     @Test
     void 지나간_날짜로_예약_시_예외가_발생해야_한다() {
-        ReservationTime reservationTime = ReservationTime.of("11:00");
+        ReservationTime reservationTime = ReservationTime.of(LocalTime.parse("11:00"));
         Theme theme = Theme.of(1L, "테마1", "설명", "URL");
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-05"), 1L, 1L);
@@ -76,7 +77,7 @@ class ReservationServiceTest {
 
     @Test
     void 같은_날짜이며_시간이_1초_전이면_예약에_성공해야_한다() {
-        ReservationTime reservationTime = ReservationTime.of("11:00");
+        ReservationTime reservationTime = ReservationTime.of(LocalTime.parse("11:00"));
         Theme theme = Theme.of(1L, "테마1", "설명", "URL");
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-05"), 1L, 1L);
@@ -89,7 +90,7 @@ class ReservationServiceTest {
 
     @Test
     void 같은_날짜이며_시간이_1초_지났다면_예약에_실패해야_한다() {
-        ReservationTime reservationTime = ReservationTime.of("11:00");
+        ReservationTime reservationTime = ReservationTime.of(LocalTime.parse("11:00"));
         Theme theme = Theme.of(1L, "테마1", "설명", "URL");
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-05"), 1L, 1L);
@@ -102,7 +103,7 @@ class ReservationServiceTest {
 
     @Test
     void 미래로_예약하면_성공해야_한다() {
-        ReservationTime reservationTime = ReservationTime.of("11:00");
+        ReservationTime reservationTime = ReservationTime.of(LocalTime.parse("11:00"));
         Theme theme = Theme.of(1L, "테마1", "설명", "URL");
 
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.parse("2026-04-06"), 1L, 1L);

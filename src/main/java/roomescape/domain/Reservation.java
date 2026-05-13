@@ -27,8 +27,15 @@ public class Reservation {
 
     public static Reservation reserve(Name name, ReservationDate date, ReservationTime time, Theme theme,
                                       LocalDateTime now) {
+        validateIsNotNull(now);
         validateAvailableDateTime(date, time, now);
         return new Reservation(0L, name, date, time, theme);
+    }
+
+    private static void validateIsNotNull(LocalDateTime now) {
+        if (now == null) {
+            throw new IllegalStateException("현재 날짜를 입력해야 합니다.");
+        }
     }
 
 
