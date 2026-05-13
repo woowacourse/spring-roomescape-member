@@ -147,10 +147,37 @@ class JdbcReservationRepositoryTest {
                 Reservation.withoutId("루드비코", LocalDate.parse("2026-05-06"), reservationTime, theme);
 
         // when
-        reservationRepository.delete(reservation.getId());
+        reservationRepository.deleteById(reservation.getId());
         Optional<Reservation> result = reservationRepository.findById(reservation.getId());
 
         // then
         assertThat(result).isNotPresent();
+    }
+
+    @DisplayName("특정 사용자에 대한 예약을 취소한다")
+    @Test
+    void 사용자_이름과_날짜와_예약_시간과_테마를_기준으로_예약을_취소한다() {
+        // given
+        ReservationTime reservationTime = reservationTimeRepository.save(
+                ReservationTime.withoutId(LocalTime.parse("10:20"))
+        );
+        Theme theme = themeRepository.save(
+                Theme.withoutId("귀신찾기", "귀신을 찾는다", "example.com")
+        );
+        Reservation reservation =
+                Reservation.withoutId("루드비코", LocalDate.now().plusDays(1), reservationTime, theme);
+
+        Reservation saved = reservationRepository.save(reservation);
+
+        // when
+        reservationRepository.deleteByNameAndDateAndTimeIdAndThemeId(
+                saved.getName(),
+                saved.getDate(),
+                saved.getTimeId(),
+                saved.getThemeId()
+        );
+
+        // then
+        assertThat(reservationRepository.findById(saved.getId())).isEmpty();
     }
 }

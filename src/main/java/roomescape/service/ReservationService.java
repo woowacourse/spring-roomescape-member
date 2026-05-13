@@ -74,7 +74,7 @@ public class ReservationService {
     }
 
     public void deleteReservation(Long id) {
-        reservationRepository.delete(id);
+        reservationRepository.deleteById(id);
     }
 
     private static void validateNotPast(LocalDateTime targetDateTime) {
