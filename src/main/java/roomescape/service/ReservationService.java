@@ -40,6 +40,12 @@ public class ReservationService {
                 .toList();
     }
 
+    public ReservationResponseDTO findById(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow();
+        return ReservationResponseDTO.from(reservation);
+    }
+
     public ReservationResponseDTO addReservation(ReservationRequestDTO reservationRequestDTO) {
         ReservationTime time = reservationTimeRepository.findById(reservationRequestDTO.timeId())
                 .orElseThrow();

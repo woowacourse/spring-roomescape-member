@@ -1,13 +1,17 @@
 package roomescape.controller;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -17,6 +21,38 @@ class ReservationControllerE2ETest {
 
     private static final LocalDate PAST_DATE = LocalDate.now().minusDays(1);
     private static final LocalDate FUTURE_DATE = LocalDate.now().plusDays(1);
+
+    @DisplayName("정상 요청에 대한 예약을 생성한다")
+    @Sql("/initialize_theme_and_time.sql")
+    @Test
+    void 예약_생성() {
+        // given
+        Map<String, Object> requestBody = Map.of(
+                "name", "루드비코",
+                "date", FUTURE_DATE,
+                "timeId", 1,
+                "themeId", 1
+        );
+
+        // when
+        Response response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .when().post("/reservations");
+
+        // then
+        response.then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/admin" + response.getHeader(HttpHeaders.LOCATION))
+                .then().log().all()
+                .statusCode(200)
+                .body("name", is("루드비코"))
+                .body("date", is(FUTURE_DATE.toString()))
+                .body("time.id", is(1))
+                .body("theme.id", is(1));
+    }
 
     @DisplayName("지난 시점으로 예약하면 422 Unprocessable Entity를 응답한다")
     @Sql("/initialize_theme_and_time.sql")
