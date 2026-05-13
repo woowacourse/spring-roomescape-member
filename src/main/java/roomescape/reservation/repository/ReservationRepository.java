@@ -123,9 +123,9 @@ public class ReservationRepository {
         return jdbcTemplate.queryForObject(sql, Boolean.class, scheduleId);
     }
 
-    public void delete(Long id) {
+    public int delete(Long id) {
         String sql = "delete from reservation where id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 
     public Optional<Reservation> findById(Long id) {
@@ -169,8 +169,8 @@ public class ReservationRepository {
         }
     }
 
-    public int delete(Long reservationId, User user) {
-        String sql = "DELETE FROM reservation WHERE id = ? AND user_id = ?";
-        return jdbcTemplate.update(sql, reservationId, user.getId());
+    public int update(Long reservationId, Long newScheduleId, Long userId) {
+        String sql = "UPDATE reservation SET schedule_id = ? WHERE id = ? AND user_id = ?";
+        return jdbcTemplate.update(sql, newScheduleId, reservationId, userId);
     }
 }

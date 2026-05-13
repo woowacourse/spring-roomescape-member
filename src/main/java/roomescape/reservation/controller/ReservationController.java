@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,6 +47,15 @@ public class ReservationController {
             @PathVariable @NotNull(message = "예약 ID는 필수입니다.") @Positive(message = "예약 ID는 양수여야 합니다.") Long id,
             @RequestParam @NotBlank(message = "사용자 이름은 필수입니다.") String name) {
         reservationService.delete(id, name);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateMyReservation(
+            @PathVariable @NotNull(message = "예약 ID는 필수입니다.") @Positive(message = "예약 ID는 양수여야 합니다.") Long id,
+            @RequestParam @NotBlank(message = "사용자 이름은 필수입니다.") String name,
+            @RequestBody @Valid ReservationRequest request) {
+        reservationService.update(id, request.scheduleId(), name);
         return ResponseEntity.noContent().build();
     }
 }

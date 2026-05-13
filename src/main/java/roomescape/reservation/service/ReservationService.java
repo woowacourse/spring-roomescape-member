@@ -78,4 +78,32 @@ public class ReservationService {
 
         reservationRepository.delete(reservationId);
     }
+
+    // TODO: 너무 길다. (2026. 5. 13.)
+    @Transactional
+    public void update(Long reservationId, Long newScheduleId, String userName) {
+        User currentUser = userService.findByName(userName);
+        Schedule newSchedule = scheduleService.findById(newScheduleId);
+        Reservation reservationToUpdate = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+
+        if (!reservationToUpdate.getUser().getId().equals(currentUser.getId())) {
+            throw new IllegalArgumentException("본인의 예약만 변경할 수 있습니다.");
+        }
+        if (reservationToUpdate.getSchedule().isBefore()) {
+            throw new IllegalArgumentException("이미 지나간 예약은 변경할 수 없습니다.");
+        }
+        if (newSchedule.isBefore()) {
+            throw new IllegalArgumentException("지나간 시간으로 예약을 변경할 수 없습니다.");
+        }
+        if (reservationRepository.existsByScheduleId(newScheduleId)) {
+            throw new IllegalArgumentException("변경하려는 시간에 이미 예약이 있습니다.");
+        }
+
+        int updatedRows = reservationRepository.update(reservationId, newSchedule.getId(), currentUser.getId());
+
+        if (updatedRows == 0) {
+            throw new IllegalStateException("예약 변경에 실패했습니다. 예약 정보와 사용자 정보를 다시 확인해주세요.");
+        }
+    }
 }
