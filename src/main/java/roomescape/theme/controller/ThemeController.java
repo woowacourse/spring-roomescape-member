@@ -3,8 +3,8 @@ package roomescape.theme.controller;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
@@ -19,10 +19,8 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping("/top")
-    public ResponseEntity<List<ThemeResponse>> getTopThemes(
-            @RequestParam(defaultValue = "10") int limit
-    ) {
+    @GetMapping("/top/{limit}")
+    public ResponseEntity<List<ThemeResponse>> getTopThemes(@PathVariable int limit) {
         return ResponseEntity.ok(themeService.getTopThemes(limit));
     }
 }
