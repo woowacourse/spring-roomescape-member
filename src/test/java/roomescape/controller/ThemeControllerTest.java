@@ -8,9 +8,10 @@ import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ThemeControllerTest {
 
@@ -31,18 +32,17 @@ public class ThemeControllerTest {
     @Test
     void 인기_테마를_조회한다() {
         // given
-        setupPopularThemesViaApi();
-        LocalDate endDate = LocalDate.of(2026, 5, 5);
+        setupPopularThemes();
 
         // when & then
         RestAssured.given().log().all()
-                .when().get("/themes?endDate=" + endDate)
+                .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200)
                 .body("[0].name", is("공포의 저택"));
     }
 
-    private void setupPopularThemesViaApi() {
+    private void setupPopularThemes() {
         int time1 = createTime("10:00");
         int time2 = createTime("11:00");
         int time3 = createTime("12:00");
@@ -64,13 +64,14 @@ public class ThemeControllerTest {
         int theme9 = createTheme("우주 정거장", "고장난 우주 정거장에서 탈출하세요", "https://example.com/theme9.jpg");
         int theme10 = createTheme("고대 유적", "고대 유적의 수수께끼를 풀어보세요", "https://example.com/theme10.jpg");
 
-        String date1 = "2026-05-05";
-        String date2 = "2026-05-04";
-        String date3 = "2026-05-03";
-        String date4 = "2026-05-02";
-        String date5 = "2026-05-01";
-        String date6 = "2026-04-30";
-        String date7 = "2026-04-29";
+        LocalDate today = LocalDate.now();
+        String date1 = today.minusDays(1).toString();
+        String date2 = today.minusDays(2).toString();
+        String date3 = today.minusDays(3).toString();
+        String date4 = today.minusDays(4).toString();
+        String date5 = today.minusDays(5).toString();
+        String date6 = today.minusDays(6).toString();
+        String date7 = today.minusDays(7).toString();
 
         // theme1: 12건
         createReservation(date1, time1, theme1);
