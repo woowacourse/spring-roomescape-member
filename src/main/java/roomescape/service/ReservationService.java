@@ -83,4 +83,11 @@ public class ReservationService {
     public void delete(Long id) {
         reservationDao.delete(id);
     }
+
+    public List<ReservationResponseDto> getReservationsBy(String name) {
+        return reservationDao.findByName(name).stream()
+                .map(ReservationResponseDto::from)
+                .toList();
+    }
+
 }

@@ -206,13 +206,13 @@ async function handleReservationSubmit(event) {
 async function handleReservationSearch(event) {
   event.preventDefault();
   renderLoading(elements.searchResult, "예약을 조회하는 중입니다.");
-  const reservations = await requestJson("/reservations");
-  renderSearchResult(filterReservationsByName(reservations));
+  const reservations = await requestJson(reservationSearchUrl());
+  renderSearchResult(reservations);
 }
 
-function filterReservationsByName(reservations) {
+function reservationSearchUrl() {
   const name = elements.searchNameInput.value.trim();
-  return reservations.filter((reservation) => reservation.name === name);
+  return `/reservations?name=${encodeURIComponent(name)}`;
 }
 
 function renderSearchResult(reservations) {
@@ -266,8 +266,8 @@ async function cancelReservation(reservationId) {
 }
 
 async function refreshReservationSearch() {
-  const reservations = await requestJson("/reservations");
-  renderSearchResult(filterReservationsByName(reservations));
+  const reservations = await requestJson(reservationSearchUrl());
+  renderSearchResult(reservations);
 }
 
 async function createReservation() {
