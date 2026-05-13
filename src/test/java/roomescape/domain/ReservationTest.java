@@ -15,7 +15,7 @@ class ReservationTest {
     void create_ValidParameters_CreatesReservation() {
         Time time = new Time(1L, LocalTime.of(10, 0));
         Reservation reservation = new Reservation(1L, "브라운", LocalDate.now().plusDays(1), time,
-                new Theme(1L, null, null, null));
+                new Theme(1L, null, null, null), ReservationStatus.PENDING);
         assertThat(reservation.getName()).isEqualTo("브라운");
     }
 
@@ -24,7 +24,7 @@ class ReservationTest {
     void create_InvalidName_ThrowsException() {
         Time time = new Time(1L, LocalTime.of(10, 0));
         assertThatThrownBy(() -> new Reservation(1L, " ", LocalDate.now().plusDays(1), time,
-                new Theme(1L, null, null, null)))
+                new Theme(1L, null, null, null), ReservationStatus.PENDING))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -32,7 +32,7 @@ class ReservationTest {
     @DisplayName("예약 시간 객체가 null이면 예외가 발생한다.")
     void create_NullTime_ThrowsException() {
         assertThatThrownBy(() -> new Reservation(1L, "브라운", LocalDate.now().plusDays(1), null,
-                new Theme(1L, null, null, null)))
+                new Theme(1L, null, null, null), ReservationStatus.PENDING))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

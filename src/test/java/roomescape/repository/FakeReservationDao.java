@@ -1,12 +1,10 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationStatus;
 
 public class FakeReservationDao implements ReservationRepository {
 
@@ -26,8 +24,14 @@ public class FakeReservationDao implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         long id = sequence++;
-        Reservation savedReservation = new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        Reservation savedReservation = new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme(),
+                reservation.getReservationStatus()
+        );
         storage.put(id, savedReservation);
         return savedReservation;
     }
@@ -40,5 +44,12 @@ public class FakeReservationDao implements ReservationRepository {
     @Override
     public boolean isExistBy(Long themeId, LocalDate date, Long reservationTimeId) {
         return false;
+    }
+
+    @Override
+    public List<Reservation> findByName(String name) {
+        return storage.values().stream()
+                .filter(reservation -> Objects.equals(reservation.getName(), name))
+                .toList();
     }
 }

@@ -10,6 +10,7 @@ public class Reservation {
     private final LocalDate date;
     private final Time time;
     private final Theme theme;
+    private ReservationStatus reservationStatus;
 
     public Reservation(String name, LocalDate date, Time time, Theme theme) {
         validate(name, date, time, theme);
@@ -18,19 +19,28 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.reservationStatus = ReservationStatus.PENDING;
     }
 
-    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme, ReservationStatus reservationStatus) {
         validate(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.reservationStatus = reservationStatus;
     }
 
     public Reservation of(Long id, Reservation reservation) {
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        return new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme(),
+                reservation.getReservationStatus()
+        );
     }
 
     private void validate(String name, LocalDate date, Time time, Theme theme) {
@@ -66,6 +76,19 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public ReservationStatus getReservationStatus() {
+        return reservationStatus;
+    }
+
+    public void cancel() {
+
+
+
+
+
+        this.reservationStatus = ReservationStatus.CANCELLED;
     }
 
     @Override
