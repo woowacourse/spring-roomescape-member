@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.InvalidInputException;
 import roomescape.exception.ResourceInUseException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -92,19 +93,6 @@ class ReservationTimeServiceTest {
         // then
         verify(reservationRepository).existsByTimeId(id);
         verify(reservationTimeRepository).delete(id);
-    }
-
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(longs = {0, -1})
-    void 삭제하려는_id가_양수가_아니면_예외_발생(Long id) {
-        // when & then
-        assertThatThrownBy(() -> service.delete(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] id는 양수이어야 합니다.");
-
-        verify(reservationRepository, never()).existsByTimeId(anyLong());
-        verify(reservationTimeRepository, never()).delete(anyLong());
     }
 
     @Test

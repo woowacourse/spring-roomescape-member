@@ -255,6 +255,95 @@ public class MissionStepTest {
     }
 
     @Test
+    void 유효하지_않은_입력값_에러_응답() {
+        Map<String, String> reservation = new HashMap<>();
+        reservation.put("name", "");
+        reservation.put("date", "2099-01-01");
+        reservation.put("timeId", "1");
+        reservation.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_INPUT"))
+                .body("detail", is("이름은 비어 있을 수 없습니다."));
+    }
+
+    @Test
+    void 날짜_형식_에러_응답() {
+        RestAssured.given().log().all()
+                .when().get("/themes/1/times?date=invalid-date")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("INVALID_INPUT"))
+                .body("detail", is("날짜 또는 시간 형식이 올바르지 않습니다."));
+    }
+
+    @Test
+    void 지난_예약_에러_응답() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", LocalDate.now().minusDays(1).toString());
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("code", is("PAST_RESERVATION"))
+                .body("detail", is("이미 지난 시간으로는 예약할 수 없습니다."));
+    }
+
+    @Test
+    void 존재하지_않는_리소스_에러_응답() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", LocalDate.now().plusDays(1).toString());
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 999);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404)
+                .body("code", is("NOT_FOUND"))
+                .body("detail", is("존재하지 않는 테마입니다."));
+    }
+
+    @Test
+    void 중복_예약_에러_응답() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", LocalDate.now().plusDays(1).toString());
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409)
+                .body("code", is("DUPLICATE_RESERVATION"))
+                .body("detail", is("이미 예약된 시간입니다."));
+    }
+
+    @Test
     void 계층화_리팩터링() {
         boolean isJdbcTemplateInjected = false;
 
@@ -340,6 +429,8 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().get("/images/themes/not-found.png")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(404)
+                .body("code", is("NOT_FOUND"))
+                .body("detail", is("존재하지 않는 리소스입니다."));
     }
 }

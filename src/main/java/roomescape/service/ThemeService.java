@@ -32,12 +32,11 @@ public class ThemeService {
         Theme theme = new Theme(null, name, description, thumbnail);
         Long id = themeRepository.insert(theme);
         return themeRepository.findBy(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("생성된 테마를 찾을 수 없습니다."));
     }
 
     @Transactional
     public void delete(Long id) {
-        validateId(id);
         validateDeletable(id);
         themeRepository.delete(id);
     }
@@ -47,12 +46,6 @@ public class ThemeService {
         LocalDate startDate = today.minusWeeks(1);
         LocalDate endDate = today.minusDays(1);
         return themeRepository.findPopular(startDate, endDate, 10);
-    }
-
-    private void validateId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("[ERROR] id는 양수이어야 합니다.");
-        }
     }
 
     private void validateDeletable(Long id) {

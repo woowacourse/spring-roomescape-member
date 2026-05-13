@@ -11,6 +11,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.repository.ReservationRepository;
@@ -270,18 +271,6 @@ class ReservationServiceTest {
 
         // then
         verify(reservationRepository).delete(id);
-    }
-
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(longs = {0, -1})
-    void 삭제하려는_id가_양수가_아니면_예외_발생(Long id) {
-        // when & then
-        assertThatThrownBy(() -> service.delete(id))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] id는 양수이어야 합니다.");
-
-        verify(reservationRepository, never()).delete(anyLong());
     }
 
     @Test

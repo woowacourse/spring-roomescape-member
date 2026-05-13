@@ -50,7 +50,6 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        validateId(id);
         reservationRepository.delete(id);
     }
 
@@ -67,19 +66,9 @@ public class ReservationService {
                 .toList();
     }
 
-    private Reservation create(String name, LocalDate date, Long timeId, Long themeId, ReservationTime time) {
-        validateAlreadyReserved(date, timeId, themeId);
-        Theme theme = findTheme(themeId);
-        Reservation reservation = new Reservation(null, name, date, time, theme);
-        Long id = reservationRepository.insert(reservation);
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 ID입니다."));
-    }
-
-    private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existWith(date, timeId, themeId)) {
-            throw new DuplicateReservationException("이미 예약된 시간입니다.");
-        }
+    private ReservationTime findReservationTime(Long timeId) {
+        return reservationTimeRepository.findBy(timeId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
     }
 
     private void validateNotPast(LocalDate date, ReservationTime time) {
@@ -89,24 +78,28 @@ public class ReservationService {
         }
     }
 
+    private Reservation create(String name, LocalDate date, Long timeId, Long themeId, ReservationTime time) {
+        validateAlreadyReserved(date, timeId, themeId);
+        Theme theme = findTheme(themeId);
+        Reservation reservation = new Reservation(null, name, date, time, theme);
+        Long id = reservationRepository.insert(reservation);
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("생성된 예약을 찾을 수 없습니다."));
+    }
+
     private boolean isAvailable(ReservationTime time, List<Reservation> reservations) {
         return reservations.stream()
                 .noneMatch(reservation -> time.equals(reservation.getTime()));
     }
 
-    private ReservationTime findReservationTime(Long timeId) {
-        return reservationTimeRepository.findBy(timeId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
+    private void validateAlreadyReserved(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existWith(date, timeId, themeId)) {
+            throw new DuplicateReservationException("이미 예약된 시간입니다.");
+        }
     }
 
     private Theme findTheme(Long themeId) {
         return themeRepository.findBy(themeId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
-    }
-
-    private void validateId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("[ERROR] id는 양수이어야 합니다.");
-        }
     }
 }

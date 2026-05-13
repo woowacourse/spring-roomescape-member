@@ -1,37 +1,15 @@
 package roomescape.controller.dto;
 
-import roomescape.exception.InvalidInputException;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record ThemeRequest(
+        @NotBlank(message = "name은 비어 있을 수 없습니다.")
+        @Size(max = 255, message = "name은 255자를 넘을 수 없습니다.")
         String name,
+        @Size(max = 255, message = "description은 255자를 넘을 수 없습니다.")
         String description,
+        @Size(max = 255, message = "thumbnail는 255자를 넘을 수 없습니다.")
         String thumbnail
 ) {
-
-    public ThemeRequest {
-        validateName(name);
-        validateDescription(description);
-        validateThumbnail(thumbnail);
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new InvalidInputException("테마 이름은 비어 있을 수 없습니다.");
-        }
-        if (name.length() > 255) {
-            throw new InvalidInputException("테마 이름은 255자를 넘을 수 없습니다.");
-        }
-    }
-
-    private void validateDescription(String description) {
-        if (description != null && description.length() > 255) {
-            throw new InvalidInputException("테마 설명은 255자를 넘을 수 없습니다.");
-        }
-    }
-
-    private void validateThumbnail(String thumbnail) {
-        if (thumbnail != null && thumbnail.length() > 255) {
-            throw new InvalidInputException("썸네일 경로는 255자를 넘을 수 없습니다.");
-        }
-    }
 }

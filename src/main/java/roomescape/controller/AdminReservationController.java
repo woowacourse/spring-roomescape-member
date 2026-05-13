@@ -1,6 +1,9 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
@@ -10,6 +13,7 @@ import roomescape.service.ReservationService;
 import java.net.URI;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/admin/reservations")
 public class AdminReservationController {
@@ -29,7 +33,7 @@ public class AdminReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
         Reservation reservation = service.createAdminReservation(
                 request.name(),
                 request.date(),
@@ -40,7 +44,7 @@ public class AdminReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable @Positive(message = "id는 양수이어야 합니다.") Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

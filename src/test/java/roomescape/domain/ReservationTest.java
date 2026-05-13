@@ -27,7 +27,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(null, name, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이름은 비어 있을 수 없습니다.");
+                .hasMessage("name은 비어 있을 수 없습니다.");
     }
 
     @Test
@@ -40,7 +40,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(null, name, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이름은 255자를 넘을 수 없습니다.");
+                .hasMessage("name은 255자를 넘을 수 없습니다.");
     }
 
     @Test
@@ -52,7 +52,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(null, "구구", null, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 날짜는 비어 있을 수 없습니다.");
+                .hasMessage("date는 비어 있을 수 없습니다.");
         ;
     }
 
@@ -64,7 +64,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(null, "홍길동", date, null, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 예약 시간은 비어있을 수 없습니다.");
+                .hasMessage("time은 비어있을 수 없습니다.");
     }
 
     @Test
@@ -75,7 +75,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(null, "홍길동", date, time, null))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마는 비어있을 수 없습니다.");
+                .hasMessage("theme는 비어있을 수 없습니다.");
     }
 
     @ParameterizedTest
