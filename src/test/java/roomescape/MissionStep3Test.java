@@ -66,7 +66,7 @@ public class MissionStep3Test {
 
         Map<String, Object> reservation = reservationRequestBody(
                 "브라운",
-                LocalDate.of(2023, 8, 5),
+                LocalDate.of(2026, 5, 10),
                 reservationTimeId.longValue(),
                 themeId.longValue()
         );

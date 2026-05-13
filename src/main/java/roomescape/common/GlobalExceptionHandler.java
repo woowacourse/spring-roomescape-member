@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservation.exception.ReservationNotFoundException;
+import roomescape.reservation.exception.ReservationPastDateTimeException;
 import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.theme.exception.ThemeNotFoundException;
@@ -51,6 +52,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body("요청 본문 형식이 올바르지 않습니다.");
+    }
+
+    @ExceptionHandler(ReservationPastDateTimeException.class)
+    public ResponseEntity<String> handleReservationPastDateTimeException(ReservationPastDateTimeException e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(e.getMessage());
     }
 
 }

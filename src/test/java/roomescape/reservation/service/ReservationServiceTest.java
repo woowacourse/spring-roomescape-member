@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.exception.ReservationDuplicatedException;
 import roomescape.reservation.exception.ReservationNotFoundException;
+import roomescape.reservation.exception.ReservationPastDateTimeException;
 import roomescape.reservation.payload.ReservationRequest;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
@@ -43,7 +44,7 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest("테마"));
         ReservationRequest reservationRequest = reservationRequest(
                 "봉구스",
-                LocalDate.of(2026, 5, 6),
+                LocalDate.of(2026, 5, 10),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -75,7 +76,7 @@ class ReservationServiceTest {
         ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
         ReservationRequest reservationRequest = reservationRequest(
                 "봉구스",
-                LocalDate.of(2026, 5, 6),
+                LocalDate.of(2026, 5, 10),
                 reservationTime.getId(),
                 999L
         );
@@ -91,13 +92,13 @@ class ReservationServiceTest {
         Theme theme2 = themeService.save(themeRequest("테마2"));
         ReservationRequest reservationRequest1 = reservationRequest(
                 "봉구스",
-                LocalDate.of(2026, 5, 6),
+                LocalDate.of(2026, 5, 10),
                 reservationTime.getId(),
                 theme1.getId()
         );
         ReservationRequest reservationRequest2 = reservationRequest(
                 "봉구스",
-                LocalDate.of(2026, 5, 6),
+                LocalDate.of(2026, 5, 10),
                 reservationTime.getId(),
                 theme2.getId()
         );
@@ -114,7 +115,7 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest("테마"));
         ReservationRequest reservationRequest = reservationRequest(
                 "봉구스",
-                LocalDate.of(2026, 5, 6),
+                LocalDate.of(2026, 5, 10),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -131,7 +132,7 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest("테마"));
         ReservationRequest reservationRequest = reservationRequest(
                 "봉구스",
-                LocalDate.of(2026, 5, 6),
+                LocalDate.of(2026, 5, 10),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -148,7 +149,7 @@ class ReservationServiceTest {
         Theme theme = themeService.save(themeRequest("테마"));
         ReservationRequest reservationRequest = reservationRequest(
                 "봉구스",
-                LocalDate.of(2026, 5, 6),
+                LocalDate.of(2026, 5, 10),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -164,6 +165,21 @@ class ReservationServiceTest {
     void 없는_예약을_삭제하면_에러를_던진다() {
         assertThatThrownBy(() -> reservationService.deleteById(999L))
                 .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @Test
+    void 지난_날짜와_시간으로_예약하면_에러를_던진다() {
+        ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequest(LocalTime.of(10, 0)));
+        Theme theme = themeService.save(themeRequest("테마"));
+        ReservationRequest reservationRequest = reservationRequest(
+                "봉구스",
+                LocalDate.of(2001, 5, 1),
+                reservationTime.getId(),
+                theme.getId()
+        );
+
+        assertThatThrownBy(() -> reservationService.save(reservationRequest))
+                .isInstanceOf(ReservationPastDateTimeException.class);
     }
 
 }

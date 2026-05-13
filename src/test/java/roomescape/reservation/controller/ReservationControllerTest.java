@@ -54,7 +54,7 @@ class ReservationControllerTest {
         Theme theme = themeService.save(themeRequest("테마"));
         Map<String, Object> request = reservationRequestBody(
                 "밀란",
-                LocalDate.of(2026, 5, 3),
+                LocalDate.of(2026, 5, 10),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -65,7 +65,7 @@ class ReservationControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", containsString("/reservations/")))
                 .andExpect(jsonPath("$.name").value("밀란"))
-                .andExpect(jsonPath("$.date").value("2026-05-03"))
+                .andExpect(jsonPath("$.date").value("2026-05-10"))
                 .andExpect(jsonPath("$.time.id").value(reservationTime.getId()))
                 .andExpect(jsonPath("$.theme.id").value(theme.getId()));
     }
@@ -76,7 +76,7 @@ class ReservationControllerTest {
         Theme theme = themeService.save(themeRequest("테마"));
         Map<String, Object> request = reservationRequestBody(
                 "밀란",
-                LocalDate.of(2026, 5, 3),
+                LocalDate.of(2026, 5, 10),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -85,7 +85,7 @@ class ReservationControllerTest {
         mockMvc.perform(get("/reservations"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*].name", hasItem("밀란")))
-                .andExpect(jsonPath("$[*].date", hasItem("2026-05-03")))
+                .andExpect(jsonPath("$[*].date", hasItem("2026-05-10")))
                 .andExpect(jsonPath("$[*].time.id", hasItem(reservationTime.getId().intValue())))
                 .andExpect(jsonPath("$[*].theme.runtime", hasItem(60)));
     }
@@ -96,7 +96,7 @@ class ReservationControllerTest {
         Theme theme = themeService.save(themeRequest("테마"));
         Map<String, Object> request = reservationRequestBody(
                 "밀란",
-                LocalDate.of(2026, 5, 3),
+                LocalDate.of(2026, 5, 10),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -122,7 +122,7 @@ class ReservationControllerTest {
         Theme theme = themeService.save(themeRequest("테마"));
         Map<String, Object> request = reservationRequestBody(
                 "밀란",
-                LocalDate.of(2026, 5, 6),
+                LocalDate.of(2026, 5, 10),
                 reservationTime.getId(),
                 theme.getId()
         );
