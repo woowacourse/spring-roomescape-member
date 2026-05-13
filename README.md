@@ -197,12 +197,21 @@
 - 응답 `200 OK`
 
 ```json
+
 {
-  "id": 2,
-  "name": "이산",
-  "dateId": 1,
-  "timeId": 2,
-  "themeId": 1
+  "id": 1,
+  "name": "보예",
+  "date": "2026-05-05",
+  "time": {
+    "id": 1,
+    "startAt": "10:00"
+  },
+  "theme": {
+    "id": 1,
+    "name": "공포",
+    "content": "오금이 저리는 공포입니다.",
+    "url": "/themes/scary"
+  }
 }
 ```
 
