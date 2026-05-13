@@ -7,10 +7,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.global.exception.InfrastructureException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
-import roomescape.global.exception.InfrastructureException;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -22,22 +22,22 @@ import java.util.Optional;
 public class JdbcReservationRepository implements ReservationRepository {
     private static final Logger log = LoggerFactory.getLogger(JdbcReservationRepository.class);
     private static final String SELECT_RESERVATION_WITH_TIME_AND_THEME = """
-        SELECT
-            r.id AS reservation_id,
-            r.name,
-            r.date,
-            t.id AS time_id,
-            t.start_at,
-            th.id AS theme_id,
-            th.name AS theme_name,
-            th.description AS theme_description,
-            th.thumbnail AS theme_thumbnail
-        FROM reservation r
-        INNER JOIN reservation_time t
-            ON r.time_id = t.id
-        INNER JOIN theme th
-            ON r.theme_id = th.id
-        """;
+            SELECT
+                r.id AS reservation_id,
+                r.name,
+                r.date,
+                t.id AS time_id,
+                t.start_at,
+                th.id AS theme_id,
+                th.name AS theme_name,
+                th.description AS theme_description,
+                th.thumbnail AS theme_thumbnail
+            FROM reservation r
+            INNER JOIN reservation_time t
+                ON r.time_id = t.id
+            INNER JOIN theme th
+                ON r.theme_id = th.id
+            """;
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
@@ -106,6 +106,22 @@ public class JdbcReservationRepository implements ReservationRepository {
         return reservation.withId(id);
     }
 
+    @Override
+    public boolean update(Reservation reservation) {
+        String sql = """
+                UPDATE reservation
+                SET date = ?, time_id = ?
+                WHERE id = ?
+                """;
+
+        return jdbcTemplate.update(
+                sql,
+                Date.valueOf(reservation.getDate()),
+                reservation.getTime().getId(),
+                reservation.getId()
+        ) == 1;
+    }
+
     private int insert(Reservation reservation, KeyHolder keyHolder) {
         String sql = """
                 INSERT INTO reservation (name, date, time_id, theme_id)
@@ -157,12 +173,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public boolean existsByTimeId(Long timeId) {
         String sql = """
-        SELECT EXISTS (
-            SELECT 1
-            FROM reservation
-            WHERE time_id = ?
-        )
-        """;
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
+                )
+                """;
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
     }
@@ -170,12 +186,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM reservation
-                WHERE date = ? AND time_id = ? AND theme_id = ?
-            )
-            """;
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE date = ? AND time_id = ? AND theme_id = ?
+                )
+                """;
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
     }

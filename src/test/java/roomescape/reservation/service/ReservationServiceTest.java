@@ -211,4 +211,112 @@ class ReservationServiceTest {
                 .isInstanceOf(InvalidRequestException.class)
                 .hasMessage("이미 지난 예약은 취소할 수 없습니다.");
     }
+
+    @Test
+    @DisplayName("사용자가 본인 예약의 날짜와 시간을 변경한다.")
+    public void updateDateTime_success() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime newTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+
+        // when
+        Reservation updatedReservation = reservationService.updateDateTime(
+                reservation.getId(),
+                "브라운",
+                LocalDate.of(2026, 5, 15),
+                newTime.getId()
+        );
+
+        // then
+        assertThat(updatedReservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 15));
+        assertThat(updatedReservation.getTime()).isEqualTo(newTime);
+
+        Reservation savedReservation = reservationService.findAll().get(0);
+        assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2026, 5, 15));
+        assertThat(savedReservation.getTime()).isEqualTo(newTime);
+    }
+
+    @Test
+    @DisplayName("이미 예약된 날짜, 시간, 테마로 예약을 변경하면 예외가 발생한다.")
+    public void updateDateTime_fail_whenDuplicatedReservation() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime occupiedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+
+        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+        reservationService.create("레아", LocalDate.of(2026, 5, 15), occupiedTime.getId(), theme.getId());
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.updateDateTime(
+                reservation.getId(),
+                "브라운",
+                LocalDate.of(2026, 5, 15),
+                occupiedTime.getId()
+        ))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("선택한 날짜와 시간에는 이미 해당 테마의 예약이 있습니다. 다른 시간을 선택해주세요.");
+    }
+
+    @Test
+    @DisplayName("현재 예약과 같은 날짜와 시간으로 변경하면 예외가 발생한다.")
+    public void updateDateTime_fail_whenSameSchedule() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.updateDateTime(
+                reservation.getId(),
+                "브라운",
+                LocalDate.of(2026, 5, 14),
+                time.getId()
+        ))
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessage("변경할 날짜와 시간을 현재 예약과 다르게 선택해주세요.");
+    }
+
+    @Test
+    @DisplayName("현재 시각보다 이전 날짜와 시간으로 예약을 변경하면 예외가 발생한다.")
+    public void updateDateTime_fail_whenPastDateTime() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime pastTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Reservation reservation = reservationService.create("브라운", LocalDate.of(2026, 5, 14), time.getId(), theme.getId());
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.updateDateTime(
+                reservation.getId(),
+                "브라운",
+                LocalDate.of(2026, 5, 13),
+                pastTime.getId()
+        ))
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessage("현재 시각 이후의 날짜와 시간을 선택해주세요.");
+    }
+
+    @Test
+    @DisplayName("이미 지난 예약을 변경하면 예외가 발생한다.")
+    public void updateDateTime_fail_whenPastReservation() {
+        // given
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
+        ReservationTime newTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://example.com/theme.png"));
+        Reservation reservation = reservationRepository.save(
+                new Reservation("브라운", LocalDate.of(2026, 5, 13), time, theme));
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.updateDateTime(
+                reservation.getId(),
+                "브라운",
+                LocalDate.of(2026, 5, 14),
+                newTime.getId()
+        ))
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessage("이미 지난 예약은 변경할 수 없습니다.");
+    }
 }

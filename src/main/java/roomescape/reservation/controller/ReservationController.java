@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationCreateRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationUpdateRequest;
 import roomescape.reservation.dto.ReservationsResponse;
 import roomescape.reservation.service.ReservationService;
 
@@ -57,6 +59,24 @@ public class ReservationController {
 
         return ResponseEntity.ok(ReservationsResponse.from(reservations));
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReservationResponse> updateDateTime(
+            @Positive(message = "예약 id는 1 이상의 숫자여야 합니다.")
+            @PathVariable Long id,
+
+            @Valid @RequestBody ReservationUpdateRequest request
+    ) {
+        Reservation reservation = reservationService.updateDateTime(
+                id,
+                request.name(),
+                request.date(),
+                request.timeId()
+        );
+
+        return ResponseEntity.ok(ReservationResponse.from(reservation));
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancel(
