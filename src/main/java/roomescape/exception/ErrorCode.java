@@ -11,6 +11,7 @@ public enum ErrorCode {
 
     // Reservation
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."),
+    DUPLICATE_RESERVATION(HttpStatus.CONFLICT, "이미 예약된 시간입니다."),
 
     // ReservationTime
     RESERVATION_TIME_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 예약 시간입니다."),

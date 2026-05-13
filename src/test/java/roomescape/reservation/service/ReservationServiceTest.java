@@ -112,4 +112,18 @@ class ReservationServiceTest {
 
         verify(reservationRepository).deleteById(999L);
     }
+
+    @Test
+    void 이미_예약된_예약_시간인_경우_예외가_발생한다() {
+        ReservationTime newTime = new ReservationTime(2L, LocalTime.of(12, 0));
+        Theme theme = new Theme(1L, "공포방", "무서운방입니다.", "image-url");
+        when(reservationTimeRepository.findById(any())).thenReturn(Optional.of(newTime));
+        when(themeRepository.findById(any())).thenReturn(Optional.of(theme));
+        when(reservationRepository.existsByDateAndTimeIdAndThemeId(any(), any(), any())).thenReturn(true);
+
+        assertThatThrownBy(() -> reservationService.createReservation("레서", LocalDate.of(2026, 5, 13), 1L, 1L))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.DUPLICATE_RESERVATION);
+    }
 }

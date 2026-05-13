@@ -40,6 +40,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
 
+        validateUnique(date, timeId, themeId);
         Reservation reservation = new Reservation(null, name, date, time, theme);
 
         return reservationRepository.save(reservation);
@@ -48,5 +49,11 @@ public class ReservationService {
     @Transactional
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    private void validateUnique(LocalDate date, Long timeId, Long themeId) {
+        if(reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new BusinessException(ErrorCode.DUPLICATE_RESERVATION);
+        }
     }
 }
