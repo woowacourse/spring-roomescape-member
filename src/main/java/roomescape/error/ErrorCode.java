@@ -11,6 +11,8 @@ public enum ErrorCode {
     PAST_RESERVATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "지난 날짜와 시간으로 예약할 수 없습니다."),
     DUPLICATE_RESERVATION(HttpStatus.CONFLICT, "이미 예약된 시간입니다."),
     RESERVED_TIME_DELETE_NOT_ALLOWED(HttpStatus.CONFLICT, "예약이 존재하는 시간은 삭제할 수 없습니다."),
+    PAST_RESERVATION_CANCEL_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "이미 지난 예약은 취소할 수 없습니다."),
+    RESERVATION_OWNER_MISMATCH(HttpStatus.FORBIDDEN, "본인의 예약만 취소·변경할 수 있습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
 
     private final HttpStatus httpStatus;
