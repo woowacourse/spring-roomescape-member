@@ -55,43 +55,46 @@ public class ReservationService {
         return reservationRepository.addReservation(reservation);
     }
 
-    private void validateDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
-            throw new IllegalArgumentException("이미 존재하는 예약입니다.");
-        }
-    }
-
     private void validateReservableDateTime(LocalDate date, LocalTime startAt) {
         if (date == null || startAt == null) {
-            throw new IllegalArgumentException("유효하지 않은 예약 날짜 또는 시간입니다.");
+            throw new RoomescapeException(ErrorCode.INVALID_INPUT);
         }
 
         LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
 
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("지난 날짜와 시간은 예약할 수 없습니다.");
+            throw new RoomescapeException(ErrorCode.RESERVATION_PAST_TIME);
+        }
+    }
+
+    private void validateDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_DUPLICATED);
         }
     }
 
     @NonNull
     private ReservationTime findReservationTime(ReservationSaveCommand command) {
         return reservationTimeRepository.findById(command.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 
     @NonNull
     private Theme findTheme(ReservationSaveCommand command) {
         return themeRepository.findById(command.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new RoomescapeException(ErrorCode.THEME_NOT_FOUND));
     }
 
+    @NonNull
     public List<Reservation> findReservationsByName(String name) {
         if (Objects.isNull(name)) {
-            throw new IllegalArgumentException("이름은 필수입니다.");
+            throw new RoomescapeException(ErrorCode.INVALID_INPUT);
         }
+
         List<Reservation> reservations = reservationRepository.findReservationsByName(name);
+
         if (reservations.isEmpty()) {
-            throw new IllegalArgumentException("예약을 찾을 수 없습니다.");
+            throw new RoomescapeException(ErrorCode.RESERVATION_NOT_FOUND);
         }
 
         return reservations;

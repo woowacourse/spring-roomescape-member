@@ -25,10 +25,11 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
+        if (!reservationTimeRepository.existsById(id)) {
+            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND);
+        }
 
-        if (reservationTimeRepository.existsByTimeId(id)) {
+        if (reservationTimeRepository.existsReservationByTimeId(id)) {
             throw new RoomescapeException(ErrorCode.RESERVATION_TIME_IN_USE);
         }
 

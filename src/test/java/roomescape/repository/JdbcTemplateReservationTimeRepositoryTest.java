@@ -75,13 +75,30 @@ class JdbcTemplateReservationTimeRepositoryTest {
         assertThat(count).isEqualTo(0);
     }
 
+    @Test
+    @DisplayName("id에 해당하는 예약 시간이 존재하는지 확인한다")
+    void existsById() {
+        long id = addTime(LocalTime.of(10, 0));
+
+        boolean exists = reservationTimeRepository.existsById(id);
+
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("id에 해당하는 예약 시간이 없으면 존재하지 않는다고 판단한다")
+    void notExistsById() {
+        boolean exists = reservationTimeRepository.existsById(-1L);
+
+        assertThat(exists).isFalse();
+    }
 
     @Test
     @DisplayName("예약이 존재하는 경우 예약 시간 삭제를 할 수 없다")
     void existsTime_WhenReservationAlreadyExist() {
         long timeId = addReservedTime();
 
-        boolean exists = reservationTimeRepository.existsByTimeId(timeId);
+        boolean exists = reservationTimeRepository.existsReservationByTimeId(timeId);
 
         assertThat(exists).isTrue();
     }
@@ -91,7 +108,7 @@ class JdbcTemplateReservationTimeRepositoryTest {
     void notExistsTime_WhenReservationDoesNotExist() {
         long timeId = addTime(DEFAULT_START_AT);
 
-        boolean exists = reservationTimeRepository.existsByTimeId(timeId);
+        boolean exists = reservationTimeRepository.existsReservationByTimeId(timeId);
 
         assertThat(exists).isFalse();
     }

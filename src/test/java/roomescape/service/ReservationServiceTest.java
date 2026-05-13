@@ -77,7 +77,8 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_TIME_NOT_FOUND));
     }
 
     @Test
@@ -90,7 +91,8 @@ class ReservationServiceTest {
         given(themeRepository.findById(THEME_ID)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.THEME_NOT_FOUND));
     }
 
     @Test
@@ -113,8 +115,19 @@ class ReservationServiceTest {
     void throwException_WhenNoReservationsByName() {
         given(reservationRepository.findReservationsByName(any())).willReturn(List.of());
         assertThatThrownBy(() -> reservationService.findReservationsByName(" "))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_NOT_FOUND));
         verify(reservationRepository, times(1)).findReservationsByName(any());
+    }
+
+    @Test
+    @DisplayName("사용자명이 null이면 예외가 발생한다")
+    void throwException_WhenReservationNameIsNull() {
+        assertThatThrownBy(() -> reservationService.findReservationsByName(null))
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_INPUT));
+
+        verify(reservationRepository, never()).findReservationsByName(any());
     }
 
     @Test
@@ -165,8 +178,8 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("지난 날짜와 시간은 예약할 수 없습니다.");
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_PAST_TIME));
     }
 
     @Test
@@ -183,8 +196,8 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findById(TIME_ID)).willReturn(Optional.of(time));
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("지난 날짜와 시간은 예약할 수 없습니다.");
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_PAST_TIME));
     }
 
     @Test
@@ -206,8 +219,8 @@ class ReservationServiceTest {
                 .willReturn(true);
 
         assertThatThrownBy(() -> reservationService.saveReservation(saveCommand))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 예약입니다.");
+                .isInstanceOfSatisfying(RoomescapeException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.RESERVATION_DUPLICATED));
     }
 
 
