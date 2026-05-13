@@ -282,6 +282,12 @@ hr {
     white-space: nowrap; /* 날짜나 시간이 중간에 끊기지 않도록 */
 }
 
+/* 예약 아이템 버튼 컨테이너 */
+.reservation-item-buttons {
+    display: flex;
+    gap: 8px;
+}
+
 /* 예약 취소 버튼 스타일 */
 .my-reservations-list-section .delete-btn.small {
     background-color: #e74c3c;
@@ -294,4 +300,18 @@ hr {
 
 .my-reservations-list-section .delete-btn.small:hover {
     background-color: #c0392b;
+}
+
+/* 예약 변경 버튼 스타일 */
+.my-reservations-list-section .change-btn.small {
+    background-color: #3498db;
+    color: white;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    width: auto;
+    flex-shrink: 0;
+}
+
+.my-reservations-list-section .change-btn.small:hover {
+    background-color: #2980b9;
 }

@@ -2,6 +2,10 @@
 
 // 현재 로그인한 사용자 이름을 저장할 변수
 let currentUser = '';
+// 🚨 예약 변경 모드를 위한 전역 변수
+let isUpdateMode = false;
+let reservationToUpdateId = null;
+
 
 // 로그인 버튼 클릭 이벤트
 document.getElementById('login-btn').addEventListener('click', () => {
@@ -53,12 +57,20 @@ document.getElementById('my-reservations-nav-btn').addEventListener('click', () 
 
 // '예약하기' 페이지로 돌아가기 버튼 클릭 이벤트 (새로 추가된 버튼)
 document.getElementById('back-to-reservation-btn').addEventListener('click', () => {
+    resetToCreateMode(); // 🚨 생성 모드로 초기화
     document.getElementById('my-reservations-section').classList.add('hidden');
     document.getElementById('reservation-section').classList.remove('hidden');
 });
 
 // 🚨 '내 예약 목록' 리스트에 이벤트 위임을 사용하여 클릭 이벤트 처리
 document.getElementById('my-reservation-list').addEventListener('click', (event) => {
+    // 클릭된 요소가 'change-btn' 클래스를 가지고 있는지 확인
+    if (event.target.classList.contains('change-btn')) {
+        reservationToUpdateId = event.target.dataset.id;
+        enterUpdateMode();
+        return;
+    }
+
     // 클릭된 요소가 'delete-btn' 클래스를 가지고 있는지 확인
     if (event.target.classList.contains('delete-btn')) {
         const reservationId = event.target.dataset.id;
@@ -67,6 +79,30 @@ document.getElementById('my-reservation-list').addEventListener('click', (event)
         }
     }
 });
+
+// 🚨 예약 변경 모드로 진입하는 함수
+function enterUpdateMode() {
+    isUpdateMode = true;
+
+    // 1. 화면 전환
+    document.getElementById('my-reservations-section').classList.add('hidden');
+    document.getElementById('reservation-section').classList.remove('hidden');
+
+    // 2. UI 텍스트 변경
+    document.querySelector('.reservation-form h2').textContent = '변경할 시간 선택';
+    document.getElementById('reserve-btn').textContent = '예약 변경하기';
+
+    // 3. 기존 선택 초기화
+    document.getElementById('schedule-list').innerHTML = '<li class="empty-message">변경할 테마와 날짜를 선택한 후 조회해주세요.</li>';
+}
+
+// 🚨 예약 생성 모드로 돌아가는 함수
+function resetToCreateMode() {
+    isUpdateMode = false;
+    reservationToUpdateId = null;
+    document.querySelector('.reservation-form h2').textContent = '예약 가능한 시간';
+    document.getElementById('reserve-btn').textContent = '예약하기';
+}
 
 
 // =================================================================================================
@@ -219,7 +255,7 @@ function loadMyReservations() {
                 const formattedEndTime = endDateTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 
                 // 🚨 "테마: " 레이블을 추가하고, div와 span으로 구조화하여 CSS로 제어하기 쉽게 만듭니다.
-                // 🚨 오른쪽에 '취소' 버튼을 추가합니다.
+                // 🚨 오른쪽에 '변경'과 '취소' 버튼을 추가합니다.
                 li.innerHTML = `
                     <div class="reservation-item-content">
                         <div class="reservation-item-header"><strong>테마: ${reservation.themeName}</strong></div>
@@ -228,7 +264,10 @@ function loadMyReservations() {
                             <span>시간: ${formattedStartTime} ~ ${formattedEndTime}</span>
                         </div>
                     </div>
-                    <button class="delete-btn small" data-id="${reservation.reservationId}">취소</button>
+                    <div class="reservation-item-buttons">
+                        <button class="change-btn small" data-id="${reservation.reservationId}">변경</button>
+                        <button class="delete-btn small" data-id="${reservation.reservationId}">취소</button>
+                    </div>
                 `;
                 myReservationList.appendChild(li);
             });
@@ -258,11 +297,58 @@ function deleteMyReservation(id) {
         .catch(error => console.error('예약 취소 중 에러:', error));
 }
 
+// =================================================================================================
+// ✅ 사용자 본인의 예약 변경
+// API 명세: PUT /reservations/{id}?name={name}
+// =================================================================================================
+function updateMyReservation() {
+    const selectedScheduleRadio = document.querySelector('input[name="schedule"]:checked');
+    if (!selectedScheduleRadio) {
+        alert("변경할 시간을 선택해주세요.");
+        return;
+    }
+    const newScheduleId = selectedScheduleRadio.value;
+
+    // 백엔드 DTO에 맞춰 요청 본문 생성
+    const updateData = {
+        scheduleId: parseInt(newScheduleId),
+        name: currentUser // 이 필드는 컨트롤러에서 사용되지 않지만 DTO 형식을 맞추기 위해 포함
+    };
+
+    fetch(`/reservations/${reservationToUpdateId}?name=${currentUser}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData)
+    })
+        .then(response => {
+            if (response.ok) { // 200 OK
+                alert('예약이 성공적으로 변경되었습니다.');
+                resetToCreateMode(); // 상태 초기화
+                // '내 예약 보기' 페이지로 돌아가서 새로고침
+                document.getElementById('reservation-section').classList.add('hidden');
+                document.getElementById('my-reservations-section').classList.remove('hidden');
+                loadMyReservations();
+                loadPopularThemes(); // 인기 테마 통계도 바뀔 수 있으므로 새로고침
+            } else {
+                response.json().then(errorBody => {
+                    alert(`예약 변경 실패: ${errorBody.message || '알 수 없는 오류'}`);
+                });
+            }
+        })
+        .catch(error => console.error('예약 변경 중 에러:', error));
+}
+
 
 // =================================================================================================
 // ✅ TODO 3: '예약하기' 버튼 클릭 시 API(POST /reservations) 호출
 // =================================================================================================
 document.getElementById('reserve-btn').addEventListener('click', () => {
+    // 🚨 예약 생성 모드와 변경 모드를 분기합니다.
+    if (isUpdateMode) {
+        updateMyReservation();
+        return;
+    }
+
     const selectedScheduleRadio = document.querySelector('input[name="schedule"]:checked');
 
     if (!selectedScheduleRadio) {
