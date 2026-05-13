@@ -27,6 +27,11 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
+    public ReservationResponse find(String name) {
+        Reservation response = reservationDao.findByName(name);
+        return ReservationResponse.from(response);
+    }
+
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll()
             .stream()

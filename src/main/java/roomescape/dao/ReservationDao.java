@@ -56,6 +56,39 @@ public class ReservationDao {
         );
     }
 
+    public Reservation findByName(String name) {
+        return jdbcTemplate.queryForObject(
+                """
+                            SELECT r.id, r.name, r.date, rt.id AS time_id, rt.start_at,
+                            t.id AS theme_id, t.name AS theme_name, t.description, t.url
+                            FROM reservation r
+                            INNER JOIN reservation_time rt ON r.time_id = rt.id
+                            INNER JOIN theme t ON r.theme_id = t.id
+                            WHERE r.name = ?
+                        """,
+                (rs, rowNum) -> {
+                    ReservationTime time = new ReservationTime(
+                            rs.getLong("time_id"),
+                            rs.getTime("start_at").toLocalTime()
+                    );
+                    Theme theme = new Theme(
+                            rs.getLong("theme_id"),
+                            rs.getString("theme_name"),
+                            rs.getString("description"),
+                            rs.getString("url")
+                    );
+                    return new Reservation(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getDate("date").toLocalDate(),
+                            time,
+                            theme
+                    );
+                },
+                name
+        );
+    }
+
     public boolean existsBy(LocalDate date, Theme theme, ReservationTime time) {
         Boolean result = jdbcTemplate.queryForObject("""
         SELECT EXISTS(
