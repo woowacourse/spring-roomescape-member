@@ -15,6 +15,7 @@ import roomescape.domain.reservation.request.ReservationCreateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
 import roomescape.domain.reservation.response.ReservationsResponse;
 import roomescape.domain.reservationtime.entity.ReservationTime;
+import roomescape.domain.reservationtime.exception.TimeErrorCode;
 import roomescape.domain.reservationtime.repository.ReservationTimeRepository;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.exception.ThemeErrorCode;
@@ -53,7 +54,7 @@ public class ReservationService {
     @Transactional
     public ReservationResponse saveReservationByUser(ReservationCreateRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND));
 
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));
@@ -71,7 +72,7 @@ public class ReservationService {
                 request.date(),
                 request.timeId())
         ) {
-            throw new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND);
+            throw new BusinessException(ReservationErrorCode.DUPLICATE_RESERVATION);
         }
 
         Reservation reservation = Reservation.create(
@@ -89,7 +90,7 @@ public class ReservationService {
     @Transactional
     public ReservationResponse saveReservationByAdmin(ReservationCreateRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new BusinessException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(TimeErrorCode.RESERVATION_TIME_NOT_FOUND));
 
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new BusinessException(ThemeErrorCode.THEME_NOT_FOUND));

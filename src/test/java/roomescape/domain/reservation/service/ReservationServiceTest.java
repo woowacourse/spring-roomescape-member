@@ -29,6 +29,7 @@ import roomescape.domain.reservation.request.ReservationCreateRequest;
 import roomescape.domain.reservation.response.ReservationResponse;
 import roomescape.domain.reservation.response.ReservationsResponse;
 import roomescape.domain.reservationtime.entity.ReservationTime;
+import roomescape.domain.reservationtime.exception.TimeErrorCode;
 import roomescape.domain.reservationtime.repository.ReservationTimeRepository;
 import roomescape.domain.reservationtime.response.ReservationTimeResponse;
 import roomescape.domain.theme.entity.Theme;
@@ -127,8 +128,8 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.saveReservationByUser(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("해당 id의 ReservationTime이 존재하지 않습니다.");
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining(TimeErrorCode.RESERVATION_TIME_NOT_FOUND.getMessage());
     }
 
     @Test

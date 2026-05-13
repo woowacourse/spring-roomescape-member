@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.BusinessException;
 import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.exception.ThemeErrorCode;
 import roomescape.domain.theme.repository.PopularThemeResult;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.theme.repository.ThemeReservationTimeResult;
@@ -88,7 +90,7 @@ public class ThemeService {
         try {
             themeRepository.deleteById(themeId);
         } catch (DataIntegrityViolationException exception) {
-            throw new IllegalStateException();
+            throw new BusinessException(ThemeErrorCode.THEME_DELETE_CONFLICT, exception);
         }
     }
 }
