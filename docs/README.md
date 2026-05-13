@@ -27,6 +27,10 @@
 - [x] 예약 생성: 사용자 이름, 날짜, 테마, 시간을 선택하여 예약
 - [x] 예약 조회 및 취소: 전체 예약 목록 조회 및 특정 예약 취소 기능 제공
 - [x] 중복 예약 방지: 동일한 날짜/시간/테마에 대해 중복 예약 불가
+- [ ] 내 예약 조회: 특정 사용자의 전체 예약 및 취소 내역 조회 (is_deleted = false인 데이터)
+- [ ] 예약 변경: 본인 예약의 날짜 또는 시간 정보 수정 (PATCH)
+- [ ] 예약 취소: 사용자가 본인의 예약을 취소 상태로 변경 (is_cancelled = true)
+- [x] 예약 삭제: 관리자가 시스템에서 예약 레코드를 비활성화 (is_deleted = true)
 
 ---
 
@@ -73,11 +77,14 @@
 
 ### 3. 예약 (Reservation)
 
-| 기능 | Method | Path | 설명 |
-| --- | --- | --- | --- |
-| 예약 목록 조회 | `GET` | `/reservations` | 전체 예약 내역 조회 |
-| 예약 생성 | `POST` | `/reservations` | 새로운 예약 등록 |
-| 예약 취소 | `DELETE` | `/reservations/{id}` | 특정 예약 취소 |
+| 기능       | Method | Path                      | 설명                                |
+| -------- | ------ |---------------------------| --------------------------------- |
+| 전체 예약 조회 | GET    | /reservations             | 관리자용 전체 목록 조회                     |
+| 내 예약 조회  | GET    | /reservations?name={name} | 본인의 예약 및 취소 내역 조회                 |
+| 예약 생성    | POST   | /reservations             | 새로운 예약 등록                         |
+| 예약 변경    | PATCH  | /reservations/{id}        | 예약의 날짜 또는 시간 수정                   |
+| 예약 취소    | POST   | /reservations/{id}/cancel | 사용자의 예약 취소 처리 (is_cancelled 업데이트) |
+| 예약 삭제    | DELETE | /reservations/{id}        | 시스템 내 예약 논리 삭제 (is_deleted 업데이트)  |
 
 #### 예약 생성 요청 (Example)
 ```json
@@ -85,7 +92,8 @@
   "name": "브라운",
   "date": "2024-05-07",
   "timeId": 1,
-  "themeId": 1
+  "themeId": 1,
+  "isCancelled": false
 }
 ```
 
@@ -97,7 +105,8 @@
     "name": "브라운",
     "date": "2024-05-07",
     "time": { "id": 1, "startAt": "13:00" },
-    "theme": { "id": 1, "name": "우테코 탈출", ... }
+    "theme": { "id": 1, "name": "우테코 탈출", ... },
+    "isCancelled" : true
   }
 ]
 ```
