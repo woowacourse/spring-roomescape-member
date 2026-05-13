@@ -36,7 +36,10 @@ public class ReservationService {
     public Reservation createReservation(String name, LocalDate date, Long timeId, Long themeId) {
         ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_TIME_NOT_FOUND));
-        Theme theme = themeRepository.findById(themeId);
+
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
+
         Reservation reservation = new Reservation(null, name, date, time, theme);
 
         return reservationRepository.save(reservation);

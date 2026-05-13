@@ -47,12 +47,17 @@ class ThemeRepositoryTest {
     void 존재하는_id로_조회하면_테마를_반환한다() {
         Theme saved = themeRepository.save(new Theme("공포방", "무서운방입니다.", "image-url"));
 
-        Theme result = themeRepository.findById(saved.getId());
+        Theme result = themeRepository.findById(saved.getId()).orElseThrow();
 
         assertThat(result.getId()).isEqualTo(saved.getId());
         assertThat(result.getName()).isEqualTo("공포방");
         assertThat(result.getDescription()).isEqualTo("무서운방입니다.");
         assertThat(result.getThumbnail()).isEqualTo("image-url");
+    }
+
+    @Test
+    void 존재하지_않는_id로_조회하면_빈_Optional을_반환한다() {
+        assertThat(themeRepository.findById(999L)).isEmpty();
     }
 
     @Test

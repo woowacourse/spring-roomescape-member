@@ -64,7 +64,7 @@ class ReservationServiceTest {
         Reservation reservation = new Reservation(1L, "어셔", LocalDate.of(2026, 5, 10), time, theme);
 
         when(reservationTimeRepository.findById(any())).thenReturn(Optional.of(time));
-        when(themeRepository.findById(any())).thenReturn(theme);
+        when(themeRepository.findById(any())).thenReturn(Optional.of(theme));
         when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
 
         Reservation result = reservationService.createReservation("어셔", LocalDate.of(2026, 5, 10), 1L, 2L);
