@@ -1,6 +1,8 @@
 package roomescape.time.domain;
 
 import org.junit.jupiter.api.Test;
+import roomescape.global.exception.BusinessException;
+import roomescape.global.exception.ErrorCode;
 
 import java.time.LocalTime;
 
@@ -19,6 +21,9 @@ class ReservationTimeTest {
     @Test
     void 시작_시간이_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> new ReservationTime(1L, null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.INVALID_INPUT);
     }
+
 }
