@@ -26,7 +26,10 @@
 - [x] Bean Validation 추가(유효하지 않은 입력값 거부)
   - json 요청을 dto로 역직렬화에서 발생하는 오류: HttpMessageNotReadableException
   - dto로 역직렬화가 완료된 이후 값이 올바른 값을 가지는 지 검증: MethodArgumentNotValidException
-- [ ] 예약 생성 시 도메인 검증 추가
+- [x] 예약 생성 시 도메인 검증 추가
+  - 도메인 생성 시 null 체크 수행
+  - 검증 실패 시 BusinessException 반환하도록 한다
+    - (도메인 검증 구체적인 내용을 외부에 알려줄 필요가 없다고 생각..)
 - [ ] 예약 생성 시 중복 시 거부 로직 추가
 - [ ] 예약 시간 삭제 시 해당 시간에 예약이 있으면 거부 로직 추가
 - [ ] 테마 삭제 시 해당 테마에 예약이 있으면 거부 로직 추가
