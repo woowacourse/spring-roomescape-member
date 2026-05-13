@@ -39,9 +39,9 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Theme> findPopularThemes(int days, int limit) {
+    public List<Theme> findPopularThemes(int recentDays, int limit) {
         LocalDate today = LocalDate.now(clock);
-        LocalDate start = today.minusDays(days);
+        LocalDate start = today.minusDays(recentDays);
 
         return themeRepository.findPopularThemes(start, today, limit);
     }

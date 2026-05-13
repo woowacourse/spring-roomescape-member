@@ -19,6 +19,8 @@ import roomescape.theme.exception.ThemeNotFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // TODO: 에러 응답 객체 만들기 (내부에 어떤 필드?)
+
     @ExceptionHandler({
             ReservationNotFoundException.class,
             ReservationTimeNotFoundException.class,

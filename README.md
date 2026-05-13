@@ -209,21 +209,21 @@ Content-Type: application/json
 
 # 📝API 명세
 
-| 기능           | 메서드 / URL                                 | 요청 본문                               | 응답 본문                                                                                               |
-|--------------|-------------------------------------------|-------------------------------------|-----------------------------------------------------------------------------------------------------|
-| (어드민)        |                                           |
-| 시간 추가        | `POST /admin/times`                       | `{startAt}`                         | `{id, startAt}`                                                                                     |
-| 시간 삭제        | `DELETE /admin/times/{id}`                |                                     |                                                                                                     |
-| 테마 추가        | `POST /admin/themes`                      | `{name, description, thumbnailUrl}` | `{id, name, description, thumbnailUrl, runtime}`                                                    |
-| 테마 삭제        | `DELETE /admin/themes/{id}`               |                                     |                                                                                                     |
-| (유저)         |                                           |                                     |
-| 예약 추가        | `POST /reservations`                      | `{name, date, timeId, themeId}`     | `{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}`        |
-| 예약 조회        | `GET /reservations`                       |                                     | `[{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}, ...]` |
-| 예약 삭제        | `DELETE /reservations/{id}`               |                                     |                                                                                                     |
-| 시간 조회        | `GET /times`                              |                                     | `[{id, startAt}, ...]`                                                                              |
-| 예약 가능한 시간 조회 | `GET /times/available/date={}&themeId={}` |                                     | `[{id, startAt}, ...]`                                                                              |
-| 테마 조회        | `GET /themes`                             |                                     | `[{id, name, description, thumbnailUrl, runtime}, ...]`                                             |
-| 인기 있는 테마 조회  | `GET /themes/popular?days={}&limit={}`    |                                     | `[{id, name, description, thumbnailUrl, runtime}, ...]`                                             |
+| 기능           | 메서드 / URL                                    | 요청 본문                               | 응답 본문                                                                                               |
+|--------------|----------------------------------------------|-------------------------------------|-----------------------------------------------------------------------------------------------------|
+| (어드민)        |                                              |
+| 시간 추가        | `POST /admin/times`                          | `{startAt}`                         | `{id, startAt}`                                                                                     |
+| 시간 삭제        | `DELETE /admin/times/{id}`                   |                                     |                                                                                                     |
+| 테마 추가        | `POST /admin/themes`                         | `{name, description, thumbnailUrl}` | `{id, name, description, thumbnailUrl, runtime}`                                                    |
+| 테마 삭제        | `DELETE /admin/themes/{id}`                  |                                     |                                                                                                     |
+| (유저)         |                                              |                                     |
+| 예약 추가        | `POST /reservations`                         | `{name, date, timeId, themeId}`     | `{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}`        |
+| 예약 조회        | `GET /reservations`                          |                                     | `[{id, name, date, time:{id, startAt}, theme:{id, name, description, thumbnailUrl, runtime}}, ...]` |
+| 예약 삭제        | `DELETE /reservations/{id}`                  |                                     |                                                                                                     |
+| 시간 조회        | `GET /times`                                 |                                     | `[{id, startAt}, ...]`                                                                              |
+| 예약 가능한 시간 조회 | `GET /times/available/date={}&themeId={}`    |                                     | `[{id, startAt}, ...]`                                                                              |
+| 테마 조회        | `GET /themes`                                |                                     | `[{id, name, description, thumbnailUrl, runtime}, ...]`                                             |
+| 인기 있는 테마 조회  | `GET /themes/popular?recentDays={}&limit={}` |                                     | `[{id, name, description, thumbnailUrl, runtime}, ...]`                                             |
 
 # 응답 코드
 
