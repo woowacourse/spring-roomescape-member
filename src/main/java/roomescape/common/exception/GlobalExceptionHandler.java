@@ -24,13 +24,6 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.from(exception.getMessage()));
     }
 
-    @ExceptionHandler(InvalidFormatException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidFormatException(InvalidFormatException exception) {
-        return ResponseEntity
-                .status(exception.getStatus())
-                .body(ErrorResponse.from(exception.getMessage()));
-    }
-
     @ExceptionHandler(UnprocessableException.class)
     public ResponseEntity<ErrorResponse> handleUnprocessableException(UnprocessableException exception) {
         return ResponseEntity
