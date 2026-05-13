@@ -32,12 +32,7 @@ public class ThemeService {
 
         Theme theme = themeRepository.save(themeWithoutId);
 
-        return new ThemeResponse(
-                theme.getId(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnailUrl()
-        );
+        return mapDomainToDto(theme);
     }
 
     public void delete(final Long themeId) {
@@ -54,24 +49,23 @@ public class ThemeService {
 
         return themeRepository.findPopularThemes(startDate, today)
                 .stream()
-                .map(theme -> new ThemeResponse(
-                        theme.getId(),
-                        theme.getName(),
-                        theme.getDescription(),
-                        theme.getThumbnailUrl()
-                ))
+                .map(ThemeService::mapDomainToDto)
                 .toList();
     }
 
     public List<ThemeResponse> getThemes() {
         return themeRepository.findAll()
                 .stream()
-                .map(theme -> new ThemeResponse(
-                        theme.getId(),
-                        theme.getName(),
-                        theme.getDescription(),
-                        theme.getThumbnailUrl()
-                ))
+                .map(ThemeService::mapDomainToDto)
                 .toList();
+    }
+
+    private static ThemeResponse mapDomainToDto(Theme theme) {
+        return new ThemeResponse(
+                theme.getId(),
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnailUrl()
+        );
     }
 }

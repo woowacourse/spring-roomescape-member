@@ -19,10 +19,7 @@ public class ReservationTimeService {
     public List<ReservationTimeResponse> getTimes() {
         return reservationTimeRepository.findAll()
                 .stream()
-                .map(reservationTime -> new ReservationTimeResponse(
-                        reservationTime.getId(),
-                        reservationTime.getStartAt()
-                ))
+                .map(ReservationTimeService::mapDomainToDto)
                 .toList();
     }
 
@@ -36,10 +33,7 @@ public class ReservationTimeService {
 
         final ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
 
-        return new ReservationTimeResponse(
-                savedTime.getId(),
-                savedTime.getStartAt()
-        );
+        return mapDomainToDto(savedTime);
     }
 
     public void delete(final Long timeId) {
@@ -48,5 +42,12 @@ public class ReservationTimeService {
         if (!deleted) {
             throw new IllegalArgumentException("존재하지 않는 예약 시간입니다.");
         }
+    }
+
+    private static ReservationTimeResponse mapDomainToDto(ReservationTime reservationTime) {
+        return new ReservationTimeResponse(
+                reservationTime.getId(),
+                reservationTime.getStartAt()
+        );
     }
 }
