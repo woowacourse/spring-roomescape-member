@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmptyNameException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
         return ResponseEntity
-                .badRequest()
+                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
                 .body(ex.getMessage());
     }
 
