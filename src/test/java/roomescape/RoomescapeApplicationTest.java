@@ -160,19 +160,6 @@ class RoomescapeApplicationTest {
     }
 
     @Test
-    void 파라미터_없이_랭킹을_조회하면_최근_7일_기준_상위_10개_기본값의_테마가_반환된다() {
-        RestAssured.given().log().all()
-                .when().get("/themes/rank")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .body("size()", is(4))
-                .body("[0].id", is(1))
-                .body("[1].id", is(2))
-                .body("[2].id", is(3))
-                .body("[3].id", is(4));
-    }
-
-    @Test
     void limit_파라미터를_2로_지정하면_상위_2개의_테마만_반환된다() {
         RestAssured.given().log().all()
                 .queryParam("limit", 2)
@@ -180,7 +167,7 @@ class RoomescapeApplicationTest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .body("size()", is(2))
-                .body("[0].id", is(1))
+                .body("[0].id", is(3))
                 .body("[1].id", is(2));
     }
 

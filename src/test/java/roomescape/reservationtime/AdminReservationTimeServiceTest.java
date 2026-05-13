@@ -68,6 +68,4 @@ class AdminReservationTimeServiceTest {
         assertThatCode(() -> reservationTimeService.deleteReservationTime(1L))
                 .doesNotThrowAnyException();
     }
-
-
 }

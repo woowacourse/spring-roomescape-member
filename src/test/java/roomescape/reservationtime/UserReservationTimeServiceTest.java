@@ -54,10 +54,10 @@ class UserReservationTimeServiceTest {
                 new AvailableTime(2L, LocalTime.of(11, 0), false)   // 예약 불가 (이미 예약됨)
         );
 
-        when(reservationTimeRepository.findAvailableTimes(date, themeId))
+        when(reservationTimeRepository.findAvailableTimes(themeId, date))
                 .thenReturn(mockSchedules);
 
-        ScheduleResponse result = reservationTimeService.getSchedules(date, themeId);
+        ScheduleResponse result = reservationTimeService.getSchedules(themeId, date);
 
         assertThat(result.themeId()).isEqualTo(themeId);
         assertThat(result.date()).isEqualTo(date);
@@ -72,10 +72,10 @@ class UserReservationTimeServiceTest {
         LocalDate date = LocalDate.of(2026, 5, 8);
         Long themeId = 1L;
 
-        when(reservationTimeRepository.findAvailableTimes(date, themeId))
+        when(reservationTimeRepository.findAvailableTimes(themeId, date))
                 .thenReturn(Collections.emptyList());
 
-        ScheduleResponse result = reservationTimeService.getSchedules(date, themeId);
+        ScheduleResponse result = reservationTimeService.getSchedules(themeId, date);
 
         assertThat(result.themeId()).isEqualTo(themeId);
         assertThat(result.date()).isEqualTo(date);

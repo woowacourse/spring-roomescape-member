@@ -31,8 +31,10 @@ class ReservationDaoTest {
         Theme theme = createTheme("Theme A");
         ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
 
-        Reservation saved = reservationDao.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
-        Reservation found = reservationDao.findById(saved.getId());
+        Reservation reservation = new Reservation("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
+        Reservation saved = reservationDao.save(reservation);
+        Reservation found = reservationDao.findById(saved.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약을 찾을 수 없습니다."));
 
         assertThat(found.getId()).isEqualTo(saved.getId());
         assertThat(found.getName()).isEqualTo("브라운");
@@ -47,8 +49,8 @@ class ReservationDaoTest {
         ReservationTime firstTime = createReservationTime(LocalTime.of(10, 0));
         ReservationTime secondTime = createReservationTime(LocalTime.of(11, 0));
 
-        reservationDao.save("브라운", LocalDate.of(2026, 5, 1), firstTime, theme);
-        reservationDao.save("코니", LocalDate.of(2026, 5, 2), secondTime, theme);
+        reservationDao.save(new Reservation("브라운", LocalDate.of(2026, 5, 1), firstTime, theme));
+        reservationDao.save(new Reservation("코니", LocalDate.of(2026, 5, 2), secondTime, theme));
 
         List<Reservation> reservations = reservationDao.findAll();
 
@@ -63,7 +65,7 @@ class ReservationDaoTest {
         Theme theme = createTheme("Theme A");
         ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
 
-        Reservation saved = reservationDao.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
+        Reservation saved = reservationDao.save(new Reservation("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme));
 
         reservationDao.delete(saved.getId());
 
@@ -75,8 +77,8 @@ class ReservationDaoTest {
         Theme theme = createTheme("Theme A");
         ReservationTime reservationTime = createReservationTime(LocalTime.of(10, 0));
 
-        reservationDao.save("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme);
-        reservationDao.save("코니", LocalDate.of(2026, 5, 2), reservationTime, theme);
+        reservationDao.save(new Reservation("브라운", LocalDate.of(2026, 5, 1), reservationTime, theme));
+        reservationDao.save(new Reservation("코니", LocalDate.of(2026, 5, 2), reservationTime, theme));
 
         int count = reservationDao.countByTimeId(reservationTime.id());
 
@@ -89,8 +91,8 @@ class ReservationDaoTest {
         ReservationTime firstTime = createReservationTime(LocalTime.of(10, 0));
         ReservationTime secondTime = createReservationTime(LocalTime.of(11, 0));
 
-        reservationDao.save("브라운", LocalDate.of(2026, 5, 1), firstTime, theme);
-        reservationDao.save("코니", LocalDate.of(2026, 5, 1), secondTime, theme);
+        reservationDao.save(new Reservation("브라운", LocalDate.of(2026, 5, 1), firstTime, theme));
+        reservationDao.save(new Reservation("코니", LocalDate.of(2026, 5, 1), secondTime, theme));
 
         List<Long> reservedTimes = reservationDao.findByDateAndTheme(LocalDate.of(2026, 5, 1), theme.id());
 

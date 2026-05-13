@@ -1,5 +1,6 @@
 package roomescape.reservationtime;
 
+import java.util.Map;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,10 +18,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         return reservationTimeDao.findAll().stream()
-                .map(row -> new ReservationTime(
-                        (Long) row.get("id"),
-                        ((java.sql.Time) row.get("start_at")).toLocalTime()
-                ))
+                .map(this::mapToReservationTime)
                 .toList();
     }
 
@@ -38,10 +36,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public Optional<ReservationTime> findById(long id) {
         return reservationTimeDao.findById(id)
-                .map(row -> new ReservationTime(
-                        (Long) row.get("id"),
-                        ((java.sql.Time) row.get("start_at")).toLocalTime()
-                ));
+                .map(this::mapToReservationTime);
+    }
+
+    private ReservationTime mapToReservationTime(Map<String, Object> row) {
+        return new ReservationTime(
+                (Long) row.get("id"),
+                ((java.sql.Time) row.get("start_at")).toLocalTime()
+        );
     }
 
     @Override

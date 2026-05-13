@@ -29,12 +29,12 @@ class UserThemeServiceTest {
                 new Theme(2L, "Theme B", "desc", "thumb2")
         );
 
-        when(themeRepository.findRanked(eq("reservationCount"), eq("DESC"), eq(LocalDate.of(2026, 5, 1)),
-                eq(LocalDate.of(2026, 5, 31)), eq(10L)))
+        when(themeRepository.findRanked(eq(LocalDate.of(2026, 5, 1)),
+                eq(LocalDate.of(2026, 5, 31)), eq(ThemeSort.RESERVATION_COUNT), eq(SortOrder.DESC), eq(10L)))
                 .thenReturn(themes);
 
-        List<Theme> result = userThemeService.getThemes("reservationCount", "DESC", LocalDate.of(2026, 5, 1),
-                LocalDate.of(2026, 5, 31), 10L);
+        List<Theme> result = userThemeService.getThemes(LocalDate.of(2026, 5, 1),
+                LocalDate.of(2026, 5, 31), ThemeSort.RESERVATION_COUNT, SortOrder.DESC, 10L);
 
         assertThat(result).hasSize(2);
         assertThat(result)

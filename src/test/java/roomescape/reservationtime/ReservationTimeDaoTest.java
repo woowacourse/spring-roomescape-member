@@ -1,5 +1,6 @@
 package roomescape.reservationtime;
 
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -25,12 +26,13 @@ class ReservationTimeDaoTest {
 
     @Test
     void 예약_시간을_저장하고_ID로_조회할_수_있다() {
-        ReservationTime saved = reservationTimeDao.save(LocalTime.of(10, 0));
+        long savedId = reservationTimeDao.save(LocalTime.of(10, 0));
 
-        ReservationTime found = reservationTimeDao.findById(saved.id()).orElseThrow();
+        Map<String, Object> found = reservationTimeDao.findById(savedId).orElseThrow();
 
-        assertThat(found.id()).isEqualTo(saved.id());
-        assertThat(found.startAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(found.get("id")).isEqualTo(savedId);
+        assertThat(((java.sql.Time) found.get("start_at")).toLocalTime())
+                .isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test
@@ -38,19 +40,19 @@ class ReservationTimeDaoTest {
         reservationTimeDao.save(LocalTime.of(10, 0));
         reservationTimeDao.save(LocalTime.of(11, 0));
 
-        List<ReservationTime> times = reservationTimeDao.findAll();
+        List<Map<String, Object>> times = reservationTimeDao.findAll();
 
         assertThat(times).hasSize(2);
         assertThat(times)
-                .extracting(ReservationTime::startAt)
+                .extracting(row -> ((java.sql.Time) row.get("start_at")).toLocalTime())
                 .containsExactly(LocalTime.of(10, 0), LocalTime.of(11, 0));
     }
 
     @Test
     void ID로_예약_시간을_삭제할_수_있다() {
-        ReservationTime saved = reservationTimeDao.save(LocalTime.of(10, 0));
+        long savedId = reservationTimeDao.save(LocalTime.of(10, 0));
 
-        reservationTimeDao.delete(saved.id());
+        reservationTimeDao.delete(savedId);
 
         assertThat(reservationTimeDao.findAll()).isEmpty();
     }

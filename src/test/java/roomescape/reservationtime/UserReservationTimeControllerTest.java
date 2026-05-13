@@ -54,7 +54,7 @@ class UserReservationTimeControllerTest {
         );
         ScheduleResponse mockResponse = new ScheduleResponse(themeId, date, mockSchedules);
 
-        given(userReservationTimeService.getSchedules(eq(date), eq(themeId))).willReturn(mockResponse);
+        given(userReservationTimeService.getSchedules(eq(themeId), eq(date))).willReturn(mockResponse);
 
         mockMvc.perform(get("/times/{themeId}", themeId)
                         .param("date", "2026-05-08"))

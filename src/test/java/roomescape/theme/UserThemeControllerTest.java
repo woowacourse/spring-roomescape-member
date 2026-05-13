@@ -35,7 +35,7 @@ class UserThemeControllerTest {
                 new Theme(2L, "Horror", "Escape the room", "thumb2")
         );
 
-        when(userThemeService.getThemes(eq("reservationCount"), eq("DESC"), eq(startDate), eq(endDate), eq(10L)))
+        when(userThemeService.getThemes(eq(startDate), eq(endDate), eq(ThemeSort.RESERVATION_COUNT), eq(SortOrder.DESC), eq(10L)))
                 .thenReturn(themes);
 
         mockMvc.perform(get("/themes/rank")
@@ -62,7 +62,7 @@ class UserThemeControllerTest {
         LocalDate startDate = LocalDate.of(2026, 5, 1);
         LocalDate endDate = LocalDate.of(2026, 5, 31);
 
-        when(userThemeService.getThemes(eq("reservationCount"), eq("DESC"), eq(startDate), eq(endDate), eq(10L)))
+        when(userThemeService.getThemes(eq(startDate), eq(endDate), eq(ThemeSort.RESERVATION_COUNT), eq(SortOrder.DESC), eq(10L)))
                 .thenReturn(List.of());
 
         mockMvc.perform(get("/themes/rank")
@@ -79,7 +79,7 @@ class UserThemeControllerTest {
         LocalDate today = LocalDate.now();
         LocalDate weekAgo = today.minusDays(7);
 
-        when(userThemeService.getThemes(eq("reservationCount"), eq("DESC"), eq(weekAgo), eq(today), isNull()))
+        when(userThemeService.getThemes(eq(weekAgo), eq(today), eq(ThemeSort.RESERVATION_COUNT), eq(SortOrder.DESC), isNull()))
                 .thenReturn(List.of());
 
         mockMvc.perform(get("/themes/rank")
