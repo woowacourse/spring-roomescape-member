@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.config.TestFixture.reservation;
 import static roomescape.config.TestFixture.reservationTime;
 import static roomescape.config.TestFixture.theme;
@@ -8,7 +9,6 @@ import static roomescape.config.TestFixture.theme;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -21,6 +21,7 @@ import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.entity.Theme;
+import roomescape.theme.exception.ThemeInUseException;
 import roomescape.theme.exception.ThemeNotFoundException;
 
 @JdbcTest
@@ -91,25 +92,15 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    void 테마를_삭제하면_이를_참조하는_예약도_삭제된다() {
-        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(11, 0)));
+    void 예약이_참조하는_테마는_삭제할_수_없다() {
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(theme("테마"));
+        Reservation reservation = reservation("밀란", date, reservationTime, theme);
+        reservationRepository.save(reservation);
 
-        Theme theme = theme("테마");
-        Theme savedTheme = themeRepository.save(theme);
-
-        Reservation reservation = reservation(
-                "밀란",
-                LocalDate.of(2026, 5, 6),
-                reservationTime,
-                savedTheme
-        );
-
-        Reservation savedReservation = reservationRepository.save(reservation);
-
-        themeRepository.deleteById(savedTheme.getId());
-
-        Optional<Reservation> foundReservation = reservationRepository.findById(savedReservation.getId());
-        assertThat(foundReservation).isEmpty();
+        assertThatThrownBy(() -> themeRepository.deleteById(theme.getId()))
+                .isInstanceOf(ThemeInUseException.class);
     }
 
     @Sql("/create_dummies_for_popular_themes.sql")

@@ -9,7 +9,6 @@ import static roomescape.config.TestFixture.theme;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -19,6 +18,7 @@ import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.entity.ReservationTime;
 import roomescape.reservationtime.exception.ReservationTimeDuplicatedException;
+import roomescape.reservationtime.exception.ReservationTimeInUseException;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.JdbcThemeRepository;
@@ -94,21 +94,6 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
-    void 예약_시간을_삭제하면_이를_참조하는_예약도_삭제된다() {
-        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(17, 0)));
-        Theme theme = themeRepository.save(theme("테마"));
-
-        Reservation reservation = reservation("밀란", LocalDate.of(2026, 5, 6), reservationTime, theme);
-
-        Reservation savedReservation = reservationRepository.save(reservation);
-
-        reservationTimeRepository.deleteById(reservationTime.getId());
-
-        Optional<Reservation> foundReservation = reservationRepository.findById(savedReservation.getId());
-        assertThat(foundReservation).isEmpty();
-    }
-
-    @Test
     void 특정_날짜와_테마에_예약_가능한_시간을_조회하는_테스트() {
         LocalDate date = LocalDate.of(2026, 5, 6);
 
@@ -130,6 +115,18 @@ class JdbcReservationTimeRepositoryTest {
         assertThat(availableTimes)
                 .extracting(ReservationTime::getId)
                 .containsExactly(reservationTime2.getId(), reservationTime3.getId());
+    }
+
+    @Test
+    void 예약이_참조하는_예약시간은_삭제할_수_없다() {
+        LocalDate date = LocalDate.of(2026, 5, 10);
+        ReservationTime reservationTime = reservationTimeRepository.save(reservationTime(LocalTime.of(10, 0)));
+        Theme theme = themeRepository.save(theme("테마"));
+        Reservation reservation = reservation("밀란", date, reservationTime, theme);
+        reservationRepository.save(reservation);
+
+        assertThatThrownBy(() -> reservationTimeRepository.deleteById(reservationTime.getId()))
+                .isInstanceOf(ReservationTimeInUseException.class);
     }
 
 }
