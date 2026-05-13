@@ -62,6 +62,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorInformation> handleUnknownException(Exception e) {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        log.error("예상치 못한 예외 발생", e);
         ErrorInformation errorInformation = ErrorInformation.of(httpStatus, e.getMessage());
         return ResponseEntity.status(httpStatus)
                 .body(errorInformation);
