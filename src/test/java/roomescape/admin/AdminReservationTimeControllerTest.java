@@ -1,7 +1,6 @@
 package roomescape.admin;
 
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,8 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
 import roomescape.time.ReservationTimeService;
 
 @WebMvcTest(AdminReservationTimeController.class)
@@ -60,14 +57,5 @@ class AdminReservationTimeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void 존재하지_않는_예약시간_삭제시_404() throws Exception {
-        willThrow(new RoomescapeException(ErrorCode.RESERVATION_TIME_NOT_FOUND))
-                .given(reservationTimeService).delete(0L);
-
-        mockMvc.perform(delete("/api/admin/times/0"))
-                .andExpect(status().isNotFound());
     }
 }

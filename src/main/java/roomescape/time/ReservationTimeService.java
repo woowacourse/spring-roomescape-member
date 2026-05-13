@@ -5,8 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
+import roomescape.exception.AlreadyInUseException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.dto.ReservationTimeRequest;
 import roomescape.time.dto.ReservationTimeResponse;
@@ -46,7 +45,7 @@ public class ReservationTimeService {
     @Transactional
     public void delete(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
-            throw new RoomescapeException(ErrorCode.RESERVATION_TIME_IN_USE);
+            throw new AlreadyInUseException("예약 시간에 해당하는 예약이 있습니다.");
         }
         reservationTimeRepository.deleteById(id);
     }

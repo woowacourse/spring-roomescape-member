@@ -4,8 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomescapeException;
+import roomescape.exception.AlreadyInUseException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
@@ -50,7 +49,7 @@ public class ThemeService {
     @Transactional
     public void delete(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
-            throw new RoomescapeException(ErrorCode.THEME_IN_USE);
+            throw new AlreadyInUseException("테마에 해당하는 예약이 있습니다.");
         }
         themeRepository.deleteById(id);
     }

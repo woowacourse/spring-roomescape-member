@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import java.time.LocalDate;
+import roomescape.exception.InvalidStateException;
 import roomescape.theme.Theme;
 import roomescape.time.ReservationTime;
 
@@ -54,25 +55,25 @@ public class Reservation {
 
     private void validateUserName(String userName) {
         if (userName == null || userName.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 비어있을 수 없습니다.");
+            throw new InvalidStateException("예약자 이름은 비어있을 수 없습니다.");
         }
     }
 
     private void validateTheme(Theme theme) {
         if (theme == null) {
-            throw new IllegalArgumentException("예약 테마는 비어있을 수 없습니다.");
+            throw new InvalidStateException("예약 테마는 비어있을 수 없습니다.");
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 비어있을 수 없습니다.");
+            throw new InvalidStateException("예약 날짜는 비어있을 수 없습니다.");
         }
     }
 
     private void validateTime(ReservationTime time) {
         if (time == null) {
-            throw new IllegalArgumentException("예약 시간은 비어있을 수 없습니다.");
+            throw new InvalidStateException("예약 시간은 비어있을 수 없습니다.");
         }
     }
 }
