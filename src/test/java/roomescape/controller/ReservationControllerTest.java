@@ -233,6 +233,18 @@ class ReservationControllerTest {
 
     @Test
     @Sql("/clear.sql")
+    void 예약_요청_본문이_null이면_400을_응답한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body("null")
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", org.hamcrest.Matchers.is("잘못된 요청입니다."));
+    }
+
+    @Test
+    @Sql("/clear.sql")
     void 존재하지_않는_테마로_예약하면_404를_응답한다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at, end_at) VALUES (?, ?)", "10:00", "10:30");
 
