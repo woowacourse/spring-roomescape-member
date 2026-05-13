@@ -9,21 +9,12 @@
 
 우아한테크코스 BE 레벨 2 방탈출 예약 서비스를 구현한 저장소입니다.
 
-## 목차
+# 목차
 
 - [API 명세서](#api-명세서)
-    - [예약 생성](#예약-생성)
-    - [관리자 예약 조회](#관리자-예약-조회)
-    - [관리자 예약 삭제](#관리자-예약-삭제)
-    - [관리자 시간 조회](#관리자-시간-조회)
-    - [관리자 시간 생성](#관리자-시간-생성)
-    - [관리자 시간 삭제](#관리자-시간-삭제)
-    - [관리자 테마 추가](#관리자-테마-추가)
-    - [관리자 테마 삭제](#관리자-테마-삭제)
-    - [사용자 테마 조회](#사용자-테마-조회)
-    - [사용자 예약 가능한 시간 조회](#사용자-예약-가능한-시간-조회)
-    - [사용자 예약 생성](#사용자-예약-생성)
-    - [사용자 인기 테마 조회](#사용자-인기-테마-조회)
+    - [Reservation](#reservation)
+    - [Time](#time)
+    - [Theme](#theme)
 - [클라이언트 기능](#클라이언트-기능)
     - [공통(사용자)](#공통사용자)
         - [인기 테마 조회 기능](#인기-테마-조회-기능)
@@ -35,64 +26,109 @@
         - [테마 관리 기능](#테마-관리-기능)
         - [시간 추가 및 관리 기능](#시간-추가-및-관리-기능)
 
-## API 명세서
+# API 명세서
 
-### 예약 생성
+## Reservation
 
-#### URL
+### `POST /api/reservations` 예약 생성 API
 
-```http
-POST /api/reservations
+<details>
+<summary>세부 내용</summary>
+
+### API 정보
+
+```text
+예약을 생성합니다.
 ```
 
-#### Query Parameters
+### 상황별 HTTP Code 및 에러 메시지
 
-없음
+| 상황                                | HTTP Code                 | 에러 메시지                     | 문제 필드   |
+|-----------------------------------|---------------------------|----------------------------|---------|
+| 요청 처리 성공                          | 201 Created               | 없음                         | 없음      |
+| 필드의 자료형이 올바르지 않는 경우               | 400 Bad Request           | {필드명}의 형식이 유효하지 않습니다.      | 필드명     |
+| 필드의 자료형이 유효하지 않은 경우               | 400 Bad Request           | {필드명}의 값이 유효하지 않습니다.       | 필드명     |
+| name의 길이가 0이하, 20 초과인 경우          | 400 Bad Request           | 예약자의 이름의 길이는 1이상 20이하 입니다. | name    |
+| date가 현재 시간보다 과거인 경우              | 400 Bad Request           | 예약 날짜가 현재보다 과거입니다.         | date    |
+| timeId가 존재하지 않는 경우                | 404 Not Found             | 존재 하지 않는 시간대입니다.           | timeId  |
+| themeId가 존재하지 않는 경우               | 404 Not Found             | 존재 하지 않는 테마입니다.            | themeId |
+| timeId, themeId에 해당하는 예약이 존재하는 경우 | 409 Conflict              | 이미 예약된 시간, 테마입니다.          | 없음      |
+| 서버 오류인 경우                         | 500 Interval Server Error | 서버 내부 오류가 발생했습니다.          | 없음      |
 
-#### Request Body
+### Request Body
+
+| 필드      | 타입     | 필수 여부 | 설명       | 예시         |
+|---------|--------|-------|----------|------------|
+| name    | String | 필수    | 예약자 이름   | 브라운        |
+| date    | Date   | 필수    | 예약 날짜    | 2026-05-12 |
+| timeId  | Number | 필수    | 예약 시간 ID | 1          |
+| themeId | Number | 필수    | 예약 테마 ID | 1          |
+
+#### 예시
 
 ```json
 {
-  "name": "서여",
-  "date": "2026-05-04",
+  "name": "브라운",
+  "date": "2026-05-12",
   "timeId": 1,
   "themeId": 1
 }
 ```
 
-#### Response Body
+### Response Body
 
-##### 201 Created
+#### 성공 예시
 
 ```json
 {
   "id": 1,
-  "name": "서여",
-  "date": "2026-05-04",
+  "name": "브라운",
+  "date": "2026-05-12",
   "timeId": 1,
   "themeId": 1
 }
 ```
 
-### 관리자 예약 조회
+#### 실패 예시
 
-#### URL
-
-```http
-GET /api/admin/reservations
+```json
+{
+  "message": "유효하지 않은 입력값입니다.",
+  "errors": [
+    {
+      "field": "date",
+      "message": "예약 날짜가 현재보다 과거입니다."
+    }
+  ]
+}
 ```
 
-#### Query Parameters
+</details>
+
+### `GET /api/admin/reservations` 관리자 예약 목록 조회 API
+
+<details>
+<summary>세부 내용</summary>
+
+### API 정보
+
+```text
+등록된 전체 예약 목록을 조회합니다.
+```
+
+### 상황별 HTTP Code 및 에러 메시지
+
+| 상황       | HTTP Code | 에러 메시지 | 문제 필드 |
+|----------|-----------|--------|-------|
+| 요청 처리 성공 | 200 OK    | 없음     | 없음    |
+
+### Request Body
 
 없음
 
-#### Request Body
+### Response Body
 
-없음
-
-#### Response Body
-
-##### 200 OK
+#### 성공 예시
 
 ```json
 [
@@ -110,267 +146,110 @@ GET /api/admin/reservations
       "description": "설명",
       "imageUrl": "https://roomescape.com/images/themes/ring-banner.png"
     }
-  },
-  {
-    "id": 2,
-    "name": "네오",
-    "date": "2026-05-06",
-    "time": {
-      "id": 2,
-      "startAt": "12:00"
-    },
-    "theme": {
-      "id": 1,
-      "name": "피온피온",
-      "description": "설명",
-      "imageUrl": "https://roomescape.com/images/themes/prison-banner.png"
+  }
+]
+```
+
+#### 실패 예시
+
+```json
+{
+  "message": "유효하지 않은 입력값입니다.",
+  "errors": [
+    {
+      "field": "date",
+      "message": "예약 날짜가 현재보다 과거입니다."
     }
-  }
-]
-```
-
-### 관리자 예약 삭제
-
-#### URL
-
-```http
-DELETE /api/admin/reservations/{id}
-```
-
-#### Path Variables
-
-| 파라미터명 | 필수 여부 | 타입     | 설명        | 예시 |
-|-------|-------|--------|-----------|----|
-| id    | 필수    | Number | 삭제할 예약 ID | 1  |
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 200 OK
-
-없음
-
-### 관리자 시간 조회
-
-#### URL
-
-```http
-GET /api/admin/times
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 200 OK
-
-```json
-[
-  {
-    "id": 1,
-    "startAt": "10:00"
-  },
-  {
-    "id": 2,
-    "startAt": "11:00"
-  }
-]
-```
-
-### 관리자 시간 생성
-
-#### URL
-
-```http
-POST /api/admin/times
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-```json
-{
-  "startAt": "20:30"
+  ]
 }
 ```
 
-#### Response Body
+</details>
 
-##### 201 Created
+### `DELETE /api/admin/reservations/{id}` 관리자 예약 삭제 API
+
+<details>
+<summary>세부 내용</summary>
+
+### API 정보
+
+```text
+예약 ID로 예약을 삭제합니다.
+```
+
+### 상황별 HTTP Code 및 에러 메시지
+
+| 상황                  | HTTP Code       | 에러 메시지             | 문제 필드 |
+|---------------------|-----------------|--------------------|-------|
+| 요청 처리 성공            | 200 OK          | 없음                 | 없음    |
+| id의 자료형이 올바르지 않은 경우 | 400 Bad Request | id의 형식이 유효하지 않습니다. | id    |
+| id가 존재하지 않는 경우      | 404 Not Found   | 존재 하지 않는 예약입니다.    | id    |
+
+### Path Variables
+
+| 이름 | 타입     | 필수 여부 | 설명        | 예시 |
+|----|--------|-------|-----------|----|
+| id | Number | 필수    | 삭제할 예약 ID | 1  |
+
+### Request Body
+
+없음
+
+### Response Body
+
+#### 성공 예시
+
+```text
+응답 본문 없음
+```
+
+#### 실패 예시
 
 ```json
 {
-  "id": 1,
-  "startAt": "20:30"
+  "code": "RESERVATION404",
+  "errorMessage": "존재 하지 않는 예약입니다."
 }
 ```
 
-### 관리자 시간 삭제
+</details>
 
-#### URL
+## Time
 
-```http
-DELETE /api/admin/times/{id}
+### `GET /api/times?date={date}&themeId={themeId}` 예약 가능 시간 조회 API
+
+<details>
+<summary>세부 내용</summary>
+
+### API 정보
+
+```text
+특정 날짜와 테마 기준으로 예약 가능한 시간을 조회합니다.
 ```
 
-#### Path Variables
+### 상황별 HTTP Code 및 에러 메시지
 
-| 파라미터명 | 필수 여부 | 타입     | 설명        | 예시 |
-|-------|-------|--------|-----------|----|
-| id    | 필수    | Number | 삭제할 시간 ID | 1  |
+| 상황                   | HTTP Code       | 에러 메시지                | 문제 필드   |
+|----------------------|-----------------|-----------------------|---------|
+| 요청 처리 성공             | 200 OK          | 없음                    | 없음      |
+| 필드의 자료형이 올바르지 않는 경우  | 400 Bad Request | {필드명}의 형식이 유효하지 않습니다. | 필드명     |
+| date가 현재 시간보다 과거인 경우 | 400 Bad Request | 예약 날짜가 현재보다 과거입니다.    | date    |
+| themeId가 존재하지 않는 경우  | 404 Not Found   | 존재 하지 않는 테마입니다.       | themeId |
 
-#### Query Parameters
+### Query Parameters
 
-없음
+| 이름      | 타입     | 필수 여부 | 설명       | 예시         |
+|---------|--------|-------|----------|------------|
+| date    | Date   | 필수    | 예약 날짜    | 2026-05-12 |
+| themeId | Number | 필수    | 예약 테마 ID | 1          |
 
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 200 OK
-
-없음
-
-### 관리자 테마 추가
-
-#### URL
-
-```http
-POST /api/admin/themes
-```
-
-#### Query Parameters
+### Request Body
 
 없음
 
-#### Request Body
+### Response Body
 
-```json
-{
-  "name": "브라운",
-  "description": "테마 설명",
-  "imageUrl": "https://roomescape.com/images/themes/prison-room.png"
-}
-```
-
-#### Response Body
-
-##### 201 Created
-
-```json
-{
-  "id": 1,
-  "name": "브라운",
-  "description": "테마 설명",
-  "imageUrl": "https://roomescape.com/images/themes/prison-room.png"
-}
-```
-
-### 관리자 테마 삭제
-
-#### URL
-
-```http
-DELETE /api/admin/themes/{id}
-```
-
-#### Path Variables
-
-| 파라미터명 | 필수 여부 | 타입     | 설명        | 예시 |
-|-------|-------|--------|-----------|----|
-| id    | 필수    | Number | 삭제할 테마 ID | 1  |
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 200 OK
-
-없음
-
-### 사용자 테마 조회
-
-#### URL
-
-```http
-GET /api/themes
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 200 OK
-
-```json
-[
-  {
-    "id": 1,
-    "name": "링",
-    "description": "이것은 링 방탈출 설명입니다.",
-    "imageUrl": "https://roomescape.com/images/themes/ring.png"
-  },
-  {
-    "id": 2,
-    "name": "감옥",
-    "description": "이것은 감옥 방탈출 설명입니다.",
-    "imageUrl": "https://roomescape.com/images/themes/prison-room.png"
-  }
-]
-```
-
-### 사용자 예약 가능한 시간 조회
-
-#### URL
-
-```http
-GET /api/times?date={date}&themeId={themeId}
-```
-
-#### Query Parameters
-
-| 파라미터명   | 필수 여부 | 타입     | 설명        | 예시         |
-|---------|-------|--------|-----------|------------|
-| date    | 필수    | Date   | 예약할 날짜    | 2026-05-12 |
-| themeId | 필수    | BigInt | 예약할 테마 ID | 1          |
-
-#### Request Body
-
-없음
-
-#### Response Body
-
-##### 200 OK
+#### 성공 예시
 
 ```json
 [
@@ -385,58 +264,200 @@ GET /api/times?date={date}&themeId={themeId}
 ]
 ```
 
-### 사용자 예약 생성
-
-#### URL
-
-```http
-POST /api/reservations
-```
-
-#### Query Parameters
-
-없음
-
-#### Request Body
+#### 실패 예시
 
 ```json
 {
-  "name": "브라운",
-  "date": "2026-05-12",
-  "timeId": 1,
-  "themeId": 1
+  "message": "유효하지 않은 입력값입니다.",
+  "errors": [
+    {
+      "field": "date",
+      "message": "예약 날짜가 현재보다 과거입니다."
+    }
+  ]
 }
 ```
 
-#### Response Body
+</details>
 
-##### 201 CREATED
+### `GET /api/admin/times` 관리자 예약 시간 목록 조회 API
+
+<details>
+<summary>세부 내용</summary>
+
+### API 정보
+
+```text
+등록된 전체 예약 시간을 조회합니다.
+```
+
+### 상황별 HTTP Code 및 에러 메시지
+
+| 상황       | HTTP Code | 에러 메시지 | 문제 필드 |
+|----------|-----------|--------|-------|
+| 요청 처리 성공 | 200 OK    | 없음     | 없음    |
+
+### Request Body
+
+없음
+
+### Response Body
+
+#### 성공 예시
+
+```json
+[
+  {
+    "id": 1,
+    "startAt": "10:00"
+  },
+  {
+    "id": 2,
+    "startAt": "11:00"
+  }
+]
+```
+
+#### 실패 예시
+
+```json
+{
+  "code": "ERROR_CODE",
+  "errorMessage": "에러 메시지"
+}
+```
+
+</details>
+
+### `POST /api/admin/times` 관리자 예약 시간 생성 API
+
+<details>
+<summary>세부 내용</summary>
+
+### API 정보
+
+```text
+예약 시간을 생성합니다.
+```
+
+### 상황별 HTTP Code 및 에러 메시지
+
+| 상황                      | HTTP Code       | 에러 메시지                | 문제 필드   |
+|-------------------------|-----------------|-----------------------|---------|
+| 요청 처리 성공                | 201 Created     | 없음                    | 없음      |
+| 필드의 자료형이 올바르지 않는 경우     | 400 Bad Request | {필드명}의 형식이 유효하지 않습니다. | 필드명     |
+| startAt의 형식이 유효하지 않은 경우 | 400 Bad Request | 예약 시간의 형식이 유효하지 않습니다. | startAt |
+
+### Request Body
+
+| 필드      | 타입   | 필수 여부 | 설명       | 예시    |
+|---------|------|-------|----------|-------|
+| startAt | Time | 필수    | 예약 시작 시간 | 20:30 |
+
+#### 예시
+
+```json
+{
+  "startAt": "20:30"
+}
+```
+
+### Response Body
+
+#### 성공 예시
 
 ```json
 {
   "id": 1,
-  "name": "브라운",
-  "date": "2026-05-12",
-  "timeId": 1,
-  "themeId": 1
+  "startAt": "20:30"
 }
 ```
 
-### 사용자 인기 테마 조회
+#### 실패 예시
 
-#### URL
-
-```http
-GET /api/themes/rankings/last-7-days
+```json
+{
+  "code": "TIME400",
+  "errorMessage": "예약 시간의 형식이 유효하지 않습니다."
+}
 ```
 
-#### Request Body
+</details>
+
+### `DELETE /api/admin/times/{id}` 관리자 예약 시간 삭제 API
+
+<details>
+<summary>세부 내용</summary>
+
+### API 정보
+
+```text
+예약 시간 ID로 예약 시간을 삭제합니다.
+```
+
+### 상황별 HTTP Code 및 에러 메시지
+
+| 상황                  | HTTP Code       | 에러 메시지             | 문제 필드 |
+|---------------------|-----------------|--------------------|-------|
+| 요청 처리 성공            | 200 OK          | 없음                 | 없음    |
+| id의 자료형이 올바르지 않은 경우 | 400 Bad Request | id의 형식이 유효하지 않습니다. | id    |
+| id가 존재하지 않는 경우      | 404 Not Found   | 존재 하지 않는 시간대입니다.   | id    |
+
+### Path Variables
+
+| 이름 | 타입     | 필수 여부 | 설명           | 예시 |
+|----|--------|-------|--------------|----|
+| id | Number | 필수    | 삭제할 예약 시간 ID | 1  |
+
+### Request Body
 
 없음
 
-#### Response Body
+### Response Body
 
-##### 200 OK
+#### 성공 예시
+
+```text
+응답 본문 없음
+```
+
+#### 실패 예시
+
+```json
+{
+  "code": "TIME404",
+  "errorMessage": "존재 하지 않는 시간대입니다."
+}
+```
+
+</details>
+
+## Theme
+
+### `GET /api/themes` 테마 목록 조회 API
+
+<details>
+<summary>세부 내용</summary>
+
+### API 정보
+
+```text
+등록된 전체 테마를 조회합니다.
+```
+
+### 상황별 HTTP Code 및 에러 메시지
+
+| 상황       | HTTP Code | 에러 메시지 | 문제 필드 |
+|----------|-----------|--------|-------|
+| 요청 처리 성공 | 200 OK    | 없음     | 없음    |
+
+### Request Body
+
+없음
+
+### Response Body
+
+#### 성공 예시
 
 ```json
 [
@@ -454,6 +475,181 @@ GET /api/themes/rankings/last-7-days
   }
 ]
 ```
+
+#### 실패 예시
+
+```json
+{
+  "code": "ERROR_CODE",
+  "errorMessage": "에러 메시지"
+}
+```
+
+</details>
+
+### `GET /api/themes/rankings/last-7-days` 최근 7일 인기 테마 조회 API
+
+<details>
+<summary>세부 내용</summary>
+
+### API 정보
+
+```text
+오늘을 제외한 직전 7일 동안 예약 수가 많은 테마를 조회합니다.
+```
+
+### 상황별 HTTP Code 및 에러 메시지
+
+| 상황       | HTTP Code | 에러 메시지 | 문제 필드 |
+|----------|-----------|--------|-------|
+| 요청 처리 성공 | 200 OK    | 없음     | 없음    |
+
+### Request Body
+
+없음
+
+### Response Body
+
+#### 성공 예시
+
+```json
+[
+  {
+    "id": 1,
+    "name": "링",
+    "description": "이것은 링 방탈출 설명입니다.",
+    "imageUrl": "https://roomescape.com/images/themes/ring.png"
+  },
+  {
+    "id": 2,
+    "name": "감옥",
+    "description": "이것은 감옥 방탈출 설명입니다.",
+    "imageUrl": "https://roomescape.com/images/themes/prison-room.png"
+  }
+]
+```
+
+#### 실패 예시
+
+```json
+{
+  "code": "ERROR_CODE",
+  "errorMessage": "에러 메시지"
+}
+```
+
+</details>
+
+### `POST /api/admin/themes` 관리자 테마 생성 API
+
+<details>
+<summary>세부 내용</summary>
+
+### API 정보
+
+```text
+테마를 생성합니다.
+```
+
+### 상황별 HTTP Code 및 에러 메시지
+
+| 상황                       | HTTP Code       | 에러 메시지                   | 문제 필드       |
+|--------------------------|-----------------|--------------------------|-------------|
+| 요청 처리 성공                 | 201 Created     | 없음                       | 없음          |
+| 필드의 자료형이 올바르지 않는 경우      | 400 Bad Request | {필드명}의 형식이 유효하지 않습니다.    | 필드명         |
+| name의 길이가 0이하, 20 초과인 경우 | 400 Bad Request | 테마 이름의 길이는 1이상 20이하 입니다. | name        |
+| description이 비어있는 경우     | 400 Bad Request | 테마 설명은 필수입니다.            | description |
+| imageUrl이 비어있는 경우        | 400 Bad Request | 테마 이미지 URL은 필수입니다.       | imageUrl    |
+
+### Request Body
+
+| 필드          | 타입     | 필수 여부 | 설명         | 예시                                                   |
+|-------------|--------|-------|------------|------------------------------------------------------|
+| name        | String | 필수    | 테마 이름      | 브라운                                                  |
+| description | String | 필수    | 테마 설명      | 테마 설명                                                |
+| imageUrl    | String | 필수    | 테마 이미지 URL | https://roomescape.com/images/themes/prison-room.png |
+
+#### 예시
+
+```json
+{
+  "name": "브라운",
+  "description": "테마 설명",
+  "imageUrl": "https://roomescape.com/images/themes/prison-room.png"
+}
+```
+
+### Response Body
+
+#### 성공 예시
+
+```json
+{
+  "id": 1,
+  "name": "브라운",
+  "description": "테마 설명",
+  "imageUrl": "https://roomescape.com/images/themes/prison-room.png"
+}
+```
+
+#### 실패 예시
+
+```json
+{
+  "code": "THEME400",
+  "errorMessage": "테마 이름의 길이는 1이상 20이하 입니다."
+}
+```
+
+</details>
+
+### `DELETE /api/admin/themes/{id}` 관리자 테마 삭제 API
+
+<details>
+<summary>세부 내용</summary>
+
+### API 정보
+
+```text
+테마 ID로 테마를 삭제합니다.
+```
+
+### 상황별 HTTP Code 및 에러 메시지
+
+| 상황                  | HTTP Code       | 에러 메시지             | 문제 필드 |
+|---------------------|-----------------|--------------------|-------|
+| 요청 처리 성공            | 200 OK          | 없음                 | 없음    |
+| id의 자료형이 올바르지 않은 경우 | 400 Bad Request | id의 형식이 유효하지 않습니다. | id    |
+| id가 존재하지 않는 경우      | 404 Not Found   | 존재 하지 않는 테마입니다.    | id    |
+
+### Path Variables
+
+| 이름 | 타입     | 필수 여부 | 설명        | 예시 |
+|----|--------|-------|-----------|----|
+| id | Number | 필수    | 삭제할 테마 ID | 1  |
+
+### Request Body
+
+없음
+
+### Response Body
+
+#### 성공 예시
+
+```text
+응답 본문 없음
+```
+
+#### 실패 예시
+
+```json
+{
+  "code": "THEME404",
+  "errorMessage": "존재 하지 않는 테마입니다."
+}
+```
+
+</details>
 
 ## 클라이언트 기능
 
